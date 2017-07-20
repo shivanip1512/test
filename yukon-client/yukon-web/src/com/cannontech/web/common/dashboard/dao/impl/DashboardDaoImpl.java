@@ -299,6 +299,16 @@ public class DashboardDaoImpl implements DashboardDao {
         });
     }
     
+    @Override
+    @Transactional
+    public void unassignDashboardFromUsers(Iterable<Integer> userIds, int dashboardId) {
+        SqlStatementBuilder unassignSql = new SqlStatementBuilder();
+        unassignSql.append("DELETE FROM UserDashboard");
+        unassignSql.append("WHERE UserId").in(userIds);
+        unassignSql.append("AND DashboardId").eq_k(dashboardId);
+        jdbcTemplate.update(unassignSql);
+    }
+    
     private void unassignDashboardForType(Iterable<Integer> userIds, DashboardPageType type) {
         SqlStatementBuilder unassignSql = new SqlStatementBuilder();
         unassignSql.append("DELETE FROM UserDashboard");

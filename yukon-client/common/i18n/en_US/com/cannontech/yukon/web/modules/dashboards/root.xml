@@ -37,7 +37,11 @@
     <entry key="yukon.web.modules.dashboard.dashboardsSection.title">Dashboards</entry>
     <entry key="yukon.web.modules.dashboard.changeOwner.success">Dashboard owner successfully changed.</entry>    
     <entry key="yukon.web.modules.dashboard.assignUsers">Assign for Users</entry>
+    <entry key="yukon.web.modules.dashboard.assignButton">Assign</entry>
     <entry key="yukon.web.modules.dashboard.assignUsers.dialogTitle">Assign Dashboard for Users</entry>
+    <entry key="yukon.web.modules.dashboard.unassignUsers">Unassign from Users</entry>
+    <entry key="yukon.web.modules.dashboard.unassignButton">Unassign</entry>
+    <entry key="yukon.web.modules.dashboard.unassignUsers.success">Dashboard users have been successfully unassigned.</entry>    
     <entry key="yukon.web.modules.dashboard.viewUsers">View Users</entry>
     <entry key="yukon.web.modules.dashboard.dashboard">Dashboard</entry>
     <entry key="yukon.web.modules.dashboard.dashboardPage">Assign to Page</entry>

@@ -7,6 +7,7 @@
 
 <%@ attribute name="type" required="true" description="Spring bean name of the Picker class." %>
 <%@ attribute name="id" required="true" description="Unique id for this picker, must be safe for javascript variable names and html element ids." %>
+<%@ attribute name="okButtonKey" description="The key for the OK button for the dialog"%>
 
 <%@ attribute name="destinationFieldId" description="Id of field to place selected items on picker close." %>
 <%@ attribute name="excludeIds" type="java.lang.Object" description="The ids that cannot be selected in the picker." %>
@@ -46,6 +47,9 @@
 
 <cti:default var="linkType" value="normal"/>
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
+<c:if test="${!empty okButtonKey}">
+    <cti:msg2 var="okText" key="${okButtonKey}"/>
+</c:if>
 <cti:msg2 var="cancelText" key="yukon.common.cancel"/>
 <cti:msg2 var="noneSelectedText" key="yukon.web.components.button.selectionPicker.label"/>
 

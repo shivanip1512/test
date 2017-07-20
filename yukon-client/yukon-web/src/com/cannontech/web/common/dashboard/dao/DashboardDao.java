@@ -61,6 +61,11 @@ public interface DashboardDao {
      * Unassigns users from dashboard.
      */
     void unassignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType);
+    
+    /**
+     * Unassigns users from a specific dashboard.
+     */
+    void unassignDashboardFromUsers(Iterable<Integer> userIds, int dashboardId);  
 
     /**
      * Retrieves dashboard for userId and dashboard type.

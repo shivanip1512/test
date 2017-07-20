@@ -62,9 +62,10 @@ yukon.dashboards = (function () {
             /** Assign Users  */
             $(document).on('yukon:dashboard:assignUsers', function (ev) {
                 var dialog = $(ev.target),
-                    selectedUsers = yukon.pickers['dashboardUsersPicker'].selectedItems,
+                    pickerId = dialog.find('#pickerId').val(),
                     dashboardId = dialog.find('#dashboardId').val(),
                     dashboardType = dialog.find('#dashboardType').val(),
+                    selectedUsers = yukon.pickers['dashboardUsersPicker_' + pickerId].selectedItems,
                     users = selectedUsers.map(function (item) { return item.userId; });
                 
                 var data = {
@@ -74,6 +75,23 @@ yukon.dashboards = (function () {
                 
                 $.ajax({
                     url: yukon.url('/dashboards/' + dashboardId + '/assignUsers'),
+                    type: 'post',
+                    data: data
+                }).done(function () {
+                    window.location.reload();
+                });
+            });
+            
+            /** Unassign Users  */
+            $(document).on('yukon:dashboard:unassignUsers', function (ev, items, picker) {
+                var users = items.map(function (item) { return item.userId; }),
+                    dashboardId = picker.extraArgs
+                    data = {
+                        users: users
+                    };
+                
+                $.ajax({
+                    url: yukon.url('/dashboards/' + dashboardId + '/unassignUsers'),
                     type: 'post',
                     data: data
                 }).done(function () {

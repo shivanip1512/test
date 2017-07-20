@@ -190,6 +190,17 @@ public class DashboardsController {
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
+    @RequestMapping(value="{id}/unassignUsers", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
+    public void unassignUsers(@PathVariable int id, @RequestParam(value="users[]", required=false) Integer[] users, 
+                              FlashScope flash, HttpServletResponse resp) {
+        if (users != null) {
+            dashboardDao.unassignDashboardFromUsers(Arrays.asList(users), id);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unassignUsers.success"));
+        }
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
+    }
+    
     @RequestMapping(value="create", method=RequestMethod.GET)
     public String createDialog(ModelMap model, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.CREATE);

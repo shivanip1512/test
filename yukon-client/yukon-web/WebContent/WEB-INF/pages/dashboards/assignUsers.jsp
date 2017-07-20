@@ -5,6 +5,9 @@
 
 <cti:msgScope paths="modules.dashboard">
 
+    <cti:uniqueIdentifier var="pickerId" />
+    <input type="hidden" id="pickerId" value="${pickerId}"/>
+
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".dashboard">
             <select id="dashboardId">
@@ -25,12 +28,12 @@
     <br/>
     
      <div id="users-tab">  
-         <tags:pickerDialog type="userPicker" id="dashboardUsersPicker" container="users-tab" multiSelectMode="true"/>
+         <tags:pickerDialog type="userPicker" id="dashboardUsersPicker_${pickerId}" container="users-tab" multiSelectMode="true"/>
      </div>
 
 <script>
 $(function() {             
-    yukon.pickers['dashboardUsersPicker'].show(); 
+    yukon.pickers['dashboardUsersPicker_' + ${pickerId}].show(); 
 });
 </script>
             

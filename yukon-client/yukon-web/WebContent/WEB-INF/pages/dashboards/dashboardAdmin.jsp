@@ -85,11 +85,21 @@
                             <c:when test="${dashboard.visibility != 'PRIVATE'}">
                                 <div class="dn js-assign-users-${dashboardId}" data-dialog data-title="<cti:msg2 key=".assignUsers.dialogTitle"/>" 
                                     data-width="700" data-height="600" data-event="yukon:dashboard:assignUsers" 
+                                    data-ok-text="<cti:msg2 key=".assignButton"/>"
                                     data-url="<cti:url value="/dashboards/${dashboardId}/assignUsers"/>"></div>
-                                <cm:dropdownOption key=".assignUsers" icon="icon-group-add" data-popup=".js-assign-users-${dashboardId}" endEvent="yukon:dashboard:assignUsers"/>
+                                <cm:dropdownOption key=".assignUsers" icon="icon-group-add" data-popup=".js-assign-users-${dashboardId}"/>
+                                <li class="dropdown-option">
+                                    <cti:uniqueIdentifier var="id" />
+                                    <tags:pickerDialog type="dashboardUsersPicker" id="unassignDashboardUsers_${id}" extraArgs="${dashboardId}" multiSelectMode="true"
+                                        endEvent="yukon:dashboard:unassignUsers" okButtonKey=".unassignButton">
+                                        <cti:icon icon="icon-group-delete"/>                                
+                                        <cti:msg2 key=".unassignUsers" />
+                                    </tags:pickerDialog>
+                                </li>
                             </c:when>
                             <c:otherwise>
                                 <cm:dropdownOption key=".assignUsers" icon="icon-group-add" disabled="true"/>
+                                <cm:dropdownOption key=".unassignUsers" icon="icon-group-delete" disabled="true"/>
                             </c:otherwise>
                         </c:choose>
                     </cm:dropdown>
