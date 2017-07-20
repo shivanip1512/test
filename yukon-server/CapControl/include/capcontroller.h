@@ -109,6 +109,7 @@ class CtiCapController : public MessageListener
         void signalMsg( const CtiSignalMsg & signal );
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);
 
+        void handleConfigDbChange( CtiDBChangeMsg * dbChange );
         bool isCbcDbChange(const CtiDBChangeMsg* dbChange);
         CcDbReloadInfo resolveCapControlType(CtiDBChangeMsg *dbChange);
         CcDbReloadInfo resolveCapControlTypeByDataBase(CtiDBChangeMsg *dbChange);

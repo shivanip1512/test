@@ -43,6 +43,9 @@
 #include "mgr_season.h"
 #include "win_helper.h"
 #include "MessageCounter.h"
+#include "database_reader.h"
+
+#include <boost/regex.hpp>
 
 extern void refreshGlobalCParms();
 
@@ -1673,6 +1676,118 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
     }
 }
 
+void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
+{
+    Cti::ConfigManager::handleDbChange( dbChange->getId(),
+                                		dbChange->getCategory(),
+                                		dbChange->getObjectType(),
+                                		dbChange->getTypeOfChange() );
+/*
+    We have 3 different object types that are possible when reloading a device config:
+        1. category
+        2. config
+        3. device
+ 
+    In all instances we need to get a collection of pao IDs and types that we need to reload.  The only things
+        in CapControl that currently uses a device config are regulators and CBC 802x controllers.  We filter out
+        all the other device types.
+*/
+
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr( connection );
+
+    if ( dbChange->getObjectType() == "config" )
+    {
+        // Find all paos assigned to this particular device config.
+
+        rdr.setCommandText
+        (
+            "SELECT "
+                "Y.PAObjectID, "
+                "Y.Type "
+            "FROM "
+                "DeviceConfigurationDeviceMap M "
+                    "JOIN YukonPAObject Y "
+                        "ON M.DeviceID = Y.PAObjectID "
+            "WHERE "
+                "Y.Type IN ('LTC', 'PO_REGULATOR', 'GO_REGULATOR', 'CBC 8020', 'CBC 8024') "
+                    "AND "
+                        "M.DeviceConfigurationId = ?"
+        );
+    }
+    else if ( dbChange->getObjectType() == "category" )
+    {
+        // Find all paos that are assigned a config that contains this particular category.
+
+        rdr.setCommandText
+        (
+            "SELECT "
+                "Y.PAObjectID, "
+                "Y.Type "
+            "FROM "
+                "DeviceConfigCategoryMap C "
+                    "JOIN DeviceConfigurationDeviceMap M "
+                        "ON C.DeviceConfigurationId = M.DeviceConfigurationId "
+                    "JOIN YukonPAObject Y "
+                        "ON M.DeviceID = Y.PAObjectID "
+            "WHERE "
+                "Y.Type IN ('LTC', 'PO_REGULATOR', 'GO_REGULATOR', 'CBC 8020', 'CBC 8024') "
+                    "AND "
+                        "C.DeviceConfigCategoryId = ?"
+        );
+    }
+    else    // dbChange->getObjectType() == "device"
+    {
+        // Reload this particular device because it has been assigned a different config.
+
+        rdr.setCommandText
+        (
+            "SELECT "
+                "Y.PAObjectID, "
+                "Y.Type "
+            "FROM "
+                "YukonPAObject Y "
+            "WHERE "
+                "Y.Type IN ('LTC', 'PO_REGULATOR', 'GO_REGULATOR', 'CBC 8020', 'CBC 8024') "
+                    "AND "
+                        "Y.PAObjectID = ?"
+        );
+    }
+    
+    rdr << dbChange->getId();
+
+    rdr.execute();
+
+    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+    {
+        CTILOG_INFO( dout, rdr.asString() );
+    }
+
+    while ( rdr() )
+    {
+        long        paoID;
+        std::string paoType;
+
+        rdr[ "PAObjectID" ] >> paoID;
+        rdr[ "Type" ]       >> paoType;
+
+        long reloadID = paoID;
+        Cti::CapControl::CapControlType reloadType = Cti::CapControl::VoltageRegulatorType;
+
+        if ( boost::regex_search( paoType, boost::regex( "^CBC 802[04]$" ) ) ) // paoType is a 'CBC 8020' or 'CBC 8024'
+        {
+            reloadID = CtiCCSubstationBusStore::getInstance()->findCapBankIDbyCbcID( paoID ); 
+            reloadType = Cti::CapControl::CapBank;
+        }
+
+        if ( reloadID > 0 )
+        {
+            CcDbReloadInfo reloadInfo( reloadID, ChangeTypeUpdate, reloadType );
+            CtiCCSubstationBusStore::getInstance()->insertDBReloadList( reloadInfo );
+        }
+    }
+}
+
 /*---------------------------------------------------------------------------
     isCbcDbChange
 
@@ -1893,15 +2008,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     }
                     else if ( dbChange && dbChange->getDatabase() == ChangeConfigDb )
                     {
-                        Cti::ConfigManager::handleDbChange( dbChange->getId(),
-                                                            dbChange->getCategory(),
-                                                            dbChange->getObjectType(),
-                                                            dbChange->getTypeOfChange() );
-
-                        // This is a horrible hack... force all regulators to reload whenever we update a device configuration...
-                        CcDbReloadInfo reloadInfo( -1, ChangeTypeUpdate, Cti::CapControl::VoltageRegulatorType );
-                        CtiCCSubstationBusStore::getInstance()->insertDBReloadList( reloadInfo );
-
+                        handleConfigDbChange( dbChange );
                     }
                     else if ( dbChange && dbChange->getDatabase() == ChangeStateGroupDb )
                     {
