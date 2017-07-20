@@ -100,7 +100,7 @@
         <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL"/>
         <pointInfo name="Sum Peak kVA" attributes="SUM_PEAK_KVA"/>
         <pointInfo name="Sum Peak kVAr" attributes="SUM_PEAK_KVAR"/>
-        <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND"/>
+        <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
         <pointInfo name="Table Crc Error" attributes="TABLE_CRC_ERROR"/>
         <pointInfo name="Tamper Detect" attributes="TAMPER_FLAG"/>
         <pointInfo name="Time Adjustment" attributes="TIME_ADJUSTMENT"/>

@@ -158,7 +158,8 @@
         ],
         "attributeOverrides" : [
                 { "attribute" : "DEMAND",        "metricId" : 200, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
-                { "attribute" : "KVAR",          "metricId" : 201, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] }
+                { "attribute" : "KVAR",          "metricId" : 201, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
+                { "attribute" : "PEAK_DEMAND",   "metricId" :  13, "paoTypes" : [ "rfn-530s4x", "rfn-530s4eax", "rfn-530s4eaxr", "rfn-530s4erx", "rfn-530s4erxr" ] }
         ]
 }
 

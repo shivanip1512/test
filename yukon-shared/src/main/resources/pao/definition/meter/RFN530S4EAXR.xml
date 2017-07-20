@@ -101,8 +101,8 @@
         <pointInfo name="Sum kWh (Rate C kWh)" attributes="USAGE_RATE_C,SUM_KWH_RATE_C"/>
         <pointInfo name="Sum kWh (Rate D kWh)" attributes="USAGE_RATE_D,SUM_KWH_RATE_D"/>
         <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL,DELIVERED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND"/>
-        <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
+        <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A,PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Table Crc Error" attributes="TABLE_CRC_ERROR"/>
         <pointInfo name="Tamper Detect" attributes="TAMPER_FLAG"/>
         <pointInfo name="Time Adjustment" attributes="TIME_ADJUSTMENT"/>
