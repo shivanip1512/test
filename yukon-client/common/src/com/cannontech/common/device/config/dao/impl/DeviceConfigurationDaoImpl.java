@@ -26,6 +26,7 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -96,23 +97,15 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    
-    private Resource inputFile;
-    private Resource schemaFile;
+
+    @Value("classpath:device/config/configurationCategoryDefinition.xml") private Resource inputFile;
+    @Value("classpath:device/config/configurationCategoryDefinition.xsd") private Resource schemaFile;
     
     private Map<CategoryType, Category> typeToCategoryMap;
     
     @Override
     public Category getCategoryByType(CategoryType categoryType) {
         return typeToCategoryMap.get(categoryType);
-    }
-    
-    public void setInputFile(Resource inputFile) {
-        this.inputFile = inputFile;
-    }
-    
-    public void setSchemaFile(Resource schemaFile) {
-        this.schemaFile = schemaFile;
     }
     
     @PostConstruct
