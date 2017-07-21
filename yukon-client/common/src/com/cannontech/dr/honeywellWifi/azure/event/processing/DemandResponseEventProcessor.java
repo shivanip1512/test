@@ -33,7 +33,8 @@ public class DemandResponseEventProcessor extends AbstractHoneywellWifiDataProce
         
         DemandResponseEvent event = (DemandResponseEvent) data;
         
-        double stateValue = event.getPhase().getStateValue();
+        // If device is opted out, set the Control Status to 0 (false), regardless of the phase.
+        double stateValue = event.getOptedOut() ? 0 : event.getPhase().getStateValue();
         Instant eventTime = event.getMessageWrapper().getDate();
         
         // Subtract 1 second from "NotStarted" events. This avoids problems that occur when a "NotStarted" and a 
