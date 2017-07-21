@@ -1035,42 +1035,35 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         {
             try
             {
-                std::auto_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
-
                 CtiServerExclusion pmguard(_server_exclusion);
                 int payload_status = CtiServerResponseMsg::OK;
                 string payload_string;
 
-                // Vector contains ONLY PointIDs that need to be sent to the client.
-                for each( const long pid in Cmd->getOpArgList() )
+                auto results = PointMgr.getCurrentPointData(Cmd->getOpArgList());
+
+                auto pMulti = std::make_unique<CtiMultiMsg>();
+
+                for( auto& msg : results.pointData )
                 {
-                    if( CtiPointSPtr pPt = PointMgr.getPoint(pid) )
+                    msg->setSource(DISPATCH_APPLICATION_NAME);
+
+                    const auto pointId = msg->getId();
+
+                    pMulti->getData().push_back(msg.release());
+
+                    if( auto pSigMulti = _signalManager.getPointSignals(pointId) )
                     {
-                        if( const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPt) )
-                        {
-                            std::auto_ptr<CtiPointDataMsg> pDat(
-                                    new CtiPointDataMsg(
-                                            pPt->getID(),
-                                            pDyn->getValue(),
-                                            pDyn->getQuality(),
-                                            pPt->getType(),
-                                            string(),
-                                            pDyn->getDispatch().getTags()));
-
-                            pDat->setSource(DISPATCH_APPLICATION_NAME);
-                            pDat->setTime( pDyn->getTimeStamp() );  // Make the time match the point's last received time
-                            pMulti->getData().push_back(pDat.release());
-                        }
-
-                        if( auto pSigMulti = _signalManager.getPointSignals(pPt->getID()) )
-                        {
-                            pMulti->getData().push_back(pSigMulti.release());
-                        }
+                        pMulti->getData().push_back(pSigMulti.release());
                     }
-                    else
+
+                    if( !results.missingIds.empty() )
                     {
                         payload_status = CtiServerResponseMsg::ERR;
-                        payload_string = "Point id (" + CtiNumStr(pid) + ") not found";
+                        payload_string =
+                            results.missingIds.size() == 1
+                                ? "Point id not found: "
+                                : "Point ids not found: ";
+                        payload_string += Cti::join(results.missingIds, ",");
                     }
                 }
 

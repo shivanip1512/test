@@ -30,7 +30,9 @@
 #include "std_helper.h"
 
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/algorithm/remove_if.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/adaptor/map.hpp>
 
 #include <list>
 
@@ -1493,6 +1495,122 @@ CtiPointManager::ptr_type CtiPointClientManager::getControlOffsetEqual(LONG pao,
     return retVal;
 }
 
+
+auto CtiPointClientManager::generatePointDataSqlStatements(const std::vector<int>& pointIds) -> std::vector<ParameterizedIdQuery>
+{
+    int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_SELECT", POINT_REFRESH_SIZE);
+
+    std::vector<ParameterizedIdQuery> results;
+
+    for( const auto chunk : Cti::Coroutines::chunked(pointIds, max_ids_per_select) )
+    {
+        auto chunkVector = boost::copy_range<std::vector<long>>(chunk);  //  upcast to long
+
+        results.push_back(ParameterizedIdQuery{ CtiTablePointDispatch::getSQLforPointValues(chunkVector.size()), std::move(chunkVector) });
+    }
+
+    return results;
+}
+
+
+//  Collects current point values from cached points if loaded, and reads the rest from the database
+auto CtiPointClientManager::getCurrentPointData(const std::vector<int>& pointIds) -> PointDataResults
+{
+    PointDataResults results;
+
+    results.pointData.reserve(pointIds.size());
+
+    std::map<int, size_t> cacheMisses;
+
+    for( const auto pid : pointIds )
+    {
+        if( const auto pPt = getCachedPoint(pid) )
+        {
+            if( const auto pDyn = getDynamic(*pPt) )
+            {
+                auto pDat = 
+                    std::make_unique<CtiPointDataMsg>(
+                        pPt->getID(),
+                        pDyn->getValue(),
+                        pDyn->getQuality(),
+                        pPt->getType(),
+                        string(),
+                        pDyn->getDispatch().getTags());
+
+                pDat->setTime( pDyn->getTimeStamp() );  // Make the time match the point's last received time
+                
+                results.pointData.emplace_back(std::move(pDat));
+
+                continue;
+            }
+        }
+        else
+        {
+            cacheMisses.emplace(pid, results.pointData.size());  //  results.size() is the zero-based index of the new item we're adding
+        }
+
+        results.pointData.emplace_back(nullptr);
+    }
+
+    if( ! cacheMisses.empty() )
+    {
+        CTILOG_DEBUG(dout, "Dynamic points not loaded for " << cacheMisses.size() << " points, retrieving values directly from DynamicPointDispatch");
+
+        const auto pointDataStatements = generatePointDataSqlStatements(boost::copy_range<std::vector<int>>(cacheMisses | boost::adaptors::map_keys));
+
+        std::map<int, std::unique_ptr<CtiPointDataMsg>> cacheMissPointData;
+
+        DatabaseConnection conn;
+
+        for( const auto& pointDataStatement : pointDataStatements )
+        {
+            DatabaseReader rdr{ conn, pointDataStatement.sql };
+
+            rdr << pointDataStatement.pointIds;
+
+            rdr.execute();
+
+            while( rdr() )
+            {
+                const auto pointId = rdr["pointid"].as<long>();
+
+                auto pDat =
+                    std::make_unique<CtiPointDataMsg>(
+                        pointId,
+                        rdr["value"].as<double>(),
+                        rdr["quality"].as<int>(),
+                        resolvePointType(rdr["pointtype"].as<std::string>()),
+                        string(),
+                        rdr["tags"].as<long>());
+
+                pDat->setTime(rdr["timestamp"].as<CtiTime>());
+
+                auto itr = cacheMisses.find(pointId);
+                if( itr != cacheMisses.end() )
+                {
+                    results.pointData[itr->second] = std::move(pDat);
+                    cacheMisses.erase(itr);
+                }
+                else
+                {
+                    CTILOG_WARN(dout, "Unknown point ID returned:" << *pDat);
+                }
+            }
+        }
+
+        //  We didn't load all of the cache misses - these IDs are unexpectedly missing
+        if( ! cacheMisses.empty() )
+        {
+            //  Remove the null entries from the pointData list
+            auto itr = boost::remove_if(results.pointData, [](const auto& pd) { return !pd; });
+            results.pointData.erase(itr, results.pointData.end());
+
+            results.missingIds = boost::copy_range<std::vector<int>>(cacheMisses | boost::adaptors::map_keys);
+        }
+    }
+
+    return results;
+}
 
 
 /**

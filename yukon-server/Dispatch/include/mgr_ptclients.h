@@ -73,6 +73,8 @@ private:
 
    void executeDynamicDataQueries(const std::vector<ParameterizedIdQuery> &queries);
 
+   auto generatePointDataSqlStatements(const std::vector<int>& ids)->std::vector<ParameterizedIdQuery>;
+
    using DynamicPointDispatchList = std::vector<CtiDynamicPointDispatchSPtr>;
    DynamicPointDispatchList getDirtyRecordList();
    void writeRecordsToDB(const DynamicPointDispatchList& records);
@@ -107,6 +109,14 @@ public:
    bool                        isPointLoaded(LONG Pt);
    CtiPointManager::ptr_type   getOffsetTypeEqual(LONG pao, INT offset, CtiPointType_t type);
    CtiPointManager::ptr_type   getControlOffsetEqual(LONG pao, INT offset);
+
+   struct PointDataResults
+   {
+       std::vector<std::unique_ptr<CtiPointDataMsg>> pointData;
+       std::vector<int> missingIds;
+   };
+
+   PointDataResults getCurrentPointData(const std::vector<int>& pointIds);
 
    void DeleteList(void);
    virtual void expire (long pid);

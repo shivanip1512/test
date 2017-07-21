@@ -899,6 +899,8 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
         DatabaseConnection connection { getCalcQueryTimeout() };
         DatabaseReader rdr { connection, sqlBase };
 
+        rdr.setPrefetch();
+
         rdr.execute();
 
         // Load all Base Calcs first
@@ -1005,10 +1007,20 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
             }
         }
 
-        static const string sqlLimit = "SELECT DISTINCT PL.pointid, PL.limitnumber, PL.highlimit, PL.lowlimit, "
-                                          "PL.limitduration "
-                                       "FROM POINTLIMITS PL, CALCCOMPONENT CC, CALCBASE CB "
-                                       "WHERE PL.pointid = CC.COMPONENTPOINTID OR PL.pointid = CB.POINTID";
+        static const string sqlLimit = 
+            "SELECT"
+                " pointid,"
+                " limitnumber,"
+                " highlimit,"
+                " lowlimit,"
+                " limitduration"
+            " FROM"
+                " POINTLIMITS"
+            " WHERE"
+                " pointid in ("
+                    "SELECT pointid FROM CALCCOMPONENT"
+                    " UNION"
+                    " SELECT pointid FROM CALCBASE)";
 
         Cti::Database::DatabaseReader limitReader(connection);
 
@@ -1210,6 +1222,12 @@ void CtiCalcLogicService::_registerForPoints()
             }
 
             dispatchConnection->WriteConnQue(msgPtReg.release(), CALLSITE);
+
+            auto msgPtDataReq = std::make_unique<CtiCommandMsg>(CtiCommandMsg::PointDataRequest);
+
+            msgPtDataReq->setOpArgList(boost::copy_range<std::vector<int>>(chunk));
+
+            dispatchConnection->WriteConnQue(msgPtDataReq.release(), CALLSITE);
         }
     }
     catch(...)
