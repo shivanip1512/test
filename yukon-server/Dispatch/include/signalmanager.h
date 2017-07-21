@@ -50,7 +50,7 @@ public:
     UINT getConditionTags(long pointid, int alarm_condition) const;         // Returns the bits of the point tag representing this condition MASK_ANY_ALARM
 
     CtiSignalMsg* getAlarm(long pointid, int alarm_condition) const;        // Returns a copy of the alarm for this pointid and alarmcondition.  Could return NULL
-    CtiMultiMsg* getPointSignals(long pointid) const;
+    std::unique_ptr<CtiMultiMsg> getPointSignals(long pointid) const;
     CtiMultiMsg* getAllAlarmSignals() const;
     CtiMultiMsg* getCategorySignals(unsigned category) const;
 

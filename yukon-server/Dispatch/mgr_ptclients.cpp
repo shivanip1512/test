@@ -107,7 +107,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, const set<long> 
     }
     else if( ! pointIds.empty() )
     {
-        for each( long pointid in pointIds )
+        for( long pointid : pointIds )
         {
             if( CtiPointSPtr pPoint = getCachedPoint(pointid) )
             {
@@ -280,7 +280,7 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
         {
             removeAlarming(pntID);
         }
-        for each( long tempPointID in pointIds )
+        for( long tempPointID : pointIds )
         {
             removeAlarming(tempPointID);
         }
@@ -650,7 +650,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
     vector<long> points;
     getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
 
-    for each( long ptid in points )
+    for( long ptid : points )
     {
         if( CtiPointSPtr pPt = getPoint(ptid) )
         {
@@ -883,7 +883,7 @@ void CtiPointClientManager::refreshDynamicDataForSinglePoint(const long id)
         return;
     }
 
-    const vector<string> queries(1, CtiTablePointDispatch::getSQLCoreStatement(id));
+    const vector<ParameterizedIdQuery> queries{ 1, { CtiTablePointDispatch::getSQLCoreStatement(1), { id } } };
 
     executeDynamicDataQueries(queries);
 }
@@ -896,58 +896,35 @@ void CtiPointClientManager::refreshDynamicDataForPointSet(const set<long> &point
         return;
     }
 
-    const vector<string> queries = generateSqlStatements(pointIds);
+    const vector<ParameterizedIdQuery> queries = generateSqlStatements(pointIds);
 
     executeDynamicDataQueries(queries);
 }
 
 void CtiPointClientManager::refreshDynamicDataForAllPoints()
 {
-    // We want the sql without a single-id where clause.
-    const vector<string> queries(1, CtiTablePointDispatch::getSQLCoreStatement(0));
+    const vector<ParameterizedIdQuery> queries{ 1, { CtiTablePointDispatch::getSQLCoreStatement(0), {} } };
 
     executeDynamicDataQueries(queries);
 }
 
-vector<string> CtiPointClientManager::generateSqlStatements(const set<long> &pointIds)
+auto CtiPointClientManager::generateSqlStatements(const set<long> &pointIds) -> std::vector<ParameterizedIdQuery>
 {
-    // We want the sql without a single-id where clause.
-    const string sql = CtiTablePointDispatch::getSQLCoreStatement(0);
-
-    vector<string> queries;
-
-    Cti::Database::id_set_itr pointid_itr = pointIds.begin();
+    vector<ParameterizedIdQuery> queries;
 
     int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_SELECT", POINT_REFRESH_SIZE);
 
-    do
+    for ( const auto& range : Cti::Coroutines::chunked(pointIds, max_ids_per_select) )
     {
-        // Let the chunking begin.
-        string chunk = sql;
+        std::vector<long> subset { range.begin(), range.end() };
 
-        int subset_size = min(distance(pointid_itr, pointIds.end()), max_ids_per_select);
-
-        Cti::Database::id_set_itr subset_end = pointid_itr;
-        advance(subset_end, subset_size);
-        Cti::Database::id_set pointid_subset(pointid_itr, subset_end);
-
-        chunk += " WHERE DPD.pointid IN ";
-        chunk += "(";
-        chunk += Cti::join(pointid_subset, ",");
-        chunk += ")";
-
-        // Sql is completed.
-        queries.push_back(chunk);
-
-        // Grab the next chunk.
-        advance(pointid_itr, subset_size);
-
-    } while( pointid_itr != pointIds.end() );
+        queries.push_back({CtiTablePointDispatch::getSQLCoreStatement(subset.size()), subset});
+    }
 
     return queries;
 }
 
-void CtiPointClientManager::executeDynamicDataQueries(const vector<string> &queries)
+void CtiPointClientManager::executeDynamicDataQueries(const vector<ParameterizedIdQuery> &queries)
 {
     CtiTime start, stop;
 
@@ -958,9 +935,14 @@ void CtiPointClientManager::executeDynamicDataQueries(const vector<string> &quer
 
     Cti::Database::DatabaseConnection connection;
 
-    for each( const string &sql in queries )
+    for( const auto& parameterizedQuery : queries )
     {
-        Cti::Database::DatabaseReader rdr(connection, sql);
+        Cti::Database::DatabaseReader rdr(connection, parameterizedQuery.sql);
+
+        if( ! parameterizedQuery.pointIds.empty() )
+        {
+            rdr << parameterizedQuery.pointIds;
+        }
 
         rdr.execute();
 
@@ -1097,7 +1079,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
         {
             _reasonabilityLimits.erase(pntID);
         }
-        for each( long tempPointID in pointIds )
+        for( long tempPointID : pointIds )
         {
             _reasonabilityLimits.erase(tempPointID);
         }
@@ -1172,7 +1154,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
             _limits.erase(CtiTablePointLimit(pntID, 1));
             _limits.erase(CtiTablePointLimit(pntID, 2));
         }
-        for each( long tempPointID in pointIds )
+        for( long tempPointID : pointIds )
         {
             _limits.erase(CtiTablePointLimit(tempPointID, 1));
             _limits.erase(CtiTablePointLimit(tempPointID, 2));
@@ -1270,7 +1252,7 @@ bool CtiPointClientManager::isPointLoaded(LONG Pt)
     // The point must be loaded in both locations to exist. If it is loaded
     // in just the inherited container, the dynamic may not yet be loaded.
     // The point will be in only dynamic for a time when the point expires.
-    return (Inherited::getPoint(Pt) && getDynamic(Pt));
+    return (getCachedPoint(Pt) && getDynamic(Pt));
 }
 
 CtiPointManager::ptr_type CtiPointClientManager::getCachedPoint(LONG Pt)

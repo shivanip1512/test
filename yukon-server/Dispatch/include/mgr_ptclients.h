@@ -35,6 +35,12 @@ private:
    typedef DynamicPointDispatchMap::const_iterator      DynamicPointDispatchIterator;
    typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
+   struct ParameterizedIdQuery
+   {
+      std::string sql;
+      std::vector<long> pointIds;
+   };
+
    ConnectionMgrPointMap    _conMgrPointMap;
    ReasonabilityLimitMap    _reasonabilityLimits;
    PointLimitSet            _limits;
@@ -65,7 +71,7 @@ private:
 
    void loadDynamicPoint(Cti::Database::DatabaseReader &rdr);
 
-   void executeDynamicDataQueries(const std::vector<std::string> &queries);
+   void executeDynamicDataQueries(const std::vector<ParameterizedIdQuery> &queries);
 
    using DynamicPointDispatchList = std::vector<CtiDynamicPointDispatchSPtr>;
    DynamicPointDispatchList getDirtyRecordList();
@@ -82,7 +88,7 @@ protected:  //  for unit test access
    void refreshPoints( std::set<long> &pointIdsFound, Cti::RowReader& rdr );
    std::set<long> getRegistrationSet(LONG mgrID, Cti::Test::use_in_unit_tests_only&);
 
-   std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds);
+   std::vector<ParameterizedIdQuery> generateSqlStatements(const std::set<long> &pointIds);
 
    void addAlarming(CtiTablePointAlarming &table);
    void removeAlarming(unsigned long pointID);
@@ -124,7 +130,6 @@ public:
    CtiTime findNextNearestArchivalTime();
    std::vector<std::unique_ptr<CtiTableRawPointHistory>> scanForArchival(const CtiTime &Now);
 
-   void validateConnections();
    void storeDirtyRecords();
 
    ReasonabilityLimitStruct getReasonabilityLimits(const CtiPointBase &point) const;

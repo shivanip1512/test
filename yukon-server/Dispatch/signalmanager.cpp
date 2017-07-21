@@ -473,7 +473,7 @@ CtiSignalMsg* CtiSignalManager::getAlarm(long pointid, int alarm_condition) cons
 }
 
 
-CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
+std::unique_ptr<CtiMultiMsg> CtiSignalManager::getPointSignals(long pointid) const
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
@@ -482,39 +482,36 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
         tlg.tryAcquire(5000);
     }
 
-    std::auto_ptr<CtiMultiMsg>       pMulti(new CtiMultiMsg);
-    PointSignalMap_t::const_iterator itr;
+    auto pMulti = std::make_unique<CtiMultiMsg>();
 
-    itr = _pointMap.find(pointid);
-    if( itr != _pointMap.end() )
+    auto range = _pointMap.equal_range(pointid);
+    try
     {
-        try
+        for( auto& vt : boost::make_iterator_range(range.first, range.second) )
         {
-            for(; itr != _pointMap.end() && itr->first == pointid; itr++)
+            auto key = vt.first;
+            CtiSignalMsg *pOriginalSig = vt.second;
+
+            if(key == pointid && pOriginalSig)
             {
-                PointSignalMap_t::value_type vt = *itr;
-                PointSignalMap_t::key_type   key = vt.first;
-                CtiSignalMsg *pOriginalSig = vt.second;
+                std::unique_ptr<CtiSignalMsg> pSig(static_cast<CtiSignalMsg*>(pOriginalSig->replicateMessage()));
+                pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
-                if(key == pointid && pOriginalSig)
-                {
-                    std::auto_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
-                    pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
-
-                    if(pMulti.get())
-                    {
-                        pMulti->insert(pSig.release());
-                    }
-                }
+                pMulti->insert(pSig.release());
             }
         }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return pMulti.release();
+    if( ! pMulti->getCount() )
+    {
+        return nullptr;
+    }
+
+    return pMulti;
 }
 
 CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const

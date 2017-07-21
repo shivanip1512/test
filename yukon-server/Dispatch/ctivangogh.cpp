@@ -1062,9 +1062,9 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             pMulti->getData().push_back(pDat.release());
                         }
 
-                        if( CtiMultiMsg *pSigMulti = _signalManager.getPointSignals(pPt->getID()) )
+                        if( auto pSigMulti = _signalManager.getPointSignals(pPt->getID()) )
                         {
-                            pMulti->getData().push_back(pSigMulti);
+                            pMulti->getData().push_back(pSigMulti.release());
                         }
                     }
                     else

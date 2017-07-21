@@ -23,11 +23,11 @@ std::experimental::generator<boost::iterator_range<typename Container::const_ite
 
             std::advance(itr, chunkSize);
 
-            yield boost::iterator_range<Container::const_iterator>(chunk_begin, itr);
+            yield boost::make_iterator_range(chunk_begin, itr);
         }
     }
 
-    yield boost::iterator_range<Container::const_iterator>(itr, end);
+    yield boost::make_iterator_range(itr, end);
 }
 
 }

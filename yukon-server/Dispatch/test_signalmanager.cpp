@@ -164,23 +164,23 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
         messagePtr = NULL;
     }
 
-    CtiMultiMsg* tempMulti = manager.getPointSignals(1);
-    BOOST_CHECK(tempMulti != NULL);
-    if( tempMulti != NULL )
     {
-        BOOST_CHECK_EQUAL(tempMulti->getCount(), 2);
-        if( tempMulti->getCount() == 2 )
+        auto tempMulti = manager.getPointSignals(1);
+        BOOST_CHECK(tempMulti);
+        if( tempMulti )
         {
-            CtiSignalMsg *pMsg1 = (CtiSignalMsg*)tempMulti->getData()[0];
-            CtiSignalMsg *pMsg2 = (CtiSignalMsg*)tempMulti->getData()[1];
-            BOOST_CHECK_EQUAL(pMsg1->getId(), pMsg2->getId());
-            BOOST_CHECK(pMsg1->getSignalCategory() != pMsg2->getSignalCategory());
+            BOOST_CHECK_EQUAL(tempMulti->getCount(), 2);
+            if( tempMulti->getCount() == 2 )
+            {
+                CtiSignalMsg *pMsg1 = (CtiSignalMsg*)tempMulti->getData()[0];
+                CtiSignalMsg *pMsg2 = (CtiSignalMsg*)tempMulti->getData()[1];
+                BOOST_CHECK_EQUAL(pMsg1->getId(), pMsg2->getId());
+                BOOST_CHECK(pMsg1->getSignalCategory() != pMsg2->getSignalCategory());
+            }
         }
-        delete tempMulti;
-        tempMulti = NULL;
     }
 
-    tempMulti = manager.getAllAlarmSignals();
+    auto tempMulti = manager.getAllAlarmSignals();
     BOOST_CHECK(tempMulti != NULL);
     if( tempMulti != NULL )
     {
@@ -202,22 +202,20 @@ BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
     BOOST_CHECK_EQUAL(manager.entries(), 1);
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
 
-    tempMulti = manager.getPointSignals(1);
-    BOOST_CHECK(tempMulti != NULL);
-    if( tempMulti != NULL )
     {
-        BOOST_CHECK_EQUAL(tempMulti->getCount(), 1);
-        delete tempMulti;
-        tempMulti = NULL;
-    }
+        auto tempMulti = manager.getPointSignals(1);
+        BOOST_CHECK(tempMulti);
+        if( tempMulti )
+        {
+            BOOST_CHECK_EQUAL(tempMulti->getCount(), 1);
+        }
 
-    tempMulti = manager.getPointSignals(3);
-    if( tempMulti != NULL )
-    {
-        BOOST_CHECK_EQUAL(tempMulti->getCount(), 0);
-        delete tempMulti;
+        tempMulti = manager.getPointSignals(3);
+        if( tempMulti )
+        {
+            BOOST_CHECK_EQUAL(tempMulti->getCount(), 0);
+        }
     }
-
 }
 
 BOOST_AUTO_TEST_SUITE_END()
