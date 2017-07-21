@@ -8,6 +8,8 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     
+    <!-- How to create a new event logger: http://cipt0534.nam.ci.root:8090/display/EEST/How+to+add+a+new+event+logger+in+Yukon -->
+    
     <bean id="eventLogDao" class="com.cannontech.common.events.dao.impl.EventLogDaoImpl"/>
     <bean id="eventLogService" class="com.cannontech.common.events.service.impl.EventLogServiceImpl"/>
     <bean id="eventLogUIService" class="com.cannontech.common.events.service.impl.EventLogUIServiceImpl"/>
