@@ -32,7 +32,10 @@ public enum ChartInterval {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-
+            
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return new Date(cal.getTimeInMillis());
         }
 
@@ -53,7 +56,10 @@ public enum ChartInterval {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-
+            
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return new Date(cal.getTimeInMillis());
         }
     },
@@ -111,7 +117,10 @@ public enum ChartInterval {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-
+            
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return new Date(cal.getTimeInMillis());
         }
     },
@@ -199,6 +208,9 @@ public enum ChartInterval {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return cal.getTime();
         }
 
@@ -229,6 +241,9 @@ public enum ChartInterval {
             int i = cal.get(Calendar.MINUTE);
             cal.set(Calendar.MINUTE, i - (i % 5));
 
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return cal.getTime();
         }
         
@@ -264,6 +279,9 @@ public enum ChartInterval {
             int i = cal.get(Calendar.MINUTE);
             cal.set(Calendar.MINUTE, i - (i % 15));
 
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return cal.getTime();
         }
         
