@@ -89,7 +89,7 @@ yukon.tools.group.editor = (function () {
                 $("#addSubGroupPopup").dialog({width: 500});
             });
             $('#groupName').on('change', function () {
-                if(hideOnGroupLoad == true) {
+                if (hideOnGroupLoad == true) {
                     $('.js-error').addClass('dn');
                 }
                 var groupName = $('#groupName').val();
