@@ -510,7 +510,10 @@ yukon.tools.commander = (function () {
                     type = option.data('type'), 
                     paoId = option.data('paoId'),
                     routeId = option.data('routeId'),
-                    serialNumber = option.data('serialNumber');
+                    serialNumber = option.data('serialNumber'),
+                    category = type === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL',
+                    url = 'commander/type-commands?' + $.param({ type: category });
+                    $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
                 
                 if (type === _targetTypes.device) {
                     $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
@@ -540,6 +543,7 @@ yukon.tools.commander = (function () {
                     $('#serial-number-row').show();
                     $('#route-row').show();
                     $('.js-nearby-btn').addClass('dn');
+                    $('#command-text').val('');
                 } else if (type === _targetTypes.vcom) {
                     $('#serial-number').val(serialNumber);
                     $('#route-id').val(routeId);
@@ -549,6 +553,7 @@ yukon.tools.commander = (function () {
                     $('#serial-number-row').show();
                     $('#route-row').show();
                     $('.js-nearby-btn').addClass('dn');
+                    $('#command-text').val('');
                 }
             });
             
