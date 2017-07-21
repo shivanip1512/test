@@ -292,6 +292,14 @@ public class PointController {
         verifyRoles(userContext.getYukonUser());
         return save(pointModel, result, redirectAttributes);
     }
+    
+    @RequestMapping(value = "/points/DemandAccumulator", method = RequestMethod.POST)
+    public String saveDemandAccumulator(AccumulatorPointModel pointModel, BindingResult result,
+            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+
+        verifyRoles(userContext.getYukonUser());
+        return save(pointModel, result, redirectAttributes);
+    }
 
     @RequestMapping(value = "/points/CalcAnalog", method = RequestMethod.POST)
     public String saveCalcAnalog(@ModelAttribute("pointModel") CalculatedPointModel pointModel, BindingResult result,
