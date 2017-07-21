@@ -58,8 +58,6 @@ private:
 
     void incrementColumnIndex() override;
 
-    void setPrefetch();
-
 public:
     // inputs for variable binding
     RowReader &operator<<(const bool operand);
@@ -100,6 +98,9 @@ public:
         setPrefetch();
         return *this;
     }
+
+    //  Used to prefetch 100 rows.  Useful if you're reading an entire rowset instead of just the first row.
+    void setPrefetch();
 
     std::string asString();
 };

@@ -47,7 +47,9 @@ public:
 
     virtual bool Restore();
 
-    static std::string getSQLCoreStatement(long id = 0);
+    static std::string getSQLCoreStatement(size_t count);
+
+    static std::string getSQLforPointValues(size_t count);
 
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 

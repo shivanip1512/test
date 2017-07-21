@@ -68,27 +68,48 @@ std::array<Cti::Database::ColumnDefinition, 7> CtiTablePointDispatch::getTempTab
         { "millis",         "smallint", "SMALLINT" }};
 }
 
-string CtiTablePointDispatch::getSQLCoreStatement(long id)
+string CtiTablePointDispatch::getSQLCoreStatement(size_t count)
 {
-    static const string sqlNoID = "SELECT DPD.pointid, DPD.timestamp, DPD.quality, DPD.value, DPD.tags, DPD.nextarchive, "
-                                      "DPD.millis "
-                                  "FROM DynamicPointDispatch DPD";
+    static const string sqlNoID = 
+        "SELECT"
+            " DPD.pointid, DPD.timestamp,"
+            " DPD.quality, DPD.value," 
+            " DPD.tags, DPD.nextarchive,"
+            " DPD.millis"
+        " FROM"
+            " DynamicPointDispatch DPD";
 
-    if( id )
+    if( count > 1 )
     {
-        return string(sqlNoID + " WHERE DPD.pointid = " + CtiNumStr(id));
+        return sqlNoID + " WHERE " + Cti::Database::createIdInClause("DPD", "pointid", count);
     }
-    else
+    if( count == 1 )
     {
-        return sqlNoID;
+        return sqlNoID + " WHERE " + Cti::Database::createIdEqualClause("DPD", "pointid");
     }
+    
+    return sqlNoID;
+}
+
+string CtiTablePointDispatch::getSQLforPointValues(size_t count)
+{
+    static const string sqlNoID =
+        "SELECT"
+            " DPD.pointid, DPD.timestamp,"
+            " DPD.quality, DPD.value,"
+            " DPD.tags, DPD.millis,"
+            " P.POINTTYPE"
+        " FROM"
+            " DynamicPointDispatch DPD"
+            " JOIN Point P ON DPD.pointid=P.pointid"
+        " WHERE ";
+
+    return sqlNoID + Cti::Database::createIdInClause("DPD", "pointid", count);
 }
 
 bool CtiTablePointDispatch::Restore()
 {
-    static const string sql =  "SELECT DD.pointid, DD.timestamp, DD.quality, DD.value, DD.tags, DD.nextarchive, DD.millis "
-                               "FROM DynamicPointDispatch DD "
-                               "WHERE DD.pointid = ?";
+    static const string sql = getSQLCoreStatement(1);
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader reader(connection, sql);

@@ -75,10 +75,9 @@ std::vector<int> CtiCommandMsg::getOpArgList() const
    return iOpArgList;
 }
 
-std::vector<int>& CtiCommandMsg::insert(INT i)
+void CtiCommandMsg::insert(int i)
 {
    iOpArgList.push_back(i);
-   return iOpArgList;
 }
 
 std::string CtiCommandMsg::getOpString() const
@@ -86,22 +85,24 @@ std::string CtiCommandMsg::getOpString() const
    return iOpString;
 }
 
-CtiCommandMsg&    CtiCommandMsg::setOpString(const std::string &aRef)
+void CtiCommandMsg::setOpString(const std::string &aRef)
 {
    iOpString = aRef;
-   return *this;
 }
 
-CtiCommandMsg& CtiCommandMsg::setOperation(const INT &aInt)
+void CtiCommandMsg::setOperation(const INT &aInt)
 {
    iOperation = aInt;
-   return *this;
 }
 
-CtiCommandMsg& CtiCommandMsg::setOpArgList(const OpArgList &aRef)
+void CtiCommandMsg::setOpArgList(const OpArgList &aRef)
 {
    iOpArgList = aRef;
-   return *this;
+}
+
+void CtiCommandMsg::setOpArgList(OpArgList&& aRef)
+{
+   iOpArgList = aRef;
 }
 
 CtiCommandMsg::CtiCommandMsg(int Op, int Pri) :

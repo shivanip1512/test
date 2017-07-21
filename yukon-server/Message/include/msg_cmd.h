@@ -26,13 +26,14 @@ public:
 
     OpArgList    getOpArgList() const;
     OpArgList&   getOpArgList();
-    std::string       getOpString() const;
+    std::string  getOpString() const;
 
-    CtiCommandMsg&    setOpArgList(const OpArgList &aRef);
-    CtiCommandMsg&    setOpString(const std::string &aRef);
-    CtiCommandMsg&    setOperation(const INT &aInt);
+    void setOpArgList(const OpArgList &aRef);
+    void setOpArgList(OpArgList&& aRef);
+    void setOpString(const std::string &aRef);
+    void setOperation(const INT &aInt);
 
-    OpArgList&   insert(int i);
+    void insert(int i);
 
     CtiMessage*       replicateMessage() const;
 
@@ -45,7 +46,7 @@ public:
         OP_POINTID  = 1
     };
 
-    // Command Operaitons I will support.
+    // Supported command operations.
     // Real codes to be sent from client to server must be divisible by 10.
     enum
     {
@@ -74,8 +75,6 @@ public:
         ControlStatusVerification,       // Internal Message used by Dispatch, value does not matter.
         InitiateScan = 250,               //Vector contains token, paoid, ...
         PointDataDebug = 260,
-
-        LastCommand = 10000              //this is to be the last entry in the enum, so add new entries above here, otay
     };
 };
 
