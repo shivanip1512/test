@@ -208,12 +208,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         // Adding or Removing the new program enrollment to the active enrollment list, which is needed
         // in legacy code to process enrollment
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            if (!isMultipleProgramsPerCategoryAllowed) {
-                addProgramEnrollment(enrollmentData, programEnrollment);
-            } else {
-                addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
-            }
-
+            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), isMultipleProgramsPerCategoryAllowed);
         } else if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
             removeProgramEnrollment(enrollmentData, programEnrollment);
         }
@@ -264,40 +259,10 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
     }
 
-    protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments, ProgramEnrollment newProgramEnrollment) {
-        List<ProgramEnrollment> removedEnrollments = Lists.newArrayList();
-        boolean isProgramEnrollmentEnrolled = false;
-        for (ProgramEnrollment programEnrollment : programEnrollments) {
-            if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()) {
-                if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
-                    if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
-                        programEnrollment.update(newProgramEnrollment);
-                        programEnrollment.setEnroll(true);
-                        isProgramEnrollmentEnrolled = true;
-                    } else {
-                        continue;
-                    }
-                } else {
-                    removedEnrollments.add(programEnrollment);
-                }
-            }
-        }
-
-        if (CollectionUtils.isNotEmpty(removedEnrollments)) {
-            programEnrollments.removeAll(removedEnrollments);
-        }
-
-        if (!isProgramEnrollmentEnrolled) {
-            programEnrollments.add(newProgramEnrollment);
-        }
-
-    }
-
     protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
-                                        ProgramEnrollment newProgramEnrollment,
-                                        boolean seasonalLoad){
+            ProgramEnrollment newProgramEnrollment, boolean seasonalLoad, boolean isMultipleProgramsPerCategoryAllowed) {
         boolean isProgramEnrollmentEnrolled = false;
-        
+        List<ProgramEnrollment> removedEnrollments = Lists.newArrayList();
         for (ProgramEnrollment programEnrollment : programEnrollments) {
             
             if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()){
@@ -321,12 +286,18 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                             programEnrollment.update(newProgramEnrollment);
                             programEnrollment.setEnroll(true);
                             isProgramEnrollmentEnrolled = true;
+                        } else if (!isMultipleProgramsPerCategoryAllowed) {
+                            removedEnrollments.add(programEnrollment);
                         }
                     }
                 }
             }
         }    
-        
+
+        if (CollectionUtils.isNotEmpty(removedEnrollments)) {
+            programEnrollments.removeAll(removedEnrollments);
+        }
+
         if (!isProgramEnrollmentEnrolled) {
             programEnrollments.add(newProgramEnrollment);
         }
