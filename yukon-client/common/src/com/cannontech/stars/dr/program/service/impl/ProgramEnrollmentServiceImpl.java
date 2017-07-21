@@ -198,7 +198,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 throw new EnrollmentSystemConfigurationException("System configuration error in enrollment.", e);
             } catch (CommandCompletionException e) {
                 log.error(e);
-                throw new EnrollmentException("Error sending enrollment command.", e);
+                throw new EnrollmentException("Error sending enrollment/unenrollment command.", e);
             }
 
             // Log activity
