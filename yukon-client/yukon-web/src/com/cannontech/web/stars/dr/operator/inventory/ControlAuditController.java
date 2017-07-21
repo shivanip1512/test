@@ -186,7 +186,13 @@ public class ControlAuditController {
             dataRow[0] = device.getHardware().getSerialNumber();
             dataRow[1] = accessor.getMessage(device.getHardware().getInventoryIdentifier().getHardwareType());
             dataRow[2] = device.getHardware().getAccountNo();
-            if (isControlled) dataRow[3] = Long.toString(device.getControl().getStandardMinutes());
+            if (isControlled) {
+                if (device.getControl() != null) {
+                    dataRow[3] = Long.toString(device.getControl().getStandardMinutes());
+                } else {
+                    dataRow[3] = "NA";
+                }
+            }
             
             dataRows.add(dataRow);
         }
