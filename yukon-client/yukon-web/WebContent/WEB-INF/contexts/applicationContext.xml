@@ -1139,6 +1139,11 @@
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="GROUP_COMMANDER"/>
     </bean>
+    <bean id="menuItemMapDevices" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
+        <property name="decider" ref="meterMenuDecider"/>
+        <constructor-arg value="/tools/map"/>
+        <constructor-arg value="DEVICE_ACTIONS"/>
+    </bean>
     <bean id="menuItemGroupMeterRead" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/group/groupMeterRead/homeCollection"/>
@@ -1177,26 +1182,11 @@
                 <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemBulkGroupAdd"/>
                 <ref bean="menuItemBulkGroupRemove"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkMassChange"/>
-                <ref bean="menuItemBulkMassDelete"/>
-                <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemGroupCommander"/>
                 <ref bean="menuItemGroupMeterRead"/>
-                <ref bean="menuItemBulkRouteLocate"/>
+                <ref bean="menuItemMapDevices"/>
                 <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkConfigAssign"/>
-                <ref bean="menuItemBulkConfigSend"/>
-                <ref bean="menuItemBulkConfigRead"/>
-                <ref bean="menuItemBulkConfigVerify"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkDeviceCollectionReport"/>
-                <ref bean="menuItemBulkDataAnalysis"/>
-                <ref bean="menuItemAmrArchivedDataExporter"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkPointsAdd"/>
-                <ref bean="menuItemBulkPointsUpdate"/>
-                <ref bean="menuItemBulkPointsRemove"/>
+                <ref bean="menuItemBulkCollectionAction"/>
            </list>
         </property>
     </bean>
@@ -1225,30 +1215,13 @@
     <bean id="meterMenuDeviceCollection" class="com.cannontech.web.contextualMenu.model.menu.DeviceCollectionMenu">
         <property name="menuEntries">
             <list>
-                <ref bean="menuItemBulkCollectionAction"/>
-                <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemBulkGroupAdd"/>
                 <ref bean="menuItemBulkGroupRemove"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkMassChange"/>
-                <ref bean="menuItemBulkMassDelete"/>
-                <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemGroupCommander"/>
                 <ref bean="menuItemGroupMeterRead"/>
-                <ref bean="menuItemBulkRouteLocate"/>
+                <ref bean="menuItemMapDevices"/>
                 <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkConfigAssign"/>
-                <ref bean="menuItemBulkConfigSend"/>
-                <ref bean="menuItemBulkConfigRead"/>
-                <ref bean="menuItemBulkConfigVerify"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkDeviceCollectionReport"/>
-                <ref bean="menuItemBulkDataAnalysis"/>
-                <ref bean="menuItemAmrArchivedDataExporter"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkPointsAdd"/>
-                <ref bean="menuItemBulkPointsUpdate"/>
-                <ref bean="menuItemBulkPointsRemove"/>
+                <ref bean="menuItemBulkCollectionAction"/>
            </list>
         </property>
     </bean>
