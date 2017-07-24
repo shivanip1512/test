@@ -79,13 +79,9 @@ string CtiTablePointDispatch::getSQLCoreStatement(size_t count)
         " FROM"
             " DynamicPointDispatch DPD";
 
-    if( count > 1 )
+    if( count >= 1 )
     {
         return sqlNoID + " WHERE " + Cti::Database::createIdInClause("DPD", "pointid", count);
-    }
-    if( count == 1 )
-    {
-        return sqlNoID + " WHERE " + Cti::Database::createIdEqualClause("DPD", "pointid");
     }
     
     return sqlNoID;
