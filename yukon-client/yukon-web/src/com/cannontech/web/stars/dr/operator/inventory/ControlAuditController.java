@@ -190,7 +190,7 @@ public class ControlAuditController {
                 if (device.getControl() != null) {
                     dataRow[3] = Long.toString(device.getControl().getStandardMinutes());
                 } else {
-                    dataRow[3] = "NA";
+                    dataRow[3] = accessor.getMessage("yukon.common.na");
                 }
             }
             
