@@ -102,7 +102,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional
-    public int update(Dashboard dashboard) {
+    public int update(Dashboard dashboard) throws DuplicateException {
         ListMultimap<DashboardPageType, Integer> userPageMap = dashboardDao.getPageAssignmentToUserIdMap(dashboard.getDashboardId());
         dashboardDao.deleteDashboard(dashboard.getDashboardId());
         int dashboardId = create(dashboard);

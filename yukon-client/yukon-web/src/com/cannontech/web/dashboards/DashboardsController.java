@@ -378,14 +378,21 @@ public class DashboardsController {
                 return "dashboardDetails.jsp";
             }
             dashboard.setOwner(userContext.getYukonUser());
-            int id = dashboardService.update(dashboard);
-            
-            // Success
-            model.clear();
-            Map<String, Object> json = new HashMap<>();
-            json.put("dashboardId", id);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success"));
-            return JsonUtils.writeResponse(resp, json);
+            try {
+                int id = dashboardService.update(dashboard);
+                // Success
+                model.clear();
+                Map<String, Object> json = new HashMap<>();
+                json.put("dashboardId", id);
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success"));
+                return JsonUtils.writeResponse(resp, json);
+            } catch (DuplicateException e) {
+                result.rejectValue("name", "yukon.web.error.nameConflict");
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                model.addAttribute("mode", PageEditMode.EDIT);
+                setupDashboardDetailsModel(model, userContext);
+                return "dashboardDetails.jsp";
+            }
         } else {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
