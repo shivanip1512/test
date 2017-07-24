@@ -91,6 +91,9 @@ public enum ChartInterval {
                 cal.set(Calendar.MILLISECOND, 1);
             }
 
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return cal.getTime();
         }
     },
@@ -147,7 +150,10 @@ public enum ChartInterval {
 
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-
+            
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return new Date(cal.getTimeInMillis());
         }
         
@@ -180,7 +186,10 @@ public enum ChartInterval {
             cal.set(Calendar.MILLISECOND, 0);
             int i = cal.get(Calendar.SECOND);
             cal.set(Calendar.SECOND, i - (i % 15));
-
+            
+            if (date.getTime() > cal.getTimeInMillis()) {
+                increment(cal);
+            }
             return cal.getTime();
         }
         
