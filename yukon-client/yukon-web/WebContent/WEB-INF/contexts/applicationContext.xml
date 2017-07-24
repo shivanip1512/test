@@ -1134,18 +1134,18 @@
         <constructor-arg value="DEVICE_GROUP_MODIFY"/>
     </bean>
     <bean id="menuItemGroupCommander" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="meterMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/group/commander/collectionProcessing"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="GROUP_COMMANDER"/>
     </bean>
     <bean id="menuItemMapDevices" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="meterMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/tools/map"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
     <bean id="menuItemGroupMeterRead" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="meterMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/group/groupMeterRead/homeCollection"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
@@ -1198,16 +1198,11 @@
                 <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemBulkGroupAdd"/>
                 <ref bean="menuItemBulkGroupRemove"/>
+                <ref bean="menuItemGroupCommander"/>
+                <ref bean="menuItemGroupMeterRead"/>
+                <ref bean="menuItemMapDevices"/>
                 <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkMassChange"/>
-                <ref bean="menuItemBulkMassDelete"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkDeviceCollectionReport"/>
-                <ref bean="menuItemAmrArchivedDataExporter"/>
-                <ref bean="separatorMenuItem"/>
-                <ref bean="menuItemBulkPointsAdd"/>
-                <ref bean="menuItemBulkPointsUpdate"/>
-                <ref bean="menuItemBulkPointsRemove"/>
+                <ref bean="menuItemBulkCollectionAction"/>
            </list>
         </property>
     </bean>
