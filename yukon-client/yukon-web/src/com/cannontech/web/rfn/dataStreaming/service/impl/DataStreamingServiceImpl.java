@@ -1033,7 +1033,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             deviceBehaviorDao.deleteUnusedBehaviors();
             
             if(!devicesIdsToUnassign.isEmpty()){
-                deviceBehaviorDao.unassignBehavior(TYPE, devicesIdsToUnassign);
+                unassignDataStreamingConfig(createDeviceCollectionForIds(devicesIdsToUnassign), user);
             }
             
             logService.acceptCompleted(result.getResultsId(), allDeviceIds.size(), configIdsToDeviceIds.size(),
