@@ -6461,14 +6461,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             CtiCommandMsg *pCmdMsg = (CtiCommandMsg*)MsgPtr;
             if(pCmdMsg->getOperation() == CtiCommandMsg::PointDataRequest)
             {
-                for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
-                {
-                    if(!PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[i]))
-                    {
-                        retVal = true;
-                        break;
-                    }
-                }
+                return false;
             }
             else if(pCmdMsg->getOperation() == CtiCommandMsg::AcknowledgeAlarm)
             {
@@ -6602,17 +6595,8 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
         else if(MsgPtr->isA() == MSG_COMMAND)
         {
             CtiCommandMsg *pCmdMsg = (CtiCommandMsg*)MsgPtr;
-            if(pCmdMsg->getOperation() == CtiCommandMsg::PointDataRequest)
-            {
-                for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
-                {
-                    if(!PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[i]))
-                    {
-                        ptIdList.insert(pCmdMsg->getOpArgList()[i]);
-                    }
-                }
-            }
-            else if(pCmdMsg->getOperation() == CtiCommandMsg::AcknowledgeAlarm)
+            //  Note that CtiCommandMsg::PointDataRequest does not require preload, and is intentionally excluded.
+            if(pCmdMsg->getOperation() == CtiCommandMsg::AcknowledgeAlarm)
             {
                 for(int i = 1; i + 1 < pCmdMsg->getOpArgList().size(); i += 2)
                 {
