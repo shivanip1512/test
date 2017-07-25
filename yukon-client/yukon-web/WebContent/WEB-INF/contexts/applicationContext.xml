@@ -1198,8 +1198,6 @@
                 <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemBulkGroupAdd"/>
                 <ref bean="menuItemBulkGroupRemove"/>
-                <ref bean="menuItemGroupCommander"/>
-                <ref bean="menuItemGroupMeterRead"/>
                 <ref bean="menuItemMapDevices"/>
                 <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemBulkCollectionAction"/>
