@@ -71,6 +71,36 @@ UPDATE Point SET ArchiveInterval = 600 WHERE ArchiveInterval = 720 AND ArchiveTy
 UPDATE Point SET ArchiveInterval = 900 WHERE (ArchiveInterval = 1200 OR ArchiveInterval = 1500) AND ArchiveType IN ('On Timer', 'timer|update');
 /* End YUK-16983 */
 
+/* Start YUK-16964 */
+/* Delivered kW (Offset 101)               *
+ * Peak kW (Offset 105)                    *
+ * Delivered kW Load Profile (Offset 188)  *
+ * Delivered kWh Per Interval (Offset 182) */
+DELETE FROM DYNAMICPOINTDISPATCH WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (101, 105, 182, 188) AND YP.Type IN ('RFN-530S4EAX', 'RFN-530S4ERX'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (101, 105, 182, 188) AND YP.Type IN ('RFN-530S4EAX', 'RFN-530S4ERX'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (101, 105, 182, 188) AND YP.Type IN ('RFN-530S4EAX', 'RFN-530S4ERX'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (101, 105, 182, 188) AND YP.Type IN ('RFN-530S4EAX', 'RFN-530S4ERX'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (101, 105, 182, 188) AND YP.Type IN ('RFN-530S4EAX', 'RFN-530S4ERX'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (101, 105, 182, 188) AND YP.Type IN ('RFN-530S4EAX', 'RFN-530S4ERX'));
+/* End YUK-16964 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
