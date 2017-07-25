@@ -334,6 +334,7 @@ public class MeterController {
         YukonMeter meterOriginal = meterDao.getForId(deviceId);
         CreateMeterModel meter = new CreateMeterModel();
         meter.setType(meterOriginal.getPaoType());
+        meter.setDisabled(meterOriginal.isDisabled());
         if (meterOriginal instanceof RfnMeter) {
             meter.setManufacturer(((RfnMeter)meterOriginal).getRfnIdentifier().getSensorManufacturer());
             meter.setModel(((RfnMeter)meterOriginal).getRfnIdentifier().getSensorModel());
