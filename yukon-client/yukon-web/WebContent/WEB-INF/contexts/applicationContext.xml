@@ -1134,7 +1134,7 @@
         <constructor-arg value="DEVICE_GROUP_MODIFY"/>
     </bean>
     <bean id="menuItemGroupCommander" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/group/commander/collectionProcessing"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
         <constructor-arg value="GROUP_COMMANDER"/>
@@ -1145,7 +1145,7 @@
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
     <bean id="menuItemGroupMeterRead" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="meterAndRelayMenuDecider"/>
+        <property name="decider" ref="meterMenuDecider"/>
         <constructor-arg value="/group/groupMeterRead/homeCollection"/>
         <constructor-arg value="DEVICE_ACTIONS"/>
     </bean>
