@@ -43,6 +43,8 @@ public enum TimeIntervals {
     HOURS_8(Duration.standardHours(8)),
     HOURS_12(Duration.standardHours(12)),
     DAYS_1(Duration.standardDays(1)), 
+    DAYS_7(Duration.standardDays(7)),
+    DAYS_30(Duration.standardDays(30)),
     ;
 
     private Duration duration;
@@ -126,17 +128,47 @@ public enum TimeIntervals {
     }
 
     private static final Set<TimeIntervals> archiveIntervals = ImmutableSet.of(
+        SECONDS_1,
+        SECONDS_2,
+        SECONDS_5,
+        SECONDS_10,
+        SECONDS_15,
+        SECONDS_30,
         MINUTES_1,
         MINUTES_2,
         MINUTES_3,
-        MINUTES_4,
         MINUTES_5,
-        MINUTES_7,
         MINUTES_10,
-        MINUTES_12,
         MINUTES_15,
-        MINUTES_20,
-        MINUTES_25,
+        MINUTES_30,
+        HOURS_1,
+        HOURS_2,
+        HOURS_6,
+        HOURS_12,
+        DAYS_1,
+        DAYS_7,
+        DAYS_30);
+
+    /**
+     * Used for {@link Point#getArchiveInterval()}
+     */
+    public static Set<TimeIntervals> getArchiveIntervals() {
+        return archiveIntervals;
+    }
+
+    private static final Set<TimeIntervals> updateRate = ImmutableSet.of(
+        SECONDS_1,
+        SECONDS_2,
+        SECONDS_5,
+        SECONDS_10,
+        SECONDS_15,
+        SECONDS_30,
+        MINUTES_1,
+        MINUTES_2,
+        MINUTES_3,
+        MINUTES_5,
+        MINUTES_10,
+        MINUTES_15,
         MINUTES_30,
         HOURS_1,
         HOURS_2,
@@ -145,10 +177,10 @@ public enum TimeIntervals {
         DAYS_1);
 
     /**
-     * Used for {@link Point#getArchiveInterval()}
+     * Used for {@link Point#getUpdateRate()}
      */
-    public static Set<TimeIntervals> getArchiveIntervals() {
-        return archiveIntervals;
+    public static Set<TimeIntervals> getUpdateRate() {
+        return updateRate;
     }
 
     private static final Set<TimeIntervals> capControlIntervals = ImmutableSet.of(

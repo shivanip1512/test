@@ -138,7 +138,7 @@
                                 itemValue="databaseRepresentation" inputClass="js-calc-update-type"/>
                             <span class="js-calc-period">
                                 <tags:intervalDropdown path="pointBase.calcBase.periodicRate" 
-                                    intervals="${archiveIntervals}"/>
+                                    intervals="${updateRate}"/>
                             </span>
                         </tags:nameValue2>
 
