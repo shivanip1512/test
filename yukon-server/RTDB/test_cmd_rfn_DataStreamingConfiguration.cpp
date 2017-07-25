@@ -52,7 +52,7 @@ R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 5,
     "enabled" : true,
     "status" : "OK"
@@ -204,7 +204,7 @@ R"SQUID(json{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 5,
     "enabled" : true,
     "status" : "METER_READ_TIMEOUT"
@@ -330,7 +330,7 @@ R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 5,
     "enabled" : true,
     "status" : "OK"
@@ -396,7 +396,7 @@ R"SQUID(json{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 5,
     "enabled" : true,
     "status" : "CHANNEL_NOT_SUPPORTED"
@@ -461,7 +461,7 @@ R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 5,
     "enabled" : true,
     "status" : "OK"
@@ -757,7 +757,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
     "status" : "OK"
   },
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 30,
     "enabled" : false,
     "status" : "OK"
@@ -832,7 +832,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
     "status" : "OK"
   },
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 30,
     "enabled" : false,
     "status" : "OK"
@@ -954,7 +954,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_interval
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 30,
     "enabled" : true,
     "status" : "OK"

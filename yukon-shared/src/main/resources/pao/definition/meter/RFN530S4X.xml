@@ -46,13 +46,13 @@
         <pointInfo name="Delivered kVAh (Rate B kVAh)" attributes="KVAH_RATE_B"/>
         <pointInfo name="Delivered kVAh (Rate C kVAh)" attributes="KVAH_RATE_C"/>
         <pointInfo name="Delivered kVAh (Rate D kVAh)" attributes="KVAH_RATE_D"/>
-        <pointInfo name="Delivered kVAr" attributes="KVAR"/>
+        <pointInfo name="Delivered kVAr" attributes="DELIVERED_KVAR"/>
         <pointInfo name="Delivered kVArh" attributes="KVARH"/>
         <pointInfo name="Delivered kVArh (Rate A kVArh)" attributes="KVARH_RATE_A"/>
         <pointInfo name="Delivered kVArh (Rate B kVArh)" attributes="KVARH_RATE_B"/>
         <pointInfo name="Delivered kVArh (Rate C kVArh)" attributes="KVARH_RATE_C"/>
         <pointInfo name="Delivered kVArh (Rate D kVArh)" attributes="KVARH_RATE_D"/>
-        <pointInfo name="Delivered kW" init="true" attributes="DEMAND"/>
+        <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>

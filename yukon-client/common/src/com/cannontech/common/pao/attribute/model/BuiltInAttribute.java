@@ -49,7 +49,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)", AttributeGroup.CURRENT, false),   //440 types only
     CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)", AttributeGroup.CURRENT, false),   //440 types only
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage", AttributeGroup.STATUS, false),   //440 types only
-    DEMAND("Demand", AttributeGroup.DEMAND), // Delivered Demand / also instantaneous
+    DEMAND("Demand", AttributeGroup.DEMAND), // instantaneous
+    DELIVERED_DEMAND("Delivered Demand", AttributeGroup.DEMAND),
     RECEIVED_DEMAND("Received Demand", AttributeGroup.DEMAND),
     DEMAND_PEAK_KVA_COIN("Demand at Peak kVa Coincidental", AttributeGroup.DEMAND),
     DISCONNECT_STATUS("Disconnect Status", AttributeGroup.STATUS),
@@ -76,7 +77,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVAH_RATE_B("Sum kVAh Rate B", AttributeGroup.USAGE),
     SUM_KVAH_RATE_C("Sum kVAh Rate C", AttributeGroup.USAGE),
     SUM_KVAH_RATE_D("Sum kVAh Rate D", AttributeGroup.USAGE),
-    KVAR("kVAr", AttributeGroup.REACTIVE),  // Delivered kVar / also instantaneous
+    KVAR("kVAr", AttributeGroup.REACTIVE),  // instantaneous
+    DELIVERED_KVAR("Delivered kVAr", AttributeGroup.REACTIVE),
     RECEIVED_KVAR("Received kVAr", AttributeGroup.REACTIVE),
     KVARH("kVArh", AttributeGroup.REACTIVE),    // Delivered kVArh
     KVARH_RATE_A("kVArh Rate A", AttributeGroup.REACTIVE),

@@ -1579,7 +1579,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
             ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
               + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "INTERVAL" )
             ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
-              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DEMAND" )
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_DEMAND" )
             ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
               + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "INTERVAL" )
             ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )

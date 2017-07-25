@@ -374,7 +374,7 @@ void config_a_meter(Cti::Test::test_DeviceConfig &cfg)
         ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
         + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
         ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DEMAND" )
+        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_DEMAND" )
         ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
         + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
         ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
@@ -419,11 +419,11 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_missing )
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         Cti::Test::msgsEqual( returnMsgs, ClientErrors::ConfigNotCurrent, {
-            "Midnight channel config possibly not supported by meter.  Meter is missing NET_KWH, DEMAND",
-            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
+            "Midnight channel config possibly not supported by meter.  Meter is missing NET_KWH, DELIVERED_DEMAND",
+            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND",
             "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH",
-            "Interval channel config possibly not supported by meter.  Meter is missing DEMAND",
-            "Config: SUM_KWH, NET_KWH, DEMAND",
+            "Interval channel config possibly not supported by meter.  Meter is missing DELIVERED_DEMAND",
+            "Config: SUM_KWH, NET_KWH, DELIVERED_DEMAND",
             "Meter: SUM_KWH, NET_KWH",
             "Config channelconfig is NOT current."
         } );
@@ -464,11 +464,11 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
 
         Cti::Test::msgsEqual(returnMsgs, ClientErrors::ConfigNotCurrent, {
             "Midnight channel program mismatch.  Meter also contains PEAK_DEMAND_FROZEN",
-            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
-            "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND, PEAK_DEMAND_FROZEN",
+            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND",
+            "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN",
             "Interval channel program mismatch.  Meter also contains DELIVERED_KWH, RECEIVED_KWH, PEAK_DEMAND_FROZEN",
-            "Config: SUM_KWH, NET_KWH, DEMAND",
-            "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND, PEAK_DEMAND_FROZEN",
+            "Config: SUM_KWH, NET_KWH, DELIVERED_DEMAND",
+            "Meter: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND, PEAK_DEMAND_FROZEN",
             "Config channelconfig is NOT current.",
         });
     }
@@ -542,10 +542,10 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_disjoint
 
         Cti::Test::msgsEqual(returnMsgs, ClientErrors::ConfigNotCurrent, {
             "Midnight channel program mismatch.",
-            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DEMAND",
+            "Config: DELIVERED_KWH, RECEIVED_KWH, SUM_KWH, NET_KWH, DELIVERED_DEMAND",
             "Meter: PEAK_DEMAND_FROZEN, USAGE_FROZEN, RECEIVED_KWH_FROZEN",
             "Interval channel program mismatch.",
-            "Config: SUM_KWH, NET_KWH, DEMAND",
+            "Config: SUM_KWH, NET_KWH, DELIVERED_DEMAND",
             "Meter: PEAK_DEMAND_FROZEN, USAGE_FROZEN, RECEIVED_KWH_FROZEN",
             "Config channelconfig is NOT current."
         });
@@ -649,7 +649,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "DELIVERED_DEMAND",
     "interval" : 5,
     "enabled" : true,
     "status" : "OK"
@@ -708,7 +708,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_two_channels_no_device
         { "channels", "2" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" }};
 
     {
@@ -760,7 +760,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_mat
         { "channels", "2" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" }};
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
@@ -769,7 +769,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_mat
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
         { "channels.0.enabled", "true" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" },
         { "channels.1.enabled", "true" }};
 
@@ -800,7 +800,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
         { "channels", "2" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" }};
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
@@ -809,7 +809,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
         { "channels.0.enabled", "true" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" },
         { "channels.1.enabled", "true" }};
 
@@ -856,7 +856,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_device
         { "channels", "2" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" }};
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
@@ -865,7 +865,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_device
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
         { "channels.0.enabled", "true" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" },
         { "channels.1.enabled", "false" }};
 
@@ -915,7 +915,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_channe
         { "channels", "2" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" }};
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
@@ -924,7 +924,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_channe
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
         { "channels.0.enabled", "true" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "17" },
         { "channels.1.enabled", "true" }};
 
@@ -974,24 +974,27 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
         { "channels", "2" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" }};
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
         { "enabled", "true" },
-        { "channels", "4" },
+        { "channels", "5" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "40" },
         { "channels.0.enabled", "false" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "17" },
         { "channels.1.enabled", "false" },
-        { "channels.2.attribute", "KVAR" },
+        { "channels.2.attribute", "DELIVERED_KVAR" },
         { "channels.2.interval", "9" },
         { "channels.2.enabled", "true" },
-        { "channels.3.attribute", "POWER_FACTOR" },
-        { "channels.3.interval", "11" },
-        { "channels.3.enabled", "true" }};
+        { "channels.3.attribute", "KVAR" },
+        { "channels.3.interval", "9" },
+        { "channels.3.enabled", "true" },
+        { "channels.4.attribute", "POWER_FACTOR" },
+        { "channels.4.interval", "11" },
+        { "channels.4.enabled", "true" }};
 
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
@@ -1016,7 +1019,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
 
             const std::vector<unsigned char> exp {
                 0x86,  //  command code
-                0x04,  //  number of metrics
+                0x05,  //  number of metrics
                 0x01,  //  data streaming ON
                 0x00, 0x05,  //  metric ID 1
                 0x01,        //  metric ID 1 enable/disable
@@ -1024,12 +1027,15 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
                 0x00, 0x73,  //  metric ID 2
                 0x01,        //  metric ID 2 enable/disable
                 0x04,        //  metric ID 2 interval
-                0x00, 0x20,  //  metric ID 3
+                0x00, 0xc9,  //  metric ID 3
                 0x00,        //  metric ID 3 enable/disable
                 0x00,        //  metric ID 3 interval
-                0x00, 0x50,  //  metric ID 4
+                0x00, 0x20,  //  metric ID 4
                 0x00,        //  metric ID 4 enable/disable
-                0x00         //  metric ID 4 interval
+                0x00,        //  metric ID 4 interval
+                0x00, 0x50,  //  metric ID 5
+                0x00,        //  metric ID 5 enable/disable
+                0x00         //  metric ID 5 interval
             };
 
             BOOST_CHECK_EQUAL(rcv, exp);
@@ -1048,24 +1054,27 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
         { "channels", "2" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" }};
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
         { "enabled", "false" },
-        { "channels", "4" },
+        { "channels", "5" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "40" },
         { "channels.0.enabled", "true" },
-        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "17" },
         { "channels.1.enabled", "true" },
-        { "channels.2.attribute", "KVAR" },
+        { "channels.2.attribute", "DELIVERED_KVAR" },
         { "channels.2.interval", "9" },
         { "channels.2.enabled", "true" },
-        { "channels.3.attribute", "POWER_FACTOR" },
-        { "channels.3.interval", "11" },
-        { "channels.3.enabled", "true" }};
+        { "channels.3.attribute", "KVAR" },
+        { "channels.3.interval", "9" },
+        { "channels.3.enabled", "true" },
+        { "channels.4.attribute", "POWER_FACTOR" },
+        { "channels.4.interval", "11" },
+        { "channels.4.enabled", "true" }};
 
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
@@ -1090,7 +1099,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
 
             const std::vector<unsigned char> exp {
                 0x86,  //  command code
-                0x04,  //  number of metrics
+                0x05,  //  number of metrics
                 0x01,  //  data streaming ON
                 0x00, 0x05,  //  metric ID 1
                 0x01,        //  metric ID 1 enable/disable
@@ -1098,12 +1107,15 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
                 0x00, 0x73,  //  metric ID 2
                 0x01,        //  metric ID 2 enable/disable
                 0x04,        //  metric ID 2 interval
-                0x00, 0x20,  //  metric ID 3
+                0x00, 0xc9,  //  metric ID 3
                 0x00,        //  metric ID 3 enable/disable
                 0x00,        //  metric ID 3 interval
-                0x00, 0x50,  //  metric ID 4
+                0x00, 0x20,  //  metric ID 4
                 0x00,        //  metric ID 4 enable/disable
-                0x00         //  metric ID 4 interval
+                0x00,        //  metric ID 4 interval
+                0x00, 0x50,  //  metric ID 5
+                0x00,        //  metric ID 5 enable/disable
+                0x00         //  metric ID 5 interval
             };
 
             BOOST_CHECK_EQUAL(rcv, exp);
@@ -1125,16 +1137,19 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_unsupported_attribute)
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
         { "enabled", "true" },
-        { "channels", "3" },
-        { "channels.0.attribute", "DEMAND" },
+        { "channels", "4" },
+        { "channels.0.attribute", "DELIVERED_DEMAND" },
         { "channels.0.interval", "17" },
         { "channels.0.enabled", "false" },
-        { "channels.1.attribute", "KVAR" },
+        { "channels.1.attribute", "DELIVERED_KVAR" },
         { "channels.1.interval", "9" },
         { "channels.1.enabled", "true" },
-        { "channels.2.attribute", "POWER_FACTOR" },
-        { "channels.2.interval", "11" },
-        { "channels.2.enabled", "true" }};
+        { "channels.2.attribute", "KVAR" },
+        { "channels.2.interval", "9" },
+        { "channels.2.enabled", "true" },
+        { "channels.3.attribute", "POWER_FACTOR" },
+        { "channels.3.interval", "11" },
+        { "channels.3.enabled", "true" }};
 
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");

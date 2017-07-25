@@ -36,7 +36,7 @@
         <pointInfo name="Current Loss" attributes="CURRENT_LOSS"/>
         <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE"/>
         <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE"/>
-        <pointInfo name="Delivered kW" init="true" attributes="DEMAND"/>
+        <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>

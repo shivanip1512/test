@@ -50,7 +50,7 @@
         <pointInfo name="Delivered kVArh (Rate B kVArh)" init="true"/>
         <pointInfo name="Delivered kVArh (Rate C kVArh)" init="true"/>
         <pointInfo name="Delivered kVArh (Rate D kVArh)" init="true"/>
-        <pointInfo name="Delivered kW" init="true" attributes="DEMAND"/>
+        <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
@@ -68,7 +68,7 @@
         <pointInfo name="Improper Meter Engine Operation Warning" attributes="IMPROPER_METER_ENGINE_OPERATION_WARNING"/>
         <pointInfo name="Internal Communication Error" attributes="INTERNAL_COMMUNICATION_ERROR"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
-        <pointInfo name="Delivered kVAr" attributes="KVAR"/>
+        <pointInfo name="Delivered kVAr" attributes="DELIVERED_KVAR"/>
         <pointInfo name="Line Frequency Warning" attributes="LINE_FREQUENCY_WARNING"/>
         <pointInfo name="Load Side Voltage Is Missing" attributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
         <pointInfo name="Loss Of All Current" attributes="LOSS_OF_ALL_CURRENT"/>

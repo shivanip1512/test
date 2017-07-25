@@ -96,6 +96,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE_PHASE_B">Current Angle (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE_PHASE_C">Current Angle (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND">Demand</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_DEMAND">Delivered Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_DEMAND">Received Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_PEAK_KVA_COIN">Demand at Peak kVa Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DISCONNECT_STATUS">Disconnect Status</entry>
@@ -120,6 +121,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH_RATE_C">Sum kVAh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH_RATE_D">Sum kVAh Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAR">kVAr</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVAR">Delivered kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVAR">Received kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH">kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_A">kVArh Rate A</entry>

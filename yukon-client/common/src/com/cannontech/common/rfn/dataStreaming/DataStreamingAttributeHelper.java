@@ -41,49 +41,49 @@ public class DataStreamingAttributeHelper {
         RFN_410CL(PaoType.RFN410CL, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //C2SX
         RFN_420CL(PaoType.RFN420CL, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //C2SX
         RFN_420CD(PaoType.RFN420CD, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //Focus AXD
         RFN_420FX(PaoType.RFN420FX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //Focus AXR-SD
         RFN_420FD(PaoType.RFN420FD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //FocuskWh (as 420FL)
         RFN_420FL(PaoType.RFN420FL,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //FocuskWh-500
         RFN_510FL(PaoType.RFN510FL,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //S4-AD
@@ -170,7 +170,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXD(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -180,7 +180,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXT(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -190,7 +190,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXR(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -200,7 +200,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXD_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -210,7 +210,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXT_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -220,7 +220,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXR_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -231,7 +231,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXT(PaoType.RFN520FRX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -243,7 +243,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXR(PaoType.RFN520FRX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -255,7 +255,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXD_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -267,7 +267,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXT_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -279,7 +279,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXR_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -291,7 +291,7 @@ public class DataStreamingAttributeHelper {
         RFN_530FAXT(PaoType.RFN530FAX,
                 BuiltInAttribute.DELIVERED_KWH,     //metric 1
                 BuiltInAttribute.RECEIVED_KWH,      //metric 2
-                BuiltInAttribute.DEMAND,            //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,  //metric 5
                 BuiltInAttribute.VOLTAGE,           //metric 115
                 BuiltInAttribute.VOLTAGE_PHASE_A,   //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B,   //metric 101
@@ -301,7 +301,7 @@ public class DataStreamingAttributeHelper {
         RFN_530FAXR(PaoType.RFN530FRX,
                 BuiltInAttribute.DELIVERED_KWH,     //metric 1
                 BuiltInAttribute.RECEIVED_KWH,      //metric 2
-                BuiltInAttribute.DEMAND,            //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,  //metric 5
                 BuiltInAttribute.SUM_KVARH,         //metric 23
                 BuiltInAttribute.SUM_KVAH,          //metric 43
                 BuiltInAttribute.VOLTAGE,           //metric 115
@@ -313,7 +313,7 @@ public class DataStreamingAttributeHelper {
         RFN_430A3D(PaoType.RFN430A3D,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -323,7 +323,7 @@ public class DataStreamingAttributeHelper {
         RFN_430A3T(PaoType.RFN430A3T,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -333,7 +333,7 @@ public class DataStreamingAttributeHelper {
         RFN_430A3K(PaoType.RFN430A3K,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
@@ -346,10 +346,10 @@ public class DataStreamingAttributeHelper {
         RFN_430A3R(PaoType.RFN430A3R,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
                 BuiltInAttribute.SUM_KVARH,       //metric 23
-                BuiltInAttribute.KVAR,            //metric 32
+                BuiltInAttribute.DELIVERED_KVAR,  //metric 32
                 BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
@@ -364,9 +364,9 @@ public class DataStreamingAttributeHelper {
         RFN_430SL1(PaoType.RFN430SL1,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
-                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.KVA,             //metric 202 
+                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.KVAR,            //metric 201
+                BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -376,9 +376,9 @@ public class DataStreamingAttributeHelper {
         RFN_430SL2(PaoType.RFN430SL2,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
-                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.KVA,             //metric 202 
+                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.KVAR,            //metric 201
+                BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -388,9 +388,9 @@ public class DataStreamingAttributeHelper {
         RFN_430SL3(PaoType.RFN430SL3,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
-                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.KVA,             //metric 202 
+                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.KVAR,            //metric 201
+                BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -400,9 +400,9 @@ public class DataStreamingAttributeHelper {
         RFN_430SL4(PaoType.RFN430SL4,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
-                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.KVA,             //metric 202 
+                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.KVAR,            //metric 201
+                BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101

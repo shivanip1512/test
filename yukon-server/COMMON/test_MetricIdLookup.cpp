@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_GetMetricId_success)
         BOOST_CHECK_EQUAL(metricId, 1);
     }
     {
-        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::Demand, TYPE_RFN420CL);
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::DeliveredDemand, TYPE_RFN420CL);
 
         BOOST_CHECK_EQUAL(metricId, 5);
     }
@@ -96,8 +96,8 @@ BOOST_AUTO_TEST_CASE(test_getAttribute_override)
     {
         const auto attrib = Cti::MetricIdLookup::GetAttribute(5, TYPE_RFN420CL);
 
-        BOOST_CHECK(attrib == Attribute::Demand);
-        BOOST_CHECK_EQUAL(attrib.getName(), "DEMAND");
+        BOOST_CHECK(attrib == Attribute::DeliveredDemand);
+        BOOST_CHECK_EQUAL(attrib.getName(), "DELIVERED_DEMAND");
     }
 
     {

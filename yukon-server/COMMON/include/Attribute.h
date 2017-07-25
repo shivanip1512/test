@@ -45,6 +45,7 @@ public:
     static const Attribute  CurrentAnglePhaseC;
     static const Attribute  CurrentWithoutVoltage;
     static const Attribute  Demand;
+    static const Attribute  DeliveredDemand;
     static const Attribute  ReceivedDemand;
     static const Attribute  DemandPeakkVACoin;
     static const Attribute  DisconnectStatus;
@@ -71,6 +72,7 @@ public:
     static const Attribute  SumkVAhRateC;
     static const Attribute  SumkVAhRateD;
     static const Attribute  kVAr;
+    static const Attribute  DeliveredkVAr;
     static const Attribute  ReceivedkVAr;
     static const Attribute  kVArh;
     static const Attribute  kVArhRateA;

@@ -4,7 +4,7 @@
                 { "metricId" :  2, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH" },
                 { "metricId" :  3, "attributeMagnitude" : 3, "attribute" : "SUM_KWH" },
                 { "metricId" :  4, "attributeMagnitude" : 3, "attribute" : "NET_KWH" },
-                { "metricId" :  5, "attributeMagnitude" : 3, "attribute" : "DEMAND" },
+                { "metricId" :  5, "attributeMagnitude" : 3, "attribute" : "DELIVERED_DEMAND" },
                 { "metricId" :  6, "attributeMagnitude" : 3, "attribute" : "RECEIVED_DEMAND" },
 
                 { "metricId" :  7, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND" },
@@ -27,7 +27,7 @@
                 { "metricId" : 29, "attributeMagnitude" : 3, "attribute" : "NET_DELIVERED_KVARH" },
                 { "metricId" : 30, "attributeMagnitude" : 3, "attribute" : "NET_RECEIVED_KVARH" },
 
-                { "metricId" : 32, "attributeMagnitude" : 3, "attribute" : "KVAR" },
+                { "metricId" : 32, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVAR" },
 
                 { "metricId" : 33, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVAR" },
                 { "metricId" : 34, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR" },
@@ -85,6 +85,8 @@
 
                 { "metricId" : 184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR" },
 
+                { "metricId" : 200, "attributeMagnitude" : 3, "attribute" : "DEMAND" },
+                { "metricId" : 201, "attributeMagnitude" : 3, "attribute" : "KVAR" },
                 { "metricId" : 202, "attributeMagnitude" : 3, "attribute" : "KVA" },
                 
                 { "metricId" : 210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA" },
@@ -157,8 +159,6 @@
                 { "metricId" : 4044, "attributeMagnitude" : 3, "attribute" : "NET_KVAH_RATE_D" }
         ],
         "attributeOverrides" : [
-                { "attribute" : "DEMAND",        "metricId" : 200, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
-                { "attribute" : "KVAR",          "metricId" : 201, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
                 { "attribute" : "PEAK_DEMAND",   "metricId" :  13, "paoTypes" : [ "rfn-530s4x", "rfn-530s4eax", "rfn-530s4eaxr", "rfn-530s4erx", "rfn-530s4erxr" ] }
         ]
 }
