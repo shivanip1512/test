@@ -59,6 +59,18 @@ UPDATE DeviceConfigDeviceTypes SET PaoType = 'RFN-530S4eRX' WHERE PaoType = 'RFN
 UPDATE DeviceConfigDeviceTypes SET PaoType = 'RFN-530S4eRXR' WHERE PaoType = 'RFN-530S4eRT';
 /* End YUK-16931 */
 
+/* Start YUK-16983 */
+UPDATE CalcBase SET PeriodicRate = 180 WHERE PeriodicRate = 240 AND UpdateType IN ('On Timer', 'On Timer+Change');
+UPDATE CalcBase SET PeriodicRate = 300 WHERE PeriodicRate = 420 AND UpdateType IN ('On Timer', 'On Timer+Change');
+UPDATE CalcBase SET PeriodicRate = 600 WHERE PeriodicRate = 720 AND UpdateType IN ('On Timer', 'On Timer+Change');
+UPDATE CalcBase SET PeriodicRate = 900 WHERE (PeriodicRate = 1200 OR PeriodicRate = 1500) AND UpdateType IN ('On Timer', 'On Timer+Change');
+
+UPDATE Point SET ArchiveInterval = 180 WHERE ArchiveInterval = 240 AND ArchiveType IN ('On Timer', 'timer|update');
+UPDATE Point SET ArchiveInterval = 300 WHERE ArchiveInterval = 420 AND ArchiveType IN ('On Timer', 'timer|update');
+UPDATE Point SET ArchiveInterval = 600 WHERE ArchiveInterval = 720 AND ArchiveType IN ('On Timer', 'timer|update');
+UPDATE Point SET ArchiveInterval = 900 WHERE (ArchiveInterval = 1200 OR ArchiveInterval = 1500) AND ArchiveType IN ('On Timer', 'timer|update');
+/* End YUK-16983 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
