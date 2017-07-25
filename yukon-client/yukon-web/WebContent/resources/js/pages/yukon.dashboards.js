@@ -85,7 +85,7 @@ yukon.dashboards = (function () {
             /** Unassign Users  */
             $(document).on('yukon:dashboard:unassignUsers', function (ev, items, picker) {
                 var users = items.map(function (item) { return item.userId; }),
-                    dashboardId = picker.extraArgs
+                    dashboardId = picker.extraArgs,
                     data = {
                         users: users
                     };
