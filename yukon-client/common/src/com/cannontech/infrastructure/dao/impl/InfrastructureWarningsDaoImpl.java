@@ -23,6 +23,7 @@ import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
@@ -40,6 +41,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
     private static Instant lastRun;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private DatabaseVendorResolver dbVendorResolver;
     
     @Override
     @Transactional
@@ -146,6 +148,9 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
             sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
             sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
             sql.append(") AS WarningRepeaters");
+            if (dbVendorResolver.getDatabaseVendor().isOracle()) {
+                sql.append("FROM dual");
+            }
             
             InfrastructureWarningSummary summary = jdbcTemplate.queryForObject(sql, warningSummaryRowMapper);
             summary.setLastRun(getLastRun());
