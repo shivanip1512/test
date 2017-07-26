@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/13/2017 4:40:46 AM                         */
+/* Created on:     7/26/2017 1:36:48 PM                         */
 /*==============================================================*/
 
 
@@ -2913,6 +2913,10 @@ go
 
 INSERT INTO Dashboard VALUES (-1, 'Default Main Dashboard', 'Default Main Dashboard', -1, 'SYSTEM');
 INSERT INTO Dashboard VALUES (-2, 'Default AMI Dashboard', 'Default AMI Dashboard', -1, 'SYSTEM');
+
+alter table Dashboard
+   add constraint AK_Dashboard_OwnerId_Name unique (OwnerId, Name)
+go
 
 /*==============================================================*/
 /* Table: DateOfHoliday                                         */

@@ -176,6 +176,11 @@ FROM GlobalSetting
 WHERE value = 'SMTP_TLS_ENABLED';
 /* End YUK-16952 */
 
+/* Start YUK-16986 */
+ALTER TABLE Dashboard
+   ADD CONSTRAINT AK_Dashboard_OwnerId_Name UNIQUE (OwnerId, Name);
+/* End YUK-16986 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
