@@ -22,10 +22,11 @@ public class ConfigurationLoaderTest {
     public void setup() {
 
         ReflectionTestUtils.setField(smtpHelper, "configurationLoader", configurationLoader);
-        GlobalSettingDao mockGlobalSettingDao = EasyMock.createStrictMock(GlobalSettingDao.class);
+        GlobalSettingDao mockGlobalSettingDao = EasyMock.createMock(GlobalSettingDao.class);
         ReflectionTestUtils.setField(smtpHelper, "globalSettingDao", mockGlobalSettingDao);
         EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.SMTP_HOST)).andReturn("xyz.com");
         EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.SMTP_PORT)).andReturn("568");
+        EasyMock.expect(mockGlobalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class)).andReturn(SmtpEncryptionType.SSL);
         EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD)).andReturn("xyz");
         EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.SMTP_USERNAME)).andReturn("abc");
         EasyMock.replay(mockGlobalSettingDao);
@@ -45,10 +46,9 @@ public class ConfigurationLoaderTest {
         Map<String, Map<String, String>> settingsMap = configurationLoader.getConfigSettings();
         Map<String, String> smtpSettings = settingsMap.get("smtp");
         Assert.assertEquals(smtpSettings.get("mail.smtp.port"), "465");
-        Assert.assertEquals(smtpSettings.get("mail.smtp.starttls.enable"), "true");
         Assert.assertEquals(smtpSettings.get("mail.smtp.socketFactory.class"), "javax.net.ssl.SSLSocketFactory");
         Assert.assertEquals(smtpSettings.get("mail.smtp.socketFactory.port"), "465");
-        Assert.assertEquals(smtpSettings.size(), 4);
+        Assert.assertEquals(smtpSettings.size(), 3);
     }
 
     @Test
@@ -57,7 +57,6 @@ public class ConfigurationLoaderTest {
         Assert.assertEquals(smtpHelper.getSmtpConfigSettings().get("mail.smtp.host"), "xyz.com");
         // File property overwrites the global settings for port.
         Assert.assertEquals(smtpHelper.getSmtpConfigSettings().get("mail.smtp.port"), "465");
-        Assert.assertEquals(smtpHelper.getSmtpConfigSettings().get("mail.smtp.starttls.enable"), "true");
         Assert.assertEquals(smtpHelper.getSmtpConfigSettings().get("mail.smtp.socketFactory.class"),
             "javax.net.ssl.SSLSocketFactory");
         Assert.assertEquals(smtpHelper.getSmtpConfigSettings().get("mail.smtp.socketFactory.port"), "465");
