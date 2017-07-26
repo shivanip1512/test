@@ -7,6 +7,9 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
 
+/**
+ * Generates warnings for relays with a bad outage state.
+ */
 public class RelayOutageStatusEvaluator extends InfrastructureStatusWarningEvaluator {
 
     private static int BAD_STATE = 2;

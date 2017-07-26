@@ -7,6 +7,9 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
 
+/**
+ * Generates warnings for CCUs whose comm status state is "disconnected".
+ */
 public class CCUCommStatusEvaluator extends InfrastructureStatusWarningEvaluator {
     
     private static int DISCONNECTED = 1;

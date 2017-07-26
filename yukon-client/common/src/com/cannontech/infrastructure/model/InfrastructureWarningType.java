@@ -11,7 +11,7 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     GATEWAY_FAILSAFE,
     GATEWAY_CONNECTED_NODES,
     GATEWAY_DATA_STREAMING_LOAD,
-    //GATEWAY_READY_NODES,
+    GATEWAY_READY_NODES,
     RELAY_OUTAGE,
     CCU_COMM_STATUS,
     REPEATER_COMM_STATUS,

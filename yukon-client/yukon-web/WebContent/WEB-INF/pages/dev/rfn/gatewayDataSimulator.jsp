@@ -144,7 +144,11 @@
                                         <tags:nameValue name="Connection Status">
                                             <select name="connectionStatus" disabled>
                                                 <c:forEach var="connectionType" items="${connectionTypes}">
-                                                    <option value="${connectionType}">${connectionType}</option>
+                                                    <c:set var="selected" value=""/>
+                                                    <c:if test="${connectionType eq dataSettings.connectionStatus}">
+                                                        <c:set var="selected" value="selected"/>
+                                                    </c:if>
+                                                    <option value="${connectionType}" ${selected}>${connectionType}</option>
                                                 </c:forEach>
                                             </select>                                        
                                         </tags:nameValue>
@@ -180,7 +184,11 @@
                                         <tags:nameValue name="Connection Status">
                                             <select name="connectionStatus">
                                                 <c:forEach var="connectionType" items="${connectionTypes}">
-                                                    <option value="${connectionType}">${connectionType}</option>
+                                                    <c:set var="selected" value=""/>
+                                                    <c:if test="${connectionType eq dataSettings.connectionStatus}">
+                                                        <c:set var="selected" value="selected"/>
+                                                    </c:if>
+                                                    <option value="${connectionType}" ${selected}>${connectionType}</option>
                                                 </c:forEach>
                                             </select>                                        
                                         </tags:nameValue>

@@ -25,6 +25,9 @@ import com.cannontech.services.infrastructure.service.InfrastructureWarningEvalu
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
+/**
+ * Generates warnings for gateways whose connection status has been "disconnected" for a configurable duration.
+ */
 public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayConnectionStatusEvaluator.class);
     private static final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -46,25 +49,33 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
         Duration warnableDuration = Duration.standardMinutes(warnableTimeMinutes);
         log.debug("Required disconnected minutes to warn: " + warnableTimeMinutes);
         
-        Map<PaoIdentifier, PointValueQualityHolder> pao = rphDao.getSingleAttributeData(
+        Map<PaoIdentifier, PointValueQualityHolder> gatewayToPointValue = rphDao.getSingleAttributeData(
             rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS, false, null, null);
 
-        return pao.keySet().stream().filter(gateway -> isWarnable(pao.get(gateway), warnableDuration)).
-                map(gateway -> {
-                    return new InfrastructureWarning(gateway, 
-                        InfrastructureWarningType.GATEWAY_CONNECTION_STATUS,
-                        df.format(pao.get(gateway).getPointDataTimeStamp()));
-                }).collect(Collectors.toList());
+        return gatewayToPointValue.entrySet()
+                                  .stream()
+                                  .filter(entry -> isWarnable(entry.getValue(), warnableDuration))
+                                  .map(entry -> buildWarning(entry.getKey(), entry.getValue()))
+                                  .collect(Collectors.toList());
     }
     
     /**
      * Returns true if warning should be generated.
      */
-    private boolean isWarnable(PointValueQualityHolder point, Duration warnableDuration) {
+    protected static boolean isWarnable(PointValueQualityHolder point, Duration warnableDuration) {
         if (point.getValue() == CONNECTED
             || new Instant(point.getPointDataTimeStamp()).plus(warnableDuration).isAfterNow()) {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Builds a GATEWAY_CONNECTION_STATUS warning for the specified paoIdentifier and point value.
+     */
+    private static InfrastructureWarning buildWarning(PaoIdentifier paoId, PointValueQualityHolder pvqh) {
+        return new InfrastructureWarning(paoId,
+                                         InfrastructureWarningType.GATEWAY_CONNECTION_STATUS,
+                                         df.format(pvqh.getPointDataTimeStamp()));
     }
 }

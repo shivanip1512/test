@@ -2,8 +2,11 @@ package com.cannontech.common.stream;
 
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -41,6 +44,24 @@ public final class StreamUtils {
         return Collector.of(
             () -> HashMultimap.create(),
             (map, object) -> map.put(keyMapper.apply(object), valueMapper.apply(object)),
+            (map1, map2) -> { map1.putAll(map2); return map1; }
+        );
+    }
+    
+    /**
+     * Identical to {@link toMultimap}, but to be used when the {@code valueMapper} returns an Iterable of values
+     * instead of a single value.
+     * 
+     * @param keyMapper A function for mapping the objects from the stream to keys in the map.
+     * @param valueMapper A function for mapping the objects from the stream to values in the map.
+     * @return
+     */
+    public static final <O,K,V> Collector<O,?,Multimap<K,V>> mappedValueToMultimap(Function<O,K> keyMapper, 
+                                                                        Function<O,Iterable<V>> valueMapper) {
+        
+        return Collector.of(
+            () -> HashMultimap.create(),
+            (map, object) -> map.putAll(keyMapper.apply(object), valueMapper.apply(object)),
             (map1, map2) -> { map1.putAll(map2); return map1; }
         );
     }
@@ -102,5 +123,22 @@ public final class StreamUtils {
      */
     public static final <K,V> Collector<K,?,Map<K,V>> mapSelfTo(Function<K,V> valueMapper) {
         return Collectors.toMap(Function.identity(), valueMapper);
+    }
+    
+    /**
+     * Generates a Stream via an indexed getter function and a length. This makes it cleaner to get a stream out of an 
+     * indexed object that isn't a Java Collection.
+     * 
+     * <pre>{@code 
+     * List<String> list = new ArrayList<>();
+     * Stream<String> listValuesStream = stream(list::get, list.size());
+     * }</pre>
+     * 
+     * @param indexedGetterFunction A function that accepts an int parameter and provides an object for the stream.
+     * @param length The number of times to call the function.
+     * @return A Stream consisting of the objects returned by the specified function.
+     */
+    public static final <T> Stream<T> stream(IntFunction<T> indexedGetterFunction, int length) {
+        return IntStream.range(0, length).mapToObj(indexedGetterFunction); 
     }
 }

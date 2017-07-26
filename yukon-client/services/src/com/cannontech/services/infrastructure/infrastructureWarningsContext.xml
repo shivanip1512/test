@@ -16,6 +16,7 @@
         <jms:listener destination="yukon.notif.obj.infrastructure.InfrastructureWarningsRequest" ref="infrastructureWarningsRequestListener" method="handleRequest"/>
     </jms:listener-container>
     
+    <!-- Services and daos -->
     <bean class="com.cannontech.services.infrastructure.service.impl.InfrastructureWarningsServiceImpl"/>
     <bean class="com.cannontech.infrastructure.dao.impl.InfrastructureWarningsDaoImpl"/>
     
@@ -25,6 +26,7 @@
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayConnectedNodesEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayFailsafeEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayConnectionStatusEvaluator"/>
+    <bean class="com.cannontech.services.infrastructure.service.impl.GatewayReadyNodesEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.RelayOutageStatusEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.CCUCommStatusEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.RepeaterCommStatusEvaluator"/>

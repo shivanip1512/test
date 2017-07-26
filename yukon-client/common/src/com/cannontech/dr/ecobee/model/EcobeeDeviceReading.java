@@ -1,6 +1,6 @@
 package com.cannontech.dr.ecobee.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 public final class EcobeeDeviceReading {

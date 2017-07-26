@@ -19,6 +19,9 @@ import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 import com.google.common.collect.ImmutableSet;
 
+/**
+ * Generates warnings for all GWY-800s whose data streaming load percentage is greater than 100% (yellow) or 120% (red).
+ */
 public class GatewayDataStreamingLoadEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayDataStreamingLoadEvaluator.class);
     @Autowired RfnGatewayService rfnGatewayService;
