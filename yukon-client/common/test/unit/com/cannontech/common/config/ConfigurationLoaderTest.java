@@ -48,6 +48,7 @@ public class ConfigurationLoaderTest {
         Assert.assertEquals(smtpSettings.get("mail.smtp.port"), "465");
         Assert.assertEquals(smtpSettings.get("mail.smtp.socketFactory.class"), "javax.net.ssl.SSLSocketFactory");
         Assert.assertEquals(smtpSettings.get("mail.smtp.socketFactory.port"), "465");
+        Assert.assertNull(smtpHelper.getSmtpConfigSettings().get("mail.smtp.starttls.enable"));
         Assert.assertEquals(smtpSettings.size(), 3);
     }
 
@@ -60,5 +61,6 @@ public class ConfigurationLoaderTest {
         Assert.assertEquals(smtpHelper.getSmtpConfigSettings().get("mail.smtp.socketFactory.class"),
             "javax.net.ssl.SSLSocketFactory");
         Assert.assertEquals(smtpHelper.getSmtpConfigSettings().get("mail.smtp.socketFactory.port"), "465");
+        Assert.assertNull(smtpHelper.getSmtpConfigSettings().get("mail.smtp.starttls.enable"));
     }
 }
