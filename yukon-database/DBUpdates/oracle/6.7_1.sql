@@ -101,6 +101,71 @@ DELETE FROM POINT WHERE POINTID IN (
     WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (101, 105, 182, 188) AND YP.Type IN ('RFN-530S4EAX', 'RFN-530S4ERX'));
 /* End YUK-16964 */
 
+/* Start YUK-16952 */
+INSERT INTO GlobalSetting (GlobalSettingId, Name, Value, Comments, LastChangedDate)
+  (SELECT
+     (SELECT MAX(GlobalSettingId)+1
+      FROM GlobalSetting), 'SMTP_ENCRYPTION_TYPE',
+                           'NONE',
+                           '6.7 DB Update Conversion',
+                           SYSDATE
+   FROM GlobalSetting
+   WHERE Name = 'SMTP_HOST'
+     AND Value IS NOT NULL);
+
+UPDATE GlobalSetting
+SET value = 'NONE'
+WHERE Name = 'SMTP_ENCRYPTION_TYPE'
+  AND (
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_USERNAME') IS NULL
+       OR
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_PASSWORD') IS NULL)
+  AND (
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_TLS_ENABLED') = '0'
+       OR
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_TLS_ENABLED') IS NULL);
+
+UPDATE GlobalSetting
+SET value = 'SSL'
+WHERE Name = 'SMTP_ENCRYPTION_TYPE'
+  AND (
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_USERNAME') IS NOT NULL
+       AND
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_PASSWORD') IS NOT NULL)
+  AND (
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_TLS_ENABLED') = '0'
+       OR
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_TLS_ENABLED') IS NULL);
+
+UPDATE GlobalSetting
+SET value = 'TLS'
+WHERE Name = 'SMTP_ENCRYPTION_TYPE'
+  AND (
+         (SELECT VALUE
+          FROM GlobalSetting
+          WHERE Name = 'SMTP_TLS_ENABLED') = '1');
+
+DELETE
+FROM GlobalSetting
+WHERE value = 'SMTP_TLS_ENABLED';
+/* End YUK-16952 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
