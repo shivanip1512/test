@@ -345,6 +345,9 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         // It might be more correct to do 'GROUP BY DeviceCount' here but that slows this down
         // We can select 'Top 1' because every slotId for any given AnalysisId will have the same set of devices
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CASE WHEN DeviceCount IS NULL");
+        sql.append("    THEN 0 ELSE DeviceCount END");
+        sql.append("    FROM (SELECT (");
         sql.append("SELECT DeviceCount");
         sql.append("FROM(");
         sql.append("SELECT DeviceCount,row_number() OVER (ORDER BY DeviceCount DESC) RowNumber");
@@ -358,6 +361,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         sql.append("WHERE AnalysisId").eq(analysisId);
         sql.append(") tmp ");
         sql.append("WHERE RowNumber = 1");
+        sql.append(") AS DeviceCount) outertable");
 
         return jdbcTemplate.queryForInt(sql);
     }
