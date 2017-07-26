@@ -43,21 +43,9 @@
                                     <cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
                                 </td>
                                 <td>
-                                    	<c:if test="${job.jobState eq 'SCHEDULED'}">
-                                    	<cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
-                                            <cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
-                                        </cti:classUpdater>    
-                                        </c:if> <c:if
-                                            test="${job.jobState eq 'RUNNING'}">
-                                            <cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
-                                                <cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
-                                            </cti:classUpdater>
-                                        </c:if> <c:if
-                                            test="${job.jobState eq 'DISABLED' || job.jobState eq 'DELETED'}">
-                                            <cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
-                                                <cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
-                                            </cti:classUpdater>
-                                        </c:if> 
+                                    <cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
+                                        <cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
+                                    </cti:classUpdater>    
                                 </td>
                                 <td>
                                     <cti:url var="historyUrl" value="/support/fileExportHistory/list">
