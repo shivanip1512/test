@@ -361,9 +361,23 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
         sql.append("WHERE AnalysisId").eq(analysisId);
         sql.append(") tmp ");
         sql.append("WHERE RowNumber = 1");
-        sql.append(") AS DeviceCount) outertable");
+        sql.append(") AS DeviceCount ");
+        sql.append(getTable().getSql());
+        sql.append(" ) outertable");
+        
 
         return jdbcTemplate.queryForInt(sql);
+    }
+    
+    private SqlFragmentSource getTable() {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
+        sqla.append("");
+
+        SqlBuilder sqlb = builder.buildOther();
+        sqlb.append("FROM Dual");
+
+        return builder;
     }
     
     @Override
