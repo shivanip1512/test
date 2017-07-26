@@ -17,6 +17,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -72,7 +73,12 @@ public class SmtpHelper {
         }
         cachedHost = loadCommonProperty(SmtpPropertyType.HOST);
         cachedPort = loadCommonProperty(SmtpPropertyType.PORT);
-        cachedTls = loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
+        SmtpEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
+        if (encryptionType == SmtpEncryptionType.TLS) {
+            smtpConfigSettings.put(SmtpPropertyType.START_TLS_ENABLED.getKey(false), "true");
+        } else {
+            smtpConfigSettings.asMap().remove(SmtpPropertyType.START_TLS_ENABLED.getKey(false));
+        }
         log.info("Reloaded cache for the smtp Settings.");
     }
 

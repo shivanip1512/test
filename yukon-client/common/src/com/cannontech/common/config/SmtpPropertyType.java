@@ -5,8 +5,7 @@ import com.cannontech.system.GlobalSettingType;
 public enum SmtpPropertyType {
     HOST("host", GlobalSettingType.SMTP_HOST),
     PORT("port", GlobalSettingType.SMTP_PORT),
-    START_TLS_ENABLED("starttls.enable", GlobalSettingType.SMTP_TLS_ENABLED);
-
+    START_TLS_ENABLED("starttls.enable", GlobalSettingType.SMTP_ENCRYPTION_TYPE);
     private String propertyName;
     private GlobalSettingType globalSettingType;
 

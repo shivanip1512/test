@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.ClientApplicationRememberMe;
+import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
@@ -90,9 +91,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
     SMTP_USERNAME(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
+    SMTP_ENCRYPTION_TYPE(GlobalSettingSubCategory.YUKON_SERVICES, InputTypeFactory.enumType(SmtpEncryptionType.class), SmtpEncryptionType.NONE),
     MAIL_FROM_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "yukon@eaton.com"),
     NETWORK_MANAGER_ADDRESS(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "http://127.0.0.1:8081/nmclient/"),
-    SMTP_TLS_ENABLED(GlobalSettingSubCategory.YUKON_SERVICES, booleanType(), false),
     RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "https://127.0.0.1:8443/updateserver/latest/"),
     RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gateway"),
     RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gwupdate"),

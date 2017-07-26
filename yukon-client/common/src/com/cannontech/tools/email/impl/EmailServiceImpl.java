@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.SmtpEncryptionType;
 import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.config.SmtpPropertyType;
 import com.cannontech.system.GlobalSettingType;
@@ -78,10 +79,12 @@ public class EmailServiceImpl implements EmailService {
     private void send(final MimeMessage message, Session session) throws MessagingException {
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
+        Transport transport = null;
+        SmtpEncryptionType encryptionType = globalSettingDao.getEnum(GlobalSettingType.SMTP_ENCRYPTION_TYPE, SmtpEncryptionType.class);
+        transport = session.getTransport(encryptionType.getProtocol());
 
         if (authentication != null) {
             try {
-                Transport transport = session.getTransport("smtps");
                 String username = authentication.getUserName();
                 String password = authentication.getPassword();
 
@@ -100,7 +103,8 @@ public class EmailServiceImpl implements EmailService {
                 log.error("Unable to send email message, SMTP port number is invalid");
             }
         } else {
-            Transport.send(message);
+            transport.connect();
+            transport.sendMessage(message, message.getAllRecipients());
             log.debug("Message Sent: " + message.toString());
         }
     }
