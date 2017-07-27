@@ -45,7 +45,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     const CtiTime& getStartedRampingOutTime() const;
     BOOL getConstraintOverride() const;
     bool isAdjustNotificationPending() const;
-    bool CtiLMProgramDirect::shouldNotifyWhenScheduled() const;
+    bool shouldNotifyWhenScheduled() const;
 
     bool getIsRampingIn();
     bool getIsRampingOut();
@@ -109,7 +109,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
     BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);
     bool notifyGroupsOfAdjustment(CtiMultiMsg* multiNotifMsg);
-    bool notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop, CtiMultiMsg* multiNotifMsg);
+    bool notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop);
     BOOL wasControlActivatedByStatusTrigger();
 
     void requestAdjustNotification(const CtiTime& stop_time);

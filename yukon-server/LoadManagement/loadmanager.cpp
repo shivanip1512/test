@@ -1344,13 +1344,13 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
 
   Sends a cti message to the notification server
   ---------------------------------------------------------------------------*/
-void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
+void CtiLoadManager::sendMessageToNotification(std::unique_ptr<CtiMessage>&& message)
 {
     CtiLockGuard<CtiCriticalSection>  guard(_mutex);
     try
     {
         message->resetTime();                       // CGP 5/21/04 Update its time to current time.
-        getNotificationConnection()->WriteConnQue(message, CALLSITE);
+        getNotificationConnection()->WriteConnQue(std::move(message), CALLSITE);
     }
     catch( ... )
     {

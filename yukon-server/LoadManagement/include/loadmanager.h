@@ -35,7 +35,7 @@ public:
 
     void sendMessageToDispatch(CtiMessage* message);
     void sendMessageToPIL(CtiMessage* message);
-    void sendMessageToNotification(CtiMessage* message);
+    void sendMessageToNotification(std::unique_ptr<CtiMessage>&& message);
     void sendMessageToClients(CtiMessage* message);
 
 private:

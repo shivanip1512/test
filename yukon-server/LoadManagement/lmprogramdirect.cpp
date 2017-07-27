@@ -3589,16 +3589,25 @@ notifyGroupsOfSchedule
 Let the notification groups know when we have scheduled a start program
 Returns true if a notifcation was sent.
 ----------------------------------------------------------------------------*/
-bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop, CtiMultiMsg* multiNotifMsg)
+bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop)
 {
-    if(_LM_DEBUG & LM_DEBUG_DIRECT_NOTIFY)
+    if ( shouldNotifyWhenScheduled() ) 
     {
-        CTILOG_DEBUG(dout, "sending notification of scheduled program start. Program: " << getPAOName());
-    }
+        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CTILOG_DEBUG(dout, "sending notification of scheduled program start. Program: " << getPAOName());
+        }
 
-    auto notif_msg = std::make_unique<CtiNotifLMControlMsg>(_notificationgroupids, CtiNotifLMControlMsg::SCHEDULING, getPAOId(), start, stop);
-    multiNotifMsg->insert(notif_msg.release());
-    return true;
+		auto multiNotifMsg = std::make_unique<CtiMultiMsg>();
+        auto notif_msg = std::make_unique<CtiNotifLMControlMsg>(_notificationgroupids, CtiNotifLMControlMsg::SCHEDULING, getPAOId(), start, stop);
+        multiNotifMsg->insert(notif_msg.release());
+
+        CtiLoadManager::getInstance()->sendMessageToNotification(std::move(multiNotifMsg));
+
+        return true;
+    }
+    else
+        return false;
 }
 
 BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
@@ -5883,19 +5892,9 @@ bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)
  */
 void CtiLMProgramDirect::scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time)
 {
-    CtiMultiMsg* multiNotifMsg = new CtiMultiMsg();
-
-    if(_LM_DEBUG & LM_DEBUG_STANDARD)
-    {
-        CTILOG_DEBUG( dout, getPAOName() << " notify of scheduled curtailment from "
-            << start_time << " to " << stop_time );
-    }
-    notifyGroupsOfSchedule( start_time, stop_time, multiNotifMsg );
-
+    notifyGroupsOfSchedule(start_time, stop_time);
     scheduleStartNotification(start_time);
     scheduleStopNotification(stop_time);
-
-    CtiLoadManager::getInstance()->sendMessageToNotification(multiNotifMsg);
 }
 
 /**
