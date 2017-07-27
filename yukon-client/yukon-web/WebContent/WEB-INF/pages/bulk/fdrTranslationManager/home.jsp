@@ -22,7 +22,7 @@
                     } else {
                         var url = yukon.url('/bulk/fdrTranslationManager/importResults?');
                         url += 'resultId=' + data.resultId;
-                        url += '&fileName=' + data.fileName;
+                        url += '&fileName=' + encodeURIComponent(data.fileName);
                         url += '&ignoreInvalidColumns=' + data.ignoreInvalidColumns;
                         window.location = url;
                     }
