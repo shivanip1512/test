@@ -413,6 +413,10 @@ public class MeterController {
         }
         
         deviceDao.changeMeterNumber(device, meter.getMeterNumber());
+        if (meter.getType().isMct()) {
+            deviceDao.changeAddress(device, meter.getAddress());
+            deviceDao.changeRoute(device, meter.getRouteId());
+        }
         if (meter.isDisabled()) {
            deviceUpdateService.disableDevice(device); 
         }
