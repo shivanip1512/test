@@ -48,8 +48,14 @@ public class DemandResponseEventProcessor extends AbstractHoneywellWifiDataProce
             
             //Send point data to dispatch
             inputPointValue(thermostat, BuiltInAttribute.CONTROL_STATUS, eventTime, stateValue);
-            recentEventParticipationService.updateDeviceControlEvent(event.getDemandResponseId(), thermostat.getPaoId(),
-                event.getPhase(), eventTime);
+            if (event.getOptedOut()) {
+                recentEventParticipationService.updateDeviceControlEvent(event.getDemandResponseId(),
+                    thermostat.getPaoId(), EventPhase.COMPLETED, eventTime);
+            } else {
+                recentEventParticipationService.updateDeviceControlEvent(event.getDemandResponseId(),
+                    thermostat.getPaoId(), event.getPhase(), eventTime);
+            }
+
         } catch (NotFoundException e) {
             log.info("Honeywell demand response message received for unknown device with MAC ID " + event.getMacId());
         }
