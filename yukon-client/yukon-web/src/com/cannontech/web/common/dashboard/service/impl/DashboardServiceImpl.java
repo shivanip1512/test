@@ -4,10 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.events.loggers.DashboardEventLogService;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -17,7 +19,9 @@ import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Visibility;
+import com.cannontech.web.common.dashboard.model.Widget;
 import com.cannontech.web.common.dashboard.service.DashboardService;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
@@ -25,6 +29,7 @@ public class DashboardServiceImpl implements DashboardService {
     
     @Autowired DashboardDao dashboardDao;
     @Autowired YukonUserDao userDao;
+    @Autowired DashboardEventLogService dashboardEventLogService;
  
     @Override
     public Dashboard getAssignedDashboard(int userId, DashboardPageType dashboardType) {
@@ -84,10 +89,50 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void setDefault(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId) {
+    public void setDefault(LiteYukonUser yukonUser, Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId) {
         dashboardDao.assignDashboard(userIds, dashboardType, dashboardId);
+        dashboardEventLogService.dashboardAssigned(yukonUser, Iterables.size(userIds), dashboardDao.getDashboard(dashboardId).getName());
+    }
+    
+    @Override
+    public void unassignDashboardFromUsers(LiteYukonUser yukonUser, Iterable<Integer> userIds, int dashboardId) {
+        dashboardDao.unassignDashboardFromUsers(userIds, dashboardId);
+        dashboardEventLogService.dashboardUnassigned(yukonUser, Iterables.size(userIds), dashboardDao.getDashboard(dashboardId).getName());
     }
 
+    @Override
+    public void logDetailsEdited(LiteYukonUser yukonUser, String oldName, String oldDescription, String newName, String newDescription) {
+        if (!oldName.equals(newName)) {
+            dashboardEventLogService.nameChanged(yukonUser, oldName, newName);
+        }
+        if (!oldDescription.equals(newDescription)) {
+            dashboardEventLogService.descriptionChanged(yukonUser, oldDescription, newDescription, newName);
+        }
+    }
+    
+    @Override
+    public void logWidgetsAddedOrRemoved(LiteYukonUser yukonUser, Dashboard existingDashboard, Dashboard newDashboard) {
+        
+        //create list of existing widget ids and new widget ids
+        Set<Integer> existingWidgetIds = existingDashboard.getAllWidgets().stream().map(Widget::getId).collect(Collectors.toSet());
+        Set<Integer> newWidgetIds = newDashboard.getAllWidgets().stream().map(Widget::getId).collect(Collectors.toSet());
+
+        //find removed widgets and log the event
+        existingDashboard.getAllWidgets().stream()
+                         .filter(widget -> !newWidgetIds.remove(widget.getId()))
+                         .forEach(widget -> {
+                             dashboardEventLogService.widgetRemoved(yukonUser, widget.getType().toString(), newDashboard.getName());
+                         });
+        
+        //find added widgets and log the event
+        newDashboard.getAllWidgets().stream()
+                         .filter(widget -> !existingWidgetIds.remove(widget.getId()))
+                         .forEach(widget -> {
+                             System.out.println("widget added with id: " + widget.getId());
+                             dashboardEventLogService.widgetAdded(yukonUser, widget.getType().toString(), newDashboard.getName());
+                         });
+    }
+    
     @Override
     @Transactional
     public int create(DashboardBase dashboardBase) throws DuplicateException {
@@ -102,13 +147,17 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional
-    public int update(Dashboard dashboard) throws DuplicateException {
+    public int update(LiteYukonUser yukonUser, Dashboard dashboard) throws DuplicateException {
         ListMultimap<DashboardPageType, Integer> userPageMap = dashboardDao.getPageAssignmentToUserIdMap(dashboard.getDashboardId());
+        Dashboard existingDashboard = dashboardDao.getDashboard(dashboard.getDashboardId());
         dashboardDao.deleteDashboard(dashboard.getDashboardId());
         int dashboardId = create(dashboard);
         for (DashboardPageType type : userPageMap.keySet()) {
             dashboardDao.assignDashboard(userPageMap.get(type), type, dashboardId);
         }
+        
+        logWidgetsAddedOrRemoved(yukonUser, existingDashboard, dashboard);
+        
         return dashboardId;
     }
 
@@ -125,15 +174,22 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void delete(int dashboardId) {
+    public void delete(LiteYukonUser yukonUser, int dashboardId) {
+        String dashboardName = dashboardDao.getDashboard(dashboardId).getName();
         dashboardDao.deleteDashboard(dashboardId);
+        dashboardEventLogService.dashboardDeleted(yukonUser, dashboardName);
     }
 
     @Override
     public void setOwner(int userId, int dashboardId) {
         Dashboard dashboard = getDashboard(dashboardId);
-        dashboard.setOwner(userDao.getLiteYukonUser(userId));
-        update(dashboard);
+        LiteYukonUser oldOwner = dashboard.getOwner();
+        LiteYukonUser newOwner = userDao.getLiteYukonUser(userId);
+        dashboard.setOwner(newOwner);
+        if (oldOwner.getUserID() != newOwner.getUserID()) {
+            dashboardEventLogService.dashboardOwnerChanged(oldOwner, newOwner, dashboard.getName());
+        }
+        update(newOwner, dashboard);
     }
 
     @Override

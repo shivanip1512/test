@@ -13,6 +13,7 @@ public enum ArgEnum {
     contactName,
     controlAreaName,
     cron,
+    dashboardName,
     deviceConfig,
     deviceLabel,
     deviceGroup,
@@ -77,6 +78,7 @@ public enum ArgEnum {
     unsupportedCount,
     username, 
     warehouseName,
+    widgetType,
     workOrderNumber,
     ;
 }

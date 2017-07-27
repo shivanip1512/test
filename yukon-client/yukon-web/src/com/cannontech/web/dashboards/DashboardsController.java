@@ -139,11 +139,11 @@ public class DashboardsController {
         
         model.addAttribute("dashboards", searchResult);
     }
-    
+
     @RequestMapping("saveSettings")
     public String saveSettings(@ModelAttribute UserDashboardSettings settings, YukonUserContext userContext, FlashScope flash) {
         settings.getSettings().forEach(setting -> {
-            dashboardService.setDefault(Arrays.asList(userContext.getYukonUser().getUserID()), setting.getPageType(), setting.getDashboardId());
+            dashboardService.setDefault(userContext.getYukonUser(), Arrays.asList(userContext.getYukonUser().getUserID()), setting.getPageType(), setting.getDashboardId());
         });
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "saveSettings.success"));
         return "redirect:/dashboards/manage";
@@ -181,10 +181,10 @@ public class DashboardsController {
     @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
     public void assignUsers(@PathVariable int id, @RequestParam(value="users[]", required=false) Integer[] users, 
                               @RequestParam("pageType") String pageType, 
-                              FlashScope flash, HttpServletResponse resp) {
+                              FlashScope flash, HttpServletResponse resp, YukonUserContext userContext) {
         DashboardPageType dashboardType = DashboardPageType.valueOf(pageType);
         if (users != null) {
-            dashboardService.setDefault(Arrays.asList(users), dashboardType, id);
+            dashboardService.setDefault(userContext.getYukonUser(), Arrays.asList(users), dashboardType, id);
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "assignUsers.success"));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
@@ -193,9 +193,9 @@ public class DashboardsController {
     @RequestMapping(value="{id}/unassignUsers", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
     public void unassignUsers(@PathVariable int id, @RequestParam(value="users[]", required=false) Integer[] users, 
-                              FlashScope flash, HttpServletResponse resp) {
+                              FlashScope flash, HttpServletResponse resp, YukonUserContext userContext) {
         if (users != null) {
-            dashboardDao.unassignDashboardFromUsers(Arrays.asList(users), id);
+            dashboardService.unassignDashboardFromUsers(userContext.getYukonUser(), Arrays.asList(users), id);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unassignUsers.success"));
         }
         resp.setStatus(HttpStatus.NO_CONTENT.value());
@@ -379,7 +379,12 @@ public class DashboardsController {
             }
             dashboard.setOwner(userContext.getYukonUser());
             try {
-                int id = dashboardService.update(dashboard);
+                int id = dashboardService.update(userContext.getYukonUser(), dashboard);
+                dashboardService.logDetailsEdited(userContext.getYukonUser(),
+                                               existingDashboard.getName(),
+                                               existingDashboard.getDescription(),
+                                               dashboard.getName(),
+                                               dashboard.getDescription());
                 // Success
                 model.clear();
                 Map<String, Object> json = new HashMap<>();
@@ -404,7 +409,7 @@ public class DashboardsController {
         Dashboard existingDashboard = dashboardService.getDashboard(dashboard.getDashboardId());
         if (isDashboardOwner(userContext, existingDashboard)) {
             dashboard.setOwner(userContext.getYukonUser());
-            int id = dashboardService.update(dashboard);
+            int id = dashboardService.update(userContext.getYukonUser(), dashboard);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success"));
             return "redirect:/dashboards/" + id + "/view";
         } else {
@@ -422,7 +427,7 @@ public class DashboardsController {
         } else if (hasOtherUsers(userContext, id)) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboard.getName()));
         } else if (owner == null || isDashboardOwner(userContext, dashboard)) {
-            dashboardService.delete(id);
+            dashboardService.delete(userContext.getYukonUser(), id);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", dashboard.getName()));
         } else {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.notOwner", dashboard.getName()));

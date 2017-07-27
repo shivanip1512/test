@@ -123,4 +123,8 @@
     <bean id="infrastructureEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.InfrastructureEventLogService"/>
     </bean>
+    
+    <bean id="dashboardEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.DashboardEventLogService"/>
+    </bean>
 </beans>

@@ -48,7 +48,26 @@ public interface DashboardService {
     /**
      * Sets the default dashboard for the specified users and dashboard page type.
      */
-    void setDefault(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId);
+    void setDefault(LiteYukonUser yukonUser, Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId);
+    
+    /**
+     * Removes the users from the specified dashboard.
+     */
+    void unassignDashboardFromUsers(LiteYukonUser yukonUser, Iterable<Integer> userIds, int dashboardId);
+    
+    /**
+     * Tells the DashboardEventLogService which widgets have been added to the given dashboard.
+     */
+    void logWidgetsAddedOrRemoved(LiteYukonUser yukonUser, Dashboard existingDashboard, Dashboard newDashboard);
+    
+    /**
+     * Tells the DashboardEventLogService that the given dashboard's details have been edited
+     */
+    void logDetailsEdited(LiteYukonUser yukonUser,
+                       String oldName,
+                       String oldDescription,
+                       String newName,
+                       String newDescription);
     
     /**
      * @return The ID of the newly created dashboard.
@@ -58,7 +77,7 @@ public interface DashboardService {
     /**
      * @return The ID of the modified dashboard.
      */
-    int update(Dashboard dashboard);
+    int update(LiteYukonUser yukonUser, Dashboard dashboard);
     
     /**
      * Copy a dashboard, saving the new copy to the database with the specified owner.
@@ -72,7 +91,7 @@ public interface DashboardService {
      * Delete a dashboard.
      * @param userId TODO
      */
-    void delete(int dashboardId);
+    void delete(LiteYukonUser yukonUser, int dashboardId);
     
     /**
      * Get the user that owns the specified dashboard.
