@@ -513,11 +513,11 @@ yukon.tools.commander = (function () {
                     serialNumber = option.data('serialNumber'),
                     category = type === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL',
                     url = 'commander/type-commands?' + $.param({ type: category });
-                    $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
                 
                 if (type === _targetTypes.device) {
                     $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
                         commanderDevicePicker.select({ type: pao.paoType, paoId: paoId, paoName: pao.paoName });
+                        _updateCommandsForPao(paoId);
                         $('#target-device-btn').addClass('on').siblings().removeClass('on');
                         $('#device-row').show();
                         $('#serial-number-row').hide();
@@ -527,6 +527,7 @@ yukon.tools.commander = (function () {
                 } else if (type === _targetTypes.lmGroup) {
                     $.ajax({ url: yukon.url('/common/pao/' + paoId) }).done(function (pao) {
                         lmGroupPicker.select({ type: pao.paoType, paoId: paoId, paoName: pao.paoName });
+                        _updateCommandsForPao(paoId);
                         $('#target-lm-group-btn').addClass('on').siblings().removeClass('on');
                         $('#load-group-row').show();
                         $('#device-row').hide();
@@ -542,6 +543,7 @@ yukon.tools.commander = (function () {
                     $('#device-row').hide();
                     $('#serial-number-row').show();
                     $('#route-row').show();
+                    $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
                     $('.js-nearby-btn').addClass('dn');
                     $('#command-text').val('');
                 } else if (type === _targetTypes.vcom) {
@@ -552,6 +554,7 @@ yukon.tools.commander = (function () {
                     $('#device-row').hide();
                     $('#serial-number-row').show();
                     $('#route-row').show();
+                    $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
                     $('.js-nearby-btn').addClass('dn');
                     $('#command-text').val('');
                 }
