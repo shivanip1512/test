@@ -160,9 +160,9 @@ public class DeviceGroupUpdaterController {
                             errors.add(processingResultInfo.getError());
                             deviceCount = processingResultInfo.getDeviceCount();
                             if(!processingResultInfo.getUnknownDevices().isEmpty()){
-                                String error = "Unknown devices: "+StringUtils.join(processingResultInfo.getUnknownDevices(), ',');
+                                String error = processingResultInfo.getUnknownDevices().size() +" unknown devices.";
                                 errors.add(error);
-                                log.error(error);
+                                log.error("Unable to upload unknown devices: " + StringUtils.join(processingResultInfo.getUnknownDevices(), ','));
                             }
                         } else {
                             errors.add("File should contain at least one update column.");
