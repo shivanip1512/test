@@ -3591,9 +3591,9 @@ Returns true if a notifcation was sent.
 ----------------------------------------------------------------------------*/
 bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop)
 {
-    if (shouldNotifyWhenScheduled())
+    if ( shouldNotifyWhenScheduled() ) 
     {
-        if (_LM_DEBUG & LM_DEBUG_STANDARD)
+        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CTILOG_DEBUG(dout, "sending notification of scheduled program start. Program: " << getPAOName());
         }
