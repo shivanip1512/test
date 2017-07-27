@@ -43,6 +43,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -78,6 +80,7 @@ public class YukonSecurityController {
     @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private HoneywellSecurityService honeywellSecurityService;
+    @Autowired private ConfigurationSource configurationSource;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -215,14 +218,22 @@ public class YukonSecurityController {
                 invalidKeyFound = invalidKeyFound || !isValid;
             }
 
-            // Extract Honeywell key
-
-            EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
-            if (honeywellEncryptionKey != null) {
-                String decryptedPublicKeyValue = new String(aes.decryptHexStr(honeywellEncryptionKey.getPublicKey()));
-                model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
+            // Extract Honeywell key if Honeywell is Eanble
+            boolean honeywellEnabled =
+                configurationSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false);
+            if (honeywellEnabled) {
+                EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
+                if (honeywellEncryptionKey != null) {
+                    try {
+                        String decryptedPublicKeyValue =
+                            new String(aes.decryptHexStr(honeywellEncryptionKey.getPublicKey()));
+                        model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
+                    } catch (CryptoException | DecoderException e) {
+                        flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".honeywellKeyDecryptionFailed",
+                            e.getMessage()));
+                    }
+                }
             }
-            
 
         } catch (Exception e) {
             for (EncryptionKey key : encryptionKeys) {
