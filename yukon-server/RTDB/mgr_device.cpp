@@ -435,7 +435,7 @@ auto CtiDeviceManager::getDeviceByRfnIdentifier(const RfnIdentifier& rfnId) -> p
 
     rdr << rfnId.serialNumber << rfnId.manufacturer << rfnId.model;
 
-    rdr.executeCommand();
+    Cti::Database::executeCommand(rdr, __FILE__, __LINE__);
 
     if( rdr() )
     {

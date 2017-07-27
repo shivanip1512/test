@@ -19,6 +19,9 @@ private:
 
     SACommand _command;
 
+    //  Private since no one calls it
+    void executeWithDatabaseException();
+
 public:
 
     DatabaseReader(Cti::Database::DatabaseConnection &conn, const std::string &command = "");
@@ -28,7 +31,6 @@ public:
     bool isValid();
     bool execute();
     bool executeWithRetries();
-    void executeCommand();
 
     // Checks if the current index is null.
     // For example: rdr["test"].isNull();
@@ -82,7 +84,7 @@ public:
         {
             *this << element;
         }
-        //  If we're feeding in a bunch of IDs, we'll probably be reading back a bunch of rows, so prefetch at least 10 at a time.
+        //  If we're feeding in a bunch of IDs, we'll probably be reading back a bunch of rows, so prefetch at least 100 at a time.
         setPrefetch();
         return *this;
     }
@@ -94,7 +96,7 @@ public:
         {
             *this << element;
         }
-        //  If we're feeding in a bunch of IDs, we'll probably be reading back a bunch of rows, so prefetch at least 10 at a time.
+        //  If we're feeding in a bunch of IDs, we'll probably be reading back a bunch of rows, so prefetch at least 100 at a time.
         setPrefetch();
         return *this;
     }

@@ -64,10 +64,10 @@ bool DatabaseReader::executeWithRetries()
     {
         try
         {
-            executeCommand();
+            executeWithDatabaseException();
             return true;
         }
-        catch(SAException &x)
+        catch(DatabaseException &x)
         {
             retries--;
 
@@ -88,7 +88,7 @@ bool DatabaseReader::executeWithRetries()
 
 }
 
-void DatabaseReader::executeCommand()
+void DatabaseReader::executeWithDatabaseException()
 {
     _executeCalled = true;
     try
@@ -107,7 +107,7 @@ bool DatabaseReader::execute()
 {
     try
     {
-        executeCommand();
+        executeWithDatabaseException();
         return true;
     }
     catch(DatabaseException &x)
