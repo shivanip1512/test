@@ -3591,14 +3591,14 @@ Returns true if a notifcation was sent.
 ----------------------------------------------------------------------------*/
 bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop)
 {
-    if ( shouldNotifyWhenScheduled() ) 
+    if (shouldNotifyWhenScheduled())
     {
-        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+        if (_LM_DEBUG & LM_DEBUG_STANDARD)
         {
             CTILOG_DEBUG(dout, "sending notification of scheduled program start. Program: " << getPAOName());
         }
 
-		auto multiNotifMsg = std::make_unique<CtiMultiMsg>();
+        auto multiNotifMsg = std::make_unique<CtiMultiMsg>();
         auto notif_msg = std::make_unique<CtiNotifLMControlMsg>(_notificationgroupids, CtiNotifLMControlMsg::SCHEDULING, getPAOId(), start, stop);
         multiNotifMsg->insert(notif_msg.release());
 
@@ -3607,7 +3607,9 @@ bool CtiLMProgramDirect::notifyGroupsOfSchedule(const CtiTime &start, const CtiT
         return true;
     }
     else
+    {
         return false;
+    }
 }
 
 BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
