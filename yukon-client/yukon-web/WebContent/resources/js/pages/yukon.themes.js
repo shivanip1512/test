@@ -220,6 +220,7 @@ yukon.themes = (function () {
             uploadForm.fileupload({
                 dataType: 'text',
                 start: function (e) {
+                    $("#image-upload-error").addClass("dn");
                     var bar = uploadForm.find('input').next();
                     if (typeof bar !== 'undefined') {
                         $(bar).progressbar({max:100, value: 0});
@@ -233,7 +234,8 @@ yukon.themes = (function () {
                     uploadForm.find('label.uploadLabel').css('display', 'none');
                     if (data.result.status === 'success') {
                         uploadArea = uploadForm.find('input').closest('.section');
-                        copy = uploadArea.next().clone();
+                        copy = $("#template-row").clone();
+                        copy.removeAttr('id');
 
                         uploadArea.closest('.image-picker').find('.image.selected').removeClass('selected');
                         copy.find('.image').addClass('selected').attr('data-image-id', data.result.image.id);
@@ -242,17 +244,21 @@ yukon.themes = (function () {
                         copy.find('.js-size-value').text(data.result.image.size);
                         copy.find('.simple-input-image img').attr('alt', data.result.image.name);
                         copy.find('.simple-input-image img').attr('src', yukon.url('/common/images/') + data.result.image.id + '/thumb');
+                        copy.removeClass('dn');
 
                         copy.insertAfter(uploadArea);
-                    } else {/* ignore for now */}
+                    } else { 
+                        $("#image-upload-error").text(data.result.message);
+                        $("#image-upload-error").removeClass("dn");
+                        $("div.upload-percent.fr").text("");
+                    }
                 },
                 progressall: function (e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10),
                         button = uploadForm.find('input'),
-                        bar = $(button.next()),
-                        percent = $(bar.next());
+                        bar = $(button.next());
                     bar.progressbar("value", progress);
-                    percent.text(progress + "%");
+                    $("div.upload-percent.fr").text(progress + "%");
                 }
             });
             uploadForm.fileupload('option', 'formData', {'category': category, 'com.cannontech.yukon.request.csrf.token': token});

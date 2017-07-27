@@ -228,20 +228,21 @@ public class YukonImageController {
         
         try {
             rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_SUPER_USER, userContext.getYukonUser());
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             
             boolean isMultipart = ServletFileUpload.isMultipartContent(req);
             if (!isMultipart) {
-                throw new IllegalArgumentException("not multipart file");
+                throw new IllegalArgumentException(accessor.getMessage(keyBase + "error.notMultipartRequest"));
             }
             
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) req;
             MultipartFile file = mRequest.getFile("file");
             if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
-                throw new IllegalArgumentException("Blank file.");
+                throw new IllegalArgumentException(accessor.getMessage(keyBase + "error.blankFile"));
             }
             
             if(!file.getContentType().startsWith("image")) {
-                throw new IllegalArgumentException("Only image files are valid.");
+                throw new IllegalArgumentException(accessor.getMessage(keyBase + "error.invalidFileType"));
             }
             InputStream inputStream = file.getInputStream();
             LiteYukonImage image = imageDao.add(category, file.getOriginalFilename(), new InputStreamResource(inputStream));
@@ -250,7 +251,6 @@ public class YukonImageController {
             imageStats.put("name", image.getImageName());
             imageStats.put("category", image.getImageCategory());
             
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String size = accessor.getMessage("yukon.common.prefixedByteValue.kibi", image.getImageValue().length * .001);
             imageStats.put("size", size);
             json.put("image", imageStats);
