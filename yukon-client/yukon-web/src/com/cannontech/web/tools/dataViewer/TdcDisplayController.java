@@ -181,7 +181,7 @@ public class TdcDisplayController {
         backingBean.setPointId(pointId);
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("enableDisable", EnabledStatus.values());
-        int tags = asyncDynamicDataSource.getTags(pointId);
+        long tags = asyncDynamicDataSource.getTags(pointId);
 
         if (TagUtils.isDeviceOutOfService(tags)) {
             backingBean.setDeviceEnabledStatus(EnabledStatus.DISABLED);
@@ -201,7 +201,7 @@ public class TdcDisplayController {
     public @ResponseBody Map<String, String> enableDisableSend(YukonUserContext userContext,
                                  @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
 
-        int tags = asyncDynamicDataSource.getTags(backingBean.getPointId());
+        long tags = asyncDynamicDataSource.getTags(backingBean.getPointId());
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
         int deviceId = liteYukonPAO.getPaoIdentifier().getPaoId();
@@ -520,8 +520,8 @@ public class TdcDisplayController {
                 return tag.getInstanceID();
             }
         });
-        List<Tag> tagsToCreate = new ArrayList<Tag>();
-        List<Tag> tagsToUpdate = new ArrayList<Tag>();
+        List<Tag> tagsToCreate = new ArrayList<>();
+        List<Tag> tagsToUpdate = new ArrayList<>();
 
         for (Tag tag : backingBean.getTags()) {
             if (tag.getInstanceID() == 0) {

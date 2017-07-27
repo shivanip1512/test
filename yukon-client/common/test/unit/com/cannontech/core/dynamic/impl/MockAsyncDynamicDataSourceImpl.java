@@ -20,6 +20,7 @@ import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.core.dynamic.SignalListener;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.cache.DBChangeListener;
@@ -171,16 +172,6 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     }
 
     @Override
-    public Set<Integer> getTags(Set<Integer> pointIds) {
-        throw new MethodNotImplementedException();  
-    }
-
-    @Override
-    public Integer getTags(int pointId) {
-        throw new MethodNotImplementedException();  
-    }
-
-    @Override
     public PointValueQualityHolder getPointValue(int pointId) {
         throw new MethodNotImplementedException();  
     }
@@ -212,6 +203,21 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
 
     @Override
     public void logListenerInfo(int pointId) {
+        throw new MethodNotImplementedException(); 
+    }
+
+    @Override
+    public Set<? extends PointValueQualityTagHolder> getPointValuesAndTags(Set<Integer> pointIds) {
+        throw new MethodNotImplementedException(); 
+    }
+
+    @Override
+    public long getTags(int pointId) {
+        throw new MethodNotImplementedException(); 
+    }
+
+    @Override
+    public PointValueQualityTagHolder getPointValueAndTags(int pointId) {
         throw new MethodNotImplementedException(); 
     }
 }

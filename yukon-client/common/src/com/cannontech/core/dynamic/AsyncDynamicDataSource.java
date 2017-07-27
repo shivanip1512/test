@@ -121,10 +121,12 @@ public interface AsyncDynamicDataSource {
     void putValues(Iterable<PointData> pointDatas);
 
     Set<? extends PointValueQualityHolder> getPointValues(Set<Integer> pointIds);
+    
+    Set<? extends PointValueQualityTagHolder> getPointValuesAndTags(Set<Integer> pointIds);
 
-    Set<Integer> getTags(Set<Integer> pointIds);
-
-    Integer getTags(int pointId);
+    PointValueQualityTagHolder getPointValueAndTags(int pointId);
+    
+    long getTags(int pointId);
 
     PointValueQualityHolder getPointValue(int pointId);
 

@@ -47,6 +47,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -137,10 +138,10 @@ public class TdcServiceImpl implements TdcService {
         
     @Override
     public void sendPointData(int pointId, double value, LiteYukonUser user){
-        PointValueQualityHolder pd = asyncDynamicDataSource.getPointValue(pointId);
+        PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointData data  = new PointData();
         data.setId(pointId);
-        data.setTags(asyncDynamicDataSource.getTags(pointId));
+        data.setTags(pd.getTags());
         data.setTimeStamp(new java.util.Date());
         data.setTime(new java.util.Date());
         data.setType(pd.getType());
@@ -187,7 +188,7 @@ public class TdcServiceImpl implements TdcService {
 
     @Override
     public String getPointState(int pointId) {
-        int tags = asyncDynamicDataSource.getTags(pointId);
+        int tags = (int) asyncDynamicDataSource.getTags(pointId);
         return TagUtils.getTagString(tags);
     }
 
@@ -443,7 +444,7 @@ public class TdcServiceImpl implements TdcService {
     public boolean isManualControlEnabled(int pointId){
         PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         if(pointValue.getPointType() == PointType.Analog || pointValue.getPointType() == PointType.Status){
-            int tags = asyncDynamicDataSource.getTags(pointId);
+            long tags = asyncDynamicDataSource.getTags(pointId);
             return TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags);
         }
         return false;
@@ -454,9 +455,9 @@ public class TdcServiceImpl implements TdcService {
         if(!hasPointValueColumn){
             return false;
         }
-        int tags = asyncDynamicDataSource.getTags(pointId);
+        PointValueQualityTagHolder pointValue = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointType type = PointType.getForId(pointTypeId);
-        boolean inService = !TagUtils.isDeviceOutOfService(tags) && !TagUtils.isPointOutOfService(tags);
+        boolean inService = !TagUtils.isDeviceOutOfService(pointValue.getTags()) && !TagUtils.isPointOutOfService(pointValue.getTags());
         boolean isValidTypeForManualEntry = inService &&
                 (type == PointType.Analog
                     || type == PointType.PulseAccumulator
@@ -464,7 +465,6 @@ public class TdcServiceImpl implements TdcService {
                     || type == PointType.CalcAnalog
                     || type == PointType.Status
                     || type == PointType.CalcStatus);
-        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         return isValidTypeForManualEntry && pointValue.getPointQuality() != PointQuality.Constant;
     }
        

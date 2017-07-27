@@ -6,11 +6,11 @@ import org.joda.time.Instant;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.point.PointType;
 
-public class LitePointData extends LiteBase implements PointValueQualityHolder {
+public class LitePointData extends LiteBase implements PointValueQualityTagHolder {
     private int id;
     private int type;
     private PointQuality pointQuality;
@@ -29,30 +29,37 @@ public class LitePointData extends LiteBase implements PointValueQualityHolder {
         return lpd;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public Date getPointDataTimeStamp() {
         return time;
     }
 
+    @Override
     public PointQuality getPointQuality() {
         return pointQuality;
     }
 
+    @Override
     public long getTags() {
         return tags;
     }
 
+    @Override
     public int getType() {
         return type;
     }
 
+    @Override
     public PointType getPointType() {
         return PointType.getForId(type);
     }
 
+    @Override
     public double getValue() {
         return value;
     }
@@ -98,28 +105,38 @@ public class LitePointData extends LiteBase implements PointValueQualityHolder {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        }
+        if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         LitePointData other = (LitePointData) obj;
-        if (id != other.id)
+        if (id != other.id) {
             return false;
-        if (pointQuality != other.pointQuality)
+        }
+        if (pointQuality != other.pointQuality) {
             return false;
-        if (tags != other.tags)
+        }
+        if (tags != other.tags) {
             return false;
+        }
         if (time == null) {
-            if (other.time != null)
+            if (other.time != null) {
                 return false;
-        } else if (!time.equals(other.time))
+            }
+        } else if (!time.equals(other.time)) {
             return false;
-        if (type != other.type)
+        }
+        if (type != other.type) {
             return false;
-        if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value))
+        }
+        if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value)) {
             return false;
+        }
         return true;
     }
 
