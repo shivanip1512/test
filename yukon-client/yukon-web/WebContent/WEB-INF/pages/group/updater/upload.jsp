@@ -26,14 +26,14 @@
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
-<c:choose>
-<c:when test="${not empty error}">
-    <div class="error">${fn:escapeXml(error)}</div>
-</c:when>
-<c:when test="${success}">
-    <div class="success"><i:inline key=".success" arguments="${deviceCount}"/></div>
-</c:when>
-</c:choose>
+<c:if test="${deviceCount > 0}">
+	<div class="success"><i:inline key=".success" arguments="${deviceCount}"/></div>
+</c:if>
+
+<c:if test="${not empty error}">
+    <div class="error">${error}</div>
+</c:if>
+
 
 <cti:msg2 key=".createGroups" var="createGroups"/>
 <tags:simplePopup id="createGroupsOptionInfoPopup" title="${createGroups}" on="#help_icon" options="{width: 600}">
@@ -51,7 +51,8 @@
                         <label><input type="checkbox" name="createGroups" class="fl"><span class="fl"><i:inline key=".autoCreate"/></span></label><cti:icon icon="icon-help" id="help_icon" classes="cp"/>
                     </tags:nameValue2>
                     <tags:nameValue2 excludeColon="true" nameKey="yukon.common.blank">
-                        <label><input type="checkbox" name="ignoreInvalidHeaders" class="fl"<c:if test="${ignoreInvalidHeaders}">checked</c:if>><cti:msg key="yukon.common.device.bulk.options.update.ignoreInvalidHeaders"/></label>
+                        <div><label><input type="checkbox" name="ignoreInvalidHeaders" <c:if test="${ignoreInvalidHeaders}">checked</c:if>><cti:msg key="yukon.common.device.bulk.options.update.ignoreInvalidHeaders"/></label></div>
+                        <div><label><input type="checkbox" name="ignoreInvalidIdentifiers"  <c:if test="${ignoreInvalidIdentifiers}">checked</c:if>><cti:msg key="yukon.common.device.bulk.options.update.ignoreInvalidIdentifiers"/></label></div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">

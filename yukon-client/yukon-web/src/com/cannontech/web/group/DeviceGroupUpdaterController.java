@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -64,6 +65,8 @@ public class DeviceGroupUpdaterController {
         int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
         Boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidHeaders", true);
         model.addAttribute("ignoreInvalidHeaders", ignoreInvalidHeaders);
+        boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", true); 
+        model.addAttribute("ignoreInvalidIdentifiers", ignoreInvalidIdentifiers);
         
         model.addAttribute("error", error);
         model.addAttribute("success", success);
@@ -75,7 +78,8 @@ public class DeviceGroupUpdaterController {
 
         boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);
         boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidHeaders", false);
-        String error = null;
+        boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", false); 
+        Set<String> errors = new HashSet<>();
         int deviceCount = 0;
         
         MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
@@ -83,12 +87,12 @@ public class DeviceGroupUpdaterController {
         
         // get file from request
         if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-            error = "No file selected.";
+            errors.add("No file selected.");
         } else {
             InputStream inputStream = dataFile.getInputStream();
             
             if (inputStream.available() <= 0) {
-                error = "File is empty.";
+                errors.add("File is empty.");
             } else {
                 BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
                         ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
@@ -99,7 +103,7 @@ public class DeviceGroupUpdaterController {
                 String[] headerRow = csvReader.readNext();
                 
                 if (headerRow.length < 2) {
-                    error = "File header should contain an Identifier column and at least one action column.";
+                    errors.add("File header should contain an Identifier column and at least one action column.");
                 } else {
                 
                     BulkField<?, SimpleDevice> identifierBulkField = null;
@@ -122,7 +126,7 @@ public class DeviceGroupUpdaterController {
                         // processors
                         DeviceGroupProcessorFactory deviceGroupProcessorFactory = new DeviceGroupProcessorFactory();
                         
-                        List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<BulkFieldProcessor<SimpleDevice, String>>();
+                        List<BulkFieldProcessor<SimpleDevice, String>> processors = new ArrayList<>();
                         Boolean[] isInvalidColumnByIndex = new Boolean[headerRow.length];
                         for (int columnIdx = 1; columnIdx < headerRow.length; columnIdx++) {
                             isInvalidColumnByIndex[columnIdx] = false; // All columns by default marked,
@@ -152,32 +156,40 @@ public class DeviceGroupUpdaterController {
                         if (processors.size() != 0) {
                             // process rows
                             ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, 
-                                processors, isInvalidColumnByIndex);
-                            error = processingResultInfo.getError();
+                                processors, isInvalidColumnByIndex, ignoreInvalidIdentifiers);
+                            errors.add(processingResultInfo.getError());
                             deviceCount = processingResultInfo.getDeviceCount();
+                            if(!processingResultInfo.getUnknownDevices().isEmpty()){
+                                String error = "Unknown devices: "+StringUtils.join(processingResultInfo.getUnknownDevices(), ',');
+                                errors.add(error);
+                                log.error(error);
+                            }
                         } else {
-                            error = "File should contain at least one update column.";
+                            errors.add("File should contain at least one update column.");
                         }
                     } catch (InvalidIndentifierException e) {
                         Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
-                        error = "Error (line 1): Invalid identifier type: " + e.getIdentifier() + ". Valid identifier types are: " + StringUtils.join(identifierFields, " ,");
+                        String error = "Error (line 1): Invalid identifier type: " + e.getIdentifier() + ". Valid identifier types are: " + StringUtils.join(identifierFields, " ,");
+                        errors.add(error);
                         log.error(error, e);
                     } catch (IllegalArgumentException e) {
-                        error = "Error (line 1): Invalid header type: " + columnType + ". Valid header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
+                        String error = "Error (line 1): Invalid header type: " + columnType + ". Valid header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
+                        errors.add(error);
                         log.error(error, e);
                     } catch (IndexOutOfBoundsException e) {
-                        error = "Error (line 1): Invalid header syntax.";
+                        String error = "Error (line 1): Invalid header syntax.";
+                        errors.add(error);
                         log.error(error, e);
                     } catch (NotFoundException e) {
-                        error = "Error (line 1): " + e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
+                        String error = "Error (line 1): " + e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
+                        errors.add(error);
                         log.error(error, e);
                     } 
                 }
             }
         }
         
-        model.addAttribute("error", error);
-        model.addAttribute("success", error == null);
+        model.addAttribute("error", StringUtils.join(errors, "<br/>"));
         model.addAttribute("deviceCount", deviceCount);
         
         return "redirect:upload";
@@ -193,9 +205,10 @@ public class DeviceGroupUpdaterController {
         }
     }
     
-    private ProcessingResultInfo runProcessing(final CSVReader csvReader, final BulkField<?, SimpleDevice> identifierBulkField, final List<BulkFieldProcessor<SimpleDevice, String>> processors, Boolean[] isInvalidColumnByIndex) {
+    private ProcessingResultInfo runProcessing(final CSVReader csvReader, final BulkField<?, SimpleDevice> identifierBulkField, final List<BulkFieldProcessor<SimpleDevice, String>> processors, Boolean[] isInvalidColumnByIndex, boolean ignoreInvalidIdentifiers) {
         
         ProcessingResultInfo processingResultInfo = transactionTemplate.execute(new TransactionCallback<ProcessingResultInfo>() {
+            @Override
             public ProcessingResultInfo doInTransaction(TransactionStatus status) {
                 
                 String processError = null;
@@ -203,21 +216,35 @@ public class DeviceGroupUpdaterController {
                 String currentIdentifier = "";
                 String currentColumnValue = "";
                 int deviceCount = 0;
+                List<String> unknownDevices = new ArrayList<>();
                 String [] line = null;
                 try {
                     while ((line = csvReader.readNext()) != null) {
                         currentIdentifier = StringUtils.trim(line[0]);
-                        SimpleDevice device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
+                        SimpleDevice device = null;
+                        try {
+                            device = bulkFieldService.getYukonDeviceForIdentifier(identifierBulkField, currentIdentifier);
+                        } catch (ObjectMappingException e) {
+                           if(!ignoreInvalidIdentifiers){
+                               throw e;
+                           }
+                        }
                         int idx = 1;
                         for (BulkFieldProcessor<SimpleDevice, String> processor : processors) {
                             while (isInvalidColumnByIndex[idx]) {
                                 idx++;
                             }
                             currentColumnValue = line[idx++].trim();
-                            processor.updateField(device, currentColumnValue);
+                            if (device != null) {
+                                processor.updateField(device, currentColumnValue);
+                            }
                         }
                         currentLineNumber++;
-                        deviceCount++;
+                        if (device != null) {
+                            deviceCount++;
+                        } else {
+                            unknownDevices.add(currentIdentifier);
+                        }
                     }
                 } catch (IOException e) {
                     status.setRollbackOnly();
@@ -245,7 +272,7 @@ public class DeviceGroupUpdaterController {
                     } catch (IOException e){}
                 }
                 
-                return new ProcessingResultInfo(processError, deviceCount);
+                return new ProcessingResultInfo(processError, deviceCount, unknownDevices);
             }
         });
         
@@ -256,10 +283,12 @@ public class DeviceGroupUpdaterController {
         
         private String error = null;
         private int deviceCount = 0;
+        private List<String> unknownDevices = new ArrayList<>();
         
-        ProcessingResultInfo(String error, int deviceCount) {
+        ProcessingResultInfo(String error, int deviceCount,  List<String> unknownDevices) {
             this.error = error;
             this.deviceCount = deviceCount;
+            this.unknownDevices = unknownDevices;
         }
         
         public String getError() {
@@ -268,6 +297,11 @@ public class DeviceGroupUpdaterController {
         public int getDeviceCount() {
             return deviceCount;
         }
+
+        public List<String> getUnknownDevices() {
+            return unknownDevices;
+        }
+
     }
     
     /** PREFIX PROCESSOR */
