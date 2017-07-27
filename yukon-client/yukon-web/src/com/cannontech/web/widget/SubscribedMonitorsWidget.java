@@ -2,10 +2,15 @@ package com.cannontech.web.widget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
@@ -13,14 +18,15 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
+import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.search.result.UltraLightMonitor;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
-import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.search.searcher.MonitorLuceneSearcher;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Lists;
+import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 
 @Controller
@@ -34,6 +40,8 @@ import com.google.common.collect.Lists;
     })
 public class SubscribedMonitorsWidget extends AllMonitorsWidget {
 
+    @Autowired private MonitorLuceneSearcher monitorLuceneSearcher;
+
     public SubscribedMonitorsWidget() {
     }
     
@@ -43,12 +51,18 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         super(roleAndPropertyDescriptionService);
     }
 
-    @Autowired private UserSubscriptionDao userSubscriptionDao;
-
-    protected void putMonitorsInModel(ModelMap model, YukonUserContext context) {
-        List<UserSubscription> subscribed = 
-            Lists.newArrayList(userSubscriptionDao.getSubscriptionsForUser(context.getYukonUser()));
-
+    @Override
+    protected void putMonitorsInModel(ModelMap model, HttpServletRequest request) {
+        List<Integer> monitorIds = new ArrayList<Integer>();
+        try {
+            Pattern pattern = Pattern.compile(",");
+            monitorIds = pattern.splitAsStream(WidgetParameterHelper.getStringParameter(request, "selectMonitors"))
+                    .map(Integer::valueOf)
+                    .collect(Collectors.toList());
+        } catch (ServletRequestBindingException e) {
+            e.printStackTrace();
+        }
+        
         List<DeviceDataMonitor> deviceDataMonitors = new ArrayList<>();
         List<OutageMonitor> outageMonitors = new ArrayList<>();
         List<TamperFlagMonitor> tamperFlagMonitors = new ArrayList<>();
@@ -56,29 +70,32 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         List<PorterResponseMonitor> porterResponseMonitors = new ArrayList<>();
         List<ValidationMonitor> validationMonitors = new ArrayList<>();
 
-        for (UserSubscription monitor : subscribed) {
-            switch (monitor.getType()) {
-            case DEVICE_DATA_MONITOR:
-                deviceDataMonitors.add(deviceDataMonitorDao.getMonitorById(monitor.getRefId()));
+        SearchResults<UltraLightMonitor> sr = monitorLuceneSearcher.all(null, 0, Integer.MAX_VALUE);
+        for(UltraLightMonitor monitor: sr.getResultList()) {
+            if (monitorIds.contains(monitor.getId())) {
+                switch (monitor.getType()) {
+                case "Device Data":
+                    deviceDataMonitors.add(deviceDataMonitorDao.getMonitorById(monitor.getSubId()));
+                    break;
+                case "Outage":
+                    outageMonitors.add(outageMonitorDao.getById(monitor.getSubId()));
+                    break;
+                case "Tamper Flag":
+                    tamperFlagMonitors.add(tamperFlagMonitorDao.getById(monitor.getSubId()));
+                    break;
+                case "Status Point":
+                    statusPointMonitors.add(statusPointMonitorDao.getStatusPointMonitorById(monitor.getSubId()));
+                    break;
+                case "Porter Response":
+                    porterResponseMonitors.add(porterResponseMonitorDao.getMonitorById(monitor.getSubId()));
+                    break;
+                case "Validation":
+                    validationMonitors.add(validationMonitorDao.getById(monitor.getSubId()));
+                    break;
+                default:
+                    //Non-monitor subscription
                 break;
-            case OUTAGE_MONITOR:
-                outageMonitors.add(outageMonitorDao.getById(monitor.getRefId()));
-                break;
-            case TAMPER_FLAG_MONITOR:
-                tamperFlagMonitors.add(tamperFlagMonitorDao.getById(monitor.getRefId()));
-                break;
-            case STATUS_POINT_MONITOR:
-                statusPointMonitors.add(statusPointMonitorDao.getStatusPointMonitorById(monitor.getRefId()));
-                break;
-            case PORTER_RESPONSE_MONITOR:
-                porterResponseMonitors.add(porterResponseMonitorDao.getMonitorById(monitor.getRefId()));
-                break;
-            case VALIDATION_MONITOR:
-                validationMonitors.add(validationMonitorDao.getById(monitor.getRefId()));
-                break;
-            default:
-                //Non-monitor subscription
-                break;
+                }
             }
         }
 

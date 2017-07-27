@@ -6,14 +6,8 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<script type="text/javascript">
-    $(function() {
-        yukon.favorites.initSubscribe();
-    });
-</script>
 
 <style type="text/css">
-    .monitor-subs th.subscribe {width: 5%;}
     .monitor-subs th.name {width: 45%;}
     .monitor-subs th.data {width: 20%;}
     .monitor-subs th.monitoring {width: 25%;}
@@ -28,7 +22,6 @@
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th class="subscribe">&nbsp;</th>
                 <th class="name"><i:inline key=".name"/></th>
                 <th class="data tar"><i:inline key=".violations"/></th>
                 <th class="monitoring tar"><i:inline key=".monitoring"/></th>
@@ -38,20 +31,8 @@
         <tfoot></tfoot>
         <tbody>
             <c:forEach var="monitor" items="${deviceDataMonitors}">
-                <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitor.name)}"/>
 
                 <tr class="monitor" data-removed-text="${removedText}">
-                    <td>
-                        <c:set var="buttonClasses" value="" />
-                        <c:set var="iconClasses" value="disabled cp" />
-                        <c:if test="${isSubscribedWidget}">
-                            <c:set var="iconClasses" value="" />
-                            <c:set var="buttonClasses" value="remove" />
-                        </c:if>
-
-                        <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                            data-subscription-type="DEVICE_DATA_MONITOR" data-ref-id="${monitor.id}" />
-                    </td>
                     <%-- monitor name --%>
                     <td>
 
@@ -89,7 +70,6 @@
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th class="subscribe">&nbsp;</th>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
                 <th class="data tar"><i:inline key=".tableHeader.violations"/></th>
                 <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
@@ -101,20 +81,8 @@
             <c:forEach var="monitor" items="${outageMonitors}">
                 <c:set var="monitorId" value="${monitor.outageMonitorId}"/>
                 <c:set var="monitorName" value="${monitor.outageMonitorName}"/>
-                <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
                 <tr class="monitor" data-removed-text="${removedText}">
-                    <td>
-                        <c:set var="buttonClasses" value="" />
-                        <c:set var="iconClasses" value="disabled cp" />
-                        <c:if test="${isSubscribedWidget}">
-                            <c:set var="iconClasses" value="" />
-                            <c:set var="buttonClasses" value="remove" />
-                        </c:if>
-
-                        <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                            data-name="${fn:escapeXml(monitorName)}" data-subscription-type="OUTAGE_MONITOR" data-ref-id="${monitorId}"/>
-                    </td>
                     <%-- monitor name --%>
                     <td>
 
@@ -156,7 +124,6 @@
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th class="subscribe">&nbsp;</th>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
                 <th class="data tar"><i:inline key=".tableHeader.violations"/></th>
                 <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
@@ -168,20 +135,8 @@
             <c:forEach var="monitor" items="${tamperFlagMonitors}">
                 <c:set var="monitorId" value="${monitor.tamperFlagMonitorId}"/>
                 <c:set var="monitorName" value="${monitor.tamperFlagMonitorName}"/>
-                <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
                 <tr class="monitor" data-removed-text="${removedText}">
-                    <td>
-                        <c:set var="buttonClasses" value="" />
-                        <c:set var="iconClasses" value="disabled cp" />
-                        <c:if test="${isSubscribedWidget}">
-                            <c:set var="iconClasses" value="" />
-                            <c:set var="buttonClasses" value="remove" />
-                        </c:if>
-
-                        <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                            data-name="${fn:escapeXml(monitorName)}" data-subscription-type="TAMPER_FLAG_MONITOR" data-ref-id="${monitorId}"/>
-                    </td>
 
                     <%-- monitor name --%>
                     <td>
@@ -223,7 +178,6 @@
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th class="subscribe">&nbsp;</th>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
                 <th class="data">&nbsp;</th>
                 <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
@@ -235,20 +189,8 @@
         <c:forEach var="monitor" items="${statusPointMonitors}">
             <c:set var="monitorId" value="${monitor.statusPointMonitorId}"/>
             <c:set var="monitorName" value="${monitor.statusPointMonitorName}"/>
-            <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
             <tr class="monitor" data-removed-text="${removedText}">
-                <td>
-                    <c:set var="buttonClasses" value="" />
-                    <c:set var="iconClasses" value="disabled cp" />
-                    <c:if test="${isSubscribedWidget}">
-                        <c:set var="iconClasses" value="" />
-                        <c:set var="buttonClasses" value="remove" />
-                    </c:if>
-
-                    <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                        data-name="${fn:escapeXml(monitorName)}" data-subscription-type="STATUS_POINT_MONITOR" data-ref-id="${monitorId}"/>
-                </td>
                 <%-- monitor name --%>
                 <td colspan="2">
 
@@ -286,7 +228,6 @@
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th class="subscribe">&nbsp;</th>
                 <th class="name"><i:inline key=".name"/></th>
                 <th class="data">&nbsp;</th>
                 <th class="monitoring">&nbsp;</th>
@@ -296,20 +237,8 @@
         <tfoot></tfoot>
         <tbody>
         <c:forEach var="monitor" items="${porterResponseMonitors}">
-            <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitor.name)}"/>
 
             <tr class="monitor" data-removed-text="${removedText}">
-                <td>
-                    <c:set var="buttonClasses" value="" />
-                    <c:set var="iconClasses" value="disabled cp" />
-                    <c:if test="${isSubscribedWidget}">
-                        <c:set var="iconClasses" value="" />
-                        <c:set var="buttonClasses" value="remove" />
-                    </c:if>
-
-                    <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                        data-name="${fn:escapeXml(monitor.name)}" data-subscription-Type="PORTER_RESPONSE_MONITOR" data-ref-id="${monitor.monitorId}"/>
-                </td>
                 <%-- monitor name --%>
                 <td colspan="3">
 
@@ -341,7 +270,6 @@
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
-                <th class="subscribe">&nbsp;</th>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
                 <th class="data tar"><i:inline key=".tableHeader.threshold"/></th>
                 <th class="monitoring tar"><i:inline key=".tableHeader.monitoring"/></th>
@@ -353,19 +281,8 @@
         <c:forEach var="monitor" items="${validationMonitors}">
             <c:set var="monitorId" value="${monitor.validationMonitorId}"/>
             <c:set var="monitorName" value="${monitor.name}"/>
-            <cti:msg2 var="removedText" key="widgetClasses.SubscribedMonitorsWidget.subscription.removed" argument="${fn:escapeXml(monitorName)}"/>
 
             <tr class="monitor" data-removed-text="${removedText}">
-                <td>
-                    <c:set var="buttonClasses" value="" />
-                    <c:set var="iconClasses" value="disabled cp" />
-                    <c:if test="${isSubscribedWidget}">
-                        <c:set var="iconClasses" value="" />
-                        <c:set var="buttonClasses" value="remove" />
-                    </c:if>
-                    <cti:button classes="hover-actions b-subscribe ${buttonClasses}" nameKey="subscribe" renderMode="image" icon="icon-feed ${iconClasses}"
-                        data-name="${fn:escapeXml(monitorName)}" data-subscription-type="VALIDATION_MONITOR" data-ref-id="${monitorId}"/>
-                </td>
 
                 <%-- monitor name --%>
                 <td>

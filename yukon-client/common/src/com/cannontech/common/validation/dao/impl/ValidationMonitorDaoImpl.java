@@ -33,6 +33,9 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
@@ -46,6 +49,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
+    @Autowired private DbChangeManager dbChangeManager;
     private static final RowMapper<ValidationMonitor> rowMapper;
     private SimpleTableAccessTemplate<ValidationMonitor> template;
     
@@ -84,6 +88,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
     public void saveOrUpdate(ValidationMonitor validationMonitor) {
         try {
             template.save(validationMonitor);
+            dbChangeManager.processDbChange(validationMonitor.getValidationMonitorId(), DBChangeMsg.CHANGE_VALIDATION_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save validation monitor.", e);
         }
@@ -136,11 +141,13 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
         sql.append("WHERE ValidationMonitorId ").eq(validationMonitorId);
         
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.VALIDATION_MONITOR, validationMonitorId);
+        dbChangeManager.processDbChange(validationMonitorId, DBChangeMsg.CHANGE_VALIDATION_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         return yukonJdbcTemplate.update(sql) > 0;
     }
     
     private static final RowMapper<ValidationMonitor> createRowMapper() {
         final RowMapper<ValidationMonitor> rowMapper = new RowMapper<ValidationMonitor>() {
+            @Override
             public ValidationMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
                 ValidationMonitor validationMonitor = new ValidationMonitor();
                 
@@ -160,7 +167,8 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
         return rowMapper;
     }
     
-    private FieldMapper<ValidationMonitor> validationMonitorFieldMapper = new FieldMapper<ValidationMonitor>() {
+    private final FieldMapper<ValidationMonitor> validationMonitorFieldMapper = new FieldMapper<ValidationMonitor>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, ValidationMonitor validationMonitor) {
             p.addValue("ValidationMonitorName", validationMonitor.getName());
             p.addValue("GroupName", validationMonitor.getDeviceGroupName());
@@ -173,9 +181,11 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
             p.addValue("EvaluatorStatus", validationMonitor.getEvaluatorStatus().name());
             
         }
+        @Override
         public Number getPrimaryKey(ValidationMonitor validationMonitor) {
             return validationMonitor.getValidationMonitorId();
         }
+        @Override
         public void setPrimaryKey(ValidationMonitor validationMonitor, int value) {
             validationMonitor.setValidationMonitorId(value);
         }

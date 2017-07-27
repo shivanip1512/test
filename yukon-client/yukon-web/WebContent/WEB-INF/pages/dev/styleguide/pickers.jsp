@@ -50,6 +50,10 @@
         <c:set var="itemIdProperty" value="notificationGroupId"/>
         <c:set var="itemNameProperty" value="name"/>
     </c:when>
+        <c:when test="${pickerType == 'monitorPicker'}">
+        <c:set var="itemIdProperty" value="monitorId"/>
+        <c:set var="itemNameProperty" value="monitorName"/>
+    </c:when>
 </c:choose>
 
 <p class="description">
@@ -205,6 +209,7 @@ or in a popup.
                 <option value="userGroupPicker"<c:if test="${pickerType == 'userGroupPicker'}"> selected</c:if>>User Group Picker (Lucene)</option>
                 <option value="loginGroupPicker"<c:if test="${pickerType == 'loginGroupPicker'}"> selected</c:if>>Role Group Picker (Lucene)</option>
                 <option value="notificationGroupPicker"<c:if test="${pickerType == 'notificationGroupPicker'}"> selected</c:if>>Notification Group Picker (Custom)</option>
+                <option value="monitorPicker"<c:if test="${pickerType == 'monitorPicker'}"> selected</c:if>>Monitor Picker (Lucene)</option>
             </select>
         </label>
     </div>

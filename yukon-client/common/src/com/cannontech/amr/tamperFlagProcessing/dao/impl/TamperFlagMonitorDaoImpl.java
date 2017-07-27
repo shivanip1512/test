@@ -24,11 +24,15 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
     private SimpleTableAccessTemplate<TamperFlagMonitor> template;
     private static final RowMapper<TamperFlagMonitor> rowMapper;
 
@@ -36,14 +40,17 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
         rowMapper = TamperFlagMonitorDaoImpl.createRowMapper();
     }
 
+    @Override
     public void saveOrUpdate(TamperFlagMonitor tamperFlagMonitor) {
         try {
             template.save(tamperFlagMonitor);
+            dbChangeManager.processDbChange(tamperFlagMonitor.getTamperFlagMonitorId(), DBChangeMsg.CHANGE_TAMPER_FLAG_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save tamper flag monitor.", e);
         }
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public TamperFlagMonitor getById(final int tamperFlagMonitorId) throws TamperFlagMonitorNotFoundException {
 
@@ -60,26 +67,31 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
         return tamperFlagMonitor;
     }
 
+    @Override
     public boolean processorExistsWithName(String name) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM TamperFlagMonitor WHERE TamperFlagMonitorName").eq(name);
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<TamperFlagMonitor> getAll() {
         final SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM TamperFlagMonitor");
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
+    @Override
     public boolean delete(int tamperFlagMonitorId) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM TamperFlagMonitor WHERE TamperFlagMonitorId").eq(tamperFlagMonitorId);
+        dbChangeManager.processDbChange(tamperFlagMonitorId, DBChangeMsg.CHANGE_TAMPER_FLAG_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         return yukonJdbcTemplate.update(sql) > 0;
     }
 
     private static final RowMapper<TamperFlagMonitor> createRowMapper() {
         final RowMapper<TamperFlagMonitor> rowMapper = new RowMapper<TamperFlagMonitor>() {
+            @Override
             public TamperFlagMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
                 TamperFlagMonitor tamperFlagMonitor = new TamperFlagMonitor();
                 tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));
@@ -92,17 +104,20 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
         return rowMapper;
     }
 
-    private FieldMapper<TamperFlagMonitor> tamperFlagMonitorFieldMapper = new FieldMapper<TamperFlagMonitor>() {
+    private final FieldMapper<TamperFlagMonitor> tamperFlagMonitorFieldMapper = new FieldMapper<TamperFlagMonitor>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, TamperFlagMonitor tamperFlagMonitor) {
             p.addValue("TamperFlagMonitorName", tamperFlagMonitor.getTamperFlagMonitorName());
             p.addValue("GroupName", tamperFlagMonitor.getGroupName());
             p.addValue("EvaluatorStatus", tamperFlagMonitor.getEvaluatorStatus().name());
         }
 
+        @Override
         public Number getPrimaryKey(TamperFlagMonitor tamperFlagMonitor) {
             return tamperFlagMonitor.getTamperFlagMonitorId();
         }
 
+        @Override
         public void setPrimaryKey(TamperFlagMonitor tamperFlagMonitor, int value) {
             tamperFlagMonitor.setTamperFlagMonitorId(value);
         }

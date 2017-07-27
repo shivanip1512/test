@@ -76,6 +76,13 @@
 <entry key="yukon.web.picker.user.userId">User Id</entry>
 <entry key="yukon.web.picker.userPicker.dialogTitle">Select User</entry>
 
+
+<!-- Monitor Picker -->
+<entry key="yukon.web.picker.monitor.name">Monitor</entry>
+<entry key="yukon.web.picker.monitor.type">Type</entry>
+<entry key="yukon.web.picker.monitor.id">Monitor Id</entry>
+<entry key="yukon.web.picker.monitorPicker.dialogTitle">Select Monitors</entry>
+
 <!-- Dashboard User Picker -->
 <entry key="yukon.web.picker.dashboardUsersPicker.dialogTitle">Dashboard Users</entry>
 

@@ -68,6 +68,16 @@
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
 
+    <bean id="monitorSearcherLucene" class="com.cannontech.web.search.searcher.MonitorLuceneSearcher">
+        <property name="indexManager" ref="monitorIndexManager" />
+    </bean>
+
+    <alias name="monitorSearcherLucene" alias="monitorSearcher" />
+
+    <bean id="monitorIndexManager" class="com.cannontech.web.search.lucene.index.MonitorIndexManager">
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
+
     <bean class="com.cannontech.web.search.lucene.index.site.StaticPageIndexBuilder"/>
     <bean class="com.cannontech.web.search.lucene.index.site.CustomerAccountPageIndexBuilder"/>
     <bean class="com.cannontech.web.search.lucene.index.site.InventoryPageIndexBuilder"/>

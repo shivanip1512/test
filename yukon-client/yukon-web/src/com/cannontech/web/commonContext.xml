@@ -154,6 +154,10 @@
         <property name="searcher" ref="userSearcherLucene"/>
     </bean>
 
+    <bean name="monitorPicker" class="com.cannontech.web.picker.MonitorPicker">
+        <property name="searcher" ref="monitorSearcherLucene"/>
+    </bean>
+
     <bean name="userGroupPicker" class="com.cannontech.web.picker.UserGroupPicker">
         <property name="searcher" ref="userGroupSearcherLucene"/>
     </bean>

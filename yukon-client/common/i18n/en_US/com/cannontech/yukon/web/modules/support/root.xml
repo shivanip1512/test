@@ -277,6 +277,8 @@
     <entry key="yukon.web.modules.support.indexes.siteSearch">Site Search</entry>
     <entry key="yukon.web.modules.support.indexes.user">Users</entry>
     <entry key="yukon.web.modules.support.indexes.userGroup">User Groups</entry>
+    <entry key="yukon.web.modules.support.indexes.monitor">Monitors</entry>
+    
     
     <!-- siteMap.jsp -->
     <entry key="yukon.web.modules.support.siteMap.pageName">Site Map</entry>

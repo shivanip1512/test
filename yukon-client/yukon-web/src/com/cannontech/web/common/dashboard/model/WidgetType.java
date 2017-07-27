@@ -75,7 +75,8 @@ public enum WidgetType implements DisplayableEnum {
                                       new WidgetParameter("showRfGatewayDataRequest", WidgetInputType.CHECKBOX, null),
                                       new WidgetParameter("showRfGatewayData", WidgetInputType.CHECKBOX, null))
             .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, null),
-                                     new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null));
+                                     new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null))
+            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null));
         
         widgetParameters = builder.build();
     }

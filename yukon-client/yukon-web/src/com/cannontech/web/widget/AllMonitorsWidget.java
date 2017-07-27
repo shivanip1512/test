@@ -3,6 +3,8 @@ package com.cannontech.web.widget;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,7 +24,6 @@ import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.base.Joiner;
@@ -65,12 +66,12 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping("render")
-    public String render(ModelMap model, YukonUserContext context) {
-        putMonitorsInModel(model, context);
+    public String render(ModelMap model, HttpServletRequest request) {
+        putMonitorsInModel(model, request);
         return "allMonitorsWidget/render.jsp";
     }
 
-    protected void putMonitorsInModel(ModelMap model, YukonUserContext context) {
+    protected void putMonitorsInModel(ModelMap model, HttpServletRequest request) {
         List<DeviceDataMonitor> deviceDataMonitors = deviceDataMonitorDao.getAllMonitors();
         Collections.sort(deviceDataMonitors);
         model.addAttribute("deviceDataMonitors", deviceDataMonitors);
