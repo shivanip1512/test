@@ -206,13 +206,13 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
    
         if (filter.getThresholdDescriptor() != null) {
             if (filter.getThresholdDescriptor() == ThresholdDescriptor.GREATOR_OR_EQUAL) {
-                if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED)) {
+                if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED) || filter.getAvailability().contains(DataAvailability.NONE)) {
                     sql.append("AND (utrr.Delta").gte(filter.getThreshold()).append("OR utrr.Delta IS NULL)");
                 } else {
                     sql.append("AND utrr.Delta").gte(filter.getThreshold());
                 }
             } else if (filter.getThresholdDescriptor() == ThresholdDescriptor.LESS_OR_EQUAL) {
-                if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED)) {
+                if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED) || filter.getAvailability().contains(DataAvailability.NONE)) {
                     sql.append("AND (utrr.Delta").lte(filter.getThreshold()).append("OR utrr.Delta IS NULL)");
                 } else {
                     sql.append("AND utrr.Delta").lte(filter.getThreshold());
