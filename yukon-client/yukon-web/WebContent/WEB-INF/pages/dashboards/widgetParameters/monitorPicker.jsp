@@ -14,7 +14,7 @@
         <tags:pickerDialog
             id="monitorPicker${id}"
             type="monitorPicker"
-            linkType="selectionLabel"
+            linkType="selection"
             multiSelectMode="true"
             selectionProperty="monitorName"
             destinationFieldId="param_${id}"/>
