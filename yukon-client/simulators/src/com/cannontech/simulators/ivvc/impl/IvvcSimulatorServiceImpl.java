@@ -67,6 +67,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private boolean tapPositionsPreloaded = false;
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
+    private final Map<Integer, Integer> subBusKVar = new HashMap<>();
     private int keepAliveIncrementingValue = 0;
     private Instant lastRegulatorEvaluationTime;
     private ScheduledFuture<?> ivvcSimulationFuture;
@@ -167,19 +168,26 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         // The minimum output of our system will be around 3 kW and -750 kVar
         // We use kVar to drive the kW to make future changes to banks and desired KVar easier
         final double KW_TO_KVAR_MULTIPLIER = .75;
-        final int MAX_KVAR = 10500; // TODO calculate this from the database
         final int MIN_KVAR = -1500;
         final int MIN_KW = 3000;
-        final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
-        
         int secondsOfDayForCalculation = DateTime.now().plusHours(12).getSecondOfDay(); // This shifts the sine so the peak is at 18:00
-        final double currentSubBusBaseKw = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
-        final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
         keepAliveIncrementingValue = (keepAliveIncrementingValue + 1) & 0xFFFF; // Rolls over after 16 bits.
         
         for (Area area : simulatedAreas) {
             List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
             subBusesByArea.parallelStream().forEach(subBus -> {
+                
+                Integer bankSize = subBusKVar.get(subBus.getCcId());
+                if (bankSize == null) {
+                    bankSize = capControlCache.getCapBanksBySubBus(subBus.getCcId()).stream().mapToInt(
+                        capBank -> capBank.getBankSize()).sum();
+                    subBusKVar.put(subBus.getCcId(), bankSize + 1500);
+                }
+                final int MAX_KVAR = bankSize;
+                final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
+                final double currentSubBusBaseKw = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
+                final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
+                
                 int subBusKVarClosed = 0;
                 Map<Integer, Integer> capBankToFeeder = new HashMap<>();
                 List<Feeder> feedersBySubBus = capControlCache.getFeedersBySubBus(subBus.getCcId());
