@@ -49,7 +49,7 @@
     </form:form>
     
     <%-- ADD WIDGETS POPUP --%>
-<div class="dn js-add-widgets-popup" data-dialog data-height="500" data-width="900"
+<div class="dn js-add-widgets-popup" data-dialog data-cancel-omit="true" data-height="500" data-width="900"
     data-title="<cti:msg2 key=".addWidgets.label"/>"
     data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/addWidgets"/>"></div>
         

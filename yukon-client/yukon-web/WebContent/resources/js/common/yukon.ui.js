@@ -645,6 +645,7 @@ yukon.ui = (function () {
          *                                               the dialog will ask for confirmation.
          *        {string} [cancelClass='']            - CSS class names applied to the secondary (cancel) button.
          *        {string} [cancelText=yg.text.cancel] - The text of the cancel button. Defaults to yg.text.cancel.
+         *        {boolean} [cancelOmit=false]         - If true, the cancel button will be omitted.
          *        {boolean} [delete=false]             - If true, a 'Delete' button will also be included.
          *                                               Only used when mode is not 'CREATE'.
          */
@@ -653,6 +654,7 @@ yukon.ui = (function () {
             options = $.extend({
                 cancelClass : '',
                 cancelText : yg.text.cancel,
+                cancelOmit : false,
                 confirm : false,
                 'delete' : false,
                 event : 'yukon.dialog.ok',
@@ -676,11 +678,13 @@ yukon.ui = (function () {
             };
             
             // Cancel Button
-            buttons.push({
-                text : options.cancelText,
-                click : function (ev) { $(this).dialog('close'); },
-                'class': 'js-secondary-action ' + (options.cancelClass || '')
-            });
+            if (!options.cancelOmit) {
+                buttons.push({
+                    text : options.cancelText,
+                    click : function (ev) { $(this).dialog('close'); },
+                    'class': 'js-secondary-action ' + (options.cancelClass || '')
+                });
+            }
             
             if (options['delete'] && options.mode !== 'CREATE') {
                 // Delete Button
@@ -806,6 +810,7 @@ yukon.ui = (function () {
                 if (popup.is('[data-ok-disabled]')) buttonOptions.okDisabled = true;
                 if (popup.is('[data-cancel-text]')) buttonOptions.cancelText = popup.data('cancelText');
                 if (popup.is('[data-cancel-class]')) buttonOptions.cancelClass = popup.data('cancelClass');
+                if (popup.is('[data-cancel-omit]')) buttonOptions.cancelOmit = true;
                 if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
                 if (popup.is('[data-target]')) buttonOptions.target = $(popup.data('target'));
                 if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
@@ -1411,7 +1416,20 @@ yukon.ui = (function () {
                 row.after(undo);
                 undo.fadeIn(100);
             });
-        }
+        },
+        
+        getSortingPagingParameters: function(params) {
+            var
+            sorting = $('.sortable.desc, .sortable.asc'),
+            paging = $('.paging-area');
+            
+            if (sorting.length > 0) {
+                params.sort = sorting.data('sort'),
+                params.dir = sorting.is('.desc') ? 'desc' : 'asc';
+            }
+            params.itemsPerPage = paging.length > 0 ? paging.data('pageSize') : 10;
+            params.page = paging.length > 0 ? paging.data('currentPage') : 1;
+        },
         
     };
     
