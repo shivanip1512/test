@@ -244,6 +244,8 @@ public:
     bool getInsertDynamicDataFlag() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
+    bool checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges );
+
     /**
      * Uses the passed in connection to dump the data.
     */

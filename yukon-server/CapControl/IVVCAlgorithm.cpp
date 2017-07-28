@@ -949,16 +949,15 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 }
 
 
-void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection, IVVCStrategy* strategy)
+bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection, IVVCStrategy* strategy)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiCCCapBankPtr bank = store->findCapBankByPAObjectID(bankId);
-    if (bank != NULL)
+    bool performedOperation = false;
+
+    if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( bankId ) )
     {
-        long feederId = bank->getParentId();
-        CtiCCFeederPtr feeder = store->findFeederByPAObjectID(feederId);
-        if (feeder != NULL)
+        if ( CtiCCFeederPtr feeder = store->findFeederByPAObjectID( bank->getParentId() ) )
         {
             bool isCapBankOpen = (bank->getControlStatus() == CtiCCCapBank::Open ||
                                   bank->getControlStatus() == CtiCCCapBank::OpenQuestionable);
@@ -969,79 +968,91 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             CtiMultiMsg_vec pointChanges;
             EventLogEntries ccEvents;
 
-            double beforeKvar = subbus->getCurrentVarLoadPointValue();
-            double varValueA = subbus->getPhaseAValue();
-            double varValueB = subbus->getPhaseBValue();
-            double varValueC = subbus->getPhaseCValue();
-
-            if ( strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder )
+            if ( ! bank->checkMaxDailyOpCountExceeded( pointChanges ) )
             {
-                // Use feeder values instead of bus values for call to create(In/De)creaseVarRequest()
+                double beforeKvar = subbus->getCurrentVarLoadPointValue();
+                double varValueA = subbus->getPhaseAValue();
+                double varValueB = subbus->getPhaseBValue();
+                double varValueC = subbus->getPhaseCValue();
 
-                beforeKvar = feeder->getCurrentVarLoadPointValue();
-                varValueA  = feeder->getPhaseAValue();
-                varValueB  = feeder->getPhaseBValue();
-                varValueC  = feeder->getPhaseCValue();
-            }
+                if ( strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder )
+                {
+                    // Use feeder values instead of bus values for call to create(In/De)creaseVarRequest()
 
-            CtiRequestMsg* request = NULL;
+                    beforeKvar = feeder->getCurrentVarLoadPointValue();
+                    varValueA  = feeder->getPhaseAValue();
+                    varValueB  = feeder->getPhaseBValue();
+                    varValueC  = feeder->getPhaseCValue();
+                }
 
-            if (isCapBankOpen)
-            {
-                std::string text = feeder->createTextString(ControlStrategy::IntegratedVoltVarControlUnit,CtiCCCapBank::Close,feeder->getIVControl(),beforeKvar);
-                request = feeder->createDecreaseVarRequest(bank,pointChanges,ccEvents,text,beforeKvar,varValueA,varValueB,varValueC);
+                CtiRequestMsg* request = NULL;
 
-            }
-            else if (isCapBankClosed)
-            {
-                std::string text = feeder->createTextString(ControlStrategy::IntegratedVoltVarControlUnit,CtiCCCapBank::Open,feeder->getIVControl(),beforeKvar);
-                request = feeder->createIncreaseVarRequest(bank,pointChanges,ccEvents,text,beforeKvar,varValueA,varValueB,varValueC);
+                if (isCapBankOpen)
+                {
+                    std::string text = feeder->createTextString(ControlStrategy::IntegratedVoltVarControlUnit,CtiCCCapBank::Close,feeder->getIVControl(),beforeKvar);
+                    request = feeder->createDecreaseVarRequest(bank,pointChanges,ccEvents,text,beforeKvar,varValueA,varValueB,varValueC);
+
+                }
+                else if (isCapBankClosed)
+                {
+                    std::string text = feeder->createTextString(ControlStrategy::IntegratedVoltVarControlUnit,CtiCCCapBank::Open,feeder->getIVControl(),beforeKvar);
+                    request = feeder->createIncreaseVarRequest(bank,pointChanges,ccEvents,text,beforeKvar,varValueA,varValueB,varValueC);
+                }
+                else
+                {
+                    //Check for a retry
+                }
+
+                CtiTime timestamp;
+
+                if (request != NULL)
+                {
+                    CtiTime time = request->getMessageTime();
+                    CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(request, CALLSITE);
+
+                    performedOperation = true;
+
+                    sendIVVCAnalysisMessage(
+                        IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
+                                                                            isCapBankOpen
+                                                                                ? IVVCAnalysisMessage::Scenario_CapbankCloseOperation
+                                                                                : IVVCAnalysisMessage::Scenario_CapbankOpenOperation,
+                                                                            timestamp,
+                                                                            bankId ) );
+
+                    subbus->setLastOperationTime(time);
+                    subbus->setLastFeederControlled(feeder->getPaoId());
+                    subbus->setCurrentDailyOperationsAndSendMsg(subbus->getCurrentDailyOperations() + 1, pointChanges);
+                    subbus->figureEstimatedVarLoadPointValue();
+                    subbus->setBusUpdatedFlag(true);
+                    subbus->setVarValueBeforeControl(beforeKvar);
+                    subbus->setRecentlyControlledFlag(true);
+                    feeder->setLastOperationTime(time);
+
+                    if( subbus->getEstimatedVarLoadPointId() > 0 )
+                    {
+                        pointChanges.push_back(new CtiPointDataMsg(subbus->getEstimatedVarLoadPointId(),subbus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                    }
+                }
+                else    // if request is NULL we returned early from create(In|De)creaseVarRequest( ... ) - this only happens if we exceed KVar
+                {
+                    sendIVVCAnalysisMessage( IVVCAnalysisMessage::createExceedMaxKVarMessage( subbus->getPaoId(),
+                                                                                              timestamp,
+                                                                                              bankId,
+                                                                                              _MAX_KVAR ) );
+                }
             }
             else
             {
-                //Check for a retry
+                CTILOG_DEBUG( dout, "IVVC Algorithm: CapBank: " << bank->getPaoName()
+                                        << " was not operated due to MaxDailyOps setting." );
             }
 
-            CtiTime timestamp;
-
-            if (request != NULL)
-            {
-                CtiTime time = request->getMessageTime();
-                CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(request, CALLSITE);
-
-                sendIVVCAnalysisMessage(
-                    IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
-                                                                        isCapBankOpen
-                                                                            ? IVVCAnalysisMessage::Scenario_CapbankCloseOperation
-                                                                            : IVVCAnalysisMessage::Scenario_CapbankOpenOperation,
-                                                                        timestamp,
-                                                                        bankId ) );
-
-                subbus->setLastOperationTime(time);
-                subbus->setLastFeederControlled(feeder->getPaoId());
-                subbus->setCurrentDailyOperationsAndSendMsg(subbus->getCurrentDailyOperations() + 1, pointChanges);
-                subbus->figureEstimatedVarLoadPointValue();
-                subbus->setBusUpdatedFlag(true);
-                subbus->setVarValueBeforeControl(beforeKvar);
-                subbus->setRecentlyControlledFlag(true);
-                feeder->setLastOperationTime(time);
-
-                if( subbus->getEstimatedVarLoadPointId() > 0 )
-                {
-                    pointChanges.push_back(new CtiPointDataMsg(subbus->getEstimatedVarLoadPointId(),subbus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
-                }
-
-                sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
-            }
-            else    // if request is NULL we returned early from create(In|De)creaseVarRequest( ... ) - this only happens if we exceed KVar
-            {
-                sendIVVCAnalysisMessage( IVVCAnalysisMessage::createExceedMaxKVarMessage( subbus->getPaoId(),
-                                                                                          timestamp,
-                                                                                          bankId,
-                                                                                          _MAX_KVAR ) );
-            }
+            sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
         }
     }
+
+    return performedOperation;
 }
 
 
@@ -1877,9 +1888,14 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         }
 
         //send cap bank command
-        operateBank(operatePaoId,subbus,dispatchConnection, strategy);
-
-        state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+        if ( operateBank(operatePaoId, subbus, dispatchConnection, strategy) )
+        {
+            state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+        }
+        else
+        {
+            state->setState(IVVCState::IVVC_WAIT);
+        }
     }
     else
     {

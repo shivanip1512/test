@@ -15,12 +15,18 @@
 #include "capcontroller.h"
 #include "mgr_config.h"
 #include "config_data_cbc.h"
+#include "msg_signal.h"
+#include "tbl_pt_alarm.h"
+
+#include <memory>
 
 using namespace Cti::CapControl;
 using namespace std;
 
 extern unsigned long _CC_DEBUG;
 extern bool _USE_FLIP_FLAG;
+extern bool _LOG_MAPID_INFO;
+extern long _MAXOPS_ALARM_CATID;
 
 DEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 
@@ -1516,6 +1522,78 @@ void CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMultiMsg_vec
         _dirty = true;
     }
     _totaloperations = operations;
+}
+
+/*
+    Check if we can operate this bank based on its 'Max Daily Ops' settings.  If we would exceed our setting then
+        disable the bank and return true, else return false.
+*/
+bool CtiCCCapBank::checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges )
+{
+    if (    getMaxDailyOps() > 0
+         && ! getMaxDailyOpsHitFlag()
+         && getCurrentDailyOperations() >= getMaxDailyOps() )
+    {
+        setMaxDailyOpsHitFlag( true );
+
+        std::string additional  = "CapBank: " + getPaoName();
+
+        if ( _LOG_MAPID_INFO )
+        {
+            additional  += " MapID: "
+                        + getMapLocationId()
+                        + " ("
+                        + getPaoDescription()
+                        + ")";
+        }
+
+        if ( getOperationAnalogPointId() > 0 )
+        {
+            auto pSig = std::make_unique<CtiSignalMsg>( getOperationAnalogPointId(),
+                                                        5,                /* soe */
+                                                        "CapBank Exceeded Max Daily Operations",
+                                                        additional,
+                                                        CapControlLogType,
+                                                        _MAXOPS_ALARM_CATID,
+                                                        Cti::CapControl::SystemUser,
+                                                        TAG_ACTIVE_ALARM, /* tags */
+                                                        0,                /* pri */
+                                                        0,                /* millis */
+                                                        getCurrentDailyOperations() );
+
+            pSig->setCondition( CtiTablePointAlarming::highReasonability );
+
+            pointChanges.push_back( pSig.release() );
+        }
+
+        if ( getMaxOpsDisableFlag() )
+        {
+            CtiCCSubstationBusStore::getInstance()->UpdatePaoDisableFlagInDB( this, true );
+
+            if ( getOperationAnalogPointId() > 0 )
+            {
+                auto pSig = std::make_unique<CtiSignalMsg>( getOperationAnalogPointId(),
+                                                            5,                /* soe */
+                                                            "CapBank Exceeded Max Daily Operations",
+                                                            additional,
+                                                            CapControlLogType,
+                                                            _MAXOPS_ALARM_CATID,
+                                                            Cti::CapControl::SystemUser,
+                                                            TAG_ACTIVE_ALARM, /* tags */
+                                                            0,                /* pri */
+                                                            0,                /* millis */
+                                                            getCurrentDailyOperations() );
+
+                pSig->setCondition( CtiTablePointAlarming::highReasonability );
+
+                pointChanges.push_back( pSig.release() );
+            }
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 /*---------------------------------------------------------------------------
