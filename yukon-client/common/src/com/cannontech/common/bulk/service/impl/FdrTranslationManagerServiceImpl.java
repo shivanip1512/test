@@ -42,13 +42,18 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 
 public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerService {
+    
+    @Autowired DbChangeManager dbChangeManager;
     private FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper;
-    private Logger log = YukonLogManager.getLogger(FdrTranslationManagerServiceImpl.class);
+    private final Logger log = YukonLogManager.getLogger(FdrTranslationManagerServiceImpl.class);
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private RecentResultsCache<BackgroundProcessResultHolder> bpRecentResultsCache;
     private BulkProcessor bulkProcessor = null;
@@ -253,6 +258,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 if(dataRow.getAction().equalsIgnoreCase(FdrImportAction.ADD.toString())) {
                     try {
                         fdrTranslationDao.add(translation);
+                        dbChangeManager.processDbChange(translation.getPointId(), DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DbChangeType.ADD);
                     } catch(DataIntegrityViolationException e) {
                         String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToInsert");
                         throw new ProcessingException(error, "unableToInsert", e);
@@ -263,6 +269,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                         String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToRemove");
                         throw new ProcessingException(error, "unableToRemove");
                     }
+                    dbChangeManager.processDbChange(translation.getPointId(), DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DbChangeType.DELETE);
                 } else {
                     String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidAction");
                     throw new ProcessingException(error, "invalidAction");
