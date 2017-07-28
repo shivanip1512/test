@@ -128,7 +128,6 @@ public class DashboardServiceImpl implements DashboardService {
         newDashboard.getAllWidgets().stream()
                          .filter(widget -> !existingWidgetIds.remove(widget.getId()))
                          .forEach(widget -> {
-                             System.out.println("widget added with id: " + widget.getId());
                              dashboardEventLogService.widgetAdded(yukonUser, widget.getType().toString(), newDashboard.getName());
                          });
     }
