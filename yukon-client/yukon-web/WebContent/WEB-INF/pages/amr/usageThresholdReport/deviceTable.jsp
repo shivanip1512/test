@@ -23,8 +23,8 @@
     </cti:url>
     
     <div data-url="${dataUrl}">
-        <span class="fwn"><i:inline key=".devices"/>:</span>
-        <span class="badge">${report.detail.hitCount}</span>
+        <span class="fwn"><i:inline key=".filteredResults"/></span>
+        <span class="badge">${report.detail.hitCount}</span>&nbsp;<i:inline key=".devices"/>
         <span class="fr">
             <c:forEach var="availability" items="${dataAvailabilityOptions}">
                 <cti:msg2 var="availabilityText" key=".dataAvailability.${availability}"/>

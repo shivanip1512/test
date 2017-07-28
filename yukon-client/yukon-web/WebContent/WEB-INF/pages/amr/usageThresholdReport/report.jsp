@@ -27,6 +27,11 @@
                 <tags:nameValue2 nameKey=".criteria.dateRange">
                     <dt:dateRange startValue="${criteria.startDate}" endValue="${criteria.endDate}" startName="minDate" endName="maxDate"/>
                 </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".criteria.initialThreshold">
+                    <tags:selectWithItems items="${thresholdOptions}" path="thresholdDescriptor" itemLabel="value"/>
+                    <tags:input path="threshold"/>
+                </tags:nameValue2>
 
             </tags:nameValueContainer2>
             

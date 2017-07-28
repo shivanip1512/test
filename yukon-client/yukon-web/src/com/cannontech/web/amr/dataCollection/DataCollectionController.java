@@ -125,6 +125,9 @@ public class DataCollectionController {
             ranges = RangeType.values();
         }
         model.addAttribute("deviceGroup", deviceGroup);
+        model.addAttribute("deviceGroupName", group.getName());
+        DeviceCollection allDevicesCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+        model.addAttribute("totalDeviceCount", allDevicesCollection.getDeviceCount());
         model.addAttribute("deviceSubGroups", deviceSubGroups);
         model.addAttribute("includeDisabled", includeDisabled);
         model.addAttribute("ranges", ranges);

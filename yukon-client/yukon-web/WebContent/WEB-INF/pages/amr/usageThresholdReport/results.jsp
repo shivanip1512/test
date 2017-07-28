@@ -4,12 +4,19 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="usageThresholdReport.results">
 
     <div class="column-12-12 clearfix">
         <div class="column one" style="border:1px solid #ccc;padding:5px;min-height:160px;">
             <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".devices">
+                     ${criteria.description}
+                     <c:if test="${totalDeviceCount != null}">
+                        (${totalDeviceCount}&nbsp;<i:inline key=".devices"/>)
+                     </c:if>
+                </tags:nameValue2>
                 <tags:nameValue2 nameKey=".attribute">
                      <cti:msg2 key="${criteria.attribute.formatKey}"/>
                 </tags:nameValue2>
@@ -20,11 +27,11 @@
                     <cti:formatDate type="DATE" value="${criteria.endDate}"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".reportRunDate">
-                    <cti:formatDate type="DATEHM_12" value="${criteria.runTime}"/>
+                    <span class="fl"><cti:formatDate type="DATEHM_12" value="${criteria.runTime}"/></span>
                     <cti:url var="downloadAllUrl" value="downloadAll">
                         <cti:param name="reportId" value="${criteria.reportId}"/>
                     </cti:url>
-                    <cti:icon icon="icon-csv" href="${downloadAllUrl}" classes="fr" nameKey="downloadAll"/>
+                    <cti:icon icon="icon-csv" href="${downloadAllUrl}" nameKey="downloadAll"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>

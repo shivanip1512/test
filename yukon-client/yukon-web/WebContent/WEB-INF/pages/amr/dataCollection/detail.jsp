@@ -21,9 +21,14 @@
         <input type="hidden" name="includeDisabled" value="${includeDisabled}"/>
         <div class="column-12-12 clearfix">
             <div class="column one">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".deviceGroup">
+                        ${deviceGroupName} (${totalDeviceCount}&nbsp;<i:inline key=".devices"/>)
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
                 <div style="max-height: 200px;" class="js-pie-chart-summary"></div>
             </div>
-            <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;margin-top:40px;">
+            <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;margin-top:40px;">          
                 <span class="fr cp"><cti:icon icon="icon-help" data-popup="#results-help"/></span>
                 <cti:msg2 var="helpTitle" key=".helpTitle"/>
                 <div id="results-help" class="dn" data-dialog data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div><br/>
@@ -69,8 +74,8 @@
     </form>
 
 
-    <span class="fwn"><i:inline key=".devices"/>:</span>
-    <span class="badge">${detail.hitCount}</span>
+    <span class="fwn"><i:inline key=".filteredResults"/></span>
+    <span class="badge">${detail.hitCount}</span>&nbsp;<i:inline key=".devices"/>
     
     <c:if test="${detail.hitCount > 0}">
         <span class="js-cog-menu">

@@ -102,6 +102,7 @@ public class UsageThresholdReportController {
         if (criteriaObj instanceof ThresholdReportCriteria) {
             criteria = (ThresholdReportCriteria) model.get("criteria");
         }
+        model.addAttribute("thresholdOptions", ThresholdDescriptor.values());
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/report.jsp";
     }
@@ -132,13 +133,17 @@ public class UsageThresholdReportController {
                 String groupName = collection.getCollectionParameters().get("group.name");
                 DeviceGroup grp = deviceGroupService.resolveGroupName(groupName);
                 criteria.setDescription(grp.getName());
+                model.addAttribute("totalDeviceCount", collection.getDeviceCount());
             } else {
                 criteria.setDescription(collection.getDeviceCount() + " devices");
             }
             int reportId = reportService.createThresholdReport(criteria, collection.getDeviceList());
             criteria.setReportId(reportId);
         }
-        model.addAttribute("filter", new ThresholdReportFilter());
+        ThresholdReportFilter filter = new ThresholdReportFilter();
+        filter.setThresholdDescriptor(criteria.getThresholdDescriptor());
+        filter.setThreshold(criteria.getThreshold());
+        model.addAttribute("filter", filter);
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/results.jsp";
     }

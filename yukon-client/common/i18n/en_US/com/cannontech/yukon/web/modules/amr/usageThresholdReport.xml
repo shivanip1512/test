@@ -9,18 +9,23 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.devices">Devices</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.dateRange">Date Range</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.initialThreshold">Threshold (initial)</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.run.label">Run</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.title">Criteria</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.helpText"><![CDATA[
-        Select one to many devices to perform analysis on. Devices can be selectable by device group or individually.<br/>
-        Select an attribute and date range. Start date is adjusted to beginning of day, end date is adjusted to end of day.<br/>
+        <ul>
+            <li><b>Devices</b> - select one to many devices to perform analysis on. Devices can be selectable by device group or individually.</li>
+            <li><b>Attribute</b> - select an attribute to use for analaysis.</li>
+            <li><b>Date Range</b> - select a date range. Start date is adjusted to beginning of day, end date is adjusted to end of day.</li>
+            <li><b>Threshold (initial)</b> - select <= or >= and enter the threshold (delta) between the earliest and latest readings to include in results.  This value can be changed on the resulting page.</li>
+        </ul>
         This analysis will find the attribute’s reading equal to the start date. If one does not exist, the reading closest to (and greater than) the start date without exceeding the end date will be used. Similarly, it will find the attribute’s reading equal to the stop date. If one does not exist, the readings closest to (and less than) the end date without preceding the start date will be used.
     ]]></entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.invalidDevicesSelected">Invalid device selection. Please select either a device group or individual devices to run the report.</entry>
     
     <!-- USAGE THRESHOLD RESULTS results.jsp -->
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.pageTitle">Usage Threshold Results</entry>
-    <entry key="yukon.web.modules.amr.usageThresholdReport.results.pageHeading">Usage Threshold Results: {0}</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.pageHeading">Usage Threshold Results</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.crumbTitle">Usage Threshold Results</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.filter.deviceGroups">Device Group(s)</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.filter.includeDisabled">Include Disabled</entry>
@@ -81,6 +86,7 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.availabilityCounts">Availability Counts</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.downloadAll.hoverText">Download All</entry>
     
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.filteredResults">Filtered Results:</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.devices">Devices</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.collectionActions">Collection Actions</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.mapDevices">Map Devices</entry>

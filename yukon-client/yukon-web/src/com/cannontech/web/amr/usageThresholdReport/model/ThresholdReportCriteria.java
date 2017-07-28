@@ -16,6 +16,8 @@ public class ThresholdReportCriteria {
     //description - if individual devices were selected “X devices” otherwise a group name
     private String description;
     private int reportId;
+    private ThresholdDescriptor thresholdDescriptor;
+    private double threshold;
 
     public BuiltInAttribute getAttribute() {
         return attribute;
@@ -65,6 +67,22 @@ public class ThresholdReportCriteria {
         this.reportId = reportId;
     }
     
+    public ThresholdDescriptor getThresholdDescriptor() {
+        return thresholdDescriptor;
+    }
+
+    public void setThresholdDescriptor(ThresholdDescriptor thresholdDescriptor) {
+        this.thresholdDescriptor = thresholdDescriptor;
+    }
+
+    public double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+    
     /**
      * Returns end date +1 day
      */
@@ -83,4 +101,6 @@ public class ThresholdReportCriteria {
         tsb.append(InstantRangeLogHelper.getLogString(startDate)+"-"+InstantRangeLogHelper.getLogString(endDate));
         return tsb.toString();
     }
+
+
 }
