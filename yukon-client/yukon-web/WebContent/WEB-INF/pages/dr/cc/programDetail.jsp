@@ -56,7 +56,14 @@
                     <i:inline key=".identifierPostfix"/>
                 </td>
                 <td class="value">
-                    <input id="program-last-identifier" type="text" name="programLastIdentifier" value="${program.lastIdentifier}">
+                    <c:if test="${not empty postfixError}">
+                        <c:set var="clazz3" value="error"/>
+                    </c:if>
+                    <input class="${clazz3}" id="program-last-identifier" type="text" name="programLastIdentifier" value="${program.lastIdentifier}">
+                    <c:if test="${not empty postfixError}">
+                        <span class="error"><i:inline key="${postfixError}"/></span>
+                    </c:if>
+                    <div id="program-error" class="error dn"><i:inline key=".cc.invalidInput"/></div>
                 </td>
             </tr>
         </table>
@@ -64,9 +71,24 @@
         <h3><i:inline key=".parameters"/></h3>
             <table class="name-value-table natural-width" id="program-parameters">
             <c:forEach var="parameter" items="${programParameters}" varStatus="loop">
-                <tr>
+            <c:set var="errorkey" value="${requestScope['error_'.concat(parameter.parameterKey)]}" />
+                 <tr>
                     <td>${parameter.parameterKey.description}</td>
-                    <td><input id="parameter-value-${loop.index}" type="text" name="${parameter.parameterKey}" value="${parameter.parameterValue}" data-parameter-id="${parameter.id}"></td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty errorkey}">
+                                <c:set var="clazz4" value="error"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="clazz4" value=""/>
+                            </c:otherwise>
+                        </c:choose>
+                        <input class="${clazz4}" id="parameter-value-${loop.index}" type="text" name="${parameter.parameterKey}" value="${parameter.parameterValue}" data-parameter-id="${parameter.id}">
+                        <c:if test="${not empty errorkey}">
+                            <span class="error"><i:inline key="${errorkey}"/></span>
+                        </c:if>
+                        <div id="parameter-error-${loop.index}" class="error dn"><i:inline key=".cc.invalidInput"/></div>
+                    </td>
                 </tr>
             </c:forEach>
             </table>
@@ -151,7 +173,7 @@
 </div>
 <div class="page-action-area">
     <cti:url value="/dr/cc/programSave/${program.id}" var="saveUrl"/>
-    <cti:button nameKey="save" classes="action primary" type="submit" id="program-save" href="${saveUrl}"/>
+    <cti:button nameKey="save" classes="action primary" type="submit" id="program-save"/>
     <c:if test="${deletable}">
         <cti:url value="/dr/cc/programDelete/${program.id}" var="deleteUrl"/>
         <cti:button nameKey="delete" classes="delete" href="${deleteUrl}" id="delete-program"/>

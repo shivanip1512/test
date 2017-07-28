@@ -198,6 +198,35 @@ yukon.dr.curtailment = (function () {
                 }
             });
             
+            //validation for CommercialCurtailment program detail
+            $(document).on('click', '#program-save', function (ev) {
+                $('#program-last-identifier').removeClass('error');
+                $('#program-error').hide();
+                var errorFound = false,
+                    progLastId = $('#program-last-identifier').val();
+                if (!$.isNumeric(progLastId) || progLastId < 0) {
+                        $('#program-last-identifier').addClass('error');
+                        $('#program-error').show();
+                        errorFound = true;
+                }
+                for (var i=0 ; i < 7 ; i++) {
+                    $('#parameter-value-'+i).removeClass('error');
+                    $('#parameter-error-'+i).hide();
+                    var paramId = $('#parameter-value-'+i).val();
+                    if (typeof paramId !== 'undefined') {
+                        if(!$.isNumeric(paramId) || paramId < 0) {
+                            $('#parameter-value-'+i).addClass('error');
+                            $('#parameter-error-'+i).show();
+                            errorFound = true;
+                        }
+                    }
+                }
+                if (errorFound) {
+                   return false;
+                }
+                $('#program').submit();
+            });
+            
             $(function () {
                 $(document).on('click', '#assigned-groups', function (ev) {
                     var button = $(ev.target).closest('button');

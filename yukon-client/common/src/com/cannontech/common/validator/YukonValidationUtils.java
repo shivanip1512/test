@@ -11,7 +11,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -94,6 +93,20 @@ public class YukonValidationUtils extends ValidationUtils {
             return false;
         }
         return true;
+    }
+
+    public static void checkIsValidNumber(Errors errors, String field, Number fieldValue) {
+        if (fieldValue == null) {
+            errors.rejectValue(field, "yukon.web.error.isBlank");
+        } else if (fieldValue instanceof Double) {
+            if (checkIsValidDouble(errors, field, fieldValue.doubleValue()) && fieldValue.doubleValue() < 0) {
+                errors.rejectValue(field, "yukon.web.error.isNotPositive");
+            }
+        } else if (fieldValue instanceof Integer) {
+            if (fieldValue.intValue() < 0) {
+                errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
+            }
+        }
     }
 
     /**

@@ -1020,38 +1020,46 @@ public class CcHomeController {
         program.setName(programName);
         program.setIdentifierPrefix(programIdentifierPrefix);
         program.setLastIdentifier(programLastIdentifier);
-        
+
+        ProgramFields programFields =new ProgramFields(programName, programIdentifierPrefix, programLastIdentifier);
+        //Validation
+        DataBinder binder = new DataBinder(programFields);
+        BindingResult bindingResult = binder.getBindingResult();
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programName", programName, false, 255);
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programIdentifierPrefix", programIdentifierPrefix, false, 32);
+        YukonValidationUtils.checkIsPositiveInt(bindingResult, "programLastIdentifier", programLastIdentifier);
+
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
         List<ProgramParameter> programParameters = strategy.getParameters(program);
-        
+
         for (ProgramParameter parameter : programParameters) {
             switch(parameter.getParameterKey()) {
             case DEFAULT_EVENT_OFFSET_MINUTES:
-                setProgramParameter(parameter, DEFAULT_EVENT_OFFSET_MINUTES);
+                setProgramParameter(parameter, DEFAULT_EVENT_OFFSET_MINUTES, "eventTimeOffsetMinutes", bindingResult);
                 break;
             case DEFAULT_NOTIFICATION_OFFSET_MINUTES:
-                setProgramParameter(parameter, DEFAULT_NOTIFICATION_OFFSET_MINUTES);
+                setProgramParameter(parameter, DEFAULT_NOTIFICATION_OFFSET_MINUTES, "notificationTimeOffsetMinutes", bindingResult);
                 break;
             case MINIMUM_NOTIFICATION_MINUTES:
-                setProgramParameter(parameter, MINIMUM_NOTIFICATION_MINUTES);
+                setProgramParameter(parameter, MINIMUM_NOTIFICATION_MINUTES, "minimumNotificationTimeMinutes", bindingResult);
                 break;
             case DEFAULT_EVENT_DURATION_MINUTES:
-                setProgramParameter(parameter, DEFAULT_EVENT_DURATION_MINUTES);
+                setProgramParameter(parameter, DEFAULT_EVENT_DURATION_MINUTES, "defaultEventDuration", bindingResult);
                 break;
             case MINIMUM_EVENT_DURATION_MINUTES:
-                setProgramParameter(parameter, MINIMUM_EVENT_DURATION_MINUTES);
+                setProgramParameter(parameter, MINIMUM_EVENT_DURATION_MINUTES, "minimumEventDuration", bindingResult);
                 break;
             case DEFAULT_ENERGY_PRICE:
-                setProgramParameter(parameter, DEFAULT_ENERGY_PRICE);
+                setProgramParameter(parameter, DEFAULT_ENERGY_PRICE, "energyPrice", bindingResult);
                 break;
             case CUSTOMER_ELECTION_CUTOFF_MINUTES:
-                setProgramParameter(parameter, CUSTOMER_ELECTION_CUTOFF_MINUTES);
+                setProgramParameter(parameter, CUSTOMER_ELECTION_CUTOFF_MINUTES, "customerElectionCutoff", bindingResult);
                 break;
             default:
                 break;
             }
         }
-        
+
         Set<LiteNotificationGroup> assignedNotificationGroups = new HashSet<>();
         Set<LiteNotificationGroup> unassignedNotificationGroups = new HashSet<>();
         Set<LiteNotificationGroup> allNotificationGroups = notificationGroupDao.getAllNotificationGroups();
@@ -1069,18 +1077,29 @@ public class CcHomeController {
         } else {
             assignedGroups = new ArrayList<>();
         }
-        
-        //Validation
-        DataBinder binder = new DataBinder(new ProgramFields(programName, programIdentifierPrefix));
-        BindingResult bindingResult = binder.getBindingResult();
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programName", programName, false, 255);
-        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(bindingResult, "programIdentifierPrefix", programIdentifierPrefix, false, 32);
+
         FieldError nameError = bindingResult.getFieldError("programName");
         FieldError prefixError = bindingResult.getFieldError("programIdentifierPrefix");
+        FieldError postfixError = bindingResult.getFieldError("programLastIdentifier");
+        FieldError eventTimeOffsetMinutesError = bindingResult.getFieldError("eventTimeOffsetMinutes");
+        FieldError notificationTimeOffsetMinutesError = bindingResult.getFieldError("notificationTimeOffsetMinutes");
+        FieldError minimumNotificationTimeMinutesError = bindingResult.getFieldError("minimumNotificationTimeMinutes");
+        FieldError defaultEventDurationError = bindingResult.getFieldError("defaultEventDuration");
+        FieldError minimumEventDurationError = bindingResult.getFieldError("minimumEventDuration");
+        FieldError energyPriceError = bindingResult.getFieldError("energyPrice");
+        FieldError customerElectionCutoffError = bindingResult.getFieldError("customerElectionCutoff");
         
         if (bindingResult.hasErrors()) {
             model.addAttribute("nameError", nameError == null ? null : nameError.getCode());
             model.addAttribute("prefixError", prefixError == null ? null : prefixError.getCode());
+            model.addAttribute("postfixError", postfixError == null ? null : postfixError.getCode());
+            model.addAttribute("error_DEFAULT_EVENT_OFFSET_MINUTES", eventTimeOffsetMinutesError == null ? null : eventTimeOffsetMinutesError.getCode());
+            model.addAttribute("error_DEFAULT_NOTIFICATION_OFFSET_MINUTES", notificationTimeOffsetMinutesError == null ? null : notificationTimeOffsetMinutesError.getCode());
+            model.addAttribute("error_MINIMUM_NOTIFICATION_MINUTES", minimumNotificationTimeMinutesError == null ? null : minimumNotificationTimeMinutesError.getCode());
+            model.addAttribute("error_DEFAULT_EVENT_DURATION_MINUTES", defaultEventDurationError == null ? null : defaultEventDurationError.getCode());
+            model.addAttribute("error_MINIMUM_EVENT_DURATION_MINUTES", minimumEventDurationError == null ? null : minimumEventDurationError.getCode());
+            model.addAttribute("error_DEFAULT_ENERGY_PRICE", energyPriceError == null ? null : energyPriceError.getCode());
+            model.addAttribute("error_CUSTOMER_ELECTION_CUTOFF_MINUTES", customerElectionCutoffError == null ? null : customerElectionCutoffError.getCode()); 
             model.addAttribute("program", program);
             model.addAttribute("programParameters", programParameters);
             model.addAttribute("assignedProgramGroups", assignedGroups);
@@ -1100,10 +1119,13 @@ public class CcHomeController {
         return "redirect:/dr/cc/programList";
     }
     
-    private void setProgramParameter(ProgramParameter parameter, Number parameterInput) {
+    private void setProgramParameter(ProgramParameter parameter, Number parameterInput, String programFields, BindingResult bindingResult) {
         if (parameterInput != null) {
             parameter.setParameterValue(parameterInput.toString());
+        } else {
+            parameter.setParameterValue(null);
         }
+        YukonValidationUtils.checkIsValidNumber(bindingResult, programFields, parameterInput);
     }
     
     @RequestMapping("/cc/program/{programId}/event/{eventId}/revision/{revision}")
@@ -1486,9 +1508,19 @@ public class CcHomeController {
     private class ProgramFields {
         private String programName;
         private String programIdentifierPrefix;
-        public ProgramFields(String programName, String identifierPrefix) {
+        private Integer programLastIdentifier;
+        private Integer eventTimeOffsetMinutes;
+        private Integer notificationTimeOffsetMinutes;
+        private Integer minimumNotificationTimeMinutes;
+        private Integer defaultEventDuration;
+        private Integer minimumEventDuration;
+        private double energyPrice;
+        private Integer customerElectionCutoff;
+
+        public ProgramFields(String programName, String identifierPrefix, Integer programLastIdentifier) {
             this.programName = programName;
             programIdentifierPrefix = identifierPrefix;
+            this.programLastIdentifier = programLastIdentifier;
         }
         public String getProgramName() {
             return programName;
@@ -1502,5 +1534,53 @@ public class CcHomeController {
         public void setProgramIdentifierPrefix(String identifierPrefix) {
             programIdentifierPrefix = identifierPrefix;
         }
+        public Integer getProgramLastIdentifier() {
+            return programLastIdentifier;
+        }
+        public void setProgramLastIdentifier(Integer programLastIdentifier) {
+            this.programLastIdentifier = programLastIdentifier;
+        }
+        public Integer getEventTimeOffsetMinutes() {
+            return eventTimeOffsetMinutes;
+        }
+        public void setEventTimeOffsetMinutes(Integer eventTimeOffsetMinutes) {
+            this.eventTimeOffsetMinutes = eventTimeOffsetMinutes;
+        }
+        public Integer getNotificationTimeOffsetMinutes() {
+            return notificationTimeOffsetMinutes;
+        }
+        public void setNotificationTimeOffsetMinutes(Integer notificationTimeOffsetMinutes) {
+            this.notificationTimeOffsetMinutes = notificationTimeOffsetMinutes;
+        }
+        public Integer getMinimumNotificationTimeMinutes() {
+            return minimumNotificationTimeMinutes;
+        }
+        public void setMinimumNotificationTimeMinutes(Integer minimumNotificationTimeMinutes) {
+            this.minimumNotificationTimeMinutes = minimumNotificationTimeMinutes;
+        }
+        public Integer getDefaultEventDuration() {
+            return defaultEventDuration;
+        }
+        public void setDefaultEventDuration(Integer defaultEventDuration) {
+            this.defaultEventDuration = defaultEventDuration;
+        }
+        public Integer getMinimumEventDuration() {
+            return minimumEventDuration;
+        }
+        public void setMinimumEventDuration(Integer minimumEventDuration) {
+            this.minimumEventDuration = minimumEventDuration;
+        }
+        public double getEnergyPrice() {
+            return energyPrice;
+        }
+        public void setEnergyPrice(double energyPrice) {
+            this.energyPrice = energyPrice;
+        }
+        public Integer getCustomerElectionCutoff() {
+            return customerElectionCutoff;
+        }
+        public void setCustomerElectionCutoff(Integer customerElectionCutoff) {
+            this.customerElectionCutoff = customerElectionCutoff;
+        }       
     }
 }
