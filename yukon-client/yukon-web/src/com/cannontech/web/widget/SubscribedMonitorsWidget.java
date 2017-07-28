@@ -20,7 +20,6 @@ import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.search.result.UltraLightMonitor;
-import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -62,7 +61,10 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         } catch (ServletRequestBindingException e) {
             e.printStackTrace();
         }
-        
+        if (monitorIds == null) {
+            model.addAttribute("isSubscribedWidget", true);
+            return;
+        }
         List<DeviceDataMonitor> deviceDataMonitors = new ArrayList<>();
         List<OutageMonitor> outageMonitors = new ArrayList<>();
         List<TamperFlagMonitor> tamperFlagMonitors = new ArrayList<>();
