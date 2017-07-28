@@ -160,7 +160,8 @@ public class DeviceGroupUpdaterController {
                             errors.add(processingResultInfo.getError());
                             deviceCount = processingResultInfo.getDeviceCount();
                             if(!processingResultInfo.getUnknownDevices().isEmpty()){
-                                String error = processingResultInfo.getUnknownDevices().size() +" unknown devices.";
+                                String error = processingResultInfo.getUnknownDevices().size() > 1 ? "There were " : "There was ";
+                                error += processingResultInfo.getUnknownDevices().size() +" unknown device(s) found.";
                                 errors.add(error);
                                 log.error("Unable to upload unknown devices: " + StringUtils.join(processingResultInfo.getUnknownDevices(), ','));
                             }
