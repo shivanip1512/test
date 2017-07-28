@@ -671,7 +671,7 @@
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" classes="primary action"/>
+                <cti:button nameKey="save" type="submit" classes="primary action" busy="true"/>
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">

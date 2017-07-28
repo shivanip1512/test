@@ -280,62 +280,62 @@ public class PointController {
 
     @RequestMapping(value = "/points/Analog", method = RequestMethod.POST)
     public String saveAnalog(@ModelAttribute("pointModel") AnalogPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser());
-        return save(pointModel, result, redirectAttributes);
+        return save(pointModel, result, redirectAttributes, flash);
     }
 
     @RequestMapping(value = "/points/PulseAccumulator", method = RequestMethod.POST)
     public String saveAccumulator(AccumulatorPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser());
-        return save(pointModel, result, redirectAttributes);
+        return save(pointModel, result, redirectAttributes, flash);
     }
     
     @RequestMapping(value = "/points/DemandAccumulator", method = RequestMethod.POST)
     public String saveDemandAccumulator(AccumulatorPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser());
-        return save(pointModel, result, redirectAttributes);
+        return save(pointModel, result, redirectAttributes, flash);
     }
 
     @RequestMapping(value = "/points/CalcAnalog", method = RequestMethod.POST)
     public String saveCalcAnalog(@ModelAttribute("pointModel") CalculatedPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser());
-        return save(pointModel, result, redirectAttributes);
+        return save(pointModel, result, redirectAttributes, flash);
     }
 
     @RequestMapping(value = "/points/Status", method = RequestMethod.POST)
     public String saveStatusAnalog(@ModelAttribute("pointModel") StatusPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser());
-        return save(pointModel, result, redirectAttributes);
+        return save(pointModel, result, redirectAttributes, flash);
     }
 
     @RequestMapping(value = "/points/CalcStatus", method = RequestMethod.POST)
     public String saveCalcStatusAnalog(@ModelAttribute("pointModel") CalcStatusPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser());
 
-        return save(pointModel, result, redirectAttributes);
+        return save(pointModel, result, redirectAttributes, flash);
     }
 
     @RequestMapping(value = "/points/System", method = RequestMethod.POST)
     public String saveSystem(@ModelAttribute("pointModel") SystemPointModel pointModel, BindingResult result,
-            RedirectAttributes redirectAttributes, YukonUserContext userContext) {
+            RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser());
-        return save(pointModel, result, redirectAttributes);
+        return save(pointModel, result, redirectAttributes, flash);
     }
 
-    private String save(PointModel pointModel, BindingResult result, RedirectAttributes redirectAttributes) {
+    private String save(PointModel pointModel, BindingResult result, RedirectAttributes redirectAttributes, FlashScope flash) {
 
         pointModel.finishSetup();
 
@@ -346,7 +346,8 @@ public class PointController {
         }
 
         int id = pointEditorService.save(pointModel);
-
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saveSuccess"));
+        
         return "redirect:/tools/points/" + id;
     }
 
