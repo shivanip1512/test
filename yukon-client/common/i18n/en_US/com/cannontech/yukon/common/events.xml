@@ -744,14 +744,14 @@
     <entry key="yukon.common.events.infrastructure.warning.warningGenerated">{3}-severity {2} warning generated for device: {1}. Message: {4}</entry>
     
     <!-- Dashboard Actions -->
-    <entry key="yukon.common.events.dashboard.dashboardAssigned">Dashboard {2} assigned to {7} user(s) by {1}.</entry>
-    <entry key="yukon.common.events.dashboard.dashboardUnassigned">Dashboard {2} unassigned from {7} user(s) by {1}.</entry>
-    <entry key="yukon.common.events.dashboard.dashboardOwnerChanged">Dashboard {3} owner changed from {1} to {2}.</entry>
-    <entry key="yukon.common.events.dashboard.dashboardDeleted">Dashboard {2} deleted by {1}.</entry>
-    <entry key="yukon.common.events.dashboard.widgetAdded">{2} widget added to dashboard {3} by {1}.</entry>
-    <entry key="yukon.common.events.dashboard.widgetRemoved">{2} widget removed from dashboard {3} by {1}.</entry>
-    <entry key="yukon.common.events.dashboard.nameChanged">Dashboard name changed from {2} to {3} by {1}.</entry>
-    <entry key="yukon.common.events.dashboard.descriptionChanged">Dashboard {4} description changed from "{2}" to "{3}" by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.dashboardAssigned">Dashboard {2} assigned to {7} user(s) by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.dashboardUnassigned">Dashboard {2} unassigned from {7} user(s) by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.dashboardOwnerChanged">Dashboard {3} owner changed from {1} to {2}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.dashboardDeleted">Dashboard {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.widgetAdded">{2} widget added to dashboard {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.widgetRemoved">{2} widget removed from dashboard {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.nameChanged">Dashboard name changed from {2} to {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dashboard.descriptionChanged">Dashboard {4} description changed from "{2}" to "{3}" by {1}.</entry>
     
 </properties>
 
