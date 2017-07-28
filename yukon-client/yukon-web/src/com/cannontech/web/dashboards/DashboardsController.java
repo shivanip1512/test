@@ -380,11 +380,7 @@ public class DashboardsController {
             dashboard.setOwner(userContext.getYukonUser());
             try {
                 int id = dashboardService.update(userContext.getYukonUser(), dashboard);
-                dashboardService.logDetailsEdited(userContext.getYukonUser(),
-                                               existingDashboard.getName(),
-                                               existingDashboard.getDescription(),
-                                               dashboard.getName(),
-                                               dashboard.getDescription());
+                
                 // Success
                 model.clear();
                 Map<String, Object> json = new HashMap<>();

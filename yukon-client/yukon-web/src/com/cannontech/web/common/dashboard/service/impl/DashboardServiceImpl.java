@@ -156,6 +156,7 @@ public class DashboardServiceImpl implements DashboardService {
             dashboardDao.assignDashboard(userPageMap.get(type), type, dashboardId);
         }
         
+        logDetailsEdited(yukonUser, existingDashboard.getName(), existingDashboard.getDescription(), dashboard.getName(), dashboard.getDescription());
         logWidgetsAddedOrRemoved(yukonUser, existingDashboard, dashboard);
         
         return dashboardId;
