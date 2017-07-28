@@ -417,11 +417,9 @@ public class MeterController {
             deviceDao.changeRoute(device, meter.getRouteId());
         }
         if (meter.isDisabled()) {
-           deviceUpdateService.disableDevice(device); 
-        }
-        else
-        {
-           deviceDao.enableDevice(device);
+            deviceUpdateService.disableDevice(device);
+        } else {
+            deviceDao.enableDevice(device);
         }
         Map<String, Object> json = new HashMap<>();
         json.put("deviceId", device.getDeviceId());
