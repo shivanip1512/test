@@ -6,7 +6,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<c:set var="actionUrl" value="/stars/consumer/optout/deviceSelection"/>
+ <cti:url var="actionUrl" value="/stars/consumer/optout/deviceSelection"/>
 
 <cti:standardPage module="consumer" page="optout">
     <cti:standardMenu />

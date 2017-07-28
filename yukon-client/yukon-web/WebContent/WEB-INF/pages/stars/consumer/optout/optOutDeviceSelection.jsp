@@ -8,6 +8,14 @@
 <cti:standardPage module="consumer" page="optoutlist">
     <cti:standardMenu/>
 
+<script type="text/javascript">
+function submitForm() {
+    $(".ui-dialog").css("display","none");
+    yukon.ui.blockPage();
+    $('#form').submit();
+}
+</script>
+
     <c:if test="${!empty error}">
         <span class="error"><cti:msg key="${error}"/></span><br>
     </c:if>
@@ -89,7 +97,7 @@
             <br>
             <c:if test="${showNextButton}">
                 <span style="padding-right: 0.5em;">
-                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optoutlist.save'/>"></input>
+                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optoutlist.save'/>" onclick="submitForm()"></input>
                 </span>
             </c:if>
             <cti:url var="optOutUrl" value="/stars/consumer/optout" />
@@ -100,5 +108,4 @@
             <form:hidden path="startDate"/>
         </form:form>
     </div>
-
 </cti:standardPage>
