@@ -14,7 +14,7 @@
 function submitForm() {
     $(".ui-dialog").css("display","none");
     yukon.ui.blockPage();
-    $('form').submit();
+    $('#form').submit();
 }
 </script>
 
