@@ -8,7 +8,7 @@ import org.apache.lucene.document.TextField;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class MonitorIndexManager extends SimpleIndexManager {
@@ -98,12 +98,14 @@ public class MonitorIndexManager extends SimpleIndexManager {
     @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database,
                                               String category) {
-        if(category == DBChangeMsg.CAT_MONITOR_DB) {
+        if (database == DbChangeCategory.MONITOR.getDbChangeMsgDatabaseId() ||
+                database == DbChangeCategory.PORTER_RESPONSE_MONITOR.getDbChangeMsgDatabaseId() ||
+                database == DbChangeCategory.DEVICE_DATA_MONITOR.getDbChangeMsgDatabaseId()) {
             rebuildIndex();
         }
         return null;
     }
-
+    
     @Override
     public synchronized void rebuildIndex() {
         super.rebuildIndex();

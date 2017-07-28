@@ -25,8 +25,6 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
 
@@ -44,7 +42,6 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
     public void saveOrUpdate(TamperFlagMonitor tamperFlagMonitor) {
         try {
             template.save(tamperFlagMonitor);
-            dbChangeManager.processDbChange(tamperFlagMonitor.getTamperFlagMonitorId(), DBChangeMsg.CHANGE_TAMPER_FLAG_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save tamper flag monitor.", e);
         }
@@ -85,7 +82,6 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
     public boolean delete(int tamperFlagMonitorId) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM TamperFlagMonitor WHERE TamperFlagMonitorId").eq(tamperFlagMonitorId);
-        dbChangeManager.processDbChange(tamperFlagMonitorId, DBChangeMsg.CHANGE_TAMPER_FLAG_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         return yukonJdbcTemplate.update(sql) > 0;
     }
 

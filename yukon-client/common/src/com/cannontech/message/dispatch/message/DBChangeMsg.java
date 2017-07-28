@@ -69,12 +69,6 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_USER_PREFERENCE_DB = 40;
     public static final int CHANGE_USER_PREFERENCE_DB_DELETE_BY_USER_ID = 41;
     public static final int CHANGE_INVENTORY_DB = 42;
-    public static final int CHANGE_DEVICE_DATA_MONITOR_DB = 43;
-    public static final int CHANGE_OUTAGE_MONITOR_DB = 44;
-    public static final int CHANGE_TAMPER_FLAG_MONITOR_DB = 45;
-    public static final int CHANGE_STATUS_POINT_MONITOR_DB = 46;
-    public static final int CHANGE_PORTER_RESPONSE_MONITOR_DB = 47;
-    public static final int CHANGE_VALIDATION_MONITOR_DB = 48;
 
     
     /*Possible values for the Categories field
@@ -113,7 +107,6 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final String CAT_YUKON_PAOBJECT_ENCRYPTION_KEY_DB = "Yukon Paobject Encryption Key";
     public static final String CAT_ENCRYPTION_KEY_DB = "Encryption Key";
     public static final String CAT_INVENTORY_DB = "Inventory";
-    public static final String CAT_MONITOR_DB = "Monitor";
     
     // Categories used by stars
     public static final String CAT_CUSTOMER_ACCOUNT = "CustomerAccount";

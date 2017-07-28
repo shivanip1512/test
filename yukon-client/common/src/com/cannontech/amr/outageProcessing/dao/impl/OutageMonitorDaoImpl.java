@@ -25,8 +25,6 @@ import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class OutageMonitorDaoImpl implements OutageMonitorDao {
 
@@ -43,7 +41,6 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao {
     public void saveOrUpdate(OutageMonitor outageMonitor) {
         try {
             template.save(outageMonitor);
-            dbChangeManager.processDbChange(outageMonitor.getOutageMonitorId(), DBChangeMsg.CHANGE_OUTAGE_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save outage processor.", e);
         }
@@ -84,7 +81,6 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao {
     public boolean delete(int outageMonitorId) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM OutageMonitor WHERE OutageMonitorId").eq(outageMonitorId);
-        dbChangeManager.processDbChange(outageMonitorId, DBChangeMsg.CHANGE_OUTAGE_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         return yukonJdbcTemplate.update(sql) > 0;
     }
 

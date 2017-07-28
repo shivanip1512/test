@@ -33,8 +33,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
 
@@ -163,7 +161,6 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
         sql.append("DELETE FROM PorterResponseMonitor");
         sql.append("WHERE MonitorId").eq(monitorId);
         int rowsAffected = yukonJdbcTemplate.update(sql);
-        dbChangeManager.processDbChange(monitorId, DBChangeMsg.CHANGE_PORTER_RESPONSE_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         return rowsAffected > 0;
     }
 
@@ -172,7 +169,6 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
     public void save(PorterResponseMonitor monitor) {
         try {
             monitorTemplate.save(monitor);
-            dbChangeManager.processDbChange(monitor.getMonitorId(), DBChangeMsg.CHANGE_PORTER_RESPONSE_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save Porter Response Monitor.", e);
         }

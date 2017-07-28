@@ -30,8 +30,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -130,7 +128,6 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
                 //--deliberately re-using the ID of the row we just deleted above
                 statusPointMonitorProcessorTemplate.insert(holder);
             }
-            dbChangeManager.processDbChange(statusPointMonitor.getStatusPointMonitorId(), DBChangeMsg.CHANGE_STATUS_POINT_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
 
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save Status Point Monitor.", e);
@@ -180,7 +177,6 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
         sql.append("DELETE FROM StatusPointMonitor");
         sql.append("WHERE StatusPointMonitorId").eq(statusPointMonitorId);
         int rowsAffected = yukonJdbcTemplate.update(sql);
-        dbChangeManager.processDbChange(statusPointMonitorId, DBChangeMsg.CHANGE_STATUS_POINT_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
 
         return rowsAffected > 0;
     }

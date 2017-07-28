@@ -38,8 +38,6 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
@@ -162,7 +160,6 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         sql.append("WHERE MonitorId").eq(monitorId);
         int rowsAffected = yukonJdbcTemplate.update(sql);
         log.info("Deleted device data monitor: " + monitor.getName());
-        dbChangeManager.processDbChange(monitor.getId(), DBChangeMsg.CHANGE_DEVICE_DATA_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.DEVICE_DATA_MONITOR, monitorId);
         return rowsAffected > 0;
     }
@@ -172,7 +169,6 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     public void save(DeviceDataMonitor monitor) {
         try {
             monitorTemplate.save(monitor);
-            dbChangeManager.processDbChange(monitor.getId(), DBChangeMsg.CHANGE_DEVICE_DATA_MONITOR_DB, DBChangeMsg.CAT_MONITOR_DB, DbChangeType.ADD);
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Unable to save Device Data Monitor.", e);
         }
