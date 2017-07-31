@@ -181,9 +181,9 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 if (bankSize == null) {
                     bankSize = capControlCache.getCapBanksBySubBus(subBus.getCcId()).stream().mapToInt(
                         capBank -> capBank.getBankSize()).sum();
-                    subBusKVar.put(subBus.getCcId(), bankSize);
+                    subBusKVar.put(subBus.getCcId(), bankSize + 1500);
                 }
-                final int MAX_KVAR = bankSize  + 1500;
+                final int MAX_KVAR = bankSize;
                 final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
                 final double currentSubBusBaseKw = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
                 final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
