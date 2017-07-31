@@ -282,13 +282,21 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                             isProgramEnrollmentEnrolled = true;
                         }
                     } else {
-                        if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()){
+                        if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
                             programEnrollment.update(newProgramEnrollment);
                             programEnrollment.setEnroll(true);
                             isProgramEnrollmentEnrolled = true;
                         } else if (!isMultipleProgramsPerCategoryAllowed) {
                             removedEnrollments.add(programEnrollment);
                         }
+                    }
+                } else if (!isMultipleProgramsPerCategoryAllowed) {
+                    if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
+                        programEnrollment.update(newProgramEnrollment);
+                        programEnrollment.setEnroll(true);
+                        isProgramEnrollmentEnrolled = true;
+                    } else {
+                        removedEnrollments.add(programEnrollment);
                     }
                 }
             }

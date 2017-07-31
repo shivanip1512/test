@@ -197,15 +197,36 @@ public class EnrollmentHelperServiceImplTest {
 
         enrollmentHelperService = new EnrollmentHelperEndpointServiceMock();
 
-        ProgramEnrollment newProgramEnrollment = new ProgramEnrollment(10, 20, false, 34, 40, 50, 1);
+        ProgramEnrollment newProgramEnrollment = new ProgramEnrollment(10, 20, false, 34, 100, 50, 1);
         List<ProgramEnrollment> programEnrollments =
             enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
-        Assert.assertEquals(5, programEnrollments.size());
+        Assert.assertEquals(4, programEnrollments.size());
+        Assert.assertEquals(100, programEnrollments.get(0).getLmGroupId());
+    }
+    
+    /**
+     * In this case , considering same appliance category, different program and different inventory
+     * (isMultipleProgramsPerCategoryAllowed = false)
+     */
+
+    @Test
+    public void testAddProgramEnrollmentCase_5() throws Exception {
+
+        enrollmentHelperService = new EnrollmentHelperEndpointServiceMock();
+
+        ProgramEnrollment newProgramEnrollment = new ProgramEnrollment(10, 20, false, 34, 40, 67, 1);
+        List<ProgramEnrollment> programEnrollments =
+            enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
+
+        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
+
+        Assert.assertEquals(4, programEnrollments.size());
         Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
+    
 
     /**
      * In this case , considering same appliance category, same program and same inventory
@@ -213,7 +234,7 @@ public class EnrollmentHelperServiceImplTest {
      */
 
     @Test
-    public void testAddProgramEnrollmentCase_5() throws Exception {
+    public void testAddProgramEnrollmentCase_6() throws Exception {
 
         enrollmentHelperService = new EnrollmentHelperEndpointServiceMock();
 
