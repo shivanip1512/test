@@ -15481,6 +15481,20 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
+            <string>Indx_RPV_PointID</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>RecentPointValue</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>PointID</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>Indx_RPV_PointID</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>PK_RecentPointValue</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
