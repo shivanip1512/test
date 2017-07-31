@@ -202,53 +202,53 @@ public class DashboardsController {
     }
     
     @RequestMapping(value="create", method=RequestMethod.GET)
-    public String createDialog(ModelMap model, YukonUserContext userContext) {
+    public String createDialog(ModelMap model, LiteYukonUser yukonUser) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        setupDashboardDetailsModel(model, userContext);
+        setupDashboardDetailsModel(model, yukonUser);
         model.addAttribute("dashboard", new Dashboard());
         return "dashboardDetails.jsp";
     }
     
     @RequestMapping("{id}/copy")
-    public String copyDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
+    public String copyDashboard(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        setupDashboardDetailsModel(model, userContext);
+        setupDashboardDetailsModel(model, yukonUser);
         Dashboard dashboard = new Dashboard();
         dashboard.setDashboardId(id);
         model.addAttribute("dashboard", dashboard);
         return "dashboardDetails.jsp";
     }
     
-    private void setupDashboardDetailsModel(ModelMap model, YukonUserContext userContext) {
+    private void setupDashboardDetailsModel(ModelMap model, LiteYukonUser yukonUser) {
         model.addAttribute("visibilityOptions", Visibility.values());
-        List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        List<LiteDashboard> dashboards = dashboardService.getVisible(yukonUser.getUserID());
         model.addAttribute("dashboards", dashboards);
     }
     
     @RequestMapping(value="create", method=RequestMethod.POST)
-    public String createDashboard(@ModelAttribute Dashboard dashboard, YukonUserContext userContext, ModelMap model,
+    public String createDashboard(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, ModelMap model,
                                   FlashScope flash, BindingResult result, HttpServletResponse resp) {
         int id = dashboard.getDashboardId();
         validator.validate(dashboard, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
-            setupDashboardDetailsModel(model, userContext);
+            setupDashboardDetailsModel(model, yukonUser);
             return "dashboardDetails.jsp";
         }
         try {
             if (id != 0) {
                 id = dashboardService.copy(dashboard.getDashboardId(), dashboard.getName(), dashboard.getDescription(),
-                    dashboard.getVisibility(), userContext.getYukonUser().getUserID());
+                    dashboard.getVisibility(), yukonUser.getUserID());
             } else {
-                dashboard.setOwner(userContext.getYukonUser());
+                dashboard.setOwner(yukonUser);
                 id = dashboardService.create(dashboard);
             }
         } catch (DuplicateException e) {
             result.rejectValue("name", "yukon.web.error.nameConflict");
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
-            setupDashboardDetailsModel(model, userContext);
+            setupDashboardDetailsModel(model, yukonUser);
             return "dashboardDetails.jsp";
         }
         // Success
@@ -260,13 +260,13 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/editDetails")
-    public String editDetails(@PathVariable int id, ModelMap model, YukonUserContext userContext, FlashScope flash) {
+    public String editDetails(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(userContext, dashboard)) {
+        if (isDashboardOwner(yukonUser, dashboard)) {
             model.addAttribute("mode", PageEditMode.EDIT);
             List<Visibility> reducedVisibility = new ArrayList<>();
             List<Visibility> visibilityOptions = Arrays.asList(Visibility.values());
-            if (hasOtherUsers(userContext, id)) {
+            if (hasOtherUsers(yukonUser, id)) {
                 //only allow making visibility more visible if there are users
                 List<Visibility> reversedOptions = Lists.reverse(visibilityOptions);
                 for (Visibility visibility : reversedOptions) {
@@ -279,7 +279,7 @@ public class DashboardsController {
                 visibilityOptions = reducedVisibility;
             }
             model.addAttribute("visibilityOptions", visibilityOptions);
-            List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+            List<LiteDashboard> dashboards = dashboardService.getVisible(yukonUser.getUserID());
             model.addAttribute("dashboards", dashboards);
             model.addAttribute("dashboard", dashboard);
             return "dashboardDetails.jsp";
@@ -321,9 +321,9 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/edit")
-    public String editDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext, FlashScope flash) {
+    public String editDashboard(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(userContext, dashboard)) {
+        if (isDashboardOwner(yukonUser, dashboard)) {
             model.addAttribute("mode", PageEditMode.EDIT);
             model.addAttribute("dashboard", dashboard);
             return "dashboardEdit.jsp";
@@ -334,9 +334,9 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/addWidgets")
-    public String addWidgets(@PathVariable int id, ModelMap model, YukonUserContext userContext, FlashScope flash) {
+    public String addWidgets(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(userContext, dashboard)) {
+        if (isDashboardOwner(yukonUser, dashboard)) {
             model.addAttribute("widgetMap", widgetService.getTypesByCategory());
             model.addAttribute("totalWidgets", WidgetType.values().length);
             return "addWidgets.jsp";
@@ -347,9 +347,9 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/addWidget/{type}")
-    public String addWidgetType(@PathVariable int id, @PathVariable String type, ModelMap model, YukonUserContext userContext, FlashScope flash) {
+    public String addWidgetType(@PathVariable int id, @PathVariable String type, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(userContext, dashboard)) {
+        if (isDashboardOwner(yukonUser, dashboard)) {
             WidgetType widgetType = WidgetType.valueOf(type);
             Widget widget = new Widget();
             widget.setType(widgetType);
@@ -364,22 +364,22 @@ public class DashboardsController {
 
     
     @RequestMapping("saveDetails")
-    public String saveDetails(@ModelAttribute Dashboard dashboard, YukonUserContext userContext, 
+    public String saveDetails(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, 
                               BindingResult result, ModelMap model, HttpServletResponse resp, FlashScope flash) {
         Dashboard existingDashboard = dashboardService.getDashboard(dashboard.getDashboardId());
-        if (isDashboardOwner(userContext, existingDashboard)) {
+        if (isDashboardOwner(yukonUser, existingDashboard)) {
             dashboard.setColumn1Widgets(existingDashboard.getColumn1Widgets());
             dashboard.setColumn2Widgets(existingDashboard.getColumn2Widgets());
             validator.validate(dashboard, result);
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 model.addAttribute("mode", PageEditMode.EDIT);
-                setupDashboardDetailsModel(model, userContext);
+                setupDashboardDetailsModel(model, yukonUser);
                 return "dashboardDetails.jsp";
             }
-            dashboard.setOwner(userContext.getYukonUser());
-            try {
-                int id = dashboardService.update(userContext.getYukonUser(), dashboard);
+            
+            try {dashboard.setOwner(yukonUser);
+                int id = dashboardService.update(yukonUser, dashboard);
                 
                 // Success
                 model.clear();
@@ -391,7 +391,7 @@ public class DashboardsController {
                 result.rejectValue("name", "yukon.web.error.nameConflict");
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 model.addAttribute("mode", PageEditMode.EDIT);
-                setupDashboardDetailsModel(model, userContext);
+                setupDashboardDetailsModel(model, yukonUser);
                 return "dashboardDetails.jsp";
             }
         } else {
@@ -401,11 +401,11 @@ public class DashboardsController {
     }
     
     @RequestMapping("save")
-    public String saveDashboard(@ModelAttribute Dashboard dashboard, YukonUserContext userContext, FlashScope flash) {
+    public String saveDashboard(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard existingDashboard = dashboardService.getDashboard(dashboard.getDashboardId());
-        if (isDashboardOwner(userContext, existingDashboard)) {
-            dashboard.setOwner(userContext.getYukonUser());
-            int id = dashboardService.update(userContext.getYukonUser(), dashboard);
+        if (isDashboardOwner(yukonUser, existingDashboard)) {
+            dashboard.setOwner(yukonUser);
+            int id = dashboardService.update(yukonUser, dashboard);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success"));
             return "redirect:/dashboards/" + id + "/view";
         } else {
@@ -415,15 +415,15 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/delete")
-    public void deleteDashboard(FlashScope flash, @PathVariable int id, YukonUserContext userContext, HttpServletResponse resp) {
+    public void deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser yukonUser, HttpServletResponse resp) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         LiteYukonUser owner = dashboard.getOwner();
         if (dashboard.getVisibility() == Visibility.SYSTEM) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.system", dashboard.getName()));
-        } else if (hasOtherUsers(userContext, id)) {
+        } else if (hasOtherUsers(yukonUser, id)) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboard.getName()));
-        } else if (owner == null || isDashboardOwner(userContext, dashboard)) {
-            dashboardService.delete(userContext.getYukonUser(), id);
+        } else if (owner == null || isDashboardOwner(yukonUser, dashboard)) {
+            dashboardService.delete(yukonUser, id);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", dashboard.getName()));
         } else {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.notOwner", dashboard.getName()));
@@ -431,13 +431,13 @@ public class DashboardsController {
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
-    private boolean isDashboardOwner(YukonUserContext userContext, Dashboard dashboard) {
-        return (userContext.getYukonUser().getUserID() == dashboard.getOwner().getUserID());
+    private boolean isDashboardOwner(LiteYukonUser yukonUser, Dashboard dashboard) {
+        return (yukonUser.getUserID() == dashboard.getOwner().getUserID());
     }
     
-    private boolean hasOtherUsers(YukonUserContext userContext, int dashboardId) {
+    private boolean hasOtherUsers(LiteYukonUser yukonUser, int dashboardId) {
         List<Integer> dashboardUsers = dashboardDao.getAllUsersForDashboard(dashboardId);
-        return !(dashboardUsers.size() == 0 || (dashboardUsers.size() == 1 && dashboardUsers.get(0) == userContext.getYukonUser().getUserID()));
+        return !(dashboardUsers.size() == 0 || (dashboardUsers.size() == 1 && dashboardUsers.get(0) == yukonUser.getUserID()));
     }
     
     public enum DashboardSortBy implements DisplayableEnum {
