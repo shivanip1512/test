@@ -63,7 +63,7 @@
                     <c:if test="${not empty postfixError}">
                         <span class="error"><i:inline key="${postfixError}"/></span>
                     </c:if>
-                    <div id="program-error" class="error dn"><i:inline key=".cc.invalidInput"/></div>
+                    <div id="program-error" class="error dn"><i:inline key="yukon.web.error.isNotPositive"/></div>
                 </td>
             </tr>
         </table>
@@ -87,7 +87,7 @@
                         <c:if test="${not empty errorkey}">
                             <span class="error"><i:inline key="${errorkey}"/></span>
                         </c:if>
-                        <div id="parameter-error-${loop.index}" class="error dn"><i:inline key=".cc.invalidInput"/></div>
+                        <div id="parameter-error-${loop.index}" class="error dn"><i:inline key="yukon.web.error.isNotPositive"/></div>
                     </td>
                 </tr>
             </c:forEach>
