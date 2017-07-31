@@ -70,7 +70,6 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         } catch (ServletRequestBindingException e) {
             log.error(e.getMessage());
         }
-        System.out.println(monitorIds.size());
         if (monitorIds == null || monitorIds.size() == 0) {
             super.putMonitorsInModel(model, request);
             model.addAttribute("isSubscribedWidget", true);
