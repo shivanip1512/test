@@ -10,14 +10,6 @@
 <cti:standardPage module="consumer" page="optoutlist">
     <cti:standardMenu/>
 
-<script type="text/javascript">
-function submitForm() {
-    $(".ui-dialog").css("display","none");
-    yukon.ui.blockPage();
-    $('#form').submit();
-}
-</script>
-
     <h3><cti:msg key="yukon.dr.consumer.confirmOptOutAllDevices.header"/></h3>
 
     <div align="center">
@@ -68,7 +60,7 @@ function submitForm() {
 
             <div class="page-action-area">
                 <cti:msg var="save" key="yukon.dr.consumer.confirmOptOutAllDevices.save"/>
-                <cti:button type="submit" value="${save }" label="${save}" onclick="submitForm()"/>
+                <cti:button type="submit" value="${save}" label="${save}" busy="true" blockPage="true"/>
                 <cti:url var="optOutUrl" value="/stars/consumer/optout"/>
                 <cti:msg key="yukon.dr.consumer.confirmOptOutAllDevices.cancel" var="cancel"/>
                 <cti:button label="${cancel}" href="${optOutUrl}"/>

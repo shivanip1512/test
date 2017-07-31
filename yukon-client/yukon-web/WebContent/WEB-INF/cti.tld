@@ -1880,6 +1880,15 @@
                 This attribute requires the js-disable-after-click class. 
             </description>
         </attribute>
+        <attribute>
+            <name>blockPage</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Sets the 'data-block-page' attribute of the button when set to 'true'.
+                This attribute requires the js-disable-after-click class. 
+            </description>
+        </attribute>
     </tag>
 
     <tag>

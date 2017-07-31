@@ -39,6 +39,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     protected String value = null;
     protected boolean disabled = false;
     protected boolean busy = false;
+    protected boolean blockPage = false;
 
     /* Will add hint to button that it will ask for more info before doing the action.
      * Currently adds ellipsis to end of button text. */
@@ -104,6 +105,10 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
     
     public void setBusy(Boolean busy) {
         this.busy = busy;
+    }
+    
+    public void setBlockPage(Boolean blockPage) {
+        this.blockPage = blockPage;
     }
 
     public void setRenderMode(String renderMode) {
@@ -225,6 +230,10 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 } else {
                     out.write(" data-busy");
                 }
+            }
+            
+            if (blockPage) {
+                out.write("data-block-page");
             }
             
             out.write(">");

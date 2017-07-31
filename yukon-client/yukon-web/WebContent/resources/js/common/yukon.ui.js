@@ -386,6 +386,11 @@ yukon.ui = (function () {
                 if (button.is('[data-busy]')) {
                     mod.busy(button);
                 }
+                
+                // if this is a block page button, block out the page
+                if (button.is('[data-block-page]')) {
+                    mod.blockPage();
+                }
 
                 // if this is a submit button, trigger the submit event on the form
                 if (button.is(':submit')) {

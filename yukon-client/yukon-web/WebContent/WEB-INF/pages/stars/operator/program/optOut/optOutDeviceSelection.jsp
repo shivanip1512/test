@@ -41,12 +41,6 @@ function createJSON () {
     $('form')[0].appendChild(inputElement);
 }
 
-function submitForm() {
-    $(".ui-dialog").css("display","none");
-    yukon.ui.blockPage();
-    $('#form').submit();
-}
-
 </script>    
 
 <c:set var="showNextButton" value="false" />
@@ -119,7 +113,7 @@ function submitForm() {
 
     <div class="page-action-area">
         <c:if test="${showNextButton}">
-            <cti:button nameKey="save" type="submit" classes="primary action" onclick="submitForm()"/>
+            <cti:button nameKey="save" type="submit" classes="primary action" busy="true" blockPage="true"/>
         </c:if>
         <cti:button nameKey="cancel" name="cancel" type="submit"/>
     </div>
