@@ -39,12 +39,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="VOLTS"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="6" type="Analog">
-        <name>Voltage Secondary</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
+    <!--  point offset 6 was previously Voltage Secondary, but can be reused if necessary -->
     <point offset="7" type="Analog">
         <name>Received kVArh</name>
         <multiplier value="1"/>
