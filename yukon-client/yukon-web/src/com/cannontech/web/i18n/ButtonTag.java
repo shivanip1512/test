@@ -233,7 +233,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             }
             
             if (blockPage) {
-                out.write("data-block-page");
+                out.write(" data-block-page");
             }
             
             out.write(">");

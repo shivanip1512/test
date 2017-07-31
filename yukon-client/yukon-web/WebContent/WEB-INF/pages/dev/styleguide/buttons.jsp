@@ -481,6 +481,30 @@ yukon.ui.unbusy('#busy-test-3');
 &lt;cti:button nameKey=&quot;delete&quot; busy=&quot;true&quot; data-disable-group=&quot;them-buttons&quot; classes=&quot;delete&quot; /&gt;
 &lt;cti:button nameKey=&quot;cancel&quot; busy=&quot;true&quot; data-disable-group=&quot;them-buttons&quot;/&gt;
 </pre>
+
+<h2 id="block-page-example">Blocking the Page</h2>
+
+<p class="description">
+    The <span class="label label-attr">&lt;cti:button&gt;</span> tag has the ability to block/disable the page when clicked by setting the 
+    <span class="label label-attr">blockPage</span> attribute to <em>true</em>.  This can be used in conjunction with the busy attribute.
+    <span class="warning">Blocking should only be used as a last resort since it is visually jarring to users.</span>
+    You can programatically block and un-block the page using the <span class="label label-attr">yukon.ui.blockPage</span> and 
+    <span class="label label-attr">yukon.ui.unblockPage</span> javascript functions.
+</p>
+<div class="column-4-20 clearfix button-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <cti:button id="block-test-1" nameKey="readNow" icon="icon-read" busy="true" blockPage="true"/>
+        <cti:button id="block-test-2" nameKey="readNow" busy="true" classes="action primary" blockPage="true"/>
+        <cti:button id="block-test-3" busy="true" icon="icon-cross" renderMode="buttonImage" blockPage="true"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;cti:button id=&quot;block-test-1&quot; nameKey=&quot;readNow&quot; icon=&quot;icon-read&quot; busy=&quot;true&quot; blockPage=&quot;true&quot;/&gt;
+&lt;cti:button id=&quot;busy-test-2&quot; nameKey=&quot;readNow&quot; busy=&quot;true&quot; blockPage=&quot;true&quot; classes=&quot;action primary&quot;/&gt;
+&lt;cti:button id=&quot;busy-test-3&quot; busy=&quot;true&quot; blockPage=&quot;true&quot; icon=&quot;icon-cross&quot; renderMode=&quot;buttonImage&quot;/&gt;
+</pre>
     
 <h2 id="drop-down-example">Drop Downs</h2>
 
