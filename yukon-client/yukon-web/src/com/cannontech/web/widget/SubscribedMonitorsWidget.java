@@ -54,16 +54,17 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
     protected void putMonitorsInModel(ModelMap model, HttpServletRequest request) {
         List<Integer> monitorIds = new ArrayList<Integer>();
         try {
+            String monitors = WidgetParameterHelper.getStringParameter(request, "selectMonitors");
+            if (monitors == null) {
+                model.addAttribute("isSubscribedWidget", true);
+                return;
+            }
             Pattern pattern = Pattern.compile(",");
-            monitorIds = pattern.splitAsStream(WidgetParameterHelper.getStringParameter(request, "selectMonitors"))
+            monitorIds = pattern.splitAsStream(monitors)
                     .map(Integer::valueOf)
                     .collect(Collectors.toList());
         } catch (ServletRequestBindingException e) {
             e.printStackTrace();
-        }
-        if (monitorIds == null) {
-            model.addAttribute("isSubscribedWidget", true);
-            return;
         }
         List<DeviceDataMonitor> deviceDataMonitors = new ArrayList<>();
         List<OutageMonitor> outageMonitors = new ArrayList<>();
