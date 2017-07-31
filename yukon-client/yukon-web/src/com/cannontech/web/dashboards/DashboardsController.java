@@ -262,7 +262,7 @@ public class DashboardsController {
     @RequestMapping("{id}/editDetails")
     public String editDetails(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(yukonUser, dashboard)) {
+        if (canUserEditDashboard(yukonUser, dashboard, flash)) {
             model.addAttribute("mode", PageEditMode.EDIT);
             List<Visibility> reducedVisibility = new ArrayList<>();
             List<Visibility> visibilityOptions = Arrays.asList(Visibility.values());
@@ -284,7 +284,6 @@ public class DashboardsController {
             model.addAttribute("dashboard", dashboard);
             return "dashboardDetails.jsp";
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
         }
 
@@ -323,12 +322,11 @@ public class DashboardsController {
     @RequestMapping("{id}/edit")
     public String editDashboard(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(yukonUser, dashboard)) {
+        if (canUserEditDashboard(yukonUser, dashboard, flash)) {
             model.addAttribute("mode", PageEditMode.EDIT);
             model.addAttribute("dashboard", dashboard);
             return "dashboardEdit.jsp";
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
         }
     }
@@ -336,12 +334,11 @@ public class DashboardsController {
     @RequestMapping("{id}/addWidgets")
     public String addWidgets(@PathVariable int id, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(yukonUser, dashboard)) {
+        if (canUserEditDashboard(yukonUser, dashboard, flash)) {
             model.addAttribute("widgetMap", widgetService.getTypesByCategory());
             model.addAttribute("totalWidgets", WidgetType.values().length);
             return "addWidgets.jsp";
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
         }
     }
@@ -349,7 +346,7 @@ public class DashboardsController {
     @RequestMapping("{id}/addWidget/{type}")
     public String addWidgetType(@PathVariable int id, @PathVariable String type, ModelMap model, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (isDashboardOwner(yukonUser, dashboard)) {
+        if (canUserEditDashboard(yukonUser, dashboard, flash)) {
             WidgetType widgetType = WidgetType.valueOf(type);
             Widget widget = new Widget();
             widget.setType(widgetType);
@@ -357,7 +354,6 @@ public class DashboardsController {
             model.addAttribute("dashboard", dashboard);
             return "widgetAddRow.jsp";
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
         }
     }
@@ -367,7 +363,7 @@ public class DashboardsController {
     public String saveDetails(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, 
                               BindingResult result, ModelMap model, HttpServletResponse resp, FlashScope flash) {
         Dashboard existingDashboard = dashboardService.getDashboard(dashboard.getDashboardId());
-        if (isDashboardOwner(yukonUser, existingDashboard)) {
+        if (canUserEditDashboard(yukonUser, existingDashboard, flash)) {
             dashboard.setColumn1Widgets(existingDashboard.getColumn1Widgets());
             dashboard.setColumn2Widgets(existingDashboard.getColumn2Widgets());
             validator.validate(dashboard, result);
@@ -395,7 +391,6 @@ public class DashboardsController {
                 return "dashboardDetails.jsp";
             }
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
         }
     }
@@ -403,13 +398,12 @@ public class DashboardsController {
     @RequestMapping("save")
     public String saveDashboard(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard existingDashboard = dashboardService.getDashboard(dashboard.getDashboardId());
-        if (isDashboardOwner(yukonUser, existingDashboard)) {
+        if (canUserEditDashboard(yukonUser, existingDashboard, flash)) {
             dashboard.setOwner(yukonUser);
             int id = dashboardService.update(yukonUser, dashboard);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success"));
             return "redirect:/dashboards/" + id + "/view";
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
         }
     }
@@ -418,7 +412,7 @@ public class DashboardsController {
     public void deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser yukonUser, HttpServletResponse resp) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         LiteYukonUser owner = dashboard.getOwner();
-        if (dashboard.getVisibility() == Visibility.SYSTEM) {
+        if (isSystemDashboard(dashboard)) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.system", dashboard.getName()));
         } else if (hasOtherUsers(yukonUser, id)) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboard.getName()));
@@ -431,6 +425,10 @@ public class DashboardsController {
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
+    private boolean isSystemDashboard(Dashboard dashboard) {
+        return dashboard.getVisibility() == Visibility.SYSTEM;
+    }
+    
     private boolean isDashboardOwner(LiteYukonUser yukonUser, Dashboard dashboard) {
         return (yukonUser.getUserID() == dashboard.getOwner().getUserID());
     }
@@ -438,6 +436,18 @@ public class DashboardsController {
     private boolean hasOtherUsers(LiteYukonUser yukonUser, int dashboardId) {
         List<Integer> dashboardUsers = dashboardDao.getAllUsersForDashboard(dashboardId);
         return !(dashboardUsers.size() == 0 || (dashboardUsers.size() == 1 && dashboardUsers.get(0) == yukonUser.getUserID()));
+    }
+    
+    private boolean canUserEditDashboard(LiteYukonUser yukonUser, Dashboard dashboard, FlashScope flash) {
+        if (isSystemDashboard(dashboard)){
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.system", dashboard.getName()));
+            return false;
+        }
+        if (!isDashboardOwner(yukonUser, dashboard)){
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.notOwner", dashboard.getName()));
+            return false;
+        }
+        return true;
     }
     
     public enum DashboardSortBy implements DisplayableEnum {

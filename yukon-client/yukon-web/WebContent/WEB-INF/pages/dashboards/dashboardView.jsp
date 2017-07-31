@@ -26,7 +26,7 @@
             </c:forEach>
             <li class="divider"/>
         </c:if>
-        <c:if test="${user.userID == dashboard.owner.userID}">
+        <c:if test="${user.userID == dashboard.owner.userID && dashboard.visibility != 'SYSTEM'}">
             <cti:url var="editUrl" value="/dashboards/${dashboard.dashboardId}/edit"/>
             <cm:dropdownOption key=".edit" href="${editUrl}"/>
         </c:if>

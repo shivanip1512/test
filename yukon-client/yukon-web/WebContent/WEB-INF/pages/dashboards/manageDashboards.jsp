@@ -56,7 +56,7 @@
                                         data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>" data-event="yukon:dashboard:details:save"></div>
                                         <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
                                         <c:choose>
-                                            <c:when test="${user.userID == dashboard.owner.userID}">
+                                            <c:when test="${user.userID == dashboard.owner.userID && dashboard.visibility != 'SYSTEM'}">
                                                 <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
                                                 <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}" />
                                                 <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
