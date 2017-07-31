@@ -841,6 +841,10 @@ TRUNCATE TABLE t_DeviceConfigCategoryIDs;
 DROP TABLE t_DeviceConfigCategoryIDs;
 /* End YUK-16782 */
 
+/* Start YUK-16969 */
+CREATE INDEX Indx_RPV_PointID ON RecentPointValue (PointID ASC);
+/* End YUK-16969 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

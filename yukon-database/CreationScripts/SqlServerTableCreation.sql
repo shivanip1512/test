@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/26/2017 1:36:48 PM                         */
+/* Created on:     7/31/2017 3:46:32 PM                         */
 /*==============================================================*/
 
 
@@ -8232,6 +8232,14 @@ create table RecentPointValue (
    Quality              numeric              not null,
    Value                float                not null,
    constraint PK_RecentPointValue primary key (PAObjectID)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_RPV_PointID                                      */
+/*==============================================================*/
+create index Indx_RPV_PointID on RecentPointValue (
+PointID ASC
 )
 go
 

@@ -600,6 +600,10 @@ WHERE
     AND DCCI.ItemValue='DEMAND';
 /* End YUK-16963 */
 
+/* Start YUK-16969 */
+CREATE INDEX Indx_RPV_PointID ON RecentPointValue (PointID ASC);
+/* End YUK-16969 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

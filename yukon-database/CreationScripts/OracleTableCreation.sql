@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/26/2017 1:35:51 PM                         */
+/* Created on:     7/31/2017 3:47:17 PM                         */
 /*==============================================================*/
 
 
@@ -7757,6 +7757,13 @@ create table RecentPointValue  (
    Quality              NUMBER                          not null,
    Value                FLOAT                           not null,
    constraint PK_RecentPointValue primary key (PAObjectID)
+);
+
+/*==============================================================*/
+/* Index: Indx_RPV_PointID                                      */
+/*==============================================================*/
+create index Indx_RPV_PointID on RecentPointValue (
+   PointID ASC
 );
 
 /*==============================================================*/
