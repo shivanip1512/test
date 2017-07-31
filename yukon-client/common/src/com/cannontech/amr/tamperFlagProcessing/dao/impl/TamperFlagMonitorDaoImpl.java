@@ -24,13 +24,11 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
 
 public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private DbChangeManager dbChangeManager;
     private SimpleTableAccessTemplate<TamperFlagMonitor> template;
     private static final RowMapper<TamperFlagMonitor> rowMapper;
 

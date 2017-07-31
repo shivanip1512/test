@@ -33,7 +33,6 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.SetMultimap;
@@ -47,7 +46,6 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
-    @Autowired private DbChangeManager dbChangeManager;
     private static final RowMapper<ValidationMonitor> rowMapper;
     private SimpleTableAccessTemplate<ValidationMonitor> template;
     

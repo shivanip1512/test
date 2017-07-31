@@ -37,7 +37,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
 
 public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
@@ -48,7 +47,6 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
-    @Autowired private DbChangeManager dbChangeManager;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorDaoImpl.class);
     
     private SimpleTableAccessTemplate<DeviceDataMonitor> monitorTemplate;

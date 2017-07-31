@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -18,6 +19,7 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.search.result.UltraLightMonitor;
 import com.cannontech.common.validation.model.ValidationMonitor;
@@ -40,6 +42,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class SubscribedMonitorsWidget extends AllMonitorsWidget {
 
     @Autowired private MonitorLuceneSearcher monitorLuceneSearcher;
+    private static final Logger log = YukonLogManager.getLogger(SubscribedMonitorsWidget.class);
 
     public SubscribedMonitorsWidget() {
     }
@@ -56,6 +59,7 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         try {
             String monitors = WidgetParameterHelper.getStringParameter(request, "selectMonitors");
             if (monitors == null) {
+                super.putMonitorsInModel(model, request);
                 model.addAttribute("isSubscribedWidget", true);
                 return;
             }
@@ -64,7 +68,13 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
                     .map(Integer::valueOf)
                     .collect(Collectors.toList());
         } catch (ServletRequestBindingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
+        }
+        System.out.println(monitorIds.size());
+        if (monitorIds == null || monitorIds.size() == 0) {
+            super.putMonitorsInModel(model, request);
+            model.addAttribute("isSubscribedWidget", true);
+            return;
         }
         List<DeviceDataMonitor> deviceDataMonitors = new ArrayList<>();
         List<OutageMonitor> outageMonitors = new ArrayList<>();

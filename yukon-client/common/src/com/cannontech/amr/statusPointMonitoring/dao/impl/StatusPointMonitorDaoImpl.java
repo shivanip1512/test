@@ -29,7 +29,6 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.message.DbChangeManager;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -39,7 +38,6 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     @Autowired private AttributeService attributeService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private DbChangeManager dbChangeManager;
     private SimpleTableAccessTemplate<StatusPointMonitor> statusPointMonitorTemplate;
     private SimpleTableAccessTemplate<StoredStatusPointMonitorProcessor> statusPointMonitorProcessorTemplate;
 
