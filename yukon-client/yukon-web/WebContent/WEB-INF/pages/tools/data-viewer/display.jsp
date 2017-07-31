@@ -13,7 +13,6 @@
 
     <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
     <flot:defaultIncludes />
-
     <div id="page-buttons" class="dn">
         <c:if test="${display.acknowledgable}">
             <tags:dynamicChoose updaterString="TDC/ALARM_DISPLAY/${display.displayId}" suffix="${display.displayId}">
@@ -31,10 +30,11 @@
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
         </c:if>
-        <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
-        <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
     </div>
-    
+    <div id="page-actions" class="dn">    
+    <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
+        <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
+    </div>
     <cti:url var="url" value="/tools/data-viewer/${display.displayId}/page"/>
     <div data-url="${url}" data-static>
         <table class="compact-results-table has-actions has-alerts">
