@@ -207,23 +207,18 @@ KVAR -> KVAR
 
 /* Update all RFN Data Streaming Device Behaviors with appropriate meter types to use DELIVERED_KVAR instead of KVAR */
 UPDATE BehaviorValue
-SET 
-    Value='DELIVERED_KVAR'
-FROM 
-    BehaviorValue BV 
-    JOIN (
-        SELECT DISTINCT
-            BV.BehaviorId
-        FROM BehaviorValue BV
-            JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-            JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-            JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-        WHERE 
-            B.BehaviorType='DATA_STREAMING'
-            AND Y.Type IN ('RFN-430A3R','RFN-530S4X')
-        ) RFNDS ON BV.BehaviorId=RFNDS.BehaviorId
-WHERE 
-    BV.Value='KVAR';
+SET Value = 'DELIVERED_KVAR'
+FROM BehaviorValue BV 
+JOIN (
+    SELECT DISTINCT BV.BehaviorId
+    FROM BehaviorValue BV
+    JOIN Behavior B            ON BV.BehaviorId=B.BehaviorId
+    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
+    JOIN YukonPAObject Y       ON DBM.DeviceId=Y.PAObjectID
+    WHERE B.BehaviorType = 'DATA_STREAMING'
+    AND Y.Type IN ('RFN-430A3R','RFN-530S4X')
+    ) RFNDS ON BV.BehaviorId=RFNDS.BehaviorId
+WHERE BV.Value = 'KVAR';
 
 
  /* Splitting/Updating DeviceConfiguration */
@@ -236,23 +231,21 @@ BEGIN
         @maxDeviceConfigDeviceTypeId    NUMERIC = (SELECT MAX(DeviceConfigDeviceTypeId) FROM DeviceConfigDeviceTypes);
 
     /* Find all rfnChannelConfiguration DeviceConfigCategories that contain 'KVAR' and are assigned to devices that need to stay as KVAR and devices that need to move to DELIVERED_KVAR */
-    SELECT 
-        DISTINCT DC.DeviceConfigurationID, 
+    SELECT DISTINCT 
+        DC.DeviceConfigurationID, 
         DCC.DeviceConfigCategoryId
     INTO #DeviceConfigsToSplit
-    FROM 
-        DeviceConfiguration DC
-        JOIN DeviceConfigCategoryMap DCCM ON DC.DeviceConfigurationID=DCCM.DeviceConfigurationId
-        JOIN DeviceConfigCategory DCC ON DCCM.DeviceConfigCategoryId=DCC.DeviceConfigCategoryId
-        JOIN DeviceConfigCategoryItem DCCI ON DCC.DeviceConfigCategoryId=DCCI.DeviceConfigCategoryId
-        JOIN DeviceConfigDeviceTypes DCDT1 ON DC.DeviceConfigurationID=DCDT1.DeviceConfigurationId
-        JOIN DeviceConfigDeviceTypes DCDT2 ON DC.DeviceConfigurationID=DCDT2.DeviceConfigurationId
-    WHERE 
-        DCC.CategoryType='rfnChannelConfiguration'
-        AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-        AND DCCI.ItemValue='KVAR'
-        AND DCDT1.PaoType IN ('RFN-430A3R', 'RFN-530S4X')
-        AND DCDT2.PaoType IN ('RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    FROM DeviceConfiguration DC
+    JOIN DeviceConfigCategoryMap DCCM  ON DC.DeviceConfigurationID=DCCM.DeviceConfigurationId
+    JOIN DeviceConfigCategory DCC      ON DCCM.DeviceConfigCategoryId=DCC.DeviceConfigCategoryId
+    JOIN DeviceConfigCategoryItem DCCI ON DCC.DeviceConfigCategoryId=DCCI.DeviceConfigCategoryId
+    JOIN DeviceConfigDeviceTypes DCDT1 ON DC.DeviceConfigurationID=DCDT1.DeviceConfigurationId
+    JOIN DeviceConfigDeviceTypes DCDT2 ON DC.DeviceConfigurationID=DCDT2.DeviceConfigurationId
+    WHERE DCC.CategoryType = 'rfnChannelConfiguration'
+    AND DCCI.ItemName LIKE 'enabledChannels%attribute'
+    AND DCCI.ItemValue = 'KVAR'
+    AND DCDT1.PaoType IN ('RFN-430A3R', 'RFN-530S4X')
+    AND DCDT2.PaoType IN ('RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
 
     /* Calculate the new Device Config IDs */
     SELECT 
@@ -270,56 +263,52 @@ BEGIN
 
     /*  Create a new RFN-430SL rfnChannelConfiguration DeviceConfigCategory from the existing one */
     INSERT INTO DeviceConfigCategory 
-        SELECT
-            DCCID.NewDeviceConfigCategoryId,
-            DCC.CategoryType,
-            DCC.Name + ' (RFN DELIVERED_KVAR)',
-            CASE
-                WHEN DCC.Description IS NULL THEN 'Auto created for select RFN meters during 6.7.1 upgrade'
-                ELSE DCC.Description + char(13) + char(10) + 'Auto created for select RFN meters during 6.7.1 upgrade'
-            END
-        FROM DeviceConfigCategory DCC
-            JOIN #DeviceConfigCategoryIDs DCCID ON DCC.DeviceConfigCategoryId=DCCID.DeviceConfigCategoryId
+    SELECT
+        DCCID.NewDeviceConfigCategoryId,
+        DCC.CategoryType,
+        DCC.Name + ' (auto-created - DELIVERED_KVAR)',
+        CASE
+            WHEN DCC.Description IS NULL THEN 'Auto created to split DELIVERED_KVAR from KVAR during 6.7.1 upgrade'
+            ELSE DCC.Description + char(13) + char(10) + 'Auto created to split DELIVERED_KVAR from KVAR during 6.7.1 upgrade'
+        END
+    FROM DeviceConfigCategory DCC
+    JOIN #DeviceConfigCategoryIDs DCCID ON DCC.DeviceConfigCategoryId=DCCID.DeviceConfigCategoryId
 
     INSERT INTO DeviceConfigCategoryItem
-        SELECT
-            @maxDeviceConfigCategoryItemId + ROW_NUMBER() OVER(ORDER BY DCCI.DeviceConfigCategoryItemId ASC),
-            DCCID.NewDeviceConfigCategoryId,
-            DCCI.ItemName,
-            DCCI.ItemValue
-        FROM 
-            DeviceConfigCategoryItem DCCI
-            JOIN #DeviceConfigCategoryIDs DCCID ON DCCI.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
+    SELECT
+        @maxDeviceConfigCategoryItemId + ROW_NUMBER() OVER(ORDER BY DCCI.DeviceConfigCategoryItemId ASC),
+        DCCID.NewDeviceConfigCategoryId,
+        DCCI.ItemName,
+        DCCI.ItemValue
+    FROM DeviceConfigCategoryItem DCCI
+    JOIN #DeviceConfigCategoryIDs DCCID ON DCCI.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
 
-    /*  Create new device configs for the proper meters */
+    /*  Create new device configs */
     INSERT INTO DeviceConfiguration 
-        SELECT
-            DCID.NewDeviceConfigurationID,
-            DC.Name + ' (auto-created)',
-            CASE
-                WHEN DC.Description IS NULL THEN 'Auto created for select RFN meters during 6.7.1 upgrade'
-                ELSE DC.Description + char(13) + char(10) + 'Auto created for select RFN meters during 6.7.1 upgrade'
-            END
-        FROM 
-            DeviceConfiguration DC
-            JOIN #DeviceConfigurationIDs DCID ON DC.DeviceConfigurationID = DCID.DeviceConfigurationId
+    SELECT
+        DCID.NewDeviceConfigurationID,
+        DC.Name + ' (auto-created - DELIVERED_KVAR)',
+        CASE
+            WHEN DC.Description IS NULL THEN 'Auto created to split DELIVERED_KVAR from KVAR during 6.7.1 upgrade'
+            ELSE DC.Description + char(13) + char(10) + 'Auto created to split DELIVERED_KVAR from KVAR during 6.7.1 upgrade'
+        END
+    FROM DeviceConfiguration DC
+    JOIN #DeviceConfigurationIDs DCID ON DC.DeviceConfigurationID = DCID.DeviceConfigurationId
 
     /*  Insert copies of all device config categories into the new device configs */
     INSERT INTO DeviceConfigCategoryMap
-        SELECT
-            DCID.NewDeviceConfigurationId,
-            DCCM.DeviceConfigCategoryId
-        FROM 
-            DeviceConfigCategoryMap DCCM
-            JOIN #DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.DeviceConfigurationId
+    SELECT
+        DCID.NewDeviceConfigurationId,
+        DCCM.DeviceConfigCategoryId
+    FROM DeviceConfigCategoryMap DCCM
+    JOIN #DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.DeviceConfigurationId
 
     /*  Update the new device configs to use the new categories */
     UPDATE DeviceConfigCategoryMap
     SET DeviceConfigCategoryId = DCCID.NewDeviceConfigCategoryId
-    FROM 
-        DeviceConfigCategoryMap DCCM
-        JOIN #DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.NewDeviceConfigurationId
-        JOIN #DeviceConfigCategoryIDs DCCID ON DCCM.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
+    FROM DeviceConfigCategoryMap DCCM
+    JOIN #DeviceConfigurationIDs DCID   ON DCCM.DeviceConfigurationId = DCID.NewDeviceConfigurationId
+    JOIN #DeviceConfigCategoryIDs DCCID ON DCCM.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
                 
     /*  Insert the new config RFN's into the new device config typelists */
     INSERT INTO DeviceConfigDeviceTypes
@@ -327,28 +316,23 @@ BEGIN
             @maxDeviceConfigDeviceTypeId + ROW_NUMBER() OVER(ORDER BY DCDT.DeviceConfigDeviceTypeId ASC),
             DCID.NewDeviceConfigurationId,
             DCDT.PaoType
-        FROM 
-            DeviceConfigDeviceTypes DCDT
-            JOIN #DeviceConfigurationIDs DCID ON DCDT.DeviceConfigurationId=DCID.DeviceConfigurationId
-        WHERE
-            DCDT.PaoType IN ('RFN-430A3R', 'RFN-530S4X')
+        FROM DeviceConfigDeviceTypes DCDT
+        JOIN #DeviceConfigurationIDs DCID ON DCDT.DeviceConfigurationId=DCID.DeviceConfigurationId
+        WHERE DCDT.PaoType IN ('RFN-430A3R', 'RFN-530S4X')
 
     /*  Delete the new config RFN's from the old device config typelists */
     DELETE DCDT
-    FROM
-        DeviceConfigDeviceTypes DCDT
-        JOIN #DeviceConfigsToSplit DCTS ON DCDT.DeviceConfigurationId = DCTS.DeviceConfigurationID
-    WHERE 
-        DCDT.PaoType IN ('RFN-430A3R', 'RFN-530S4X')
+    FROM DeviceConfigDeviceTypes DCDT
+    JOIN #DeviceConfigsToSplit DCTS ON DCDT.DeviceConfigurationId = DCTS.DeviceConfigurationID
+    WHERE DCDT.PaoType IN ('RFN-430A3R', 'RFN-530S4X')
 
     /*  Point the new config RFN's to the new configs */
     UPDATE DeviceConfigurationDeviceMap
     SET DeviceConfigurationId = DCID.NewDeviceConfigurationId
     FROM DeviceConfigurationDeviceMap DCDM
-            JOIN #DeviceConfigurationIDs DCID ON DCDM.DeviceConfigurationId = DCID.DeviceConfigurationId
-            JOIN YukonPAObject Y ON DCDM.DeviceId = Y.PAObjectID
-    WHERE
-        Y.Type IN ('RFN-430A3R', 'RFN-530S4X');
+    JOIN #DeviceConfigurationIDs DCID ON DCDM.DeviceConfigurationId = DCID.DeviceConfigurationId
+    JOIN YukonPAObject Y              ON DCDM.DeviceId = Y.PAObjectID
+    WHERE Y.Type IN ('RFN-430A3R', 'RFN-530S4X');
 END;
 /* @end-block */
 
@@ -360,17 +344,15 @@ FROM
     DeviceConfigCategoryItem DCCI
     JOIN (
         SELECT DISTINCT DCC.DeviceConfigCategoryId 
-        FROM
-            DeviceConfigCategory DCC
-            JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-            JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-            JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-        WHERE
-            DCC.CategoryType='rfnChannelConfiguration'
-            AND DCDT.PaoType IN ('RFN-430A3R', 'RFN-530S4X')) RFNDC ON DCCI.DeviceConfigCategoryId=RFNDC.DeviceConfigCategoryId
-WHERE
-    DCCI.ItemName LIKE 'enabledChannels%attribute'
-    AND DCCI.ItemValue='KVAR';
+        FROM DeviceConfigCategory DCC
+        JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
+        JOIN DeviceConfiguration DC       ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
+        JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
+        WHERE DCC.CategoryType='rfnChannelConfiguration'
+        AND DCDT.PaoType IN ('RFN-430A3R', 'RFN-530S4X')
+        ) RFNDC ON DCCI.DeviceConfigCategoryId = RFNDC.DeviceConfigCategoryId
+WHERE DCCI.ItemName LIKE 'enabledChannels%attribute'
+AND DCCI.ItemValue = 'KVAR';
 
 /* Drop temp tables to ensure that they don't interfere with the next set of attribute updates */
 DROP TABLE #DeviceConfigsToSplit;
@@ -418,24 +400,20 @@ DEMAND -> DEMAND
 /* Update all RFN Data Streaming Device Behaviors with appropriate meter types to use DELIVERED_DEMAND instead of DEMAND */
 
 UPDATE BehaviorValue
-SET 
-    Value='DELIVERED_DEMAND'
-FROM 
-    BehaviorValue BV 
-    JOIN (
-        SELECT DISTINCT
-            BV.BehaviorId
-        FROM BehaviorValue BV
-            JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
-            JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
-            JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
-        WHERE 
-            B.BehaviorType='DATA_STREAMING'
-            AND Y.Type IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
-                           'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
-                           'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
-                           'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
-        ) RFNDS ON BV.BehaviorId=RFNDS.BehaviorId
+SET Value='DELIVERED_DEMAND'
+FROM BehaviorValue BV 
+JOIN (
+    SELECT DISTINCT BV.BehaviorId
+    FROM BehaviorValue BV
+    JOIN Behavior B            ON BV.BehaviorId=B.BehaviorId
+    JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
+    JOIN YukonPAObject Y       ON DBM.DeviceId=Y.PAObjectID
+    WHERE b.BehaviorType='DATA_STREAMING'
+    AND Y.Type IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
+                   'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
+                   'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
+                   'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
+    ) RFNDS ON BV.BehaviorId=RFNDS.BehaviorId
 WHERE 
     BV.Value='DEMAND';
 
@@ -449,26 +427,24 @@ BEGIN
         @maxDeviceConfigDeviceTypeId    NUMERIC = (SELECT MAX(DeviceConfigDeviceTypeId) FROM DeviceConfigDeviceTypes);
 
     /* Find all rfnChannelConfiguration DeviceConfigCategories that contain 'DEMAND' and are assigned to devices that need to stay as DEMAND and devices that need to move to DELIVERED_DEMAND */
-    SELECT 
-        DISTINCT DC.DeviceConfigurationID, 
+    SELECT DISTINCT 
+        DC.DeviceConfigurationID, 
         DCC.DeviceConfigCategoryId
     INTO #DeviceConfigsToSplit
-    FROM 
-        DeviceConfiguration DC
-        JOIN DeviceConfigCategoryMap DCCM ON DC.DeviceConfigurationID=DCCM.DeviceConfigurationId
-        JOIN DeviceConfigCategory DCC ON DCCM.DeviceConfigCategoryId=DCC.DeviceConfigCategoryId
-        JOIN DeviceConfigCategoryItem DCCI ON DCC.DeviceConfigCategoryId=DCCI.DeviceConfigCategoryId
-        JOIN DeviceConfigDeviceTypes DCDT1 ON DC.DeviceConfigurationID=DCDT1.DeviceConfigurationId
-        JOIN DeviceConfigDeviceTypes DCDT2 ON DC.DeviceConfigurationID=DCDT2.DeviceConfigurationId
-    WHERE 
-        DCC.CategoryType='rfnChannelConfiguration'
-        AND DCCI.ItemName LIKE 'enabledChannels%attribute'
-        AND DCCI.ItemValue='DEMAND'
-        AND DCDT1.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
-                              'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
-                              'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
-                              'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
-        AND DCDT2.PaoType IN ('RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+    FROM DeviceConfiguration DC
+    JOIN DeviceConfigCategoryMap DCCM  ON DC.DeviceConfigurationID=DCCM.DeviceConfigurationId
+    JOIN DeviceConfigCategory DCC      ON DCCM.DeviceConfigCategoryId=DCC.DeviceConfigCategoryId
+    JOIN DeviceConfigCategoryItem DCCI ON DCC.DeviceConfigCategoryId=DCCI.DeviceConfigCategoryId
+    JOIN DeviceConfigDeviceTypes DCDT1 ON DC.DeviceConfigurationID=DCDT1.DeviceConfigurationId
+    JOIN DeviceConfigDeviceTypes DCDT2 ON DC.DeviceConfigurationID=DCDT2.DeviceConfigurationId
+    WHERE DCC.CategoryType = 'rfnChannelConfiguration'
+    AND DCCI.ItemName LIKE 'enabledChannels%attribute'
+    AND DCCI.ItemValue = 'DEMAND'
+    AND DCDT1.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
+                          'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
+                          'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
+                          'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
+    AND DCDT2.PaoType IN ('RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
 
     /* Calculate the new Device Config IDs */
     SELECT 
@@ -486,118 +462,106 @@ BEGIN
 
     /*  Create a new RFN-430SL rfnChannelConfiguration DeviceConfigCategory from the existing one */
     INSERT INTO DeviceConfigCategory 
-        SELECT
-            DCCID.NewDeviceConfigCategoryId,
-            DCC.CategoryType,
-            DCC.Name + ' (RFN DELIVERED_DEMAND)',
-            CASE
-                WHEN DCC.Description IS NULL THEN 'Auto created for select RFN meters during 6.7.1 upgrade'
-                ELSE DCC.Description + char(13) + char(10) + 'Auto created for select RFN meters during 6.7.1 upgrade'
-            END
-        FROM DeviceConfigCategory DCC
-            JOIN #DeviceConfigCategoryIDs DCCID ON DCC.DeviceConfigCategoryId=DCCID.DeviceConfigCategoryId
+    SELECT
+        DCCID.NewDeviceConfigCategoryId,
+        DCC.CategoryType,
+        DCC.Name + ' (auto-created - DELIVERED_DEMAND)',
+        CASE
+            WHEN DCC.Description IS NULL THEN 'Auto created to split DELIVERED_DEMAND from DEMAND during 6.7.1 upgrade'
+            ELSE DCC.Description + char(13) + char(10) + 'Auto created to split DELIVERED_DEMAND from DEMAND during 6.7.1 upgrade'
+        END
+    FROM DeviceConfigCategory DCC
+    JOIN #DeviceConfigCategoryIDs DCCID ON DCC.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
 
     INSERT INTO DeviceConfigCategoryItem
-        SELECT
-            @maxDeviceConfigCategoryItemId + ROW_NUMBER() OVER(ORDER BY DCCI.DeviceConfigCategoryItemId ASC),
-            DCCID.NewDeviceConfigCategoryId,
-            DCCI.ItemName,
-            DCCI.ItemValue
-        FROM 
-            DeviceConfigCategoryItem DCCI
-            JOIN #DeviceConfigCategoryIDs DCCID ON DCCI.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
+    SELECT
+        @maxDeviceConfigCategoryItemId + ROW_NUMBER() OVER(ORDER BY DCCI.DeviceConfigCategoryItemId ASC),
+        DCCID.NewDeviceConfigCategoryId,
+        DCCI.ItemName,
+        DCCI.ItemValue
+    FROM DeviceConfigCategoryItem DCCI
+    JOIN #DeviceConfigCategoryIDs DCCID ON DCCI.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
 
-    /*  Create new device configs for the proper meters */
+    /*  Create new device configs */
     INSERT INTO DeviceConfiguration 
-        SELECT
-            DCID.NewDeviceConfigurationID,
-            DC.Name + ' (auto-created)',
-            CASE
-                WHEN DC.Description IS NULL THEN 'Auto created for select RFN meters during 6.7.1 upgrade'
-                ELSE DC.Description + char(13) + char(10) + 'Auto created for select RFN meters during 6.7.1 upgrade'
-            END
-        FROM 
-            DeviceConfiguration DC
-            JOIN #DeviceConfigurationIDs DCID ON DC.DeviceConfigurationID = DCID.DeviceConfigurationId
+    SELECT
+        DCID.NewDeviceConfigurationID,
+        DC.Name + ' (auto-created - DELIVERED_DEMAND)',
+        CASE
+            WHEN DC.Description IS NULL THEN 'Auto created to split DELIVERED_DEMAND from DEMAND during 6.7.1 upgrade'
+            ELSE DC.Description + char(13) + char(10) + 'Auto created to split DELIVERED_DEMAND from DEMAND during 6.7.1 upgrade'
+        END
+    FROM DeviceConfiguration DC
+    JOIN #DeviceConfigurationIDs DCID ON DC.DeviceConfigurationID = DCID.DeviceConfigurationId
 
     /*  Insert copies of all device config categories into the new device configs */
     INSERT INTO DeviceConfigCategoryMap
-        SELECT
-            DCID.NewDeviceConfigurationId,
-            DCCM.DeviceConfigCategoryId
-        FROM 
-            DeviceConfigCategoryMap DCCM
-            JOIN #DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.DeviceConfigurationId
+    SELECT
+        DCID.NewDeviceConfigurationId,
+        DCCM.DeviceConfigCategoryId
+    FROM DeviceConfigCategoryMap DCCM
+    JOIN #DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.DeviceConfigurationId
 
     /*  Update the new device configs to use the new categories */
     UPDATE DeviceConfigCategoryMap
     SET DeviceConfigCategoryId = DCCID.NewDeviceConfigCategoryId
-    FROM 
-        DeviceConfigCategoryMap DCCM
-        JOIN #DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.NewDeviceConfigurationId
-        JOIN #DeviceConfigCategoryIDs DCCID ON DCCM.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
+    FROM DeviceConfigCategoryMap DCCM
+    JOIN #DeviceConfigurationIDs DCID   ON DCCM.DeviceConfigurationId = DCID.NewDeviceConfigurationId
+    JOIN #DeviceConfigCategoryIDs DCCID ON DCCM.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId
                 
     /*  Insert the new config RFN's into the new device config typelists */
     INSERT INTO DeviceConfigDeviceTypes
-        SELECT
-            @maxDeviceConfigDeviceTypeId + ROW_NUMBER() OVER(ORDER BY DCDT.DeviceConfigDeviceTypeId ASC),
-            DCID.NewDeviceConfigurationId,
-            DCDT.PaoType
-        FROM 
-            DeviceConfigDeviceTypes DCDT
-            JOIN #DeviceConfigurationIDs DCID ON DCDT.DeviceConfigurationId=DCID.DeviceConfigurationId
-        WHERE
-            DCDT.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
-                             'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
-                             'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
-                             'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
+    SELECT
+        @maxDeviceConfigDeviceTypeId + ROW_NUMBER() OVER(ORDER BY DCDT.DeviceConfigDeviceTypeId ASC),
+        DCID.NewDeviceConfigurationId,
+        DCDT.PaoType
+    FROM DeviceConfigDeviceTypes DCDT
+    JOIN #DeviceConfigurationIDs DCID ON DCDT.DeviceConfigurationId = DCID.DeviceConfigurationId
+    WHERE DCDT.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
+                           'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
+                           'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
+                           'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
 
     /*  Delete the new config RFN's from the old device config typelists */
     DELETE DCDT
-    FROM
-        DeviceConfigDeviceTypes DCDT
-        JOIN #DeviceConfigsToSplit DCTS ON DCDT.DeviceConfigurationId = DCTS.DeviceConfigurationID
-    WHERE 
-        DCDT.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
-                         'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
-                         'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
-                         'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
+    FROM DeviceConfigDeviceTypes DCDT
+    JOIN #DeviceConfigsToSplit DCTS ON DCDT.DeviceConfigurationId = DCTS.DeviceConfigurationID
+    WHERE DCDT.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
+                           'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
+                           'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
+                           'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
 
     /*  Point the new config RFN's to the new configs */
     UPDATE DeviceConfigurationDeviceMap
     SET DeviceConfigurationId = DCID.NewDeviceConfigurationId
     FROM DeviceConfigurationDeviceMap DCDM
-            JOIN #DeviceConfigurationIDs DCID ON DCDM.DeviceConfigurationId = DCID.DeviceConfigurationId
-            JOIN YukonPAObject Y ON DCDM.DeviceId = Y.PAObjectID
-    WHERE
-        Y.Type IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
-                   'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
-                   'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
-                   'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X');
+    JOIN #DeviceConfigurationIDs DCID ON DCDM.DeviceConfigurationId = DCID.DeviceConfigurationId
+    JOIN YukonPAObject Y              ON DCDM.DeviceId = Y.PAObjectID
+    WHERE Y.Type IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
+                     'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
+                     'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
+                     'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X');
 END;
 /* @end-block */
 
  /* Update all rfnChannelConfiguration categories assigned to RFN-430SL1+ to use DELIVERED_DEMAND instead of DEMAND */
 UPDATE DCCI
 SET ItemValue='DELIVERED_DEMAND'
-FROM 
-    DeviceConfigCategoryItem DCCI
-    JOIN (
-        SELECT DISTINCT DCC.DeviceConfigCategoryId 
-        FROM
-            DeviceConfigCategory DCC
-            JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
-            JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
-            JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
-        WHERE
-            DCC.CategoryType='rfnChannelConfiguration'
-            AND DCDT.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
-                                 'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
-                                 'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
-                                 'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')) RFNDC ON DCCI.DeviceConfigCategoryId=RFNDC.DeviceConfigCategoryId
-WHERE
-    DCCI.ItemName LIKE 'enabledChannels%attribute'
-    AND DCCI.ItemValue='DEMAND';
+FROM DeviceConfigCategoryItem DCCI
+JOIN (
+    SELECT DISTINCT DCC.DeviceConfigCategoryId 
+    FROM DeviceConfigCategory DCC
+    JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
+    JOIN DeviceConfiguration DC       ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
+    JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
+    WHERE DCC.CategoryType='rfnChannelConfiguration'
+    AND DCDT.PaoType IN ('RFN-410CL','RFN-410FD','RFN-410FL','RFN-410FX','RFN-420CD','RFN-420CL',
+                         'RFN-420FD','RFN-420FL','RFN-420FRD','RFN-420FRX','RFN-420FX','RFN-430A3D',
+                         'RFN-430A3K','RFN-430A3T','RFN-430A3R','RFN-430KV','RFN-510FL','RFN-520FAX',
+                         'RFN-520FAXD','RFN-520FRX','RFN-520FRXD','RFN-530FAX','RFN-530FRX','RFN-530S4X')
+    ) RFNDC ON DCCI.DeviceConfigCategoryId=RFNDC.DeviceConfigCategoryId
+WHERE DCCI.ItemName LIKE 'enabledChannels%attribute'
+AND DCCI.ItemValue = 'DEMAND';
 /* End YUK-16963 */
 
 /* Start YUK-16969 */
