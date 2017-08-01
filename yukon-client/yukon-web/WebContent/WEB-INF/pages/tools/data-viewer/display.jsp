@@ -42,12 +42,20 @@
                 <tr>
                     <th></th>
                     <c:forEach var="column" items="${display.columns}">
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
-                            <th></th>
-                            <th><i:inline key="yukon.common.value"/></th>
+                        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                            <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
+                                <th></th>
+                                <th><i:inline key="yukon.common.value"/></th>
+                            </c:if>
+                            <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}"></c:if>
+                            <c:if test="${column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE') && column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
+                                <th>${fn:escapeXml(column.title)}</th>
+                            </c:if>
                         </c:if>
-                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}"></c:if>
-                        <c:if test="${column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE') && column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
+                        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                            <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
+                                <th></th>
+                            </c:if>
                             <th>${fn:escapeXml(column.title)}</th>
                         </c:if>
                     </c:forEach>
