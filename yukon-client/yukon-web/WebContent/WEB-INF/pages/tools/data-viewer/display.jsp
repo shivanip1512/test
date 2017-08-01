@@ -44,8 +44,12 @@
                     <c:forEach var="column" items="${display.columns}">
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
                             <th></th>
+                            <th><i:inline key="yukon.common.value"/></th>
                         </c:if>
-                        <th>${fn:escapeXml(column.title)}</th>
+                        <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}"></c:if>
+                        <c:if test="${column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE') && column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
+                            <th>${fn:escapeXml(column.title)}</th>
+                        </c:if>
                     </c:forEach>
                     <th class="action-column"><c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}"><cti:icon icon="icon-cog" classes="M0"/></c:if></th>
                 </tr>
@@ -80,7 +84,15 @@
                                         <td>${fn:escapeXml(row.pointId)}</td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_NAME')}">
-                                        <td>${fn:escapeXml(row.pointName)}</td>
+                                        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                                            <td>
+                                                <cti:url var="pointEditor" value="/tools/points/${row.pointId}"/>
+                                                    <a href="${pointEditor}">${fn:escapeXml(row.pointName)}</a>
+                                            </td>
+                                        </c:if>
+                                        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                                            <td>${fn:escapeXml(row.pointName)}</td>
+                                        </c:if>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TYPE')}">
                                         <td><i:inline key="${row.pointType}"/></td>
@@ -89,10 +101,24 @@
                                         <td><i:inline key=".point.enabled.${row.pointEnabled}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_NAME')}">
-                                        <td>${fn:escapeXml(row.deviceName)}</td>
+                                        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                                            <td>
+                                                <cti:paoDetailUrl yukonPao="${row.device}">
+                                                    <c:if test="${!empty row.deviceName}">${fn:escapeXml(row.deviceName)}</c:if>
+                                                </cti:paoDetailUrl>
+                                            </td>
+                                        </c:if>
+                                        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                                            <td>${fn:escapeXml(row.deviceName)}</td>
+                                        </c:if>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_TYPE')}">
-                                        <td><tags:paoType yukonPao="${row.device}" showLink="false"/></td>
+                                        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                                            <td><tags:paoType yukonPao="${row.device}"/></td>
+                                        </c:if>
+                                        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                                            <td><tags:paoType yukonPao="${row.device}" showLink="false"/></td>
+                                        </c:if>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_CURRENT_STATE')}">
                                         <td>${fn:escapeXml(row.deviceCurrentState)}</td>
@@ -128,9 +154,6 @@
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.USERNAME')}">
                                         <td>${fn:escapeXml(row.userName)}</td>
-                                    </c:if>
-                                    <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
-                                        <td><cti:dataUpdaterValue type="TDC" identifier="STATE/${row.pointId}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TAG')}">
                                         <td>${fn:escapeXml(row.tagName)}</td>
