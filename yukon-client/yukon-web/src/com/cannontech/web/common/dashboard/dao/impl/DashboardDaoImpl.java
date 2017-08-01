@@ -252,7 +252,7 @@ public class DashboardDaoImpl implements DashboardDao {
                 widgetParamSink.addValue("SettingId", settingId);
                 widgetParamSink.addValue("WidgetId", widgetId);
                 widgetParamSink.addValue("Name", parameter.getKey());
-                widgetParamSink.addValue("Value", parameter.getValue());
+                widgetParamSink.addValueSafe("Value", parameter.getValue());
                 jdbcTemplate.update(widgetParamSql);
             });
         }
