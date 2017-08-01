@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
@@ -915,10 +917,14 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                     Arrays.asList(MspAccountInformationInfo.values()).stream().filter(
                         objType -> objType.isInstance(value)).findFirst().orElse(MspAccountInformationInfo.OTHER);
 
-                if (accountInfo == MspAccountInformationInfo.DATE) {
+                if (MspAccountInformationInfo.DATE.isInstance(value)) {
                     this.value = formatDate((Date) value, userContext);
-                } else if (accountInfo == MspAccountInformationInfo.CALENDAR) {
-                    formatDate(((Calendar) value).getTime(), userContext);
+                } else if (MspAccountInformationInfo.CALENDAR.isInstance(value)) {
+                    this.value = formatDate(((Calendar) value).getTime(), userContext);
+                } else if (MspAccountInformationInfo.XMLGREGORIANCALENDAR.isInstance(value)) {
+                    this.value = formatDate((XMLGregorianCalendar) value, userContext);
+                } else if (MspAccountInformationInfo.BOOLEAN.isInstance(value)) {
+                    this.value = MspAccountInformationInfo.BOOLEAN.getValue(value);
                 } else {
                     this.value = accountInfo.getValue(value);
                 }
@@ -927,6 +933,10 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         }
 
         private String formatDate(Date date, YukonUserContext userContext) {
+            return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
+        }
+
+        private String formatDate(XMLGregorianCalendar date, YukonUserContext userContext) {
             return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
         }
 

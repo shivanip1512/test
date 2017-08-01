@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -355,10 +356,14 @@ public class MspAccountInformationV3 implements MspAccountInformation {
                     this.value = formatDate((Date)value, userContext);
                 } else if (value instanceof Calendar) {
                     this.value = formatDate(((Calendar)value).getTime(), userContext);
+                } else if (value instanceof XMLGregorianCalendar) {
+                    this.value = formatDate(((XMLGregorianCalendar) value), userContext);
                 } else if (value instanceof ObjectRef) {
                     this.value = ((ObjectRef)value).getName();
                 } else if (value instanceof NodeIdentifier) {
                     this.value = ((NodeIdentifier)value).getName();
+                } else if (value instanceof Boolean) {
+                    this.value = ((Boolean) value ? "Yes" : "No");
                 } else if (value instanceof LinkedTransformer) {
                     
                     LinkedTransformer linkedTransformer = (LinkedTransformer)value;
@@ -388,6 +393,10 @@ public class MspAccountInformationV3 implements MspAccountInformation {
             return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
         }
 
+        private String formatDate(XMLGregorianCalendar date, YukonUserContext userContext) {
+            return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
+        }
+        
         public String getLabel() {
             return label;
         }

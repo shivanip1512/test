@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.msp.beans.v5.commontypes.GPSLocation;
@@ -60,6 +62,17 @@ public enum MspAccountInformationInfo {
         @Override
         public boolean isInstance(Object value) {
             return (value instanceof Calendar) ? true: false; 
+        }
+    },
+    XMLGREGORIANCALENDAR {
+        @Override
+        public String getValue(Object value) {
+            return StringUtils.EMPTY;
+        }
+
+        @Override
+        public boolean isInstance(Object value) {
+            return (value instanceof XMLGregorianCalendar) ? true : false;
         }
     },
     OBJECTREF {
@@ -171,6 +184,18 @@ public enum MspAccountInformationInfo {
         @Override
         public boolean isInstance(Object value) {
             return (value instanceof ObjectID) ? true: false; 
+        }
+    },
+    BOOLEAN {
+        @Override
+        public String getValue(Object value) {
+            return ((Boolean) value ? "Yes" : "No");
+
+        }
+
+        @Override
+        public boolean isInstance(Object value) {
+            return (value instanceof Boolean) ? true : false;
         }
     },
     OTHER {
