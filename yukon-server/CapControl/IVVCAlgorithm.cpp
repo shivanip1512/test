@@ -390,30 +390,43 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            if ( ! hasValidData( request, timeNow, subbus, strategy ) )   // invalid data
+            ValidityCheckResults    result = hasValidData( request, timeNow, subbus, strategy );
+
+            if ( result != ValidityCheckResults::Valid )
             {
-                //Not starting a new scan here. There should be retrys happening already.
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                if ( result != ValidityCheckResults::Invalid )
                 {
-                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
-                         << "  Analysis Interval: Invalid Data.");
-                }
+                    // This means we tried to look up a capbank and failed, probably due to a store reload.
 
-                state->setCommsRetryCount(state->getCommsRetryCount() + 1);
-                if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
-                {
+                    CTILOG_ERROR( dout, "IVVC Algorithm: Data validation issue -- aborting analysis." );
+
                     state->setState(IVVCState::IVVC_WAIT);
-                    state->setCommsRetryCount(0);
-
-                    if ( ! state->isCommsLost() )
+                }
+                else    // result == ValidityCheckResults::Invalid
+                {
+                    //Not starting a new scan here. There should be retrys happening already.
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
-                        state->setCommsLost(true);
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
+                             << "  Analysis Interval: Invalid Data.");
+                    }
 
-                        handleCommsLost( state, subbus );
+                    state->setCommsRetryCount(state->getCommsRetryCount() + 1);
+                    if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
+                    {
+                        state->setState(IVVCState::IVVC_WAIT);
+                        state->setCommsRetryCount(0);
 
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        if ( ! state->isCommsLost() )
                         {
-                            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost.");
+                            state->setCommsLost(true);
+
+                            handleCommsLost( state, subbus );
+
+                            if (_CC_DEBUG & CC_DEBUG_IVVC)
+                            {
+                                CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost.");
+                            }
                         }
                     }
                 }
@@ -840,19 +853,28 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
         for each ( const Zone::IdSet::value_type & ID in capbankIds )
         {
-            CtiCCCapBankPtr bank    = store->findCapBankByPAObjectID(ID);
-
-            for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
-            {
-                if ( point->getPointId() > 0 )
+            if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
+            {                
+                for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
                 {
-                    pointRequests.insert( PointRequest(point->getPointId(), CbcRequestType, ! sendScan) );
+                    if ( point->getPointId() > 0 )
+                    {
+                        pointRequests.insert( PointRequest(point->getPointId(), CbcRequestType, ! sendScan) );
+                    }
+                }
+                if ( sendScan )
+                {
+                    CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
+                                                                            bank->getControlDeviceId() ) )->execute();
                 }
             }
-            if ( sendScan )
+            else
             {
-                CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
-                                                                        bank->getControlDeviceId() ) )->execute();
+                // we will be building a point request that won't contain the points for this capbank, which is 
+                //  probably OK, it will just exclude this bank from the decision tree, as if it were disabled.
+
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                                        << ". Possible BusStore reset in progress." );
             }
         }
 
@@ -1051,6 +1073,13 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
         }
     }
+    else
+    {
+        // OK, can't operate a bank we can't find, algorithm will abort.
+
+        CTILOG_ERROR( dout, "IVVC Algoritm: Failed to find capbank with ID: " << bankId
+                                << ". Possible BusStore reset in progress." );
+    }
 
     return performedOperation;
 }
@@ -1195,6 +1224,14 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             {
                 bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
             }
+            else
+            {
+                // Probably not a serious problem, we will retry this on the next CBC heartbeat period, until then we
+                //  will remain in comms lost mode.
+
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << bankID
+                                        << ". Possible BusStore reset in progress - aborting analysis." );
+            }
         }
     }
 }
@@ -1226,12 +1263,9 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
 
     CtiTime now;
     state->setTimeStamp(now);
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    CtiMultiMsg_vec pointChanges;
-    CtiMultiMsg* pilMessages = new CtiMultiMsg();
     EventLogEntries ccEvents;
-    CtiMultiMsg_vec &pilMsg = pilMessages->getData();
+
     if (!subbus->getPerformingVerificationFlag())
     {
         subbus->setLastVerificationCheck(now);
@@ -1243,66 +1277,82 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
         subbus->setCapBanksToVerifyFlags((long)subbus->getVerificationStrategy(), ccEvents);
         setupNextBankToVerify(state, subbus, ccEvents);
     }
-    PointValueMap pointValues = state->getGroupRequest()->getPointValues();
-    pointValues.erase(subbus->getCurrentWattLoadPointId());
-    PointIdVector pointIds = subbus->getCurrentVarLoadPoints();
-    for each (long pointId in pointIds)
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    const long capbankID = subbus->getCurrentVerificationCapBankId();
+
+    if ( CtiCCCapBankPtr currentBank = store->findCapBankByPAObjectID( capbankID ) )
     {
-        pointValues.erase(pointId);
-    }//At this point we have removed the var and watt points. Only volt points remain.
-
-    CtiCCCapBankPtr currentBank = store->findCapBankByPAObjectID(subbus->getCurrentVerificationCapBankId());;
-
-
-    state->_estimated[currentBank->getPaoId()].capbank = currentBank;
-    // record preoperation voltage values for the feeder our capbank is on
-    for each (PointValueMap::value_type pointValuePair in pointValues)
-    {
-        try
+        PointValueMap pointValues = state->getGroupRequest()->getPointValues();
+        pointValues.erase(subbus->getCurrentWattLoadPointId());
+        PointIdVector pointIds = subbus->getCurrentVarLoadPoints();
+        for each (long pointId in pointIds)
         {
-            state->_estimated[currentBank->getPaoId()].capbank->updatePointResponsePreOpValue(pointValuePair.first,pointValuePair.second.value);
+            pointValues.erase(pointId);
+        }//At this point we have removed the var and watt points. Only volt points remain.
+
+        state->_estimated[currentBank->getPaoId()].capbank = currentBank;
+        // record preoperation voltage values for the feeder our capbank is on
+        for each (PointValueMap::value_type pointValuePair in pointValues)
+        {
+            try
+            {
+                state->_estimated[currentBank->getPaoId()].capbank->updatePointResponsePreOpValue(pointValuePair.first,pointValuePair.second.value);
+            }
+            catch (NotFoundException& e)
+            {
+                CTILOG_ERROR(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first);
+            }
         }
-        catch (NotFoundException& e)
+
+        state->_estimated[currentBank->getPaoId()].operated = true;
+        state->setControlledBankId(currentBank->getPaoId());
+
+        state->_estimated.clear();     // done with this data
+
+        if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CTILOG_ERROR(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first);
+            CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank: " << currentBank->getPaoName());
         }
-    }
 
-    state->_estimated[currentBank->getPaoId()].operated = true;
-    state->setControlledBankId(currentBank->getPaoId());
+        CtiMultiMsg_vec pointChanges;
+        CtiMultiMsg* pilMessages = new CtiMultiMsg();
+        CtiMultiMsg_vec &pilMsg = pilMessages->getData();
 
-    state->_estimated.clear();     // done with this data
-
-    if (_CC_DEBUG & CC_DEBUG_IVVC)
-    {
-        CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank: " << currentBank->getPaoName());
-    }
-
-    if (state->_verification.successCount == 0 && state->_verification.failureCount == 0)
-    {
-        subbus->startVerificationOnCapBank(now, pointChanges, ccEvents, pilMsg);
-    }
-    else
-    {
-        if (subbus->sendNextCapBankVerificationControl(now, pointChanges, ccEvents, pilMsg))
+        if (state->_verification.successCount == 0 && state->_verification.failureCount == 0)
         {
-            subbus->setWaitForReCloseDelayFlag(false);
+            subbus->startVerificationOnCapBank(now, pointChanges, ccEvents, pilMsg);
         }
         else
         {
-            subbus->setWaitForReCloseDelayFlag(true);
+            if (subbus->sendNextCapBankVerificationControl(now, pointChanges, ccEvents, pilMsg))
+            {
+                subbus->setWaitForReCloseDelayFlag(false);
+            }
+            else
+            {
+                subbus->setWaitForReCloseDelayFlag(true);
+            }
         }
+        if (pilMsg.size() > 0)
+        {
+            CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(pilMessages, CALLSITE);
+            sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+        }
+
+        state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
     }
-    if (pilMsg.size() > 0)
+    else
     {
-        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(pilMessages, CALLSITE);
-        sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
+        // Not entirely sure what the right thing to do here is. We are in a verification stage and our store is reset
+        //  so who knows what the state of the world is... probably best to just bail out.
+
+        CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << capbankID
+                                << ". Possible BusStore reset in progress." );
     }
-
-    state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
-
+    
     return true;
-
 }
 
 void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, EventLogEntries &ccEvents)
@@ -1328,7 +1378,6 @@ void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBus
            CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() << " has completed Verification.");
         }
     }
-    return;
 }
 
 /**
@@ -1954,6 +2003,8 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
             for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
             {
+                bool disableTapOverride = false;
+
                 PointValueMap zonePointValues;      // point values for stuff assigned to the current zone ID
 
                 VoltageRegulatorManager::SharedPtr regulator =
@@ -1971,8 +2022,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
                 for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
                 {
-                    CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( capBankId );
-                    if ( bank )
+                    if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( capBankId ) )
                     {
                         for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
                         {
@@ -1988,6 +2038,16 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                                 }
                             }
                         }
+                    }
+                    else
+                    {
+                        // Our Vte calculation is going to be messed up because we are missing the banks monitor
+                        //  points, so we disallow a tap operation in this particular zone.
+
+                        disableTapOverride = true;
+
+                        CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << capBankId
+                                                << ". Possible BusStore reset in progress." );
                     }
                 }
 
@@ -2009,7 +2069,9 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     }
                 }
 
-                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator);
+                state->_tapOps[ regulator->getPaoId() ] = disableTapOverride
+                    ? 0
+                    : calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime, regulator);
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -2414,6 +2476,14 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
             {
                 bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
             }
+            else
+            {
+                // Not really a big deal here, the CBC will eventually fall out of SCADA override mode when
+                //  the internal timer expires, rahter than exiting the mode immediately.
+
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                                        << ". Possible BusStore reset in progress." );
+            }
         }
     }
 }
@@ -2651,6 +2721,13 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
                                            maxOvervoltages );
                 }
             }
+            else
+            {
+                // Not sure what to do here if we fail to find a capbank, at a minimum log it.
+
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                                        << ". Possible BusStore reset in progress." );
+            }
         }
 
         // Additional Voltage Points
@@ -2758,6 +2835,13 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
                     }
                 }
             }
+            else
+            {
+                // Not sure what to do here if we fail to find a capbank, at a minimum log it.
+
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                                        << ". Possible BusStore reset in progress." );
+            }
         }
 
         // Additional Voltage Points
@@ -2831,7 +2915,10 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
     Now the validity is on a per zone per phase basis...
 */
-bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy )
+IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataRequestPtr& request,
+                                                                 CtiTime timeNow,
+                                                                 CtiCCSubstationBusPtr subbus,
+                                                                 IVVCStrategy* strategy )
 {
     bool dataIsValid = true;
 
@@ -2920,16 +3007,26 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
 
             for each ( const Zone::IdSet::value_type & ID in zone->getBankIds() )
             {
-                CtiCCCapBankPtr bank    = store->findCapBankByPAObjectID( ID );
-
-                for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+                if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
                 {
-                    const long cbcPointID = point->getPointId();
-
-                    if ( cbcPointID > 0 && point->getPhase() == phase )
+                    for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
                     {
-                        findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
+                        const long cbcPointID = point->getPointId();
+
+                        if ( cbcPointID > 0 && point->getPhase() == phase )
+                        {
+                            findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
+                        }
                     }
+                }
+                else
+                {
+                    CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                                            << ". Possible BusStore reset in progress." );
+
+                    // Abort the analysis without contributing to a comms lost condition
+
+                    return ValidityCheckResults::MissingObject;
                 }
             }
 
@@ -3049,7 +3146,9 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
                                             timeNow,
                                             "BusPower" );
 
-    return dataIsValid;
+    return dataIsValid
+            ? ValidityCheckResults::Valid
+            : ValidityCheckResults::Invalid;
 }
 
 
