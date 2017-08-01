@@ -806,6 +806,33 @@ DROP TABLE t_DeviceConfigCategoryIDs;
 CREATE INDEX Indx_RPV_PointID ON RecentPointValue (PointID ASC);
 /* End YUK-16969 */
 
+/* Start YUK-17038 */
+CREATE GLOBAL TEMPORARY TABLE t_PointIDsToDelete (PointID NUMBER NOT NULL) ON COMMIT PRESERVE ROWS;
+/* @start-block */
+BEGIN
+    INSERT INTO t_PointIDsToDelete
+    SELECT PointId 
+    FROM Point P 
+    JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' 
+    AND (  (PointOffset=6 AND YP.Type IN ('RFN-410fL', 'RFN-420fL', 'RFN-510fL')) 
+        OR (PointOffset=5 AND YP.Type IN ('RFN-420fL', 'RFN-510fL'))
+        );
+
+    DELETE FROM DYNAMICPOINTDISPATCH WHERE POINTID IN (SELECT PointID FROM t_PointIDsToDelete);
+    DELETE FROM POINTUNIT            WHERE POINTID IN (SELECT PointID FROM t_PointIDsToDelete);
+    DELETE FROM PointAlarming        WHERE POINTID IN (SELECT PointID FROM t_PointIDsToDelete);
+    DELETE FROM DISPLAY2WAYDATA      WHERE POINTID IN (SELECT PointID FROM t_PointIDsToDelete);
+    DELETE FROM POINTANALOG          WHERE POINTID IN (SELECT PointID FROM t_PointIDsToDelete);
+    DELETE FROM GRAPHDATASERIES      WHERE POINTID IN (SELECT PointID FROM t_PointIDsToDelete);
+    DELETE FROM POINT                WHERE POINTID IN (SELECT PointID FROM t_PointIDsToDelete);
+END;
+/
+/* @end-block */
+TRUNCATE TABLE t_PointIDsToDelete;
+DROP TABLE t_PointIDsToDelete;
+/* End YUK-17038 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
