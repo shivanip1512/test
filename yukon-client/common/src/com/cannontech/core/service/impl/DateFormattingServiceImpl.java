@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTimeZone;
@@ -59,6 +61,9 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         } else if (object instanceof Long && object != null) {
         	DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
         	return formatter.print(((Long) object).longValue());
+        } else if (object instanceof XMLGregorianCalendar && object != null) {
+            Date date = ((XMLGregorianCalendar) object).toGregorianCalendar().getTime();
+            return formatDate(date, type, userContext);
         } else {
             throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.format()");
         }

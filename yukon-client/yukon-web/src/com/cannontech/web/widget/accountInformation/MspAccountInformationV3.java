@@ -357,7 +357,7 @@ public class MspAccountInformationV3 implements MspAccountInformation {
                 } else if (value instanceof Calendar) {
                     this.value = formatDate(((Calendar)value).getTime(), userContext);
                 } else if (value instanceof XMLGregorianCalendar) {
-                    this.value = formatDate(((XMLGregorianCalendar) value), userContext);
+                    this.value = dateFormattingService.format(value, DateFormattingService.DateFormatEnum.DATE, userContext);
                 } else if (value instanceof ObjectRef) {
                     this.value = ((ObjectRef)value).getName();
                 } else if (value instanceof NodeIdentifier) {
@@ -393,10 +393,6 @@ public class MspAccountInformationV3 implements MspAccountInformation {
             return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
         }
 
-        private String formatDate(XMLGregorianCalendar date, YukonUserContext userContext) {
-            return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
-        }
-        
         public String getLabel() {
             return label;
         }

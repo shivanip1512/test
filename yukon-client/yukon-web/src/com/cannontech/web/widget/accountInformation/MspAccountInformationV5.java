@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
@@ -922,7 +920,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 } else if (MspAccountInformationInfo.CALENDAR.isInstance(value)) {
                     this.value = formatDate(((Calendar) value).getTime(), userContext);
                 } else if (MspAccountInformationInfo.XMLGREGORIANCALENDAR.isInstance(value)) {
-                    this.value = formatDate((XMLGregorianCalendar) value, userContext);
+                    this.value = dateFormattingService.format(value, DateFormattingService.DateFormatEnum.DATE, userContext);
                 } else if (MspAccountInformationInfo.BOOLEAN.isInstance(value)) {
                     this.value = MspAccountInformationInfo.BOOLEAN.getValue(value);
                 } else {
@@ -933,10 +931,6 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         }
 
         private String formatDate(Date date, YukonUserContext userContext) {
-            return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
-        }
-
-        private String formatDate(XMLGregorianCalendar date, YukonUserContext userContext) {
             return dateFormattingService.format(date, DateFormattingService.DateFormatEnum.DATE, userContext);
         }
 
