@@ -34,6 +34,11 @@
     <div id="page-actions" class="dn">    
         <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
             <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
+        <cti:url var="copy" value="/tools/data-viewer/${display.displayId}/copy"/>
+        <cti:msg2 key=".copy" var="copyTitle"/>
+        <cm:dropdownOption key="yukon.web.modules.tools.tdc.copy" icon="icon-disk-multiple"
+        data-display-id="${display.displayId}" data-copy-title="${copyTitle}" 
+        classes="js-tdc-copy"/>
         <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
             <cti:url var="deleteCustomDisplay" value="/tools/data-viewer/${display.displayId}/deleteCustomDisplay"/>
                 <cm:dropdownOption key=".deleteCustomDisplay" href="${deleteCustomDisplay}" icon="icon-cross"/>

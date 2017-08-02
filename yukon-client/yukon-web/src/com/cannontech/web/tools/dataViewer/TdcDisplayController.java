@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -18,6 +19,8 @@ import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -108,7 +111,19 @@ public class TdcDisplayController {
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
         @Override
         protected void doValidation(DisplayBackingBean bean, Errors errors) {
-            YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
+            if (bean.getValue() != null) {
+                YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
+            }
+            else if (bean.getDisplayName() != null) {
+                YukonValidationUtils.checkIsBlank(errors, "displayName", bean.getDisplayName(), false);
+                try {
+                displayDao.getDisplayByName(bean.getDisplayName());
+                errors.rejectValue("displayName", "yukon.web.error.nameConflict");
+                }
+                catch (EmptyResultDataAccessException e) {
+                    //if we caught this exception it means the displayName does not exist.
+                }
+            }
         }
     };
 
@@ -623,6 +638,38 @@ public class TdcDisplayController {
         return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
     
+    @RequestMapping(value = "data-viewer/copySend", method = RequestMethod.POST)
+    public String copySend(HttpServletResponse response, YukonUserContext userContext,
+                                  @ModelAttribute("backingBean") DisplayBackingBean backingBean,
+                                  BindingResult bindingResult, ModelMap model, FlashScope flashScope) throws IOException {
+        
+        
+        validator.validate(backingBean, bindingResult);
+        if (bindingResult.hasErrors()) {
+            Display display = displayDao.getDisplayById(backingBean.getDisplayId());
+            model.put("displayName", display.getName());
+            model.addAttribute("backingBean", backingBean);
+            List<MessageSourceResolvable> messages =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setError(messages);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.put("displayName", display.getName());
+            model.addAttribute("backingBean", backingBean);
+            return "data-viewer/copyPopup.jsp";
+        }
+
+        Display newDisplay = tdcService.copyCustomDisplay(backingBean.getDisplayId(), backingBean.getDisplayName());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("success", true);
+        data.put("displayId", newDisplay.getDisplayId());
+        
+        response.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(response.getOutputStream(), data);
+        
+        return null;
+    }
+
     @RequestMapping(value = "data-viewer/{displayId}/deleteCustomDisplay", method = RequestMethod.GET)
     public String deleteCustomDisplay(FlashScope flash, @PathVariable int displayId) {
 //        displayDao.deleteCustomDisplay(displayId);

@@ -10,6 +10,7 @@ import com.cannontech.tags.Tag;
 public class DisplayBackingBean {
     private int deviceId;
     private int pointId;
+    private int displayId;
     private AltScanRate altScanRate;
     private EnabledStatus pointEnabledStatus = EnabledStatus.ENABLED;
     private EnabledStatus deviceEnabledStatus = EnabledStatus.ENABLED;
@@ -18,7 +19,8 @@ public class DisplayBackingBean {
     private List<Tag> tags = new ArrayList<>();
     private boolean deviceControlInhibited;
     private int rowIndex;
-        
+    private String displayName;
+    
     public AltScanRate getAltScanRate() {
         return altScanRate;
     }
@@ -97,5 +99,21 @@ public class DisplayBackingBean {
 
     public void setDeviceEnabledStatus(EnabledStatus deviceEnabledStatus) {
         this.deviceEnabledStatus = deviceEnabledStatus;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public int getDisplayId() {
+        return displayId;
+    }
+
+    public void setDisplayId(int displayId) {
+        this.displayId = displayId;
     }
 }

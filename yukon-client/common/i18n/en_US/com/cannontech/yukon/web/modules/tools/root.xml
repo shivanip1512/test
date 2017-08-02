@@ -177,6 +177,10 @@
     <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS2">2 days</entry>
     <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS5">5 days</entry>
 
+    <entry key="yukon.web.modules.tools.tdc.download">Download</entry>
+    <entry key="yukon.web.modules.tools.tdc.copy">Copy</entry>
+    <entry key="yukon.web.modules.tools.tdc.copy.name">Copy Name</entry>
+
     <entry key="yukon.web.modules.tools.pao.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.pageHeading">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.crumbTitle">{0}</entry>

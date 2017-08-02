@@ -1,0 +1,23 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<cti:msgScope paths="modules.tools.tdc">
+    <cti:flashScopeMessages/>
+    <cti:url var="saveUrl" value="/tools/data-viewer/copySend"/>
+    <form:form id="tdc-copy-form" cssClass="js-no-submit-on-enter" commandName="backingBean" action="${saveUrl}">
+        <cti:csrfToken/>
+        <form:hidden path="displayId" />
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".display.VIEW.pageName">${fn:escapeXml(displayName)}</tags:nameValue2>
+            <tags:inputNameValue nameKey=".copy.name" path="displayName" />
+        </tags:nameValueContainer2>
+        <div class="action-area">
+            <cti:button nameKey="ok" classes="primary js-tdc-copy-send" />
+            <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
+        </div>
+    </form:form>
+</cti:msgScope>

@@ -154,6 +154,35 @@ yukon.tools.tdc = (function () {
                     });
                 });
             });
+            $('.js-tdc-copy').click(function (ev) {
+                
+                var option = $(this),
+                    displayId = option.data('displayId'),
+                    copyTitle = option.data('copyTitle'),
+                    url = yukon.url('/tools/data-viewer/copy');
+                
+                $('#tdc-popup').load(url, { displayId : displayId }, function () {
+                    $('#tdc-popup').dialog({
+                        title : copyTitle,
+                        width : 500,
+                        autoOpen : true
+                    });
+                });
+            });
+            $(document).on('click', '.js-tdc-copy-send', function (ev) {
+                
+                $('#tdc-copy-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        window.location.href = yukon.url('/tools/data-viewer/'+data.displayId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#tdc-popup').html(xhr.responseText);
+                    }
+                });
+            
+                //submitFormViaAjax('tdc-popup', 'tdc-copy-form');
+                //window.location.href = yukon.url('/tools/data-viewer');
+            });
             
             $('.js-tdc-manual-control').click(function (ev) {
                 
