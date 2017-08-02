@@ -109,13 +109,15 @@
 
     <entry key="yukon.web.modules.tools.tdc.home.pageName">Data Viewer</entry>
     <entry key="yukon.web.modules.tools.tdc.home.contextualPageName">Data Viewer</entry>
+    
     <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageName">Display</entry>
     <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.tdc.display.EDIT.pageName">Edit</entry>
     <entry key="yukon.web.modules.tools.tdc.display.CREATE.pageName">Create Display</entry>
-
     <entry key="yukon.web.modules.tools.tdc.display.custom">Custom Displays</entry>
     <entry key="yukon.web.modules.tools.tdc.display.event">Event Displays</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.DELETE">Delete</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.DELETE.success">Display {0} successfully deleted.</entry>
 
     <entry key="yukon.web.modules.tools.tdc.tags.title">Tags</entry>
     <entry key="yukon.web.modules.tools.tdc.tags.controlOnPointButton.label">Control On Point</entry>
@@ -478,8 +480,4 @@
     <entry key="yukon.web.modules.search.ACCOUNT_TEST.summary"></entry>
 
 	<entry key="yukon.web.modules.tools.collectionActions.deviceUploadFailed">{0} errors were encountered while processing the import file.</entry>
-    
-    <entry key="yukon.web.modules.tools.tdc.download">Download</entry>
-    <entry key="yukon.web.modules.tools.tdc.deleteCustomDisplay">Delete</entry>
-    <entry key="yukon.web.modules.tools.tdc.deleteCustomDisplay.success">Display {0} successfully deleted.</entry>
 </properties>

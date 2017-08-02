@@ -41,7 +41,7 @@
         classes="js-tdc-copy"/>
         <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
             <cti:url var="deleteCustomDisplay" value="/tools/data-viewer/${display.displayId}/deleteCustomDisplay"/>
-                <cm:dropdownOption key=".deleteCustomDisplay" href="${deleteCustomDisplay}" icon="icon-cross"/>
+                <cm:dropdownOption key=".display.DELETE" href="${deleteCustomDisplay}" icon="icon-cross"/>
         </c:if>
     </div>
     <cti:url var="url" value="/tools/data-viewer/${display.displayId}/page"/>
