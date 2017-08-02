@@ -3,187 +3,44 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-
-<cti:url var="controlUrl" value="/macsscheduler/schedules/controlView"/>
-<cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleUrl"/>
-<cti:url var="viewUrl" value="/macsscheduler/schedules/view" />
-<cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleState" />
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.scripts.innerView">
 
-<div id="schedules">
-    <table class="compact-results-table">
+    <table class="compact-results-table has-actions">
         <thead>
-            <tr>
-                <th>
-                    <form id="form_scheduleName" action="${viewUrl}" method="POST">
-                        <cti:csrfToken/>
-                        <a href="javascript:document.getElementById('form_scheduleName').submit();">
-                            <cti:msg2 key=".scheduleName"/>
-                        </a>
-                        <c:choose>
-                            <c:when test="${sortBy == 'Schedule Name'}">
-                                <c:choose>
-                                    <c:when test="${descending}">
-                                    <span title="<cti:msg2 key=".sortedDescending"/>"><cti:icon icon="icon-bullet-arrow-up" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="false" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span title="<cti:msg2 key=".sortedAscending"/>"><cti:icon icon="icon-bullet-arrow-down" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="true" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:when>
-                            <c:otherwise>
-                                <input type="hidden" name="descending" value="false" />
-                            </c:otherwise>
-                        </c:choose>
-                        <input type="hidden" name="sortBy" value="Schedule Name" />
-                    </form>
-                </th>
-                <th>
-                    <form id="form_categoryName" action="${viewUrl}" method="POST">
-                        <cti:csrfToken/>
-                        <a href="javascript:document.getElementById('form_categoryName').submit();">
-                            <cti:msg2 key=".categoryName"/>
-                        </a>
-                        <c:choose>
-                            <c:when test="${sortBy == 'Category Name'}">
-                                <c:choose>
-                                    <c:when test="${descending}">
-                                        <span title="<cti:msg2 key=".sortedDescending"/>"><cti:icon icon="icon-bullet-arrow-up" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="false" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span title="<cti:msg2 key=".sortedAscending"/>"><cti:icon icon="icon-bullet-arrow-down" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="true" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:when>
-                            <c:otherwise>
-                                <input type="hidden" name="descending" value="false" />
-                            </c:otherwise>
-                        </c:choose>
-                        <input type="hidden" name="sortBy" value="Category Name" />
-                    </form>
-                </th>
-                <th id="Current State">
-                    <form id="form_currentState" action="${viewUrl}" method="POST">
-                        <cti:csrfToken/>
-                        <a href="javascript:document.getElementById('form_currentState').submit();">
-                            <cti:msg2 key=".currentState"/>
-                        </a>
-                        <c:choose>
-                            <c:when test="${sortBy == 'Current State'}">
-                                <c:choose>
-                                    <c:when test="${descending}">
-                                        <span title="<cti:msg2 key=".sortedDescending"/>"><cti:icon icon="icon-bullet-arrow-up" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="false" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span title="<cti:msg2 key=".sortedAscending"/>"><cti:icon icon="icon-bullet-arrow-down" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="true" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:when>
-                            <c:otherwise>
-                                <input type="hidden" name="descending" value="false" />
-                            </c:otherwise>
-                        </c:choose>
-                        <input type="hidden" name="sortBy" value="Current State" />
-                    </form>
-                </th>
-                <th id="Start Date/Time">
-                    <form id="form_startDate" action="${viewUrl}" method="POST">
-                        <cti:csrfToken/>
-                        <a href="javascript:document.getElementById('form_startDate').submit();">
-                            <cti:msg2 key=".startDateTime"/>
-                        </a>
-                        <c:choose>
-                            <c:when test="${sortBy == 'Start Date/Time'}">
-                                <c:choose>
-                                    <c:when test="${descending}">
-                                        <span title="<cti:msg2 key=".sortedDescending"/>"><cti:icon icon="icon-bullet-arrow-up" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="false" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span title="<cti:msg2 key=".sortedAscending"/>"><cti:icon icon="icon-bullet-arrow-down" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="true" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:when>
-                            <c:otherwise>
-                                <input type="hidden" name="descending" value="false" />
-                            </c:otherwise>
-                        </c:choose>
-                        <input type="hidden" name="sortBy" value="Start Date/Time" />
-                    </form>
-                </th>
-                <th id="Stop Date/Time">
-                    <form id="form_stopDate" action="${viewUrl}" method="POST">
-                        <cti:csrfToken/>
-                        <a href="javascript:document.getElementById('form_stopDate').submit();">
-                            <cti:msg2 key=".stopDateTime"/>
-                        </a>
-                        <c:choose>
-                            <c:when test="${sortBy == 'Stop Date/Time'}">
-                                <c:choose>
-                                    <c:when test="${descending}">
-                                        <span title="<cti:msg2 key=".sortedDescending"/>"><cti:icon icon="icon-bullet-arrow-up" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="false" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span title="<cti:msg2 key=".sortedAscending"/>"><cti:icon icon="icon-bullet-arrow-down" classes="fn"/></span>
-                                        <input type="hidden" name="descending" value="true" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:when>
-                            <c:otherwise>
-                                <input type="hidden" name="descending" value="false" />
-                            </c:otherwise>
-                        </c:choose>
-                        <input type="hidden" name="sortBy" value="Stop Date/Time" />
-                    </form>
-                </th>
-                <th id="Disable"></th>
-            </tr>
+            <tags:sort column="${scheduleName}"/>
+            <tags:sort column="${categoryName}"/>
+            <tags:sort column="${currentState}"/>
+            <tags:sort column="${startDateTime}"/>
+            <tags:sort column="${stopDateTime}"/>
+            <th class="action-column"><cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS"><cti:icon icon="icon-cog" classes="M0"/></cti:checkRolesAndProperties></th>
         </thead>
         <tfoot>
         </tfoot>
         <tbody>
-            <c:forEach var="scheduleInfo" items="${list}">
-            <c:choose>
-                <c:when test="${scheduleInfo.showControllable}">
-                    <tr>
-                </c:when>
-                <c:otherwise>
-                    <tr class="disabled">
-                </c:otherwise>
-            </c:choose>
+            <c:forEach var="scheduleInfo" items="${list.resultList}">
+                <c:set var="id" value="${scheduleInfo.schedule.id}"/>
+                <c:choose>
+                    <c:when test="${scheduleInfo.showControllable}">
+                        <tr>
+                    </c:when>
+                    <c:otherwise>
+                        <tr class="disabled">
+                    </c:otherwise>
+                </c:choose>
                     <td>
-                        <c:choose>
-                            <c:when test="${scheduleInfo.showControllable}">
-                                <form id="controlform_${scheduleInfo.schedule.id}" action="${controlUrl}" method="POST">
-                                    <cti:csrfToken/>
-                                    <a href="javascript:document.getElementById('controlform_${scheduleInfo.schedule.id}').submit();">
-                                        ${fn:escapeXml(scheduleInfo.schedule.scheduleName)}
-                                    </a>
-                                    <input type="hidden" name="id" value="${scheduleInfo.schedule.id}" />
-                                    <input type="hidden" name="sortBy" value="${sortBy}" />
-                                    <input type="hidden" name="descending" value="${descending}" />
-                                </form>
-                            </c:when>
-                            <c:otherwise>
-                                ${fn:escapeXml(scheduleInfo.schedule.scheduleName)}
-                            </c:otherwise>
-                        </c:choose>
+                        <!-- TODO: This will link to view/edit the schedule -->
+                        ${fn:escapeXml(scheduleInfo.schedule.scheduleName)}
                     </td>
                     <td>
+                        <cti:url var="scriptUrl" value="/macsscheduler/schedules/${id}/view" />
+                        <a href="${scriptUrl}">
                         ${fn:escapeXml(scheduleInfo.schedule.categoryName)}
+                        </a>
                     </td>
                     <td>
                         <c:set var="state" value="${scheduleInfo.schedule.currentState}" />
-
                         <c:choose>
                             <c:when test="${scheduleInfo.updatingState}">
                                 <c:set var="color" value="yellow" />
@@ -218,9 +75,7 @@
                     <td>
                         <c:choose>
                             <c:when test="${scheduleInfo.schedule.nextRunTime.time > cti:constantValue('com.cannontech.message.macs.message.Schedule.INVALID_DATE')}">
-                                <cti:formatDate value="${scheduleInfo.schedule.nextRunTime}"
-                                    type="BOTH" var="formattedStartTime" />
-                                ${formattedStartTime}
+                                <cti:formatDate value="${scheduleInfo.schedule.nextRunTime}" type="BOTH"/>
                             </c:when>
                             <c:otherwise>----</c:otherwise>
                         </c:choose>
@@ -228,31 +83,56 @@
                     <td>
                         <c:choose>
                             <c:when test="${scheduleInfo.schedule.nextStopTime.time > cti:constantValue('com.cannontech.message.macs.message.Schedule.INVALID_DATE')}">
-                                <cti:formatDate value="${scheduleInfo.schedule.nextStopTime}"
-                                    type="BOTH" var="formattedStopTime" />
-                                ${formattedStopTime}
+                                <cti:formatDate value="${scheduleInfo.schedule.nextStopTime}" type="BOTH"/>
                             </c:when>
                             <c:otherwise>----</c:otherwise>
                         </c:choose>
                     </td>
-                    <td>
-                        <c:if test="${scheduleInfo.showToggleButton}">
-                            <form action="${toggleUrl}" method="POST">
-                                <cti:csrfToken/>
-   
-                                <tags:switch checked="${!scheduleInfo.disabledState}" name="toggleState" data-script-id="${scheduleInfo.schedule.id}" 
-                                 classes="js-scripts-toggle toggle-sm"/>
-                             
-                                <input type="hidden" name="id" value="${scheduleInfo.schedule.id}" />
-                                <input type="hidden" name="sortBy" value="${sortBy}" />
-                                <input type="hidden" name="descending" value="${descending}" />
-                            </form>
-                        </c:if>
-                    </td>
+                    <cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS">
+                        <td>
+                            <cm:dropdown icon="icon-cog">
+                                <cti:url var="startStopUrl" value="/macsscheduler/schedules/${id}/startStop" />
+                                <c:choose>
+                                    <c:when test="${scheduleInfo.updatingState || scheduleInfo.disabledState}">
+                                        <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
+                                    </c:when>
+                                    <c:when test="${scheduleInfo.runningState || scheduleInfo.pendingState}">
+                                        <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" data-popup=".js-stop-dialog-${id}"/>
+                                        <div class="dn js-stop-dialog-${id}" data-dialog data-event="yukon:schedule:cancel"
+                                            data-title="<cti:msg2 key=".cancel.dialogTitle"/>" data-width="500" data-ok-text="<cti:msg2 key="yukon.common.stop"/>"
+                                            data-url="${startStopUrl}"></div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" data-popup=".js-start-dialog-${id}"/>
+                                        <div class="dn js-start-dialog-${id}" data-dialog
+                                            data-title="<cti:msg2 key=".start.dialogTitle"/>" data-width="500" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
+                                            data-url="${startStopUrl}" data-event="yukon:schedule:start"></div>            
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleState?id=${id}" />
+                                <c:choose>
+                                    <c:when test="${scheduleInfo.updatingState}">
+                                        <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
+                                    </c:when>
+                                    <c:when test="${scheduleInfo.disabledState}">
+                                        <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" classes="js-script-toggle" data-schedule-id="${id}"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" classes="js-script-toggle" data-schedule-id="${id}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </cm:dropdown>
+                        </td>
+                    </cti:checkRolesAndProperties>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
-</div>
+    <tags:pagingResultsControls result="${list}" adjustPageCount="true"/>
 </cti:msgScope>
-<cti:includeScript link="/resources/js/widgets/yukon.widget.scripts.js"/>

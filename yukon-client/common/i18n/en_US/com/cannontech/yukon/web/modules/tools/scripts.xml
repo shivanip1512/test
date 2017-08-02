@@ -16,9 +16,12 @@
     <entry key="yukon.web.modules.tools.scripts.innerView.state.Waiting">Waiting</entry>
     <entry key="yukon.web.modules.tools.scripts.innerView.state.Disabled">Disabled</entry>
     <entry key="yukon.web.modules.tools.scripts.innerView.state.Pending">Pending</entry>
-
+    <entry key="yukon.web.modules.tools.scripts.innerView.start.dialogTitle">Start Schedule</entry>
+    <entry key="yukon.web.modules.tools.scripts.innerView.cancel.dialogTitle">Cancel Schedule</entry>
+    
     <entry key="yukon.web.modules.tools.scripts.start.title">Start</entry>
     <entry key="yukon.web.modules.tools.scripts.stop.title">Stop</entry>
+    <entry key="yukon.web.modules.tools.scripts.start.error.startDateBeforeEndDate">Start date must be before stop date.</entry>
 
     <entry key="yukon.web.modules.tools.scripts.start.pageName">Start</entry>
     <entry key="yukon.web.modules.tools.scripts.start.pageHeading">Start {0}</entry>

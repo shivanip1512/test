@@ -38,6 +38,10 @@ public class MACSScheduleInfo {
         return getSchedule().getCurrentState().equalsIgnoreCase("Running");
     }
     
+    public boolean getPendingState() {
+        return getSchedule().getCurrentState().equalsIgnoreCase("Pending");
+    }
+    
     public boolean getDisabledState() {
         return getSchedule().getCurrentState().equalsIgnoreCase("Disabled");
     }

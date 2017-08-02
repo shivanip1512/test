@@ -4,14 +4,20 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="tools" page="scripts.start">
-    <cti:includeScript link="/resources/js/pages/yukon.ami.macs.js" />
+<script>
+$(function () {
+    if (typeof yukon.ui.initDateTimePickers !== 'undefined') {
+        yukon.ui.initDateTimePickers();
+    }
+});
+</script>
+
+<cti:msgScope paths="yukon.web.modules.tools.scripts.start">
     <div>
-        <form id="startform" method="post" action="action">
+        <form id="startform">
             <cti:csrfToken/>
-            <c:if test="${errorMsg != null}">
-                <div class="error">${errorMsg}</div>
-            </c:if>
+            <input type="hidden" id="id" value="${schedule.id}" />
+            <div id="errorMsg" class="error">${errorMsg}</div>
             <div class="column_12_12 clearfix">
                 <div class="column one">
                     <cti:msg2 var="startText" key="yukon.common.start"/>
@@ -30,15 +36,6 @@
                     </tags:sectionContainer>
                 </div>
             </div>
-
-            <div class="page-action-area">
-                <cti:button type="submit" name="buttonAction" nameKey="apply" classes="primary action"/>
-                <cti:button nameKey="back" href="view"/>
-            </div>
-            <input type="hidden" name="id" value="${schedule.id}" />
-            <input type="hidden" name="sortBy" value="${sortBy}"/>
-            <input type="hidden" name="descending" value="${descending}"/>
-            <input type="hidden" name="isStart" value="true"/>
         </form>
     </div>
-</cti:standardPage>
+</cti:msgScope>

@@ -55,19 +55,6 @@ yukon.tools.dataStreaming = (function () {
             $('.js-selected-ids').val($('.js-results-ids').text());
         },
         
-        getSortingPagingParameters: function(params) {
-            var
-            sorting = $('.sortable.desc, .sortable.asc'),
-            paging = $('.paging-area');
-            
-            if (sorting.length > 0) {
-                params.sort = sorting.data('sort'),
-                params.dir = sorting.is('.desc') ? 'desc' : 'asc';
-            }
-            params.itemsPerPage = paging.length > 0 ? paging.data('pageSize') : 10;
-            params.page = paging.length > 0 ? paging.data('currentPage') : 1;
-        },
-        
         /** Initialize this module. */
         init: function () {
                         
@@ -153,7 +140,7 @@ yukon.tools.dataStreaming = (function () {
             $(document).on('click', '.js-read-configuration', function (ev) {
                 var deviceId = $(ev.target).closest('li').attr('data-device-id'),
                 params = {};
-                mod.getSortingPagingParameters(params);
+                yukon.ui.getSortingPagingParameters(params);
                 window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/read?' + $.param(params));            
             });
             
@@ -161,7 +148,7 @@ yukon.tools.dataStreaming = (function () {
                 var container = $(ev.target),
                 deviceId = container.data('deviceId'),
                 params = {};
-                mod.getSortingPagingParameters(params);
+                yukon.ui.getSortingPagingParameters(params);
                 window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/resend?' + $.param(params));
             });
             
@@ -181,7 +168,7 @@ yukon.tools.dataStreaming = (function () {
                 var form = $('#resendAll'),
                 url = form.attr('action'),
                 params = {};
-                mod.getSortingPagingParameters(params);
+                yukon.ui.getSortingPagingParameters(params);
                 form.attr('action', url + "?" + $.param(params));
                 form.submit();
             });
@@ -190,7 +177,7 @@ yukon.tools.dataStreaming = (function () {
                 var form = $('#acceptAll'),
                 url = form.attr('action'),
                 params = {};
-                mod.getSortingPagingParameters(params);
+                yukon.ui.getSortingPagingParameters(params);
                 form.attr('action', url + "?" + $.param(params));
                 form.submit();
             });
