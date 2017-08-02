@@ -649,7 +649,7 @@ CtiMessage* replicateWithSOE(const CtiMessage& msg, const int soe)
 bool CtiMCServer::processMessage(const CtiMessage& msg)
 {
     bool ret_val = false;
-    auto_ptr<CtiMCInfo> errorMsg;
+    unique_ptr<CtiMCInfo> errorMsg;
 
     if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
     {
@@ -884,8 +884,10 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
                 errorMsg.reset(new CtiMCInfo());
                 errorMsg->setInfo("An error occurred reading the script");
             }
-
-            _client_listener.BroadcastMessage(replicateWithSOE(script, soe), msg.getConnectionHandle());
+            else
+            {
+                _client_listener.BroadcastMessage(replicateWithSOE(script, soe), msg.getConnectionHandle());
+            }
         }
         break;
 
