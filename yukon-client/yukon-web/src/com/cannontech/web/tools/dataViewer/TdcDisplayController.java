@@ -638,8 +638,19 @@ public class TdcDisplayController {
         return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
     
+    @RequestMapping(value = "data-viewer/copy", method = RequestMethod.POST)
+    public String copy(ModelMap model, int displayId) {
+
+        DisplayBackingBean backingBean = new DisplayBackingBean();
+        backingBean.setDisplayId(displayId);
+        Display display = displayDao.getDisplayById(displayId);
+        model.put("displayName", display.getName());
+        model.addAttribute("backingBean", backingBean);
+        return "data-viewer/copyPopup.jsp";
+    }
+    
     @RequestMapping(value = "data-viewer/copySend", method = RequestMethod.POST)
-    public String copySend(HttpServletResponse response, YukonUserContext userContext,
+    public String copySend(HttpServletResponse response,
                                   @ModelAttribute("backingBean") DisplayBackingBean backingBean,
                                   BindingResult bindingResult, ModelMap model, FlashScope flashScope) throws IOException {
         
