@@ -623,4 +623,12 @@ public class TdcDisplayController {
         return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
     
+    @RequestMapping(value = "data-viewer/{displayId}/deleteCustomDisplay", method = RequestMethod.GET)
+    public String deleteCustomDisplay(FlashScope flash, @PathVariable int displayId) {
+//        displayDao.deleteCustomDisplay(displayId);
+//        flash.setConfirm(new YukonMessageSourceResolvable("Custom display successfully deleted."));
+        System.out.println("deleteCustomDisplay2");
+        return "redirect:/tools/data-viewer";
+    }
+                  
 }
