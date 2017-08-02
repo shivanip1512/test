@@ -12,7 +12,14 @@ public interface RegulatorEventsSimulatorDao {
         public Integer regulatorId;
         public RegulatorEvent.EventType eventType;
         public Instant timeStamp;
+        public Integer setPointValue;
     }
     
     List<RegulatorOperations> getRegulatorTapOperationsAfter(Instant lastRegulatorEvaluationTime);
+    
+    /**
+     * Gets Set point event operations after the timestamp passed
+     */
+    List<RegulatorOperations> getRegulatorSetPointOperationsAfter(Instant lastRegulatorEvaluationTime);
+
 }

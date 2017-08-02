@@ -29,18 +29,29 @@ public class RegulatorEventsSimulatorDaoImpl implements RegulatorEventsSimulator
             result.regulatorId = yrs.getInt("RegulatorId");
             result.eventType = yrs.getEnum("EventType", EventType.class);
             result.timeStamp = yrs.getInstant("TimeStamp");
-            
+            result.setPointValue = yrs.getInt("SetPointValue");
             return result;
         }
     };
     
+    public List<RegulatorOperations> getRegulatorSetPointOperationsAfter(Instant start) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RegulatorId, EventType, TimeStamp, SetPointValue");
+        sql.append("FROM RegulatorEvents");
+        sql.append("WHERE EventType").in(
+            ImmutableList.of(RegulatorEvent.EventType.DECREASE_SETPOINT, RegulatorEvent.EventType.INCREASE_SETPOINT));
+        sql.append("AND TimeStamp").gt(String.valueOf(start));
+
+        return yukonJdbcTemplate.query(sql, rowMapper);
+    }
+    
     public List<RegulatorOperations> getRegulatorTapOperationsAfter(Instant start) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RegulatorId, EventType, TimeStamp");
+        sql.append("SELECT RegulatorId, EventType, TimeStamp, SetPointValue");
         sql.append("FROM RegulatorEvents");
         sql.append("WHERE EventType").in(ImmutableList.of(RegulatorEvent.EventType.TAP_DOWN, RegulatorEvent.EventType.TAP_UP));
-        sql.append("AND TimeStamp").gt(start);
+        sql.append("AND TimeStamp").gt(String.valueOf(start));
         
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
