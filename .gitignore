@@ -129,6 +129,7 @@ yukon-server/Resource/Debug
 yukon-server/Resource/Release
 yukon-server/Resource/autogen_resource.rc
 yukon-server/Resource/include/autogen_resource_ids.h
+yukon-server/Resource/resource_hashes.txt
 yukon-server/Resource/resource_index.xml
 yukon-server/SCANNER/Debug
 yukon-server/SCANNER/Release
