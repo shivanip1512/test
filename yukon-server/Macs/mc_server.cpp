@@ -637,6 +637,15 @@ void CtiMCServer::checkRunningScripts()
     }
 }
 
+
+CtiMessage* replicateWithSOE(const CtiMessage& msg, const int soe)
+{
+    auto dup = msg.replicateMessage();
+    dup->setSOE(soe);
+    return dup;
+}
+
+
 bool CtiMCServer::processMessage(const CtiMessage& msg)
 {
     bool ret_val = false;
@@ -646,6 +655,9 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
     {
         CTILOG_DEBUG(dout, "Processing Message: "<< msg);
     }
+
+    //  The incoming SOE needs to be echoed back in any client response.
+    const auto soe = msg.getSOE();
 
     switch( msg.isA() )
     {
@@ -680,7 +692,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
                      _db_update_thread.forceImmediateUpdate();
                      _scheduler.initEvents(stripSeconds( CtiTime::now()), *new_sched);
 
-                     _client_listener.BroadcastMessage(new_sched->replicateMessage());
+                     _client_listener.BroadcastMessage(replicateWithSOE(*new_sched, soe));
 
                      string event_text("Created Schedule:  \\\"");
                      event_text += new_sched->getScheduleName();
@@ -743,7 +755,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
                         _scheduler.removeEvents(updated_sched->getScheduleID());
                         _scheduler.initEvents( stripSeconds( CtiTime::now()), *updated_sched );
 
-                        _client_listener.BroadcastMessage(updated_sched->replicateMessage());
+                        _client_listener.BroadcastMessage(replicateWithSOE(*updated_sched, soe));
 
                         string event_text("Updated Schedule: \\\"");
                         event_text += updated_sched->getScheduleName();
@@ -791,6 +803,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
                     }
                 }
 
+                multi->setSOE(soe);
                 _client_listener.BroadcastMessage(multi.release(), msg.getConnectionHandle());
             }
             else
@@ -799,7 +812,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
                 if( const CtiMCSchedule* sched = _schedule_manager.findSchedule(id) )
                 {
-                    _client_listener.BroadcastMessage(sched->replicateMessage(), msg.getConnectionHandle());
+                    _client_listener.BroadcastMessage(replicateWithSOE(*sched, soe), msg.getConnectionHandle());
                 }
             }
         }
@@ -840,7 +853,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
                     logEvent(string(delete_msg.getUser().data()), event_text);
 
-                    _client_listener.BroadcastMessage(delete_msg.replicateMessage());
+                    _client_listener.BroadcastMessage(replicateWithSOE(delete_msg, soe));
 
                     ret_val = deleted = true;
                 }
@@ -872,7 +885,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
                 errorMsg->setInfo("An error occurred reading the script");
             }
 
-            _client_listener.BroadcastMessage(script.replicateMessage(), msg.getConnectionHandle());
+            _client_listener.BroadcastMessage(replicateWithSOE(script, soe), msg.getConnectionHandle());
         }
         break;
 
@@ -1015,7 +1028,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
                     if( sched && _schedule_manager.updateSchedule(*sched) )
                     {
-                        _client_listener.BroadcastMessage(sched->replicateMessage());
+                        _client_listener.BroadcastMessage(replicateWithSOE(*sched, soe));
                         logEvent(string(msg.getUser().data()), event_text);
                         ret_val = true;
                     }
@@ -1033,6 +1046,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
    if( errorMsg.get() )
    {
+       errorMsg->setSOE(soe);
        _client_listener.BroadcastMessage(errorMsg.release(), msg.getConnectionHandle());
    }
 
