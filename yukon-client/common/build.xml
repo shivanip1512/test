@@ -64,9 +64,19 @@
                 <fileset dir=".." includes="**/*.jar"/>
             </classpath>
         </taskdef>
+
+        <!-- Check to see if yukon-shared is available
+               as a top-level directory (yukon/yukon-shared) 
+               or as a yukon-client project (yukom/yukon-client/yukon-shared) -->
+        <condition property="yukon-shared.resources-path" 
+                    value="../../yukon-shared/src/main/resources"
+                    else="../yukon-shared/src/main/resources">
+            <available file="../../yukon-shared/src/main/resources" type="dir"/> 
+        </condition>
+
         <!-- Update the timestamps on the xsd files so JAXB will always generate new output -->
-        <touch file="src/com/cannontech/common/device/config/configurationCategoryDefinition.xsd"/>
-        <xjc schema="src/com/cannontech/common/device/config/configurationCategoryDefinition.xsd"
+        <touch file="${yukon-shared.resources-path}/device/config/configurationCategoryDefinition.xsd"/>
+        <xjc schema="${yukon-shared.resources-path}/device/config/configurationCategoryDefinition.xsd"
                 package="com.cannontech.common.device.config.model.jaxb" destdir="src" removeOldOutput="yes">
             <arg value="-extension"/>
             <arg value="-no-header"/>
@@ -74,12 +84,12 @@
             <!-- Everything in this "produces" dir should be overwritten on fresh build -->
             <produces dir="src/com/cannontech/common/device/config/model/jaxb"/>
         </xjc>
-    	
-    	<touch file="../yukon-shared/src/main/resources/pao/definition/pao.xsd"/>
-    	<touch file="../yukon-shared/src/main/resources/pao/definition/points.xsd"/>
-    	<touch file="../yukon-shared/src/main/resources/pao/definition/override.xsd"/>
-    	
-        <xjc schema="../yukon-shared/src/main/resources/pao/definition/pao.xsd"
+
+        <touch file="${yukon-shared.resources-path}/pao/definition/pao.xsd"/>
+        <touch file="${yukon-shared.resources-path}/pao/definition/points.xsd"/>
+        <touch file="${yukon-shared.resources-path}/pao/definition/override.xsd"/>
+
+        <xjc schema="${yukon-shared.resources-path}/pao/definition/pao.xsd"
                         package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
                  <arg value="-extension"/>
                  <arg value="-no-header"/>
@@ -87,14 +97,14 @@
                     <!-- Everything in this "produces" dir should be overwritten on fresh build -->
                  <produces dir="src/com/cannontech/common/pao/definition/loader/jaxb"/>
         </xjc>
-        <xjc schema="../yukon-shared/src/main/resources/pao/definition/points.xsd"
+        <xjc schema="${yukon-shared.resources-path}/pao/definition/points.xsd"
                         package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
                  <arg value="-extension"/>
                  <arg value="-no-header"/>
                  <arg value="-Xdefault-value"/>
                     <!-- Everything in this "produces" dir should be overwritten on fresh build -->
         </xjc>
-    	<xjc schema="../yukon-shared/src/main/resources/pao/definition/override.xsd"
+    	<xjc schema="${yukon-shared.resources-path}/pao/definition/override.xsd"
 	    	            package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
                  <arg value="-extension"/>
 		    	 <arg value="-no-header"/>
