@@ -106,6 +106,7 @@ public class TdcDisplayController {
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private DateFormattingService dateFormattingService;
     
+    private final static String baseKey = "yukon.web.modules.tools.tdc.";
     private final static int itemsPerPage = 50;
 
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
@@ -637,7 +638,7 @@ public class TdcDisplayController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
-    
+
     @RequestMapping(value = "data-viewer/copy", method = RequestMethod.POST)
     public String copy(ModelMap model, int displayId) {
 
@@ -683,10 +684,10 @@ public class TdcDisplayController {
 
     @RequestMapping(value = "data-viewer/{displayId}/deleteCustomDisplay", method = RequestMethod.GET)
     public String deleteCustomDisplay(FlashScope flash, @PathVariable int displayId) {
-//        displayDao.deleteCustomDisplay(displayId);
-//        flash.setConfirm(new YukonMessageSourceResolvable("Custom display successfully deleted."));
-        System.out.println("deleteCustomDisplay2");
+        Display display = displayDao.getDisplayById(displayId);
+        displayDao.deleteCustomDisplay(displayId);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "deleteCustomDisplay.success", display.getName()));
         return "redirect:/tools/data-viewer";
     }
-                  
+
 }

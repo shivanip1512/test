@@ -481,4 +481,5 @@
     
     <entry key="yukon.web.modules.tools.tdc.download">Download</entry>
     <entry key="yukon.web.modules.tools.tdc.deleteCustomDisplay">Delete</entry>
+    <entry key="yukon.web.modules.tools.tdc.deleteCustomDisplay.success">Display {0} successfully deleted.</entry>
 </properties>
