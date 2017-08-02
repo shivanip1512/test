@@ -456,6 +456,11 @@ yukon.tools.point = (function () {
             $(document).on('yukon:da:point:delete', function () {
                 $('#delete-point').submit();
             });
+            
+            $('div[data-fdr-translation]:visible').each(function(index, value) {
+                var number = $(value).data('fdrTranslation');
+                updateFdrInterface(number);
+            });
         }
     };
 
