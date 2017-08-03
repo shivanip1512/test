@@ -30,20 +30,26 @@
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
         </c:if>
-    </div>
-    <div id="page-actions" class="dn">    
-        <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
-            <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
-        <cti:url var="copy" value="/tools/data-viewer/${display.displayId}/copy"/>
-        <cti:msg2 key=".copy" var="copyTitle"/>
-        <cm:dropdownOption key="yukon.web.modules.tools.tdc.copy" icon="icon-disk-multiple"
-        data-display-id="${display.displayId}" data-copy-title="${copyTitle}" 
-        classes="js-tdc-copy"/>
-        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-            <cti:url var="deleteCustomDisplay" value="/tools/data-viewer/${display.displayId}/deleteCustomDisplay"/>
-                <cm:dropdownOption key=".display.DELETE" href="${deleteCustomDisplay}" icon="icon-cross"/>
+        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+            <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
+            <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
         </c:if>
     </div>
+    <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+    
+        <div id="page-actions" class="dn">    
+            <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
+                <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
+            <cti:url var="copy" value="/tools/data-viewer/${display.displayId}/copy"/>
+            <cti:msg2 key=".copy" var="copyTitle"/>
+                <cm:dropdownOption key="yukon.web.modules.tools.tdc.copy" icon="icon-disk-multiple"
+            data-display-id="${display.displayId}" data-copy-title="${copyTitle}" 
+            classes="js-tdc-copy"/>
+            <cti:url var="deleteCustomDisplay" value="/tools/data-viewer/${display.displayId}/deleteCustomDisplay"/>
+                <cm:dropdownOption key=".display.DELETE" href="${deleteCustomDisplay}" icon="icon-cross"/>
+        </div>
+    </c:if>
+    
     <cti:url var="url" value="/tools/data-viewer/${display.displayId}/page"/>
     <div data-url="${url}" data-static>
         <table class="compact-results-table has-actions has-alerts">

@@ -19,7 +19,6 @@ import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -117,12 +116,9 @@ public class TdcDisplayController {
             }
             else if (bean.getDisplayName() != null) {
                 YukonValidationUtils.checkIsBlank(errors, "displayName", bean.getDisplayName(), false);
-                try {
-                displayDao.getDisplayByName(bean.getDisplayName());
-                errors.rejectValue("displayName", "yukon.web.error.nameConflict");
-                }
-                catch (EmptyResultDataAccessException e) {
-                    //if we caught this exception it means the displayName does not exist.
+                Display display = displayDao.getDisplayByName(bean.getDisplayName());
+                if (display != null) {
+                    errors.rejectValue("displayName", "yukon.web.error.nameConflict");
                 }
             }
         }

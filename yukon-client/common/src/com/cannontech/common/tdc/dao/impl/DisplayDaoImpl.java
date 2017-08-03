@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -83,7 +84,12 @@ public class DisplayDaoImpl implements DisplayDao {
         sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
         sql.append("FROM DISPLAY");
         sql.append("WHERE NAME").eq(name);
-        Display display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
+        Display display;
+        try {
+            display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
         addColumnsToDisplay(display);
         return display;
     }
