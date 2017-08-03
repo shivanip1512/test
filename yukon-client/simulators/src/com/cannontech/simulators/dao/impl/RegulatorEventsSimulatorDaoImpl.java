@@ -48,7 +48,7 @@ public class RegulatorEventsSimulatorDaoImpl implements RegulatorEventsSimulator
     public List<RegulatorOperations> getRegulatorTapOperationsAfter(Instant start) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RegulatorId, EventType, TimeStamp, SetPointValue");
+        sql.append("SELECT RegulatorId, EventType, TimeStamp, -1 AS SetPointValue");
         sql.append("FROM RegulatorEvents");
         sql.append("WHERE EventType").in(ImmutableList.of(RegulatorEvent.EventType.TAP_DOWN, RegulatorEvent.EventType.TAP_UP));
         sql.append("AND TimeStamp").gt(String.valueOf(start));

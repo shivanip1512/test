@@ -175,12 +175,16 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     // Updates the regulator tap positions using the set point value and latest voltage Y
                     updateSetPointTapPositions(regulatorOperations.regulatorId,
                         regulatorVoltageLoads.get(regulatorOperations.regulatorId));
-                    lastSetPointRegulatorEvaluationTime = regulatorOperations.timeStamp;
+                    if (regulatorOperations.timeStamp.isAfter(lastSetPointRegulatorEvaluationTime)) {
+                        lastSetPointRegulatorEvaluationTime = regulatorOperations.timeStamp;
+                    }
                     isTapControlMode = false;
                 }
                 if (isTapControlMode) {
                     log.debug("Found " + regulatorEventOperations.size() + " tap operations, acting on them.");
-                    lastTapRegulatorEvaluationTime = regulatorOperations.timeStamp;
+                    if (regulatorOperations.timeStamp.isAfter(lastTapRegulatorEvaluationTime)) {
+                        lastTapRegulatorEvaluationTime = regulatorOperations.timeStamp;
+                    }
                 }
             }
         }
