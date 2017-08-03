@@ -49,6 +49,8 @@ public enum YukonSimulatorSettingsKey {
     RFN_LCR_SIMULATOR_6200_SERIAL_TO(200000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_6600_SERIAL_FROM(300000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_6600_SERIAL_TO(320000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
+    RFN_LCR_SIMULATOR_6700_SERIAL_FROM(340000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
+    RFN_LCR_SIMULATOR_6700_SERIAL_TO(380000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE(10, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_LCR),
 

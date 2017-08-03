@@ -159,6 +159,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 RfnManufacturerModel.RFN_LCR_6200);
             createDevicesByRange(settings.getLcr6600serialFrom(), settings.getLcr6600serialTo(),
                 RfnManufacturerModel.RFN_LCR_6600);
+            createDevicesByRange(settings.getLcr6700serialFrom(), settings.getLcr6700serialTo(),
+                RfnManufacturerModel.RFN_LCR_6700);
             //check if execution was canceled
             if (!rangeDevices.isEmpty() && rangeDevicesStatus.isRunning().get()) {
                 logDebugInjectionTime(rangeDevices);
@@ -236,6 +238,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             simulatorSettings.setLcr6200serialTo(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6200_SERIAL_TO));
             simulatorSettings.setLcr6600serialFrom(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_FROM));
             simulatorSettings.setLcr6600serialTo(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_TO));
+            simulatorSettings.setLcr6700serialFrom(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_FROM));
+            simulatorSettings.setLcr6700serialTo(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_TO));
             simulatorSettings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE));
             settings = simulatorSettings;
         }
@@ -248,6 +252,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6200_SERIAL_TO, settings.getLcr6200serialTo());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_FROM, settings.getLcr6600serialFrom());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_TO, settings.getLcr6600serialTo());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_FROM, settings.getLcr6700serialFrom());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6700_SERIAL_TO, settings.getLcr6700serialTo());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
     }
 

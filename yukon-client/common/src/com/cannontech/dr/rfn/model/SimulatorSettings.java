@@ -14,6 +14,8 @@ public class SimulatorSettings implements Serializable {
     private int lcr6200serialTo;
     private int lcr6600serialFrom;
     private int lcr6600serialTo;
+    private int lcr6700serialFrom;
+    private int lcr6700serialTo;
 
     // meter data simulator
     private String paoType;
@@ -55,11 +57,13 @@ public class SimulatorSettings implements Serializable {
         }
     }
 
-    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates, ReportingInterval reportingInterval) {
+    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int lcr6700serialFrom, int lcr6700serialTo, int percentOfDuplicates, ReportingInterval reportingInterval) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
+        this.lcr6700serialFrom = lcr6700serialFrom;
+        this.lcr6700serialTo = lcr6700serialTo;
         this.percentOfDuplicates = percentOfDuplicates;
         this.reportingInterval = reportingInterval;
     }
@@ -111,6 +115,22 @@ public class SimulatorSettings implements Serializable {
 
     public int getPercentOfDuplicates() {
         return percentOfDuplicates;
+    }
+
+    public int getLcr6700serialFrom() {
+        return lcr6700serialFrom;
+    }
+
+    public void setLcr6700serialFrom(int lcr6700serialFrom) {
+        this.lcr6700serialFrom = lcr6700serialFrom;
+    }
+
+    public int getLcr6700serialTo() {
+        return lcr6700serialTo;
+    }
+
+    public void setLcr6700serialTo(int lcr6700serialTo) {
+        this.lcr6700serialTo = lcr6700serialTo;
     }
 
     public void setPercentOfDuplicates(int percentOfDuplicates) {

@@ -86,6 +86,7 @@ public class ControlAuditServiceTest {
     private PaoType supportsOne = PaoType.LCR3102;
     private PaoType supportsTwo = PaoType.LCR6200_RFN;
     private PaoType supportsAll = PaoType.LCR6600_RFN;
+    private PaoType supportsThree = PaoType.LCR6700_RFN;
     private PaoType honeywell = PaoType.HONEYWELL_9000;
 
     private Map<PaoType, Set<BuiltInAttribute>> attributeSupport = new HashMap<>();
@@ -102,6 +103,8 @@ public class ControlAuditServiceTest {
             Sets.newHashSet(BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG, BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG));
         attributeSupport.put(supportsAll, Sets.newHashSet(BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG,
             BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG));
+        attributeSupport.put(supportsThree, Sets.newHashSet(BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG,
+            BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG));
 
         //create 15 paos in controlled, uncontrolled, unknown
         //create 5 in unsupported
@@ -110,18 +113,21 @@ public class ControlAuditServiceTest {
             controlledPaos.put(id, new PaoIdentifier(id++, supportsOne));
             controlledPaos.put(id, new PaoIdentifier(id++, supportsTwo));
             controlledPaos.put(id, new PaoIdentifier(id++, supportsAll));
+            controlledPaos.put(id, new PaoIdentifier(id++, supportsThree));
             controlledPaos.put(id, new PaoIdentifier(id++, honeywell));
         }
         for (int i = 0; i < 5; i++) {
             uncontrolledPaos.put(id, new PaoIdentifier(id++, supportsOne));
             uncontrolledPaos.put(id, new PaoIdentifier(id++, supportsTwo));
             uncontrolledPaos.put(id, new PaoIdentifier(id++, supportsAll));
+            uncontrolledPaos.put(id, new PaoIdentifier(id++, supportsThree));
             uncontrolledPaos.put(id, new PaoIdentifier(id++, honeywell));
         }
         for (int i = 0; i < 5; i++) {
             unknownPaos.put(id, new PaoIdentifier(id++, supportsOne));
             unknownPaos.put(id, new PaoIdentifier(id++, supportsTwo));
             unknownPaos.put(id, new PaoIdentifier(id++, supportsAll));
+            unknownPaos.put(id, new PaoIdentifier(id++, supportsThree));
             unknownPaos.put(id, new PaoIdentifier(id++, honeywell));
         }
         for (int i = 0; i < 5; i++) {

@@ -99,7 +99,7 @@ public class PointDataCollectionService implements MessageListener {
                     if (device.getPaoType().isMeter()) {
                         meters.add(device);
                     } else if (device.getPaoType() == PaoType.LCR6200_RFN || device.getPaoType() == PaoType.LCR6600_RFN
-                        || device.getPaoType() == PaoType.LCR3102) {
+                        || device.getPaoType() == PaoType.LCR3102 || device.getPaoType() == PaoType.LCR6700_RFN) {
                         lcrs.add(device);
                     }
                 });

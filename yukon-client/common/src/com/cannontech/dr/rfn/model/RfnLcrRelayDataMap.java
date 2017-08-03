@@ -24,6 +24,7 @@ public enum RfnLcrRelayDataMap {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrRelayDataMap.class);
     private static final Set<RfnLcrRelayDataMap> lcr6200RelayMap;
     private static final Set<RfnLcrRelayDataMap> lcr6600RelayMap;
+    private static final Set<RfnLcrRelayDataMap> lcr6700RelayMap;
     
     RfnLcrRelayDataMap(String xPathQuery, BuiltInAttribute runTime, BuiltInAttribute shedTime, int relayIndex) {
         this.relayIdXPathString = xPathQuery;
@@ -40,6 +41,7 @@ public enum RfnLcrRelayDataMap {
         builder.add(RELAY_2);
         builder.add(RELAY_3);
         lcr6600RelayMap = builder.build();
+        lcr6700RelayMap = builder.build();
     }
     
     public static Set<RfnLcrRelayDataMap> getRelayMapByPaoType(PaoType paoType) throws ParseException {
@@ -47,6 +49,8 @@ public enum RfnLcrRelayDataMap {
             return getLcr6200RelayMap();
         } else if (paoType == PaoType.LCR6600_RFN) {
             return getLcr6600RelayMap();
+        } else if (paoType == PaoType.LCR6700_RFN) {
+            return getLcr6700RelayMap();
         } else {
             log.error("No RFN LCR relay mapping data found for pao type: " + paoType.getPaoTypeName());
             throw new ParseException("No RFN LCR relay mapping data found for pao type: " + paoType.getPaoTypeName(), 0);
@@ -75,5 +79,9 @@ public enum RfnLcrRelayDataMap {
     
     public static Set<RfnLcrRelayDataMap> getLcr6600RelayMap() {
         return lcr6600RelayMap;
+    }
+
+    public static Set<RfnLcrRelayDataMap> getLcr6700RelayMap() {
+        return lcr6700RelayMap;
     }
 }

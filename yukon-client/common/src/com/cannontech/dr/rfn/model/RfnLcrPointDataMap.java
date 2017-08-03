@@ -39,6 +39,7 @@ public enum RfnLcrPointDataMap {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrPointDataMap.class);
     private static final Set<RfnLcrPointDataMap> lcr6200PointDataMap;
     private static final Set<RfnLcrPointDataMap> lcr6600PointDataMap;
+    private static final Set<RfnLcrPointDataMap> lcr6700PointDataMap;
     
     RfnLcrPointDataMap(BuiltInAttribute attribute, String xPathQuery) {
         this(attribute, xPathQuery, null, null, null);
@@ -70,6 +71,8 @@ public enum RfnLcrPointDataMap {
         builder.add(RELAY_3_LOAD_SIZE);
         builder.add(RELAY_3_REMAINING_CONTROL);
         lcr6600PointDataMap = builder.build();
+
+        lcr6700PointDataMap = builder.build();
     }
     
     public static Set<RfnLcrPointDataMap> getRelayMapByPaoType(PaoType paoType) {
@@ -77,6 +80,8 @@ public enum RfnLcrPointDataMap {
             return getLcr6200PointDataMap();
         } else if (paoType == PaoType.LCR6600_RFN) {
             return getLcr6600PointDataMap();
+        } else if (paoType == PaoType.LCR6700_RFN) {
+            return getLcr6700PointDataMap();
         } else {
             log.error("No RFN LCR point mapping data found for pao type: " + paoType.getPaoTypeName());
             throw new IllegalArgumentException();
@@ -100,6 +105,10 @@ public enum RfnLcrPointDataMap {
     }
     public static Set<RfnLcrPointDataMap> getLcr6600PointDataMap() {
         return lcr6600PointDataMap;
+    }
+
+    public static Set<RfnLcrPointDataMap> getLcr6700PointDataMap() {
+        return lcr6700PointDataMap;
     }
 
     public Double getMultiplier() {

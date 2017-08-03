@@ -18,6 +18,10 @@
                 <input id="lcr6600serialFrom" name="Lcr6600serialFrom" type="text" value=${currentSettings.lcr6600serialFrom}> <i:inline key="yukon.common.to"/> 
                 <input id="lcr6600serialTo" name="lcr6600serialTo" type="text" value=${currentSettings.lcr6600serialTo}>
             </tags:nameValue2>
+            <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6700">
+                <input id="lcr6700serialFrom" name="Lcr6700serialFrom" type="text" value=${currentSettings.lcr6700serialFrom}> <i:inline key="yukon.common.to"/> 
+                <input id="lcr6700serialTo" name="lcr6700serialTo" type="text" value=${currentSettings.lcr6700serialTo}>
+            </tags:nameValue2>
             <tags:nameValue2 nameKey=".lcrDataSimulator.duplicates">
                 <input id="percentOfDuplicates" name="percentOfDuplicates" type="text" value=${currentSettings.percentOfDuplicates} maxlength="3" size="3"> %
             </tags:nameValue2>

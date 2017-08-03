@@ -220,6 +220,9 @@ public final class DeviceFactory {
         case LCR6600_RFN:
             returnDevice = new RfnLcr6600();
             break;
+        case LCR6700_RFN:
+            returnDevice = new RfnLcr6700();
+            break;
 
         //Carrier type devices
         case MCT213:
