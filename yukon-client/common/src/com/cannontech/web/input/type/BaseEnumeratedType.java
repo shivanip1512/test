@@ -39,19 +39,25 @@ public abstract class BaseEnumeratedType<T> implements InputType<T> {
                 
                 String valueString = value.toString();
 
-                List<? extends InputOptionProvider> optionList = getOptionList();
-                for (InputOptionProvider option : optionList) {
-                    if (valueString.equalsIgnoreCase(option.getValue())) {
-                        // is valid option - in option list
-                        return;
-                    }
+                InputOptionProvider option = 
+                        getOptionList().stream()
+                            .filter(opt -> valueString.equalsIgnoreCase(opt.getValue()))
+                            .findAny()
+                            .orElse(null);
+
+                if (option == null) {
+                    // Not in the option list
+                    errors.rejectValue(path,
+                                       "yukon.web.input.error.invalidOption",
+                                       new Object[] { displayName, value },
+                                       "The value is not a valid option.");
+                } else if (!option.isEnabled()) {
+                    // Not enabled in the option list
+                    errors.rejectValue(path,
+                                       "yukon.web.input.error.disabledOption",
+                                       new Object[] { displayName, value },
+                                       "The value is not an enabled option.");
                 }
-                
-                // Not in the option list
-                errors.rejectValue(path,
-                                   "error.invalidOption",
-                                   new Object[] { displayName, value },
-                                   "The value is not a valid option.");
             }
 
             public String getDescription() {

@@ -15,7 +15,7 @@
     <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
     <select name="${status.expression}" class="${inputClass}">
         <c:forEach var="option" items="${inputType.optionList}">
-            <option value="${option.value}" <c:if test="${status.value == option.value}">selected</c:if>><cti:msg2 key="${option}"/></option>
+            <option value="${option.value}"<c:if test="${status.value == option.value}"> selected</c:if><c:if test="${!option.enabled}"> disabled="true"</c:if>><cti:msg2 key="${option}"/></option>
         </c:forEach>
     </select>
 </cti:displayForPageEditModes>

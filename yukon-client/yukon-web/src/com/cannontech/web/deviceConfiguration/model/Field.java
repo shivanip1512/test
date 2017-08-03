@@ -33,11 +33,6 @@ public class Field<T> {
         return new Field<T>(displayName, fieldName, description, inputType, defaultValue, null);
     }
 
-    public static <T> Field<T> createEnumField(String displayName, String fieldName, String description,
-            InputType<T> inputType, String defaultValue) {
-        return new Field<T>(displayName, fieldName, description, inputType, defaultValue, true, null);
-    }
-
     public String getDisplayName() {
         return displayName;
     }

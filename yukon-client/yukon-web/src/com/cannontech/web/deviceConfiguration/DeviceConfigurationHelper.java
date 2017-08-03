@@ -37,12 +37,14 @@ import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInp
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
 import com.cannontech.web.deviceConfiguration.model.ChannelField;
 import com.cannontech.web.deviceConfiguration.model.ChannelInput;
+import com.cannontech.web.deviceConfiguration.model.EnumField;
 import com.cannontech.web.deviceConfiguration.model.Field;
 import com.cannontech.web.deviceConfiguration.model.FloatField;
 import com.cannontech.web.deviceConfiguration.model.IntegerField;
 import com.cannontech.web.deviceConfiguration.model.RateInput;
 import com.cannontech.web.deviceConfiguration.model.RateMapField;
 import com.cannontech.web.deviceConfiguration.model.RateMapField.DisplayableRate;
+import com.cannontech.web.input.type.BaseEnumeratedType;
 import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.DelegatingEnumeratedType;
 import com.cannontech.web.input.type.FloatType;
@@ -68,7 +70,6 @@ public class DeviceConfigurationHelper {
     @Autowired private ObjectFormattingService formattingService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private RfnDeviceAttributeDao rfnDeviceAttributeDao;
-    @Autowired private List<DeviceConfigurationInputEnumeration> configurationInputEnumerations;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @Autowired
@@ -137,8 +138,8 @@ public class DeviceConfigurationHelper {
         }
 
         if (input.getClass() == InputEnum.class) {
-            InputType<?> inputType = convertEnumField((InputEnum) input, userContext);
-            fields.add(Field.createEnumField(displayName, fieldName, description, inputType, input.getDefault()));
+            BaseEnumeratedType<String> enumField = convertEnumField((InputEnum) input, userContext);
+            fields.add(new EnumField(displayName, fieldName, description, enumField, input.getDefault()));
         } else if (input.getClass() == InputInteger.class) {
             fields.add(createIntegerField(displayName, fieldName, description, (InputInteger) input));
         } else if (input.getClass() == InputFloat.class) {
@@ -328,7 +329,7 @@ public class DeviceConfigurationHelper {
 
     };
 
-    private InputType<?> convertEnumField(InputEnum input, YukonUserContext userContext) {
+    private BaseEnumeratedType<String> convertEnumField(InputEnum input, YukonUserContext userContext) {
 
         DelegatingEnumeratedType<String> inputType = new DelegatingEnumeratedType<>();
         DeviceConfigurationInputEnumeration enumeration = fieldToEnumerationMap.get(input.getType());

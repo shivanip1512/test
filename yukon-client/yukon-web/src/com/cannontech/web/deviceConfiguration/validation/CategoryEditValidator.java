@@ -20,6 +20,7 @@ import com.cannontech.web.deviceConfiguration.model.CategoryEditBean.RateBacking
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
 import com.cannontech.web.deviceConfiguration.model.ChannelField;
 import com.cannontech.web.deviceConfiguration.model.ChannelInput;
+import com.cannontech.web.deviceConfiguration.model.EnumField;
 import com.cannontech.web.deviceConfiguration.model.Field;
 import com.cannontech.web.deviceConfiguration.model.FloatField;
 import com.cannontech.web.deviceConfiguration.model.IntegerField;
@@ -112,7 +113,7 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
 
                     if (field.getValidator() != null) {
                         try {
-                            if (field.getClass() == IntegerField.class) {
+                        	if (field.getClass() == IntegerField.class) {
                                 try {
                                     IntegerField intField = (IntegerField) field;
                                     InputValidator<Integer> validator = intField.getValidator();
@@ -135,6 +136,10 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                                         errors.rejectValue(path, baseKey + ".decimalDigits", args, "");
                                     }
                                 }
+                            } else if (field.getClass() == EnumField.class) {
+                                EnumField enumField = (EnumField) field;
+                                InputValidator<String> validator = enumField.getValidator();
+                                validator.validate(path, field.getDisplayName(), value, errors);
                             } else {
                                 log.error("Received a validator for an unsupported type: " + field.getClass().getSimpleName());
                             }

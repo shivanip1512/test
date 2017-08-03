@@ -12,6 +12,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class InputOption implements InputOptionProvider {
     private String value = null;
+    private boolean enabled = true;
     private MessageSourceResolvable messageSourceResolvable;
 
     public InputOption(){};
@@ -19,6 +20,11 @@ public class InputOption implements InputOptionProvider {
     public InputOption(String value, String text) {
         this.value = value;
         setText(text);
+    }
+
+    public InputOption(String value, String text, boolean enabled) {
+        this(value, text);
+        setEnabled(enabled);
     }
 
     public InputOption(Enum<?> enumEntry) {
@@ -55,5 +61,14 @@ public class InputOption implements InputOptionProvider {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
