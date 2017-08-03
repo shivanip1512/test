@@ -84,14 +84,13 @@ public class DisplayDaoImpl implements DisplayDao {
         sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
         sql.append("FROM DISPLAY");
         sql.append("WHERE NAME").eq(name);
-        Display display;
         try {
-            display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
+            Display display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
+            addColumnsToDisplay(display);
+            return display;
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
-        addColumnsToDisplay(display);
-        return display;
     }
     
     /**
