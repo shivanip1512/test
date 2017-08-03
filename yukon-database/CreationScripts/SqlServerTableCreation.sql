@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/31/2017 3:46:32 PM                         */
+/* Created on:     8/3/2017 4:09:54 AM                          */
 /*==============================================================*/
 
 
@@ -10129,6 +10129,7 @@ insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
 INSERT INTO YukonListEntry VALUES (2000, 1005, 0, 'LCR-6200(RFN)', 1324);
 INSERT INTO YukonListEntry VALUES (2001, 1005, 0, 'LCR-6600(RFN)', 1325);
+INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700(RFN)', 1337);
 INSERT INTO YukonListEntry VALUES (2002, 1005, 0, 'LCR-6200(ZIGBEE)', 1320); 
 INSERT INTO YukonListEntry VALUES (2003, 1005, 0, 'LCR-6200(EXPRESSCOM)', 1321); 
 INSERT INTO YukonListEntry VALUES (2004, 1005, 0, 'LCR-6600(ZIGBEE)', 1322); 
