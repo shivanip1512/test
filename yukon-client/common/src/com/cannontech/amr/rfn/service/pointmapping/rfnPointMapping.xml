@@ -2010,22 +2010,13 @@
         </point>
     </pointGroup>
 
-    <pointGroup><!-- TWO POINT VOLTAGE POINT MAPPINGS -->
+    <pointGroup><!-- RFN-410FL VOLTAGE POINT MAPPING -->
         <paoType value="RFN410FL"/>
-        <paoType value="RFN420FL"/>
-        <paoType value="RFN510FL"/>
         <point name="Voltage Primary">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Primary</modifier>
-            </modifiers>
-        </point>
-        <point name="Voltage Secondary">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Secondary</modifier>
             </modifiers>
         </point>
     </pointGroup>
