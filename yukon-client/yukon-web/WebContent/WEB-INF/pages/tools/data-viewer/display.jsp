@@ -57,22 +57,20 @@
                 <tr>
                     <th></th>
                     <c:forEach var="column" items="${display.columns}">
-                        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                            <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
-                                <th></th>
-                                <th><i:inline key="yukon.common.value"/></th>
-                            </c:if>
-                            <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}"></c:if>
-                            <c:if test="${column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE') && column.type != cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
+                        <c:choose>
+                            <c:when test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
+                                    <th></th>
+                                    <th><i:inline key="yukon.common.value"/></th>
+                            </c:when>
+                            <c:when test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
+                                <c:if test="${not stateValue}">
+                                    <th>${fn:escapeXml(column.title)}</th>
+                                </c:if>
+                            </c:when>
+                            <c:otherwise>
                                 <th>${fn:escapeXml(column.title)}</th>
-                            </c:if>
-                        </c:if>
-                        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                            <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
-                                <th></th>
-                            </c:if>
-                            <th>${fn:escapeXml(column.title)}</th>
-                        </c:if>
+                            </c:otherwise>
+                        </c:choose>
                     </c:forEach>
                     <th class="action-column"><c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}"><cti:icon icon="icon-cog" classes="M0"/></c:if></th>
                 </tr>
@@ -177,6 +175,11 @@
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.USERNAME')}">
                                         <td>${fn:escapeXml(row.userName)}</td>
+                                    </c:if>
+                                    <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
+                                        <c:if test="${not stateValue}">
+                                            <td><cti:dataUpdaterValue type="TDC" identifier="STATE/${row.pointId}"/></td>
+                                        </c:if>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TAG')}">
                                         <td>${fn:escapeXml(row.tagName)}</td>
