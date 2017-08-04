@@ -1,7 +1,6 @@
 package com.cannontech.common.device.config.dao;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.config.model.DNPConfiguration;
@@ -286,13 +285,4 @@ public interface DeviceConfigurationDao {
      * @return the string representation of the value for the specified item.
      */
     String getValueForItemName(int configId, CategoryType categoryType, String itemName);
-
-    /**
-     * Returns the voltage control mode for the regulator ids provided
-     * 
-     * @param deviceIds as regulatorIds
-     * @returns the Map with regulatorId and voltageControlModes mappings
-     */
-    Map<Integer, String> getDeviceVoltageControlMode(Set<Integer> deviceIds);
-
 }

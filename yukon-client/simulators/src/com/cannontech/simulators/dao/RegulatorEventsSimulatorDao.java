@@ -15,11 +15,6 @@ public interface RegulatorEventsSimulatorDao {
         public Integer setPointValue;
     }
     
-    List<RegulatorOperations> getRegulatorTapOperationsAfter(Instant lastRegulatorEvaluationTime);
-    
-    /**
-     * Gets Set point event operations after the timestamp passed
-     */
-    List<RegulatorOperations> getRegulatorSetPointOperationsAfter(Instant lastRegulatorEvaluationTime);
+    List<RegulatorOperations> getRegulatorEventOperationsAfter(Instant lastRegulatorEvaluationTime);
 
 }

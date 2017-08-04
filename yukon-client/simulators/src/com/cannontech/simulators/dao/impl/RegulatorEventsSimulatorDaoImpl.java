@@ -33,26 +33,17 @@ public class RegulatorEventsSimulatorDaoImpl implements RegulatorEventsSimulator
             return result;
         }
     };
-    
-    public List<RegulatorOperations> getRegulatorSetPointOperationsAfter(Instant start) {
+
+    public List<RegulatorOperations> getRegulatorEventOperationsAfter(Instant start) {
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RegulatorId, EventType, TimeStamp, SetPointValue");
         sql.append("FROM RegulatorEvents");
         sql.append("WHERE EventType").in(
-            ImmutableList.of(RegulatorEvent.EventType.DECREASE_SETPOINT, RegulatorEvent.EventType.INCREASE_SETPOINT));
+            ImmutableList.of(RegulatorEvent.EventType.TAP_DOWN, RegulatorEvent.EventType.TAP_UP,
+                RegulatorEvent.EventType.DECREASE_SETPOINT, RegulatorEvent.EventType.INCREASE_SETPOINT));
         sql.append("AND TimeStamp").gt(String.valueOf(start));
 
-        return yukonJdbcTemplate.query(sql, rowMapper);
-    }
-    
-    public List<RegulatorOperations> getRegulatorTapOperationsAfter(Instant start) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RegulatorId, EventType, TimeStamp, -1 AS SetPointValue");
-        sql.append("FROM RegulatorEvents");
-        sql.append("WHERE EventType").in(ImmutableList.of(RegulatorEvent.EventType.TAP_DOWN, RegulatorEvent.EventType.TAP_UP));
-        sql.append("AND TimeStamp").gt(String.valueOf(start));
-        
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 }

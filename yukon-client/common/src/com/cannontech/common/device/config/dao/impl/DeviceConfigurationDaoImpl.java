@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -1113,33 +1111,4 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         // and has no assigned devices.
         return !requiredConfigs.keySet().contains(configId) && getNumberOfDevicesForConfiguration(configId) == 0;
     }
-
-    @Override
-    public Map<Integer, String> getDeviceVoltageControlMode(Set<Integer> deviceIds) {
-        Map<Integer, String> controlModeMap = new HashMap<>();
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DCDM.DeviceID AS RegulatorId, DCI.ItemValue AS ControlMode");
-        sql.append("FROM DeviceConfigCategoryItem DCI");
-        sql.append("    JOIN DeviceConfigCategoryMap DCM ON DCM.DeviceConfigCategoryId = DCI.DeviceConfigCategoryId");
-        sql.append("    JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCM.DeviceConfigurationId");
-        sql.append("    JOIN DeviceConfigCategory DCC ON DCM.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId");
-        sql.append(
-            "    JOIN DeviceConfigurationDeviceMap DCDM ON DC.DeviceConfigurationId = DCDM.DeviceConfigurationId");
-        sql.append("WHERE DCI.ItemName='voltageControlMode'");
-        sql.append("    AND DCC.CategoryType ='regulatorCategory'");
-        sql.append("    AND DCDM.DeviceID").in(deviceIds);
-
-        try {
-            jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-                @Override
-                public void processRow(YukonResultSet resultSet) throws SQLException {
-                    controlModeMap.put(resultSet.getInt("RegulatorId"), resultSet.getString("ControlMode"));
-                }
-            });
-        } catch (DataAccessException e) {
-            throw new NotFoundException("Get device Voltage Control Modes failed ", e);
-        }
-        return controlModeMap;
-    }
-   
 }

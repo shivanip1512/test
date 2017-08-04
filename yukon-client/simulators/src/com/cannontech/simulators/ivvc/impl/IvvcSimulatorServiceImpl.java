@@ -30,7 +30,6 @@ import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -45,6 +44,8 @@ import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.simulators.RegulatorVoltageControlMode;
+import com.cannontech.simulators.dao.DeviceConfigurationSimulatorDao;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao.RegulatorOperations;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
@@ -59,7 +60,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     @Autowired private VoltageRegulatorService regulatorService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private RegulatorEventsSimulatorDao regulatorEventsSimulatorDao;
-    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
+    @Autowired private DeviceConfigurationSimulatorDao deviceConfigurationSimulatorDao;
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private PointDao pointDao;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
@@ -72,16 +73,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private final Map<Integer, Integer> regulatorSetPointValues = new HashMap<>();
     private final Map<Integer, Double> regulatorVoltageLoads = new HashMap<>();
     
-    private enum VoltageControlMode {
-        SET_POINT,
-        DIRECT_TAP;
-    }
-    
-    Map<Integer, VoltageControlMode> regulatorVoltageControlModeConfig = new HashMap<>();
+    Map<Integer, RegulatorVoltageControlMode> regulatorVoltageControlModeConfig = new HashMap<>();
     private final Map<Integer, Integer> subBusKVar = new HashMap<>();
     private int keepAliveIncrementingValue = 0;
-    private Instant lastTapRegulatorEvaluationTime;
-    private Instant lastSetPointRegulatorEvaluationTime;
+    private Instant lastRegulatorEvaluationTime;
     private ScheduledFuture<?> ivvcSimulationFuture;
     private final List<PointData> messagesToSend = new ArrayList<>();
     
@@ -107,8 +102,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         if (isRunning) {
             return false;
         } else {
-            lastTapRegulatorEvaluationTime = Instant.now();
-            lastSetPointRegulatorEvaluationTime = Instant.now();
+            lastRegulatorEvaluationTime = Instant.now();
             ivvcSimulationFuture = executor.scheduleAtFixedRate(this::getSimulatorThread, 0, 30, TimeUnit.SECONDS);
             saveSettings(settings);
             log.info("IVVC simulator thread starting up.");
@@ -148,14 +142,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     // Load all of the tap up and down operations, add or subtract from tap position depending on operation performed.
     // TBD: Limits position?
     private void processNewRegulatorActions() {
-        
-        //Get the Tap event operations for all regulators
+
+        // Get the Tap event and Set point operations for all regulators
         List<RegulatorOperations> regulatorEventOperations =
-            regulatorEventsSimulatorDao.getRegulatorTapOperationsAfter(lastTapRegulatorEvaluationTime);
-        
-        //Get the Set Point event operations for all regulators and merge the list
-        regulatorEventOperations.addAll(
-            regulatorEventsSimulatorDao.getRegulatorSetPointOperationsAfter(lastSetPointRegulatorEvaluationTime));
+            regulatorEventsSimulatorDao.getRegulatorEventOperationsAfter(lastRegulatorEvaluationTime.minus(3*60*60000));
 
         // Adjust the tap positions as per the regulator voltage-control-modes
         if (!regulatorEventOperations.isEmpty()) {
@@ -175,16 +165,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     // Updates the regulator tap positions using the set point value and latest voltage Y
                     updateSetPointTapPositions(regulatorOperations.regulatorId,
                         regulatorVoltageLoads.get(regulatorOperations.regulatorId));
-                    if (regulatorOperations.timeStamp.isAfter(lastSetPointRegulatorEvaluationTime)) {
-                        lastSetPointRegulatorEvaluationTime = regulatorOperations.timeStamp;
-                    }
                     isTapControlMode = false;
                 }
                 if (isTapControlMode) {
                     log.debug("Found " + regulatorEventOperations.size() + " tap operations, acting on them.");
-                    if (regulatorOperations.timeStamp.isAfter(lastTapRegulatorEvaluationTime)) {
-                        lastTapRegulatorEvaluationTime = regulatorOperations.timeStamp;
-                    }
+                }
+                if (regulatorOperations.timeStamp.isAfter(lastRegulatorEvaluationTime)) {
+                    lastRegulatorEvaluationTime = regulatorOperations.timeStamp;
                 }
             }
         }
@@ -290,7 +277,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                     generatePoint(mapping.getValue(), keepAliveIncrementingValue, PointType.Analog);
                                     break;
                                 case FORWARD_SET_POINT:
-                                    if (regulatorVoltageControlModeConfig.get(regulatorId)== VoltageControlMode.SET_POINT &&
+                                    if (regulatorVoltageControlModeConfig.get(regulatorId)== RegulatorVoltageControlMode.SET_POINT &&
                                             regulatorSetPointValues.containsKey(regulatorId)) {
                                         generatePoint(mapping.getValue(), regulatorSetPointValues.get(regulatorId),
                                             PointType.Analog); // Really not used, here to generate point data
@@ -412,7 +399,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                               regulatorTapPositionPointIds.add(tapPositionMapping.getValue());
                                               pointIdToRegulator.put(tapPositionMapping.getValue(), regulator.getId());
                                               });
-                                              regulatorVoltageControlModeConfig.put(regulator.getId(), VoltageControlMode.DIRECT_TAP); // Default mode
+                                              regulatorVoltageControlModeConfig.put(regulator.getId(), null);
                                     }));
             
             int successCount = 0;
@@ -440,31 +427,17 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             DateTime stop = DateTime.now();
             log.debug("Retrieved and loaded " + successCount + " tap point values from Dispatch in " + (stop.getMillis() - start.getMillis())/1000 + " seconds");
         }
-        // Load regulator voltage control modes every 30 seconds
-        loadRegulatorConfigurationCache();
+        // Load regulator voltage control modes from DB every 30 seconds
+        deviceConfigurationSimulatorDao.getDeviceVoltageControlMode(regulatorVoltageControlModeConfig);
     }
     
-    /**
-     * Loads the regulator voltage control modes for all the regulators simulated
-     */
-    private void loadRegulatorConfigurationCache() {
-        Map<Integer, String> voltageControlModes =
-            deviceConfigurationDao.getDeviceVoltageControlMode(regulatorVoltageControlModeConfig.keySet());
-        if (!voltageControlModes.isEmpty()) {
-            for (Integer regulatorId : voltageControlModes.keySet()) {
-                regulatorVoltageControlModeConfig.put(regulatorId,
-                    VoltageControlMode.valueOf((String) voltageControlModes.get(regulatorId)));
-            }
-        }
-    }
-
     /**
      * Returns the current regulator tap position, as per the control type set
      */
     private void updateSetPointTapPositions(Integer regulatorId, Double voltageLoad) {
         int tapChange = INITIAL_TAP_POSITION;
-        VoltageControlMode configControlType = regulatorVoltageControlModeConfig.get(regulatorId);
-        if (configControlType != null && configControlType == VoltageControlMode.SET_POINT) {
+        RegulatorVoltageControlMode configControlType = regulatorVoltageControlModeConfig.get(regulatorId);
+        if (configControlType != null && configControlType == RegulatorVoltageControlMode.SET_POINT) {
             if (voltageLoad != null && regulatorSetPointValues.containsKey(regulatorId)) {
                 int setPointVoltage = regulatorSetPointValues.get(regulatorId);
                 int bandwidth = 2;
