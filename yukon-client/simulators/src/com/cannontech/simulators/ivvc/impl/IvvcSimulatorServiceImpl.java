@@ -145,7 +145,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
 
         // Get the Tap event and Set point operations for all regulators
         List<RegulatorOperations> regulatorEventOperations =
-            regulatorEventsSimulatorDao.getRegulatorEventOperationsAfter(lastRegulatorEvaluationTime.minus(3*60*60000));
+            regulatorEventsSimulatorDao.getRegulatorEventOperationsAfter(lastRegulatorEvaluationTime);
 
         // Adjust the tap positions as per the regulator voltage-control-modes
         if (!regulatorEventOperations.isEmpty()) {
