@@ -303,20 +303,10 @@ public class DisplayDaoImpl implements DisplayDao {
     }
     
     @Override
-    @Transactional
     public void deleteCustomDisplay(int displayId) {
-        List<String> deleteTable = new ArrayList<>();
-        deleteTable.add("DISPLAY2WAYDATA");
-        deleteTable.add("DISPLAYCOLUMNS");
-        deleteTable.add("TemplateDisplay");
-        deleteTable.add("DISPLAY");
-
-        deleteTable.stream().forEach(table -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM ");
-            sql.append(table);
-            sql.append(" WHERE DISPLAYNUM").eq(displayId);
-            yukonJdbcTemplate.update(sql);
-        });
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM Display");
+        sql.append("WHERE DISPLAYNUM").eq(displayId);
+        yukonJdbcTemplate.update(sql);
     }
 }
