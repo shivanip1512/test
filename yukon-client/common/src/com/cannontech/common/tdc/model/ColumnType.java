@@ -26,7 +26,7 @@ public enum ColumnType {
     STATE(13, "State", 10),
     
     // the columns below are not defined in columntype. 
-    TIME_STAMP(-1, "Timestamp", 0),
+    TIME_STAMP(-1, "Time Stamp", 0),
     TEXT_MESSAGE(-2, "Text Message", 0),
     USERNAME(-3, "User Name", 0),
     ADDITIONAL_INFO(-4, "Additional Info", 0),
