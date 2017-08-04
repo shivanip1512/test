@@ -9,7 +9,41 @@ import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 
 public interface DisplayDataDao {
+    
+    public enum SortBy{
 
+        PAO_CATEGORY("y.Category"),
+        PAO_CLASS("y.PAOClass"),
+        PAO_DESCRIPTION("y.Description"),
+        PAO_DEVICE_NAME("y.DeviceName"),
+        PAO_DISABLED_FLAG("y.DisableFlag"),
+        PAO_ID("y.PAObjectID"),
+        PAO_NAME("y.PAOName"),
+        PAO_STATISTICS("y.PAOStatistics"),
+        PAO_TYPE("y.Type"),
+        
+        POINT_ID("p.PointId"),        
+        POINT_NAME("p.PointName"),
+        POINT_PAO_ID("p.PAObjectId"),
+
+        SYS_LOG_ACTION("s.Action"),
+        SYS_LOG_DATE_TIME("s.Datetime"),
+        SYS_LOG_DESCRIPTION("s.Description"),
+        SYS_LOG_MILLLIS("s.Millis"),
+        SYS_LOG_POINT_ID("s.PointId"),
+        SYS_LOG_SOE_TAG("s.SOE_TAG");
+
+        private SortBy(String dbString) {
+            this.dbString = dbString;
+        }
+        
+        private final String dbString;
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
+    
     /**
      * Gets Event Viewer display data
      */
