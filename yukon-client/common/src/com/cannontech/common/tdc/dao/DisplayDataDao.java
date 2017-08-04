@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.joda.time.DateTimeZone;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
@@ -57,7 +58,7 @@ public interface DisplayDataDao {
     /**
      * Gets SOE log display data
      */
-    List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging);
+    List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction);
 
     /**
      * Gets TAG log display data
