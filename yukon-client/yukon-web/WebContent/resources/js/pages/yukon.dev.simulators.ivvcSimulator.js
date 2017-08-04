@@ -18,6 +18,10 @@ yukon.dev.simulators.ivvcSimulator = ( function() {
     _sendMessageButtonClick = function(event) {
         var formData = $('#formData').serialize();
         if($(this).attr('id') === 'send-message') {
+            var isFormDataValid = _validateFormValues();
+            if (!isFormDataValid) {
+                return false;
+            }
             $.ajax({
                 url: yukon.url('/dev/ivvc/startIvvcSimulatorRequest'),
                 type: 'post',
@@ -49,6 +53,43 @@ yukon.dev.simulators.ivvcSimulator = ( function() {
         $(this).siblings('button').show();
     },
     
+    _validateFormValues = function() {
+        $("#save-settings-message").addClass("dn");
+        $("#validationErrors").addClass("dn");
+        var subStationBuskWh = $("input[name='substationBuskWh']").val();
+        if (($("input[name='autogenerateSubstationBuskWh']:checked").length == 0)
+                && (isNaN(subStationBuskWh) || subStationBuskWh <= 0)) {
+            $("#validationErrors").removeClass("dn");
+            return false;
+        }
+        return true;
+    },
+    
+    _saveSimulatorSettings = function () {
+        var isFormDataValid = _validateFormValues();
+        if (!isFormDataValid) {
+            return false;
+        }
+        var formData = $('#formData').serialize();
+        $.ajax({
+            url: yukon.url('saveSimulatorSettings'),
+            type: 'post',
+            data: formData
+        }).done(function(data) {
+            $("#save-settings-message").text(data.message);
+            if(data.hasError) {
+                $("#save-settings-message").addClass("error");
+                $("#save-settings-message").removeClass("success");
+            } else {
+                $("#save-settings-message").addClass("success");
+                $("#save-settings-message").removeClass("error");
+            }
+            $("#save-settings-message").removeClass("dn");
+        }).fail(function(data) {
+            console.log('failed');
+        });
+    },
+    
     _checkExistingDeviceStatus = function(extraCheck) {
         if (!extraCheck) {
             $.ajax({
@@ -63,11 +104,11 @@ yukon.dev.simulators.ivvcSimulator = ( function() {
                 if (data.running) {
                     $('#stop-send-message').show();
                     $('#send-message').hide();
-                    $("#ivvcForm :input").prop("disabled", true);
+                    $("#ivvcForm :input[name='increasedSpeedMode']").prop("disabled", true);
                 } else {
                     $('#stop-send-message').hide();
                     $('#send-message').show();
-                    $("#ivvcForm :input").prop("disabled", false);
+                    $("#ivvcForm :input[name='increasedSpeedMode']").prop("disabled", false);
                 }
                 var running = "Not Running";
                 if (data.running) {
@@ -92,6 +133,10 @@ yukon.dev.simulators.ivvcSimulator = ( function() {
             $('#send-test, #send-message, #stop-send-message').click(_sendMessageButtonClick);
             _checkExistingDeviceStatus();
             _initialized = true;
+            
+            $(document).on("click", "#save-settings", function() {
+                _saveSimulatorSettings();
+            });
         },
     };
     return mod;

@@ -4,7 +4,11 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dev" page="ivvc.ivvcSimulator">
-    <div class="column-12-12 clearfix">
+    <div id="validationErrors" class="user-message error dn">
+        <cti:msg key="yukon.web.modules.dev.ivvc.ivvcSimulator.substationBuskWh.invalid"/>
+    </div>
+    <div id="save-settings-message" class="user-message dn"></div>
+    <div class="column-14-10 clearfix">
         <div class="column one">
             <form id='formData'">
                 <cti:csrfToken />
@@ -13,17 +17,21 @@
                     <div id='ivvcForm'>
                         <tags:nameValueContainer2>
                             <tags:checkboxNameValue path="ivvcSimulatorSettings.increasedSpeedMode" nameKey=".ivvcSimulator.increasedSpeedMode"/>
+                            <tags:checkboxNameValue path="ivvcSimulatorSettings.autogenerateSubstationBuskWh" nameKey=".ivvcSimulator.generatekWhAutomatically"/>
+                            <tags:nameValue2 nameKey=".ivvcSimulator.substationBuskWh">
+                                <tags:input path="ivvcSimulatorSettings.substationBuskWh" id="substationBuskWh"/>
+                            </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
                     <div>
-                        <br/>
-                        <cti:button id="send-message" nameKey="sendIvvcMessages"/>
-                        <cti:button id="stop-send-message" nameKey="stopSendingIvvcMessages" classes="dn"/>
+                       <cti:button id="save-settings" nameKey="saveSettings"/>
+                       <cti:button id="send-message" nameKey="sendIvvcMessages"/>
+                       <cti:button id="stop-send-message" nameKey="stopSendingIvvcMessages" classes="dn"/>
                     </div>
                     <div class="button-group button-group-toggle">
-                        <div class="js-sim-startup" data-simulator-type="IVVC"></div>
-                        <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-                        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                       <div class="js-sim-startup" data-simulator-type="IVVC"></div>
+                       <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+                       <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
                     </div>
                 </tags:sectionContainer2>
             </form>

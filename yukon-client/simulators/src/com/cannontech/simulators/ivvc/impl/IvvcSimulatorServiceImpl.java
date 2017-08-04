@@ -67,6 +67,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
 
     private volatile boolean isRunning; // This refers to the simulator itself
     private volatile boolean isCurrentlyExecuting = false; // This is used to ensure only one timed execution happens at a time
+    private volatile double substationBuskWh;
+    private volatile boolean autoGenerateSubstationBuskWh;
     private boolean tapPositionsPreloaded = false;
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
@@ -107,6 +109,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             saveSettings(settings);
             log.info("IVVC simulator thread starting up.");
             isRunning = true;
+            substationBuskWh = settings.getSubstationBuskWh();
+            autoGenerateSubstationBuskWh = settings.isAutogenerateSubstationBuskWh();
             return true;
         }
     }
@@ -206,7 +210,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 }
                 final int MAX_KVAR = bankSize;
                 final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
-                final double currentSubBusBaseKw = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
+                double kWh = 0;
+                if(autoGenerateSubstationBuskWh) {
+                    kWh = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
+                } else {
+                    kWh = substationBuskWh;
+                }
+                final double currentSubBusBaseKw = kWh;
                 final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
                 
                 int subBusKVarClosed = 0;
@@ -611,15 +621,23 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         return null;
     }
     
-    private void saveSettings(IvvcSimulatorSettings settings) {
+    public void saveSettings(IvvcSimulatorSettings settings) {
         log.debug("Saving IVVC settings to YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE, settings.isIncreasedSpeedMode());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_SUBSTATION_BUS_KWH, settings.getSubstationBuskWh());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH, settings.isAutogenerateSubstationBuskWh());
+        
+        substationBuskWh = settings.getSubstationBuskWh();
+        autoGenerateSubstationBuskWh = settings.isAutogenerateSubstationBuskWh();
     }
     
     @Override
     public IvvcSimulatorSettings getCurrentSettings() {
         log.debug("Getting IVVC settings from db.");
-        IvvcSimulatorSettings settings = new IvvcSimulatorSettings(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE));
+        IvvcSimulatorSettings settings = new IvvcSimulatorSettings(
+            yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE),
+            yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_SUBSTATION_BUS_KWH),
+            yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH));
         return settings;
     }
 

@@ -6,6 +6,7 @@ import com.cannontech.ivvc.model.IvvcSimulatorSettings;
 import com.cannontech.ivvc.model.IvvcSimulatorStatus;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.ivvc.IvvcSimulatorService;
+import com.cannontech.simulators.message.request.IvvcSimulatorSettingsChangedRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStartRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStopRequest;
@@ -36,6 +37,12 @@ public class IvvcSimulatorMessageHandler extends SimulatorMessageHandler {
             status.setRunning(ivvcSimulatorService.isRunning());
             IvvcSimulatorSettings ivvcSimulatorSettings =
                 ivvcSimulatorService.getCurrentSettings();
+            return new IvvcSimulatorResponse(status, ivvcSimulatorSettings);
+        } else if (simulatorRequest instanceof IvvcSimulatorSettingsChangedRequest) {
+            ivvcSimulatorService.saveSettings(((IvvcSimulatorSettingsChangedRequest) simulatorRequest).getSettings());
+            IvvcSimulatorStatus status = new IvvcSimulatorStatus();
+            status.setRunning(ivvcSimulatorService.isRunning());
+            IvvcSimulatorSettings ivvcSimulatorSettings = ivvcSimulatorService.getCurrentSettings();
             return new IvvcSimulatorResponse(status, ivvcSimulatorSettings);
         } else {
             throw new IllegalArgumentException("Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());

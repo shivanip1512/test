@@ -29,4 +29,10 @@ public interface IvvcSimulatorService extends AutoStartableSimulator {
      * Gets the IVVC simulator settings from the database.
      */
     IvvcSimulatorSettings getCurrentSettings();
+    
+    /**
+     * This method saves IVVC simulator settings to the database.
+     * @param ivvcSimulatorSettings settings to be saved
+     */
+    void saveSettings(IvvcSimulatorSettings ivvcSimulatorSettings);
 }

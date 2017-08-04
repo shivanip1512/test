@@ -102,6 +102,8 @@ public enum YukonSimulatorSettingsKey {
     //IvvcSimulatorSettings
     IVVC_SIMULATOR_INCREASED_SPEED_MODE(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
+    IVVC_SIMULATOR_SUBSTATION_BUS_KWH(3000.0, InputTypeFactory.doubleType(), SimulatorType.IVVC),
+    IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
     ;
 
     private final Object defaultValue;

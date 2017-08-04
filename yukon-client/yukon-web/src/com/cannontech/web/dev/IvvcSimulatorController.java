@@ -15,14 +15,18 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.ivvc.model.IvvcSimulatorSettings;
 import com.cannontech.ivvc.model.IvvcSimulatorStatus;
+import com.cannontech.simulators.message.request.IvvcSimulatorSettingsChangedRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStartRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStopRequest;
@@ -41,9 +45,10 @@ public class IvvcSimulatorController {
     
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private JmsTemplate jmsTemplate;
-    private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
-    private final IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false);
+    private static final Logger log = YukonLogManager.getLogger(IvvcSimulatorController.class);
+    private final IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false, 3000.0, false);
     
     @RequestMapping("ivvcSimulator")
     public String ivvcSimulator(ModelMap model) {
@@ -89,6 +94,24 @@ public class IvvcSimulatorController {
             flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
+    }
+    
+    @RequestMapping(value = "saveSimulatorSettings", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> saveSimulatorSettings(IvvcSimulatorSettings ivvcSimulatorSettings, YukonUserContext userContext) {
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        try {
+            simulatorsCommunicationService.sendRequest(new IvvcSimulatorSettingsChangedRequest(ivvcSimulatorSettings), SimulatorResponseBase.class);
+            json.put("hasError", false);
+            json.put("message", accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.success"));
+        } catch (Exception e) {
+            log.error(e);
+            json.put("hasError", true);
+            json.put("message",
+                accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error", e.getMessage()));
+        }
+        return json;
     }
     
     private IvvcSimResponseOrError getIvvcSimulatorStatusResponse() {
