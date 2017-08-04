@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/3/2017 4:09:54 AM                          */
+/* Created on:     8/4/2017 9:59:50 AM                          */
 /*==============================================================*/
 
 
@@ -12361,6 +12361,7 @@ go
 alter table DISPLAY2WAYDATA
    add constraint FK_Display2WayData_Display foreign key (DISPLAYNUM)
       references DISPLAY (DISPLAYNUM)
+         on delete cascade
 go
 
 alter table DISPLAY2WAYDATA
@@ -12376,6 +12377,7 @@ go
 alter table DISPLAYCOLUMNS
    add constraint FK_DisplayColumns_Display foreign key (DISPLAYNUM)
       references DISPLAY (DISPLAYNUM)
+         on delete cascade
 go
 
 alter table DYNAMICACCUMULATOR
@@ -14380,6 +14382,7 @@ go
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_DISPLAY foreign key (DisplayNum)
       references DISPLAY (DISPLAYNUM)
+         on delete cascade
 go
 
 alter table TemplateDisplay

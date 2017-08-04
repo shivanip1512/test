@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/3/2017 4:08:39 AM                          */
+/* Created on:     8/4/2017 10:00:33 AM                         */
 /*==============================================================*/
 
 
@@ -11547,7 +11547,8 @@ alter table DEVICETAPPAGINGSETTINGS
 
 alter table DISPLAY2WAYDATA
    add constraint FK_Display2WayData_Display foreign key (DISPLAYNUM)
-      references DISPLAY (DISPLAYNUM);
+      references DISPLAY (DISPLAYNUM)
+      on delete cascade;
 
 alter table DISPLAY2WAYDATA
    add constraint FK_DISPLAY2W_REF_POINT foreign key (POINTID)
@@ -11559,7 +11560,8 @@ alter table DISPLAYCOLUMNS
 
 alter table DISPLAYCOLUMNS
    add constraint FK_DisplayColumns_Display foreign key (DISPLAYNUM)
-      references DISPLAY (DISPLAYNUM);
+      references DISPLAY (DISPLAYNUM)
+      on delete cascade;
 
 alter table DYNAMICACCUMULATOR
    add constraint FK_DynamicAccumulator_Point foreign key (POINTID)
@@ -13188,7 +13190,8 @@ alter table TagLog
 
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_DISPLAY foreign key (DisplayNum)
-      references DISPLAY (DISPLAYNUM);
+      references DISPLAY (DISPLAYNUM)
+      on delete cascade;
 
 alter table TemplateDisplay
    add constraint FK_TemplateDisplay_TEMPLATE foreign key (TemplateNum)
