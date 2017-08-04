@@ -13,10 +13,10 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
+import com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.multispeak.MspHandler;
@@ -30,7 +30,6 @@ public class MultispeakDeviceGroupSyncController {
     
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MeterDao meterDao;
-    @Autowired private MultispeakDao multispeakDao;
     @Autowired private MspHandler mspHandler;
 
 	// HOME
@@ -86,8 +85,11 @@ public class MultispeakDeviceGroupSyncController {
 	@RequestMapping("progress")
     public String progress(ModelMap modelMap, FlashScope flashScope) {
 
-        MultispeakDeviceGroupSyncProgress progress =
-                mspHandler.getDeviceGroupSyncService().getProgress();
+        MultispeakDeviceGroupSyncProgress progress = null;
+        MultispeakDeviceGroupSyncServiceBase service = mspHandler.getDeviceGroupSyncService();
+        if (service != null) {
+            progress = service.getProgress();
+        }
 
         if (progress == null) {
             return "redirect:home";
