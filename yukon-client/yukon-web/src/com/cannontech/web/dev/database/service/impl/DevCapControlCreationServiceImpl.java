@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalTime;
 import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,11 @@ import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.DeviceConfigCategory;
+import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.jaxb.CategoryType;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -60,6 +65,7 @@ import com.cannontech.database.model.Season;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
 import com.cannontech.development.service.impl.DevObjectCreationBase;
+import com.cannontech.simulators.RegulatorVoltageControlMode;
 import com.cannontech.web.capcontrol.service.BusService;
 import com.cannontech.web.capcontrol.service.CapBankService;
 import com.cannontech.web.capcontrol.service.FeederService;
@@ -67,6 +73,7 @@ import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 
 public class DevCapControlCreationServiceImpl extends DevObjectCreationBase implements DevCapControlCreationService {
     @Autowired private CapControlCreationService capControlCreationService;
@@ -85,10 +92,13 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private FeederService feederService;
     @Autowired private VoltageRegulatorService voltageRegulatorService;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
+    @Autowired private DeviceConfigurationService deviceConfigService;
 
     private static final ReentrantLock _lock = new ReentrantLock();
     private static int complete;
     private static int total;
+    private static int setPointRegulatorConfigId;
     
     @Override
     public boolean isRunning() {
@@ -122,6 +132,12 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private void createCapControl(DevCapControl devCapControl) {
         log.info("Creating (and assigning) Cap Control Objects ...");
         int strategyId = createCapControlStrategy(devCapControl);
+        
+        if (devCapControl.getRegulatorVoltageControlMode() == RegulatorVoltageControlMode.SET_POINT
+            || devCapControl.getRegulatorVoltageControlMode() == RegulatorVoltageControlMode.BOTH) {
+            setPointRegulatorConfigId = createDeviceConfigurationForSetPointRegulator();
+        }
+
         for (int areaIndex = 0; areaIndex  < devCapControl.getNumAreas(); areaIndex++) { // Areas
             PaoIdentifier areaPao = createArea(devCapControl, areaIndex);
             for (int subIndex = 0; subIndex < devCapControl.getNumSubs(); subIndex++) { // Substations
@@ -159,7 +175,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                         List<PaoIdentifier> regulatorsForZone = new ArrayList<>();
                         for (int regulatorIndex = 0; regulatorIndex < 3; regulatorIndex++) {
                             PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, regulatorIndex);
-                            attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier());
+                            attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier(), subIndex, setPointRegulatorConfigId, devCapControl.getRegulatorVoltageControlMode());
                             regulatorsForZone.add(regulatorPao);
                         }
                         
@@ -215,10 +231,20 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         feederService.save(capControlFeeder);
     }
     
-    private void attachPointsToRegulator(int pointOffset, PaoIdentifier regulatorPao, PaoIdentifier rtuPao) {
+    private void attachPointsToRegulator(int pointOffset, PaoIdentifier regulatorPao, PaoIdentifier rtuPao,
+            int subIndex, int setPointRegulatorConfigId, RegulatorVoltageControlMode controlMode) {
         Regulator regulator = voltageRegulatorService.getRegulatorById(regulatorPao.getPaoId());
-        
-        
+
+        if (controlMode == RegulatorVoltageControlMode.SET_POINT) {
+            regulator.setConfigId(setPointRegulatorConfigId);
+        }
+
+        if (controlMode == RegulatorVoltageControlMode.BOTH) {  // Half of the substations will be SetPoint and half will be Tap
+            if ((subIndex % 2) == 0) {
+                regulator.setConfigId(setPointRegulatorConfigId);
+            }
+        }
+
         PointBase autoRemoteControl = createStatusPoint(regulator.getName() + "-Auto Remote Control", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
         PointBase autoBlockEnable = createStatusPoint(regulator.getName() + "-Auto Block Enable", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
         PointBase tapUp = createStatusPoint(regulator.getName() + "-Tap Up", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
@@ -514,5 +540,25 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         }
         int portId = commChannels.get(0).getPaoIdentifier().getPaoId();
         return createCapControlObject(devCapControl, paoType, name, disabled, portId);
+    }
+
+    private int createDeviceConfigurationForSetPointRegulator() {
+        int setPointRegulatorConfigId = deviceConfigurationService.saveConfigurationBase(null, "Sim Regulator Configuration", StringUtils.EMPTY);
+
+        deviceConfigurationDao.getSupportedTypesForConfiguration(setPointRegulatorConfigId);
+        deviceConfigurationDao.addSupportedDeviceTypes(setPointRegulatorConfigId,
+            Sets.newHashSet(PaoType.PHASE_OPERATED, PaoType.GANG_OPERATED, PaoType.LOAD_TAP_CHANGER));
+        List<DeviceConfigCategoryItem> categoryItems = new ArrayList<>();
+        DeviceConfigCategoryItem controlModeCategoryItem = new DeviceConfigCategoryItem(null, "voltageControlMode", "SET_POINT");
+        DeviceConfigCategoryItem tapCategoryItem = new DeviceConfigCategoryItem(null, "voltageChangePerTap", ".75");
+        categoryItems.add(controlModeCategoryItem);
+        categoryItems.add(tapCategoryItem);
+        DeviceConfigCategory configCategory = new DeviceConfigCategory(null, CategoryType.REGULATOR_CATEGORY.value(),
+            "Sim Regulator category", StringUtils.EMPTY, categoryItems);
+        int categoryId = deviceConfigService.saveCategory(configCategory);
+        deviceConfigurationService.changeCategoryAssignment(setPointRegulatorConfigId, categoryId, CategoryType.REGULATOR_CATEGORY);
+
+        return setPointRegulatorConfigId;
+
     }
 }

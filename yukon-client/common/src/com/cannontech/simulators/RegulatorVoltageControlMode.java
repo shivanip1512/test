@@ -6,5 +6,6 @@ package com.cannontech.simulators;
 public enum RegulatorVoltageControlMode {
 
     SET_POINT,
-    DIRECT_TAP;
+    DIRECT_TAP,
+    BOTH;
 }

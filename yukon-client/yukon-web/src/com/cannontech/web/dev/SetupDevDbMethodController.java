@@ -40,6 +40,7 @@ import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
 import com.cannontech.development.service.DevAmrCreationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.simulators.RegulatorVoltageControlMode;
 import com.cannontech.simulators.message.request.AmrCreationSimulatorRequest;
 import com.cannontech.simulators.message.request.AmrCreationSimulatorStatusRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -108,6 +109,7 @@ public class SetupDevDbMethodController {
         model.addAttribute("allEnergyCompanies", allEnergyCompanies);
         
         model.addAttribute("eventSourceList", Lists.newArrayList(EventSource.values()));
+        model.addAttribute("controlModeTypes", RegulatorVoltageControlMode.values());
         
         
     }

@@ -30,6 +30,9 @@
                 <tags:inputNameValue path="offset"
                     nameKey=".setupDevDatabase.option.capcontrol.object.offset"
                     size="10" />
+                <tags:selectNameValue path="regulatorVoltageControlMode" 
+                    nameKey=".setupDevDatabase.option.capcontrol.regulator.controlMode"
+                    items="${controlModeTypes}" id="regulator-controlMode-type" />
             </tags:nameValueContainer2>
             <h4><i:inline key=".setupDevDatabase.option.capcontrol.cbcTypes"/></h4>
             <ul>

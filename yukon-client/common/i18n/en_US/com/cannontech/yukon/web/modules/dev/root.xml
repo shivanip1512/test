@@ -185,6 +185,7 @@
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.cbcs"># of CBCs (per CapBank)</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.regulators"># of Regulators (per type)</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.offset">Offset # (for names)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.regulator.controlMode">Regulator Control Mode</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog">Event Log</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog.username">Username</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog.indicatorString">Indicator Prefix prepended to all string arguments</entry>

@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.development.model.DevObject;
 import com.cannontech.development.model.DevPaoType;
+import com.cannontech.simulators.RegulatorVoltageControlMode;
 import com.google.common.collect.Lists;
 
 public class DevCapControl extends DevObject {
@@ -15,6 +16,7 @@ public class DevCapControl extends DevObject {
     private Integer numCapBanks = 4;
     private Integer numRegulators = 10;
     private Integer offset = 0;
+    private RegulatorVoltageControlMode regulatorVoltageControlMode;
     private DevPaoType cbcType = new DevPaoType(PaoType.CBC_8020);
     private List<DevPaoType> cbcTypes =
         Lists
@@ -135,4 +137,13 @@ public class DevCapControl extends DevObject {
         int total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators;
         return total;
     }
+
+    public RegulatorVoltageControlMode getRegulatorVoltageControlMode() {
+        return regulatorVoltageControlMode;
+    }
+
+    public void setRegulatorVoltageControlMode(RegulatorVoltageControlMode regulatorVoltageControlMode) {
+        this.regulatorVoltageControlMode = regulatorVoltageControlMode;
+    }
+
 }
