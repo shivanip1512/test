@@ -242,7 +242,9 @@
         </c:choose>
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="VIEW">
-                <cti:button nameKey="edit" icon="icon-pencil" id="vendor-edit" />
+                <c:if test="${!noVendorsExist}">
+                    <cti:button nameKey="edit" icon="icon-pencil" id="vendor-edit" />
+                </c:if>
                 <cti:url var="createUrl" value="/multispeak/setup/create" />
                 <cti:button nameKey="create" busy="true" href="${createUrl}" icon="icon-plus-green" />
             </cti:displayForPageEditModes>
