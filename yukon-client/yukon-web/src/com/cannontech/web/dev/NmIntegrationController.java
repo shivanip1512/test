@@ -2,19 +2,14 @@ package com.cannontech.web.dev;
 
 import java.beans.PropertyEditor;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.ConnectionFactory;
-import javax.management.InstanceNotFoundException;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -100,8 +95,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
-import com.cannontech.web.support.service.impl.BeanTypeForJMXConnector;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -120,77 +113,10 @@ public class NmIntegrationController {
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
-    private static final String meterReadServiceBean = "com.cannontech.yukon.ServiceManager:name=meterReadingArchiveRequestListener,type=MeterReadingArchiveRequestListener";
-    private static final String meterReadQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
-    private static final String lcrReadServiceBean = "com.cannontech.yukon.ServiceManager:name=lcrReadingArchiveRequestListener,type=LcrReadingArchiveRequestListener";
-    private static final String lcrReadQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
-    private static final String gatewayServiceBean = "com.cannontech.yukon.ServiceManager:name=gatewayArchiveRequestListener,type=GatewayArchiveRequestListener";
-    private static final String gatewayArchiveReqQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest";
-    private static final String gatewayDataReqQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayDataRequest";
-    private static final String gatewayDataQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData";
-    private static final String rfDaArchiveQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.da.rfn.RfDaArchiveRequest";
-    private static final DecimalFormat df = new DecimalFormat("##,###.## ms");
 
     @RequestMapping("viewBase")
     public String viewBase(ModelMap model) {
-        
-        model.addAttribute("data", getIntegrationData());
-        
         return "rfn/viewBase.jsp";
-    }
-
-    @RequestMapping("data")
-    public @ResponseBody List<Map<String, Object>> data() {
-        
-        return getIntegrationData();
-    }
-    
-    private List<Map<String, Object>> getIntegrationData() {
-        List<Map<String, Object>> data = new ArrayList<>();
-        
-        data.add(getQueueData("Meter Reads", "meter-reads", meterReadQueueBean, meterReadServiceBean));
-        data.add(getQueueData("LCR Reads", "lcr-reads", lcrReadQueueBean, lcrReadServiceBean));
-        data.add(getQueueData("RF DA Archive", "rfda-archive", rfDaArchiveQueueBean, null));
-        data.add(getQueueData("Gateway Archive", "gateway-archive", gatewayArchiveReqQueueBean, gatewayServiceBean));
-        data.add(getQueueData("Gateway Data Request", "gateway-data-rec", gatewayDataReqQueueBean, null));
-        data.add(getQueueData("Gateway Data", "gateway-data", gatewayDataQueueBean, null));
-        
-        return data;
-    }
-    
-    private Map<String, Object> getQueueData(String queueName, String queueIdentifier, String queueBean, String serviceBean) {
-        
-        Map<String, Object> data = new LinkedHashMap<>();
-        
-        try {
-            if (serviceBean != null) {
-            ObjectName service = ObjectName.getInstance(serviceBean);
-                data.put(queueIdentifier + "-archived", ImmutableMap.of(
-                        "name", queueName + " Archived", 
-                        "value", jmxQueryService.getTypedValue(service, "ArchivedReadings", 0, Integer.class, BeanTypeForJMXConnector.SERVICE)));
-                data.put(queueIdentifier + "-requests-processed", ImmutableMap.of(
-                        "name", queueName + " Requests Processed", 
-                        "value", jmxQueryService.getTypedValue(service, "ProcessedArchiveRequest", 0, Integer.class, BeanTypeForJMXConnector.SERVICE)));
-            }
-            
-            ObjectName queue = ObjectName.getInstance(queueBean);
-            data.put(queueIdentifier + "-enqueue-count", ImmutableMap.of(
-                    "name", queueName + " Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(queue, "EnqueueCount", 0L, Long.class, BeanTypeForJMXConnector.QUEUE)));
-            data.put(queueIdentifier + "-queue-size", ImmutableMap.of(
-                    "name", queueName + " Queue Size", 
-                    "value", jmxQueryService.getTypedValue(queue, "QueueSize", 0L, Long.class, BeanTypeForJMXConnector.QUEUE)));
-            Double aet = jmxQueryService.getTypedValue(queue, "AverageEnqueueTime", 0.0, Double.class, BeanTypeForJMXConnector.QUEUE);
-            data.put(queueIdentifier + "-average-enqueue-time", ImmutableMap.of(
-                    "name", queueName + " Average Enqueue Time", 
-                    "value", df.format(aet)));
-        } catch (MalformedObjectNameException | InstanceNotFoundException e) {
-            log.info("Unable to retrieve metrics for queue: " + queueName + ". Queue may not have been used yet.");
-        } catch (Exception e) {
-            log.warn("Couldn't look up value.", e);
-        }
-        
-        return data;
     }
 
     @RequestMapping("gatewaySimulator")

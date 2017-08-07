@@ -22,29 +22,6 @@ yukon.dev.rfn = (function () {
     var
     _initialized = false,
     
-    _update = function () {
-        $.ajax({
-            url: 'data',
-            contentType: 'application/json',
-            dataType: 'json'
-        }).done(function (data, status, xhr) {
-            data.forEach(function (item, index, arr) {
-                var ids = Object.keys(item), id, value, current;
-                for (var i in ids) {
-                     id = ids[i];
-                     value = item[id].value;
-                     current = $('#' + id).text().trim();
-                     $('#' + id).text(value);
-                     if (current != value) {
-                         $('#' + id).flash();
-                     }
-                }
-            });
-        }).always(function () {
-            setTimeout(_update, 500);
-        });
-    },
-    
     mod = {
         
         /** Initialize this module. */
@@ -75,9 +52,6 @@ yukon.dev.rfn = (function () {
                     type: "POST"
                 });
             });
-            
-            /** Start the recursive updating. */
-            setTimeout(_update, 200);
             
             _initialized = true;
         }
@@ -119,24 +93,6 @@ $(function () { yukon.dev.rfn.init(); });
             <cti:button id="startup-notif" label="Resend Startup Notif"/>
             <cti:button id="clear-gateway-cache" label="Clear Gateway Cache"/>
         </div>
-    </div>
-    <div class="column two nogutter">
-        <h3>YSM Server Broker Stats</h3>
-        <c:forEach items="${data}" var="type">
-            <table class="name-value-table striped stacked-md">
-                <thead></thead>
-                <tfoot></tfoot>
-                <tbody>
-                    <c:forEach items="${type}" var="entry">
-                        <c:set var="thing" value="${entry.value}"/>
-                        <tr>
-                            <td class="name">${thing.name}</td>
-                            <td class="value tar"><span id="${entry.key}">${thing.value}</span></td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </c:forEach>
     </div>
 </div>
 
