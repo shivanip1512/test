@@ -89,14 +89,14 @@
                                     </c:when>
                                     <c:when test="${schedule.isRunning() || schedule.isPending()}">
                                         <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
-                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" data-popup=".js-stop-dialog-${id}"/>
-                                        <div class="dn js-stop-dialog-${id}" data-dialog data-event="yukon:schedule:cancel"
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" data-popup="#stopDialog-${id}"/>
+                                        <div id="stopDialog-${id}" class="dn" data-dialog data-event="yukon:schedule:cancel"
                                             data-title="<cti:msg2 key=".cancel.dialogTitle"/>" data-width="500" data-ok-text="<cti:msg2 key="yukon.common.stop"/>"
                                             data-url="${startStopUrl}"></div>
                                     </c:when>
                                     <c:otherwise>
-                                        <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" data-popup=".js-start-dialog-${id}"/>
-                                        <div class="dn js-start-dialog-${id}" data-dialog
+                                        <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" data-popup="#startDialog-${id}"/>
+                                        <div id="startDialog-${id}" class="dn" data-dialog
                                             data-title="<cti:msg2 key=".start.dialogTitle"/>" data-width="500" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
                                             data-url="${startStopUrl}" data-event="yukon:schedule:start"></div>            
                                         <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
