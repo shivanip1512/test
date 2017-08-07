@@ -117,16 +117,18 @@
                                         <td><i:inline key=".point.enabled.${row.pointEnabled}"/></td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_NAME')}">
-                                        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                                            <td>
-                                                <cti:paoDetailUrl yukonPao="${row.device}">
-                                                    <c:if test="${!empty row.deviceName}">${fn:escapeXml(row.deviceName)}</c:if>
-                                                </cti:paoDetailUrl>
-                                            </td>
-                                        </c:if>
-                                        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                                            <td>${fn:escapeXml(row.deviceName)}</td>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="${!empty row.device}">
+                                                <td>
+                                                    <cti:paoDetailUrl yukonPao="${row.device}">
+                                                        <c:if test="${!empty row.deviceName}">${fn:escapeXml(row.deviceName)}</c:if>
+                                                    </cti:paoDetailUrl>
+                                                </td>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <td>${fn:escapeXml(row.deviceName)}</td>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_TYPE')}">
                                         <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
