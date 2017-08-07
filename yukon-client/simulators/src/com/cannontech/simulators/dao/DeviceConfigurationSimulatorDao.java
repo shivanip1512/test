@@ -7,10 +7,7 @@ import com.cannontech.simulators.RegulatorVoltageControlMode;
 public interface DeviceConfigurationSimulatorDao {
 
     /**
-     * Returns the voltage control mode for the regulator ids provided
-     * 
-     * @param deviceIds as regulatorIds
-     * @returns the Map with regulatorId and voltageControlModes mappings
+     * Updates the voltage control mode in the given map with the regulator ids provided as keys 
      */
     void getDeviceVoltageControlMode(Map<Integer, RegulatorVoltageControlMode> regulatorConfigMap);
 }

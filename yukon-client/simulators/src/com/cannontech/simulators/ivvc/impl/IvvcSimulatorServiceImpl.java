@@ -72,7 +72,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private boolean tapPositionsPreloaded = false;
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
-    private final Map<Integer, Integer> regulatorSetPointValues = new HashMap<>();
+    private final Map<Integer, Float> regulatorSetPointValues = new HashMap<>();
     private final Map<Integer, Double> regulatorVoltageLoads = new HashMap<>();
     
     Map<Integer, RegulatorVoltageControlMode> regulatorVoltageControlModeConfig = new HashMap<>();
@@ -154,7 +154,6 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         // Adjust the tap positions as per the regulator voltage-control-modes
         if (!regulatorEventOperations.isEmpty()) {
             for (RegulatorOperations regulatorOperations : regulatorEventOperations) {
-                boolean isTapControlMode = true;
                 Integer tapPosition =
                     Optional.ofNullable(regulatorTapPositions.get(regulatorOperations.regulatorId)).orElse(
                         INITIAL_TAP_POSITION);
@@ -164,16 +163,12 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition - 1);
                 } else if (regulatorOperations.eventType == EventType.DECREASE_SETPOINT
                     || regulatorOperations.eventType == EventType.INCREASE_SETPOINT) {
-                    log.debug("Found " + regulatorEventOperations.size() + " set point operations, acting on them.");
                     regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
                     // Updates the regulator tap positions using the set point value and latest voltage Y
                     updateSetPointTapPositions(regulatorOperations.regulatorId,
                         regulatorVoltageLoads.get(regulatorOperations.regulatorId));
-                    isTapControlMode = false;
                 }
-                if (isTapControlMode) {
-                    log.debug("Found " + regulatorEventOperations.size() + " tap operations, acting on them.");
-                }
+                log.debug("Found " + regulatorEventOperations.size() + " tap and setpoint operations, acting on them.");
                 if (regulatorOperations.timeStamp.isAfter(lastRegulatorEvaluationTime)) {
                     lastRegulatorEvaluationTime = regulatorOperations.timeStamp;
                 }
@@ -449,7 +444,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         RegulatorVoltageControlMode configControlType = regulatorVoltageControlModeConfig.get(regulatorId);
         if (configControlType != null && configControlType == RegulatorVoltageControlMode.SET_POINT) {
             if (voltageLoad != null && regulatorSetPointValues.containsKey(regulatorId)) {
-                int setPointVoltage = regulatorSetPointValues.get(regulatorId);
+                float setPointVoltage = regulatorSetPointValues.get(regulatorId);
                 int bandwidth = 2;
                 if (Math.abs(setPointVoltage - voltageLoad) > (bandwidth / 2)) {
                     tapChange = (int) (1

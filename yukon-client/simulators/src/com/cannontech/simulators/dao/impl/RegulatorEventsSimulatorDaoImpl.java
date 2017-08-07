@@ -29,7 +29,7 @@ public class RegulatorEventsSimulatorDaoImpl implements RegulatorEventsSimulator
             result.regulatorId = yrs.getInt("RegulatorId");
             result.eventType = yrs.getEnum("EventType", EventType.class);
             result.timeStamp = yrs.getInstant("TimeStamp");
-            result.setPointValue = yrs.getInt("SetPointValue");
+            result.setPointValue = yrs.getFloat("SetPointValue");
             return result;
         }
     };
