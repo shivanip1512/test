@@ -251,7 +251,7 @@ public class SetupDevDbMethodController {
                                         + e.getMessage()));
             }
         }
-
+        model.addAttribute("controlModeTypes", RegulatorVoltageControlMode.values());
         return "setupDatabase/capControlWidget.jsp";
     }
 

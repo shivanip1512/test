@@ -135,7 +135,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         
         if (devCapControl.getRegulatorVoltageControlMode() == RegulatorVoltageControlMode.SET_POINT
             || devCapControl.getRegulatorVoltageControlMode() == RegulatorVoltageControlMode.BOTH) {
-            setPointRegulatorConfigId = createDeviceConfigurationForSetPointRegulator();
+            setPointRegulatorConfigId = createDeviceConfigurationForSetPointRegulator(devCapControl);
         }
 
         for (int areaIndex = 0; areaIndex  < devCapControl.getNumAreas(); areaIndex++) { // Areas
@@ -542,8 +542,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         return createCapControlObject(devCapControl, paoType, name, disabled, portId);
     }
 
-    private int createDeviceConfigurationForSetPointRegulator() {
-        int setPointRegulatorConfigId = deviceConfigurationService.saveConfigurationBase(null, "Sim Regulator Configuration", StringUtils.EMPTY);
+    private int createDeviceConfigurationForSetPointRegulator(DevCapControl devCapControl) {
+        int setPointRegulatorConfigId = deviceConfigurationService.saveConfigurationBase(null, "Sim Regulator Configuration" + devCapControl.getOffset(), StringUtils.EMPTY);
 
         deviceConfigurationDao.getSupportedTypesForConfiguration(setPointRegulatorConfigId);
         deviceConfigurationDao.addSupportedDeviceTypes(setPointRegulatorConfigId,
@@ -554,7 +554,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         categoryItems.add(controlModeCategoryItem);
         categoryItems.add(tapCategoryItem);
         DeviceConfigCategory configCategory = new DeviceConfigCategory(null, CategoryType.REGULATOR_CATEGORY.value(),
-            "Sim Regulator category", StringUtils.EMPTY, categoryItems);
+            "Sim Regulator category" + devCapControl.getOffset(), StringUtils.EMPTY, categoryItems);
         int categoryId = deviceConfigService.saveCategory(configCategory);
         deviceConfigurationService.changeCategoryAssignment(setPointRegulatorConfigId, categoryId, CategoryType.REGULATOR_CATEGORY);
 
