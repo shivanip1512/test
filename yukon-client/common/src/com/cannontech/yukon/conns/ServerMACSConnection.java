@@ -26,8 +26,9 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 
     private void addCategory(Schedule sched) 
     {
-        if( sched == null )
+        if( sched == null ) {
             return;
+        }
     
         Object o = getCategoryNames().get( sched.getCategoryName() );
     
@@ -55,10 +56,11 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
                     }               
                 }
     
-                if( add ) // the schedule was not found
+                if( add ) {
                     list.add( sched );
-                else // the schedule is already present, update it
+                } else {
                     list.set( i, sched );
+                }
                     
             }
             catch( ClassCastException e )
@@ -92,6 +94,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * This method was created in VisualAge.
      * @return com.cannontech.macs.Schedule[]
      */
+    @Override
     public Schedule[] getCategories( String category )
     {
         java.util.ArrayList list = (java.util.ArrayList)getCategoryNames().get(category);
@@ -106,10 +109,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * Creation date: (2/23/2001 10:03:31 AM)
      * @return java.util.Hashtable
      */
+    @Override
     public java.util.Hashtable getCategoryNames() 
     {
-        if( categoryNames == null )
+        if( categoryNames == null ) {
             categoryNames = new java.util.Hashtable( 40, (float)0.6 );
+        }
     
         return categoryNames;
     }
@@ -121,8 +126,9 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      */
     private java.util.Vector getSchedules() 
     {
-        if( schedules == null )
+        if( schedules == null ) {
             schedules = new java.util.Vector(10);
+        }
             
         return schedules;
     }
@@ -170,8 +176,9 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
             {
                 // remove the previous category entry for the old version of the schedule
                 // if the category name has changed
-                if( !((Schedule)getSchedules().get(j)).getCategoryName().equals(sched.getCategoryName()) )
+                if( !((Schedule)getSchedules().get(j)).getCategoryName().equals(sched.getCategoryName()) ) {
                     removeCategory( (Schedule)getSchedules().get(j) );
+                }
                 
                 // the schedule already exists, so just assign it to the new value              
                 getSchedules().set( j, sched );
@@ -182,8 +189,9 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 
         addCategory( sched );
             
-        if( !found )
+        if( !found ) {
             getSchedules().add( sched );
+        }
     }
 
     /**
@@ -207,6 +215,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
         
     }
 
+    @Override
     public boolean isScheduleNameExists(String scheduleName, int scheduleId) {
         boolean found = false;
         for( int j = 0; j < getSchedules().size(); j++ ) {
@@ -219,6 +228,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
         return found;
     }
     
+    @Override
     public boolean isScriptFileNameExists(String scriptFileName, int scheduleId) {
         boolean found = false;
         for( int j = 0; j < getSchedules().size(); j++ ) {
@@ -238,8 +248,9 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      */
     private void removeCategory(Schedule sched)
     {
-        if( sched == null )
+        if( sched == null ) {
             return;
+        }
             
         Object o = getCategoryNames().get( sched.getCategoryName() );
     
@@ -277,6 +288,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * This method was created in VisualAge.
      * @return com.cannontech.macs.Schedule[]
      */
+    @Override
     public Schedule[] retrieveSchedules()
     {   
         try
@@ -297,11 +309,13 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @param sched com.cannontech.macs.Schedule
      * @exception java.io.IOException The exception description.
      */
+    @Override
     public void sendCreateSchedule(Schedule sched) throws java.io.IOException 
     {
     
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         com.cannontech.message.macs.message.AddSchedule newSchedule = new com.cannontech.message.macs.message.AddSchedule();
         newSchedule.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -316,10 +330,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @return boolean
      * @param sched com.cannontech.macs.Schedule
      */
+    @Override
     public void sendDeleteSchedule(int scheduleID) throws java.io.IOException
     {
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         com.cannontech.message.macs.message.DeleteSchedule sched = new com.cannontech.message.macs.message.DeleteSchedule();
         sched.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -332,13 +348,15 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @return boolean
      * @param sched com.cannontech.macs.Schedule
      */
-    public void sendEnableDisableSchedule(Schedule sched) throws java.io.IOException
+    @Override
+    public void sendEnableDisableSchedule(Schedule sched, String userName) throws java.io.IOException
     {
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         com.cannontech.message.macs.message.OverrideRequest request = new com.cannontech.message.macs.message.OverrideRequest();
-        request.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
+        request.setUserName(userName);
         request.setSchedId( sched.getId() );
         
         if( sched.getCurrentState().equalsIgnoreCase( Schedule.STATE_DISABLED ) )
@@ -358,6 +376,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
     /**
      * Sends a RetrieveSchedule message.
      */
+    @Override
     public void sendRetrieveAllSchedules() throws java.io.IOException 
     {
         RetrieveSchedule retrieveAllSchedulesMsg = getRetrieveAllSchedulesMsg();
@@ -381,10 +400,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @param sched com.cannontech.macs.Schedule
      * @exception java.io.IOException The exception description.
      */
+    @Override
     public void sendRetrieveOneSchedule( int schedId ) throws java.io.IOException 
     {
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         com.cannontech.message.macs.message.RetrieveSchedule schedule = new com.cannontech.message.macs.message.RetrieveSchedule();
         schedule.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -398,10 +419,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @return com.cannontech.macs.CommandFile
      * @param sched com.cannontech.macs.Schedule
      */
+    @Override
     public void sendRetrieveScriptText(String scriptFileName) throws java.io.IOException
     {
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         com.cannontech.message.macs.message.RetrieveScript request = new com.cannontech.message.macs.message.RetrieveScript();
         request.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -414,10 +437,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * Creation date: (3/9/2001 5:15:49 PM)
      * @param file com.cannontech.message.macs.message.ScriptFile
      */
+    @Override
     public void sendScriptFile(com.cannontech.message.macs.message.ScriptFile file) throws java.io.IOException
     {
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         com.cannontech.message.macs.message.ScriptFile script = new com.cannontech.message.macs.message.ScriptFile();
         script.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
@@ -431,10 +456,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @return boolean
      * @param sched com.cannontech.macs.Schedule
      */
-    public void sendStartStopSchedule(Schedule sched, java.util.Date startTime, java.util.Date stopTime, int command ) throws java.io.IOException
+    @Override
+    public void sendStartStopSchedule(Schedule sched, java.util.Date startTime, java.util.Date stopTime, int command , String userName) throws java.io.IOException
     {
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         /* Strange behavior here.  If we have to send a start AND stop time, */
         /*  we must send two seperate messages to the server? Server fix later. */
@@ -444,11 +471,13 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
         request.setSchedId( sched.getId() );
         request.setAction( command );
         
-        if( startTime != null )
+        if( startTime != null ) {
             request.setStart( startTime );
+        }
     
-        if( stopTime != null )
-            request.setStop( stopTime );        
+        if( stopTime != null ) {
+            request.setStop( stopTime );
+        }        
             
         write( request );
     
@@ -459,7 +488,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
         {
             OverrideRequest secondRequest = new OverrideRequest();
             secondRequest.setSchedId( request.getSchedId() );
-            
+            secondRequest.setUserName(userName);
             secondRequest.setStart( request.getStart() );
             secondRequest.setStop( request.getStop() );         
             secondRequest.setAction( OverrideRequest.OVERRIDE_STOP );
@@ -474,11 +503,13 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @param sched com.cannontech.macs.Schedule
      * @exception java.io.IOException The exception description.
      */
+    @Override
     public void sendUpdateSchedule(Schedule sched ) throws java.io.IOException 
     {
     
-        if( !(isValid()) )
+        if( !(isValid()) ) {
             throw new java.io.IOException("Not connected to MACSServer.");
+        }
     
         com.cannontech.message.macs.message.UpdateSchedule modifiedSchedule = new com.cannontech.message.macs.message.UpdateSchedule();
         modifiedSchedule.setTimeStamp( new java.util.Date() );
@@ -489,8 +520,12 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
         write( modifiedSchedule );  
     }
 
+    @Override
     public void writeMsg( Message msg ) throws java.io.IOException
     {
+        if (!isValid()) {
+            throw new java.io.IOException("Not connected to MACSServer.");
+        }
         write( msg );
     }
 
@@ -499,6 +534,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
      * @param msg
      */
 //  public void messageReceived( MessageEvent e )
+    @Override
     protected void fireMessageEvent(Message msg) 
     {
         if( msg instanceof Schedule )
@@ -520,9 +556,9 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
         else if( msg instanceof ConnStateChange )
         {
             //nothing to do locally
-        }
-        else
+        } else {
             throw new RuntimeException("Recieved a message of an unknown type: " + msg.getClass() );
+        }
         
         
         super.fireMessageEvent( msg );

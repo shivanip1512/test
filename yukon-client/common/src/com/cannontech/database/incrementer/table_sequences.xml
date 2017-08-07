@@ -393,5 +393,8 @@
       <sequence name="Display">
         <table name="Display" identitycolumn="DISPLAYNUM" initsequence="true"/>
       </sequence>
+      <sequence name="MACSServiceRequest">
+        <table name="MACSServiceRequest" identitycolumn="requestSeqNumber"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

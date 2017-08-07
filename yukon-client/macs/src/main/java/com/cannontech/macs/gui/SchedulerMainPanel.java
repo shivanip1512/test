@@ -101,6 +101,7 @@ public SchedulerMainPanel( boolean initPanelOnly )
  * This method was created in VisualAge.
  * @param event java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(ActionEvent event) 
 {
 	java.awt.Frame parent = null;
@@ -189,10 +190,11 @@ public String[] createPrintableText()
 	{
 		for( int k = 0; k < columnCount; k++ )
 		{
-			if( getScheduleTableModel().getValueAt( i, k ).equals("") )
-				break;  // blank row
-			else
-				tableData[ j++ ] = getScheduleTableModel().getValueAt( i, k ).toString();
+			if( getScheduleTableModel().getValueAt( i, k ).equals("") ) {
+                break;  // blank row
+            } else {
+                tableData[ j++ ] = getScheduleTableModel().getValueAt( i, k ).toString();
+            }
 		}
 	}
 	
@@ -216,8 +218,9 @@ private void executeDeleteButton_ActionPerformed( ActionEvent event )
 	
 	//Nothing we can do if there isn't something selected
 	//in fact we should never have gotten here in that case
-	if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) )
-		return;
+	if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) ) {
+        return;
+    }
 
 	if (JOptionPane.showConfirmDialog(SwingUtil.getParentFrame(this), "Do you really want to delete '" + selected.getScheduleName() + "'?", "Schedule Deletion", JOptionPane.YES_NO_OPTION ) == JOptionPane.NO_OPTION) {
 		return;
@@ -262,18 +265,20 @@ private void executeEnableDisableButton_ActionPerformed( ActionEvent event )
 		Schedule selected = getSelectedSchedule();
 		//Nothing we can do if there isn't something selected
 		//in fact we should never have gotten here in that case
-		if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) )
-			return;
+		if( selected == null || selected.getCurrentState().equals(Schedule.STATE_PENDING) ) {
+            return;
+        }
 		
 		String actionString = "Are you sure you want to " + enableDisableButton.getText().toLowerCase() +
 							  " schedule '" + selected.getScheduleName() + "'?";
 
-		if( !confirmAction(actionString) )
-			return;
+		if( !confirmAction(actionString) ) {
+            return;
+        }
 
 			
 		// send out the message
-		getIMACSConnection().sendEnableDisableSchedule(selected);
+		getIMACSConnection().sendEnableDisableSchedule(selected, CtiUtilities.getUserName());
 		getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, 
 			enableDisableButton.getText().toLowerCase() + " schedule command successfully sent for '" +
 			selected.getScheduleName() + "'", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
@@ -294,8 +299,9 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 		Schedule selected = getSelectedSchedule();
 		//Nothing we can do if there isn't something selected
 		//in fact we should never have gotten here in that case
-		if( selected == null || selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_DISABLED) )
-			return;
+		if( selected == null || selected.getCurrentState().equalsIgnoreCase(Schedule.STATE_DISABLED) ) {
+            return;
+        }
 
 		final JDialog d = new JDialog(SwingUtil.getParentFrame(this));
 		ManualChangeJPanel panel = null;
@@ -305,7 +311,8 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 			d.setTitle("Start schedule " + selected.getScheduleName() );
 			panel = new ManualChangeJPanel()
 			{
-				public void exit()
+				@Override
+                public void exit()
 				{
 					d.dispose();
 				}			
@@ -316,7 +323,8 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 			d.setTitle("Stop schedule " + selected.getScheduleName() );
 			panel = new ManualChangeJPanel( ManualChangeJPanel.MODE_STOP )
 			{
-				public void exit()
+				@Override
+                public void exit()
 				{
 					d.dispose();
 				}			
@@ -333,18 +341,21 @@ private void executeStartStopButton_ActionPerformed( ActionEvent event )
 		if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE )
 		{
 			// send out the message
-			if( panel.getMode() == ManualChangeJPanel.MODE_STOP )
-				getIMACSConnection().sendStartStopSchedule( 
+			if( panel.getMode() == ManualChangeJPanel.MODE_STOP ) {
+                getIMACSConnection().sendStartStopSchedule( 
 									selected, 
 									null, 
 									panel.getStopTime(), 
-									(panel.isStopStartNowSelected() ? OverrideRequest.OVERRIDE_STOP_NOW : OverrideRequest.OVERRIDE_STOP) );
-			else
-				getIMACSConnection().sendStartStopSchedule( 
+									(panel.isStopStartNowSelected() ? OverrideRequest.OVERRIDE_STOP_NOW : OverrideRequest.OVERRIDE_STOP),
+									CtiUtilities.getUserName());
+            } else {
+                getIMACSConnection().sendStartStopSchedule( 
 									selected, 
 									panel.getStartTime(), 
 									panel.getStopTime(), 
-									(panel.isStopStartNowSelected() ? OverrideRequest.OVERRIDE_START_NOW : OverrideRequest.OVERRIDE_START) );
+									(panel.isStopStartNowSelected() ? OverrideRequest.OVERRIDE_START_NOW : OverrideRequest.OVERRIDE_START),
+									CtiUtilities.getUserName());
+            }
 		}
 
 		//destroy the JDialog
@@ -364,8 +375,9 @@ private javax.swing.JFrame getAvailableFrame()
 {
 	for( int i = 0; i < getFrames().size(); i++ )
 	{
-		if( !((javax.swing.JFrame)getFrames().get(i)).isVisible() )
-			return (javax.swing.JFrame)getFrames().get(i);
+		if( !((javax.swing.JFrame)getFrames().get(i)).isVisible() ) {
+            return (javax.swing.JFrame)getFrames().get(i);
+        }
 	}
 	
 	javax.swing.JFrame frame = new javax.swing.JFrame();
@@ -529,8 +541,9 @@ public java.util.ArrayList getFrames()
 	{
 		frames = new java.util.ArrayList(10);
 
-		for( int i = 0; i < PRE_CREATED_FRAMES; i++ )
-			getFrames().add( new javax.swing.JFrame() );
+		for( int i = 0; i < PRE_CREATED_FRAMES; i++ ) {
+            getFrames().add( new javax.swing.JFrame() );
+        }
 	}
 		
 	return frames;
@@ -542,8 +555,9 @@ public java.util.ArrayList getFrames()
  */
 private com.cannontech.common.gui.util.MessagePanel getMessagePanel() 
 {
-	if( messagePanel == null )
-		messagePanel = new MessagePanel();
+	if( messagePanel == null ) {
+        messagePanel = new MessagePanel();
+    }
 
 	return messagePanel;
 }
@@ -584,7 +598,8 @@ public javax.swing.JTable getScheduleTable()
 		final SortTableModelWrapper s = new SortTableModelWrapper(getScheduleTableModel());
 		java.awt.event.MouseAdapter m = new java.awt.event.MouseAdapter() 
 		{
-			public void mouseClicked(java.awt.event.MouseEvent e)
+			@Override
+            public void mouseClicked(java.awt.event.MouseEvent e)
 			{
 				if( e.getClickCount() == 2 )
 				{
@@ -653,8 +668,9 @@ protected Schedule getSelectedSchedule()
 	int selectedRow = lsm.getMinSelectionIndex();
 
 
-	if( selectedRow < 0 )
-		return null;
+	if( selectedRow < 0 ) {
+        return null;
+    }
 		
 	Schedule selected = getScheduleTableModel().getSchedule( selectedRow );
 
@@ -691,6 +707,7 @@ private void handleException(Throwable exception)
 /* This method was created in VisualAge.
  * @param event com.cannontech.common.util.MessageEvent
  */
+@Override
 public void handlePopUpEvent(GenericEvent event)
 {
 
@@ -788,8 +805,9 @@ private void initialize( boolean initPanelOnly )
 
 	add( scrollPaneSchedule, "Center" );
 
-	if( toolBarPanel != null )
-		add( toolBarPanel, "North" );
+	if( toolBarPanel != null ) {
+        add( toolBarPanel, "North" );
+    }
 		
 	add( getMessagePanel(), "South" );	
 }
@@ -797,15 +815,16 @@ private void initialize( boolean initPanelOnly )
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent
  */
+@Override
 public void mouseClicked(MouseEvent event)
 {
 
 	//If there was a double click open a new edit window
 	if (event.getClickCount() == 2  )//&& !(Scheduler.isReadOnly()) )
 	{
-		if( event.isShiftDown() )
-			showDebugInfo();
-		else{ 
+		if( event.isShiftDown() ) {
+            showDebugInfo();
+        } else{ 
 			editSchedule( new ActionEvent(event.getSource(), event.getID(), "Mouse Clicked") );	
 		}
 	}
@@ -814,18 +833,21 @@ public void mouseClicked(MouseEvent event)
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent
  */
+@Override
 public void mouseEntered(MouseEvent event) {
 }
 /**
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent
  */
+@Override
 public void mouseExited(MouseEvent event) {
 }
 /**
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent
  */
+@Override
 public void mousePressed(MouseEvent event) 
 {
 	if( event.getSource() == SchedulerMainPanel.this.getScheduleTable() )
@@ -840,6 +862,7 @@ public void mousePressed(MouseEvent event)
  * This method was created in VisualAge.
  * @param event java.awt.event.MouseEvent
  */
+@Override
 public void mouseReleased(MouseEvent event) {
 }
 /**
@@ -847,6 +870,7 @@ public void mouseReleased(MouseEvent event) {
  * Creation date: (8/25/00 9:45:22 AM)
  * @param e javax.swing.event.PopupMenuEvent
  */
+@Override
 public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) 
 {		
 }
@@ -855,6 +879,7 @@ public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e)
  * Creation date: (8/25/00 9:45:22 AM)
  * @param e javax.swing.event.PopupMenuEvent
  */
+@Override
 public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) 
 {
 	
@@ -864,6 +889,7 @@ public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e)
  * Creation date: (8/25/00 9:45:22 AM)
  * @param e javax.swing.event.PopupMenuEvent
  */
+@Override
 public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) 
 {
 	if( e.getSource() == SchedulerMainPanel.this.getSchedulePopupMenu() )
@@ -889,23 +915,26 @@ private void removeUnneededFrames()
 	{
 		if( getFrames().size() > PRE_CREATED_FRAMES )
 		{
-			if( ((javax.swing.JFrame)getFrames().get(i)).isVisible() )
-				continue;
-			else
-				getFrames().remove(i);
-		}
-		else
-			return;
+			if( ((javax.swing.JFrame)getFrames().get(i)).isVisible() ) {
+                continue;
+            } else {
+                getFrames().remove(i);
+            }
+		} else {
+            return;
+        }
 	}
 }
 /**
  * This method was created in VisualAge.
  * @param event com.cannontech.common.editor.PropertyPanelEvent
  */
+@Override
 public void selectionPerformed( PropertyPanelEvent event) 
 {
-	if( !( event.getSource() instanceof PropertyPanel) )
-		return;
+	if( !( event.getSource() instanceof PropertyPanel) ) {
+        return;
+    }
 
 	PropertyPanel panel = (PropertyPanel) event.getSource();
 
@@ -956,8 +985,9 @@ public void selectionPerformed( PropertyPanelEvent event)
 			{
 				((javax.swing.JFrame)getFrames().get(i)).setVisible(false);
 
-				if( i >= PRE_CREATED_FRAMES )
-					removeUnneededFrames();
+				if( i >= PRE_CREATED_FRAMES ) {
+                    removeUnneededFrames();
+                }
 
 				repaint();
 				break;
@@ -969,6 +999,7 @@ public void selectionPerformed( PropertyPanelEvent event)
  * This method was created in VisualAge.
  * @param event com.cannontech.common.wizard.WizardPanelEvent
  */
+@Override
 public void selectionPerformed(WizardPanelEvent event) 
 {
 	if( event.getID() == WizardPanelEvent.FINISH_SELECTION )
@@ -981,11 +1012,11 @@ public void selectionPerformed(WizardPanelEvent event)
 		{
 			// send the new schedule
 			getIMACSConnection().sendCreateSchedule( newItem );				
-			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Created new schedule '" + ((Schedule)newItem).getScheduleName() + "' successfully", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
+			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Created new schedule '" + newItem.getScheduleName() + "' successfully", com.cannontech.common.util.MessageEvent.INFORMATION_MESSAGE));
 		}
 		catch( java.io.IOException e )
 		{
-			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Unable to create schedule '" + ((Schedule)newItem).getScheduleName() + "'", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
+			getMessagePanel().messageEvent(new com.cannontech.common.util.MessageEvent(this, "Unable to create schedule '" + newItem.getScheduleName() + "'", com.cannontech.common.util.MessageEvent.ERROR_MESSAGE));
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		
@@ -1005,8 +1036,9 @@ public void selectionPerformed(WizardPanelEvent event)
 			{
 				((javax.swing.JFrame)getFrames().get(i)).setVisible(false);
 				
-				if( i >= PRE_CREATED_FRAMES )
-					removeUnneededFrames();
+				if( i >= PRE_CREATED_FRAMES ) {
+                    removeUnneededFrames();
+                }
 					
 				repaint();
 				break;
@@ -1036,8 +1068,9 @@ private void showDebugInfo( )
  */
 public void showEditViewPanel( final Schedule selectedSchedule, PropertyPanel editViewPanel ) 
 {
-	if( selectedSchedule == null )
-		return;
+	if( selectedSchedule == null ) {
+        return;
+    }
 	
 	Frame owner = SwingUtil.getParentFrame(this);
 	java.awt.Cursor savedCursor = owner.getCursor();
@@ -1067,8 +1100,9 @@ public void showEditViewPanel( final Schedule selectedSchedule, PropertyPanel ed
 		frame.validate();
 	
 		// IF ITS A SCRIPT SCHEDULE, WE MUST GET THE SCRIPT TEXT HERE
-		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) )
-			getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );		
+		if( Schedule.SCRIPT_TYPE.equalsIgnoreCase(selectedSchedule.getType()) ) {
+            getIMACSConnection().sendRetrieveScriptText( selectedSchedule.getScriptFileName() );
+        }		
 	}
 	catch( java.io.IOException e )
 	{
@@ -1112,8 +1146,9 @@ private void showWizardPanel(WizardPanel wizard)
  */
 private void synchTableAndButtons(Schedule selected) {
 	if (startStopButton == null || editButton == null
-			|| enableDisableButton == null)
-		return;
+			|| enableDisableButton == null) {
+        return;
+    }
 
 	boolean isEditable = isScheduleEditable();
 	getDeleteScheduleButton().setEnabled(isEditable);
@@ -1142,6 +1177,7 @@ private void synchTableAndButtons(Schedule selected) {
  * This method was created in VisualAge.
  * @param event javax.swing.event.TableModelEvent
  */
+@Override
 public void tableChanged(TableModelEvent event ) 
 {
 	if( event instanceof MACSGenericTableModelEvent )
@@ -1166,12 +1202,14 @@ public void tableChanged(TableModelEvent event )
 	
 	Schedule selected = getSelectedSchedule();
 
-	if( selected != null )
-		synchTableAndButtons( selected );
+	if( selected != null ) {
+        synchTableAndButtons( selected );
+    }
 
 	getScheduleTable().repaint();
 }
 
+@Override
 public void messageReceived( MessageEvent e ) 
 {
 	Message in = e.getMessage();
@@ -1208,7 +1246,8 @@ public void messageReceived( MessageEvent e )
 	        // set the frames Title to a connected/not connected text
 	        final String connectedString = getConnectionState();
 	        javax.swing.SwingUtilities.invokeLater( new Runnable() {
-	            public void run() {
+	            @Override
+                public void run() {
 	                Frame f = SwingUtil.getParentFrame(SchedulerMainPanel.this);
 	                if( f != null ) {
 	                    f.setTitle(connectedString);
@@ -1233,8 +1272,9 @@ public void messageReceived( MessageEvent e )
             for( int i = 0; i < getFrames().size(); i++ )
             {
                 javax.swing.JFrame f = (javax.swing.JFrame)getFrames().get(i);
-                if( f.isVisible() )
+                if( f.isVisible() ) {
                     f.setVisible(false);
+                }
             }
         }
     }
@@ -1245,20 +1285,22 @@ public void messageReceived( MessageEvent e )
  * JTable.  
  * @param event ListSelectionEvent
  */
+@Override
 public void valueChanged(ListSelectionEvent event) {
 
 	ListSelectionModel lsm = (ListSelectionModel) event.getSource();
 
-	if( lsm.isSelectionEmpty() )
-		return;
-	else
+	if( lsm.isSelectionEmpty() ) {
+        return;
+    } else
 	{		
 		Schedule selected = getSelectedSchedule();
 
 		lastSelected = selected;
 
-		if( selected != null )
-			synchTableAndButtons( selected );
+		if( selected != null ) {
+            synchTableAndButtons( selected );
+        }
 	}
 }
 

@@ -23,7 +23,7 @@ public interface IMACSConnection extends IServerConnection
 
 	public void sendDeleteSchedule(int scheduleID) throws java.io.IOException;
 
-	public void sendEnableDisableSchedule(Schedule sched) throws java.io.IOException;
+	public void sendEnableDisableSchedule(Schedule sched, String userName) throws java.io.IOException;
 
 	public void sendRetrieveAllSchedules() throws java.io.IOException; 
 
@@ -33,7 +33,7 @@ public interface IMACSConnection extends IServerConnection
 
 	public void sendScriptFile(com.cannontech.message.macs.message.ScriptFile file) throws java.io.IOException;
 
-	public void sendStartStopSchedule(Schedule sched, java.util.Date startTime, java.util.Date stopTime, int command ) throws java.io.IOException;
+	public void sendStartStopSchedule(Schedule sched, java.util.Date startTime, java.util.Date stopTime, int command, String userName) throws java.io.IOException;
 
 	public void sendUpdateSchedule(Schedule sched ) throws java.io.IOException; 
 

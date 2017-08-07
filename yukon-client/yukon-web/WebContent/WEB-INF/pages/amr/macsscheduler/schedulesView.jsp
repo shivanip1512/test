@@ -19,10 +19,10 @@
         <tfoot>
         </tfoot>
         <tbody>
-            <c:forEach var="scheduleInfo" items="${list.resultList}">
-                <c:set var="id" value="${scheduleInfo.schedule.id}"/>
+            <c:forEach var="schedule" items="${list.resultList}">
+                <c:set var="id" value="${schedule.id}"/>
                 <c:choose>
-                    <c:when test="${scheduleInfo.showControllable}">
+                    <c:when test="${schedule.showControllable}">
                         <tr>
                     </c:when>
                     <c:otherwise>
@@ -31,30 +31,29 @@
                 </c:choose>
                     <td>
                         <!-- TODO: This will link to view/edit the schedule -->
-                        ${fn:escapeXml(scheduleInfo.schedule.scheduleName)}
+                        ${fn:escapeXml(schedule.scheduleName)}
                     </td>
                     <td>
                         <cti:url var="scriptUrl" value="/macsscheduler/schedules/${id}/view" />
                         <a href="${scriptUrl}">
-                        ${fn:escapeXml(scheduleInfo.schedule.categoryName)}
+                        ${fn:escapeXml(schedule.categoryName)}
                         </a>
                     </td>
                     <td>
-                        <c:set var="state" value="${scheduleInfo.schedule.currentState}" />
                         <c:choose>
-                            <c:when test="${scheduleInfo.updatingState}">
+                            <c:when test="${schedule.isUpdating()}">
                                 <c:set var="color" value="yellow" />
                             </c:when>
-                            <c:when test="${state eq 'Running'}">
+                            <c:when test="${schedule.isRunning()}">
                                 <c:set var="color" value="green" />
                             </c:when>
-                            <c:when test="${state eq 'Waiting'}">
+                            <c:when test="${schedule.isWaiting()}">
                                 <c:set var="color" value="white" />
                             </c:when>
-                            <c:when test="${state eq 'Disabled'}">
+                            <c:when test="${schedule.isDisabled()}">
                                 <c:set var="color" value="red" />
                             </c:when>
-                            <c:when test="${state eq 'Pending'}">
+                            <c:when test="${schedule.isPending()}">
                                 <c:set var="color" value="blue" />
                             </c:when>
                             <c:otherwise>
@@ -64,26 +63,27 @@
                         <span class="box state-box ${color}">
                         </span>
                         <c:choose>
-                            <c:when test="${scheduleInfo.updatingState}">
+                            <c:when test="${schedule.isUpdating()}">
                                 <cti:msg2 key=".state.updating"/>
                             </c:when>
                             <c:otherwise>
-                                <i:inline key=".state.${state}"/>
+                            <!-- Change to use enum -->
+                                <i:inline key=".state.${schedule.getState().getStateString()}"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
                     <td>
                         <c:choose>
-                            <c:when test="${scheduleInfo.schedule.nextRunTime.time > cti:constantValue('com.cannontech.message.macs.message.Schedule.INVALID_DATE')}">
-                                <cti:formatDate value="${scheduleInfo.schedule.nextRunTime}" type="BOTH"/>
+                            <c:when test="${schedule.nextRunTime != null}">
+                                <cti:formatDate value="${schedule.nextRunTime}" type="BOTH"/>
                             </c:when>
                             <c:otherwise>----</c:otherwise>
                         </c:choose>
                     </td>
                     <td>
                         <c:choose>
-                            <c:when test="${scheduleInfo.schedule.nextStopTime.time > cti:constantValue('com.cannontech.message.macs.message.Schedule.INVALID_DATE')}">
-                                <cti:formatDate value="${scheduleInfo.schedule.nextStopTime}" type="BOTH"/>
+                            <c:when test="${schedule.nextStopTime != null}">
+                                <cti:formatDate value="${schedule.nextStopTime}" type="BOTH"/>
                             </c:when>
                             <c:otherwise>----</c:otherwise>
                         </c:choose>
@@ -93,11 +93,11 @@
                             <cm:dropdown icon="icon-cog">
                                 <cti:url var="startStopUrl" value="/macsscheduler/schedules/${id}/startStop" />
                                 <c:choose>
-                                    <c:when test="${scheduleInfo.updatingState || scheduleInfo.disabledState}">
+                                    <c:when test="${schedule.isUpdating() || schedule.isDisabled()}">
                                         <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
                                         <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
                                     </c:when>
-                                    <c:when test="${scheduleInfo.runningState || scheduleInfo.pendingState}">
+                                    <c:when test="${schedule.isRunning() || schedule.isPending()}">
                                         <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
                                         <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" data-popup=".js-stop-dialog-${id}"/>
                                         <div class="dn js-stop-dialog-${id}" data-dialog data-event="yukon:schedule:cancel"
@@ -114,11 +114,11 @@
                                 </c:choose>
                                 <cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleState?id=${id}" />
                                 <c:choose>
-                                    <c:when test="${scheduleInfo.updatingState}">
+                                    <c:when test="${schedule.isUpdating()}">
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>
                                         <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
                                     </c:when>
-                                    <c:when test="${scheduleInfo.disabledState}">
+                                    <c:when test="${schedule.isDisabled()}">
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" classes="js-script-toggle" data-schedule-id="${id}"/>
                                         <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
                                     </c:when>

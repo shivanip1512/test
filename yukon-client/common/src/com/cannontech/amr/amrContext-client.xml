@@ -24,10 +24,7 @@
 
     <bean id="meterSearchDao" class="com.cannontech.amr.meter.search.dao.impl.MeterSearchDaoImpl"/>
 
-    <bean id="macsScheduleService"
-        class="com.cannontech.amr.macsscheduler.service.impl.MACSScheduleServiceImpl">
-        <property name="connection" ref="macsConnection" />
-    </bean>
+    <bean class="com.cannontech.amr.macsscheduler.service.impl.MACSScheduleServiceImpl"/>
 
     <bean id="meterDao" class="com.cannontech.amr.meter.dao.impl.MeterDaoImpl"/>
     
