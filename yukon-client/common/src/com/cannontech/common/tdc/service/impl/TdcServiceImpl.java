@@ -126,11 +126,11 @@ public class TdcServiceImpl implements TdcService {
         case SOE_LOG_DISPLAY_NUMBER:
             searchResults = displayDataDao.getSortedSoeLogDisplayData(timeZone, paging, sortBy, direction);
             break;
-//        case TAG_LOG_DISPLAY_NUMBER:
-//            searchResults = displayDataDao.getTagLogDisplayData(timeZone, paging);
-//            break;
+        case TAG_LOG_DISPLAY_NUMBER:
+            searchResults = displayDataDao.getSortedTagLogDisplayData(timeZone, paging, sortBy, direction);
+            break;
 //        case EVENT_VIEWER_DISPLAY_NUMBER:
-//            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging);
+//            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction);
 //            break;
 //        case GLOBAL_ALARM_DISPLAY:
 //            searchResults = getAlarms(true);

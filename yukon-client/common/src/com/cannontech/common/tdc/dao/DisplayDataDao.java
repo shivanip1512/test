@@ -24,7 +24,7 @@ public interface DisplayDataDao {
         PAO_STATISTICS("y.PAOStatistics"),
         PAO_TYPE("y.Type"),
         
-        POINT_ID("p.PointId"),        
+        POINT_ID("p.PointId"),
         POINT_NAME("p.PointName"),
         POINT_PAO_ID("p.PAObjectId"),
 
@@ -33,8 +33,15 @@ public interface DisplayDataDao {
         SYS_LOG_DESCRIPTION("s.Description"),
         SYS_LOG_MILLLIS("s.Millis"),
         SYS_LOG_POINT_ID("s.PointId"),
-        SYS_LOG_SOE_TAG("s.SOE_TAG");
-
+        SYS_LOG_SOE_TAG("s.SOE_TAG"),
+        
+        TAGS_TAG_NAME("t.Tagname"),
+        
+        TAG_LOG_TAG_TIME("l.Tagtime"),
+        TAG_LOG_DESCRIPTION("l.Description"),
+        TAG_LOG_ACTION("l.Action"),
+        TAG_LOG_USERNAME("l.Username");       
+        
         private SortBy(String dbString) {
             this.dbString = dbString;
         }
@@ -89,4 +96,7 @@ public interface DisplayDataDao {
     SearchResults<DisplayData> getSortedSoeLogDisplayData(DateTimeZone timeZone,
                                                           PagingParameters paging, SortBy sortBy,
                                                           Direction direction);
+
+    SearchResults<DisplayData> getSortedTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
+                                                 SortBy sortBy, Direction direction);
 }
