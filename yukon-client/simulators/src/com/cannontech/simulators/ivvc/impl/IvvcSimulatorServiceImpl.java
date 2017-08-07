@@ -69,6 +69,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private volatile boolean isCurrentlyExecuting = false; // This is used to ensure only one timed execution happens at a time
     private volatile double substationBuskWh;
     private volatile boolean autoGenerateSubstationBuskWh;
+    private volatile double localVoltageOffset;
+    private volatile double remoteVoltageOffset;
     private boolean tapPositionsPreloaded = false;
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
@@ -231,14 +233,16 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     for (CapBankDevice capBankDevice : capBanksByFeeder) {
                         // There might be a better way to do this check!
                         LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
-                        if (capBankState.getStateText().contains("Close")) {
+                          if (capBankState.getStateText().contains("Close")) {
                             feederActiveBankKVar += capBankDevice.getBankSize();
                             
                             for (Entry<Integer, Double> feederVoltage : feederVoltageRises.entrySet()) {
                                 if( feederVoltage.getKey().equals(feeder.getCcId()) ) {
-                                    feederVoltage.setValue(feederVoltage.getValue() + capBankDevice.getBankSize()/1200); // A 1200kVar bank gives 1V to everyone else on the same feeder. All other bank sizes scale proportionally.
+                                    feederVoltage.setValue(
+                                        feederVoltage.getValue() + capBankDevice.getBankSize() / localVoltageOffset); // A 1200kVar bank gives 1V to everyone else on the same feeder. All other bank sizes scale proportionally.
                                 } else {
-                                    feederVoltage.setValue(feederVoltage.getValue() + capBankDevice.getBankSize()/1200/5); // A 1200kVar bank gives .2v to all other feeders. All other bank sizes scale proportionally.
+                                    feederVoltage.setValue(feederVoltage.getValue()
+                                        + capBankDevice.getBankSize() / remoteVoltageOffset / 5); // A 1200kVar bank gives .2v to all other feeders. All other bank sizes scale proportionally.
                                 }
                             }
                         }
@@ -621,9 +625,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE, settings.isIncreasedSpeedMode());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_SUBSTATION_BUS_KWH, settings.getSubstationBuskWh());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH, settings.isAutogenerateSubstationBuskWh());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR, settings.getLocalVoltageOffsetVar());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR, settings.getRemoteVoltageOffsetVar());
         
         substationBuskWh = settings.getSubstationBuskWh();
         autoGenerateSubstationBuskWh = settings.isAutogenerateSubstationBuskWh();
+        localVoltageOffset = settings.getRemoteVoltageOffsetVar();
+        remoteVoltageOffset = settings.getRemoteVoltageOffsetVar();
     }
     
     @Override
@@ -632,7 +640,9 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         IvvcSimulatorSettings settings = new IvvcSimulatorSettings(
             yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE),
             yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_SUBSTATION_BUS_KWH),
-            yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH));
+            yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH),
+            yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR),
+            yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR));
         return settings;
     }
 

@@ -21,6 +21,12 @@
                             <tags:nameValue2 nameKey=".ivvcSimulator.substationBuskWh">
                                 <tags:input path="ivvcSimulatorSettings.substationBuskWh" id="substationBuskWh"/>
                             </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".ivvcSimulator.localVoltageOffsetVar">
+                                <tags:input path="ivvcSimulatorSettings.localVoltageOffsetVar" id="localVoltageOffsetVar"/>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".ivvcSimulator.remoteVoltageOffsetVar">
+                                <tags:input path="ivvcSimulatorSettings.remoteVoltageOffsetVar" id="remoteVoltageOffsetVar"/>
+                            </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
                     <div>

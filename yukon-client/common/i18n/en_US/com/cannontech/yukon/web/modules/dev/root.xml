@@ -311,6 +311,8 @@
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.substationBuskWh.invalid">Substation bus kWh value must be greater than 0.</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.generatekWhAutomatically">Generate Substation kWh Automatically</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.generatekWhAutomatically.label">Generate Substation kWh Automatically</entry>
+    <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.localVoltageOffsetVar">Local Voltage Offset (Var)</entry>
+    <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.remoteVoltageOffsetVar">Remote Voltage Offset (Var)</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.success">Simulator settings save successfully.</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error">Unable to save simulator settings : {0}.</entry>
     <entry key="yukon.web.modules.dev.ivvc.saveSettings.label">Save Settings</entry>

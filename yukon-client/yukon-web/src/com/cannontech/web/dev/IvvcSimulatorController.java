@@ -48,7 +48,7 @@ public class IvvcSimulatorController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(IvvcSimulatorController.class);
-    private final IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false, 3000.0, false);
+    private final IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false, 3000.0, false, 1200, 1200);
     
     @RequestMapping("ivvcSimulator")
     public String ivvcSimulator(ModelMap model) {
