@@ -6,6 +6,7 @@
 #include "cccapbank.h"
 #include "capcontrol_test_helpers.h"
 #include "boost_test_helpers.h"
+#include "test_reader.h"
 
 // Exceptions
 using Cti::CapControl::MissingAttribute;
@@ -396,6 +397,354 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_stop_heartbeat_scada_override_mo
 
     BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideClear' LitePoint
     BOOST_CHECK_EQUAL( "control pulse select pointid 5678", requestMsg->CommandString() );
+}
+
+BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
+{
+    // test to document the existig CapBank & CBC initialization process.
+
+    std::unique_ptr<CtiCCCapBank>   bank;
+
+    {
+        using CcCapBankRow      = Cti::Test::StringRow<18>;
+        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
+
+        CcCapBankRow columnNames =
+        {
+            "PAObjectID",
+            "Category",
+            "PAOClass",
+            "PAOName",
+            "Type",
+            "Description",
+            "DisableFlag",
+            "OPERATIONALSTATE",
+            "ControllerType",
+            "CONTROLDEVICEID",
+            "CONTROLPOINTID",
+            "BANKSIZE",
+            "TypeOfSwitch",
+            "SwitchManufacture",
+            "MapLocationID",
+            "RecloseDelay",
+            "MaxDailyOps",
+            "MaxOpDisable"
+        };
+
+        std::vector< CcCapBankRow > columnValues
+        {
+            {
+                "185",
+                "DEVICE",
+                "CAPCONTROL",
+                "Bank 8",
+                "CAP BANK",
+                "----",
+                "N",
+                "Switched",
+                "",
+                "184",
+                "333",
+                "600",
+                "",
+                "",
+                "0",
+                "0",
+                "10",
+                "Y"
+            }
+        };
+
+        CcCapBankReader reader( columnNames, columnValues );
+
+        reader();
+
+        bank.reset( new CtiCCCapBank( reader ) );
+    }
+    {
+        using CcCapBankRow      = Cti::Test::StringRow<3>;
+        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
+
+        CcCapBankRow columnNames =
+        {
+            "DEVICEID",
+            "ALARMINHIBIT",
+            "CONTROLINHIBIT"
+        };
+
+        std::vector< CcCapBankRow > columnValues
+        {
+            {
+                "185",
+                "N",
+                "N"
+            }
+        };
+
+        CcCapBankReader reader( columnNames, columnValues );
+
+        reader();
+
+        std::string tempBoolString;
+
+        reader["ALARMINHIBIT"] >> tempBoolString;
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
+
+        bank->setAlarmInhibitFlag(tempBoolString=="y");
+
+        reader["CONTROLINHIBIT"] >> tempBoolString;
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
+
+        bank->setControlInhibitFlag(tempBoolString=="y");
+    }
+    {
+        using CcCapBankRow      = Cti::Test::StringRow<3>;
+        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
+
+        CcCapBankRow columnNames =
+        {
+            "DEVICEID",
+            "CONTROLDEVICEID",
+            "Type"
+        };
+
+        std::vector< CcCapBankRow > columnValues
+        {
+            {
+                "185",
+                "184",
+                "CBC 8024"
+            }
+        };
+
+        CcCapBankReader reader( columnNames, columnValues );
+
+        reader();
+
+        long controlDeviceId;
+        std::string controlDeviceType;
+
+        reader["CONTROLDEVICEID"] >> controlDeviceId;
+        reader["Type"] >> controlDeviceType;
+
+        if ( bank->getControlDeviceId() == controlDeviceId )
+        {
+            bank->setControlDeviceType( controlDeviceType );
+        }
+    }
+    {
+        using CcCapBankRow      = Cti::Test::StringRow<5>;
+        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
+
+        CcCapBankRow columnNames =
+        {
+            "DeviceID",
+            "FeederID",
+            "ControlOrder",
+            "CloseOrder",
+            "TripOrder"
+        };
+
+        std::vector< CcCapBankRow > columnValues
+        {
+            {
+                "185",
+                "5",
+                "2.00000",
+                "3.00000",
+                "1.00000"
+            }
+        };
+
+        CcCapBankReader reader( columnNames, columnValues );
+
+        reader();
+
+        long feederid;
+        float controlOrder;
+        float tripOrder;
+        float closeOrder;
+
+        reader["FeederID"]      >> feederid;
+        reader["ControlOrder"]  >> controlOrder;
+        reader["CloseOrder"]    >> closeOrder;
+        reader["TripOrder"]     >> tripOrder;
+
+        bank->setControlOrder( controlOrder );
+        bank->setTripOrder( tripOrder );
+        bank->setCloseOrder( closeOrder );
+        bank->setParentId( feederid );
+    }
+    {
+        using CcCapBankRow      = Cti::Test::StringRow<22>;
+        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
+
+        CcCapBankRow columnNames =
+        {
+            "CapBankID",
+            "ControlStatus",
+            "TotalOperations",
+            "LastStatusChangeTime",
+            "TagsControlStatus",
+            "CTITimeStamp",
+            "AssumedStartVerificationStatus",
+            "PrevVerificationControlStatus",
+            "VerificationControlIndex",
+            "AdditionalFlags",
+            "CurrentDailyOperations",
+            "TwoWayCBCState",
+            "TwoWayCBCStateTime",
+            "beforeVar",
+            "afterVar",
+            "changeVar",
+            "twoWayCBCLastControl",
+            "PartialPhaseInfo",
+            "OriginalParentId",
+            "OriginalSwitchingOrder",
+            "OriginalCloseOrder",
+            "OriginalTripOrder"
+        };
+
+        std::vector< CcCapBankRow > columnValues
+        {
+            {
+                "185",
+                "0",
+                "16",
+                "2017-08-01 14:17:44.000",
+                "0",
+                "2017-08-01 14:20:01.000",
+                "0",
+                "0",
+                "-1",
+                "NNNNNYNNNNNNNNNNNNNN",
+                "4",
+                "1",
+                "1990-01-01 00:00:00.000",
+                "-500.00",
+                "100.00",
+                "100.00",
+                "0",
+                "(none)",
+                "0",
+                "0",
+                "0",
+                "0"
+            }
+        };
+
+        CcCapBankReader reader( columnNames, columnValues );
+
+        reader();
+
+        bank->setDynamicData( reader );
+    }
+
+    BOOST_REQUIRE( bank );
+
+    BOOST_CHECK_EQUAL( bank->getPaoId(),                        185 );
+    BOOST_CHECK_EQUAL( bank->getPaoCategory(),                  "DEVICE" );
+    BOOST_CHECK_EQUAL( bank->getPaoClass(),                     "CAPCONTROL" );
+    BOOST_CHECK_EQUAL( bank->getPaoName(),                      "Bank 8" );
+    BOOST_CHECK_EQUAL( bank->getPaoType(),                      "CAP BANK" );
+    BOOST_CHECK_EQUAL( bank->getPaoDescription(),               "----" );
+    BOOST_CHECK_EQUAL( bank->getDisableFlag(),                  false );
+    BOOST_CHECK_EQUAL( bank->getDisabledStatePointId(),         0 );
+    BOOST_CHECK_EQUAL( bank->getOperationalState(),             "Switched" );
+    BOOST_CHECK_EQUAL( bank->getControllerType(),               "" );
+    BOOST_CHECK_EQUAL( bank->getControlDeviceId(),              184 );
+    BOOST_CHECK_EQUAL( bank->getControlPointId(),               333 );
+    BOOST_CHECK_EQUAL( bank->getBankSize(),                     600 );
+    BOOST_CHECK_EQUAL( bank->getTypeOfSwitch(),                 "" );
+    BOOST_CHECK_EQUAL( bank->getSwitchManufacture(),            "" );
+    BOOST_CHECK_EQUAL( bank->getMapLocationId(),                "0" );
+    BOOST_CHECK_EQUAL( bank->getRecloseDelay(),                 0 );
+    BOOST_CHECK_EQUAL( bank->getMaxDailyOps(),                  10 );
+    BOOST_CHECK_EQUAL( bank->getMaxOpsDisableFlag(),            true );
+
+    Cti::CapControl::PointIdVector * points = bank->getPointIds();
+    BOOST_CHECK_EQUAL( points->size(), 0 );
+
+    std::set<long>  p;
+    bank->getPointRegistrationIds( p );
+    BOOST_CHECK_EQUAL( p.size(), 0 );
+
+    BOOST_CHECK_EQUAL( bank->getParentId(),                     5 );
+    BOOST_CHECK_EQUAL( bank->getAlarmInhibitFlag(),             false );
+    BOOST_CHECK_EQUAL( bank->getControlInhibitFlag(),           false );
+    BOOST_CHECK_EQUAL( bank->getCurrentDailyOperations(),       4 );
+    BOOST_CHECK_EQUAL( bank->getControlDeviceType(),            "CBC 8024" );
+    BOOST_CHECK_EQUAL( bank->getControlOrder(),                 2.0f );
+    BOOST_CHECK_EQUAL( bank->getTripOrder(),                    1.0f );
+    BOOST_CHECK_EQUAL( bank->getCloseOrder(),                   3.0f );
+    BOOST_CHECK_EQUAL( bank->getStatusPointId(),                0 );
+    BOOST_CHECK_EQUAL( bank->getControlStatus(),                0 );
+    BOOST_CHECK_EQUAL( bank->getOperationAnalogPointId(),       0 );
+    BOOST_CHECK_EQUAL( bank->getTotalOperations(),              16 );
+
+    {
+        //  "2017-08-01 14:17:44.000"
+        CtiTime lastStatus( CtiDate( 1, 8, 2017 ), 14, 17, 44 );
+
+        BOOST_CHECK_EQUAL( bank->getLastStatusChangeTime(),         lastStatus );
+    }
+
+    BOOST_CHECK_EQUAL( bank->getTagsControlStatus(),            0 );
+    BOOST_CHECK_EQUAL( bank->getVCtrlIndex(),                   -1 );
+    BOOST_CHECK_EQUAL( bank->isSelectedForVerification(),       false );
+    BOOST_CHECK_EQUAL( bank->getVerificationFlag(),             false );
+    BOOST_CHECK_EQUAL( bank->getRetryOpenFailedFlag(),          false );
+    BOOST_CHECK_EQUAL( bank->getRetryCloseFailedFlag(),         false );
+    BOOST_CHECK_EQUAL( bank->getOvUvDisabledFlag(),             true );
+    BOOST_CHECK_EQUAL( bank->getMaxDailyOpsHitFlag(),           false );
+    BOOST_CHECK_EQUAL( bank->getControlStatusPartialFlag(),     false );
+    BOOST_CHECK_EQUAL( bank->getControlStatusSignificantFlag(), false );
+    BOOST_CHECK_EQUAL( bank->getControlStatusAbnQualityFlag(),  false );
+    BOOST_CHECK_EQUAL( bank->getControlStatusFailFlag(),        false );
+    BOOST_CHECK_EQUAL( bank->getControlStatusCommFailFlag(),    false );
+    BOOST_CHECK_EQUAL( bank->getControlStatusNoControlFlag(),   false );
+    BOOST_CHECK_EQUAL( bank->getControlStatusUnSolicitedFlag(), false );
+    BOOST_CHECK_EQUAL( bank->getOvUvSituationFlag(),            false );
+    BOOST_CHECK_EQUAL( bank->getReEnableOvUvFlag(),             false );
+    BOOST_CHECK_EQUAL( bank->getLocalControlFlag(),             false );
+    BOOST_CHECK_EQUAL( bank->getControlRecentlySentFlag(),      false );
+    BOOST_CHECK_EQUAL( bank->getPorterRetFailFlag(),            false );
+    BOOST_CHECK_EQUAL( bank->getUnsolicitedPendingFlag(),       false );
+    BOOST_CHECK_EQUAL( bank->getPerformingVerificationFlag(),   false );
+    BOOST_CHECK_EQUAL( bank->getVerificationDoneFlag(),         false );
+    BOOST_CHECK_EQUAL( bank->getIpAddress(),                    "(none)" );
+    BOOST_CHECK_EQUAL( bank->getUDPPort(),                      0 );
+    BOOST_CHECK_EQUAL( bank->getReportedCBCState(),             1 );
+    BOOST_CHECK_EQUAL( bank->getReportedCBCLastControlReason(), 0 );
+    BOOST_CHECK_EQUAL( bank->getReportedCBCStateTime(),         gInvalidCtiTime );
+    BOOST_CHECK_EQUAL( bank->getPartialPhaseInfo(),             "(none)" );
+    BOOST_CHECK_EQUAL( bank->getIgnoreFlag(),                   false );
+    BOOST_CHECK_EQUAL( bank->getIgnoredReason(),                0 );
+    BOOST_CHECK_EQUAL( bank->getBeforeVarsString(),             "-500.00" );
+    BOOST_CHECK_EQUAL( bank->getAfterVarsString(),              "100.00" );
+    BOOST_CHECK_EQUAL( bank->getPercentChangeString(),          "100.00" );
+    BOOST_CHECK_EQUAL( bank->getControlStatusQuality(),         0 );
+    BOOST_CHECK_EQUAL( bank->getIgnoreIndicatorTimeUpdated(),   gInvalidCtiTime );
+    BOOST_CHECK_EQUAL( bank->getUnsolicitedChangeTimeUpdated(), gInvalidCtiTime );
+    BOOST_CHECK_EQUAL( bank->getInsertDynamicDataFlag(),        false );
+    BOOST_CHECK_EQUAL( bank->isDirty(),                         false );
+    BOOST_CHECK_EQUAL( bank->getOriginalParent().getPAOId(),    185 );
+
+    BOOST_CHECK_EQUAL( bank->getMonitorPoint().size(),          0 );
+
+/* 
+    These members are not available in the public interface:
+ 
+    std::string _additionalFlags;
+    long        _verificationControlStatus;
+    bool        _retryFlag;
+    int         _assumedOrigCapBankPos;
+    long        _prevVerificationControlStatus;
+
+    Don't call the following as it hits the database:
+ 
+    BOOST_CHECK_EQUAL( bank->getActionId(),          0 );
+*/
 }
 
 BOOST_AUTO_TEST_SUITE_END()

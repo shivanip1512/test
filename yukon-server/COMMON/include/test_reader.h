@@ -255,9 +255,15 @@ public:
 
     operator CtiTime() override
     {
+        using boost::posix_time::to_tm;
+        using boost::posix_time::time_from_string;
+
         checkBounds();
 
-        return CtiTime::now();
+        std::tm parsedTm = 
+            to_tm( time_from_string( _values[_currentRow][_currentColumn] ) );
+
+        return CtiTime( &parsedTm );
     }
 
     operator boost_ptime() override
