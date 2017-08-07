@@ -27,11 +27,14 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.dao.DisplayDataDao;
+import com.cannontech.common.tdc.dao.DisplayDataDao.SortBy;
 import com.cannontech.common.tdc.model.Cog;
 import com.cannontech.common.tdc.model.Column;
 import com.cannontech.common.tdc.model.Display;
@@ -96,7 +99,7 @@ public class TdcServiceImpl implements TdcService {
         List<DisplayData> retVal = null;
         switch (display.getDisplayId()) {
         case SOE_LOG_DISPLAY_NUMBER:
-            retVal = displayDataDao.getSoeLogDisplayData(timeZone, paging, null, null);
+            retVal = displayDataDao.getSoeLogDisplayData(timeZone, paging);
             break;
         case TAG_LOG_DISPLAY_NUMBER:
             retVal = displayDataDao.getTagLogDisplayData(timeZone, paging);
@@ -115,6 +118,31 @@ public class TdcServiceImpl implements TdcService {
             }
         }
         return retVal;
+    }
+    
+    public SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
+        SearchResults<DisplayData> searchResults = null;
+        switch (display.getDisplayId()) {
+        case SOE_LOG_DISPLAY_NUMBER:
+            searchResults = displayDataDao.getSortedSoeLogDisplayData(timeZone, paging, sortBy, direction);
+            break;
+//        case TAG_LOG_DISPLAY_NUMBER:
+//            searchResults = displayDataDao.getTagLogDisplayData(timeZone, paging);
+//            break;
+//        case EVENT_VIEWER_DISPLAY_NUMBER:
+//            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging);
+//            break;
+//        case GLOBAL_ALARM_DISPLAY:
+//            searchResults = getAlarms(true);
+//            break;
+//        default:
+//            if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
+//                searchResults = displayDataDao.getCustomDisplayData(display);
+//            }else if(display.getType() == DisplayType.ALARMS_AND_EVENTS){
+//                searchResults = getCustomDisplayDataByAlarmCategory(display);
+//            }
+        }
+        return searchResults;
     }
     
     @Override

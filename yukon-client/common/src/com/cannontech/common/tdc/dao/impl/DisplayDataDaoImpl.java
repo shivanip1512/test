@@ -24,6 +24,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tdc.dao.DisplayDataDao;
 import com.cannontech.common.tdc.model.Cog;
 import com.cannontech.common.tdc.model.ColumnType;
@@ -34,6 +35,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityTagHolder;
+import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -140,28 +142,59 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     }
     
     @Override
-    public List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
+    public List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging) {
         DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, s.Description, s.Action, s.Millis, p.LogicalGroup");
+        sql.append("FROM SystemLog s");
+        sql.append("JOIN Point p ON s.PointId = p.PointId");
+        sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
+        sql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.SOE.getDbValue());
+        sql.append("    AND s.Datetime").gte(from);
+        sql.append("    AND s.Datetime").lt(to);
+        sql.append("ORDER BY s.Datetime DESC, s.Millis DESC");
+        sql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
+        sql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
+        List<DisplayData> data = yukonJdbcTemplate.query(sql, createSoeRowMapper);
+        return data;
+    }
+
+    @Override
+    public SearchResults<DisplayData> getSortedSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
+        DateTime to = from.plusDays(1);
+        
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+        
         if (sortBy == null) {
             sortBy = SortBy.SYS_LOG_DATE_TIME;
         }
         if (direction == null) {
             direction = Direction.desc;
         }
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, s.Description, s.Action, s.Millis, p.LogicalGroup");
-        sql.append("FROM SystemLog s");
-        sql.append("JOIN Point p ON s.PointId = p.PointId");
-        sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.DEFAULT.getDbValue());
-        sql.append("    AND s.Datetime").gte(from);
-        sql.append("    AND s.Datetime").lt(to);
-        sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
-        sql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
-        sql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
-        List<DisplayData> data = yukonJdbcTemplate.query(sql, createSoeRowMapper);
-        return data;
+        
+        SqlStatementBuilder allRowsSql = new SqlStatementBuilder();
+        allRowsSql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, s.Description, s.Action, s.Millis, p.LogicalGroup");
+        allRowsSql.append("FROM SystemLog s");
+        allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
+        allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
+        allRowsSql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.SOE.getDbValue());
+        allRowsSql.append("    AND s.Datetime").gte(from);
+        allRowsSql.append("    AND s.Datetime").lt(to);
+        allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        allRowsSql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
+        allRowsSql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
+        
+        PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createSoeRowMapper);
+        yukonJdbcTemplate.query(allRowsSql, rse);
+
+        SearchResults<DisplayData> searchResults = new SearchResults<>();
+        searchResults.setBounds(start, count, getSoeLogDisplayDataCount(timeZone));
+        searchResults.setResultList(rse.getResultList());
+        
+        return searchResults;
     }
 
     @Override
@@ -289,4 +322,5 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         yukonJdbcTemplate.yukonBatchUpdate(sql);
         log.debug("Done inserting in Display2waydata");
     }
+    
 }

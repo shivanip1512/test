@@ -6,6 +6,7 @@ import org.joda.time.DateTimeZone;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 
@@ -58,7 +59,7 @@ public interface DisplayDataDao {
     /**
      * Gets SOE log display data
      */
-    List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction);
+    List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging);
 
     /**
      * Gets TAG log display data
@@ -84,4 +85,8 @@ public interface DisplayDataDao {
      * Deletes Display2Waydata entries for display id, inserts the entries for points.
      */
     void updateDisplay2Waydata(Integer displayId, List<Integer> pointIds);
+
+    SearchResults<DisplayData> getSortedSoeLogDisplayData(DateTimeZone timeZone,
+                                                          PagingParameters paging, SortBy sortBy,
+                                                          Direction direction);
 }
