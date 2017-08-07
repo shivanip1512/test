@@ -105,15 +105,10 @@
                                         <td>${fn:escapeXml(row.pointId)}</td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_NAME')}">
-                                        <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                                            <td>
-                                                <cti:url var="pointEditor" value="/tools/points/${row.pointId}"/>
-                                                    <a href="${pointEditor}">${fn:escapeXml(row.pointName)}</a>
-                                            </td>
-                                        </c:if>
-                                        <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                                            <td>${fn:escapeXml(row.pointName)}</td>
-                                        </c:if>
+                                        <td>
+                                            <cti:url var="pointEditor" value="/tools/points/${row.pointId}"/>
+                                                <a href="${pointEditor}">${fn:escapeXml(row.pointName)}</a>
+                                        </td>
                                     </c:if>
                                     <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TYPE')}">
                                         <td><i:inline key="${row.pointType}"/></td>
