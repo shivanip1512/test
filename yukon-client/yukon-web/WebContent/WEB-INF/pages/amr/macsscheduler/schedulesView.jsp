@@ -73,20 +73,10 @@
                         </c:choose>
                     </td>
                     <td>
-                        <c:choose>
-                            <c:when test="${schedule.nextRunTime != null}">
-                                <cti:formatDate value="${schedule.nextRunTime}" type="BOTH"/>
-                            </c:when>
-                            <c:otherwise>----</c:otherwise>
-                        </c:choose>
+                        <cti:formatDate value="${schedule.nextRunTime}" type="BOTH" nullText="----"/>
                     </td>
                     <td>
-                        <c:choose>
-                            <c:when test="${schedule.nextStopTime != null}">
-                                <cti:formatDate value="${schedule.nextStopTime}" type="BOTH"/>
-                            </c:when>
-                            <c:otherwise>----</c:otherwise>
-                        </c:choose>
+                        <cti:formatDate value="${schedule.nextStopTime}" type="BOTH" nullText="----"/>
                     </td>
                     <cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS">
                         <td>
@@ -112,7 +102,6 @@
                                         <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleState?id=${id}" />
                                 <c:choose>
                                     <c:when test="${schedule.isUpdating()}">
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>

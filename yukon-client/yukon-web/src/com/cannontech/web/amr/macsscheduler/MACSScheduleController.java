@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -68,7 +69,7 @@ public class MACSScheduleController extends MultiActionController {
         return "scheduledscripts.jsp";
     }
    
-    @RequestMapping("innerView")
+    @RequestMapping(value="innerView", method = RequestMethod.GET)
     public String innerView(ModelMap model, LiteYukonUser user, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
             @DefaultItemsPerPage(10) PagingParameters paging, YukonUserContext userContext) {
  
@@ -121,7 +122,7 @@ public class MACSScheduleController extends MultiActionController {
         return "schedulesView.jsp";
     }
     
-    @RequestMapping("{id}/view")
+    @RequestMapping(value="{id}/view", method = RequestMethod.GET)
     public String viewSchedule(ModelMap model,YukonUserContext yukonUserContext, @PathVariable int id) {
         //TODO: Get Script text and add to model
         try {
@@ -134,7 +135,7 @@ public class MACSScheduleController extends MultiActionController {
         return "script.jsp";
     }
     
-    @RequestMapping("{id}/startStop")
+    @RequestMapping(value="{id}/startStop", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public String startStop(ModelMap model, YukonUserContext userContext, @PathVariable int id) throws Exception {        
         MacsSchedule schedule = service.getMacsScheduleById(id);
@@ -156,7 +157,7 @@ public class MACSScheduleController extends MultiActionController {
         return "startDialog.jsp";
     }
     
-    @RequestMapping("{id}/start")
+    @RequestMapping(value="{id}/start", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public @ResponseBody Map<String, Object> start(@PathVariable int id, YukonUserContext yukonUserContext, 
                       @RequestParam(value="startNow", required=false, defaultValue="false") Boolean startNow, 
@@ -191,7 +192,7 @@ public class MACSScheduleController extends MultiActionController {
         return json;
     }
     
-    @RequestMapping("{id}/stop")
+    @RequestMapping(value="{id}/stop", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public @ResponseBody Map<String, Object> stop(@PathVariable int id, YukonUserContext yukonUserContext, 
                      @RequestParam(value="stopNow", required=false, defaultValue="false") boolean stopNow, 
@@ -218,9 +219,9 @@ public class MACSScheduleController extends MultiActionController {
         return json;
     }
 
-    @RequestMapping("{id}/toggleState")
+    @RequestMapping(value="{id}/toggleState", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
-    public @ResponseBody Map<String, Object> toggleState(ModelMap model, @PathVariable int id, LiteYukonUser user){      
+    public @ResponseBody Map<String, Object> toggleState(@PathVariable int id, LiteYukonUser user){      
         Map<String, Object> json = new HashMap<>();
         try {
             service.enableDisableSchedule(id, user);

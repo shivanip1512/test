@@ -43,6 +43,7 @@ yukon.ami.macs = (function () {
                     var scheduleId = selection.data('scheduleId');
                     $.ajax({
                         url: yukon.url('/macsscheduler/schedules/' + scheduleId + '/toggleState'),
+                        method: 'post',
                         dataType: 'json'
                     }).done(function (data) {
                         if (data.errorMsg) {
@@ -64,6 +65,7 @@ yukon.ami.macs = (function () {
                     $.ajax({
                         url: yukon.url('/macsscheduler/schedules/' + scheduleId + '/start'),
                         dataType: 'json',
+                        method: 'post',
                         data: data
                     }).done(function (data) {
                         if (data.errorMsg) {
@@ -85,6 +87,7 @@ yukon.ami.macs = (function () {
                     $.ajax({
                         url: yukon.url('/macsscheduler/schedules/' + scheduleId + '/stop'),
                         dataType: 'json',
+                        method: 'post',
                         data: data
                     }).done(function (data) {
                         if (data.errorMsg) {
