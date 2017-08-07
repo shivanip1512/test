@@ -3,13 +3,13 @@
 /******************************************/
 
 /* Start YUK-17045 */
-IF( (SELECT Count(*) 
-     FROM   yukonlistentry 
-     WHERE  entrytext = 'LCR-6700(RFN)') = 0 ) 
-  INSERT INTO yukonlistentry 
-  VALUES      ((SELECT Max(entryid) + 1 
-                FROM   yukonlistentry 
-                WHERE  entryid < 10000), 
+IF( (SELECT COUNT(*) 
+     FROM   YukonListEntry 
+     WHERE  EntryText = 'LCR-6700(RFN)') = 0 ) 
+  INSERT INTO YukonListEntry 
+  VALUES      ((SELECT MAX(EntryId) + 1 
+                FROM   YukonListEntry 
+                WHERE  EntryId < 10000), 
                1005, 
                0, 
                'LCR-6700(RFN)', 
