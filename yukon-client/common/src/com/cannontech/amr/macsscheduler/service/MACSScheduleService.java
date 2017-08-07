@@ -13,21 +13,21 @@ public interface MACSScheduleService {
     /**
      * Starts schedule. Doesn't wait for confirmation.
      * 
-     * @throws MacsException - if the couldn't communicate with Macs Service.
+     * @throws MacsException - couldn't communicate with Macs Service.
      */
     void start(int scheduleId, Date startDate, Date stopDate, LiteYukonUser user) throws MacsException;
     
     /**
      * Stops schedule. Doesn't wait for confirmation.
      * 
-     * @throws MacsException - if the couldn't communicate with Macs Service.
+     * @throws MacsException - couldn't communicate with Macs Service.
      */
     void stop(int scheduleId, Date stopDate, LiteYukonUser user) throws MacsException;
 
     /**
      * Deletes schedule. Waits for confirmation.
      * 
-     * @throws MacsException - if the couldn't communicate with Macs Service or delete was unsuccessful.
+     * @throws MacsException - couldn't communicate with Macs Service or delete was unsuccessful.
      */
     void delete(int scheduleId, LiteYukonUser user) throws MacsException;
 
@@ -40,7 +40,7 @@ public interface MACSScheduleService {
      * Creates schedule. Waits for confirmation.
      * 
      * @throws DuplicateException - schedule with this name already exist
-     * @throws MacsException - if the couldn't communicate with Macs Service or create was unsuccessful.
+     * @throws MacsException - couldn't communicate with Macs Service or create was unsuccessful.
      */
     int createSchedule(MacsSchedule macsSchedule, LiteYukonUser user) throws DuplicateException, MacsException;
 
@@ -48,14 +48,14 @@ public interface MACSScheduleService {
      * Updates schedule. Waits for confirmation.
      * 
      * @throws DuplicateException - schedule with this name already exist
-     * @throws MacsException - if the couldn't communicate with Macs Service or update was unsuccessful.
+     * @throws MacsException - couldn't communicate with Macs Service or update was unsuccessful.
      */
     void updateSchedule(MacsSchedule macsSchedule, LiteYukonUser user) throws DuplicateException, MacsException;
 
     /**
      * Toggles enable/disable schedule. Doesn't wait for confirmation.
      * 
-     * @throws MacsException - if the couldn't communicate with Macs Service.
+     * @throws MacsException - couldn't communicate with Macs Service.
      */
     void enableDisableSchedule(int scheduleId, LiteYukonUser user) throws MacsException;
 
