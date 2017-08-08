@@ -230,7 +230,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     }
     
     @Override
-    public SearchResults<DisplayData> getSortedTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
+    public SearchResults<DisplayData> getTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
         DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         
@@ -253,8 +253,6 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("    AND l.Tagtime").gte(from);
         allRowsSql.append("    AND l.Tagtime").lt(to);
         allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
-        allRowsSql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
-        allRowsSql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
 
         PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createTagRowMapper);
         yukonJdbcTemplate.query(allRowsSql, rse);
