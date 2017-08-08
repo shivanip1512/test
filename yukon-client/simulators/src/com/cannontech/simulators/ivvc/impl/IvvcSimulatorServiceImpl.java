@@ -349,7 +349,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             // Check if the bank itself is closed
                             LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
                             if(capBankState.getStateText().contains("Close")) {
-                                voltage += (capBankDevice.getBankSize()/1200); // A bank gives a bonus extra voltage to itself.
+                                voltage += (capBankDevice.getBankSize() / localVoltageOffset); // A bank gives a bonus extra voltage to itself.
                             }
                             
                             // Add in Feeder voltage shift
