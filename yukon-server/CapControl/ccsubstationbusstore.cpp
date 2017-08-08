@@ -5831,9 +5831,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                                        ChildToParentMap *feeder_subbus_map,
                                                        ChildToParentMap *cbc_capbank_map )
 {
-    CtiCCCapBankPtr capBankToUpdate = NULL;
-    long monPointId = 0;
-
     if (capBankId > 0)
     {
         deleteCapBank(capBankId);
@@ -5841,145 +5838,128 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
     try
     {
-        CtiTime currentDateTime;
         {
-            static const string sqlNoID =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                               "YP.description, YP.disableflag, CB.operationalstate, CB.controllertype, "
-                                               "CB.controldeviceid, CB.controlpointid, CB.banksize, CB.typeofswitch, "
-                                               "CB.switchmanufacture, CB.maplocationid, CB.reclosedelay, CB.maxdailyops, "
-                                               "CB.maxopdisable "
-                                           "FROM yukonpaobject YP, capbank CB "
-                                           "WHERE YP.paobjectid = CB.deviceid";
+            static const std::string sql =
+                "SELECT "
+                    "Y.PAObjectID, "
+                    "Y.Category, "
+                    "Y.PAOClass, "
+                    "Y.PAOName, "
+                    "Y.Type, "
+                    "Y.Description, "
+                    "Y.DisableFlag, "
+                    "C.OPERATIONALSTATE, "
+                    "C.ControllerType, "
+                    "C.CONTROLDEVICEID, "
+                    "C.CONTROLPOINTID, "
+                    "C.BANKSIZE, "
+                    "C.TypeOfSwitch, "
+                    "C.SwitchManufacture, "
+                    "C.MapLocationID, "
+                    "C.RecloseDelay, "
+                    "C.MaxDailyOps, "
+                    "C.MaxOpDisable, "
+                    "D.ALARMINHIBIT, "
+                    "D.CONTROLINHIBIT, "
+                    "X.Type AS CbcType, "
+                    "DC.ControlStatus, "
+                    "DC.TotalOperations, "
+                    "DC.LastStatusChangeTime, "
+                    "DC.TagsControlStatus, "
+                    "DC.CTITimeStamp, "
+                    "DC.AssumedStartVerificationStatus, "
+                    "DC.PrevVerificationControlStatus, "
+                    "DC.VerificationControlIndex, "
+                    "DC.AdditionalFlags, "
+                    "DC.CurrentDailyOperations, "
+                    "DC.TwoWayCBCState, "
+                    "DC.TwoWayCBCStateTime, "
+                    "DC.beforeVar, "
+                    "DC.afterVar, "
+                    "DC.changeVar, "
+                    "DC.twoWayCBCLastControl, "
+                    "DC.PartialPhaseInfo, "
+                    "DP.OriginalParentId, "
+                    "DP.OriginalSwitchingOrder, "
+                    "DP.OriginalCloseOrder, "
+                    "DP.OriginalTripOrder "
+                "FROM "
+                    "YukonPAObject Y "
+                        "JOIN CAPBANK C "
+                            "ON Y.PAObjectID = C.DEVICEID "
+                        "JOIN DEVICE D "
+                            "ON Y.PAObjectID = D.DEVICEID "
+                        "JOIN YukonPAObject X "
+                            "ON C.CONTROLDEVICEID = X.PAObjectID "
+                        "LEFT OUTER JOIN DynamicCCCapBank DC "
+                            "ON Y.PAObjectID = DC.CapBankID "
+                        "LEFT OUTER JOIN DynamicCCOriginalParent DP "
+                            "ON Y.PAObjectID = DP.PAObjectId";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            static const std::string sqlID = sql +
+                " WHERE "
+                    "Y.PAObjectID = ?";
 
-            if(capBankId > 0)
+            Cti::Database::DatabaseConnection   connection;
+            Cti::Database::DatabaseReader       rdr( connection );
+
+            if ( capBankId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND YP.paobjectid = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << capBankId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
             while ( rdr() )
             {
-                CtiCCCapBankPtr currentCCCapBank = CtiCCCapBankPtr(new CtiCCCapBank(rdr));
+                //  core
 
-                paobject_capbank_map->insert(make_pair(currentCCCapBank->getPaoId(),currentCCCapBank));
-            }
-        }
-        {
-            static const string sqlNoID =  "SELECT DV.deviceid, DV.alarminhibit, DV.controlinhibit "
-                                           "FROM device DV, capbank CB "
-                                           "WHERE DV.deviceid = CB.deviceid";
+                CtiCCCapBankPtr bank = CtiCCCapBankPtr( new CtiCCCapBank( rdr ) );
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+                paobject_capbank_map->insert( std::make_pair( bank->getPaoId(), bank ) );
 
-            if(capBankId > 0)
-            {
-                static const string sqlID = string(sqlNoID + " AND DV.deviceid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << capBankId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
+                //  flags
 
-            rdr.execute();
+                std::string tempBoolString;
 
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while ( rdr() )
-            {
-                long deviceid;
-                string tempBoolString;
-
-                rdr["deviceid"] >> deviceid;
-                CtiCCCapBankPtr currentCCCapBank = findInMap(deviceid, paobject_capbank_map);
-                if (currentCCCapBank == NULL )
-                {
-                    continue;
-                }
-
-                rdr["alarminhibit"] >> tempBoolString;
+                rdr["ALARMINHIBIT"] >> tempBoolString;
                 std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
 
-                currentCCCapBank->setAlarmInhibitFlag(tempBoolString=="y");
+                bank->setAlarmInhibitFlag(tempBoolString=="y");
 
-                rdr["controlinhibit"] >> tempBoolString;
+                rdr["CONTROLINHIBIT"] >> tempBoolString;
                 std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
 
-                currentCCCapBank->setControlInhibitFlag(tempBoolString=="y");
-            }
-        }
+                bank->setControlInhibitFlag(tempBoolString=="y");
 
+                //  cbc type
 
-        {
-            static const string sqlNoID =  "SELECT CB.deviceid, CB.controldeviceid, YP.type "
-                                           "FROM capbank CB, yukonpaobject YP "
-                                           "WHERE YP.paobjectid = CB.controldeviceid";
+                std::string controlDeviceType;
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+                rdr["CbcType"] >> controlDeviceType;
 
-            if(capBankId > 0)
-            {
-                static const string sqlID = string(sqlNoID + " AND CB.deviceid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << capBankId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
+                bank->setControlDeviceType( controlDeviceType );
 
-            rdr.execute();
+                cbc_capbank_map->insert( std::make_pair( bank->getControlDeviceId(), bank->getPaoId() ) );
 
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
+                //  dynamic data
 
-            while ( rdr() )
-            {
-                long currentCapBankId;
-                long controlDeviceId;
-                string controlDeviceType;
-
-                rdr["deviceid"] >> currentCapBankId;
-                rdr["controldeviceid"] >> controlDeviceId;
-                rdr["type"] >> controlDeviceType;
-                CtiCCCapBankPtr currentCCCapBank = findInMap(currentCapBankId, paobject_capbank_map);
-                if (currentCCCapBank == NULL )
+                if ( ! rdr["AdditionalFlags"].isNull()  )
                 {
-                    continue;
-                }
-                if (currentCCCapBank->getControlDeviceId() == controlDeviceId)
-                {
-                    currentCCCapBank->setControlDeviceType(controlDeviceType);
-
-                    cbc_capbank_map->insert(make_pair(controlDeviceId,currentCapBankId));
+                    bank->setDynamicData( rdr );
                 }
             }
         }
-
-
         {
             static const string sqlNoID =  "SELECT FBL.deviceid, FBL.feederid, FBL.controlorder, FBL.closeorder, "
                                              "FBL.triporder "
@@ -6048,49 +6028,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         subbusid = feeder_subbus_map->find(feederid)->second;
                         capbank_subbus_map->insert(make_pair(deviceid, subbusid));
                     }
-                }
-            }
-        }
-        {
-            static const string sqlNoID =  "SELECT DCP.capbankid, DCP.controlstatus, DCP.totaloperations, "
-                                               "DCP.laststatuschangetime, DCP.tagscontrolstatus, DCP.ctitimestamp, "
-                                               "DCP.assumedstartverificationstatus, DCP.prevverificationcontrolstatus, "
-                                               "DCP.verificationcontrolindex, DCP.additionalflags, DCP.currentdailyoperations, "
-                                               "DCP.twowaycbcstate, DCP.twowaycbcstatetime, DCP.beforevar, DCP.aftervar, "
-                                               "DCP.changevar, DCP.twowaycbclastcontrol, DCP.partialphaseinfo, "
-                                               "DOP.originalparentid, DOP.originalswitchingorder, DOP.originalcloseorder, "
-                                               "DOP.originaltriporder "
-                                           "FROM dynamiccccapbank DCP, capbank CB, dynamicccoriginalparent DOP "
-                                           "WHERE CB.deviceid = DCP.capbankid AND CB.deviceid = DOP.paobjectid";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
-
-            if(capBankId > 0)
-            {
-                static const string sqlID = string(sqlNoID + " AND CB.deviceid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << capBankId;
-            }
-            else
-            {
-                rdr.setCommandText(sqlNoID);
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO(dout, rdr.asString());
-            }
-
-            while (rdr())
-            {
-                long currentCCCapBankId;
-                rdr["capbankid"] >> currentCCCapBankId;
-                if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCCCapBankId, paobject_capbank_map))
-                {
-                    currentCCCapBank->setDynamicData(rdr);
                 }
             }
         }

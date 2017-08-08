@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
     std::unique_ptr<CtiCCCapBank>   bank;
 
     {
-        using CcCapBankRow      = Cti::Test::StringRow<18>;
+        using CcCapBankRow      = Cti::Test::StringRow<42>;
         using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
 
         CcCapBankRow columnNames =
@@ -428,7 +428,31 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
             "MapLocationID",
             "RecloseDelay",
             "MaxDailyOps",
-            "MaxOpDisable"
+            "MaxOpDisable",
+            "ALARMINHIBIT",
+            "CONTROLINHIBIT",
+            "CbcType",
+            "ControlStatus",
+            "TotalOperations",
+            "LastStatusChangeTime",
+            "TagsControlStatus",
+            "CTITimeStamp",
+            "AssumedStartVerificationStatus",
+            "PrevVerificationControlStatus",
+            "VerificationControlIndex",
+            "AdditionalFlags",
+            "CurrentDailyOperations",
+            "TwoWayCBCState",
+            "TwoWayCBCStateTime",
+            "beforeVar",
+            "afterVar",
+            "changeVar",
+            "twoWayCBCLastControl",
+            "PartialPhaseInfo",
+            "OriginalParentId",
+            "OriginalSwitchingOrder",
+            "OriginalCloseOrder",
+            "OriginalTripOrder"
         };
 
         std::vector< CcCapBankRow > columnValues
@@ -451,39 +475,43 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
                 "0",
                 "0",
                 "10",
-                "Y"
+                "Y",
+                "N",
+                "N",
+                "CBC 8024",
+                "0",
+                "16",
+                "2017-08-01 14:17:44.000",
+                "0",
+                "2017-08-01 14:20:01.000",
+                "0",
+                "0",
+                "-1",
+                "NNNNNYNNNNNNNNNNNNNN",
+                "4",
+                "1",
+                "1990-01-01 00:00:00.000",
+                "-500.00",
+                "100.00",
+                "100.00",
+                "0",
+                "(none)",
+                "0",
+                "0",
+                "0",
+                "0"
             }
         };
 
         CcCapBankReader reader( columnNames, columnValues );
 
         reader();
+
+        //  core
 
         bank.reset( new CtiCCCapBank( reader ) );
-    }
-    {
-        using CcCapBankRow      = Cti::Test::StringRow<3>;
-        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
 
-        CcCapBankRow columnNames =
-        {
-            "DEVICEID",
-            "ALARMINHIBIT",
-            "CONTROLINHIBIT"
-        };
-
-        std::vector< CcCapBankRow > columnValues
-        {
-            {
-                "185",
-                "N",
-                "N"
-            }
-        };
-
-        CcCapBankReader reader( columnNames, columnValues );
-
-        reader();
+        // flags
 
         std::string tempBoolString;
 
@@ -496,41 +524,18 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
         std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
 
         bank->setControlInhibitFlag(tempBoolString=="y");
-    }
-    {
-        using CcCapBankRow      = Cti::Test::StringRow<3>;
-        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
 
-        CcCapBankRow columnNames =
-        {
-            "DEVICEID",
-            "CONTROLDEVICEID",
-            "Type"
-        };
+        //  cbc type
 
-        std::vector< CcCapBankRow > columnValues
-        {
-            {
-                "185",
-                "184",
-                "CBC 8024"
-            }
-        };
-
-        CcCapBankReader reader( columnNames, columnValues );
-
-        reader();
-
-        long controlDeviceId;
         std::string controlDeviceType;
 
-        reader["CONTROLDEVICEID"] >> controlDeviceId;
-        reader["Type"] >> controlDeviceType;
+        reader["CbcType"] >> controlDeviceType;
 
-        if ( bank->getControlDeviceId() == controlDeviceId )
-        {
-            bank->setControlDeviceType( controlDeviceType );
-        }
+        bank->setControlDeviceType( controlDeviceType );
+
+        //  dynamic data
+
+        bank->setDynamicData( reader );
     }
     {
         using CcCapBankRow      = Cti::Test::StringRow<5>;
@@ -574,70 +579,6 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
         bank->setTripOrder( tripOrder );
         bank->setCloseOrder( closeOrder );
         bank->setParentId( feederid );
-    }
-    {
-        using CcCapBankRow      = Cti::Test::StringRow<22>;
-        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
-
-        CcCapBankRow columnNames =
-        {
-            "CapBankID",
-            "ControlStatus",
-            "TotalOperations",
-            "LastStatusChangeTime",
-            "TagsControlStatus",
-            "CTITimeStamp",
-            "AssumedStartVerificationStatus",
-            "PrevVerificationControlStatus",
-            "VerificationControlIndex",
-            "AdditionalFlags",
-            "CurrentDailyOperations",
-            "TwoWayCBCState",
-            "TwoWayCBCStateTime",
-            "beforeVar",
-            "afterVar",
-            "changeVar",
-            "twoWayCBCLastControl",
-            "PartialPhaseInfo",
-            "OriginalParentId",
-            "OriginalSwitchingOrder",
-            "OriginalCloseOrder",
-            "OriginalTripOrder"
-        };
-
-        std::vector< CcCapBankRow > columnValues
-        {
-            {
-                "185",
-                "0",
-                "16",
-                "2017-08-01 14:17:44.000",
-                "0",
-                "2017-08-01 14:20:01.000",
-                "0",
-                "0",
-                "-1",
-                "NNNNNYNNNNNNNNNNNNNN",
-                "4",
-                "1",
-                "1990-01-01 00:00:00.000",
-                "-500.00",
-                "100.00",
-                "100.00",
-                "0",
-                "(none)",
-                "0",
-                "0",
-                "0",
-                "0"
-            }
-        };
-
-        CcCapBankReader reader( columnNames, columnValues );
-
-        reader();
-
-        bank->setDynamicData( reader );
     }
 
     BOOST_REQUIRE( bank );
