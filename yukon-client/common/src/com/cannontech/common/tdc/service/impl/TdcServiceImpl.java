@@ -124,7 +124,7 @@ public class TdcServiceImpl implements TdcService {
         SearchResults<DisplayData> searchResults = null;
         switch (display.getDisplayId()) {
         case SOE_LOG_DISPLAY_NUMBER:
-            searchResults = displayDataDao.getSortedSoeLogDisplayData(timeZone, paging, sortBy, direction);
+            searchResults = displayDataDao.getSoeLogDisplayData(timeZone, paging, sortBy, direction);
             break;
         case TAG_LOG_DISPLAY_NUMBER:
             searchResults = displayDataDao.getSortedTagLogDisplayData(timeZone, paging, sortBy, direction);
@@ -132,15 +132,6 @@ public class TdcServiceImpl implements TdcService {
 //        case EVENT_VIEWER_DISPLAY_NUMBER:
 //            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction);
 //            break;
-//        case GLOBAL_ALARM_DISPLAY:
-//            searchResults = getAlarms(true);
-//            break;
-//        default:
-//            if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
-//                searchResults = displayDataDao.getCustomDisplayData(display);
-//            }else if(display.getType() == DisplayType.ALARMS_AND_EVENTS){
-//                searchResults = getCustomDisplayDataByAlarmCategory(display);
-//            }
         }
         return searchResults;
     }

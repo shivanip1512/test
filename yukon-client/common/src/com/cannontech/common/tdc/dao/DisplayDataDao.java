@@ -93,10 +93,9 @@ public interface DisplayDataDao {
      */
     void updateDisplay2Waydata(Integer displayId, List<Integer> pointIds);
 
-    SearchResults<DisplayData> getSortedSoeLogDisplayData(DateTimeZone timeZone,
-                                                          PagingParameters paging, SortBy sortBy,
-                                                          Direction direction);
-
     SearchResults<DisplayData> getSortedTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
                                                  SortBy sortBy, Direction direction);
+
+    SearchResults<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
+                                                    SortBy sortBy, Direction direction);
 }

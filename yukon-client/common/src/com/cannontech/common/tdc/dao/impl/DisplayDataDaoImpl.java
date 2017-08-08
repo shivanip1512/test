@@ -161,7 +161,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     }
 
     @Override
-    public SearchResults<DisplayData> getSortedSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
+    public SearchResults<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
         DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         
@@ -184,8 +184,6 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("    AND s.Datetime").gte(from);
         allRowsSql.append("    AND s.Datetime").lt(to);
         allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
-        allRowsSql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
-        allRowsSql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
         
         PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createSoeRowMapper);
         yukonJdbcTemplate.query(allRowsSql, rse);
