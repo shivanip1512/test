@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -310,15 +311,17 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                         // We need to map a Regulator to a Feeder, which is not a thing in CapControl. To simulate it, we will get a capbank from the zone, then 
                                         // find the Feeder from that CapBank. We will use this Feeder as the presumed Feeder for the Regulators on that same zone.
                                         // Add in Feeder voltage shift
-                                        Integer feederId = getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0));
-                                        if (feederId != null) {
-                                            voltage += feederVoltageRises.get(getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0)));
-                                            voltage += 0.75*getRegulatorTapPosition(phaseToRegulator.get(points.getValue()));
+                                        if (CollectionUtils.isNotEmpty(capBankToZoneMappings)) {
+                                            Integer feederId = getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0));
+                                            if (feederId != null) {
+                                                voltage += feederVoltageRises.get(getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0)));
+                                                voltage += 0.75*getRegulatorTapPosition(phaseToRegulator.get(points.getValue()));
 
-                                            // The feeder voltage matches the regulator phase voltage. We finally have that so lets send it!
-                                            if (points.getValue() == Phase.A) {
-                                                Feeder feeder = capControlCache.getFeeder(feederId);
-                                                generatePoint(feeder.getCurrentVoltLoadPointID(), voltage, PointType.Analog);
+                                                // The feeder voltage matches the regulator phase voltage. We finally have that so lets send it!
+                                                if (points.getValue() == Phase.A) {
+                                                    Feeder feeder = capControlCache.getFeeder(feederId);
+                                                    generatePoint(feeder.getCurrentVoltLoadPointID(), voltage, PointType.Analog);
+                                                }
                                             }
                                         }
                                         
