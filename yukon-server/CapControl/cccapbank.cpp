@@ -95,9 +95,37 @@ CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr) :
 _parentId(0)
 {
     restore(rdr);
-     _monitorPoint.clear();
-     _ovuvSituationFlag = false;
-     _originalParent.setPAOId(getPaoId());
+
+    _monitorPoint.clear();
+    _ovuvSituationFlag = false;
+    _originalParent.setPAOId(getPaoId());
+
+    std::string tempBoolString;
+
+    rdr["ALARMINHIBIT"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
+
+    setAlarmInhibitFlag(tempBoolString=="y");
+
+    rdr["CONTROLINHIBIT"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
+
+    setControlInhibitFlag(tempBoolString=="y");
+
+    //  cbc type
+
+    std::string controlDeviceType;
+
+    rdr["CbcType"] >> controlDeviceType;
+
+    setControlDeviceType( controlDeviceType );
+
+    //  dynamic data
+
+    if ( ! rdr["AdditionalFlags"].isNull()  )
+    {
+        setDynamicData( rdr );
+    }
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)

@@ -507,35 +507,7 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
 
         reader();
 
-        //  core
-
         bank.reset( new CtiCCCapBank( reader ) );
-
-        // flags
-
-        std::string tempBoolString;
-
-        reader["ALARMINHIBIT"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
-
-        bank->setAlarmInhibitFlag(tempBoolString=="y");
-
-        reader["CONTROLINHIBIT"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
-
-        bank->setControlInhibitFlag(tempBoolString=="y");
-
-        //  cbc type
-
-        std::string controlDeviceType;
-
-        reader["CbcType"] >> controlDeviceType;
-
-        bank->setControlDeviceType( controlDeviceType );
-
-        //  dynamic data
-
-        bank->setDynamicData( reader );
     }
     {
         using CcCapBankRow      = Cti::Test::StringRow<5>;

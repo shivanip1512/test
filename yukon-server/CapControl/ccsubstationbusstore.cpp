@@ -5922,42 +5922,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             while ( rdr() )
             {
-                //  core
-
                 CtiCCCapBankPtr bank = CtiCCCapBankPtr( new CtiCCCapBank( rdr ) );
 
                 paobject_capbank_map->insert( std::make_pair( bank->getPaoId(), bank ) );
 
-                //  flags
-
-                std::string tempBoolString;
-
-                rdr["ALARMINHIBIT"] >> tempBoolString;
-                std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
-
-                bank->setAlarmInhibitFlag(tempBoolString=="y");
-
-                rdr["CONTROLINHIBIT"] >> tempBoolString;
-                std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
-
-                bank->setControlInhibitFlag(tempBoolString=="y");
-
-                //  cbc type
-
-                std::string controlDeviceType;
-
-                rdr["CbcType"] >> controlDeviceType;
-
-                bank->setControlDeviceType( controlDeviceType );
-
                 cbc_capbank_map->insert( std::make_pair( bank->getControlDeviceId(), bank->getPaoId() ) );
-
-                //  dynamic data
-
-                if ( ! rdr["AdditionalFlags"].isNull()  )
-                {
-                    bank->setDynamicData( rdr );
-                }
             }
         }
         {
