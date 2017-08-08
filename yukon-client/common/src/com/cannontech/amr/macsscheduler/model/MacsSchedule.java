@@ -59,7 +59,7 @@ public class MacsSchedule implements YukonPao{
     private int id;
     private String scheduleName;
     private String categoryName;
-    private PaoType type = PaoType.SIMPLE_SCHEDULE;
+    private PaoType type = PaoType.SCRIPT;
     private State state = State.WAITING;
     private boolean updatingState;
     private MacsStartPolicy startPolicy = new MacsStartPolicy();
