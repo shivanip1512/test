@@ -117,16 +117,6 @@ public class DevCapControl extends DevObject {
         this.regulatorTypes = regulatorTypes;
     }
 
-    private int getNumRegulatorsToCreate() {
-        int num = 0;
-        for (DevPaoType type: regulatorTypes) {
-            if (type.isCreate()) {
-                num += numRegulators;
-            }
-        }
-        return num;
-    }
-
     public boolean isUseIvvcControlType() {
         return useIvvcControlType;
     }
@@ -137,13 +127,13 @@ public class DevCapControl extends DevObject {
 
     @Override
     public int getTotal() {
-        int numTotalSubs = numAreas * numSubs;
+        int numTotalSubs = numAreas * numSubs; // 1
         int numTotalSubBuses = numTotalSubs * numSubBuses;
         int numTotalFeeders = numTotalSubBuses * numFeeders;
         int numTotalCapBanks = numTotalFeeders * numCapBanks;
         int numTotalCBCs = getCbcType() != null ? numTotalCapBanks : 0;
-        int numTotalRegulators = getNumRegulatorsToCreate();
-        int total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators;
+        int numTotalRegulators = isUseIvvcControlType() ? numTotalSubBuses * 2 * 3 : 0;  // If IVVC, then create regulators count = total buses count in area * 2 zones per bus * 3 regulators per zone  
+        int total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators + 1 ;// 1 RTU;
         return total;
     }
 
