@@ -121,6 +121,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         String description = getDescription("Delete schedule (" + schedule.getScheduleName() + ")", soeTag, now);
         getMessage(soeTag, now, description);
         // got the confirmation message
+        eventLog.macsScriptDeleted(user, schedule.getScheduleName());
     }
     
     @Override
@@ -164,6 +165,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         String description = getDescription("Update schedule (" + schedule.getScheduleName() + ")", soeTag, now);
         getMessage(soeTag, now, description);
         // got the confirmation message
+        eventLog.macsScriptUpdated(user, schedule.getScheduleName());
     }
     
     @Override
@@ -181,6 +183,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
 
         String description = getDescription("Create schedule (" + schedule.getScheduleName() + ")", soeTag, now);
         Schedule createdSchedule = (Schedule) getMessage(soeTag, now, description);
+        eventLog.macsScriptCreated(user, schedule.getScheduleName());
         return createdSchedule.getId();
     }
     

@@ -568,6 +568,9 @@
     <entry key="yukon.common.events.system.tools.macsScripts.macsScriptStarted">MACS script {2} manually scheduled to start at {11} and stop at {12} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.macsScripts.macsScriptStopped">MACS script {2} manually scheduled to stop at {11} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.macsScripts.macsScriptEnabled">MACS script {2} {3} by {1}.</entry>
+     <entry key="yukon.common.events.system.tools.macsScripts.macsScriptDeleted">MACS script {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScripts.macsScriptUpdated">MACS script {2} updated by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScripts.macsScriptCreated">MACS script {2} created by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleCreated">Scheduled group read {2} created with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleCreated">Scheduled group command {2} created with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleUpdated">Scheduled group read {2} updated with scheduled run {3} by {1}.</entry>

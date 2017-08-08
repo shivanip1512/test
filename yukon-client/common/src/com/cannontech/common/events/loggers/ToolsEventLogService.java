@@ -43,6 +43,15 @@ public interface ToolsEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.macsScripts")
     public void macsScriptEnabled(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.name) String name,
             @Arg(ArgEnum.state) String state);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.macsScripts")
+    public void macsScriptDeleted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.name) String name);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.macsScripts")
+    public void macsScriptUpdated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.name) String name);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.macsScripts")
+    public void macsScriptCreated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.name) String name);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.groupRead")
     public void groupRequestByAttributeScheduleCreated(@Arg(ArgEnum.username) LiteYukonUser user,
