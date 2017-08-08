@@ -5866,7 +5866,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                     "DC.TotalOperations, "
                     "DC.LastStatusChangeTime, "
                     "DC.TagsControlStatus, "
-                    "DC.CTITimeStamp, "
                     "DC.AssumedStartVerificationStatus, "
                     "DC.PrevVerificationControlStatus, "
                     "DC.VerificationControlIndex, "

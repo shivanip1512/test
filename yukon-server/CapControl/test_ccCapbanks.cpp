@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
     std::unique_ptr<CtiCCCapBank>   bank;
 
     {
-        using CcCapBankRow      = Cti::Test::StringRow<42>;
+        using CcCapBankRow      = Cti::Test::StringRow<41>;
         using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
 
         CcCapBankRow columnNames =
@@ -436,7 +436,6 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
             "TotalOperations",
             "LastStatusChangeTime",
             "TagsControlStatus",
-            "CTITimeStamp",
             "AssumedStartVerificationStatus",
             "PrevVerificationControlStatus",
             "VerificationControlIndex",
@@ -483,7 +482,6 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
                 "16",
                 "2017-08-01 14:17:44.000",
                 "0",
-                "2017-08-01 14:20:01.000",
                 "0",
                 "0",
                 "-1",

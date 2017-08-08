@@ -342,7 +342,6 @@ private:
     long _tagscontrolstatus;
 
     //verification info
-    std::string _additionalFlags;
     long _verificationControlStatus;
     int _vCtrlIndex; //1,2, or 3
     bool _selectedForVerificationFlag;

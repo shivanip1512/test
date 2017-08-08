@@ -91,34 +91,68 @@ _dirty(true)
     _ovuvSituationFlag = false;
 }
 
-CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr) :
-_parentId(0)
+CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
+    :   CapControlPao( rdr ),
+        _parentId( 0 ),
+        _alarminhibitflag( false ),
+        _controlinhibitflag( false ),
+        _currentdailyoperations( 0 ),
+        _controlorder( 0.0f ),
+        _triporder( 0.0f ),
+        _closeorder( 0.0f ),
+        _statuspointid( 0 ),
+        _controlstatus( CtiCCCapBank::Open ),
+        _operationanalogpointid( 0 ),
+        _totaloperations( 0 ),
+        _laststatuschangetime( gInvalidCtiTime ),
+        _tagscontrolstatus( 0 ),
+        _verificationControlStatus( CtiCCCapBank::Open ),
+        _vCtrlIndex( -1 ),
+        _selectedForVerificationFlag( false ),
+        _retryFlag( false ),
+        _prevVerificationControlStatus( CtiCCCapBank::Open ),
+        _assumedOrigCapBankPos( CtiCCCapBank::Open ),
+        _verificationFlag( false ),
+        _performingVerificationFlag( false ),
+        _verificationDoneFlag( false ),
+        _retryOpenFailedFlag( false ),
+        _retryCloseFailedFlag( false ),
+        _ovUvDisabledFlag( false ),
+        _maxDailyOpsHitFlag( false ),
+        _controlStatusPartialFlag( false ),
+        _controlStatusSignificantFlag( false ),
+        _controlStatusAbnQualityFlag( false ),
+        _controlStatusFailFlag( false ),
+        _controlStatusCommFailFlag( false ),
+        _controlStatusNoControlFlag( false ),
+        _controlStatusUnSolicitedFlag( false ),
+        _ovuvSituationFlag( false ),
+        _reEnableOvUvFlag( false ),
+        _localControlFlag( false ),
+        _controlRecentlySentFlag( false ),
+        _porterRetFailFlag( false ),
+        _unsolicitedPendingFlag( false ),
+        _ipAddress( "(none)" ),
+        _udpPortNumber( 0 ),
+        _reportedCBCLastControlReason( 0 ),
+        _reportedCBCState( -1 ),
+        _reportedCBCStateTime( gInvalidCtiTime ),
+        _partialPhaseInfo( "(none)" ),
+        _ignoreFlag( false ),
+        _ignoreReason( 0 ),
+        _sBeforeVars( "none" ),
+        _sAfterVars( "none" ),
+        _sPercentChange( "none" ),
+        _controlStatusQuality( CC_Normal ),
+        _ignoreIndicatorTimeUpdated( gInvalidCtiTime ),
+        _unsolicitedChangeTimeUpdated( gInvalidCtiTime ),
+        _actionId( -1 ),
+        _insertDynamicDataFlag( true ),
+        _dirty( true )
 {
     restore(rdr);
 
-    _monitorPoint.clear();
-    _ovuvSituationFlag = false;
     _originalParent.setPAOId(getPaoId());
-
-    std::string tempBoolString;
-
-    rdr["ALARMINHIBIT"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
-
-    setAlarmInhibitFlag(tempBoolString=="y");
-
-    rdr["CONTROLINHIBIT"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
-
-    setControlInhibitFlag(tempBoolString=="y");
-
-    //  cbc type
-
-    std::string controlDeviceType;
-
-    rdr["CbcType"] >> controlDeviceType;
-
-    setControlDeviceType( controlDeviceType );
 
     //  dynamic data
 
@@ -1766,7 +1800,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _prevVerificationControlStatus = rightObj._prevVerificationControlStatus;
         _vCtrlIndex = rightObj._vCtrlIndex;
         _selectedForVerificationFlag = rightObj._selectedForVerificationFlag;
-        _additionalFlags = rightObj._additionalFlags;
         _verificationFlag = rightObj._verificationFlag;
         _performingVerificationFlag = rightObj._performingVerificationFlag;
         _verificationDoneFlag = rightObj._verificationDoneFlag;
@@ -1830,82 +1863,33 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 ---------------------------------------------------------------------------*/
 void CtiCCCapBank::restore(Cti::RowReader& rdr)
 {
-    CtiTime currentDateTime = CtiTime();
-    CtiTime dynamicTimeStamp;
-    string tempBoolString;
+    using Cti::CapControl::deserializeFlag;
 
-    CapControlPao::restore(rdr);
+    rdr["OPERATIONALSTATE"]  >> _operationalstate;
+    rdr["ControllerType"]    >> _controllertype;
+    rdr["CONTROLDEVICEID"]   >> _controldeviceid;
+    rdr["CONTROLPOINTID"]    >> _controlpointid;
+    rdr["BANKSIZE"]          >> _banksize;
+    rdr["TypeOfSwitch"]      >> _typeofswitch;
+    rdr["SwitchManufacture"] >> _switchmanufacture;
+    rdr["MapLocationID"]     >> _maplocationid;
+    rdr["RecloseDelay"]      >> _reclosedelay;
+    rdr["MaxDailyOps"]       >> _maxdailyops;
+    rdr["CbcType"]           >> _controlDeviceType;
 
-    rdr["operationalstate"] >> _operationalstate;
-    rdr["controllertype"] >> _controllertype;
-    rdr["controldeviceid"] >> _controldeviceid;
-    rdr["controlpointid"] >> _controlpointid;
-    rdr["banksize"] >> _banksize;
-    rdr["typeofswitch"] >> _typeofswitch;
-    rdr["switchmanufacture"] >> _switchmanufacture;
-    rdr["maplocationid"] >> _maplocationid;
-    rdr["reclosedelay"] >> _reclosedelay;
-    rdr["maxdailyops"] >> _maxdailyops;
-    rdr["maxopdisable"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setMaxOpsDisableFlag(tempBoolString=="y");
+    std::string flag;
 
+    rdr["MaxOpDisable"] >> flag;
 
-    setAlarmInhibitFlag(false);
-    setControlInhibitFlag(false);
-    _controlorder = 0;
-    setStatusPointId(0);
-    setOperationAnalogPointId(0);
+    _maxopsdisableflag = deserializeFlag( flag );
 
- //initialize dynamic data members
-    setTotalOperations(0);
-    setLastStatusChangeTime(gInvalidCtiTime);
-    setControlStatus(CtiCCCapBank::Open);
-    setTagsControlStatus(0);
-    setAssumedOrigVerificationState(CtiCCCapBank::Open);
-    setPreviousVerificationControlStatus(CtiCCCapBank::Open);
-    setVCtrlIndex(-1);
-    setSelectedForVerificationFlag(false);
-    setVerificationFlag(false);
-    setRetryOpenFailedFlag(false);
-    setRetryCloseFailedFlag(false);
-    setOvUvDisabledFlag(false);
-    setMaxDailyOpsHitFlag(false);
-    setControlStatusPartialFlag(false);
-    setControlStatusSignificantFlag(false);
-    setControlStatusAbnQualityFlag(false);
-    setControlStatusQuality(CC_Normal);
-    setReEnableOvUvFlag(false);
-    setLocalControlFlag(false);
-    setControlRecentlySentFlag(false);
-    setPorterRetFailFlag(false);
-    setUnsolicitedPendingFlag(false);
+    rdr["ALARMINHIBIT"] >> flag;
 
-    setOvUvSituationFlag(false);
-    _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
-    setCurrentDailyOperations(0);
+    _alarminhibitflag = deserializeFlag( flag );
 
-    setIpAddress(0);
-    setUDPPort(0);
-    setReportedCBCLastControlReason(0);
-    setReportedCBCState(-1);
-    setReportedCBCStateTime(gInvalidCtiTime);
+    rdr["CONTROLINHIBIT"] >> flag;
 
-    setIgnoreFlag(false);
-    setIgnoredReason(0);
-    setBeforeVarsString("none");
-    setAfterVarsString("none");
-    setPercentChangeString("none");
-    setPartialPhaseInfo("(none)");
-
-    setIgnoreIndicatorTimeUpdated(gInvalidCtiTime);
-    setUnsolicitedChangeTimeUpdated(gInvalidCtiTime);
-
-    _originalParent.setPAOId(getPaoId());
-
-    _insertDynamicDataFlag = true;
-    _dirty = true;
-
+    _controlinhibitflag = deserializeFlag( flag );
 }
 
 bool CtiCCCapBank::getInsertDynamicDataFlag() const
@@ -1915,73 +1899,63 @@ bool CtiCCCapBank::getInsertDynamicDataFlag() const
 
 void CtiCCCapBank::setDynamicData(Cti::RowReader& rdr)
 {
+    using Cti::CapControl::deserializeFlag;
 
-    CtiTime dynamicTimeStamp;
-    rdr["controlstatus"] >> _controlstatus;
-    rdr["totaloperations"] >> _totaloperations;
-    rdr["laststatuschangetime"] >> _laststatuschangetime;
-    rdr["tagscontrolstatus"] >> _tagscontrolstatus;
-    rdr["ctitimestamp"] >> dynamicTimeStamp;
-    rdr["assumedstartverificationstatus"] >> _assumedOrigCapBankPos;
-    rdr["prevverificationcontrolstatus"] >> _prevVerificationControlStatus;
-    rdr["verificationcontrolindex"] >> _vCtrlIndex;
+    rdr["ControlStatus"]                  >> _controlstatus;
+    rdr["TotalOperations"]                >> _totaloperations;
+    rdr["LastStatusChangeTime"]           >> _laststatuschangetime;
+    rdr["TagsControlStatus"]              >> _tagscontrolstatus;
+    rdr["AssumedStartVerificationStatus"] >> _assumedOrigCapBankPos;
+    rdr["PrevVerificationControlStatus"]  >> _prevVerificationControlStatus;
+    rdr["VerificationControlIndex"]       >> _vCtrlIndex;
 
-    rdr["additionalflags"] >> _additionalFlags;
-    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _verificationFlag = (_additionalFlags[0]=='y');
-    _performingVerificationFlag = (_additionalFlags[1]=='y');
-    _verificationDoneFlag = (_additionalFlags[2]=='y');
-    _retryOpenFailedFlag = (_additionalFlags[3]=='y');
-    _retryCloseFailedFlag = (_additionalFlags[4]=='y');
-    _ovUvDisabledFlag = (_additionalFlags[5]=='y');
-    _maxDailyOpsHitFlag = (_additionalFlags[6]=='y');
-    _ovuvSituationFlag = (_additionalFlags[7]=='y');
-    _controlStatusPartialFlag = (_additionalFlags[8]=='y');
-    _controlStatusSignificantFlag = (_additionalFlags[9]=='y');
-    _controlStatusAbnQualityFlag = (_additionalFlags[10]=='y');
-    _controlStatusFailFlag = (_additionalFlags[11]=='y');
-    _controlStatusCommFailFlag = (_additionalFlags[12]=='y');
-    _controlStatusNoControlFlag = (_additionalFlags[13]=='y');
-    _controlStatusUnSolicitedFlag = (_additionalFlags[14]=='y');
-    _reEnableOvUvFlag = (_additionalFlags[15]=='y');
-    _localControlFlag = (_additionalFlags[16]=='y');
-    _controlRecentlySentFlag = (_additionalFlags[17]=='y');
-    _porterRetFailFlag = (_additionalFlags[18]=='y');
-    _unsolicitedPendingFlag = (_additionalFlags[19]=='y');
+    std::string flags;
 
-    if (_controlStatusPartialFlag)
-        _controlStatusQuality = CC_Partial;
-    else if(_controlStatusPartialFlag)
-        _controlStatusQuality = CC_Significant;
-    else if(_controlStatusAbnQualityFlag)
-        _controlStatusQuality = CC_AbnormalQuality;
-    else if(_controlStatusFailFlag)
-        _controlStatusQuality = CC_Fail;
-    else if(_controlStatusCommFailFlag)
-        _controlStatusQuality = CC_CommFail;
-    else if(_controlStatusNoControlFlag)
-        _controlStatusQuality = CC_NoControl;
-    else if(_controlStatusUnSolicitedFlag)
-        _controlStatusQuality = CC_UnSolicited;
-    else
-        _controlStatusQuality = CC_Normal;
+    rdr["AdditionalFlags"] >> flags;
 
-    rdr["currentdailyoperations"] >> _currentdailyoperations;
-    rdr["twowaycbcstate"] >> _reportedCBCState;
-    rdr["twowaycbcstatetime"] >> _reportedCBCStateTime;
-    rdr["beforevar"] >> _sBeforeVars;
-    rdr["aftervar"] >> _sAfterVars;
-    rdr["changevar"] >> _sPercentChange;
-    rdr["twowaycbclastcontrol"] >> _reportedCBCLastControlReason;
-    rdr["partialphaseinfo"] >> _partialPhaseInfo;
+    _verificationFlag             = deserializeFlag( flags,  0 );
+    _performingVerificationFlag   = deserializeFlag( flags,  1 );
+    _verificationDoneFlag         = deserializeFlag( flags,  2 );
+    _retryOpenFailedFlag          = deserializeFlag( flags,  3 );
+    _retryCloseFailedFlag         = deserializeFlag( flags,  4 );
+    _ovUvDisabledFlag             = deserializeFlag( flags,  5 );
+    _maxDailyOpsHitFlag           = deserializeFlag( flags,  6 );
+    _ovuvSituationFlag            = deserializeFlag( flags,  7 );
+    _controlStatusPartialFlag     = deserializeFlag( flags,  8 );
+    _controlStatusSignificantFlag = deserializeFlag( flags,  9 );
+    _controlStatusAbnQualityFlag  = deserializeFlag( flags, 10 );
+    _controlStatusFailFlag        = deserializeFlag( flags, 11 );
+    _controlStatusCommFailFlag    = deserializeFlag( flags, 12 );
+    _controlStatusNoControlFlag   = deserializeFlag( flags, 13 );
+    _controlStatusUnSolicitedFlag = deserializeFlag( flags, 14 );
+    _reEnableOvUvFlag             = deserializeFlag( flags, 15 );
+    _localControlFlag             = deserializeFlag( flags, 16 );
+    _controlRecentlySentFlag      = deserializeFlag( flags, 17 );
+    _porterRetFailFlag            = deserializeFlag( flags, 18 );
+    _unsolicitedPendingFlag       = deserializeFlag( flags, 19 );
 
-    _originalParent.restore(rdr);
+    if      ( _controlStatusPartialFlag )     _controlStatusQuality = CC_Partial;
+    else if ( _controlStatusSignificantFlag ) _controlStatusQuality = CC_Significant;
+    else if ( _controlStatusAbnQualityFlag )  _controlStatusQuality = CC_AbnormalQuality;
+    else if ( _controlStatusFailFlag )        _controlStatusQuality = CC_Fail;
+    else if ( _controlStatusCommFailFlag )    _controlStatusQuality = CC_CommFail;
+    else if ( _controlStatusNoControlFlag )   _controlStatusQuality = CC_NoControl;
+    else if ( _controlStatusUnSolicitedFlag ) _controlStatusQuality = CC_UnSolicited;
+    else                                      _controlStatusQuality = CC_Normal;
 
-    _actionId = -1;
+    rdr["CurrentDailyOperations"] >> _currentdailyoperations;
+    rdr["TwoWayCBCState"]         >> _reportedCBCState;
+    rdr["TwoWayCBCStateTime"]     >> _reportedCBCStateTime;
+    rdr["beforeVar"]              >> _sBeforeVars;
+    rdr["afterVar"]               >> _sAfterVars;
+    rdr["changeVar"]              >> _sPercentChange;
+    rdr["twoWayCBCLastControl"]   >> _reportedCBCLastControlReason;
+    rdr["PartialPhaseInfo"]       >> _partialPhaseInfo;
+
+    _originalParent.restore( rdr );
 
     _insertDynamicDataFlag = false;
     _dirty = false;
-
 }
 
 
@@ -2022,52 +1996,34 @@ bool CtiCCCapBank::isDirty() const
 ---------------------------------------------------------------------------*/
 void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    using Cti::CapControl::populateFlag;
+
     if( _dirty )
     {
+        std::string addFlags( 20, 'N' );
+
         if( !_insertDynamicDataFlag )
         {
-
-            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-            addFlags[0] = (_verificationFlag?'Y':'N');
-            addFlags[1] = (_performingVerificationFlag?'Y':'N');
-            addFlags[2] = (_verificationDoneFlag?'Y':'N');
-            addFlags[3] = (_retryOpenFailedFlag?'Y':'N');
-            addFlags[4] = (_retryCloseFailedFlag?'Y':'N');
-            addFlags[5] = (_ovUvDisabledFlag?'Y':'N');
-            addFlags[6] = (_maxDailyOpsHitFlag?'Y':'N');
-            addFlags[7] = (_ovuvSituationFlag?'Y':'N');
-            addFlags[8] = (_controlStatusPartialFlag?'Y':'N');
-            addFlags[9] = (_controlStatusSignificantFlag?'Y':'N');
-            addFlags[10] = (_controlStatusAbnQualityFlag?'Y':'N');
-            addFlags[11] = (_controlStatusFailFlag?'Y':'N');
-            addFlags[12] = (_controlStatusCommFailFlag?'Y':'N');
-            addFlags[13] = (_controlStatusNoControlFlag?'Y':'N');
-            addFlags[14] = (_controlStatusUnSolicitedFlag?'Y':'N');
-            addFlags[15] = (_reEnableOvUvFlag?'Y':'N');
-            addFlags[16] = (_localControlFlag?'Y':'N');
-            addFlags[17] = (_controlRecentlySentFlag?'Y':'N');
-            addFlags[18] = (_porterRetFailFlag?'Y':'N');
-            addFlags[19] = (_unsolicitedPendingFlag?'Y':'N');
-            _additionalFlags = char2string(*addFlags);
-            _additionalFlags.append(char2string(*(addFlags+1)));
-            _additionalFlags.append(char2string(*(addFlags+2)));
-            _additionalFlags.append(char2string(*(addFlags+3)));
-            _additionalFlags.append(char2string(*(addFlags+4)));
-            _additionalFlags.append(char2string(*(addFlags+5)));
-            _additionalFlags.append(char2string(*(addFlags+6)));
-            _additionalFlags.append(char2string(*(addFlags+7)));
-            _additionalFlags.append(char2string(*(addFlags+8)));
-            _additionalFlags.append(char2string(*(addFlags+9)));
-            _additionalFlags.append(char2string(*(addFlags+10)));
-            _additionalFlags.append(char2string(*(addFlags+11)));
-            _additionalFlags.append(char2string(*(addFlags+12)));
-            _additionalFlags.append(char2string(*(addFlags+13)));
-            _additionalFlags.append(char2string(*(addFlags+14)));
-            _additionalFlags.append(char2string(*(addFlags+15)));
-            _additionalFlags.append(char2string(*(addFlags+16)));
-            _additionalFlags.append(char2string(*(addFlags+17)));
-            _additionalFlags.append(char2string(*(addFlags+18)));
-            _additionalFlags.append(char2string(*(addFlags+19)));
+            addFlags[  0 ] = populateFlag( _verificationFlag );
+            addFlags[  1 ] = populateFlag( _performingVerificationFlag );
+            addFlags[  2 ] = populateFlag( _verificationDoneFlag );
+            addFlags[  3 ] = populateFlag( _retryOpenFailedFlag );
+            addFlags[  4 ] = populateFlag( _retryCloseFailedFlag );
+            addFlags[  5 ] = populateFlag( _ovUvDisabledFlag );
+            addFlags[  6 ] = populateFlag( _maxDailyOpsHitFlag );
+            addFlags[  7 ] = populateFlag( _ovuvSituationFlag );
+            addFlags[  8 ] = populateFlag( _controlStatusPartialFlag );
+            addFlags[  9 ] = populateFlag( _controlStatusSignificantFlag );
+            addFlags[ 10 ] = populateFlag( _controlStatusAbnQualityFlag );
+            addFlags[ 11 ] = populateFlag( _controlStatusFailFlag );
+            addFlags[ 12 ] = populateFlag( _controlStatusCommFailFlag );
+            addFlags[ 13 ] = populateFlag( _controlStatusNoControlFlag );
+            addFlags[ 14 ] = populateFlag( _controlStatusUnSolicitedFlag );
+            addFlags[ 15 ] = populateFlag( _reEnableOvUvFlag );
+            addFlags[ 16 ] = populateFlag( _localControlFlag );
+            addFlags[ 17 ] = populateFlag( _controlRecentlySentFlag );
+            addFlags[ 18 ] = populateFlag( _porterRetFailFlag );
+            addFlags[ 19 ] = populateFlag( _unsolicitedPendingFlag );
 
             static const string updaterSql = "update dynamiccccapbank set "
                                              "controlstatus = ?, "
@@ -2099,7 +2055,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             << _assumedOrigCapBankPos
             << _prevVerificationControlStatus
             << _vCtrlIndex
-            << _additionalFlags
+            << addFlags
             << _currentdailyoperations
             << _reportedCBCState
             << _reportedCBCStateTime
@@ -2118,8 +2074,6 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
         else
         {
             CTILOG_INFO(dout, "Inserted Cap Bank into DynamicCCCapBank: " << getPaoName());
-
-            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             static const string inserterSql = "insert into dynamiccccapbank values ( "
                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
