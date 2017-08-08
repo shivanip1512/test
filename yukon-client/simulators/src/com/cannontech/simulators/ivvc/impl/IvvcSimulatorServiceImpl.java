@@ -113,7 +113,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             log.info("IVVC simulator thread starting up.");
             isRunning = true;
             substationBuskWh = settings.getSubstationBuskWh();
-            autoGenerateSubstationBuskWh = settings.isAutogenerateSubstationBuskWh();
+            autoGenerateSubstationBuskWh = settings.isAutoGenerateSubstationBuskWh();
             return true;
         }
     }
@@ -209,7 +209,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 final int MAX_KVAR = bankSize;
                 final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
                 double kWh = 0;
-                if(autoGenerateSubstationBuskWh) {
+                if (autoGenerateSubstationBuskWh) {
                     kWh = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
                 } else {
                     kWh = substationBuskWh;
@@ -627,12 +627,12 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         log.debug("Saving IVVC settings to YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE, settings.isIncreasedSpeedMode());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_SUBSTATION_BUS_KWH, settings.getSubstationBuskWh());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH, settings.isAutogenerateSubstationBuskWh());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH, settings.isAutoGenerateSubstationBuskWh());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR, settings.getLocalVoltageOffsetVar());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR, settings.getRemoteVoltageOffsetVar());
         
         substationBuskWh = settings.getSubstationBuskWh();
-        autoGenerateSubstationBuskWh = settings.isAutogenerateSubstationBuskWh();
+        autoGenerateSubstationBuskWh = settings.isAutoGenerateSubstationBuskWh();
         localVoltageOffset = settings.getRemoteVoltageOffsetVar();
         remoteVoltageOffset = settings.getRemoteVoltageOffsetVar();
     }

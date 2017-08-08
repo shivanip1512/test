@@ -5,7 +5,7 @@
 
 <cti:standardPage module="dev" page="ivvc.ivvcSimulator">
     <div id="validationErrors" class="user-message error dn">
-        <cti:msg key="yukon.web.modules.dev.ivvc.ivvcSimulator.substationBuskWh.invalid"/>
+        <cti:msg2 key=".ivvcSimulator.substationBuskWh.invalid"/>
     </div>
     <div id="save-settings-message" class="user-message dn"></div>
     <div class="column-14-10 clearfix">
@@ -17,7 +17,7 @@
                     <div id='ivvcForm'>
                         <tags:nameValueContainer2>
                             <tags:checkboxNameValue path="ivvcSimulatorSettings.increasedSpeedMode" nameKey=".ivvcSimulator.increasedSpeedMode"/>
-                            <tags:checkboxNameValue path="ivvcSimulatorSettings.autogenerateSubstationBuskWh" nameKey=".ivvcSimulator.generatekWhAutomatically"/>
+                            <tags:checkboxNameValue path="ivvcSimulatorSettings.autoGenerateSubstationBuskWh" nameKey=".ivvcSimulator.generatekWhAutomatically"/>
                             <tags:nameValue2 nameKey=".ivvcSimulator.substationBuskWh">
                                 <tags:input path="ivvcSimulatorSettings.substationBuskWh" id="substationBuskWh"/>
                             </tags:nameValue2>

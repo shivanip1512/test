@@ -40,10 +40,7 @@ public class IvvcSimulatorMessageHandler extends SimulatorMessageHandler {
             return new IvvcSimulatorResponse(status, ivvcSimulatorSettings);
         } else if (simulatorRequest instanceof IvvcSimulatorSettingsChangedRequest) {
             ivvcSimulatorService.saveSettings(((IvvcSimulatorSettingsChangedRequest) simulatorRequest).getSettings());
-            IvvcSimulatorStatus status = new IvvcSimulatorStatus();
-            status.setRunning(ivvcSimulatorService.isRunning());
-            IvvcSimulatorSettings ivvcSimulatorSettings = ivvcSimulatorService.getCurrentSettings();
-            return new IvvcSimulatorResponse(status, ivvcSimulatorSettings);
+            return new SimulatorResponseBase(true);
         } else {
             throw new IllegalArgumentException("Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());
         }

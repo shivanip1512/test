@@ -102,8 +102,9 @@ public class IvvcSimulatorController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            simulatorsCommunicationService.sendRequest(new IvvcSimulatorSettingsChangedRequest(ivvcSimulatorSettings), SimulatorResponseBase.class);
-            json.put("hasError", false);
+            SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(
+                new IvvcSimulatorSettingsChangedRequest(ivvcSimulatorSettings), SimulatorResponseBase.class);
+            json.put("hasError", !response.isSuccessful());
             json.put("message", accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.success"));
         } catch (Exception e) {
             log.error(e);

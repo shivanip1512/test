@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class IvvcSimulatorSettings implements Serializable {
 
     private boolean increasedSpeedMode = false;
-    private boolean autogenerateSubstationBuskWh;
+    private boolean autoGenerateSubstationBuskWh;
     private double substationBuskWh = 3000;
     private double localVoltageOffsetVar = 1200;
     private double remoteVoltageOffsetVar = 1200;
@@ -14,10 +14,10 @@ public class IvvcSimulatorSettings implements Serializable {
     }
 
     public IvvcSimulatorSettings(boolean increasedSpeedMode, double substationBuskWh,
-            boolean autogenerateSubstationBuskWh, double localVoltageOffsetVar, double remoteVoltageOffsetVar) {
+            boolean autoGenerateSubstationBuskWh, double localVoltageOffsetVar, double remoteVoltageOffsetVar) {
         this.increasedSpeedMode = increasedSpeedMode;
         this.substationBuskWh = substationBuskWh;
-        this.autogenerateSubstationBuskWh = autogenerateSubstationBuskWh;
+        this.autoGenerateSubstationBuskWh = autoGenerateSubstationBuskWh;
         this.localVoltageOffsetVar = localVoltageOffsetVar;
         this.remoteVoltageOffsetVar = remoteVoltageOffsetVar;
     }
@@ -37,13 +37,13 @@ public class IvvcSimulatorSettings implements Serializable {
     public void setSubstationBuskWh(double substationBuskWh) {
         this.substationBuskWh = substationBuskWh;
     }
-
-    public boolean isAutogenerateSubstationBuskWh() {
-        return autogenerateSubstationBuskWh;
+    
+    public boolean isAutoGenerateSubstationBuskWh() {
+        return autoGenerateSubstationBuskWh;
     }
 
-    public void setAutogenerateSubstationBuskWh(boolean autogenerateSubstationBuskWh) {
-        this.autogenerateSubstationBuskWh = autogenerateSubstationBuskWh;
+    public void setAutoGenerateSubstationBuskWh(boolean autoGenerateSubstationBuskWh) {
+        this.autoGenerateSubstationBuskWh = autoGenerateSubstationBuskWh;
     }
 
     public double getLocalVoltageOffsetVar() {

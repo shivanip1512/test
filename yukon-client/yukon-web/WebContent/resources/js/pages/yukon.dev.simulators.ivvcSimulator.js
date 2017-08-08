@@ -77,7 +77,7 @@ yukon.dev.simulators.ivvcSimulator = ( function() {
             data: formData
         }).done(function(data) {
             $("#save-settings-message").text(data.message);
-            if(data.hasError) {
+            if (data.hasError) {
                 $("#save-settings-message").addClass("error");
                 $("#save-settings-message").removeClass("success");
             } else {
@@ -85,8 +85,10 @@ yukon.dev.simulators.ivvcSimulator = ( function() {
                 $("#save-settings-message").removeClass("error");
             }
             $("#save-settings-message").removeClass("dn");
-        }).fail(function(data) {
-            console.log('failed');
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            $("#save-settings-message").text(errorThrown);
+            $("#save-settings-message").addClass("error");
+            $("#save-settings-message").removeClass("dn");
         });
     },
     
