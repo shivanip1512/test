@@ -172,26 +172,27 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                             assignCBCVoltagePointsToBank(capBankPao.getPaoId());
                         }
                         
-                        List<PaoIdentifier> regulatorsForZone = new ArrayList<>();
-                        for (int regulatorIndex = 0; regulatorIndex < 3; regulatorIndex++) {
-                            PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, regulatorIndex);
-                            attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier(), subIndex, setPointRegulatorConfigId, devCapControl.getRegulatorVoltageControlMode());
-                            regulatorsForZone.add(regulatorPao);
+                        if (devCapControl.isUseIvvcControlType()) {
+                            List<PaoIdentifier> regulatorsForZone = new ArrayList<>();
+                            for (int regulatorIndex = 0; regulatorIndex < 3; regulatorIndex++) {
+                                PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, regulatorIndex);
+                                attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier(), subIndex, setPointRegulatorConfigId, devCapControl.getRegulatorVoltageControlMode());
+                                regulatorsForZone.add(regulatorPao);
+                            }
+                            
+                            // The first time through the zone is the parent (no parent zone ID), each time after its parent is the previous zone.
+                            double zonePosition = graphPositionOffset * feederIndex * (devCapControl.getNumCapBanks()+1); // Zones start at 0 (which includes the regulator), then are the capbanks, then another zone. The regulator adds the +1.
+                            parentZoneId = createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorsForZone, bankAssignments, parentZoneId, zonePosition);
                         }
-                        
-                        // The first time through the zone is the parent (no parent zone ID), each time after its parent is the previous zone.
-                        double zonePosition = graphPositionOffset * feederIndex * (devCapControl.getNumCapBanks()+1); // Zones start at 0 (which includes the regulator), then are the capbanks, then another zone. The regulator adds the +1.
-                        parentZoneId = createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorsForZone, bankAssignments, parentZoneId, zonePosition);
                     }
-
-                    
-
                 }
             }
         }
         
-        for (int regIndex = 0; regIndex < devCapControl.getNumRegulators(); regIndex++) { // Additional Regulators
-            createRegulators(devCapControl, regIndex);
+        if (devCapControl.isUseIvvcControlType()) {
+            for (int regIndex = 0; regIndex < devCapControl.getNumRegulators(); regIndex++) { // Additional Regulators
+                createRegulators(devCapControl, regIndex);
+            }
         }
     }
 
@@ -335,7 +336,11 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         //These are currently in UI order
         strategy.setName("Sim IVVC Strategy " + devCapControl.getOffset());
         strategy.setControlMethod(ControlMethod.BUSOPTIMIZED_FEEDER);
-        strategy.setAlgorithm(ControlAlgorithm.INTEGRATED_VOLT_VAR);
+        if (devCapControl.isUseIvvcControlType()) {
+            strategy.setAlgorithm(ControlAlgorithm.INTEGRATED_VOLT_VAR);
+        } else {
+            strategy.setAlgorithm(ControlAlgorithm.KVAR);
+        }
         strategy.setControlInterval(Minutes.ONE.toStandardSeconds().getSeconds());
         strategy.setMinResponseTime(Minutes.TWO.toStandardSeconds().getSeconds());
         

@@ -176,6 +176,7 @@
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.title">Cap Control</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol">Cap Control</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.cbcTypes">CBC Types</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.useIvvcControlType">Use IVVC Control Type</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.regulatorTypes">Regulator Types</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.areas"># of Areas</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.subs"># of Subs (per Area)</entry>

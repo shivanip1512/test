@@ -53,6 +53,10 @@
                 </c:forEach>
             </ul>
             <br>
+            <tags:nameValueContainer2>
+                <tags:checkbox path="useIvvcControlType" descriptionNameKey=".setupDevDatabase.option.capcontrol.useIvvcControlType"/>
+            </tags:nameValueContainer2>
+            <br>
             <h4><i:inline key=".setupDevDatabase.option.capcontrol.regulatorTypes"/></h4>
             <tags:nameValueContainer2>
                 <tags:inputNameValue path="numRegulators"

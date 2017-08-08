@@ -16,6 +16,7 @@ public class DevCapControl extends DevObject {
     private Integer numCapBanks = 4;
     private Integer numRegulators = 10;
     private Integer offset = 0;
+    private boolean useIvvcControlType = true;
     private RegulatorVoltageControlMode regulatorVoltageControlMode;
     private DevPaoType cbcType = new DevPaoType(PaoType.CBC_8020);
     private List<DevPaoType> cbcTypes =
@@ -125,7 +126,15 @@ public class DevCapControl extends DevObject {
         }
         return num;
     }
-    
+
+    public boolean isUseIvvcControlType() {
+        return useIvvcControlType;
+    }
+
+    public void setUseIvvcControlType(boolean useIvvcControlType) {
+        this.useIvvcControlType = useIvvcControlType;
+    }
+
     @Override
     public int getTotal() {
         int numTotalSubs = numAreas * numSubs;
