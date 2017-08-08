@@ -228,7 +228,6 @@ public interface DeviceTypes extends TypeBase
     
     public final static int ECOBEE_3 = DEVICE_OFFSET + 172;
     public final static int ECOBEE_SMART = DEVICE_OFFSET + 173;
-    public final static int ECOBEE_3_LITE = DEVICE_OFFSET + 196;
     
     public final static int GWY800 = DEVICE_OFFSET + 174;
     
@@ -256,6 +255,7 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN_RELAY = DEVICE_OFFSET + 193;
     public final static int RFW201 = DEVICE_OFFSET + 194;
     public final static int RFW205 = DEVICE_OFFSET + 195;
+    public final static int ECOBEE_3_LITE = DEVICE_OFFSET + 196;
     public final static int LCR6700_RFN = DEVICE_OFFSET + 197;
     
     //all the possible text representation of each device type.

@@ -27,7 +27,6 @@ import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
 import com.cannontech.common.device.data.collection.message.RecalculationRequest;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;
@@ -98,8 +97,7 @@ public class PointDataCollectionService implements MessageListener {
                 devices.forEach(device -> {
                     if (device.getPaoType().isMeter()) {
                         meters.add(device);
-                    } else if (device.getPaoType() == PaoType.LCR6200_RFN || device.getPaoType() == PaoType.LCR6600_RFN
-                        || device.getPaoType() == PaoType.LCR3102 || device.getPaoType() == PaoType.LCR6700_RFN) {
+                    } else if (device.getPaoType().isTwoWayLcr()) {
                         lcrs.add(device);
                     }
                 });
