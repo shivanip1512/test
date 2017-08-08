@@ -34,4 +34,8 @@
         <name>CONTROL STATUS</name>
         <stategroup value="TwoStateActive"/>
     </point>
+    <point offset="1" type="Status">
+        <name>Status</name>
+        <stategroup value="TwoStateActive"/>
+    </point>
 </points>

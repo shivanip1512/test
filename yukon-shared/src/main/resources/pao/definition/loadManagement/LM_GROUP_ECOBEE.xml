@@ -7,6 +7,6 @@
         <tag name="LM_GROUP"/>
     </tags>
     <pointInfos>
-        <pointInfo name="CONTROL STATUS" attributes="LM_GROUP_STATUS"/>
+        <pointInfo name="CONTROL STATUS" init="true" attributes="LM_GROUP_STATUS"/>
     </pointInfos>
 </pao>
