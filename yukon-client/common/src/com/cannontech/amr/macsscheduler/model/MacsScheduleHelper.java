@@ -3,9 +3,9 @@ package com.cannontech.amr.macsscheduler.model;
 import java.util.Date;
 
 import com.cannontech.amr.macsscheduler.model.MacsSchedule.State;
-import com.cannontech.amr.macsscheduler.model.MacsSchedule.Type;
 import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.StartPolicy;
 import com.cannontech.amr.macsscheduler.model.MacsStopPolicy.StopPolicy;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.message.macs.message.Schedule;
 import com.google.common.base.Strings;
 
@@ -16,7 +16,7 @@ public class MacsScheduleHelper {
         schedule.setId(macsSchedule.getId());
         schedule.setScheduleName(macsSchedule.getScheduleName());
         schedule.setCategoryName(macsSchedule.getCategoryName());
-        schedule.setType(macsSchedule.getType().getTypeString());
+        schedule.setType(macsSchedule.getType().getDbString());
         schedule.setCurrentState(macsSchedule.getState().getStateString());
         if (macsSchedule.getLastRunTime() != null) {
             schedule.setLastRunTime(macsSchedule.getLastRunTime());
@@ -65,7 +65,7 @@ public class MacsScheduleHelper {
         macsSchedule.setId(schedule.getId());
         macsSchedule.setScheduleName(schedule.getScheduleName());
         macsSchedule.setCategoryName(schedule.getCategoryName());
-        macsSchedule.setType(Type.getType(schedule.getType()));
+        macsSchedule.setType(PaoType.getForDbString(schedule.getType()));
         
         //start policy
         MacsStartPolicy start = macsSchedule.getStartPolicy();

@@ -75,11 +75,11 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         try {
             connection.sendStartStopSchedule(schedule, startDate, stopDate, OverrideRequest.OVERRIDE_START,
                 user.getUsername());
+            eventLog.macsScriptStarted(user, schedule.getScheduleName(), startDate, stopDate);
         } catch (IOException e) {
             log.error(e);
             throw new MacsException(MACSExceptionType.ERROR, e);
         }
-        eventLog.macsScriptStarted(user, schedule.getScheduleName(), startDate, stopDate);
     }
 
     @Override
@@ -193,7 +193,6 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         DateTime now = DateTime.now();
         
         RetrieveScript request = new RetrieveScript();
-        request.setUserName(user.getUsername());
         request.setScriptName(schedule.getScriptFileName());        
         int soeTag = sendMessage(request, user.getUsername(), now);
 
@@ -216,7 +215,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         while (true) {
             if (cachedMessages.containsKey(soeTag)) {
                 Message message = cachedMessages.get(soeTag);
-                log.debug("soeTag=" + soeTag + " [" + message + "]");
+                log.debug("Recieved error from MACS Service for soeTag=" + soeTag + " [" + message + "]");
                 if (message instanceof Info) {
                     MacsException error = new MacsException(MACSExceptionType.PROCESSING_ERROR,
                         description + " Recieved error from MACS Service: " + ((Info) message).getInfo());

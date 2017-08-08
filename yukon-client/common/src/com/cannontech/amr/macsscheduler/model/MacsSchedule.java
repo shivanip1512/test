@@ -33,28 +33,7 @@ public class MacsSchedule implements YukonPao{
                     .orElseThrow(() -> new NotFoundException("Could not find state=" + value));
         }
     }
-    
-    public enum Type {
-        SCRIPT(Schedule.SCRIPT_TYPE),
-        SIMPLE(Schedule.SIMPLE_TYPE);
-
-        private String type;
-
-        Type(String type) {
-            this.type= type;
-        }
-
-        public String getTypeString() {
-            return type;
-        }
-        public static Type getType(String value) {
-            return Arrays.stream(Type.values())
-                    .filter(s -> s.getTypeString().equalsIgnoreCase(value))
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("Could not find type=" + value));
-        }
-    }
-    
+        
     public enum Status {
         NONE(Schedule.LAST_STATUS_NONE),
         ERROR(Schedule.LAST_STATUS_ERROR),
@@ -80,7 +59,7 @@ public class MacsSchedule implements YukonPao{
     private int id;
     private String scheduleName;
     private String categoryName;
-    private Type type = Type.SIMPLE;
+    private PaoType type = PaoType.SIMPLE_SCHEDULE;
     private State state = State.WAITING;
     private boolean updatingState;
     private MacsStartPolicy startPolicy = new MacsStartPolicy();
@@ -136,11 +115,11 @@ public class MacsSchedule implements YukonPao{
         this.categoryName = categoryName;
     }
 
-    public Type getType() {
+    public PaoType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(PaoType type) {
         this.type = type;
     }
     
@@ -249,18 +228,17 @@ public class MacsSchedule implements YukonPao{
     }
     
     public boolean isScript(){
-        return type == Type.SCRIPT;
+        return type == PaoType.SCRIPT;
     }
     
     public boolean isSimple(){
-        return type == Type.SIMPLE;
+        return type == PaoType.SIMPLE_SCHEDULE;
     }
 
     @Override
     public PaoIdentifier getPaoIdentifier() {
         try {
-            PaoType paoType = PaoType.getForDbString(type.getTypeString());
-            return new PaoIdentifier(id, paoType);
+            return new PaoIdentifier(id, type);
         } catch (IllegalArgumentException e) {
             // We don't have a valid PaoType yet.
             return null;
