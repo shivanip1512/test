@@ -105,12 +105,15 @@ public class IvvcSimulatorController {
             SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(
                 new IvvcSimulatorSettingsChangedRequest(ivvcSimulatorSettings), SimulatorResponseBase.class);
             json.put("hasError", !response.isSuccessful());
-            json.put("message", accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.success"));
+            if (response.isSuccessful()) {
+                json.put("message", accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.success"));
+            } else {
+                json.put("message", accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error"));
+            }
         } catch (Exception e) {
             log.error(e);
             json.put("hasError", true);
-            json.put("message",
-                accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error", e.getMessage()));
+            json.put("message", accessor.getMessage("yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error"));
         }
         return json;
     }

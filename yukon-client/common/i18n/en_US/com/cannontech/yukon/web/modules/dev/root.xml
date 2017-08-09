@@ -314,7 +314,7 @@
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.localVoltageOffsetVar">Local Voltage Offset (Var)</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.remoteVoltageOffsetVar">Remote Voltage Offset (Var)</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.success">Simulator settings save successfully.</entry>
-    <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error">Unable to save simulator settings : {0}.</entry>
+    <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error">Unable to save simulator settings.</entry>
     <entry key="yukon.web.modules.dev.ivvc.saveSettings.label">Save Settings</entry>
     <entry key="yukon.web.modules.dev.ivvc.sendIvvcMessages.label">Simulate Existing IVVC Devices</entry>
     <entry key="yukon.web.modules.dev.ivvc.stopSendingIvvcMessages.label">Stop Simulating Existing IVVC Devices</entry>
