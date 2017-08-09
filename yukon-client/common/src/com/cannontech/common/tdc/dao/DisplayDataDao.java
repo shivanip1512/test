@@ -98,4 +98,8 @@ public interface DisplayDataDao {
 
     SearchResults<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
                                                     SortBy sortBy, Direction direction);
+
+    SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone,
+                                                         PagingParameters paging, SortBy sortBy,
+                                                         Direction direction);
 }

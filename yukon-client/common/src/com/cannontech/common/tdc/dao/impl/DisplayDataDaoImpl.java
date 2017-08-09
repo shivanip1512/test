@@ -65,22 +65,55 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     
     @Override
     public List<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone, PagingParameters paging) {
+        
         DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Datetime, PAOName, PAObjectID, Pointname, Description, Action, Username, Pointid, Soe_tag");
-        sql.append("FROM (SELECT s.Datetime, y.PAOName, y.PAObjectID,  p.Pointname, s.Description, ");
-        sql.append("             s.Action, s.Username, s.Pointid, s.Soe_tag, ");
-        sql.append("             ROW_NUMBER() OVER (ORDER BY s.Datetime DESC) AS counter");
-        sql.append("      FROM SystemLog s");
-        sql.append("      JOIN Point p ON s.PointId = p.PointId");
-        sql.append("      JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("      WHERE s.Datetime").gte(from);
-        sql.append("        AND s.Datetime").lt(to).append(") tbl");
-        sql.append("WHERE tbl.counter BETWEEN").append(paging.getOneBasedStartIndex());
-        sql.append("AND").append(paging.getOneBasedEndIndex());
+        sql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID,  p.Pointname, s.Description, s.Action, s.Username, s.Pointid, s.Soe_tag");
+        sql.append("FROM SystemLog s");
+        sql.append("JOIN Point p ON s.PointId = p.PointId");
+        sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
+        sql.append("WHERE s.Datetime").gte(from);
+        sql.append("    AND s.Datetime").lt(to);
+        sql.append("ORDER BY s.Datetime DESC");
+        sql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
+        sql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
         List<DisplayData> data = yukonJdbcTemplate.query(sql, createEventViewerRowMapper);
         return data;
+    }
+    
+    @Override
+    public SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
+        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
+        DateTime to = from.plusDays(1);
+        
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+        
+        if (sortBy == null) {
+            sortBy = SortBy.SYS_LOG_DATE_TIME;
+        }
+        if (direction == null) {
+            direction = Direction.desc;
+        }
+        
+        SqlStatementBuilder allRowsSql = new SqlStatementBuilder();
+        allRowsSql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID,  p.Pointname, s.Description, s.Action, s.Username, s.Pointid, s.Soe_tag");
+        allRowsSql.append("FROM SystemLog s");
+        allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
+        allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
+        allRowsSql.append("WHERE s.Datetime").gte(from);
+        allRowsSql.append("    AND s.Datetime").lt(to);
+        allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        
+        PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createEventViewerRowMapper);
+        yukonJdbcTemplate.query(allRowsSql, rse);
+
+        SearchResults<DisplayData> searchResults = new SearchResults<>();
+        searchResults.setBounds(start, count, getEventViewerDisplayDataCount(timeZone));
+        searchResults.setResultList(rse.getResultList());
+        
+        return searchResults;
     }
     
     @Override

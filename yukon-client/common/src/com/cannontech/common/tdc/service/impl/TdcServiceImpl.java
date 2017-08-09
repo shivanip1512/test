@@ -129,9 +129,9 @@ public class TdcServiceImpl implements TdcService {
         case TAG_LOG_DISPLAY_NUMBER:
             searchResults = displayDataDao.getTagLogDisplayData(timeZone, paging, sortBy, direction);
             break;
-//        case EVENT_VIEWER_DISPLAY_NUMBER:
-//            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction);
-//            break;
+        case EVENT_VIEWER_DISPLAY_NUMBER:
+            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction);
+            break;
         }
         return searchResults;
     }
