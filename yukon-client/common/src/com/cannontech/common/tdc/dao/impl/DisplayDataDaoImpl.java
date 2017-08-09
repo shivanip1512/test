@@ -213,10 +213,10 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("FROM SystemLog s");
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        allRowsSql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.SOE.getDbValue());
+        allRowsSql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.DEFAULT.getDbValue());
         allRowsSql.append("    AND s.Datetime").gte(from);
         allRowsSql.append("    AND s.Datetime").lt(to);
-        allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        allRowsSql = addSortByClause(allRowsSql, sortBy, direction);
         
         PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createSoeRowMapper);
         yukonJdbcTemplate.query(allRowsSql, rse);
@@ -387,6 +387,15 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         
         yukonJdbcTemplate.yukonBatchUpdate(sql);
         log.debug("Done inserting in Display2waydata");
+    }
+    
+    public SqlStatementBuilder addSortByClause(SqlStatementBuilder sql, SortBy sortBy, Direction direction) {
+        sql.append("ORDER BY");
+        if (sortBy == SortBy.SYS_LOG_DATE_TIME) {
+            return sql.append(sortBy.getDbString()).append(direction).append(",").append(SortBy.SYS_LOG_MILLLIS.getDbString()).append(direction);
+        } else {
+            return sql.append(sortBy.getDbString()).append(direction);
+        }
     }
     
 }
