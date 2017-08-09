@@ -322,6 +322,12 @@ yukon.tools.tdc = (function () {
                     $('#tdc-popup').dialog('close');
                 });
             });
+            
+            $(document).on('yukon:display:remove', function (ev) {
+                var container = $(ev.target),
+                    dashboardId = container.data('displayId');
+                window.location.href = yukon.url("/tools/data-viewer/" + dashboardId + "/deleteCustomDisplay");
+            });
         }
     };
     
