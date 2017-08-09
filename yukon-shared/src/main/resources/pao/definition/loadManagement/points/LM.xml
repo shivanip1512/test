@@ -32,6 +32,10 @@
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="Status">
         <name>CONTROL STATUS</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="1"/>
+        <stateZeroControl value="OPEN"/>
+        <stateOneControl value="CLOSE"/>
         <stategroup value="TwoStateActive"/>
     </point>
     <point offset="1" type="Status">
