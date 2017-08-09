@@ -301,8 +301,7 @@ public class DeviceConfigurationConfigController {
                       configId,
                       deviceConfig,
                       deviceConfigTypes,
-                      configCategories,
-                      context);
+                      configCategories);
         
         return "configuration.jsp";
     }
