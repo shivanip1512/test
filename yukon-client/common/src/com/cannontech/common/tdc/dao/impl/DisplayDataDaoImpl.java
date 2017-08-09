@@ -274,7 +274,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
             sortBy = SortBy.TAG_LOG_TAG_TIME;
         }
         if (direction == null) {
-            direction = Direction.asc;
+            direction = Direction.desc;
         }
         
         SqlStatementBuilder allRowsSql = new SqlStatementBuilder();
