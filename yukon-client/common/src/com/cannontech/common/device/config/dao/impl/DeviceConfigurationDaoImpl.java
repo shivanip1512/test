@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.xml.XMLConstants;
@@ -52,7 +53,6 @@ import com.cannontech.common.device.config.model.jaxb.DeviceConfigurationCategor
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -70,7 +70,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 import com.google.common.collect.TreeMultimap;
 
 public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
@@ -597,12 +596,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             }
         }
 
-        Set<String> categoryTypes = new HashSet<>();
-        for (CategoryType categoryType : difference) {
-            categoryTypes.add(categoryType.value());
-        }
-
         if (!difference.isEmpty()) {
+            Set<String> categoryTypes = difference.stream().map(CategoryType::value).collect(Collectors.toSet());
+
             // There are category types that need to be removed as a result of this pao type being removed.
             SqlStatementBuilder removeSql = new SqlStatementBuilder();
             removeSql.append("DELETE FROM DeviceConfigCategoryMap");
@@ -650,24 +646,29 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return unassignedDeviceIds;
     }
 
+    private Set<CategoryType> getCategoryTypesForPaoTypes(Set<PaoType> deviceTypes) {
+        return paoDefinitionDao.getCategoriesForPaoTypes(deviceTypes).stream()
+                .map(c -> c.getType().value())
+                .map(CategoryType::fromValue)
+                .collect(Collectors.toSet());
+    }
+    
     @Override
     public Set<CategoryType> getCategoryDifferenceForPaoTypeRemove(PaoType paoType, int configId) {
 
         Set<PaoType> supportedDeviceTypes = new HashSet<>(getSupportedTypesForConfiguration(configId));
         
         // Get the list of categories supported BEFORE the removal of the type.
-        Set<DeviceCategories.Category> currentCategories =
-            paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
+        Set<CategoryType> currentCategories = getCategoryTypesForPaoTypes(supportedDeviceTypes);
 
         // Remove the pao type.
         supportedDeviceTypes.remove(paoType);
         
         // Get the list of categories that will exist AFTER the removal of the type.
-        Set<DeviceCategories.Category> categoriesPostRemoval =
-            paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
+        Set<CategoryType> categoriesPostRemoval = getCategoryTypesForPaoTypes(supportedDeviceTypes);
         
         // Return the difference between the sets.
-        return getCategoryTypeDifference(currentCategories, categoriesPostRemoval);
+        return Sets.difference(currentCategories, categoriesPostRemoval);
     }
     
     @Override
@@ -676,30 +677,16 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         Set<PaoType> supportedDeviceTypes = new HashSet<>(getSupportedTypesForConfiguration(configId));
 
         // Get the list of categories supported BEFORE the addition of the type.
-        Set<DeviceCategories.Category> currentCategories =
-            paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
+        Set<CategoryType> currentCategories = getCategoryTypesForPaoTypes(supportedDeviceTypes);
         
         // Add the new type.
         supportedDeviceTypes.addAll(paoTypes);
         
         // Get the list of categories that will exist AFTER the addition of the type.
-        Set<DeviceCategories.Category> categoriesPostAddition =
-                paoDefinitionDao.getCategoriesForPaoTypes(supportedDeviceTypes);
+        Set<CategoryType> categoriesPostAddition = getCategoryTypesForPaoTypes(supportedDeviceTypes);
         
         // Return the difference between the sets. Pass them in opposite order, since the post-add set should be bigger
-        return getCategoryTypeDifference(categoriesPostAddition, currentCategories);
-    }
-    
-    private Set<CategoryType> getCategoryTypeDifference(Set<DeviceCategories.Category> baseSet,
-                                                        Set<DeviceCategories.Category> comparisonSet) {
-        SetView<DeviceCategories.Category> difference = Sets.difference(baseSet, comparisonSet);
-        
-        Set<CategoryType> categoryTypes = new HashSet<>();
-        for (DeviceCategories.Category category : difference) {
-            categoryTypes.add(CategoryType.fromValue(category.getType().value()));
-        }
-        
-        return categoryTypes;
+        return Sets.difference(categoriesPostAddition, currentCategories);
     }
     
     @Override

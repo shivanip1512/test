@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,7 +10,6 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -166,12 +166,12 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
-    public Set<Category> getCategoriesForPaoType(PaoType paoType) {
+    public Set<ConfigurationCategory> getCategoriesForPaoType(PaoType paoType) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes) {
+    public Collection<ConfigurationCategory> getCategoriesForPaoTypes(Set<PaoType> paoTypes) {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -186,7 +186,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
-    public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap() {
+    public SetMultimap<ConfigurationCategory, PaoType> getCategoryToPaoTypeMap() {
         throw new UnsupportedOperationException("not implemented");
     }
 

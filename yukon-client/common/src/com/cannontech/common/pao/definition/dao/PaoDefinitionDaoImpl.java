@@ -2,11 +2,13 @@ package com.cannontech.common.pao.definition.dao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,7 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.SetUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.base.Predicate;
@@ -44,12 +47,12 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
@@ -65,7 +68,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private SetMultimap<PaoType, PointTemplate> paoAllPointTemplateMap;
     private SetMultimap<PaoType, PointTemplate> paoInitPointTemplateMap;
     private SetMultimap<PaoType, Category> paoCategoryMap;
-    private SetMultimap<Category, PaoType> categoryToPaoMap;
+    private Multimap<ConfigurationCategory, PaoType> categoryToPaoMap;
     private BiMap<PaoType, PaoDefinition> paoTypeMap;
     private ListMultimap<String, PaoDefinition> paoDisplayGroupMap;
     private SetMultimap<String, PaoDefinition> changeGroupPaosMap;
@@ -94,7 +97,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         paoAllPointTemplateMap = definitionLoaderService.getPointTemplateMap(false);
         paoInitPointTemplateMap =  definitionLoaderService.getPointTemplateMap(true);
         paoCategoryMap = definitionLoaderService.getPaoCategoryMap();
-        categoryToPaoMap =  Multimaps.invertFrom(paoCategoryMap, HashMultimap.create());
+        categoryToPaoMap = paoCategoryMap.entries().stream()
+                .collect(StreamUtils.toMultimap(
+                            e -> ConfigurationCategory.of(e.getValue()),
+                            Entry::getKey));
         paoTypeMap = definitionLoaderService.getPaoTypeMap();
         for(PaoDefinition paoDefinition: paoTypeMap.values()){
             if(paoDefinition.isCreatable()){
@@ -395,40 +401,36 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     @Override
-    public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap() {
-        
-        SetMultimap<String, PaoType> map = HashMultimap.create();
-        for (Category category : categoryToPaoMap.keySet()) {
-            map.putAll(category.getType().value(), categoryToPaoMap.get(category));
-        }
-        
-        return map;
+    public SetMultimap<ConfigurationCategory, PaoType> getCategoryToPaoTypeMap() {
+        return ImmutableSetMultimap.copyOf(categoryToPaoMap);
     }
     
     @Override
-    public Set<Category> getCategoriesForPaoType(PaoType paoType) {
-        Set<Category> categories = paoCategoryMap.get(paoType);
-        return  Collections.unmodifiableSet(categories);
+    public Set<ConfigurationCategory> getCategoriesForPaoType(PaoType paoType) {
+        return paoCategoryMap.get(paoType).stream()
+                .map(ConfigurationCategory::of)
+                .collect(Collectors.toSet());
     }
     
     @Override
-    public Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes) {
-        Set<Category> categories = new HashSet<>();
-        for (PaoType paoType : paoTypes) {
-            categories.addAll(paoCategoryMap.get(paoType));
-        }
-        
-        return Collections.unmodifiableSet(categories);
+    public Collection<ConfigurationCategory> getCategoriesForPaoTypes(Set<PaoType> paoTypes) {
+        return paoTypes.stream()
+                .map(paoCategoryMap::get)
+                .flatMap(Set::stream)
+                .collect(Collectors.toMap(
+                             Category::getType, 
+                             ConfigurationCategory::of,
+                             //  If collision, replace optional categories with required categories
+                             (c1, c2) -> c1.isRequired() ? c1 : c2))
+                .values();
     }
 
     @Override
     public boolean isDnpConfigurationType(PaoType paoType) {
         return paoCategoryMap.get(paoType)
                 .stream()
-                .filter(category -> CategoryType.DNP == category.getType())
-                .findFirst()
-                .map(foundCategory -> true)
-                .orElse(false);
+                .map(Category::getType)
+                .anyMatch(CategoryType.DNP::equals);
     }
     
     

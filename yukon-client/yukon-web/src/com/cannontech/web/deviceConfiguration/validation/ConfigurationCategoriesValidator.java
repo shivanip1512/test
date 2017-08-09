@@ -11,20 +11,20 @@ import com.cannontech.web.deviceConfiguration.model.ConfigCategories;
 import com.cannontech.web.deviceConfiguration.model.ConfigCategories.CategorySelection;
 
 public class ConfigurationCategoriesValidator extends SimpleValidator<ConfigCategories> {
-    private final Set<CategoryType> supportedPaoTypes;
+    private final Set<CategoryType> categoryTypes;
     
     private static final String baseKey = "yukon.web.modules.tools.configs.config";
     
-    public ConfigurationCategoriesValidator(Set<CategoryType> supportedPaoTypes) {
+    public ConfigurationCategoriesValidator(Set<CategoryType> includedCategories) {
         super(ConfigCategories.class);
-        this.supportedPaoTypes = supportedPaoTypes;
+        this.categoryTypes = includedCategories;
     }
     
     @Override
     protected void doValidation(ConfigCategories target, Errors errors) {
         List<CategorySelection> categoryIds = target.getCategorySelections();
         
-        for (int index = 0; index < supportedPaoTypes.size(); index++) {
+        for (int index = 0; index < categoryTypes.size(); index++) {
             if (index > categoryIds.size() || 
                 categoryIds.get(index) == null || 
                 categoryIds.get(index).getCategoryId() == null) {

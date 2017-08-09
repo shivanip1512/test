@@ -18,7 +18,14 @@
     <span ${attrs} class="pipe" style="margin-bottom: 20px;">&nbsp;</span>
     
     <c:if test="${empty selection.categoryId}">
-        <tags:alertBox key=".needsSelection"/>
+        <c:choose>
+             <c:when test="${not empty selection.optionalCategory && selection.optionalCategory}">
+                <tags:alertBox key=".optionalSelection" type="info"/>
+            </c:when>
+            <c:otherwise>
+                <tags:alertBox key=".needsSelection"/>
+            </c:otherwise>
+        </c:choose>
     </c:if>
     
     <tags:nameValueContainer2>
@@ -38,19 +45,20 @@
                 <cti:icon icon="icon-help" data-popup="#section-container-info-popup-${catType}"/>
             </a>
             <div id="section-container-info-popup-${catType}" title="${catPopupTitle}" data-width="500" class="dn">
-                <c:set var="supportedTypes" value=""/>
-                <c:forEach var="paoType" items="${categoryToDeviceTypeMap[catType]}" varStatus="status">
-                    <c:choose>
-                        <c:when test="${status.first}">
-                            <c:set var="supportedTypes" value="${paoType.dbString}"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="supportedTypes" value="${supportedTypes}, ${paoType.dbString}"/>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-                <c:set var="supportedTypes" value="${supportedTypes}."/>
-                <cti:msg2 key=".categoryDeviceTypes" arguments="${supportedTypes}"/>
+                <c:if test="${not empty requiredCategoryToDeviceTypesMap[catType]}">
+                    <p><cti:msg2 key=".requiredCategoryDeviceTypes"/>
+                    <c:forEach var="paoType" items="${requiredCategoryToDeviceTypesMap[catType]}" varStatus="status">
+                        <span class="wsnw"><i:inline key="${paoType.formatKey}"/>${status.last?"":","}</span>
+                    </c:forEach>
+                    </p>
+                </c:if>
+                <c:if test="${not empty optionalCategoryToDeviceTypesMap[catType]}">
+                    <p><cti:msg2 key=".optionalCategoryDeviceTypes"/>
+                    <c:forEach var="paoType" items="${optionalCategoryToDeviceTypesMap[catType]}" varStatus="status">
+                        <span class="wsnw"><i:inline key="${paoType.formatKey}"/>${status.last?"":","}</span>
+                    </c:forEach>
+                    </p>
+                </c:if>
             </div> 
         </tags:nameValue2>
         <c:if test="${not empty selection.categoryId}">

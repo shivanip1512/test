@@ -1,14 +1,15 @@
 package com.cannontech.web.deviceConfiguration;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,11 +31,11 @@ import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.ConfigurationCategory;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories;
-import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -51,10 +52,7 @@ import com.cannontech.web.deviceConfiguration.model.DeviceConfigTypes;
 import com.cannontech.web.deviceConfiguration.validation.DeviceConfigurationValidator;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -66,7 +64,6 @@ public class DeviceConfigurationConfigController {
     
     private final static String baseKey = "yukon.web.modules.tools.configs";
 
-    @Autowired private DeviceConfigurationHelper deviceConfigurationHelper;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private ObjectFormattingService formattingService;
@@ -206,19 +203,17 @@ public class DeviceConfigurationConfigController {
     public String addSupportedTypes(ModelMap model,
                                     FlashScope flashScope,
                                     @ModelAttribute DeviceConfigTypes deviceConfigTypes) {
-        Map<PaoType, Boolean> supportedTypes = deviceConfigTypes.getSupportedTypes();
         
-        Set<PaoType> trueTypes = new HashSet<>();
-        for (Entry<PaoType, Boolean> entry : supportedTypes.entrySet()) {
-            if (entry.getValue() != null && entry.getValue() == true) {
-                trueTypes.add(entry.getKey());
-            }
-        }
+        Set<PaoType> supportedPaoTypes = 
+                deviceConfigTypes.getSupportedTypes().entrySet().stream()
+                    .filter(entry -> Boolean.TRUE.equals(entry.getValue()))
+                    .map(Entry::getKey)
+                    .collect(Collectors.toSet()); 
         
         int configId = deviceConfigTypes.getConfigId();
         
         SetView<PaoType> addTypes =
-            Sets.difference(trueTypes, deviceConfigurationDao.getSupportedTypesForConfiguration(configId));
+            Sets.difference(supportedPaoTypes, deviceConfigurationDao.getSupportedTypesForConfiguration(configId));
         
         if (!addTypes.isEmpty()) {
             boolean noTypesAdded = deviceConfigurationDao.getCategoryDifferenceForPaoTypesAdd(addTypes, configId).isEmpty();
@@ -228,12 +223,7 @@ public class DeviceConfigurationConfigController {
             List<PaoType> addedTypes = new ArrayList<>(addTypes);
             Collections.sort(addedTypes, paoTypeAlphaComparator);
             
-            List<String> dbTypes = Lists.transform(addedTypes, new Function<PaoType, String>() {
-                @Override
-                public String apply(PaoType paoType) {
-                   return paoType.getDbString();
-               }
-            });
+            List<String> dbTypes = Lists.transform(addedTypes, PaoType::getDbString);
             
             if (noTypesAdded) {
                 String key = baseKey + ".config.addTypeSuccess";
@@ -311,7 +301,8 @@ public class DeviceConfigurationConfigController {
                       configId,
                       deviceConfig,
                       deviceConfigTypes,
-                      configCategories);
+                      configCategories,
+                      context);
         
         return "configuration.jsp";
     }
@@ -364,15 +355,10 @@ public class DeviceConfigurationConfigController {
             deviceConfigTypes.getSupportedTypes().put(deviceType, true);
         }
         
-        Multimap<String, PaoType> categoryToPaoTypeMap = ArrayListMultimap.create();
-        for (PaoType paoType : sortedTypes) {
-            Set<Category> categoriesForPaoType = paoDefinitionDao.getCategoriesForPaoType(paoType);
-            for (Category category : categoriesForPaoType) {
-                categoryToPaoTypeMap.put(category.getType().value(), paoType);
-            }
-        }
+        Map<String, Collection<PaoType>> types = 
+                collectCategoryMap(paoDefinitionDao.getCategoryToPaoTypeMap().entries());
         
-        deviceConfigTypes.setTypesByCategory(categoryToPaoTypeMap.asMap());
+        deviceConfigTypes.setTypesByCategory(types);
         
         Set<PaoType> allTypes = getAllConfigurationPaoTypes();
         
@@ -385,14 +371,9 @@ public class DeviceConfigurationConfigController {
     }
 
     private Set<PaoType> getAllConfigurationPaoTypes() {
-        Set<PaoDefinition> configurablePaos =
-            paoDefinitionDao.getCreatablePaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION);
-        
-        Set<PaoType> allTypes = new HashSet<>();
-        for (PaoDefinition def : configurablePaos) {
-            allTypes.add(def.getType());
-        }
-        return allTypes;
+        return paoDefinitionDao.getCreatablePaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION).stream()
+            .map(PaoDefinition::getType)
+            .collect(Collectors.toSet());
     }
     
     private DeviceConfig setupConfigBackingBean(int configId, DeviceConfiguration deviceConfiguration) {
@@ -405,79 +386,63 @@ public class DeviceConfigurationConfigController {
         return deviceConfig;
     }
     
-    private Set<CategoryType> validateCategories(DeviceConfiguration deviceConfiguration) {
-        // Get the list of categories that SHOULD be present.
-        Set<DeviceCategories.Category> categoriesForPaoTypes =
-            paoDefinitionDao.getCategoriesForPaoTypes(deviceConfiguration.getSupportedDeviceTypes());
-        
-        // Function to transform expected types to strings.
-        Function<DeviceCategories.Category, CategoryType> expectedToType =
-            new Function<DeviceCategories.Category, CategoryType>() {
-                @Override
-                public CategoryType apply(DeviceCategories.Category category) {
-                    return CategoryType.fromValue(category.getType().value());
-                }
-            };
+    private Collection<ConfigurationCategory> validateCategories(DeviceConfiguration deviceConfiguration) {
+        // Get the list of categories that apply for the supported device types.
+        Map<String, ConfigurationCategory> categoriesForPaoTypes = 
+                paoDefinitionDao.getCategoriesForPaoTypes(deviceConfiguration.getSupportedDeviceTypes()).stream()
+                    .collect(Collectors.toMap(
+                        c -> c.getType().value(), 
+                        Function.identity()));
         
         // Get the list of categories that ARE present.
-        List<DeviceConfigCategory> categories = deviceConfiguration.getCategories();
+        List<String> categories = deviceConfiguration.getCategories().stream()
+                .map(DeviceConfigCategory::getCategoryType)
+                .collect(Collectors.toList());
         
-        // Function to transform present types to strings.
-        Function<DeviceConfigCategory, CategoryType> presentToType =
-            new Function<DeviceConfigCategory, CategoryType>() {
-                @Override
-                public CategoryType apply(DeviceConfigCategory category) {
-                    return CategoryType.fromValue(category.getCategoryType());
-                }
-            };
-        
-        Set<CategoryType> expectedTypes =
-                new HashSet<>(Lists.transform(new ArrayList<>(categoriesForPaoTypes), expectedToType));
-        Set<CategoryType> presentTypes = new HashSet<>(Lists.transform(categories, presentToType));
-            
-        if (expectedTypes.equals(presentTypes)) {
-            return new HashSet<>();
-        }
-        
-        SetView<CategoryType> setDifference = Sets.difference(expectedTypes, presentTypes);
-        
-        Set<CategoryType> difference = new HashSet<>();
-        return setDifference.copyInto(difference);
+        categoriesForPaoTypes.keySet().removeAll(categories);
+
+        return categoriesForPaoTypes.values();
     }
     
     private void handleMissingCategories(FlashScope flashScope,
             YukonUserContext context,
             DeviceConfiguration deviceConfiguration,
             ConfigCategories configCategories) {
-        Set<CategoryType> missingCategories = validateCategories(deviceConfiguration);
+        Collection<ConfigurationCategory> missingCategories = validateCategories(deviceConfiguration);
 
         if (!missingCategories.isEmpty()) {
-            List<String> categories = new ArrayList<>();
+            List<String> categories = 
+                    missingCategories.stream()
+                        .filter(ConfigurationCategory::isRequired)
+                        .map(c -> c.getType().value())
+                        .map(type -> baseKey + ".category." + type + ".title")
+                        .map(YukonMessageSourceResolvable::new)
+                        .map(ymsr -> formattingService.formatObjectAsString(ymsr, context))
+                        .collect(Collectors.toList());
+            
+            if (!categories.isEmpty()) {
+                YukonMessageSourceResolvable flashMsg =
+                        new YukonMessageSourceResolvable(baseKey + ".config.missingCategories", categories);
 
-            for (CategoryType type : missingCategories) {
-                YukonMessageSourceResolvable ymsr =
-                    new YukonMessageSourceResolvable(baseKey + ".category." + type.value() + ".title");
-                categories.add(formattingService.formatObjectAsString(ymsr, context));
+                flashScope.setError(flashMsg);
             }
-
-            YukonMessageSourceResolvable flashMsg =
-                new YukonMessageSourceResolvable(baseKey + ".config.missingCategories", categories);
-
-            flashScope.setError(flashMsg);
 
             YukonMessageSourceResolvable noneResolvable =
                 new YukonMessageSourceResolvable(baseKey + ".config.noneSelected");
             String noneSelected = formattingService.formatObjectAsString(noneResolvable, context);
 
-            for (CategoryType categoryType : missingCategories) {
-                CategoryDisplay categoryDisplay =
-                    new CategoryDisplay(
-                        categoryType.value(),
-                        deviceConfigurationDao.categoriesExistForType(categoryType.value()));
+            List<CategorySelection> unselected = 
+                    missingCategories.stream()
+                        .map(category -> 
+                                new CategorySelection(
+                                    new CategoryDisplay(
+                                        category.getType().value(), 
+                                        deviceConfigurationDao.categoriesExistForType(category.getType().value())), 
+                                    noneSelected, 
+                                    category.isOptional()))
+                        .collect(Collectors.toList());
 
-                configCategories.getCategorySelections().add(
-                    new CategorySelection(categoryDisplay, noneSelected));
-            }
+            configCategories.getCategorySelections().addAll(unselected);
         }
     }
         
@@ -579,9 +544,26 @@ public class DeviceConfigurationConfigController {
         
         model.addAttribute("showTypesPopupOnLoad", showTypesPopupOnLoad);
         
-        model.addAttribute("categoryToDeviceTypeMap", paoDefinitionDao.getCategoryTypeToPaoTypesMap().asMap());
+        //  Split the category map into optional and required sets
+        Map<Boolean, List<Entry<ConfigurationCategory, PaoType>>> partitioned = 
+                paoDefinitionDao.getCategoryToPaoTypeMap().entries().stream()
+                        .collect(Collectors.partitioningBy(e -> e.getKey().isRequired()));
+        
+        Map<String, Collection<PaoType>> requiredTypes = collectCategoryMap(partitioned.get(true));
+        Map<String, Collection<PaoType>> optionalTypes = collectCategoryMap(partitioned.get(false));
+        
+        model.addAttribute("requiredCategoryToDeviceTypesMap", requiredTypes);
+        model.addAttribute("optionalCategoryToDeviceTypesMap", optionalTypes);
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
+    }
+    
+    private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {
+        return categoryTypeLists.stream()
+                .collect(StreamUtils.toMultimap(
+                        entry -> entry.getKey().getType().value(), 
+                        Entry::getValue))
+                .asMap();
     }
     
     @InitBinder

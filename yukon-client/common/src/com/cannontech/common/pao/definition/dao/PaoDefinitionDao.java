@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,7 +11,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -64,11 +64,11 @@ import com.google.common.collect.SetMultimap;
     // DEVICE CONFIGURATION
     // ============================================
 
-    SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap();
+    SetMultimap<ConfigurationCategory, PaoType> getCategoryToPaoTypeMap();
 
-    Set<Category> getCategoriesForPaoType(PaoType paoType);
+    Set<ConfigurationCategory> getCategoriesForPaoType(PaoType paoType);
 
-    Set<Category> getCategoriesForPaoTypes(Set<PaoType> paoTypes);
+    Collection<ConfigurationCategory> getCategoriesForPaoTypes(Set<PaoType> paoTypes);
 
     boolean isDnpConfigurationType(PaoType paoType);
 

@@ -19,6 +19,7 @@ public class ConfigCategories {
         private Integer categoryId;
         private String description;
         private Boolean otherCategoriesExist;
+        private Boolean optionalCategory;
         
         public CategorySelection() {
             categoryDisplay = new CategoryDisplay();
@@ -28,8 +29,9 @@ public class ConfigCategories {
             this(categoryDisplay, null, null, null, null);
         }
         
-        public CategorySelection(CategoryDisplay categoryDisplay, String categoryName) {
+        public CategorySelection(CategoryDisplay categoryDisplay, String categoryName, boolean optional) {
             this(categoryDisplay, categoryName, null, null, null);
+            this.optionalCategory = optional;
         }
         
         public CategorySelection(CategoryDisplay categoryDisplay, String categoryName, Integer categoryId, 
@@ -81,6 +83,14 @@ public class ConfigCategories {
             return otherCategoriesExist;
         }
         
+        public Boolean getOptionalCategory() {
+            return optionalCategory;
+        }
+        
+        public void setOptionalCategory(Boolean optionalCategory) {
+            this.optionalCategory = optionalCategory;
+        }
+        
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.tools.configs.category." + categoryDisplay.getCategoryType() + ".title";
@@ -100,12 +110,13 @@ public class ConfigCategories {
                    Objects.equal(this.categoryName, other.categoryName) &&
                    Objects.equal(this.categoryId, other.categoryId) &&
                    Objects.equal(this.description, other.description) &&
-                   Objects.equal(this.otherCategoriesExist, other.otherCategoriesExist);
+                   Objects.equal(this.otherCategoriesExist, other.otherCategoriesExist) &&
+                   Objects.equal(this.optionalCategory, other.optionalCategory);
         }
         
         @Override
         public int hashCode() {
-            return Objects.hashCode(categoryDisplay, categoryName, categoryId, description, otherCategoriesExist);
+            return Objects.hashCode(categoryDisplay, categoryName, categoryId, description, otherCategoriesExist, optionalCategory);
         }
 
         @Override

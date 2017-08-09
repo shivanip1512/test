@@ -1,6 +1,5 @@
 package com.cannontech.common.pao.definition.loader;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -68,7 +67,6 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PointDao pointDao;
     private FileLoader fileLoader;
-    private Map<String, Category> categories = new HashMap<>();
     
     @PostConstruct
     public void initialize() {
@@ -156,30 +154,11 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         for (Pao pao : fileLoader.getPaos()) {
             PaoType paoType = PaoType.valueOf(pao.getPaoType());
             if (pao.getConfiguration() != null) {
-                for (Category category : getFilteredCategories(pao)) {
-                    paoCategoryMap.put(paoType, category);
-                }
+                paoCategoryMap.putAll(paoType, pao.getConfiguration().getCategory());
             }
         }
         
         return paoCategoryMap;
-    }
-
-    private List<Category> getFilteredCategories(Pao pao) {
-        List<Category> filteredCategories = new ArrayList<>();
-
-        for (Category category : pao.getConfiguration().getCategory()) {
-            String id = category.getType().name();
-            Category existingCategory = categories.get(id);
-            if (existingCategory != null) {
-                filteredCategories.add(existingCategory);
-            } else {
-                categories.put(id, category);
-                filteredCategories.add(category);
-            }
-        }
-
-        return filteredCategories;
     }
 
     @Override

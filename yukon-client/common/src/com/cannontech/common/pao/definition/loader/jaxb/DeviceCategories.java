@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;attribute name="type" use="required" type="{}CategoryType" />
+ *                 &lt;attribute name="optional" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
@@ -84,6 +85,7 @@ public class DeviceCategories {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;attribute name="type" use="required" type="{}CategoryType" />
+     *       &lt;attribute name="optional" type="{http://www.w3.org/2001/XMLSchema}boolean" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
      * &lt;/complexType>
@@ -97,6 +99,8 @@ public class DeviceCategories {
 
         @XmlAttribute(name = "type", required = true)
         protected CategoryType type;
+        @XmlAttribute(name = "optional")
+        protected Boolean optional;
 
         /**
          * Gets the value of the type property.
@@ -120,6 +124,30 @@ public class DeviceCategories {
          */
         public void setType(CategoryType value) {
             this.type = value;
+        }
+
+        /**
+         * Gets the value of the optional property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link Boolean }
+         *     
+         */
+        public Boolean isOptional() {
+            return optional;
+        }
+
+        /**
+         * Sets the value of the optional property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link Boolean }
+         *     
+         */
+        public void setOptional(Boolean value) {
+            this.optional = value;
         }
 
     }
