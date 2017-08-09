@@ -1,7 +1,5 @@
 package com.cannontech.web.common.captcha.service.impl;
 
-import java.util.Optional;
-
 import javax.annotation.PostConstruct;
 
 import net.tanesha.recaptcha.ReCaptchaImpl;
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
-import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.captcha.model.Captcha;
@@ -35,13 +32,6 @@ public class CaptchaServiceImpl implements CaptchaService{
         RECAPTCHA_PRIVATE_KEY =
             configurationSource.getString(MasterConfigString.RECAPTCHA_PRIVATE_KEY,
                 "6LcLps0SAAAAAM40wM_-kRx-FCYeEA72XVpQwGl8");
- 
-        boolean isCaptchasEnabled = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_CAPTCHAS);
-        
-        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
-        if (isCaptchasEnabled && proxy.isPresent()) {
-            proxy.get().setAsSystemProxy();
-        }
     }
     
     @Override

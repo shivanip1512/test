@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
@@ -51,6 +53,11 @@ public class EcobeeRestProxyFactory {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) {
                 try {
+                    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+                    YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
+                        factory.setProxy(httpProxy.getJavaHttpProxy());
+                    });
+                    proxiedTemplate.setRequestFactory(factory) ;
                     addAuthorizationToken(args);
                     Object responseObj = method.invoke(proxiedTemplate, args);
                     if (didAuthenticationFail(responseObj)) {

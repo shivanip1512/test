@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -51,6 +52,11 @@ public class HoneywellRestProxyFactory {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) {
                 try {
+                    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+                    YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
+                        factory.setProxy(httpProxy.getJavaHttpProxy());
+                    });
+                    proxiedTemplate.setRequestFactory(factory);
                     addAuthorizationToken(args);
                     Object responseObj = method.invoke(proxiedTemplate, args);
 
@@ -105,11 +111,9 @@ public class HoneywellRestProxyFactory {
     }
     
     private String generateAuthenticationToken() {
-        
         MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
         // TODO: Code cleanup required here will be done when we can get fully connected
         body.add("grant_type", "client_credentials");
-        YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(proxy -> proxy.setAsSystemProxy());
         String urlBase = settingDao.getString(GlobalSettingType.HONEYWELL_SERVER_URL);
         String plainClientId = settingDao.getString(GlobalSettingType.HONEYWELL_CLIENTID);
         String plainSecret = settingDao.getString(GlobalSettingType.HONEYWELL_SECRET);
