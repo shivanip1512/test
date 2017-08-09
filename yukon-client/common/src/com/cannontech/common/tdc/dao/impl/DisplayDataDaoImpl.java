@@ -271,14 +271,14 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         int count = paging.getItemsPerPage();
         
         if (sortBy == null) {
-            sortBy = SortBy.SYS_LOG_DATE_TIME;
+            sortBy = SortBy.TAG_LOG_TAG_TIME;
         }
         if (direction == null) {
-            direction = Direction.desc;
+            direction = Direction.asc;
         }
         
         SqlStatementBuilder allRowsSql = new SqlStatementBuilder();
-        allRowsSql.append("SELECT l.Tagtime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, l.Description, l.Action, l.Username, t.Tagname,");
+        allRowsSql.append("SELECT l.Tagtime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, l.Description, l.Action, l.Username, t.Tagname");
         allRowsSql.append("FROM TagLog l");
         allRowsSql.append("JOIN Point p ON l.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
