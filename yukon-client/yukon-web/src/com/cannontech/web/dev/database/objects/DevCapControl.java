@@ -132,7 +132,7 @@ public class DevCapControl extends DevObject {
         int numTotalFeeders = numTotalSubBuses * numFeeders;
         int numTotalCapBanks = numTotalFeeders * numCapBanks;
         int numTotalCBCs = getCbcType() != null ? numTotalCapBanks : 0;
-        int numTotalRegulators = isUseIvvcControlType() ? numTotalSubBuses * 2 * 3 : 0;  // If IVVC, then create regulators count = total buses count in area * 2 zones per bus * 3 regulators per zone  
+        int numTotalRegulators = isUseIvvcControlType() ? numTotalSubBuses * numTotalFeeders * 3 : 0;  // If IVVC, then create regulators count = total buses count in area * total feeders count * 3 regulators per zone  
         int total = numAreas + numTotalSubs + numTotalSubBuses + numTotalFeeders + numTotalCapBanks + numTotalCBCs + numTotalRegulators + 1 ;// 1 RTU;
         return total;
     }
