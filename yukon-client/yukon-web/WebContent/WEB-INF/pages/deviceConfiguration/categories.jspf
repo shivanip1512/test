@@ -19,7 +19,7 @@
     
     <c:if test="${empty selection.categoryId}">
         <c:choose>
-             <c:when test="${not empty selection.optionalCategory && selection.optionalCategory}">
+             <c:when test="${selection.optionalCategory}">
                 <tags:alertBox key=".optionalSelection" type="info"/>
             </c:when>
             <c:otherwise>

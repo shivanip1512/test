@@ -19,7 +19,7 @@ public class ConfigCategories {
         private Integer categoryId;
         private String description;
         private Boolean otherCategoriesExist;
-        private Boolean optionalCategory;
+        private boolean optionalCategory = false;
         
         public CategorySelection() {
             categoryDisplay = new CategoryDisplay();
@@ -83,11 +83,11 @@ public class ConfigCategories {
             return otherCategoriesExist;
         }
         
-        public Boolean getOptionalCategory() {
+        public boolean isOptionalCategory() {
             return optionalCategory;
         }
         
-        public void setOptionalCategory(Boolean optionalCategory) {
+        public void setOptionalCategory(boolean optionalCategory) {
             this.optionalCategory = optionalCategory;
         }
         
