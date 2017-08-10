@@ -436,7 +436,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         multispeakEventLogService.initiateODEventRequest(meterNumbers.size(), "InitiateOutageDetectionEventRequest",
             mspVendor.getCompanyName());
 
-        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
         List<YukonMeter> rfnPaosToPing = Lists.newArrayList();
         List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
         
@@ -722,7 +722,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     public synchronized List<ErrorObject> meterReadEvent(final MultispeakVendor mspVendor, List<String> meterNumbers,
             final String transactionID, final String responseUrl) {
         
-        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
 
         log.info("Received " + meterNumbers.size() + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterReadRequest(meterNumbers.size(), "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
@@ -795,7 +795,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         // that someone hasn't changed the map out from under us (thus the while loop)
                         MeterReadUpdaterChain chain = new MeterReadUpdaterChain(oldValue, meterReadUpdater);
                         boolean success = updaterMap.replace(pao, oldValue, chain);
-                        if (success) break;
+                        if (success) {
+                            break;
+                        }
                         oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
                     }
                 }
@@ -867,7 +869,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             final FormattedBlockProcessingService<Block> blockProcessingService, final String transactionId,
             final String responseUrl) {
         
-        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
 
         log.info("Received " + meterNumber + " for BlockMeterReading from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterReadRequest(1, "InitiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
@@ -964,9 +966,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                      // looks like the map was not empty, combine the existing updater with the
                         // new one and then place it back in the map, but we must be careful
                         // that someone hasn't changed the map out from under us (thus the while loop)
-                        FormattedBlockUpdaterChain<Block> chain = new FormattedBlockUpdaterChain<Block>(oldValue, formattedBlockUpdater);
+                        FormattedBlockUpdaterChain<Block> chain = new FormattedBlockUpdaterChain<>(oldValue, formattedBlockUpdater);
                         boolean success = updaterMap.replace(pao, oldValue, chain);
-                        if (success) break;
+                        if (success) {
+                            break;
+                        }
                         oldValue = updaterMap.putIfAbsent(pao, formattedBlockUpdater);
                     }
                 }
@@ -1003,7 +1007,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             throw new MultispeakWebServiceException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
-        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(cdEvents)) {
             log.info("Received " + cdEvents.size() + " Meter(s) for Connect/Disconnect from "
                 + mspVendor.getCompanyName());
@@ -1160,25 +1164,25 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             @Override
             public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
-                log.debug("rfn receivedSuccess for cdEvent " + state);
+                log.debug("rfn " + meter + " receivedSuccess for cdEvent " + state);
                 MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForRfnState(RfnDisconnectStatusState.getForNmState(state));
                 sendCDEventNotification(meter, mspLoadActionCode.getLoadActionCode(), mspVendor, transactionId, responseUrl);
             }
 
             @Override
             public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
-                log.warn("rfn receivedError for cdEvent " + message);
+                log.warn("rfn " + meter + " receivedError for cdEvent " + message);
                 sendCDEventNotification(meter, LoadActionCode.UNKNOWN, mspVendor, transactionId, responseUrl);
             }
 
             @Override
             public void processingExceptionOccured(MessageSourceResolvable message) {
-                log.warn("rfn processingExceptionOccured for cdEvent " + message);
+                log.warn("rfn " + meter + " processingExceptionOccured for cdEvent " + message);
             }
 
             @Override
             public void complete() {
-                log.debug("rfn complete for cdEvent");
+                log.debug("rfn " + meter + " complete for cdEvent");
             }
 
         };
@@ -1290,7 +1294,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Override
     public List<ErrorObject> meterAdd(final MultispeakVendor mspVendor, List<Meter> addMeters) throws MultispeakWebServiceException {
-        final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        final List<ErrorObject> errorObjects = new ArrayList<>();
 
         for (final Meter mspMeter : addMeters) {
             try {
@@ -1590,7 +1594,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Override
     public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<Meter> removeMeters) {
-        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
 
         for (Meter mspMeter : removeMeters) {
             if (mspMeter.getMeterNo() != null) {
@@ -1627,7 +1631,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Override
     public List<ErrorObject> serviceLocationChanged(final MultispeakVendor mspVendor, List<ServiceLocation> serviceLocations) {
-        final ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        final ArrayList<ErrorObject> errorObjects = new ArrayList<>();
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
 
         for (final ServiceLocation mspServiceLocation : serviceLocations) {
@@ -1732,7 +1736,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Override
     public List<ErrorObject> meterChanged(final MultispeakVendor mspVendor, List<Meter> changedMeters) throws MultispeakWebServiceException{
-        final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        final List<ErrorObject> errorObjects = new ArrayList<>();
 
         for (final Meter mspMeter : changedMeters) {
             try {
@@ -1793,10 +1797,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Override
     public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor) {
 
-        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        List<ErrorObject> errorObjects = new ArrayList<>();
         if (meterGroup != null && meterGroup.getGroupName() != null && meterGroup.getMeterList() != null) {
             // Convert MeterNumbers to YukonDevices
-            List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
+            List<SimpleDevice> yukonDevices = new ArrayList<>();
             for (String meterNumber : CollectionUtils.emptyIfNull(meterGroup.getMeterList().getMeterID())) {
                 try {
                     SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
@@ -1829,8 +1833,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Override
     public List<ErrorObject> removeMetersFromGroup(String groupName, List<String> meterNumbers, MultispeakVendor mspVendor) {
-        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-        List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
+        List<ErrorObject> errorObjects = new ArrayList<>();
+        List<SimpleDevice> yukonDevices = new ArrayList<>();
         
         if (groupName!=null){
         try {
@@ -1977,7 +1981,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     private List<ErrorObject> addToGroupAndDisable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
             MultispeakVendor mspVendor, boolean disable) {
 
-        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
         
         for (String meterNumber : meterNos) {
             try {
@@ -2015,7 +2019,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     private List<ErrorObject> removeMetersFromGroupAndEnable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
             MultispeakVendor mspVendor, boolean enable) {
 
-        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
 
         for (String meterNumber : meterNos) {
             try {
@@ -2161,7 +2165,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 meters.add(meter);
             }
         } else {
-            List<FilterBy> searchFilter = new ArrayList<FilterBy>(1);
+            List<FilterBy> searchFilter = new ArrayList<>(1);
             FilterBy filterBy = new StandardFilterBy("deviceName", MeterSearchField.PAONAME);
             filterBy.setFilterValue(filterValue);
             searchFilter.add(filterBy);
