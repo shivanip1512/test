@@ -442,10 +442,6 @@ public class DashboardsController {
         return dashboard.getVisibility() == Visibility.SYSTEM;
     }
 
-    /*private boolean isGroupSelected(Dashboard dashboard) {
-        return dashboard.getColumn1Widgets().
-    }*/
-
     private boolean isDashboardOwner(LiteYukonUser yukonUser, Dashboard dashboard) {
         return (yukonUser.getUserID() == dashboard.getOwner().getUserID());
     }
