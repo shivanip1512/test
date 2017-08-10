@@ -503,6 +503,7 @@ const Attribute Attribute::UnderVoltageCount                                = At
 const Attribute Attribute::VarControl                                       = Attribute( "VAR_CONTROL" );
 const Attribute Attribute::VoltageControl                                   = Attribute( "VOLTAGE_CONTROL" );
 const Attribute Attribute::VoltageDeltaAbnormal                             = Attribute( "VOLTAGE_DELTA_ABNORMAL" );
+const Attribute Attribute::PortQueueCount                                   = Attribute( "PORT_QUEUE_COUNT" );
 
 
 AttributeNotFound::AttributeNotFound(const std::string &name)

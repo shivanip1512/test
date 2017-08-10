@@ -492,6 +492,7 @@ public:
     static const Attribute  VarControl;
     static const Attribute  VoltageControl;
     static const Attribute  VoltageDeltaAbnormal;
+    static const Attribute  PortQueueCount;
 };
 
 
