@@ -183,7 +183,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("FROM SystemLog s");
         sql.append("JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.SOE.getDbValue());
+        sql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.SOE);
         sql.append("    AND s.Datetime").gte(from);
         sql.append("    AND s.Datetime").lt(to);
         sql.append("ORDER BY s.Datetime DESC, s.Millis DESC");
@@ -213,7 +213,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("FROM SystemLog s");
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        allRowsSql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.DEFAULT);
+        allRowsSql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.SOE);
         allRowsSql.append("    AND s.Datetime").gte(from);
         allRowsSql.append("    AND s.Datetime").lt(to);
         allRowsSql = addSortByClause(allRowsSql, sortBy, direction);
@@ -236,7 +236,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("SELECT count(*)");
         sql.append("FROM SystemLog s JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.SOE.getDbValue());
+        sql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.SOE);
         sql.append("    AND s.Datetime").gte(from);
         sql.append("    AND s.Datetime").lt(to);
         return yukonJdbcTemplate.queryForInt(sql);
