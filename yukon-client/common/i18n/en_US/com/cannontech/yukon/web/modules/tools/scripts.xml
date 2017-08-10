@@ -68,9 +68,17 @@
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.filePath">File Path</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.missedFileName">Missed File Name</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.successFileName">Success File Name</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.retrySection.title">Retry</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.retryCount">Retry Count</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.queueOffCount">Queue Off Count</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.maxRetryHours">Max Retry Hours</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.iedSetupSection.title">IED Setup</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.touRate">TOU Rate</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.resetDemand">Reset Demand</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.resetRetryCount">Reset Retry Count</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.readFrozenDemandRegister">Read Frozen Demand Register</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.iedType">IED Type</entry>     
+    
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.sendEmailNotification">Send Email Notification</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.notifyGroup">Notify Group</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.messageSubject">Message Subject</entry>     

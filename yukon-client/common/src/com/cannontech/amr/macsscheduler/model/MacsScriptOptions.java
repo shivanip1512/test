@@ -273,4 +273,12 @@ public class MacsScriptOptions {
     public void setBillingGroupName(String billingGroupName) {
         this.billingGroupName = billingGroupName;
     }
+    
+    public static List<String> getTouRates() {
+        return touRates;
+    }
+    
+    public static List<String> getIedTypes() {
+        return iedTypes;
+    }
 }

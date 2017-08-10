@@ -80,4 +80,16 @@ public enum MacsScriptTemplate {
     public boolean isNoTemplateSelected(){
         return this == NO_TEMPLATE;
     }
+    
+    public static Set<MacsScriptTemplate> getRetryTypes() {
+        return retry;
+    }
+    
+    public static Set<MacsScriptTemplate> getIed300Types() {
+        return ied300;
+    }
+    
+    public static Set<MacsScriptTemplate> getIed400Types() {
+        return ied400;
+    }
 }

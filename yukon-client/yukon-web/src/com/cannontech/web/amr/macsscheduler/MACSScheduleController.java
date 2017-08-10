@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.macsscheduler.model.MacsException;
 import com.cannontech.amr.macsscheduler.model.MacsSchedule;
+import com.cannontech.amr.macsscheduler.model.MacsScriptOptions;
 import com.cannontech.amr.macsscheduler.model.MacsScriptTemplate;
 import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.DayOfWeek;
 import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.StartPolicy;
@@ -171,6 +172,12 @@ public class MACSScheduleController extends MultiActionController {
         model.addAttribute("stopPolicyOptions", StopPolicy.values());
         model.addAttribute("daysOfWeek", DayOfWeek.values());
         model.addAttribute("fileFormats", FileFormatTypes.getValidFormatTypes());
+        model.addAttribute("touRates", MacsScriptOptions.getTouRates());
+        model.addAttribute("retryTypes", MacsScriptTemplate.getRetryTypes());
+        model.addAttribute("ied300Types", MacsScriptTemplate.getIed300Types());
+        model.addAttribute("ied400Types", MacsScriptTemplate.getIed400Types());
+        model.addAttribute("iedTypes", MacsScriptOptions.getIedTypes());
+        model.addAttribute("frozenDemandRegisterOptions", new ArrayList<String>(Arrays.asList("Landis-Gyr S4", "Alpha")));
         //check if device or load group
         model.addAttribute("target", "DEVICE");
         if (schedule.getSimpleOptions() != null) {

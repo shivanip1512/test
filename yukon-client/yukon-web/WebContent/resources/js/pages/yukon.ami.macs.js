@@ -23,6 +23,41 @@ yukon.ami.macs = (function () {
 
     },
     
+    _updateTemplateFields = function () {
+        var retryTypes = yukon.fromJson('#retry-types'),
+        ied300Types = yukon.fromJson('#ied-300-types'),
+        ied400Types = yukon.fromJson('#ied-400-types'),
+        templateType =  $('.js-template').val(),
+        isRetry = retryTypes.indexOf(templateType) !== -1,
+        isIed300 = ied300Types.indexOf(templateType) !== -1,
+        isIed400 = ied400Types.indexOf(templateType) !== -1,
+        demandResetToggle = $('.js-demand-reset')
+        demandResetRow = demandResetToggle.closest('tr'),
+        demandResetSelected = demandResetRow.find('.switch-btn-checkbox').prop('checked');
+        if (isRetry) {
+            $('.js-retry-section').addClass('dn');
+        } else {
+            $('.js-retry-section').removeClass('dn');
+        }
+        if (isIed300 || isIed400) {
+            $('.js-ied-section').removeClass('dn');
+            if (demandResetSelected) {
+                if (isIed400) {
+                    $('.js-ied-400').removeClass('dn');
+                    $('.js-ied-300').addClass('dn');
+                } else {
+                    $('.js-ied-400').addClass('dn');
+                    $('.js-ied-300').removeClass('dn');
+                }
+            } else {
+                $('.js-ied-300').addClass('dn');
+                $('.js-ied-400').addClass('dn');
+            }
+        } else {
+            $('.js-ied-section').addClass('dn');
+        }
+    };
+    
     _initialized = false,
 
         mod = {
@@ -32,7 +67,7 @@ yukon.ami.macs = (function () {
                 if (_initialized) {
                     return;
                 }
-                
+
                 var tableContainer = $('#scripts-container');
                 if (tableContainer.length === 1) {
                     _autoUpdatePageContent();
@@ -117,6 +152,14 @@ yukon.ami.macs = (function () {
                             errors.html(data.errorMsg);
                         }
                     });
+                });
+                
+                $(document).on('change', '.js-template', function (ev) {
+                    _updateTemplateFields();
+                });
+                
+                $(document).on('change', '.js-demand-reset', function (ev) {
+                    _updateTemplateFields();
                 });
                 
                 _initialized = true;

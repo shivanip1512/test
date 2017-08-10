@@ -29,7 +29,7 @@
                         <tags:selectWithItems path="type" items="${types}" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".template" data-toggle-group="script">
-                        <tags:selectWithItems path="template" items="${templates}"/>
+                        <tags:selectWithItems path="template" items="${templates}" inputClass="js-template"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <tags:sectionContainer2 nameKey="startPolicySection">
@@ -163,16 +163,50 @@
                             <tags:nameValue2 nameKey=".scriptOptions.successFileName">
                                 <tags:input path="scriptOptions.successFileName" />
                             </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".scriptOptions.retryCount">
-                                <tags:input path="scriptOptions.retryCount" size="5"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".scriptOptions.queueOffCount">
-                                <tags:input path="scriptOptions.queueOffCount" size="5"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".scriptOptions.maxRetryHours">
-                                <tags:input path="scriptOptions.maxRetryHours" size="5"/>
-                            </tags:nameValue2>
                         </tags:nameValueContainer2>
+                        <c:set var="clazz" value="${schedule.template.isRetry() ? 'dn' : ''}"/>
+                        <tags:sectionContainer2 nameKey="scriptOptions.retrySection" styleClass="${clazz} js-retry-section">
+                            <tags:nameValueContainer2>
+                                <tags:nameValue2 nameKey=".scriptOptions.retryCount">
+                                    <tags:input path="scriptOptions.retryCount" size="5"/>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".scriptOptions.queueOffCount">
+                                    <tags:input path="scriptOptions.queueOffCount" size="5"/>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".scriptOptions.maxRetryHours">
+                                    <tags:input path="scriptOptions.maxRetryHours" size="5"/>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                        </tags:sectionContainer2>
+                        <c:set var="clazz" value="${schedule.template.isIed() ? '' : 'dn'}"/>
+                        <tags:sectionContainer2 nameKey="scriptOptions.iedSetupSection" styleClass="${clazz} js-ied-section">
+                            <tags:nameValueContainer2>
+                                <tags:nameValue2 nameKey=".scriptOptions.touRate">
+                                    <tags:selectWithItems path="scriptOptions.touRate"
+                                        items="${touRates}" />
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".scriptOptions.resetDemand">
+                                    <tags:switchButton path="scriptOptions.demandResetSelected" classes="js-demand-reset"
+                                        toggleGroup="demandReset" toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label"/>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".scriptOptions.resetRetryCount" data-toggle-group="demandReset">
+                                    <tags:input path="scriptOptions.demandResetRetryCount" size="5"/>
+                                </tags:nameValue2>
+                                <c:set var="clazz" value="${schedule.template.isIed300() ? '' : 'dn'}"/>
+                                <tags:nameValue2 nameKey=".scriptOptions.readFrozenDemandRegister" rowClass="${clazz} js-ied-300">
+                                    <div class="button-group">
+                                        <c:forEach var="option" items="${frozenDemandRegisterOptions}">
+                                            <tags:radio path="scriptOptions.frozenDemandRegister" value="${option}" label="${option}" classes="yes M0" />
+                                        </c:forEach>
+                                    </div>
+                                </tags:nameValue2>
+                                <c:set var="clazz" value="${schedule.template.isIed400() ? '' : 'dn'}"/>
+                                <tags:nameValue2 nameKey=".scriptOptions.iedType" rowClass="${clazz} js-ied-400">
+                                    <tags:selectWithItems path="scriptOptions.iedType"
+                                        items="${iedTypes}" />
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                        </tags:sectionContainer2>
                     </cti:tab>
                     <cti:msg2 var="optionsTab" key=".scriptOptions.optionsTab" />
                     <cti:tab title="${optionsTab}">
@@ -237,6 +271,10 @@
         </div>
 
     </form:form>
+    <cti:toJson id="retry-types" object="${retryTypes}"/>
+    <cti:toJson id="ied-300-types" object="${ied300Types}"/>
+    <cti:toJson id="ied-400-types" object="${ied400Types}"/>
+    
     <cti:includeScript link="/resources/js/pages/yukon.ami.macs.js" />
 </cti:standardPage>
 
