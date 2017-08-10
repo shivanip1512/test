@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -216,7 +217,7 @@ public class DashboardDaoImpl implements DashboardDao {
         SqlParameterSink dashboardSink = dashboardSql.insertInto("Dashboard");
         dashboardSink.addValue("DashboardId", dashboardId);
         dashboardSink.addValue("Name", dashboard.getName());
-        dashboardSink.addValue("Description", dashboard.getDescription());
+        dashboardSink.addValueSafe("Description", dashboard.getDescription());
         dashboardSink.addValue("OwnerId", dashboard.getOwner().getUserID());
         dashboardSink.addValue("Visibility", dashboard.getVisibility());
         jdbcTemplate.update(dashboardSql);

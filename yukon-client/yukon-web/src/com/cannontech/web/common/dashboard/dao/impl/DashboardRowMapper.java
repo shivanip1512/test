@@ -16,7 +16,7 @@ public final class DashboardRowMapper implements YukonRowMapper<Dashboard> {
     public Dashboard mapRow(YukonResultSet rs) throws SQLException {
         Dashboard dashboard = new Dashboard();
         dashboard.setDashboardId(rs.getInt("DashboardId"));
-        dashboard.setDescription(rs.getString("Description"));
+        dashboard.setDescription(rs.getStringSafe("Description"));
         dashboard.setName(rs.getString("Name"));
         dashboard.setVisibility(rs.getEnum("Visibility", Visibility.class));
         
