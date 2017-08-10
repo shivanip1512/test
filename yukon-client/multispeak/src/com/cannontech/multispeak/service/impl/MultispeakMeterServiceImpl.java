@@ -63,6 +63,7 @@ import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -87,6 +88,7 @@ import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -182,6 +184,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OAClient oaClient;
     @Autowired private CBClient cbClient;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
 
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static long messageID = 1;
@@ -1171,13 +1174,13 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             @Override
             public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
-                log.warn("rfn " + meter + " receivedError for cdEvent " + message);
+                log.warn("rfn " + meter + " receivedError for cdEvent " + getMessageText(message));
                 sendCDEventNotification(meter, LoadActionCode.UNKNOWN, mspVendor, transactionId, responseUrl);
             }
 
             @Override
             public void processingExceptionOccured(MessageSourceResolvable message) {
-                log.warn("rfn " + meter + " processingExceptionOccured for cdEvent " + message);
+                log.warn("rfn " + meter + " processingExceptionOccured for cdEvent " + getMessageText(message));
             }
 
             @Override
@@ -1188,6 +1191,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         };
 
         rfnMeterDisconnectService.send(meter, action, rfnCallback);
+    }
+    
+    /**
+     * Returns message text.
+     */
+    private String getMessageText(MessageSourceResolvable message){
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(YukonUserContext.system);
+        return accessor.getMessage(message);
     }
 
     /**

@@ -1861,7 +1861,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             @Override
             public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
-                log.debug("rfn receivedSuccess for cdEvent " + state);
+                log.debug("rfn " + meter + " receivedSuccess for cdEvent " + state);
                 MspLoadActionCode mspLoadActionCode =
                     MspLoadActionCode.getForRfnState(RfnDisconnectStatusState.getForNmState(state));
                 sendCDEventNotification(meter, mspLoadActionCode.getLoadActionCode(), mspVendor, transactionId,
@@ -1870,18 +1870,18 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             @Override
             public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
-                log.warn("rfn receivedError for cdEvent " + getMessageText(message));
+                log.warn("rfn " + meter + " receivedError for cdEvent " + getMessageText(message));
                 sendCDEventNotification(meter, LoadActionCodeKind.UNKNOWN, mspVendor, transactionId, responseUrl);
             }
 
             @Override
             public void processingExceptionOccured(MessageSourceResolvable message) {
-                log.warn("rfn processingExceptionOccured for cdEvent " +  getMessageText(message));
+                log.warn("rfn " + meter + " processingExceptionOccured for cdEvent " + getMessageText(message));
             }
 
             @Override
             public void complete() {
-                log.debug("rfn complete for cdEvent");
+                log.debug("rfn " + meter + " complete for cdEvent");
             }
 
         };
