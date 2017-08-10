@@ -213,7 +213,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("FROM SystemLog s");
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        allRowsSql.append("WHERE p.LogicalGroup").eq(PointLogicalGroups.DEFAULT.getDbValue());
+        allRowsSql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.DEFAULT);
         allRowsSql.append("    AND s.Datetime").gte(from);
         allRowsSql.append("    AND s.Datetime").lt(to);
         allRowsSql = addSortByClause(allRowsSql, sortBy, direction);
