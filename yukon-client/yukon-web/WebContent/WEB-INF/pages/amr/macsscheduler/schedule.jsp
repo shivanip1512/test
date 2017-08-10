@@ -25,11 +25,15 @@
                     <tags:nameValue2 nameKey=".categoryName">
                         <tags:selectWithItems path="categoryName" items="${categories}" />
                     </tags:nameValue2>
+                    <cti:displayForPageEditModes modes="EDIT">
+                        <c:set var="disableType" value="true"/>
+                    </cti:displayForPageEditModes>
                     <tags:nameValue2 nameKey=".type">
-                        <tags:selectWithItems path="type" items="${types}" />
+                        <tags:selectWithItems path="type" items="${types}" inputClass="js-type" disabled="${disableType}"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".template" data-toggle-group="script">
-                        <tags:selectWithItems path="template" items="${templates}" inputClass="js-template"/>
+                    <c:set var="clazz" value="${schedule.isSimple() ? 'dn' : ''}"/>
+                    <tags:nameValue2 nameKey=".template" rowClass="js-template ${clazz}">
+                        <tags:selectWithItems path="template" items="${templates}" inputClass="js-template" disabled="${disableType}"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <tags:sectionContainer2 nameKey="startPolicySection">
@@ -83,14 +87,15 @@
 
             </cti:tab>
 
+            <c:set var="clazz" value="${schedule.isScript() ? 'dn' : ''}"/>
             <cti:msg2 var="commandsTab" key=".commandsTab" />
-            <cti:tab title="${commandsTab}">
+            <cti:tab title="${commandsTab}" headerClasses="js-commands-tab ${clazz}">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".simpleOptions.start">
-                        <tags:input path="simpleOptions.startCommand"/>
+                        <tags:input path="simpleOptions.startCommand" size="50" maxlength="120"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".simpleOptions.stop">
-                        <tags:input path="simpleOptions.stopCommand"/>
+                        <tags:input path="simpleOptions.stopCommand" size="50" maxlength="120"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <tags:nameValueContainer2>
@@ -128,8 +133,9 @@
                 </tags:nameValueContainer2>
             </cti:tab>
 
+            <c:set var="clazz" value="${schedule.isSimple() ? 'dn' : ''}"/>
             <cti:msg2 var="scriptTab" key=".scriptTab" />
-            <cti:tab title="${scriptTab}">
+            <cti:tab title="${scriptTab}" headerClasses="js-script-tab ${clazz}">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".scriptOptions.fileName">
                         <tags:input path="scriptOptions.fileName" maxlength="180" size="30" />
@@ -250,7 +256,10 @@
                     <cti:msg2 var="textEditorTab" key=".scriptOptions.textEditorTab" />
                     <cti:tab title="${textEditorTab}" headerClasses="js-script-text">
                         <div class="error" id="script-error"></div>
-                        <textarea id="script" cols="100" rows="20"></textarea>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <c:set var="disableArea" value="disabled"/>
+                        </cti:displayForPageEditModes>
+                        <textarea id="script" cols="100" rows="20" ${disableArea}></textarea>
                     </cti:tab>
                 </cti:tabs>
             </cti:tab>

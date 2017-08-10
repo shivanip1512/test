@@ -162,6 +162,19 @@ yukon.ami.macs = (function () {
                     _updateTemplateFields();
                 });
                 
+                $(document).on('change', '.js-type', function (ev) {
+                    var type = $(this).val();
+                    if (type == 'SCRIPT') {
+                        $('.js-template').removeClass('dn');
+                        $('.js-script-tab').removeClass('dn');
+                        $('.js-commands-tab').addClass('dn');
+                    } else {
+                        $('.js-template').addClass('dn');
+                        $('.js-script-tab').addClass('dn');
+                        $('.js-commands-tab').removeClass('dn');
+                    }
+                });
+                
                 _initialized = true;
 
             }
