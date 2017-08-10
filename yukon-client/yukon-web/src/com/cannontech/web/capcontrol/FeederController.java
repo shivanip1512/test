@@ -25,7 +25,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
-import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.capcontrol.dao.SubstationBusDao;
+import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -42,8 +43,6 @@ import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.capcontrol.streamable.SubBus;
-import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.models.CapBankAssignment;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
@@ -59,7 +58,6 @@ import com.cannontech.yukon.IDatabaseCache;
 public class FeederController {
 
     @Autowired private FeederValidator validator;
-    @Autowired private CapControlCache ccCache;
     @Autowired private HolidayScheduleDao hoidayScheduleDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
@@ -68,6 +66,8 @@ public class FeederController {
     @Autowired private FeederService feederService;
     @Autowired private FeederDao feederDao;
     @Autowired private PointDao pointDao;
+    @Autowired private SubstationBusDao busDao;
+    @Autowired private SubstationDao substationDao;
 
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -149,24 +149,31 @@ public class FeederController {
             model.addAttribute("capBankList", capBankList);
 
             try {
-                ccCache.getFeeder(feeder.getId());
                 model.addAttribute("orphan", false);
-                
-                SubStation substation = ccCache.getParentSubstation(feeder.getId());
-                model.addAttribute("substationId", substation.getCcId());
-                model.addAttribute("substationName", substation.getCcName());
 
-                int areaId = ccCache.getParentAreaId(feeder.getId());
-                LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
+                int parentSubstationBusId = feederDao.getParentSubBusID(feeder.getId());
+                LiteYukonPAObject bus = dbCache.getAllPaosMap().get(parentSubstationBusId);
+                model.addAttribute("busId", bus.getLiteID());
+                model.addAttribute("busName", bus.getPaoName());
 
+                Integer parentSubstationId = busDao.getParent(parentSubstationBusId);
+                if (parentSubstationId == null) {
+                    throw new NotFoundException("Substation not found for substation bus with id " + parentSubstationBusId);
+                }
+                LiteYukonPAObject substation = dbCache.getAllPaosMap().get(parentSubstationId);
+                model.addAttribute("substationId", substation.getLiteID());
+                model.addAttribute("substationName", substation.getPaoName());
+
+                Integer parentAreaID = substationDao.getParentAreaID(parentSubstationId);
+                if (parentAreaID == null) {
+                    throw new NotFoundException("Area not found for substation with id " + parentSubstationId);
+                }
+                LiteYukonPAObject area = dbCache.getAllPaosMap().get(parentAreaID);
                 model.addAttribute("areaId", area.getLiteID());
                 model.addAttribute("areaName", area.getPaoName());
-                
-                SubBus bus = ccCache.getParentSubBus(feeder.getId());
-                model.addAttribute("busId", bus.getCcId());
-                model.addAttribute("busName", bus.getCcName());
 
-            } catch (NotFoundException e) {
+            } catch (NotFoundException | EmptyResultDataAccessException e) {
+                log.error(e);
                 model.addAttribute("orphan", true);
             }
         }
