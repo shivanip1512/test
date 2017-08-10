@@ -10,8 +10,7 @@
         <cti:csrfToken/>
         <form:hidden path="displayId" />
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".display.VIEW.pageName">${fn:escapeXml(displayName)}</tags:nameValue2>
-            <tags:inputNameValue nameKey=".copy.name" path="displayName" />
+            <tags:inputNameValue nameKey=".copy.name" path="displayName" maxlength="30"/>
         </tags:nameValueContainer2>
         <div class="action-area">
             <cti:button nameKey="ok" classes="primary js-tdc-copy-send" />
