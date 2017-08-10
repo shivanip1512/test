@@ -14,6 +14,7 @@ public class MacsScriptOptions {
     private String scriptText;
     private String description;
     private DeviceGroup group;
+    private String groupName;
     private int porterTimeout;
     private String filePath;
     private String missedFileName;
@@ -36,6 +37,7 @@ public class MacsScriptOptions {
     //billing
     private boolean isBillingSelected;
     private DeviceGroup billingGroup;
+    private String billingGroupName;
     private String billingFormat;
     private int billingDemandDays;
     private int billingEnergyDays;
@@ -254,5 +256,21 @@ public class MacsScriptOptions {
 
     public void setBillingFormat(String billingFormat) {
         this.billingFormat = billingFormat;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getBillingGroupName() {
+        return billingGroupName;
+    }
+
+    public void setBillingGroupName(String billingGroupName) {
+        this.billingGroupName = billingGroupName;
     }
 }

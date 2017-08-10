@@ -1,6 +1,8 @@
 package com.cannontech.web.amr.macsscheduler;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,6 +15,8 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,8 +26,12 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.macsscheduler.model.MacsException;
 import com.cannontech.amr.macsscheduler.model.MacsSchedule;
+import com.cannontech.amr.macsscheduler.model.MacsScriptTemplate;
+import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.DayOfWeek;
+import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.StartPolicy;
+import com.cannontech.amr.macsscheduler.model.MacsStopPolicy.StopPolicy;
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -31,16 +39,24 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -55,7 +71,10 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private HolidayScheduleDao holidaySchedules;
+    @Autowired private ServerDatabaseCache cache;
+
+    private final static String baseKey = "yukon.web.modules.tools.scripts.";
     
     @RequestMapping("view")
     public String view(ModelMap model, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
@@ -116,13 +135,92 @@ public class MACSScheduleController extends MultiActionController {
         return "schedulesView.jsp";
     }
     
+    @RequestMapping(value="create", method = RequestMethod.GET)
+    public String createSchedule(ModelMap model) {
+        MacsSchedule schedule = new MacsSchedule();
+        model.addAttribute("schedule", schedule);
+        model.addAttribute("mode", PageEditMode.CREATE);
+        setupModel(model, schedule);
+        return "schedule.jsp";
+    }
+    
     @RequestMapping(value="{id}/view", method = RequestMethod.GET)
-    public String viewSchedule(ModelMap model,YukonUserContext yukonUserContext, @PathVariable int id) {
+    public String viewSchedule(ModelMap model, @PathVariable int id) {
+        MacsSchedule schedule = service.getMacsScheduleById(id);
+        model.addAttribute("schedule", schedule);
+        model.addAttribute("mode", PageEditMode.VIEW);
+        setupModel(model, schedule);
+        return "schedule.jsp";
+    }
+    
+    @RequestMapping(value="{id}/edit", method = RequestMethod.GET)
+    public String editSchedule(ModelMap model, @PathVariable int id) {
+        MacsSchedule schedule = service.getMacsScheduleById(id);
+        model.addAttribute("schedule", schedule);
+        model.addAttribute("mode", PageEditMode.EDIT);
+        setupModel(model, schedule);
+        return "schedule.jsp";
+    }
+    
+    private void setupModel(ModelMap model, MacsSchedule schedule) {
+        model.addAttribute("types", new ArrayList<PaoType>(Arrays.asList(PaoType.SCRIPT, PaoType.SIMPLE_SCHEDULE)));
+        model.addAttribute("categories", service.getCategories());
+        model.addAttribute("templates", MacsScriptTemplate.values());
+        model.addAttribute("startPolicyOptions", StartPolicy.values());
+        model.addAttribute("holidaySchedules", holidaySchedules.getAllHolidaySchedules());
+        model.addAttribute("stopPolicyOptions", StopPolicy.values());
+        model.addAttribute("daysOfWeek", DayOfWeek.values());
+        model.addAttribute("fileFormats", FileFormatTypes.getValidFormatTypes());
+        //check if device or load group
+        model.addAttribute("target", "DEVICE");
+        if (schedule.getSimpleOptions() != null) {
+            LiteYukonPAObject pao = cache.getAllPaosMap().get(schedule.getSimpleOptions().getTargetPAObjectId());
+            if (pao.getPaoType().isLoadGroup()) {
+                model.addAttribute("target", "LOADGROUP");
+            }
+        }
+    }
+    
+    @RequestMapping(value="{id}/viewScript", method = RequestMethod.GET)
+    public String viewScript(ModelMap model,YukonUserContext yukonUserContext, @PathVariable int id) {
         //TODO: Get Script text and add to model
       
         model.addAttribute("script", "");
  
         return "script.jsp";
+    }
+    
+    @RequestMapping(value="createScript", method = RequestMethod.GET)
+    public @ResponseBody Map<String, Object> createScript(@ModelAttribute MacsSchedule schedule, YukonUserContext yukonUserContext) {
+        Map<String, Object> json = new HashMap<>();
+        try {
+            //TODO: change to pass schedule
+            String script = service.getScript(schedule.getId(), yukonUserContext.getYukonUser());
+            json.put("script",  script);
+        } catch (MacsException e) {
+            json.put("errorMsg",  e.getMessage());
+        }
+        return json;
+    }
+    
+    @RequestMapping(value="save", method = RequestMethod.POST)
+    public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, LiteYukonUser user, FlashScope flash) {
+        try {
+            if (schedule.getId() > 0) {
+                service.updateSchedule(schedule, user);
+            } else {
+                service.createSchedule(schedule, user);
+            }
+        } catch (DuplicateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MacsException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();        
+        }
+        // Success
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.successful"));
+        return "redirect:/macsscheduler/schedules/" + schedule.getId();
     }
     
     @RequestMapping(value="{id}/startStop", method = RequestMethod.GET)

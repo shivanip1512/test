@@ -32,4 +32,60 @@
     <entry key="yukon.web.modules.tools.scripts.stop.pageHeading">Stop {0}</entry>
     <entry key="yukon.web.modules.tools.scripts.stop.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.scripts.stop.stopNow">Stop Now</entry>
+    
+    <!-- View/Edit Schedule -->
+    <entry key="yukon.web.modules.tools.schedule.pageName">Schedule</entry>   
+    <entry key="yukon.web.modules.tools.schedule.generalTab">General</entry>     
+    <entry key="yukon.web.modules.tools.schedule.commandsTab">Commands</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptTab">Script</entry>     
+    <entry key="yukon.web.modules.tools.schedule.name">Name</entry>    
+    <entry key="yukon.web.modules.tools.schedule.categoryName">Category</entry>    
+    <entry key="yukon.web.modules.tools.schedule.type">Type</entry>    
+    <entry key="yukon.web.modules.tools.schedule.template">Template</entry>    
+    <entry key="yukon.web.modules.tools.schedule.startPolicySection.title">Start Policy</entry>    
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.startTime">Start Time (hh:mm)</entry>  
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.startDateTime">Start Date/Time</entry>
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.everyYear">Every Year</entry>
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.daysOfWeek">Days</entry>    
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.dayOfMonth">Day of Month (1-31)</entry>        
+    <entry key="yukon.web.modules.tools.schedule.type">Type</entry>    
+    <entry key="yukon.web.modules.tools.schedule.holiday">Holiday</entry>    
+    <entry key="yukon.web.modules.tools.schedule.stopPolicySection.title">Stop Policy</entry>            
+    <entry key="yukon.web.modules.tools.schedule.stopPolicy.duration">Duration (minutes)</entry>            
+    <entry key="yukon.web.modules.tools.schedule.stopPolicy.stopTime">Stop Time (hh:mm)</entry>  
+    <entry key="yukon.web.modules.tools.schedule.simpleOptions.start">Start</entry>            
+    <entry key="yukon.web.modules.tools.schedule.simpleOptions.stop">Stop</entry>              
+    <entry key="yukon.web.modules.tools.schedule.simpleOptions.repeatInterval">Repeat Interval (minutes)</entry>            
+    <entry key="yukon.web.modules.tools.schedule.simpleOptions.target">Target</entry>                
+    <entry key="yukon.web.modules.tools.schedule.simpleOptions.loadGroup.label">Load Group</entry>                
+    <entry key="yukon.web.modules.tools.schedule.simpleOptions.device.label">Device</entry>                    
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.fileName">File Name (ex: MeterRead.ctl)</entry>                
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.description">Description</entry>                
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.meterReadTab">Meter Read</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.optionsTab">Options</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.textEditorTab">Text Editor</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.porterTimeout">Porter Timeout (seconds)</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.filePath">File Path</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.missedFileName">Missed File Name</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.successFileName">Success File Name</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.retryCount">Retry Count</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.queueOffCount">Queue Off Count</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.maxRetryHours">Max Retry Hours</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.sendEmailNotification">Send Email Notification</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.notifyGroup">Notify Group</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.messageSubject">Message Subject</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.generateBillingFile">Generate Billing File</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.deviceGroup">Device Group</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.fileFormat">File Format</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.demandDays">Demand Days</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.energyDays">Energy Days</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.fileName">File Name</entry>     
+    <entry key="yukon.web.modules.tools.schedule.scriptOptions.filePath">File Path</entry>     
+        
+    <entry key="yukon.web.modules.tools.schedule.save.successful">Schedule was saved successfully.</entry>    
+    
+    <!-- Types -->
+    <entry key="yukon.web.modules.tools.schedule.type.SIMPLE">Simple</entry>    
+    <entry key="yukon.web.modules.tools.schedule.type.SCRIPT">Script</entry>  
+        
 </properties>

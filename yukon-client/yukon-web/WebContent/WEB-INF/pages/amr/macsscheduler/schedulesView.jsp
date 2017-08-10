@@ -30,11 +30,13 @@
                     </c:otherwise>
                 </c:choose>
                     <td>
-                        <!-- TODO: This will link to view/edit the schedule -->
-                        ${fn:escapeXml(schedule.scheduleName)}
+                        <cti:url var="viewUrl" value="/macsscheduler/schedules/${id}/view" />
+                        <a href="${viewUrl}">
+                            ${fn:escapeXml(schedule.scheduleName)}
+                        </a>
                     </td>
                     <td>
-                        <cti:url var="scriptUrl" value="/macsscheduler/schedules/${id}/view" />
+                        <cti:url var="scriptUrl" value="/macsscheduler/schedules/${id}/viewScript" />
                         <a href="${scriptUrl}">
                         ${fn:escapeXml(schedule.categoryName)}
                         </a>

@@ -101,6 +101,24 @@ yukon.ami.macs = (function () {
                     });
                 });
                 
+                $(document).on('click', '.js-script-text', function (ev) {
+                    var form = $('#macs-schedule');
+                    
+                    var data = $.ajax({
+                        url: yukon.url('/macsscheduler/schedules/createScript'),
+                        data: form.serialize()
+                    }).done(function (data, textStatus, jqXHR) {
+                        if (data.script) {
+                            var script = $('#script');
+                            script.html(data.script);
+                        }
+                        else if (data.errorMsg) {
+                            var errors = $('#script-error');
+                            errors.html(data.errorMsg);
+                        }
+                    });
+                });
+                
                 _initialized = true;
 
             }
