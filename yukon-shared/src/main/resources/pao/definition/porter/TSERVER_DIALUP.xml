@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="TSERVER_DIALUP" displayGroup="PORT" displayName="Terminal Server Dialup" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>PORT.xml</pointFile>
+    </pointFiles>
+    <pointInfos>
+        <pointInfo name="Port Queue Count" init="true" attributes="PORT_QUEUE_COUNT"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+    </pointInfos>
+</pao>

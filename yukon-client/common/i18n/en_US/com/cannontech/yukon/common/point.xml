@@ -544,5 +544,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.VAR_CONTROL">VAr Control</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_CONTROL">Volatge Control</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_DELTA_ABNORMAL">Voltage Delta Abnormal</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PORT_QUEUE_COUNT">Port Queue Count</entry>
     <!-- BuiltInAttribute see note above about changing values -->
 </properties>

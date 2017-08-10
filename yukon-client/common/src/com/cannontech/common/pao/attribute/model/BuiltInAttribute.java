@@ -506,6 +506,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VAR_CONTROL("VAr Control", AttributeGroup.CAPCONTROL, false),
     VOLTAGE_CONTROL("Volatge Control", AttributeGroup.CAPCONTROL, false),
     VOLTAGE_DELTA_ABNORMAL("Voltage Delta Abnormal", AttributeGroup.CAPCONTROL, false),
+    PORT_QUEUE_COUNT("Port Queue Count", AttributeGroup.OTHER, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
