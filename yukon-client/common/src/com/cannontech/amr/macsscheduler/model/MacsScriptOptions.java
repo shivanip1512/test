@@ -28,22 +28,22 @@ public class MacsScriptOptions {
     private String touRate;
     
     //Demand Reset
-    private boolean hasDemandResetInfo;
+    private boolean isDemandResetSelected;
     private int demandResetRetryCount;
     private String frozenDemandRegister;
     private String iedType;
     
     //billing
-    private boolean hasBillingInfo;
+    private boolean isBillingSelected;
     private DeviceGroup billingGroup;
-    private String billingFromat;
+    private String billingFormat;
     private int billingDemandDays;
     private int billingEnergyDays;
     private String billingFileName;
     private String billingFilePath;
     
     //Notification
-    private boolean hasNotificationInfo;
+    private boolean isNotificationSelected;
     private String notificationGroupName;
     private String notificationSubject;
     
@@ -120,28 +120,12 @@ public class MacsScriptOptions {
         this.description = description;
     }
     
-    public boolean hasBillingInfo() {
-        return hasBillingInfo;
-    }
-
-    public void setHasBillingInfo(boolean hasBillingInfo) {
-        this.hasBillingInfo = hasBillingInfo;
-    }
-
     public DeviceGroup getBillingGroup() {
         return billingGroup;
     }
 
     public void setBillingGroup(DeviceGroup billingGroup) {
         this.billingGroup = billingGroup;
-    }
-
-    public String getBillingFromat() {
-        return billingFromat;
-    }
-
-    public void setBillingFromat(String billingFromat) {
-        this.billingFromat = billingFromat;
     }
 
     public int getBillingDemandDays() {
@@ -184,14 +168,6 @@ public class MacsScriptOptions {
         this.touRate = touRate;
     }
 
-    public boolean isHasDemandResetInfo() {
-        return hasDemandResetInfo;
-    }
-
-    public void setHasDemandResetInfo(boolean hasDemandResetInfo) {
-        this.hasDemandResetInfo = hasDemandResetInfo;
-    }
-
     public int getDemandResetRetryCount() {
         return demandResetRetryCount;
     }
@@ -214,14 +190,6 @@ public class MacsScriptOptions {
 
     public void setIedType(String iedType) {
         this.iedType = iedType;
-    }
-
-    public boolean hasNotificationInfo() {
-        return hasNotificationInfo;
-    }
-
-    public void setHasNotificationInfo(boolean hasNotificationInfo) {
-        this.hasNotificationInfo = hasNotificationInfo;
     }
 
     public String getNotificationGroupName() {
@@ -254,5 +222,37 @@ public class MacsScriptOptions {
 
     public void setScriptText(String scriptText) {
         this.scriptText = scriptText;
+    }
+
+    public boolean isDemandResetSelected() {
+        return isDemandResetSelected;
+    }
+
+    public void setDemandResetSelected(boolean isDemandResetSelected) {
+        this.isDemandResetSelected = isDemandResetSelected;
+    }
+
+    public boolean isBillingSelected() {
+        return isBillingSelected;
+    }
+
+    public void setBillingSelected(boolean isBillingSelected) {
+        this.isBillingSelected = isBillingSelected;
+    }
+
+    public boolean isNotificationSelected() {
+        return isNotificationSelected;
+    }
+
+    public void setNotificationSelected(boolean isNotificationSelected) {
+        this.isNotificationSelected = isNotificationSelected;
+    }
+
+    public String getBillingFormat() {
+        return billingFormat;
+    }
+
+    public void setBillingFormat(String billingFormat) {
+        this.billingFormat = billingFormat;
     }
 }

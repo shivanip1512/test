@@ -27,15 +27,15 @@ public enum MacsScriptTemplate {
     private static Set<MacsScriptTemplate> ied400 = ImmutableSet.of(IED_400_METER_READ_RETRY, IED_400_METER_READ);
     
     private int id;
-    private String decription;
+    private String description;
     
-    MacsScriptTemplate(int id, String decription){
+    MacsScriptTemplate(int id, String description){
         this.id = id;
-        this.decription = decription;
+        this.description = description;
     }
 
     public String getDecription() {
-        return decription;
+        return description;
     }
 
     public int getId() {

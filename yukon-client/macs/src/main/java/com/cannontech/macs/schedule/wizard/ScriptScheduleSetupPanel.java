@@ -226,7 +226,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	text += getScriptTemplate().buildParameterScript();
     	
     	//Get main code
-    	String tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.MAIN_CODE);
+    	String tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.MAIN_CODE, false);
     	if (tempText == null) {
     		tempText = ScriptTemplate.getScriptCode(getTemplateType());
     	}
@@ -234,27 +234,18 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	
     	//Get email notification code
     	if(getSendEmailCheckBox().isSelected()) {
-    	    tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.NOTIFICATION);
-    	    if( tempText == null) {
-    	        tempText = ScriptTemplate.buildNotificationCode();
-            }
+    	    tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.NOTIFICATION, true);
     	    text += tempText;
     	}
     
     	//Get billing code
     	if(getGenerateBillingCheckBox().isSelected()) {
-    	    tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.BILLING);
-    	    if( tempText == null) {
-    	        tempText = ScriptTemplate.buildBillingCode();
-            }
+    	    tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.BILLING, true);
     	    text += tempText;
     	}
     	
     	//Get the footer code
-    	tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.FOOTER); 
-    	if( tempText == null) {
-    	    tempText = ScriptTemplate.buildScriptFooterCode();
-        }
+    	tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.FOOTER, true); 
     	text += tempText;
     	
         return text;
@@ -294,7 +285,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         if (e.getSource() == getScriptTextArea()) {
             setScriptText(getScriptTextArea().getText());
             if( ! ScriptTemplateTypes.isNoTemplate(getTemplateType())) {
-                getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.PARAMETER_LIST));
+                getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
                 initSwingCompValues(true);
             }
         }
@@ -2442,7 +2433,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			getScriptTextArea().setCaretPosition(0);
     			
     			//Load parameters from the script.
-    			getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(file.getFileContents(), ScriptTemplate.PARAMETER_LIST));
+    			getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(file.getFileContents(), ScriptTemplate.PARAMETER_LIST, false));
     			//load up the swing components with the parameter values from the script file.
     			initSwingCompValues(true);
                 // turn on listeners after we are actually done with setting up components

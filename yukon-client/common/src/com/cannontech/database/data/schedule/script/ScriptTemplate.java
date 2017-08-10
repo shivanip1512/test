@@ -104,7 +104,7 @@ public class ScriptTemplate {
         String[] exportBaseFilePathParts = {path, "Server", "Export"};
         exportBaseFilePath = StringUtils.join(exportBaseFilePathParts, "/") + "/";
         
-        paramToValueMap = new HashMap<ScriptParameters, String>(30);
+        paramToValueMap = new HashMap<>(30);
         //give it some default values!
         paramToValueMap.put(SCHEDULE_NAME_PARAM, "");
         paramToValueMap.put(SCRIPT_FILE_NAME_PARAM, "");
@@ -140,7 +140,7 @@ public class ScriptTemplate {
         paramToValueMap.put(READ_FROZEN_PARAM, "");
         paramToValueMap.put(IED_TYPE_PARAM, "");
         
-        paramToDescMap = new HashMap<ScriptParameters, String>(30);
+        paramToDescMap = new HashMap<>(30);
         //Set the values, a map is used cause they are easier to find this way!
         paramToDescMap.put(SCHEDULE_NAME_PARAM, "The name of the schedule.");
         paramToDescMap.put(SCRIPT_FILE_NAME_PARAM, "The name of the script file, extension .ctl.");
@@ -299,7 +299,12 @@ public class ScriptTemplate {
 	{
 	    return buildScriptFromFiles("footer.tcl");
 	}
-	public static String getScriptSection(String text, String sectionTag)
+	
+	/**
+	 * Returns script text.
+	 * @param loadDefault - if true attempts to build get a default code text if present.
+	 */
+	public static String getScriptSection(String text, String sectionTag, boolean loadDefault)
 	{
 	    String startTag = START + sectionTag;
 	    String endTag = END + sectionTag;
@@ -307,11 +312,32 @@ public class ScriptTemplate {
 	    {
 	        int startIndex = text.indexOf(startTag)-1;//get that COMMENT char too ( -1)!
 	        int endIndex = text.lastIndexOf(endTag) + endTag.length();
-	        if (startIndex >= 0 && endIndex > startIndex)
-	            return ENDLINE + text.substring(startIndex, endIndex) + ENDLINE;
+	        if (startIndex >= 0 && endIndex > startIndex) {
+                return ENDLINE + text.substring(startIndex, endIndex) + ENDLINE;
+            }
 	    }
-	    return null;
+        if (loadDefault) {
+            return getDefault(sectionTag);
+        }
+        return null;
 	}
+	
+    /**
+     * Returns default code text.
+     */
+    private static String getDefault(String sectionTag) {
+
+        if (ScriptTemplate.NOTIFICATION.equals(sectionTag)) {
+            return ScriptTemplate.buildNotificationCode();
+        }
+        if (ScriptTemplate.BILLING.equals(sectionTag)) {
+            return ScriptTemplate.buildBillingCode();
+        }
+        if (ScriptTemplate.FOOTER.equals(sectionTag)) {
+            return ScriptTemplate.buildScriptFooterCode();
+        }
+        return null;
+    }
 	
 
 	public void loadParamsFromScript(String script)

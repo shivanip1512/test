@@ -21,15 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.macsscheduler.model.MacsException;
-import com.cannontech.amr.macsscheduler.model.MacsException.MACSExceptionType;
 import com.cannontech.amr.macsscheduler.model.MacsSchedule;
-import com.cannontech.amr.macsscheduler.model.MacsScriptOptions;
-import com.cannontech.amr.macsscheduler.model.MacsScriptTemplate;
-import com.cannontech.amr.macsscheduler.model.MacsSimpleOptions;
-import com.cannontech.amr.macsscheduler.model.MacsStartPolicy;
-import com.cannontech.amr.macsscheduler.model.MacsStopPolicy;
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
-import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -40,7 +34,6 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -62,6 +55,7 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private DeviceGroupService deviceGroupService;
     
     @RequestMapping("view")
     public String view(ModelMap model, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
@@ -125,13 +119,9 @@ public class MACSScheduleController extends MultiActionController {
     @RequestMapping(value="{id}/view", method = RequestMethod.GET)
     public String viewSchedule(ModelMap model,YukonUserContext yukonUserContext, @PathVariable int id) {
         //TODO: Get Script text and add to model
-        try {
-            String script = service.getScript(id, yukonUserContext.getYukonUser());
-            model.addAttribute("script", script);
-        } catch (MacsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+      
+        model.addAttribute("script", "");
+ 
         return "script.jsp";
     }
     
@@ -247,137 +237,6 @@ public class MACSScheduleController extends MultiActionController {
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.tools.scripts.innerView." + name();
-        }
-    }
-    
-   
-    /**
-     *  qa14 - simple
-     *  qa8 - script
-     */
-    private void createSchedule() {
-
-        // FIRST SCREEN
-
-        MacsSchedule schedule = new MacsSchedule();
-        // check for duplicate - service - isScheduleNameExists
-        schedule.setScheduleName("");
-        // service - getCategories()
-        schedule.setCategoryName("");
-
-        // template list
-        MacsScriptTemplate.values(); // description field
-
-        MacsStartPolicy startPolicy = schedule.getStartPolicy();
-        // getStartTime and getValidWeekDays needs to return a string in a certain format to populate the
-        // message to c++ service
-        // MacsStartPolicy.StartPolicy enum - CronTagStyleType?
-        // ServerDatabaseCache.allHolidaySchedules
-        startPolicy.setHolidayScheduleId(0);
-
-        MacsStopPolicy stopPolicy = schedule.getStopPolicy();
-        // getStopTime needs to return a string in a certain format to populate the message to c++ service
-
-        // NEXT SCREEN
-        if (schedule.isScript()) {
-            MacsScriptOptions options = new MacsScriptOptions();
-            schedule.setScriptOptions(options);
-            // make sure file ends with ".ctl" or append ".ctl" to it and WebFileUtils.isValidWindowsFilename
-            options.setFileName("");
-
-            if (schedule.getTemplate().isNoTemplateSelected()) {
-                // value from the text editor
-                options.setScriptText("");
-
-            }
-
-            if (!schedule.getTemplate().isNoTemplateSelected()) {
-
-                if (!schedule.getTemplate().isRetry()) {
-                    // display retry options
-                }
-                if (schedule.getTemplate().isIed()) {
-
-                    // display TOU rate dropdown
-                    // value MacsScriptOptions.touRates
-
-                    // selected value
-                    options.setTouRate("");
-
-                    // display reset demand checkbox
-                    options.setHasDemandResetInfo(true); // if checked
-
-                    // display reset retry count - possible values validated 0 - 5
-                    options.setDemandResetRetryCount(0);
-
-                    if (schedule.getTemplate().isIed300()) {
-                        // display 2 checkboxs - "Landis-Gyr S4" and "Alpha"
-                        options.setFrozenDemandRegister("Landis-Gyr S4 or Alpha");
-                    }
-
-                    if (schedule.getTemplate().isIed400()) {
-                        // display IEDType dropdown
-                        // MacsScriptOptions iedTypes
-                        options.setIedType("");
-                    }
-                }
-            }
-
-            // OPTIONS TAB
-
-            // if checked
-            options.setHasNotificationInfo(true);
-            // dropdown - ServerDatabaseCache getAllContactNotificationGroups()
-
-            // if checked
-            options.setHasBillingInfo(true);
-            // dowpdown of file formats
-            String[] formats = FileFormatTypes.getValidFormatTypes();
-
-            // TEXT Editor Tab
-            String content = MacsScriptHelper.build(options, schedule.getTemplate());
-            options.setScriptText(content);
-
-        }
-
-        if (schedule.isSimple()) {
-            MacsSimpleOptions options = new MacsSimpleOptions();
-            schedule.setSimpleOptions(options);
-            options.getStartCommand();
-            options.getStopCommand();
-            
-            //TDC displays start/stop commands as dropdown, I couldn't find where it is populated
-            //Searched SimpleSchedulePanel for xxxComboBox.addItem
-            
-            //the id user chose from the selection box.
-            options.setTargetPAObjectId(0);
-        }
-        
-        //SAVING SCHEDULE
-        try {
-            if (schedule.isScript()) {
-                // writes script to disc
-                MacsScriptHelper.write(schedule.getScriptOptions().getFileName(),
-                    schedule.getScriptOptions().getScriptText());
-            }
-            // sends message to c++ service
-            service.createSchedule(schedule, null);
-        } catch (DuplicateException e) {
-            if (schedule.isScript()) {
-                MacsScriptHelper.delete(schedule.getScriptOptions().getFileName());
-            }
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (MacsException e) {
-            if (schedule.isScript()) {
-                MacsScriptHelper.delete(schedule.getScriptOptions().getFileName());
-            }
-            
-            MACSExceptionType type = e.getType();
-            //display error based on type.
-            
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 }

@@ -64,8 +64,8 @@ public class MacsSchedule implements YukonPao{
     private boolean updatingState;
     private MacsStartPolicy startPolicy = new MacsStartPolicy();
     private MacsStopPolicy stopPolicy = new MacsStopPolicy();
-    private MacsSimpleOptions simpleOptions;
-    private MacsScriptOptions scriptOptions;
+    private MacsSimpleOptions simpleOptions = new MacsSimpleOptions();
+    private MacsScriptOptions scriptOptions = new MacsScriptOptions();
     private MacsScriptTemplate template = MacsScriptTemplate.NO_TEMPLATE;
     
     private Status status = Status.NONE;
