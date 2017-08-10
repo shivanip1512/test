@@ -135,6 +135,7 @@ const Attribute Attribute::kVA                                              = At
 const Attribute Attribute::DeliveredkVA                                     = Attribute( "DELIVERED_KVA" );
 const Attribute Attribute::ReceivedkVA                                      = Attribute( "RECEIVED_KVA" );
 const Attribute Attribute::SumkVA                                           = Attribute( "SUM_KVA" );
+const Attribute Attribute::KvaPeakDemandCoin                                = Attribute( "KVA_PEAK_DEMAND_COIN" );
 const Attribute Attribute::PeakkVA                                          = Attribute( "PEAK_KVA" );
 const Attribute Attribute::PeakkVARateA                                     = Attribute( "PEAK_KVA_RATE_A" );
 const Attribute Attribute::PeakkVARateB                                     = Attribute( "PEAK_KVA_RATE_B" );

@@ -179,6 +179,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVA">Delivered kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_KVA">Received kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVA">Sum kVA</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVA_PEAK_DEMAND_COIN">kVA at Peak Demand Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE">Phase</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FAIL_FLAG">Power Fail Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PROFILE_CHANNEL_2">Profile Channel 2</entry>

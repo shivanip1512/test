@@ -124,6 +124,7 @@ public:
     static const Attribute  DeliveredkVA;
     static const Attribute  ReceivedkVA;
     static const Attribute  SumkVA;
+    static const Attribute  KvaPeakDemandCoin;
     static const Attribute  PeakkVA;
     static const Attribute  PeakkVARateA;
     static const Attribute  PeakkVARateB;

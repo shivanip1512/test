@@ -141,6 +141,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DELIVERED_KVA("Delivered kVA", AttributeGroup.REACTIVE),
     RECEIVED_KVA("Received kVA", AttributeGroup.REACTIVE),
     SUM_KVA("Sum kVA", AttributeGroup.REACTIVE),
+    KVA_PEAK_DEMAND_COIN("kVA at Peak Demand Coincidental", AttributeGroup.REACTIVE),
     PEAK_KVA("Peak kVA", AttributeGroup.REACTIVE),
     PEAK_KVA_RATE_A("Peak kVA Rate A", AttributeGroup.REACTIVE),
     PEAK_KVA_RATE_B("Peak kVA Rate B", AttributeGroup.REACTIVE),

@@ -2271,6 +2271,21 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="kVA at Peak kW Coincidental">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
         <point name="Rate A kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
