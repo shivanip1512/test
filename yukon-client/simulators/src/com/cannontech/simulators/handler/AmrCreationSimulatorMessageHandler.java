@@ -31,7 +31,7 @@ public class AmrCreationSimulatorMessageHandler extends SimulatorMessageHandler 
     public SimulatorResponse handle(SimulatorRequest simulatorRequest) {
         try {
             if (simulatorRequest instanceof AmrCreationSimulatorRequest) {
-                final AmrCreationSimulatorRequest request = (AmrCreationSimulatorRequest) simulatorRequest;
+                AmrCreationSimulatorRequest request = (AmrCreationSimulatorRequest) simulatorRequest;
                 if (!devAmrCreationService.isRunning()) {
                     Thread thread = new Thread() {
                         @Override
