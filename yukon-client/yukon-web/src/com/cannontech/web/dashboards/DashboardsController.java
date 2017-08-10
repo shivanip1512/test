@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -396,7 +397,19 @@ public class DashboardsController {
     }
     
     @RequestMapping("save")
-    public String saveDashboard(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, FlashScope flash) {
+    public String saveDashboard(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, ModelMap model,
+            FlashScope flash, BindingResult result, HttpServletResponse resp) {
+        boolean isGroupNotSelected = dashboard.getAllWidgets()
+                                              .stream()
+                                              .filter(widget -> widget.getType() == WidgetType.DATA_COLLECTION)
+                                              .anyMatch(widget -> StringUtils.isBlank(widget.getParameters().get("deviceGroup")));
+        if (isGroupNotSelected) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.deviceGroup", dashboard.getName()));
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            setupDashboardDetailsModel(model, yukonUser);
+            return "dashboardEdit.jsp";
+        }
         Dashboard existingDashboard = dashboardService.getDashboard(dashboard.getDashboardId());
         if (canUserEditDashboard(yukonUser, existingDashboard, flash)) {
             dashboard.setOwner(yukonUser);
@@ -428,7 +441,11 @@ public class DashboardsController {
     private boolean isSystemDashboard(Dashboard dashboard) {
         return dashboard.getVisibility() == Visibility.SYSTEM;
     }
-    
+
+    /*private boolean isGroupSelected(Dashboard dashboard) {
+        return dashboard.getColumn1Widgets().
+    }*/
+
     private boolean isDashboardOwner(LiteYukonUser yukonUser, Dashboard dashboard) {
         return (yukonUser.getUserID() == dashboard.getOwner().getUserID());
     }
