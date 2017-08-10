@@ -115,7 +115,7 @@ public class TdcDisplayController {
                 YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
             }
             else if (bean.getDisplayName() != null) {
-                YukonValidationUtils.checkIsBlank(errors, "displayName", bean.getDisplayName(), false);
+                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "displayName", bean.getDisplayName(), false, 30);
                 Display display = displayDao.getDisplayByName(bean.getDisplayName());
                 if (display != null) {
                     errors.rejectValue("displayName", "yukon.web.error.nameConflict");
@@ -675,7 +675,6 @@ public class TdcDisplayController {
         Display newDisplay = tdcService.copyCustomDisplay(backingBean.getDisplayId(), backingBean.getDisplayName());
 
         Map<String, Object> data = new HashMap<>();
-        data.put("success", true);
         data.put("displayId", newDisplay.getDisplayId());
         
         response.setContentType("application/json");
@@ -691,5 +690,4 @@ public class TdcDisplayController {
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "display.DELETE.success", display.getName()));
         return "redirect:/tools/data-viewer";
     }
-
 }
