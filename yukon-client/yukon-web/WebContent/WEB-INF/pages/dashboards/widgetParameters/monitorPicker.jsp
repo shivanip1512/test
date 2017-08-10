@@ -17,7 +17,8 @@
             linkType="selection"
             multiSelectMode="true"
             selectionProperty="monitorName"
-            destinationFieldId="param_${id}"/>
-    
+            destinationFieldId="param_${id}"
+            allowEmptySelection="true"/>
+            
     </tags:nameValue2>
 </tags:nameValueContainer2>
