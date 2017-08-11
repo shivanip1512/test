@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="regulatorCategory"/>
  *     &lt;enumeration value="regulatorHeartbeat"/>
  *     &lt;enumeration value="cbcHeartbeat"/>
+ *     &lt;enumeration value="cbcAttributeMapping"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -115,7 +116,9 @@ public enum CategoryType {
     @XmlEnumValue("regulatorHeartbeat")
     REGULATOR_HEARTBEAT("regulatorHeartbeat"),
     @XmlEnumValue("cbcHeartbeat")
-    CBC_HEARTBEAT("cbcHeartbeat");
+    CBC_HEARTBEAT("cbcHeartbeat"),
+    @XmlEnumValue("cbcAttributeMapping")
+    CBC_ATTRIBUTE_MAPPING("cbcAttributeMapping");
     private final String value;
 
     CategoryType(String v) {

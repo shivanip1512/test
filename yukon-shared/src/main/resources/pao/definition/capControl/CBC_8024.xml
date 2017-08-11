@@ -11,6 +11,7 @@
     <configuration>
         <category type="dnp"/>
         <category type="cbcHeartbeat" />
+        <category type="cbcAttributeMapping" optional="true" />
     </configuration>
     <pointInfos>
         <pointInfo name="Abnormal Delta Voltage" init="true" attributes="VOLTAGE_DELTA_ABNORMAL"/>

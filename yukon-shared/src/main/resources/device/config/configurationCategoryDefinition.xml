@@ -385,4 +385,11 @@
         <float field="cbcHeartbeatPeriod" default="5" minValue="1.0" maxValue="1440.0" />
         <integer field="cbcHeartbeatValue" default="15" minValue="1" maxValue="9999" />
     </category>
+    
+    <category type="cbcAttributeMapping">
+        <indexed field="attributeMappings" minOccurs="1" maxOccurs="30">
+            <enum field="attribute" type="CapControlAttribute"/>
+            <string field="pointName" maxLength="60" />
+        </indexed>
+    </category>
 </deviceConfigurationCategories>

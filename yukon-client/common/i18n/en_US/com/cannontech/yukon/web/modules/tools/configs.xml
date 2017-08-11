@@ -562,6 +562,13 @@
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue">Heartbeat Value</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
 
+    <!-- help text used by all categories using attribute mapping inputs -->
+    <entry key="yukon.web.modules.tools.configs.category.attributeMapping.helpText">The name of the point that will be associated with the specified attribute.  Overrides existing device attribute assignments.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.cbcAttributeMapping.title">CBC Attribute Mapping</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcAttributeMapping.definition">Cap Control attribute assignment based on point names.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcAttributeMapping.attributeMappings">Attribute Point Names</entry>
+
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
     <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>    
