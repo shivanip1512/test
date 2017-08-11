@@ -17,13 +17,15 @@ public class MeterRowMapper implements YukonRowMapper<YukonMeter>, SqlProvider {
 
     private final String sql = "SELECT ypo.paObjectId, ypo.paoName, ypo.type, ypo.disableFlag, " +
                                 "dmg.meterNumber, dcs.address, dr.routeId, rypo.paoName as route, " +
-                                "serialNumber, manufacturer, model "+
+                                "cypo.paoName as port, ddcs.portId, serialNumber, manufacturer, model "+
                                 "from YukonPaObject ypo " + 
                                 "join Device d on ypo.paObjectId = d.deviceId " + 
                                 "join DeviceMeterGroup dmg on d.deviceId = dmg.deviceId " + 
                                 "left join DeviceCarrierSettings dcs on d.deviceId = dcs.deviceId " + 
+                                "LEFT JOIN DeviceDirectCommSettings ddcs ON d.deviceId = ddcs.deviceId " + 
                                 "left join DeviceRoutes dr on d.deviceId = dr.deviceId " + 
                                 "left join YukonPaObject rypo on dr.routeId = rypo.paObjectId " +
+                                "LEFT JOIN YukonPaObject cypo ON ddcs.portId = cypo.paObjectId " +
                                 "LEFT JOIN RFNAddress rfna ON rfna.deviceId = d.deviceid";
 
     @Override
@@ -48,7 +50,10 @@ public class MeterRowMapper implements YukonRowMapper<YukonMeter>, SqlProvider {
             int routeId = rs.getInt("routeId");
             return new PlcMeter(paoIdentifier, meterNumber, paoName, disabled, routeName, routeId, address);
         } else if (paoIdentifier.getPaoType().isIed()) {
-            return new IedMeter(paoIdentifier, meterNumber, paoName, disabled);
+            IedMeter iedMeter = new IedMeter(paoIdentifier, meterNumber, paoName, disabled);
+            iedMeter.setPortId(rs.getInt("portId"));
+            iedMeter.setPort(rs.getString("port"));
+            return iedMeter;
         } else {
             return null;
         }

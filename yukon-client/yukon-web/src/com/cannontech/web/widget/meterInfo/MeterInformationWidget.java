@@ -60,7 +60,7 @@ import com.cannontech.web.widget.support.SimpleWidgetInput;
 @Controller
 @RequestMapping("/meterInformationWidget/*")
 public class MeterInformationWidget extends AdvancedWidgetControllerBase {
-    
+    @Autowired private ServerDatabaseCache serverDatabaseCache;
     private final static String baseKey = "yukon.web.widgets.meterInformationWidget.";
     
     @Autowired
@@ -95,6 +95,8 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         } else if (meter instanceof PlcMeter) {
             /* Show PLC settings such as route and physcal address */
             model.addAttribute("showCarrierSettings", true);
+        } else {
+            model.addAttribute("showCommSettings", true);
         }
         
         if (paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
@@ -150,6 +152,8 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             }
         } else {
             model.addAttribute("meter", MeterModel.of(meter));
+            List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
+            model.addAttribute("ports", ports);
         }
               
         return "meterInformationWidget/edit.jsp";
@@ -264,7 +268,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         
         LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
         IedMeter ied = new IedMeter(pao.getPaoIdentifier(), meter.getMeterNumber(), meter.getName(), meter.isDisabled());
-        
+        ied.setPortId(meter.getPortId());
         meterDao.update(ied);
         // Success
         model.clear();

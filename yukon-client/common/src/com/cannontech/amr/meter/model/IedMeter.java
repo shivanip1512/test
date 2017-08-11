@@ -10,7 +10,8 @@ import com.cannontech.database.data.device.IEDMeter;
  * This is the basic "ied" (intelligent electronic device) type meter (Examples: See those that extend {@link IEDMeter})
  */
 public class IedMeter extends YukonMeter {
-
+    private Integer portId;
+    private String port = "";
     public IedMeter() {
         super();
     }
@@ -33,6 +34,22 @@ public class IedMeter extends YukonMeter {
     @Override
     public String getRoute() {
         return null;
+    }
+
+    public Integer getPortId() {
+        return portId;
+    }
+
+    public void setPortId(Integer portId) {
+        this.portId = portId;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
     }
 
     @Override

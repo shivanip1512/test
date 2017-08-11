@@ -114,7 +114,10 @@ public class MeterDaoImpl implements MeterDao {
                 throw new DuplicateException("RFN Address was not able to be inserted or updated.", e);
             }
         } else if (meter instanceof IedMeter) {
-            // do nothing special
+            sql = new SqlStatementBuilder();
+            sql.append("UPDATE DeviceDirectCommSettings").set("PortId", ((IedMeter) meter).getPortId());
+            sql.append("WHERE DeviceId").eq(meter.getDeviceId());
+            jdbcTemplate.update(sql);
         }
         
         if (meter.isDisabled()) {

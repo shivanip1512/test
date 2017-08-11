@@ -34,6 +34,9 @@
                     itemValue="liteID"/>
             </c:if>
         </c:if>
+        <c:if test="${!showRFMeshSettings && !showCarrierSettings}">
+            <tags:selectNameValue nameKey=".ports" items="${ports}" path="portId" itemLabel="paoName" itemValue="liteID" rowClass="js-ied-fields"/>
+        </c:if>
         <c:if test="${showRFMeshSettings}">
             <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE"/>
             <tags:inputNameValue nameKey=".manufacturer" path="manufacturer" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" />
