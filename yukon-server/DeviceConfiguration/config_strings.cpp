@@ -212,6 +212,10 @@ const string DNPStrings::enableNonUpdatedOnFailedScan = "enableNonUpdatedOnFaile
 const string DNPStrings::enableDnpTimesyncs = "enableDnpTimesyncs";
 const string DNPStrings::timeOffset = "timeOffset";
 
+const string DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix     = "attributeMappings";
+const string DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute = "attribute";
+const string DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName = "pointName";
+
 /* RFN */
 const string RfnStrings::displayItem01 = "displayItem1";
 const string RfnStrings::displayItem02 = "displayItem2";

@@ -18,6 +18,17 @@ public:
     static const std::string enableNonUpdatedOnFailedScan;
     static const std::string enableDnpTimesyncs;
     static const std::string timeOffset;
+
+    struct IM_EX_CONFIG AttributeMappingConfiguration
+    {
+        static const std::string AttributeMappings_Prefix;
+
+        struct IM_EX_CONFIG AttributeMappings
+        {
+            static const std::string Attribute;
+            static const std::string PointName;
+        };
+    };
 };
 
 }
