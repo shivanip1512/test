@@ -25,7 +25,8 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.SCHEDULE_NAME_PARAM;
+
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -62,13 +63,15 @@ public class MacsScriptHelper {
     
     private static DeviceGroup getGroup(ScriptTemplate scriptTemplate, ScriptParameters groupParam,
             DeviceGroupService deviceGroupService) {
-        String groupName = scriptTemplate.getParameterValue(groupParam);
-        if (StringUtils.isNotEmpty(groupName)) {
-            return deviceGroupService.resolveGroupName(groupName);
+        if (deviceGroupService != null) {
+            String groupName = scriptTemplate.getParameterValue(groupParam);
+            if (StringUtils.isNotEmpty(groupName)) {
+                return deviceGroupService.resolveGroupName(groupName);
+            }
         }
         return null;
     }
-    
+
     public static void loadFromFile(MacsSchedule schedule, DeviceGroupService deviceGroupService) {
 
         MacsScriptOptions options = schedule.getScriptOptions();
@@ -79,36 +82,33 @@ public class MacsScriptHelper {
         }
         
         ScriptTemplate scriptTemplate = new ScriptTemplate();
-  
-
-        scriptTemplate.loadParamsFromScript(
-            ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
-
+        scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
         loadValuesFromTemplate(schedule, scriptTemplate, deviceGroupService);
     }
 
-    public static void loadDefaultValues(MacsSchedule schedule, DeviceGroupService deviceGroupService) {
-        loadValuesFromTemplate(schedule, new ScriptTemplate(), deviceGroupService);
+    public static void loadDefaultValues(MacsSchedule schedule) {
+        loadValuesFromTemplate(schedule, new ScriptTemplate(), null);
     }
     
-    public static void loadValuesFromTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate,
+    private static void loadValuesFromTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate,
             DeviceGroupService deviceGroupService) {
-        scriptTemplate.setParameterValue(SCHEDULE_NAME_PARAM, schedule.getScheduleName());
+
         MacsScriptOptions options = schedule.getScriptOptions();
-        String fileName = Strings.isNullOrEmpty(options.getFileName()) ? schedule.getScheduleName()+".ctl" : options.getFileName();
-        scriptTemplate.setParameterValue(SCRIPT_FILE_NAME_PARAM, fileName);
+        if(!Strings.isNullOrEmpty(schedule.getScheduleName())){
+            options.setFileName(schedule.getScheduleName()+".ctl");
+        }
         options.setDescription(scriptTemplate.getParameterValue(SCRIPT_DESC_PARAM));
         options.setFilePath(scriptTemplate.getParameterValue(FILE_PATH_PARAM));
         options.setMissedFileName(scriptTemplate.getParameterValue(MISSED_FILE_NAME_PARAM));
         options.setSuccessFileName(scriptTemplate.getParameterValue(SUCCESS_FILE_NAME_PARAM));
         options.setPorterTimeout(NumberUtils.toInt(scriptTemplate.getParameterValue(PORTER_TIMEOUT_PARAM), 0));
-        
-        scriptTemplate.setParameterValue(READ_WITH_RETRY_FLAG_PARAM, !schedule.getTemplate().isRetry());
-        
-        options.setRetryCount(NumberUtils.toInt(scriptTemplate.getParameterValue(RETRY_COUNT_PARAM), 0));
-        options.setMaxRetryHours(NumberUtils.toInt(scriptTemplate.getParameterValue(MAX_RETRY_HOURS_PARAM), 0));
-        options.setQueueOffCount(NumberUtils.toInt(scriptTemplate.getParameterValue(QUEUE_OFF_COUNT_PARAM), 0));
-       
+               
+        if (!schedule.getTemplate().isRetry()) {
+            options.setRetryCount(NumberUtils.toInt(scriptTemplate.getParameterValue(RETRY_COUNT_PARAM), 0));
+            options.setMaxRetryHours(NumberUtils.toInt(scriptTemplate.getParameterValue(MAX_RETRY_HOURS_PARAM), 0));
+            options.setQueueOffCount(NumberUtils.toInt(scriptTemplate.getParameterValue(QUEUE_OFF_COUNT_PARAM), 0));
+        }
+
         options.setBillingSelected(Boolean.valueOf(scriptTemplate.getParameterValue(BILLING_FLAG_PARAM)));
         options.setBillingFileName(scriptTemplate.getParameterValue(BILLING_FILE_NAME_PARAM));
         options.setBillingFilePath(scriptTemplate.getParameterValue(BILLING_FILE_PATH_PARAM));
@@ -125,29 +125,33 @@ public class MacsScriptHelper {
         
     private static String getInputParameters(MacsScriptTemplate template, MacsScriptOptions options) {
         ScriptTemplate scriptTemplate = new ScriptTemplate();
-        scriptTemplate.setParameterValue(SCRIPT_FILE_NAME_PARAM, options.getFileName());
-        scriptTemplate.setParameterValue(SCRIPT_DESC_PARAM, options.getDescription());
+        scriptTemplate.setParameterValue(SCRIPT_FILE_NAME_PARAM, Objects.toString(options.getFileName(), ""));
+        scriptTemplate.setParameterValue(SCRIPT_DESC_PARAM, Objects.toString(options.getDescription(), ""));
 
-        scriptTemplate.setParameterValue(GROUP_NAME_PARAM, options.getGroup().getFullName());
+        if(options.getGroup() != null){
+            scriptTemplate.setParameterValue(GROUP_NAME_PARAM, options.getGroup().getFullName());
+        }
         scriptTemplate.setParameterValue(PORTER_TIMEOUT_PARAM, options.getPorterTimeout());
-        scriptTemplate.setParameterValue(FILE_PATH_PARAM, options.getFilePath());
-        scriptTemplate.setParameterValue(MISSED_FILE_NAME_PARAM, options.getMissedFileName());
-        scriptTemplate.setParameterValue(SUCCESS_FILE_NAME_PARAM, options.getSuccessFileName());
+        scriptTemplate.setParameterValue(FILE_PATH_PARAM, Objects.toString(options.getFilePath(), ""));
+        scriptTemplate.setParameterValue(MISSED_FILE_NAME_PARAM, Objects.toString(options.getMissedFileName(), ""));
+        scriptTemplate.setParameterValue(SUCCESS_FILE_NAME_PARAM, Objects.toString(options.getSuccessFileName(), ""));
 
         if (options.isBillingSelected()) {
             scriptTemplate.setParameterValue(BILLING_FLAG_PARAM, true);
-            scriptTemplate.setParameterValue(BILLING_FILE_NAME_PARAM, options.getBillingFileName());
-            scriptTemplate.setParameterValue(BILLING_FILE_PATH_PARAM, options.getBillingFilePath());
+            scriptTemplate.setParameterValue(BILLING_FILE_NAME_PARAM, Objects.toString(options.getBillingFileName(), ""));
+            scriptTemplate.setParameterValue(BILLING_FILE_PATH_PARAM, Objects.toString(options.getBillingFilePath(), ""));
             scriptTemplate.setParameterValue(BILLING_FORMAT_PARAM, options.getBillingFormat());
             scriptTemplate.setParameterValue(BILLING_ENERGY_DAYS_PARAM, options.getBillingEnergyDays());
             scriptTemplate.setParameterValue(BILLING_DEMAND_DAYS_PARAM, options.getBillingDemandDays());
-            scriptTemplate.setParameterValue(BILLING_GROUP_NAME_PARAM, options.getBillingGroup().getFullName());
+            if (options.getBillingGroup() != null) {
+                scriptTemplate.setParameterValue(BILLING_GROUP_NAME_PARAM, options.getBillingGroup().getFullName());
+            }
         }
 
         if (options.isNotificationSelected()) {
             scriptTemplate.setParameterValue(NOTIFICATION_FLAG_PARAM, true);
-            scriptTemplate.setParameterValue(NOTIFY_GROUP_PARAM, options.getNotificationGroupName());
-            scriptTemplate.setParameterValue(EMAIL_SUBJECT_PARAM, options.getNotificationSubject());
+            scriptTemplate.setParameterValue(NOTIFY_GROUP_PARAM,  Objects.toString(options.getNotificationGroupName(), ""));
+            scriptTemplate.setParameterValue(EMAIL_SUBJECT_PARAM, Objects.toString(options.getNotificationSubject(), ""));
         }
 
         if (!template.isRetry()) {
@@ -162,9 +166,9 @@ public class MacsScriptHelper {
             scriptTemplate.setParameterValue(TOU_RATE_PARAM, options.getTouRate());
             scriptTemplate.setParameterValue(RESET_COUNT_PARAM, options.getDemandResetRetryCount());
             if (template.isIed300()) {
-                scriptTemplate.setParameterValue(IED_TYPE_PARAM, options.getFrozenDemandRegister());
+                scriptTemplate.setParameterValue(IED_TYPE_PARAM, Objects.toString(options.getFrozenDemandRegister(), ""));
             } else if (template.isIed400()) {
-                scriptTemplate.setParameterValue(IED_TYPE_PARAM, options.getIedType());
+                scriptTemplate.setParameterValue(IED_TYPE_PARAM, Objects.toString(options.getIedType(),""));
             }
         }
         return scriptTemplate.buildParameterScript();

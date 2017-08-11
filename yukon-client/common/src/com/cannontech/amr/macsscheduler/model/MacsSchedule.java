@@ -64,9 +64,9 @@ public class MacsSchedule implements YukonPao{
     private boolean updatingState;
     private MacsStartPolicy startPolicy = new MacsStartPolicy();
     private MacsStopPolicy stopPolicy = new MacsStopPolicy();
-    private MacsSimpleOptions simpleOptions = new MacsSimpleOptions();
-    private MacsScriptOptions scriptOptions = new MacsScriptOptions();
-    private MacsScriptTemplate template = MacsScriptTemplate.NO_TEMPLATE;
+    private MacsSimpleOptions simpleOptions;
+    private MacsScriptOptions scriptOptions;
+    private MacsScriptTemplate template = MacsScriptTemplate.METER_READ;
     
     private Status status = Status.NONE;
     private Date lastRunTime;    
@@ -145,6 +145,7 @@ public class MacsSchedule implements YukonPao{
 
     public void setSimpleOptions(MacsSimpleOptions simpleOptions) {
         this.simpleOptions = simpleOptions;
+        this.scriptOptions = null;
     }
 
     public MacsScriptOptions getScriptOptions() {
@@ -153,6 +154,7 @@ public class MacsSchedule implements YukonPao{
 
     public void setScriptOptions(MacsScriptOptions scriptOptions) {
         this.scriptOptions = scriptOptions;
+        this.simpleOptions = null;
     }
 
     public MacsScriptTemplate getTemplate() {

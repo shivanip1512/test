@@ -28,11 +28,13 @@ import com.cannontech.amr.macsscheduler.model.MacsException;
 import com.cannontech.amr.macsscheduler.model.MacsSchedule;
 import com.cannontech.amr.macsscheduler.model.MacsScriptOptions;
 import com.cannontech.amr.macsscheduler.model.MacsScriptTemplate;
+import com.cannontech.amr.macsscheduler.model.MacsSimpleOptions;
 import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.DayOfWeek;
 import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.StartPolicy;
 import com.cannontech.amr.macsscheduler.model.MacsStopPolicy.StopPolicy;
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -74,6 +76,7 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private HolidayScheduleDao holidaySchedules;
     @Autowired private ServerDatabaseCache cache;
+    @Autowired private DeviceGroupService deviceGroupService;
 
     private final static String baseKey = "yukon.web.modules.tools.scripts.";
     
@@ -151,11 +154,15 @@ public class MACSScheduleController extends MultiActionController {
         //TODO: get Template
         model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.CREATE);
-        setupModel(model, schedule);
         model.addAttribute("templateReceived", true);
         if (schedule.isScript()) {
+            schedule.setScriptOptions(new MacsScriptOptions());
+            MacsScriptHelper.loadDefaultValues(schedule);
+            setupModel(model, schedule);
             return "scriptsTab.jsp";
         } else {
+            schedule.setSimpleOptions(new MacsSimpleOptions());
+            setupModel(model, schedule);
             return "commandsTab.jsp";
         }
     }
@@ -170,16 +177,26 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/edit", method = RequestMethod.GET)
-    public String editSchedule(ModelMap model, @PathVariable int id) {
+    public String editSchedule(ModelMap model, @PathVariable int id, LiteYukonUser user) {
         MacsSchedule schedule = service.getMacsScheduleById(id);
         model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.EDIT);
+        if(schedule.isScript()){
+            try {
+                String script = service.getScript(schedule.getId(), user);
+                schedule.getScriptOptions().setScriptText(script);
+                MacsScriptHelper.loadFromFile(schedule, deviceGroupService);
+            } catch (MacsException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         setupModel(model, schedule);
         return "schedule.jsp";
     }
     
     private void setupModel(ModelMap model, MacsSchedule schedule) {
-        model.addAttribute("types", new ArrayList<PaoType>(Arrays.asList(PaoType.SCRIPT, PaoType.SIMPLE_SCHEDULE)));
+        model.addAttribute("types", new ArrayList<>(Arrays.asList(PaoType.SCRIPT, PaoType.SIMPLE_SCHEDULE)));
         model.addAttribute("categories", service.getCategories());
         model.addAttribute("templates", MacsScriptTemplate.values());
         model.addAttribute("startPolicyOptions", StartPolicy.values());
@@ -192,7 +209,7 @@ public class MACSScheduleController extends MultiActionController {
         model.addAttribute("ied300Types", MacsScriptTemplate.getIed300Types());
         model.addAttribute("ied400Types", MacsScriptTemplate.getIed400Types());
         model.addAttribute("iedTypes", MacsScriptOptions.getIedTypes());
-        model.addAttribute("frozenDemandRegisterOptions", new ArrayList<String>(Arrays.asList("Landis-Gyr S4", "Alpha")));
+        model.addAttribute("frozenDemandRegisterOptions", new ArrayList<>(Arrays.asList("Landis-Gyr S4", "Alpha")));
         //check if device or load group
         model.addAttribute("target", "DEVICE");
         if (schedule.getSimpleOptions() != null) {
@@ -228,13 +245,8 @@ public class MACSScheduleController extends MultiActionController {
     @RequestMapping(value="createScript", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> createScript(@ModelAttribute MacsSchedule schedule, YukonUserContext yukonUserContext) {
         Map<String, Object> json = new HashMap<>();
-        try {
-            //TODO: change to pass schedule
-            String script = service.getScript(schedule.getId(), yukonUserContext.getYukonUser());
-            json.put("script",  script);
-        } catch (MacsException e) {
-            json.put("errorMsg",  e.getMessage());
-        }
+        MacsScriptHelper.loadFromInput(schedule);
+        json.put("script", schedule.getScriptOptions().getScriptText());
         return json;
     }
     

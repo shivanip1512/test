@@ -66,6 +66,7 @@ public class MacsScheduleHelper {
         macsSchedule.setScheduleName(schedule.getScheduleName());
         macsSchedule.setCategoryName(schedule.getCategoryName());
         macsSchedule.setType(PaoType.getForDbString(schedule.getType()));
+        macsSchedule.setTemplate(MacsScriptTemplate.getTemplate(schedule.getTemplateType()));
         
         //start policy
         MacsStartPolicy start = macsSchedule.getStartPolicy();
