@@ -103,12 +103,10 @@ public class MacsScriptHelper {
         options.setSuccessFileName(scriptTemplate.getParameterValue(SUCCESS_FILE_NAME_PARAM));
         options.setPorterTimeout(NumberUtils.toInt(scriptTemplate.getParameterValue(PORTER_TIMEOUT_PARAM), 0));
                
-        if (!schedule.getTemplate().isRetry()) {
-            options.setRetryCount(NumberUtils.toInt(scriptTemplate.getParameterValue(RETRY_COUNT_PARAM), 0));
-            options.setMaxRetryHours(NumberUtils.toInt(scriptTemplate.getParameterValue(MAX_RETRY_HOURS_PARAM), 0));
-            options.setQueueOffCount(NumberUtils.toInt(scriptTemplate.getParameterValue(QUEUE_OFF_COUNT_PARAM), 0));
-        }
-
+        options.setRetryCount(NumberUtils.toInt(scriptTemplate.getParameterValue(RETRY_COUNT_PARAM), 0));
+        options.setMaxRetryHours(NumberUtils.toInt(scriptTemplate.getParameterValue(MAX_RETRY_HOURS_PARAM), 0));
+        options.setQueueOffCount(NumberUtils.toInt(scriptTemplate.getParameterValue(QUEUE_OFF_COUNT_PARAM), 0));
+            
         options.setBillingSelected(Boolean.valueOf(scriptTemplate.getParameterValue(BILLING_FLAG_PARAM)));
         options.setBillingFileName(scriptTemplate.getParameterValue(BILLING_FILE_NAME_PARAM));
         options.setBillingFilePath(scriptTemplate.getParameterValue(BILLING_FILE_PATH_PARAM));
