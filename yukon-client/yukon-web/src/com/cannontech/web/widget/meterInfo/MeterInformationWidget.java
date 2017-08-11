@@ -95,8 +95,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         } else if (meter instanceof PlcMeter) {
             /* Show PLC settings such as route and physcal address */
             model.addAttribute("showCarrierSettings", true);
-        } else {
-            model.addAttribute("showCommSettings", true);
         }
         
         if (paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS)) {

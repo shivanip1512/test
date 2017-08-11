@@ -25,7 +25,7 @@
         <tags:nameValue2 nameKey=".manufacturer">${fn:escapeXml(meter.rfnIdentifier.sensorManufacturer)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".model">${fn:escapeXml(meter.rfnIdentifier.sensorModel)}</tags:nameValue2>
     </c:if>
-    <c:if test="${showCommSettings}">
+    <c:if test="${!showRFMeshSettings && !showCarrierSettings}">
         <tags:nameValue2 nameKey=".ports">
             <c:if test='${meter.port != null}'>${meter.port}</c:if>
             <c:if test='${meter.port == null}'><i:inline key=".notApplicable"/></c:if>
