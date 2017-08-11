@@ -240,10 +240,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             for (Entry<Integer, Double> feederVoltage : feederVoltageRises.entrySet()) {
                                 if( feederVoltage.getKey().equals(feeder.getCcId()) ) {
                                     feederVoltage.setValue(
-                                        feederVoltage.getValue() + capBankDevice.getBankSize() / localVoltageOffset); // A 1200kVar bank gives 1V to everyone else on the same feeder. All other bank sizes scale proportionally.
+                                        feederVoltage.getValue() + capBankDevice.getBankSize() / localVoltageOffset); // A local Voltage Offset (KVar) bank gives 1V to everyone else on the same feeder. All other bank sizes scale proportionally.
                                 } else {
                                     feederVoltage.setValue(feederVoltage.getValue()
-                                        + capBankDevice.getBankSize() / remoteVoltageOffset / 5); // A 1200kVar bank gives .2v to all other feeders. All other bank sizes scale proportionally.
+                                        + capBankDevice.getBankSize() / remoteVoltageOffset / 5); // A remote Voltage Offset (KVar) bank gives .2v to all other feeders. All other bank sizes scale proportionally.
                                 }
                             }
                         }
