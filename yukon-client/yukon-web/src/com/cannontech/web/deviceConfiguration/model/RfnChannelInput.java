@@ -3,26 +3,19 @@ package com.cannontech.web.deviceConfiguration.model;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.web.deviceConfiguration.enumeration.Read.ReadType;
 
-public class ChannelInput {
-    private BuiltInAttribute attribute;
+public class RfnChannelInput extends AttributeInput {
     private ReadType read;
     private boolean intervalApplicable;
 
-    public ChannelInput() {
+    public RfnChannelInput() {
     }
 
-    public ChannelInput(BuiltInAttribute attribute, ReadType readType) {
-        this.attribute = attribute;
+    public RfnChannelInput(BuiltInAttribute attribute, ReadType readType) {
+        super(attribute);
         this.read = readType;
         this.intervalApplicable = attribute.isIntervalApplicable();
     }
 
-    public final BuiltInAttribute getAttribute() {
-        return attribute;
-    }
-    public final void setAttribute(BuiltInAttribute attribute) {
-        this.attribute = attribute;
-    }
     public final ReadType getRead() {
         return read;
     }

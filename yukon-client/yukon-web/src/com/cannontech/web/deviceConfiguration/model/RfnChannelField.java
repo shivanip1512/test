@@ -7,11 +7,11 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.web.deviceConfiguration.enumeration.Read.ReadType;
 import com.cannontech.web.input.type.InputType;
 
-public class ChannelField extends Field<List<ChannelInput>> {
+public class RfnChannelField extends Field<List<RfnChannelInput>> {
     private final List<BuiltInAttribute> channelTypes;
 
-    public ChannelField(String displayName, String fieldName, String description, 
-                        InputType<List<ChannelInput>> channelType, List<BuiltInAttribute> attributes) {
+    public RfnChannelField(String displayName, String fieldName, String description, 
+                        InputType<List<RfnChannelInput>> channelType, List<BuiltInAttribute> attributes) {
 
         super(displayName, fieldName, description, channelType, "", channelType.getValidator());
         this.channelTypes = attributes;

@@ -31,11 +31,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     InputEnum.class,
     InputFloat.class,
+    InputIndexed.class,
+    InputBoolean.class,
+    InputString.class,
     InputMap.Entry.class,
     InputMap.class,
-    InputIndexed.class,
-    InputInteger.class,
-    InputBoolean.class
+    InputInteger.class
 })
 public abstract class InputBase {
 

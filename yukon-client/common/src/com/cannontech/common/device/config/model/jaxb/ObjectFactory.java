@@ -86,19 +86,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InputInteger }
-     * 
-     */
-    public InputInteger createInputInteger() {
-        return new InputInteger();
-    }
-
-    /**
      * Create an instance of {@link InputBoolean }
      * 
      */
     public InputBoolean createInputBoolean() {
         return new InputBoolean();
+    }
+
+    /**
+     * Create an instance of {@link InputString }
+     * 
+     */
+    public InputString createInputString() {
+        return new InputString();
+    }
+
+    /**
+     * Create an instance of {@link InputInteger }
+     * 
+     */
+    public InputInteger createInputInteger() {
+        return new InputInteger();
     }
 
     /**

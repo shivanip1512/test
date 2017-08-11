@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="WaterRecordingInterval"/>
  *     &lt;enumeration value="WaterReportingInterval"/>
  *     &lt;enumeration value="CBCHeartbeatMode"/>
+ *     &lt;enumeration value="CapControlAttribute"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -118,7 +119,9 @@ public enum EnumOption {
     @XmlEnumValue("WaterReportingInterval")
     WATER_REPORTING_INTERVAL("WaterReportingInterval"),
     @XmlEnumValue("CBCHeartbeatMode")
-    CBC_HEARTBEAT_MODE("CBCHeartbeatMode");
+    CBC_HEARTBEAT_MODE("CBCHeartbeatMode"),
+    @XmlEnumValue("CapControlAttribute")
+    CAP_CONTROL_ATTRIBUTE("CapControlAttribute");
     private final String value;
 
     EnumOption(String v) {

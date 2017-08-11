@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="integer" type="{}InputInteger"/>
  *         &lt;element name="float" type="{}InputFloat"/>
  *         &lt;element name="boolean" type="{}InputBoolean"/>
+ *         &lt;element name="string" type="{}InputString"/>
  *         &lt;element name="enum" type="{}InputEnum"/>
  *         &lt;element name="map" type="{}InputMap"/>
  *       &lt;/choice>
@@ -48,6 +49,7 @@ public class InputIndexed
         @XmlElement(name = "integer", type = InputInteger.class),
         @XmlElement(name = "float", type = InputFloat.class),
         @XmlElement(name = "boolean", type = InputBoolean.class),
+        @XmlElement(name = "string", type = InputString.class),
         @XmlElement(name = "enum", type = InputEnum.class),
         @XmlElement(name = "map", type = InputMap.class)
     })
@@ -78,6 +80,7 @@ public class InputIndexed
      * {@link InputInteger }
      * {@link InputFloat }
      * {@link InputBoolean }
+     * {@link InputString }
      * {@link InputEnum }
      * {@link InputMap }
      * 

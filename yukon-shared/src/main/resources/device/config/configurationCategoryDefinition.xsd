@@ -35,6 +35,14 @@
         </xs:complexContent>
     </xs:complexType>
     
+    <xs:complexType name="InputString">
+        <xs:complexContent>
+            <xs:extension base="InputBase">
+                <xs:attribute name="maxLength" type="xs:int"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
     <xs:complexType name="InputEnum">
         <xs:complexContent>
             <xs:extension base="InputBase">
@@ -102,6 +110,7 @@
             <xs:enumeration value="WaterRecordingInterval"/>
             <xs:enumeration value="WaterReportingInterval"/>
             <xs:enumeration value="CBCHeartbeatMode"/>
+            <xs:enumeration value="CapControlAttribute"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -112,6 +121,7 @@
                     <xs:element name="integer" type="InputInteger"/>
                     <xs:element name="float" type="InputFloat"/>
                     <xs:element name="boolean" type="InputBoolean"/>
+                    <xs:element name="string" type="InputString"/>
                     <xs:element name="enum" type="InputEnum"/>
                     <xs:element name="map" type="InputMap"/>
                 </xs:choice>
