@@ -116,7 +116,7 @@ public class TdcDisplayController {
             }
             else if (bean.getDisplayName() != null) {
                 YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "displayName", bean.getDisplayName(), false, 30);
-                Display display = displayDao.getDisplayByName(bean.getDisplayName());
+                Display display = displayDao.findDisplayByName(bean.getDisplayName());
                 if (display != null) {
                     errors.rejectValue("displayName", "yukon.web.error.nameConflict");
                 }

@@ -78,7 +78,7 @@ public class DisplayDaoImpl implements DisplayDao {
     
 
     @Override
-    public Display getDisplayByName(String name) {
+    public Display findDisplayByName(String name) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");

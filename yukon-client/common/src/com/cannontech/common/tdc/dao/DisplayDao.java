@@ -23,9 +23,9 @@ public interface DisplayDao {
     Display updateDisplay(Display display);
 
     /**
-     * Returns display for display name.
+     * Returns display for display name if found. Else null.
      */
-    Display getDisplayByName(String name);
+    Display findDisplayByName(String name);
 
     /**
      * Deletes display.
