@@ -58,7 +58,7 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         List<Integer> monitorIds = new ArrayList<Integer>();
         try {
             String monitors = WidgetParameterHelper.getStringParameter(request, "selectMonitors");
-            if (monitors == null || monitors.trim().equals("")) {
+            if (monitors == null || monitors.trim().isEmpty()) {
                 super.putMonitorsInModel(model, request);
                 model.addAttribute("isSubscribedWidget", true);
                 return;
