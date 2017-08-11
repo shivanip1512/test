@@ -6139,17 +6139,20 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             static const std::string sqlID = sql +
                 " AND C.DEVICEID = ?";
 
+            static const std::string ordering =
+                " ORDER BY P.PAObjectID";
+
             Cti::Database::DatabaseConnection   connection;
             Cti::Database::DatabaseReader       rdr( connection );
 
             if ( capBankId > 0 )
             {
-                rdr.setCommandText( sqlID );
+                rdr.setCommandText( sqlID + ordering );
                 rdr << capBankId;
             }
             else
             {
-                rdr.setCommandText( sql );
+                rdr.setCommandText( sql + ordering );
             }
 
             rdr.execute();
@@ -6159,29 +6162,79 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 CTILOG_INFO( dout, rdr.asString() );
             }
 
-            while ( rdr() )
+            // We sort the SQL output by PaoID, the idea being that we collect all the points for a particular PaoID
+            //  in the cache.  When we've read all the points for the particular PaoID we then look up the Pao and add
+            //  the cached points to it.
+            
+            std::vector<LitePoint>  cache;
+
+            long previousCbcID = -1,
+                 currentCbcId  = -1;
+
+            bool validRow;
+
+            do
             {
-                long currentCbcId;
-                rdr["PAObjectID"] >> currentCbcId;
+                validRow = rdr();       // advance the reader
 
-                long currentCapBankId = Cti::mapFindOrDefault( *cbc_capbank_map, currentCbcId, 0 );
+                previousCbcID = currentCbcId;
 
-                if ( currentCapBankId > 0 )
+                if ( validRow )
                 {
-                    if ( CtiCCCapBankPtr bank = findInMap( currentCapBankId, paobject_capbank_map ) )
+                    rdr["PAObjectID"] >> currentCbcId;
+                }
+                
+                if ( ( previousCbcID > 0 && previousCbcID != currentCbcId ) || ! validRow )
+                {
+                    // we are at the boundry where the previousCbcID differs from the currentCbcId, this means the cache is
+                    //  full of points for the previousCbcID -- or we have an invalid row, which means the cache has all the
+                    //  points for the last CBC (still previousCbcID) in it.
+
+                    if ( cache.size() > 0 )
                     {
-                        if ( bank->isControlDeviceTwoWay() )
+                        long currentCapBankId = Cti::mapFindOrDefault( *cbc_capbank_map, previousCbcID, 0 );
+
+                        if ( currentCapBankId > 0 )
                         {
-                            LitePoint point( rdr );
+                            if ( CtiCCCapBankPtr bank = findInMap( currentCapBankId, paobject_capbank_map ) )
+                            {
+                                if ( bank->isControlDeviceTwoWay() )
+                                {
+                                    // config
+                                    auto deviceConfig = 
+                                        Cti::ConfigManager::getConfigForIdAndType(
+                                            bank->getControlDeviceId(),
+                                            static_cast<DeviceTypes>( resolvePAOType( bank->getPaoCategory(),
+                                                                                      bank->getControlDeviceType() ) ) );
+                                    if ( deviceConfig )
+                                    {
+                                        // build the Attribute -> PointName overlay and send it in the for() below...
 
-                            bank->getTwoWayPoints().assignTwoWayPoint( point );
-                            bank->addPointId( point.getPointId() );
+                                    }
 
-                            pointid_capbank_map->insert( std::make_pair( point.getPointId(), bank ) );
+                                    // add to bank
+
+                                    for ( const LitePoint & point : cache )
+                                    {
+                                        bank->getTwoWayPoints().assignTwoWayPoint( point );
+                                        bank->addPointId( point.getPointId() );
+
+                                        pointid_capbank_map->insert( std::make_pair( point.getPointId(), bank ) );
+                                    }
+                                }
+                            }
                         }
+
+                        cache.clear();
                     }
                 }
-            }
+                
+                if ( validRow )
+                {
+                    cache.emplace_back( rdr );
+                }
+            } 
+            while ( validRow );
         }
         //load dynamiccctwowaycbc (two way device points)
         {
