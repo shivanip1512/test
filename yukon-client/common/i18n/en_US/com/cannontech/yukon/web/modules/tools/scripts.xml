@@ -91,6 +91,8 @@
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.filePath">File Path</entry>     
         
     <entry key="yukon.web.modules.tools.schedule.save.successful">Schedule was saved successfully.</entry>    
+    <entry key="yukon.web.modules.tools.schedule.delete.successful">Schedule: {0} was deleted successfully.</entry>    
+    <entry key="yukon.web.modules.tools.schedule.delete.failure">There was a problem deleting the schedule.</entry>    
     
     <!-- Types -->
     <entry key="yukon.web.modules.tools.schedule.type.SIMPLE">Simple</entry>    

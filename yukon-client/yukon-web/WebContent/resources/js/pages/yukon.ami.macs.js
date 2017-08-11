@@ -175,6 +175,27 @@ yukon.ami.macs = (function () {
                     }
                 });
                 
+                $(document).on('click', '.js-get-template', function (ev) {
+                    var form = $('#macs-schedule'),
+                        type = $('.js-type').val();
+                    
+                    $.ajax({
+                        url: yukon.url('/macsscheduler/schedules/getTemplate'),
+                        data: form.serialize()
+                    }).done(function (data) {
+                        if (type == 'SCRIPT') {
+                            $('#script-content').html(data);
+                            yukon.ui.initContent('#script-content');
+                            $('.js-script-tab').removeClass('js-get-template');
+                        } else {
+                            $('#command-content').html(data);
+                            $('.js-command-tab').removeClass('js-get-template');
+                        }
+                    });
+                    
+                });
+                    
+                
                 _initialized = true;
 
             }

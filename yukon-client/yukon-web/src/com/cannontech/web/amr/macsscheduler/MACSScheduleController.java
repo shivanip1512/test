@@ -141,8 +141,23 @@ public class MACSScheduleController extends MultiActionController {
         MacsSchedule schedule = new MacsSchedule();
         model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.CREATE);
+        model.addAttribute("getTemplate", true);
         setupModel(model, schedule);
         return "schedule.jsp";
+    }
+    
+    @RequestMapping(value="getTemplate", method = RequestMethod.GET)
+    public String getTemplate(ModelMap model, @ModelAttribute("schedule") MacsSchedule schedule) {
+        //TODO: get Template
+        model.addAttribute("schedule", schedule);
+        model.addAttribute("mode", PageEditMode.CREATE);
+        setupModel(model, schedule);
+        model.addAttribute("templateReceived", true);
+        if (schedule.isScript()) {
+            return "scriptsTab.jsp";
+        } else {
+            return "commandsTab.jsp";
+        }
     }
     
     @RequestMapping(value="{id}/view", method = RequestMethod.GET)
@@ -186,6 +201,19 @@ public class MACSScheduleController extends MultiActionController {
                 model.addAttribute("target", "LOADGROUP");
             }
         }
+    }
+    
+    @RequestMapping(value="{id}/delete", method = RequestMethod.GET)
+    public String deleteSchedule(ModelMap model, @PathVariable int id, LiteYukonUser user, FlashScope flash) {
+        try {
+            MacsSchedule schedule = service.getMacsScheduleById(id);
+            service.delete(id, user);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", schedule.getScheduleName()));
+        } catch (MacsException e) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".deleteFailure"));
+            return "redirect:/macsscheduler/schedules/" + id + "/view";
+        }
+        return "redirect:/macsscheduler/schedules/view";
     }
     
     @RequestMapping(value="{id}/viewScript", method = RequestMethod.GET)
