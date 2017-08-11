@@ -23,7 +23,8 @@ public class CategoryEditBean {
 
     // This maps a schedule to its rates. The key for this map will be the schedule.
     private SortedMap<String, RateBackingBean> scheduleInputs = new LazySortedMap<>(String.class, RateBackingBean.class);
-    private List<ChannelInput> channelInputs = new ArrayList<>();
+    private List<RfnChannelInput> channelInputs = new ArrayList<>();
+    private List<AttributeMappingInput> attributeMappingInputs = new ArrayList<>();
 
     public static final class RateBackingBean {
         // This maps the field to the rates.
@@ -54,12 +55,20 @@ public class CategoryEditBean {
         this.scheduleInputs = scheduleInputs;
     }
 
-    public List<ChannelInput> getChannelInputs() {
+    public List<RfnChannelInput> getChannelInputs() {
         return channelInputs;
     }
 
-    public void setChannelInputs(List<ChannelInput> channelInputs) {
+    public void setChannelInputs(List<RfnChannelInput> channelInputs) {
         this.channelInputs = channelInputs;
+    }
+
+    public List<AttributeMappingInput> getAttributeMappingInputs() {
+        return attributeMappingInputs;
+    }
+
+    public void setAttributeMappingInputs(List<AttributeMappingInput> attributeMappingInputs) {
+        this.attributeMappingInputs = attributeMappingInputs;
     }
 
     public String getCategoryName() {
@@ -114,7 +123,7 @@ public class CategoryEditBean {
 
     public DeviceConfigCategory getModelObject() {
         // Description can be null.
-        if (categoryName == null || categoryType == null || categoryInputs.isEmpty() && channelInputs.isEmpty()) {
+        if (categoryName == null || categoryType == null || categoryInputs.isEmpty() && channelInputs.isEmpty() && attributeMappingInputs.isEmpty()) {
             throw new RuntimeException();
         }
 
@@ -137,8 +146,9 @@ public class CategoryEditBean {
             }
         }
 
+        //  TODO - combine the channelInput and attributeMapping model builders
         int channelIndex = 0;
-        for (ChannelInput channelInput : channelInputs) {
+        for (RfnChannelInput channelInput : channelInputs) {
             if (channelInput.getRead() != ReadType.DISABLED) {
                 String prefix = "enabledChannels." + channelIndex + ".";
                 String attributeField = prefix + "attribute";
@@ -150,6 +160,20 @@ public class CategoryEditBean {
         }
         if (categoryType.equals(CategoryType.RFN_CHANNEL_CONFIGURATION.value())) {
             items.add(new DeviceConfigCategoryItem(categoryId, "enabledChannels", Integer.toString(channelIndex)));
+        }
+
+        int attribIndex = 0;
+        for (AttributeMappingInput attribInput : attributeMappingInputs) {
+            if (!attribInput.getPointName().isEmpty()) {
+                String prefix = "attributeMappings." + ++attribIndex + ".";
+                String attributeField = prefix + "attribute";
+                String pointNameField = prefix + "pointName";
+                items.add(new DeviceConfigCategoryItem(categoryId, attributeField, attribInput.getAttribute().name()));
+                items.add(new DeviceConfigCategoryItem(categoryId, pointNameField, attribInput.getPointName()));
+            }
+        }
+        if (!attributeMappingInputs.isEmpty()) {
+            items.add(new DeviceConfigCategoryItem(categoryId, "attributeMappings", Integer.toString(attribIndex)));
         }
 
         return new DeviceConfigCategory(categoryId, categoryType, categoryName, description, items);

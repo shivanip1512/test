@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.cannontech.common.device.config.model.jaxb.InputFloat;
 import com.cannontech.common.device.config.model.jaxb.InputIndexed;
 import com.cannontech.common.device.config.model.jaxb.InputInteger;
 import com.cannontech.common.device.config.model.jaxb.InputMap;
+import com.cannontech.common.device.config.model.jaxb.InputString;
 import com.cannontech.common.device.config.model.jaxb.MapType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -33,10 +35,14 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.deviceConfiguration.enumeration.CapControlAttribute;
 import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInputEnumeration;
+import com.cannontech.web.deviceConfiguration.model.AttributeInput;
+import com.cannontech.web.deviceConfiguration.model.AttributeMappingField;
+import com.cannontech.web.deviceConfiguration.model.AttributeMappingInput;
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
-import com.cannontech.web.deviceConfiguration.model.ChannelField;
-import com.cannontech.web.deviceConfiguration.model.ChannelInput;
+import com.cannontech.web.deviceConfiguration.model.RfnChannelField;
+import com.cannontech.web.deviceConfiguration.model.RfnChannelInput;
 import com.cannontech.web.deviceConfiguration.model.EnumField;
 import com.cannontech.web.deviceConfiguration.model.Field;
 import com.cannontech.web.deviceConfiguration.model.FloatField;
@@ -53,7 +59,6 @@ import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.StringType;
 import com.cannontech.web.input.validate.InputValidator;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap.Builder;
 
 @Component
@@ -149,8 +154,7 @@ public class DeviceConfigurationHelper {
         } else if (input.getClass() == InputBoolean.class) {
             fields.add(Field.createField(displayName, fieldName, description, new BooleanType(), input.getDefault()));
         } else if (input.getClass() == InputIndexed.class) {
-            //TODO Currently only supports Channel Field
-            fields.add(createChannelField(displayName, description, description, (InputIndexed)input, configId));
+            fields.add(createIndexedField(displayName, fieldName, description, (InputIndexed)input, configId));
         } else {
             log.error("Received unsupported input type: " + input.getClass());
         }
@@ -270,17 +274,72 @@ public class DeviceConfigurationHelper {
                         input.getDefault());
     }
 
-    private ChannelField createChannelField(String displayName, String fieldName, String description,
+    /**
+     * Create an indexed field.  Each indexed field type currently has its own type and renderer. 
+     */
+    private Field<? extends List<?>> createIndexedField(String displayName, String fieldName, String description,
+            InputIndexed inputIndexed, Integer configId) {
+        List<InputBase> inputs = inputIndexed.getIntegerOrFloatOrBoolean();
+        
+        if (isRfnChannelInput(inputs)) {
+            return createChannelField(displayName, fieldName, description, inputIndexed, configId);
+        }
+        if (isAttributeMappingInput(inputs)) {
+            return createAttributeMappingField(displayName, fieldName, description, inputIndexed, configId);
+        }
+        
+        Map<String, Class<?>> elements = 
+                inputIndexed.getIntegerOrFloatOrBoolean().stream()
+                    .collect(Collectors.toMap(
+                            InputBase::getField,
+                            InputBase::getClass));
+        
+        throw new NotFoundException("No indexed field type exists for indexed field \"" + fieldName + "\" with elements " + elements);
+    }
+    
+    private boolean isRfnChannelInput(List<InputBase> inputs) {
+        if (inputs.size() == 2) {
+            InputBase input1 = inputs.get(0);
+            InputBase input2 = inputs.get(1);
+            if (input1.getClass() == InputEnum.class &&
+                input2.getClass() == InputEnum.class) {
+                InputEnum inputEnum1 = (InputEnum) input1;
+                InputEnum inputEnum2 = (InputEnum) input2;
+                if (inputEnum1.getType() == EnumOption.CHANNEL_TYPE &&
+                    inputEnum2.getType() == EnumOption.READ_TYPE) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isAttributeMappingInput(List<InputBase> inputs) {
+        if (inputs.size() == 2) {
+            InputBase input1 = inputs.get(0);
+            InputBase input2 = inputs.get(1);
+            if (input1.getClass() == InputEnum.class &&
+                input2.getClass() == InputString.class) {
+                InputEnum inputEnum = (InputEnum) input1;
+                if (inputEnum.getType() == EnumOption.CAP_CONTROL_ATTRIBUTE) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private RfnChannelField createChannelField(String displayName, String fieldName, String description,
                                             InputIndexed inputIndexed, Integer configId) {
 
-        InputType<List<ChannelInput>> channelType = new InputType<List<ChannelInput>>(){
+        InputType<List<RfnChannelInput>> channelType = new InputType<List<RfnChannelInput>>(){
             @Override
             public String getRenderer() {
-                return "channelType.jsp";
+                return "rfnChannelType.jsp";
             }
             @Override
-            public InputValidator<List<ChannelInput>> getValidator() {
-                return channelValidator;
+            public InputValidator<List<RfnChannelInput>> getValidator() {
+                return rfnChannelValidator;
             }
             @Override
             public PropertyEditor getPropertyEditor() {
@@ -288,20 +347,21 @@ public class DeviceConfigurationHelper {
             }
             @SuppressWarnings("unchecked")
             @Override
-            public Class<List<ChannelInput>> getTypeClass() {
-                return (Class<List<ChannelInput>>)(Class<?>)List.class;
-        }};
+            public Class<List<RfnChannelInput>> getTypeClass() {
+                return (Class<List<RfnChannelInput>>)(Class<?>)List.class;
+            }
+        };
 
-        return new ChannelField(displayName, fieldName, description, channelType, getAttributeListForConfigId(configId));
+        return new RfnChannelField(displayName, fieldName, description, channelType, getAttributeListForConfigId(configId));
     } 
 
-    private static final InputValidator<List<ChannelInput>> channelValidator = new InputValidator<List<ChannelInput>>() {
+    private static final InputValidator<List<RfnChannelInput>> rfnChannelValidator = new InputValidator<List<RfnChannelInput>>() {
 
         @Override
-        public void validate(String path, String displayName, List<ChannelInput> values, Errors errors) {
+        public void validate(String path, String displayName, List<RfnChannelInput> values, Errors errors) {
             int interval = 0;
             int midnight = 0;
-            for (ChannelInput value : values) {
+            for (RfnChannelInput value : values) {
                 switch (value.getRead()) {
                 case MIDNIGHT :
                     midnight++;
@@ -328,6 +388,56 @@ public class DeviceConfigurationHelper {
         }
 
     };
+
+    private AttributeMappingField createAttributeMappingField(String displayName, String fieldName, String description,
+                                                        InputIndexed inputIndexed, Integer configId) {
+    
+        InputType<List<AttributeMappingInput>> attributeMappingType = new InputType<List<AttributeMappingInput>>(){
+            @Override
+            public String getRenderer() {
+                return "attributeMappingType.jsp";
+            }
+            @Override
+            public InputValidator<List<AttributeMappingInput>> getValidator() {
+                return new InputValidator<List<AttributeMappingInput>>() {
+                    @Override
+                    public void validate(String path, String displayName, List<AttributeMappingInput> value, Errors errors) {
+                        //  TODO - validate point name length, currently only limited by input tag
+                    }
+                    @Override
+                    public String getDescription() {
+                        return "Attribute mapping points";
+                    }
+                };
+            }
+            @Override
+            public PropertyEditor getPropertyEditor() {
+                return null;
+            }
+            @SuppressWarnings("unchecked")
+            @Override
+            public Class<List<AttributeMappingInput>> getTypeClass() {
+                return (Class<List<AttributeMappingInput>>)(Class<?>)List.class;
+            }
+        };
+        
+        for (InputBase input : inputIndexed.getIntegerOrFloatOrBoolean()) {
+            if (input.getClass() == InputEnum.class) {
+                InputEnum inputEnum = (InputEnum)input;
+                if (inputEnum.getType() == EnumOption.CAP_CONTROL_ATTRIBUTE) {
+                    return new AttributeMappingField(displayName, fieldName, description, attributeMappingType, CapControlAttribute.getAttributes());
+                }
+            }
+        }
+
+        Map<String, Class<?>> elements = 
+                inputIndexed.getIntegerOrFloatOrBoolean().stream()
+                    .collect(Collectors.toMap(
+                            InputBase::getField,
+                            InputBase::getClass));
+        
+        throw new NotFoundException("No attribute-based field exists inside attribute mapping field \"" + fieldName + "\" with elements " + elements);
+    } 
 
     private BaseEnumeratedType<String> convertEnumField(InputEnum input, YukonUserContext userContext) {
 
@@ -362,18 +472,18 @@ public class DeviceConfigurationHelper {
         return attributes;
     }
 
-    private class ToAttribute implements Function<ChannelInput, String> {
+    private class ToAttribute<T extends AttributeInput> implements com.google.common.base.Function<T, String> {
         final MessageSourceAccessor messageSourceAccessor;
         ToAttribute(YukonUserContext userContext) {
             messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
         }
         @Override
-        public String apply(ChannelInput channelInput) {
-            return messageSourceAccessor.getMessage(channelInput.getAttribute().getMessage());
+        public String apply(T input) {
+            return messageSourceAccessor.getMessage(input.getAttribute().getMessage());
         }
     }
 
-    public Function<ChannelInput, String> toAttribute(YukonUserContext userContext) {
-        return new ToAttribute(userContext);
+    public <T extends AttributeInput> com.google.common.base.Function<T, String> toAttribute(YukonUserContext userContext) {
+        return new ToAttribute<T>(userContext);
     }
 }

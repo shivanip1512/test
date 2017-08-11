@@ -12,9 +12,12 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,12 +47,15 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.deviceConfiguration.enumeration.CapControlAttribute;
 import com.cannontech.web.deviceConfiguration.enumeration.Read.ReadType;
+import com.cannontech.web.deviceConfiguration.model.AttributeMappingField;
+import com.cannontech.web.deviceConfiguration.model.AttributeMappingInput;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean.RateBackingBean;
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
-import com.cannontech.web.deviceConfiguration.model.ChannelField;
-import com.cannontech.web.deviceConfiguration.model.ChannelInput;
+import com.cannontech.web.deviceConfiguration.model.RfnChannelField;
+import com.cannontech.web.deviceConfiguration.model.RfnChannelInput;
 import com.cannontech.web.deviceConfiguration.model.Field;
 import com.cannontech.web.deviceConfiguration.model.RateInput;
 import com.cannontech.web.deviceConfiguration.model.RateMapField;
@@ -82,6 +88,7 @@ public class DeviceConfigurationCategoryController {
     // This will need to be updated if the schedules or rates/times can get to double digit values.
     private static final Pattern touPattern = Pattern.compile("^schedule[0-9](rate|time)[0-9]$");
     private static final Pattern channelPattern = Pattern.compile("^enabledChannels\\.\\d+\\.(attribute|read)$");
+    private static final Pattern attributeMappingPattern = Pattern.compile("^attributeMappings\\.\\d+\\.(attribute|pointName)$");
 
     @RequestMapping("create")
     public String create(ModelMap model, String categoryType, YukonUserContext userContext) {
@@ -119,15 +126,24 @@ public class DeviceConfigurationCategoryController {
                     rateBackingBean.getRateInputs().put(entry.getField(), new RateInput());
                 }
                 categoryEditBean.getScheduleInputs().put(field.getFieldName(), rateBackingBean);
-            } else if (field.getClass() == ChannelField.class) {
-                List<ChannelInput> channelInputs = new ArrayList<>();
-                ChannelField channelField = (ChannelField) field;
+            } else if (field.getClass() == RfnChannelField.class) {
+                List<RfnChannelInput> channelInputs = new ArrayList<>();
+                RfnChannelField channelField = (RfnChannelField) field;
 
                 for (BuiltInAttribute channel : channelField.getChannelTypes()) {
-                    channelInputs.add(new ChannelInput(channel, ReadType.DISABLED));
+                    channelInputs.add(new RfnChannelInput(channel, ReadType.DISABLED));
                 }
                 channelInputs = CtiUtilities.smartTranslatedSort(channelInputs, deviceConfigHelper.toAttribute(userContext));
                 categoryEditBean.setChannelInputs(channelInputs);
+            } else if (field.getClass() == AttributeMappingField.class) {
+                List<AttributeMappingInput> attributeMappingInputs = new ArrayList<>();
+                AttributeMappingField attributeMappingField = (AttributeMappingField) field;
+
+                for (BuiltInAttribute attribute : attributeMappingField.getAttributes()) {
+                    attributeMappingInputs.add(new AttributeMappingInput(attribute, StringUtils.EMPTY));
+                }
+                attributeMappingInputs = CtiUtilities.smartTranslatedSort(attributeMappingInputs, deviceConfigHelper.toAttribute(userContext));
+                categoryEditBean.setAttributeMappingInputs(attributeMappingInputs);
             } else {
                 categoryEditBean.getCategoryInputs().put(field.getFieldName(), field.getDefault());
             }
@@ -269,7 +285,7 @@ public class DeviceConfigurationCategoryController {
     /**
      * Patch categoryEditBean category inputs, before validation or before
      * rendering. This method removes deleted entries and adds default value 
-     * from the template (if itexists) to newly added entries.
+     * from the template (if it exists) to newly added entries.
      *
      */
     private void prePatchCategoryEditBean(CategoryEditBean categoryEditBean, CategoryTemplate categoryTemplate) {
@@ -278,8 +294,10 @@ public class DeviceConfigurationCategoryController {
 
         List<Field<?>> fields = categoryTemplate.getFields();
 
+        Set<Class<?>> specialClasses = ImmutableSet.of(RateMapField.class, RfnChannelField.class, AttributeMappingField.class);
+        
         for (Field<?> field : fields) {
-            if (field.getClass() != RateMapField.class && field.getClass() != ChannelField.class) {
+            if (!specialClasses.contains(field.getClass())) {
                 if (!categoryEditBean.getCategoryInputs().containsKey(field.getFieldName())) {
                     categoryEditBean.getCategoryInputs().put(field.getFieldName(), field.getDefault());
                 }
@@ -346,14 +364,18 @@ public class DeviceConfigurationCategoryController {
         Map<String, String> categoryItems = new TreeMap<>();
         Map<String, String> scheduleItems = new TreeMap<>();
         Map<String, String> channelItems = new TreeMap<>();
+        Map<String, String> attributeMappingItems = new TreeMap<>();
 
         for (DeviceConfigCategoryItem item : deviceConfigurationItems) {
             Matcher touMatcher = touPattern.matcher(item.getFieldName());
             Matcher channelMatcher = channelPattern.matcher(item.getFieldName());
+            Matcher attributeMappingMatcher = attributeMappingPattern.matcher(item.getFieldName());
             if (touMatcher.matches()) {
                 scheduleItems.put(item.getFieldName(), item.getValue());
             } else if (channelMatcher.matches()) {
                 channelItems.put(item.getFieldName(), item.getValue());
+            } else if (attributeMappingMatcher.matches()) {
+                attributeMappingItems.put(item.getFieldName(), item.getValue());
             } else {
                 categoryItems.put(item.getFieldName(), item.getValue());
             }
@@ -362,6 +384,7 @@ public class DeviceConfigurationCategoryController {
         categoryEditBean.setCategoryInputs(categoryItems);
         categoryEditBean.setScheduleInputs(convertTouScheduleItems(scheduleItems));
         categoryEditBean.setChannelInputs(convertChannelConfigItems(channelItems, configId, userContext ));
+        categoryEditBean.setAttributeMappingInputs(convertAttributeMappingItems(attributeMappingItems, userContext));
 
         return categoryEditBean;
     }
@@ -421,9 +444,9 @@ public class DeviceConfigurationCategoryController {
      * @param configId used to determine metric attributes. If null, all metric attributes are used.
      * @return
      */
-    private List<ChannelInput> convertChannelConfigItems(Map<String, String> channelItems, Integer configId, YukonUserContext userContext) {
+    private List<RfnChannelInput> convertChannelConfigItems(Map<String, String> channelItems, Integer configId, YukonUserContext userContext) {
 
-        List<ChannelInput> channelInputs = new ArrayList<>();
+        List<RfnChannelInput> channelInputs = new ArrayList<>();
         Map<BuiltInAttribute, ReadType> attributeAssignment = new LinkedHashMap<>();
 
         for (BuiltInAttribute attribute : deviceConfigHelper.getAttributeListForConfigId(configId)) {
@@ -442,12 +465,42 @@ public class DeviceConfigurationCategoryController {
         }
 
         for (Entry<BuiltInAttribute, ReadType> entry : attributeAssignment.entrySet()) {
-            channelInputs.add(new ChannelInput(entry.getKey(), entry.getValue()));
+            channelInputs.add(new RfnChannelInput(entry.getKey(), entry.getValue()));
         }
 
         channelInputs = CtiUtilities.smartTranslatedSort(channelInputs, deviceConfigHelper.toAttribute(userContext));
 
         return channelInputs;
+    }
+
+    /**
+     * Converts database representation of attribute mapping entries into a list of AttributeMappingInputs.
+     * 
+     * @param channelItems database entries
+     * @return
+     */
+    private List<AttributeMappingInput> convertAttributeMappingItems(Map<String, String> attributeMappingItems, YukonUserContext userContext) {
+
+        final String prefix = "attributeMappings.";
+        
+        //Each channel input has 2 database entries : .attribute and .pointName
+        Map<BuiltInAttribute, String> mappings =
+                IntStream.rangeClosed(1, attributeMappingItems.size() / 2)
+                    .mapToObj(i -> new String[]{
+                            prefix + i + ".attribute",
+                            prefix + i + ".pointName"})
+                    .collect(Collectors.toMap(
+                            items -> BuiltInAttribute.valueOf(attributeMappingItems.get(items[0])),
+                            items -> attributeMappingItems.get(items[1])));
+
+        CapControlAttribute.getAttributes().forEach(attrib -> mappings.putIfAbsent(attrib, ""));
+
+        List<AttributeMappingInput> attributeInputs = 
+                mappings.entrySet().stream()
+                    .map(entry -> new AttributeMappingInput(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
+        
+        return CtiUtilities.smartTranslatedSort(attributeInputs, deviceConfigHelper.toAttribute(userContext));
     }
 
     /**

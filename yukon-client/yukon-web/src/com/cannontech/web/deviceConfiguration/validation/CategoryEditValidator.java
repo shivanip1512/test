@@ -15,11 +15,13 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.deviceConfiguration.enumeration.CentronDisplayItemEnumeration;
 import com.cannontech.web.deviceConfiguration.enumeration.DisconnectMode.ConfigurationType;
 import com.cannontech.web.deviceConfiguration.enumeration.ReconnectParameter.ReconnectType;
+import com.cannontech.web.deviceConfiguration.model.AttributeMappingField;
+import com.cannontech.web.deviceConfiguration.model.AttributeMappingInput;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean;
 import com.cannontech.web.deviceConfiguration.model.CategoryEditBean.RateBackingBean;
 import com.cannontech.web.deviceConfiguration.model.CategoryTemplate;
-import com.cannontech.web.deviceConfiguration.model.ChannelField;
-import com.cannontech.web.deviceConfiguration.model.ChannelInput;
+import com.cannontech.web.deviceConfiguration.model.RfnChannelField;
+import com.cannontech.web.deviceConfiguration.model.RfnChannelInput;
 import com.cannontech.web.deviceConfiguration.model.EnumField;
 import com.cannontech.web.deviceConfiguration.model.Field;
 import com.cannontech.web.deviceConfiguration.model.FloatField;
@@ -93,11 +95,15 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                         }
                     }
                 } else if ( field.getInputType().getTypeClass().equals(List.class)) {
-                    ChannelField channelField = (ChannelField) field;
-
-                    InputValidator<List<ChannelInput>> validator = channelField.getValidator();
-                    validator.validate("channelInputs", "Channel Errors", target.getChannelInputs(), errors);
-
+                    if (field.getClass() == RfnChannelField.class) {
+                        RfnChannelField rfnChannelField = (RfnChannelField) field;
+                        InputValidator<List<RfnChannelInput>> validator = rfnChannelField.getValidator();
+                        validator.validate("channelInputs", "Channel Errors", target.getChannelInputs(), errors);
+                    } else if (field.getClass() == AttributeMappingField.class) {
+                        AttributeMappingField attributeMappingField = (AttributeMappingField) field;
+                        InputValidator<List<AttributeMappingInput>> validator = attributeMappingField.getValidator();
+                        validator.validate("attributeMappingInputs", "Attribute Mapping Errors", target.getAttributeMappingInputs(), errors);
+                    }
                 } else {
                     String value = target.getCategoryInputs().get(field.getFieldName());
 
