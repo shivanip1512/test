@@ -1,6 +1,5 @@
 package com.cannontech.web.widget.meterInfo.model;
 
-import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 
 public class MeterModel {
@@ -9,7 +8,6 @@ public class MeterModel {
     private String name;
     private String meterNumber;
     private boolean disabled;
-    private Integer portId;
     
     public int getDeviceId() {
         return deviceId;
@@ -43,14 +41,6 @@ public class MeterModel {
         this.disabled = disabled;
     }
     
-    public Integer getPortId() {
-        return portId;
-    }
-
-    public void setPortId(Integer portId) {
-        this.portId = portId;
-    }
-
     public static MeterModel of(YukonMeter meter) {
         
         MeterModel model = new MeterModel();
@@ -58,9 +48,7 @@ public class MeterModel {
         model.setDisabled(meter.isDisabled());
         model.setMeterNumber(meter.getMeterNumber());
         model.setName(meter.getName());
-        if (meter instanceof IedMeter) {
-            model.setPortId(((IedMeter) meter).getPortId());
-        }
+        
         return model;
     }
 }

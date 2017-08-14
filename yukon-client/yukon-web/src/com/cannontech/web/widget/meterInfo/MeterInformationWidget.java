@@ -48,7 +48,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.MeterValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.widget.meterInfo.model.MeterModel;
+import com.cannontech.web.widget.meterInfo.model.IEDMeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
@@ -149,7 +149,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 model.addAttribute("routes", routes);
             }
         } else {
-            model.addAttribute("meter", MeterModel.of(meter));
+            model.addAttribute("meter", IEDMeterModel.of((IedMeter) meter));
             List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
             model.addAttribute("ports", ports);
         }
@@ -250,7 +250,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     @RequestMapping(value="edit-ied", method=RequestMethod.PUT)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String editIed(HttpServletResponse resp, ModelMap model, FlashScope flash,
-            @ModelAttribute("meter") MeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
+            @ModelAttribute("meter") IEDMeterModel meter, BindingResult result, LiteYukonUser user) throws IOException {
  
         if (!rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.UPDATE, user)) {
             YukonMeter originalMeter = meterDao.getForId(meter.getDeviceId());
