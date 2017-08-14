@@ -1544,10 +1544,8 @@ auto CtiPointClientManager::getCurrentPointData(const std::vector<int>& pointIds
                 continue;
             }
         }
-        else
-        {
-            cacheMisses.emplace(pid, results.pointData.size());  //  results.size() is the zero-based index of the new item we're adding
-        }
+
+        cacheMisses.emplace(pid, results.pointData.size());  //  results.size() is the zero-based index of the new item we're adding
 
         results.pointData.emplace_back(nullptr);
     }
