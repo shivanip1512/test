@@ -3220,42 +3220,11 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 {
-    std::vector<std::string>  columnNames = boost::assign::list_of
-        ( "LogID" )
-        ( "PointID" )
-        ( "DateTime" )
-        ( "SubID" )
-        ( "FeederID" )
-        ( "EventType" )
-        ( "SeqID" )
-        ( "Value" )
-        ( "Text" )
-        ( "UserName" )
-        ( "KVARBefore" )
-        ( "KVARAfter" )
-        ( "KVARChange" )
-        ( "AdditionalInfo" )
-        ( "actionId" )
-        ( "CapBankStateInfo" )
-        ( "aVar" )
-        ( "bVar" )
-        ( "cVar" )
-        ( "StationID" )
-        ( "AreaID" )
-        ( "SpAreaID" )
-        ( "RegulatorId" );
-
-    if ( msg.eventSubtype )
-    {
-        columnNames.push_back( "EventSubtype" );
-    }
-
-    std::vector<std::string>  placeholders( columnNames.size(), "?" );
 
     const std::string insertSql =
         "INSERT INTO "
-            "CCEventLog (" + boost::algorithm::join( columnNames, ", " ) +
-        ") VALUES (" + boost::algorithm::join( placeholders, ", " ) + ")";
+            "CCEventLog "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseWriter dbInserter(connection, insertSql);
@@ -3283,13 +3252,8 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
         << msg.stationId
         << msg.areaId
         << msg.spAreaId
-        << msg.regulatorId;
-
-    if ( msg.eventSubtype )
-    {
-        dbInserter
-            << *msg.eventSubtype;
-    }
+        << msg.regulatorId
+        << msg.eventSubtype;
 
     if( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
