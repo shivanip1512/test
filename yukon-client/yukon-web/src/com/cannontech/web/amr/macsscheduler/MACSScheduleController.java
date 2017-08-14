@@ -211,7 +211,7 @@ public class MACSScheduleController extends MultiActionController {
         model.addAttribute("ied300Types", MacsScriptTemplate.getIed300Types());
         model.addAttribute("ied400Types", MacsScriptTemplate.getIed400Types());
         model.addAttribute("iedTypes", MacsScriptOptions.getIedTypes());
-        model.addAttribute("frozenDemandRegisterOptions", new ArrayList<>(Arrays.asList("Landis-Gyr S4", "Alpha")));
+        model.addAttribute("frozenDemandRegisterOptions", MacsScriptHelper.frozenDemandRegisterOptions);
         //check if device or load group
         model.addAttribute("target", "DEVICE");
         if (schedule.getSimpleOptions() != null) {
