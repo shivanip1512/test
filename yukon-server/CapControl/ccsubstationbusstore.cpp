@@ -3223,7 +3223,30 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 
     const std::string insertSql =
         "INSERT INTO "
-            "CCEventLog "
+            "CCEventLog (LogID, "
+                        "PointID, "
+                        "DateTime, "
+                        "SubID, "
+                        "FeederID, "
+                        "EventType, "
+                        "SeqID, "
+                        "Value, "
+                        "Text, "
+                        "UserName, "
+                        "KVARBefore, "
+                        "KVARAfter, "
+                        "KVARChange, "
+                        "AdditionalInfo, "
+                        "actionId, "
+                        "CapBankStateInfo, "
+                        "aVar, "
+                        "bVar, "
+                        "cVar, "
+                        "StationID, "
+                        "AreaID, "
+                        "SpAreaID, "
+                        "RegulatorId, "
+                        "EventSubtype) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     Cti::Database::DatabaseConnection connection;
