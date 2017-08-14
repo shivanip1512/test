@@ -145,7 +145,6 @@ public class MacsSchedule implements YukonPao{
 
     public void setSimpleOptions(MacsSimpleOptions simpleOptions) {
         this.simpleOptions = simpleOptions;
-        this.scriptOptions = null;
     }
 
     public MacsScriptOptions getScriptOptions() {
@@ -154,7 +153,6 @@ public class MacsSchedule implements YukonPao{
 
     public void setScriptOptions(MacsScriptOptions scriptOptions) {
         this.scriptOptions = scriptOptions;
-        this.simpleOptions = null;
     }
 
     public MacsScriptTemplate getTemplate() {

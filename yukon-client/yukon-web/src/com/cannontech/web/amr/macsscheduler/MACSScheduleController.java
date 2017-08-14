@@ -168,10 +168,11 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/view", method = RequestMethod.GET)
-    public String viewSchedule(ModelMap model, @PathVariable int id) {
+    public String viewSchedule(ModelMap model, @PathVariable int id, LiteYukonUser user) {
         MacsSchedule schedule = service.getMacsScheduleById(id);
         model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.VIEW);
+        loadScriptInfo(schedule, user);
         setupModel(model, schedule);
         return "schedule.jsp";
     }
@@ -181,18 +182,21 @@ public class MACSScheduleController extends MultiActionController {
         MacsSchedule schedule = service.getMacsScheduleById(id);
         model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.EDIT);
-        if(schedule.isScript()){
+        loadScriptInfo(schedule, user);
+        setupModel(model, schedule);
+        return "schedule.jsp";
+    }
+    
+    private void loadScriptInfo(MacsSchedule schedule, LiteYukonUser user) {
+        if (schedule.isScript()) {
             try {
                 String script = service.getScript(schedule.getId(), user);
-                schedule.getScriptOptions().setScriptText(script);
-                MacsScriptHelper.loadFromFile(schedule, deviceGroupService);
+                MacsScriptHelper.loadScheduleFromScript(script, schedule, deviceGroupService);
             } catch (MacsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-        setupModel(model, schedule);
-        return "schedule.jsp";
     }
     
     private void setupModel(ModelMap model, MacsSchedule schedule) {
@@ -245,7 +249,7 @@ public class MACSScheduleController extends MultiActionController {
     @RequestMapping(value="createScript", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> createScript(@ModelAttribute MacsSchedule schedule, YukonUserContext yukonUserContext) {
         Map<String, Object> json = new HashMap<>();
-        MacsScriptHelper.loadFromInput(schedule);
+        MacsScriptHelper.generateScript(schedule);
         json.put("script", schedule.getScriptOptions().getScriptText());
         return json;
     }

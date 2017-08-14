@@ -42,7 +42,11 @@ import com.google.common.base.Strings;
 
 public class MacsScriptHelper {
 
-    public static void loadFromInput(MacsSchedule schedule) {
+    /**
+     * Creates script file from schedule.
+     * schedule.scriptOptions.scriptText contains script file created.
+     */
+    public static void generateScript(MacsSchedule schedule) {
         MacsScriptOptions options = schedule.getScriptOptions();
         MacsScriptTemplate template = schedule.getTemplate();
         if(template.isNoTemplateSelected()){
@@ -61,6 +65,34 @@ public class MacsScriptHelper {
         options.setScriptText(script.toString());
     }
     
+    /**
+     * Loads schedule with values from script file.
+     * schedule.scriptOptions.scriptText contains script file
+     */
+    public static void loadScheduleFromScript(String script, MacsSchedule schedule, DeviceGroupService deviceGroupService) {
+        MacsScriptOptions options = schedule.getScriptOptions();
+        options.setScriptText(script);
+        MacsScriptTemplate template = schedule.getTemplate();
+        
+        if(template.isNoTemplateSelected()){
+            return;
+        }
+        
+        ScriptTemplate scriptTemplate = new ScriptTemplate();
+        scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
+        options.setFileName(scriptTemplate.getParameterValue(SCRIPT_FILE_NAME_PARAM));
+        loadValuesFromTemplate(schedule, scriptTemplate, deviceGroupService);
+    }
+
+    /**
+     * Loads schedule with the values from script file.
+     */
+    public static void loadDefaultValues(MacsSchedule schedule) {
+        MacsScriptOptions options = schedule.getScriptOptions();
+        options.setFileName(schedule.getScheduleName()+".ctl");
+        loadValuesFromTemplate(schedule, new ScriptTemplate(), null);
+    }
+    
     private static DeviceGroup getGroup(ScriptTemplate scriptTemplate, ScriptParameters groupParam,
             DeviceGroupService deviceGroupService) {
         if (deviceGroupService != null) {
@@ -71,38 +103,20 @@ public class MacsScriptHelper {
         }
         return null;
     }
-
-    public static void loadFromFile(MacsSchedule schedule, DeviceGroupService deviceGroupService) {
-
-        MacsScriptOptions options = schedule.getScriptOptions();
-        MacsScriptTemplate template = schedule.getTemplate();
-        
-        if(template.isNoTemplateSelected()){
-            return;
-        }
-        
-        ScriptTemplate scriptTemplate = new ScriptTemplate();
-        scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
-        loadValuesFromTemplate(schedule, scriptTemplate, deviceGroupService);
-    }
-
-    public static void loadDefaultValues(MacsSchedule schedule) {
-        loadValuesFromTemplate(schedule, new ScriptTemplate(), null);
-    }
     
     private static void loadValuesFromTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate,
             DeviceGroupService deviceGroupService) {
 
         MacsScriptOptions options = schedule.getScriptOptions();
-        if(!Strings.isNullOrEmpty(schedule.getScheduleName())){
-            options.setFileName(schedule.getScheduleName()+".ctl");
-        }
         options.setDescription(scriptTemplate.getParameterValue(SCRIPT_DESC_PARAM));
         options.setFilePath(scriptTemplate.getParameterValue(FILE_PATH_PARAM));
         options.setMissedFileName(scriptTemplate.getParameterValue(MISSED_FILE_NAME_PARAM));
         options.setSuccessFileName(scriptTemplate.getParameterValue(SUCCESS_FILE_NAME_PARAM));
         options.setPorterTimeout(NumberUtils.toInt(scriptTemplate.getParameterValue(PORTER_TIMEOUT_PARAM), 0));
-               
+        options.setGroup(getGroup(scriptTemplate, GROUP_NAME_PARAM, deviceGroupService));
+        if(options.getGroup() != null){
+            options.setGroupName(options.getGroup().getFullName()); 
+        }      
         options.setRetryCount(NumberUtils.toInt(scriptTemplate.getParameterValue(RETRY_COUNT_PARAM), 0));
         options.setMaxRetryHours(NumberUtils.toInt(scriptTemplate.getParameterValue(MAX_RETRY_HOURS_PARAM), 0));
         options.setQueueOffCount(NumberUtils.toInt(scriptTemplate.getParameterValue(QUEUE_OFF_COUNT_PARAM), 0));
@@ -114,6 +128,9 @@ public class MacsScriptHelper {
         options.setBillingEnergyDays(NumberUtils.toInt(scriptTemplate.getParameterValue(BILLING_ENERGY_DAYS_PARAM), 0));
         options.setBillingDemandDays(NumberUtils.toInt(scriptTemplate.getParameterValue(BILLING_DEMAND_DAYS_PARAM), 0));
         options.setBillingGroup(getGroup(scriptTemplate, BILLING_GROUP_NAME_PARAM, deviceGroupService));
+        if(options.getBillingGroup() != null){
+            options.setBillingGroupName(options.getBillingGroup().getFullName()); 
+        } 
 
         options.setNotificationSelected(Boolean.valueOf(scriptTemplate.getParameterValue(NOTIFICATION_FLAG_PARAM)));
         options.setNotificationGroupName(scriptTemplate.getParameterValue(NOTIFY_GROUP_PARAM));

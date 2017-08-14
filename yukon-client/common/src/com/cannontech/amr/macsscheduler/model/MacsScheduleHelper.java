@@ -2,6 +2,9 @@ package com.cannontech.amr.macsscheduler.model;
 
 import java.util.Date;
 
+import org.joda.time.Minutes;
+import org.joda.time.Seconds;
+
 import com.cannontech.amr.macsscheduler.model.MacsSchedule.State;
 import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.StartPolicy;
 import com.cannontech.amr.macsscheduler.model.MacsStopPolicy.StopPolicy;
@@ -37,7 +40,7 @@ public class MacsScheduleHelper {
    
         //stop policy
         MacsStopPolicy stop = macsSchedule.getStopPolicy();
-        schedule.setDuration(stop.getDuration());
+        schedule.setDuration(getSeconds(stop.getDuration()));
         schedule.setStopPolicy(stop.getPolicy().getPolicyString());
         if (!Strings.isNullOrEmpty(stop.getStopTime())) {
             schedule.setStopTime(stop.getStopTime());
@@ -54,7 +57,7 @@ public class MacsScheduleHelper {
             if (!Strings.isNullOrEmpty(options.getStopCommand())) {
                 schedule.setStartCommand(options.getStopCommand());
             }
-            schedule.setRepeatInterval(options.getRepeatInterval());
+            schedule.setRepeatInterval(getSeconds(options.getRepeatInterval()));
             schedule.setTargetPAObjectId(options.getTargetPAObjectId());
         }
         return schedule;
@@ -78,7 +81,7 @@ public class MacsScheduleHelper {
         //stop policy
         MacsStopPolicy stop = macsSchedule.getStopPolicy();
         stop.setPolicy(StopPolicy.getPolicy(schedule.getStopPolicy()));
-        stop.setDuration(schedule.getDuration());
+        stop.setDuration(getMinutes(stop.getDuration()));
         // stop.setManualStopTime(manualStopTime);
         
         if (macsSchedule.isScript()) {
@@ -93,7 +96,7 @@ public class MacsScheduleHelper {
             if (!Strings.isNullOrEmpty(schedule.getStopCommand())) {
                 options.setStopCommand(schedule.getStopCommand());
             }
-            options.setRepeatInterval(schedule.getRepeatInterval());
+            options.setRepeatInterval(getMinutes(schedule.getRepeatInterval()));
             options.setTargetPAObjectId(schedule.getTargetPAObjectId());
             macsSchedule.setSimpleOptions(options);
         }
@@ -110,5 +113,13 @@ public class MacsScheduleHelper {
             return null;
         }
         return date;
+    }
+    
+    private static int getMinutes(int seconds){
+        return Seconds.seconds(seconds).toStandardMinutes().getMinutes();
+    }
+    
+    private static int getSeconds(int minutes) {
+        return Minutes.minutes(minutes).toStandardSeconds().getSeconds();
     }
 }
