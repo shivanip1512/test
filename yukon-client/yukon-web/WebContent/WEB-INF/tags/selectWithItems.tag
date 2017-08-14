@@ -31,6 +31,9 @@
             <c:when test="${not empty itemValue}">
                 <tags:listItem value="${status.value}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}" defaultItemLabel="${defaultItemLabel}"/>
             </c:when>
+            <c:when test="${not empty itemLabel}">
+                <tags:listItem value="${status.value}" items="${items}" itemLabel="${itemLabel}"/>
+            </c:when>
             <c:otherwise>
                 <tags:listItem value="${status.value}" items="${items}"/>
             </c:otherwise>

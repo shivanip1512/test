@@ -34,33 +34,55 @@
                     </tags:nameValue2>
                     <c:set var="clazz" value="${schedule.isSimple() ? 'dn' : ''}"/>
                     <tags:nameValue2 nameKey=".template" rowClass="js-template ${clazz}">
-                        <tags:selectWithItems path="template" items="${templates}" inputClass="js-template" disabled="${disableType}"/>
+                        <tags:selectWithItems path="template" items="${templates}" inputClass="js-template-value" disabled="${disableType}" itemLabel="description"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <tags:sectionContainer2 nameKey="startPolicySection">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".type">
                             <tags:selectWithItems path="startPolicy.policy"
-                                items="${startPolicyOptions}" />
+                                items="${startPolicyOptions}" inputClass="js-start-policy"/>
                         </tags:nameValue2>
-<%--                         <tags:nameValue2 nameKey=".startPolicy.startTime">
-                            <tags:input path="startPolicy.manualStartTime" />
-                        </tags:nameValue2> --%>
-                        <tags:nameValue2 nameKey=".startPolicy.startDateTime">
+                        <tags:nameValue2 nameKey=".startPolicy.startTime" rowClass="js-start-time">
+                            <div class="stacked">
+                                <select name="startPolicy.time.hours">
+                                    <c:forEach var="hour" begin="1" end="12" step="1">
+                                        <option value="${hour}" <c:if test="${startPolicy.time.hours == hour}">selected</c:if>>${hour}</option>
+                                    </c:forEach>
+                                </select> :
+                                
+                                <select name="startPolicy.time.minutes">
+                                    <c:forEach var="minute" begin="0" end="59" step="5">
+                                        <option value="${minute}" <c:if test="${startPolicy.time.minutes == minute}">selected</c:if>>
+                                            <c:if test="${minute < 10}">
+                                                <c:set var="minute" value="0${minute}"/>
+                                            </c:if>
+                                            ${minute}
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                                
+                                <select name="startPolicy.time.amPm">
+                                    <option value="AM" <c:if test="${startPolicy.time.amPm == 'AM'}">selected</c:if>>
+                                        <i:inline key="yukon.web.components.cronPicker.am"/>
+                                    </option>
+                                    <option value="PM" <c:if test="${startPolicy.time.amPm == 'PM'}">selected</c:if>>
+                                        <i:inline key="yukon.web.components.cronPicker.pm"/>
+                                    </option>
+                                </select>
+                            </div>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".startPolicy.startDateTime" rowClass="js-start-dateTime">
                             <dt:dateTime path="startPolicy.startDateTime" />
                             <tags:checkbox path="startPolicy.everyYear" />
                             <i:inline key=".startPolicy.everyYear" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".startPolicy.daysOfWeek">
-                            <div class="button-group stacked">
-                                <c:forEach var="dayOfWeek" items="${daysOfWeek}">
-                                    <tags:check id="${dayOfWeek}_chk"
-                                        path="startPolicy.days[${dayOfWeek}]" key="${dayOfWeek}"
-                                        classes="M0" />
-                                </c:forEach>
-                            </div>
+                        <tags:nameValue2 nameKey=".startPolicy.daysOfWeek" rowClass="js-start-weekDay">
+                            <c:forEach var="dayOfWeek" items="${daysOfWeek}">
+                                <tags:checkbox path="startPolicy.days[${dayOfWeek}]" descriptionNameKey="yukon.common.day.${dayOfWeek}.short"/>
+                            </c:forEach>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".startPolicy.dayOfMonth">
+                        <tags:nameValue2 nameKey=".startPolicy.dayOfMonth" rowClass="js-start-dayOfMonth">
                             <tags:input path="startPolicy.dayOfMonth" size="5"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".holiday">
@@ -74,13 +96,39 @@
                 <tags:sectionContainer2 nameKey="stopPolicySection">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".type">
-                            <tags:selectWithItems path="stopPolicy.policy"
+                            <tags:selectWithItems path="stopPolicy.policy" inputClass="js-stop-policy"
                                 items="${stopPolicyOptions}" />
                         </tags:nameValue2>
-<%--                         <tags:nameValue2 nameKey=".stopPolicy.stopTime">
-                            <tags:input path="stopPolicy.manualStopTime" />
-                        </tags:nameValue2> --%>
-                        <tags:nameValue2 nameKey=".stopPolicy.duration">
+                        <tags:nameValue2 nameKey=".stopPolicy.stopTime" rowClass="js-stop-time">
+                            <div class="stacked">
+                                <select name="stopPolicy.time.hours">
+                                    <c:forEach var="hour" begin="1" end="12" step="1">
+                                        <option value="${hour}" <c:if test="${stopPolicy.time.hours == hour}">selected</c:if>>${hour}</option>
+                                    </c:forEach>
+                                </select> :
+                                
+                                <select name="stopPolicy.time.minutes">
+                                    <c:forEach var="minute" begin="0" end="59" step="5">
+                                        <option value="${minute}" <c:if test="${stopPolicy.time.minutes == minute}">selected</c:if>>
+                                            <c:if test="${minute < 10}">
+                                                <c:set var="minute" value="0${minute}"/>
+                                            </c:if>
+                                            ${minute}
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                                
+                                <select name="stopPolicy.time.amPm">
+                                    <option value="AM" <c:if test="${stopPolicy.time.amPm == 'AM'}">selected</c:if>>
+                                        <i:inline key="yukon.web.components.cronPicker.am"/>
+                                    </option>
+                                    <option value="PM" <c:if test="${stopPolicy.time.amPm == 'PM'}">selected</c:if>>
+                                        <i:inline key="yukon.web.components.cronPicker.pm"/>
+                                    </option>
+                                </select>
+                            </div>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".stopPolicy.duration" rowClass="js-stop-duration">
                             <tags:input path="stopPolicy.duration" size="5"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
@@ -133,7 +181,3 @@
     
     <cti:includeScript link="/resources/js/pages/yukon.ami.macs.js" />
 </cti:standardPage>
-
-
-
-

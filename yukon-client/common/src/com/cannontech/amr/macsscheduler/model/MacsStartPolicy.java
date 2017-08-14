@@ -13,7 +13,7 @@ import com.cannontech.message.macs.message.Schedule;
 
 public class MacsStartPolicy {
 
-    public enum StartPolicy {
+    public enum StartPolicy implements DisplayableEnum {
         DATETIME(Schedule.DATETIME_START),
         DAYOFMONTH(Schedule.DAYOFMONTH_START),
         WEEKDAY(Schedule.WEEKDAY_START),
@@ -35,6 +35,11 @@ public class MacsStartPolicy {
                     .findFirst()
                     .orElseThrow(() -> new NotFoundException("Could not find policy=" + value));
         }
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.tools.schedule.startPolicy.type." + name();
+        }
     }
     
     public static enum DayOfWeek implements DisplayableEnum {
@@ -55,7 +60,7 @@ public class MacsStartPolicy {
     
     private StartPolicy policy;
     private int holidayScheduleId;
-    private Date manualStartTime;
+    private MacsTimeField time;
     private Instant startDateTime;
     private boolean everyYear;
     private Map<DayOfWeek, Boolean> days = new HashMap<>(defaultDays);
@@ -86,7 +91,7 @@ public class MacsStartPolicy {
     }
     
 
-   public int getStartDay() {
+/*   public int getStartDay() {
        return 0;
    }
 
@@ -100,24 +105,16 @@ public class MacsStartPolicy {
        return 0;
    }
 
-    /**
+    *//**
      * @return the startTime (must be 8 chars)
-     */
+     *//*
     public String getStartTime() {
         return "00:00:00";
     }
 
     public String getValidWeekDays() {
         return "YYYYYYYN";
-    }
-
-    public Date getManualStartTime() {
-        return manualStartTime;
-    }
-
-    public void setManualStartTime(Date manualStartTime) {
-        this.manualStartTime = manualStartTime;
-    }
+    }*/
 
     public Instant getStartDateTime() {
         return startDateTime;
@@ -149,5 +146,13 @@ public class MacsStartPolicy {
 
     public void setDayOfMonth(int dayOfMonth) {
         this.dayOfMonth = dayOfMonth;
+    }
+
+    public MacsTimeField getTime() {
+        return time;
+    }
+
+    public void setTime(MacsTimeField time) {
+        this.time = time;
     }
 }

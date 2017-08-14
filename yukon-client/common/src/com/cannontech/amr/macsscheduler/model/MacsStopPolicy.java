@@ -3,11 +3,12 @@ package com.cannontech.amr.macsscheduler.model;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.message.macs.message.Schedule;
 
 public class MacsStopPolicy {
-    public enum StopPolicy {
+    public enum StopPolicy implements DisplayableEnum {
         UNTILCOMPLETE(Schedule.UNTILCOMPLETE_STOP),
         ABSOLUTETIME(Schedule.ABSOLUTETIME_STOP),
         DURATION(Schedule.DURATION_STOP),
@@ -29,11 +30,16 @@ public class MacsStopPolicy {
                     .findFirst()
                     .orElseThrow(() -> new NotFoundException("Could not find policy=" + value));
         }
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.tools.schedule.stopPolicy.type." + name();
+        }
     }
     
     private StopPolicy policy;
     private int duration;
-    private Date manualStopTime;
+    private MacsTimeField time;
     
     public StopPolicy getPolicy() {
         return policy;
@@ -48,16 +54,16 @@ public class MacsStopPolicy {
         this.duration = duration;
     }
     
-    /**
+/*    *//**
      * @return the stopTime (must be 8 chars)
-     */
+     *//*
     public String getStopTime() {
         return "00:00:00";
+    }*/
+    public MacsTimeField getTime() {
+        return time;
     }
-    public Date getManualStopTime() {
-        return manualStopTime;
-    }
-    public void setManualStopTime(Date manualStopTime) {
-        this.manualStopTime = manualStopTime;
+    public void setTime(MacsTimeField time) {
+        this.time = time;
     }
 }

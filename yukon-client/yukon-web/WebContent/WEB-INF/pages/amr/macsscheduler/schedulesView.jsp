@@ -36,10 +36,7 @@
                         </a>
                     </td>
                     <td>
-                        <cti:url var="scriptUrl" value="/macsscheduler/schedules/${id}/viewScript" />
-                        <a href="${scriptUrl}">
                         ${fn:escapeXml(schedule.categoryName)}
-                        </a>
                     </td>
                     <td>
                         <c:choose>

@@ -19,12 +19,13 @@
     </tags:nameValueContainer2>
     <br />
     <cti:tabs>
+        <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? 'dn' : ''}" />
         <cti:msg2 var="meterReadTab" key=".scriptOptions.meterReadTab" />
-        <cti:tab title="${meterReadTab}">
+        <cti:tab title="${meterReadTab}" headerClasses="${clazz} js-meter-read-tab" selected="${!schedule.template.isNoTemplateSelected()}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".scriptOptions.deviceGroup">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <tags:deviceGroupPicker inputName="${pathKey}groupName" />
+                        <tags:deviceGroupPicker inputName="${pathKey}groupName"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         ${schedule.scriptOptions.groupName}
@@ -91,8 +92,9 @@
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
         </cti:tab>
+        <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? 'dn' : ''}" />
         <cti:msg2 var="optionsTab" key=".scriptOptions.optionsTab" />
-        <cti:tab title="${optionsTab}">
+        <cti:tab title="${optionsTab}" headerClasses="${clazz} js-options-tab">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".scriptOptions.sendEmailNotification">
                     <tags:switchButton path="${pathKey}notificationSelected" toggleGroup="sendEmail"
@@ -132,7 +134,7 @@
             </tags:nameValueContainer2>
         </cti:tab>
         <cti:msg2 var="textEditorTab" key=".scriptOptions.textEditorTab" />
-        <cti:tab title="${textEditorTab}" headerClasses="js-script-text">
+        <cti:tab title="${textEditorTab}" headerClasses="js-script-text" selected="${schedule.template.isNoTemplateSelected()}">
             <div class="error" id="script-error"></div>
             <cti:displayForPageEditModes modes="VIEW">
                 <c:set var="disableArea" value="disabled" />

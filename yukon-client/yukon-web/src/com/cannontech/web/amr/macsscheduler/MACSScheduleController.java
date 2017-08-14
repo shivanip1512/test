@@ -78,7 +78,7 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private ServerDatabaseCache cache;
     @Autowired private DeviceGroupService deviceGroupService;
 
-    private final static String baseKey = "yukon.web.modules.tools.scripts.";
+    private final static String scheduleKey = "yukon.web.modules.tools.schedule.";
     
     @RequestMapping("view")
     public String view(ModelMap model, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
@@ -151,8 +151,6 @@ public class MACSScheduleController extends MultiActionController {
     
     @RequestMapping(value="getTemplate", method = RequestMethod.GET)
     public String getTemplate(ModelMap model, @ModelAttribute("schedule") MacsSchedule schedule) {
-        //TODO: get Template
-        model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.CREATE);
         model.addAttribute("templateReceived", true);
         if (schedule.isScript()) {
@@ -229,25 +227,16 @@ public class MACSScheduleController extends MultiActionController {
         try {
             MacsSchedule schedule = service.getMacsScheduleById(id);
             service.delete(id, user);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", schedule.getScheduleName()));
+            flash.setConfirm(new YukonMessageSourceResolvable(scheduleKey + ".delete.successful", schedule.getScheduleName()));
         } catch (MacsException e) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + ".deleteFailure"));
+            flash.setError(new YukonMessageSourceResolvable(scheduleKey + ".delete.failure"));
             return "redirect:/macsscheduler/schedules/" + id + "/view";
         }
         return "redirect:/macsscheduler/schedules/view";
     }
     
-    @RequestMapping(value="{id}/viewScript", method = RequestMethod.GET)
-    public String viewScript(ModelMap model,YukonUserContext yukonUserContext, @PathVariable int id) {
-        //TODO: Get Script text and add to model
-      
-        model.addAttribute("script", "");
- 
-        return "script.jsp";
-    }
-    
     @RequestMapping(value="createScript", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> createScript(@ModelAttribute MacsSchedule schedule, YukonUserContext yukonUserContext) {
+    public @ResponseBody Map<String, Object> createScript(@ModelAttribute("schedule") MacsSchedule schedule, YukonUserContext yukonUserContext) {
         Map<String, Object> json = new HashMap<>();
         MacsScriptHelper.generateScript(schedule);
         json.put("script", schedule.getScriptOptions().getScriptText());
@@ -255,23 +244,26 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="save", method = RequestMethod.POST)
-    public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, LiteYukonUser user, FlashScope flash) {
+    public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, LiteYukonUser user, FlashScope flash, ModelMap model) {
+        int id = schedule.getId();
         try {
-            if (schedule.getId() > 0) {
+            if (id > 0) {
                 service.updateSchedule(schedule, user);
             } else {
-                service.createSchedule(schedule, user);
+                id = service.createSchedule(schedule, user);
             }
         } catch (DuplicateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            flash.setError(new YukonMessageSourceResolvable(scheduleKey + "save.failure"));
+            setupModel(model, schedule);
+            return "schedule.jsp";
         } catch (MacsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();        
+            flash.setError(new YukonMessageSourceResolvable(scheduleKey + "save.failure"));
+            setupModel(model, schedule);
+            return "schedule.jsp";
         }
         // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.successful"));
-        return "redirect:/macsscheduler/schedules/" + schedule.getId();
+        flash.setConfirm(new YukonMessageSourceResolvable(scheduleKey + "save.successful"));
+        return "redirect:/macsscheduler/schedules/" + id;
     }
     
     @RequestMapping(value="{id}/startStop", method = RequestMethod.GET)

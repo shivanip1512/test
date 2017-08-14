@@ -43,7 +43,7 @@
     <entry key="yukon.web.modules.tools.schedule.type">Type</entry>    
     <entry key="yukon.web.modules.tools.schedule.template">Template</entry>    
     <entry key="yukon.web.modules.tools.schedule.startPolicySection.title">Start Policy</entry>    
-    <entry key="yukon.web.modules.tools.schedule.startPolicy.startTime">Start Time (hh:mm)</entry>  
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.startTime">Start Time</entry>  
     <entry key="yukon.web.modules.tools.schedule.startPolicy.startDateTime">Start Date/Time</entry>
     <entry key="yukon.web.modules.tools.schedule.startPolicy.everyYear">Every Year</entry>
     <entry key="yukon.web.modules.tools.schedule.startPolicy.daysOfWeek">Days</entry>    
@@ -52,7 +52,7 @@
     <entry key="yukon.web.modules.tools.schedule.holiday">Holiday</entry>    
     <entry key="yukon.web.modules.tools.schedule.stopPolicySection.title">Stop Policy</entry>            
     <entry key="yukon.web.modules.tools.schedule.stopPolicy.duration">Duration (minutes)</entry>            
-    <entry key="yukon.web.modules.tools.schedule.stopPolicy.stopTime">Stop Time (hh:mm)</entry>  
+    <entry key="yukon.web.modules.tools.schedule.stopPolicy.stopTime">Stop Time</entry>  
     <entry key="yukon.web.modules.tools.schedule.simpleOptions.start">Start</entry>            
     <entry key="yukon.web.modules.tools.schedule.simpleOptions.stop">Stop</entry>              
     <entry key="yukon.web.modules.tools.schedule.simpleOptions.repeatInterval">Repeat Interval (minutes)</entry>            
@@ -91,11 +91,23 @@
     <entry key="yukon.web.modules.tools.schedule.scriptOptions.filePath">File Path</entry>     
         
     <entry key="yukon.web.modules.tools.schedule.save.successful">Schedule was saved successfully.</entry>    
+    <entry key="yukon.web.modules.tools.schedule.save.failure">There was a problem saving the schedule.</entry>    
     <entry key="yukon.web.modules.tools.schedule.delete.successful">Schedule: {0} was deleted successfully.</entry>    
     <entry key="yukon.web.modules.tools.schedule.delete.failure">There was a problem deleting the schedule.</entry>    
     
     <!-- Types -->
     <entry key="yukon.web.modules.tools.schedule.type.SIMPLE">Simple</entry>    
     <entry key="yukon.web.modules.tools.schedule.type.SCRIPT">Script</entry>  
+    
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.type.DATETIME">Date Time</entry>
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.type.DAYOFMONTH">Monthly</entry>
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.type.WEEKDAY">Weekly</entry>
+    <entry key="yukon.web.modules.tools.schedule.startPolicy.type.MANUAL">Manual</entry>
+    
+    <entry key="yukon.web.modules.tools.schedule.stopPolicy.type.UNTILCOMPLETE">Until Complete</entry>
+    <entry key="yukon.web.modules.tools.schedule.stopPolicy.type.MANUAL">Manual</entry>
+    <entry key="yukon.web.modules.tools.schedule.stopPolicy.type.ABSOLUTETIME">Absolute Time</entry>
+    <entry key="yukon.web.modules.tools.schedule.stopPolicy.type.DURATION">Duration</entry>
+    
         
 </properties>

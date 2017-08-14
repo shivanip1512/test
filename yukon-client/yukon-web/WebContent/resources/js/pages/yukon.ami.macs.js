@@ -27,36 +27,82 @@ yukon.ami.macs = (function () {
         var retryTypes = yukon.fromJson('#retry-types'),
         ied300Types = yukon.fromJson('#ied-300-types'),
         ied400Types = yukon.fromJson('#ied-400-types'),
-        templateType =  $('.js-template').val(),
+        templateType =  $('.js-template-value').val(),
         isRetry = retryTypes.indexOf(templateType) !== -1,
         isIed300 = ied300Types.indexOf(templateType) !== -1,
         isIed400 = ied400Types.indexOf(templateType) !== -1,
         demandResetToggle = $('.js-demand-reset')
         demandResetRow = demandResetToggle.closest('tr'),
         demandResetSelected = demandResetRow.find('.switch-btn-checkbox').prop('checked');
-        if (isRetry) {
-            $('.js-retry-section').addClass('dn');
+        if (templateType == 'NO_TEMPLATE') {
+            $('.js-meter-read-tab').addClass('dn');
+            $('.js-options-tab').addClass('dn');
         } else {
-            $('.js-retry-section').removeClass('dn');
-        }
-        if (isIed300 || isIed400) {
-            $('.js-ied-section').removeClass('dn');
-            if (demandResetSelected) {
-                if (isIed400) {
-                    $('.js-ied-400').removeClass('dn');
-                    $('.js-ied-300').addClass('dn');
+            $('.js-meter-read-tab').removeClass('dn');
+            $('.js-options-tab').removeClass('dn');
+            if (isRetry) {
+                $('.js-retry-section').addClass('dn');
+            } else {
+                $('.js-retry-section').removeClass('dn');
+            }
+            if (isIed300 || isIed400) {
+                $('.js-ied-section').removeClass('dn');
+                if (demandResetSelected) {
+                    if (isIed400) {
+                        $('.js-ied-400').removeClass('dn');
+                        $('.js-ied-300').addClass('dn');
+                    } else {
+                        $('.js-ied-400').addClass('dn');
+                        $('.js-ied-300').removeClass('dn');
+                    }
                 } else {
+                    $('.js-ied-300').addClass('dn');
                     $('.js-ied-400').addClass('dn');
-                    $('.js-ied-300').removeClass('dn');
                 }
             } else {
-                $('.js-ied-300').addClass('dn');
-                $('.js-ied-400').addClass('dn');
+                $('.js-ied-section').addClass('dn');
             }
-        } else {
-            $('.js-ied-section').addClass('dn');
         }
-    };
+    },
+    
+    _updateStartPolicyFields = function () {
+        var policy = $('.js-start-policy').val();
+        if (policy == 'DATETIME') {
+            $('.js-start-dateTime').removeClass('dn');
+        } else {
+            $('.js-start-dateTime').addClass('dn');
+        }
+        if (policy == 'DAYOFMONTH') {
+            $('.js-start-dayOfMonth').removeClass('dn');
+        } else {
+            $('.js-start-dayOfMonth').addClass('dn');
+        }
+        if (policy == 'WEEKDAY') {
+            $('.js-start-weekDay').removeClass('dn');
+        } else {
+            $('.js-start-weekDay').addClass('dn');
+        }
+        if (policy == 'DAYOFMONTH' || policy == 'WEEKDAY') {
+            $('.js-start-time').removeClass('dn');
+        } else {
+            $('.js-start-time').addClass('dn');
+        }
+        
+    },
+    
+    _updateStopPolicyFields = function () {
+        var policy = $('.js-stop-policy').val();
+        if (policy == 'DURATION') {
+            $('.js-stop-duration').removeClass('dn');
+        } else {
+            $('.js-stop-duration').addClass('dn');
+        }
+        if (policy == 'ABSOLUTETIME') {
+            $('.js-stop-time').removeClass('dn');
+        } else {
+            $('.js-stop-time').addClass('dn');
+        }
+    },
     
     _initialized = false,
 
@@ -67,6 +113,9 @@ yukon.ami.macs = (function () {
                 if (_initialized) {
                     return;
                 }
+                
+                _updateStartPolicyFields();
+                _updateStopPolicyFields();
 
                 var tableContainer = $('#scripts-container');
                 if (tableContainer.length === 1) {
@@ -139,7 +188,7 @@ yukon.ami.macs = (function () {
                 $(document).on('click', '.js-script-text', function (ev) {
                     var form = $('#macs-schedule');
                     
-                    var data = $.ajax({
+                    $.ajax({
                         url: yukon.url('/macsscheduler/schedules/createScript'),
                         data: form.serialize()
                     }).done(function (data, textStatus, jqXHR) {
@@ -185,14 +234,23 @@ yukon.ami.macs = (function () {
                     }).done(function (data) {
                         if (type == 'SCRIPT') {
                             $('#script-content').html(data);
-                            yukon.ui.initContent('#script-content');
                             $('.js-script-tab').removeClass('js-get-template');
+                            yukon.ui.initContent('#script-content');
+                            _updateTemplateFields();
                         } else {
                             $('#command-content').html(data);
                             $('.js-command-tab').removeClass('js-get-template');
                         }
                     });
                     
+                });
+                
+                $(document).on('change', '.js-start-policy', function (ev) {
+                    _updateStartPolicyFields();
+                });
+                
+                $(document).on('change', '.js-stop-policy', function (ev) {
+                    _updateStopPolicyFields();
                 });
                     
                 

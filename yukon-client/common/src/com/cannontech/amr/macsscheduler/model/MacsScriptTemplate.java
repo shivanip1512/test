@@ -23,7 +23,7 @@ public enum MacsScriptTemplate {
             OUTAGE_METER_READ, VOLTAGE_METER_READ, IED_400_METER_READ, IED_400_METER_READ);
     private static Set<MacsScriptTemplate> retry =
         ImmutableSet.of(METER_READ_RETRY, IED_360_370_METER_READ_RETRY, IED_400_METER_READ_RETRY);
-    private static Set<MacsScriptTemplate> ied300 = ImmutableSet.of(IED_360_370_METER_READ, IED_360_370_METER_READ);
+    private static Set<MacsScriptTemplate> ied300 = ImmutableSet.of(IED_360_370_METER_READ_RETRY, IED_360_370_METER_READ);
     private static Set<MacsScriptTemplate> ied400 = ImmutableSet.of(IED_400_METER_READ_RETRY, IED_400_METER_READ);
     
     private int id;
@@ -34,7 +34,7 @@ public enum MacsScriptTemplate {
         this.description = description;
     }
 
-    public String getDecription() {
+    public String getDescription() {
         return description;
     }
 
