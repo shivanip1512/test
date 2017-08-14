@@ -2,6 +2,8 @@ package com.cannontech.web.deviceConfiguration;
 
 import java.beans.PropertyEditor;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,12 +32,13 @@ import com.cannontech.common.device.config.model.jaxb.MapType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.deviceConfiguration.enumeration.CapControlAttribute;
 import com.cannontech.web.deviceConfiguration.enumeration.DeviceConfigurationInputEnumeration;
 import com.cannontech.web.deviceConfiguration.model.AttributeInput;
 import com.cannontech.web.deviceConfiguration.model.AttributeMappingField;
@@ -60,6 +63,8 @@ import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.StringType;
 import com.cannontech.web.input.validate.InputValidator;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 @Component
 public class DeviceConfigurationHelper {
@@ -75,6 +80,7 @@ public class DeviceConfigurationHelper {
     @Autowired private ObjectFormattingService formattingService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private RfnDeviceAttributeDao rfnDeviceAttributeDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @Autowired
@@ -154,6 +160,7 @@ public class DeviceConfigurationHelper {
         } else if (input.getClass() == InputBoolean.class) {
             fields.add(Field.createField(displayName, fieldName, description, new BooleanType(), input.getDefault()));
         } else if (input.getClass() == InputIndexed.class) {
+            // TODO - pass category type so the AttributeMapping type can limit to the appropriate device types
             fields.add(createIndexedField(displayName, fieldName, description, (InputIndexed)input, configId));
         } else {
             log.error("Received unsupported input type: " + input.getClass());
@@ -297,6 +304,7 @@ public class DeviceConfigurationHelper {
         throw new NotFoundException("No indexed field type exists for indexed field \"" + fieldName + "\" with elements " + elements);
     }
     
+    // TODO - move this inside RfnChannelInput
     private boolean isRfnChannelInput(List<InputBase> inputs) {
         if (inputs.size() == 2) {
             InputBase input1 = inputs.get(0);
@@ -305,7 +313,7 @@ public class DeviceConfigurationHelper {
                 input2.getClass() == InputEnum.class) {
                 InputEnum inputEnum1 = (InputEnum) input1;
                 InputEnum inputEnum2 = (InputEnum) input2;
-                if (inputEnum1.getType() == EnumOption.CHANNEL_TYPE &&
+                if (inputEnum1.getType() == EnumOption.ATTRIBUTE_TYPE &&
                     inputEnum2.getType() == EnumOption.READ_TYPE) {
                     return true;
                 }
@@ -314,6 +322,7 @@ public class DeviceConfigurationHelper {
         return false;
     }
 
+    // TODO - move this inside AttributeMappingInput
     private boolean isAttributeMappingInput(List<InputBase> inputs) {
         if (inputs.size() == 2) {
             InputBase input1 = inputs.get(0);
@@ -321,7 +330,7 @@ public class DeviceConfigurationHelper {
             if (input1.getClass() == InputEnum.class &&
                 input2.getClass() == InputString.class) {
                 InputEnum inputEnum = (InputEnum) input1;
-                if (inputEnum.getType() == EnumOption.CAP_CONTROL_ATTRIBUTE) {
+                if (inputEnum.getType() == EnumOption.ATTRIBUTE_TYPE) {
                     return true;
                 }
             }
@@ -352,7 +361,7 @@ public class DeviceConfigurationHelper {
             }
         };
 
-        return new RfnChannelField(displayName, fieldName, description, channelType, getAttributeListForConfigId(configId));
+        return new RfnChannelField(displayName, fieldName, description, channelType, getRfnAttributesForConfigId(configId));
     } 
 
     private static final InputValidator<List<RfnChannelInput>> rfnChannelValidator = new InputValidator<List<RfnChannelInput>>() {
@@ -424,8 +433,10 @@ public class DeviceConfigurationHelper {
         for (InputBase input : inputIndexed.getIntegerOrFloatOrBoolean()) {
             if (input.getClass() == InputEnum.class) {
                 InputEnum inputEnum = (InputEnum)input;
-                if (inputEnum.getType() == EnumOption.CAP_CONTROL_ATTRIBUTE) {
-                    return new AttributeMappingField(displayName, fieldName, description, attributeMappingType, CapControlAttribute.getAttributes());
+                if (inputEnum.getType() == EnumOption.ATTRIBUTE_TYPE) {
+                    //  TODO - add support for limiting attributes by category types...  
+                    //    will need to have the category type passed in to createField and createIndexedField 
+                    return new AttributeMappingField(displayName, fieldName, description, attributeMappingType, getCbcAttributesForConfigId(configId));
                 }
             }
         }
@@ -459,8 +470,24 @@ public class DeviceConfigurationHelper {
         return formattingService.formatObjectAsString(ymsr, userContext);
     }
 
-    public List<BuiltInAttribute> getAttributeListForConfigId(Integer configId) {
-        List<BuiltInAttribute> attributes = new ArrayList<>();
+    public Set<BuiltInAttribute> getCbcAttributesForConfigId(Integer configId) {
+        Multimap<PaoType, Attribute> paoAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
+        Set<PaoType> types = PaoType.getCbcTypes(); 
+        if (configId != null) {
+            types = Sets.intersection(
+                        types,
+                        deviceConfigurationDao.getDeviceConfiguration(configId).getSupportedDeviceTypes());
+        }
+        return types.stream()
+                .map(paoAttributes::get)
+                .flatMap(Collection::stream)
+                .filter(a -> a instanceof BuiltInAttribute)
+                .map(a -> (BuiltInAttribute)a)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<BuiltInAttribute> getRfnAttributesForConfigId(Integer configId) {
+        Set<BuiltInAttribute> attributes = new HashSet<>();
         if (configId != null) {
 
             Set<PaoType> supportedTypes = deviceConfigurationDao.getDeviceConfiguration(configId).getSupportedDeviceTypes();

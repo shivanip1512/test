@@ -13,7 +13,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.type.InputOption;
 
 @Component
-public final class Channel implements DeviceConfigurationInputEnumeration {
+public final class AttributeType implements DeviceConfigurationInputEnumeration {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
@@ -32,6 +32,6 @@ public final class Channel implements DeviceConfigurationInputEnumeration {
 
     @Override
     public String getEnumOptionName() {
-        return "ChannelType";
+        return "AttributeType";
     }
 }

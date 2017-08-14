@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="DisconnectMode"/>
  *     &lt;enumeration value="DisconnectDemandInterval"/>
  *     &lt;enumeration value="ReconnectParameter"/>
- *     &lt;enumeration value="ChannelType"/>
+ *     &lt;enumeration value="AttributeType"/>
  *     &lt;enumeration value="ReadType"/>
  *     &lt;enumeration value="RecordingInterval"/>
  *     &lt;enumeration value="ReportingInterval"/>
@@ -46,7 +46,6 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="WaterRecordingInterval"/>
  *     &lt;enumeration value="WaterReportingInterval"/>
  *     &lt;enumeration value="CBCHeartbeatMode"/>
- *     &lt;enumeration value="CapControlAttribute"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -96,8 +95,8 @@ public enum EnumOption {
     DISCONNECT_DEMAND_INTERVAL("DisconnectDemandInterval"),
     @XmlEnumValue("ReconnectParameter")
     RECONNECT_PARAMETER("ReconnectParameter"),
-    @XmlEnumValue("ChannelType")
-    CHANNEL_TYPE("ChannelType"),
+    @XmlEnumValue("AttributeType")
+    ATTRIBUTE_TYPE("AttributeType"),
     @XmlEnumValue("ReadType")
     READ_TYPE("ReadType"),
     @XmlEnumValue("RecordingInterval")
@@ -119,9 +118,7 @@ public enum EnumOption {
     @XmlEnumValue("WaterReportingInterval")
     WATER_REPORTING_INTERVAL("WaterReportingInterval"),
     @XmlEnumValue("CBCHeartbeatMode")
-    CBC_HEARTBEAT_MODE("CBCHeartbeatMode"),
-    @XmlEnumValue("CapControlAttribute")
-    CAP_CONTROL_ATTRIBUTE("CapControlAttribute");
+    CBC_HEARTBEAT_MODE("CBCHeartbeatMode");
     private final String value;
 
     EnumOption(String v) {

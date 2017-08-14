@@ -98,7 +98,7 @@
             <xs:enumeration value="DisconnectMode"/>
             <xs:enumeration value="DisconnectDemandInterval"/>
             <xs:enumeration value="ReconnectParameter"/>
-            <xs:enumeration value="ChannelType"/>
+            <xs:enumeration value="AttributeType"/>
             <xs:enumeration value="ReadType"/>
             <xs:enumeration value="RecordingInterval"/>
             <xs:enumeration value="ReportingInterval"/>
@@ -110,7 +110,6 @@
             <xs:enumeration value="WaterRecordingInterval"/>
             <xs:enumeration value="WaterReportingInterval"/>
             <xs:enumeration value="CBCHeartbeatMode"/>
-            <xs:enumeration value="CapControlAttribute"/>
         </xs:restriction>
     </xs:simpleType>
 

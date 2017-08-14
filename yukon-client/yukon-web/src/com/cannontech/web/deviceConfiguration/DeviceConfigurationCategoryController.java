@@ -47,7 +47,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.deviceConfiguration.enumeration.CapControlAttribute;
 import com.cannontech.web.deviceConfiguration.enumeration.Read.ReadType;
 import com.cannontech.web.deviceConfiguration.model.AttributeMappingField;
 import com.cannontech.web.deviceConfiguration.model.AttributeMappingInput;
@@ -74,6 +73,7 @@ public class DeviceConfigurationCategoryController {
         PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD);
     private final Set<PaoType> disconnectDisplayDisabledTypes =
         ImmutableSet.of(PaoType.RFN420CL, PaoType.MCT420FD, PaoType.MCT420CL, PaoType.MCT420CD);
+    private final Set<Class<?>> specialFields = ImmutableSet.of(RateMapField.class, RfnChannelField.class, AttributeMappingField.class);
     
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);
 
@@ -294,10 +294,8 @@ public class DeviceConfigurationCategoryController {
 
         List<Field<?>> fields = categoryTemplate.getFields();
 
-        Set<Class<?>> specialClasses = ImmutableSet.of(RateMapField.class, RfnChannelField.class, AttributeMappingField.class);
-        
         for (Field<?> field : fields) {
-            if (!specialClasses.contains(field.getClass())) {
+            if (!specialFields.contains(field.getClass())) {
                 if (!categoryEditBean.getCategoryInputs().containsKey(field.getFieldName())) {
                     categoryEditBean.getCategoryInputs().put(field.getFieldName(), field.getDefault());
                 }
@@ -384,7 +382,7 @@ public class DeviceConfigurationCategoryController {
         categoryEditBean.setCategoryInputs(categoryItems);
         categoryEditBean.setScheduleInputs(convertTouScheduleItems(scheduleItems));
         categoryEditBean.setChannelInputs(convertChannelConfigItems(channelItems, configId, userContext ));
-        categoryEditBean.setAttributeMappingInputs(convertAttributeMappingItems(attributeMappingItems, userContext));
+        categoryEditBean.setAttributeMappingInputs(convertAttributeMappingItems(attributeMappingItems, configId, userContext));
 
         return categoryEditBean;
     }
@@ -449,7 +447,7 @@ public class DeviceConfigurationCategoryController {
         List<RfnChannelInput> channelInputs = new ArrayList<>();
         Map<BuiltInAttribute, ReadType> attributeAssignment = new LinkedHashMap<>();
 
-        for (BuiltInAttribute attribute : deviceConfigHelper.getAttributeListForConfigId(configId)) {
+        for (BuiltInAttribute attribute : deviceConfigHelper.getRfnAttributesForConfigId(configId)) {
             attributeAssignment.put(attribute, ReadType.DISABLED);
         }
 
@@ -475,17 +473,18 @@ public class DeviceConfigurationCategoryController {
 
     /**
      * Converts database representation of attribute mapping entries into a list of AttributeMappingInputs.
-     * 
      * @param channelItems database entries
+     * @param configId used to determine attributes. If null, all category attributes are used.
+     * 
      * @return
      */
-    private List<AttributeMappingInput> convertAttributeMappingItems(Map<String, String> attributeMappingItems, YukonUserContext userContext) {
+    private List<AttributeMappingInput> convertAttributeMappingItems(Map<String, String> attributeMappingItems, Integer configId, YukonUserContext userContext) {
 
         final String prefix = "attributeMappings.";
         
         //Each channel input has 2 database entries : .attribute and .pointName
         Map<BuiltInAttribute, String> mappings =
-                IntStream.rangeClosed(1, attributeMappingItems.size() / 2)
+                IntStream.range(0, attributeMappingItems.size() / 2)
                     .mapToObj(i -> new String[]{
                             prefix + i + ".attribute",
                             prefix + i + ".pointName"})
@@ -493,7 +492,7 @@ public class DeviceConfigurationCategoryController {
                             items -> BuiltInAttribute.valueOf(attributeMappingItems.get(items[0])),
                             items -> attributeMappingItems.get(items[1])));
 
-        CapControlAttribute.getAttributes().forEach(attrib -> mappings.putIfAbsent(attrib, ""));
+        deviceConfigHelper.getCbcAttributesForConfigId(configId).forEach(attrib -> mappings.putIfAbsent(attrib, ""));
 
         List<AttributeMappingInput> attributeInputs = 
                 mappings.entrySet().stream()

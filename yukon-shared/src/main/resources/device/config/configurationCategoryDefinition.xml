@@ -221,7 +221,7 @@
         <enum field="recordingIntervalMinutes" type="RecordingInterval" default="60"/>
         <enum field="reportingIntervalMinutes" type="ReportingInterval" default="360"/>
         <indexed field="enabledChannels" minOccurs="0" maxOccurs="80">
-            <enum field="attribute" type="ChannelType"/>
+            <enum field="attribute" type="AttributeType"/>
             <enum field="read" type="ReadType"/>
         </indexed>
     </category>
@@ -388,7 +388,7 @@
     
     <category type="cbcAttributeMapping">
         <indexed field="attributeMappings" minOccurs="1" maxOccurs="30">
-            <enum field="attribute" type="CapControlAttribute"/>
+            <enum field="attribute" type="AttributeType"/>
             <string field="pointName" maxLength="60" />
         </indexed>
     </category>
