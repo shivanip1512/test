@@ -30,10 +30,7 @@ yukon.ami.macs = (function () {
         templateType =  $('.js-template-value').val(),
         isRetry = retryTypes.indexOf(templateType) !== -1,
         isIed300 = ied300Types.indexOf(templateType) !== -1,
-        isIed400 = ied400Types.indexOf(templateType) !== -1,
-        demandResetToggle = $('.js-demand-reset')
-        demandResetRow = demandResetToggle.closest('tr'),
-        demandResetSelected = demandResetRow.find('.switch-btn-checkbox').prop('checked');
+        isIed400 = ied400Types.indexOf(templateType) !== -1;
         if (templateType == 'NO_TEMPLATE') {
             $('.js-meter-read-tab').addClass('dn');
             $('.js-options-tab').addClass('dn');
@@ -47,18 +44,6 @@ yukon.ami.macs = (function () {
             }
             if (isIed300 || isIed400) {
                 $('.js-ied-section').removeClass('dn');
-                if (demandResetSelected) {
-                    if (isIed400) {
-                        $('.js-ied-400').removeClass('dn');
-                        $('.js-ied-300').addClass('dn');
-                    } else {
-                        $('.js-ied-400').addClass('dn');
-                        $('.js-ied-300').removeClass('dn');
-                    }
-                } else {
-                    $('.js-ied-300').addClass('dn');
-                    $('.js-ied-400').addClass('dn');
-                }
             } else {
                 $('.js-ied-section').addClass('dn');
             }
@@ -251,6 +236,12 @@ yukon.ami.macs = (function () {
                 
                 $(document).on('change', '.js-stop-policy', function (ev) {
                     _updateStopPolicyFields();
+                });
+                
+                $(document).on('click', '.js-add-category', function (ev) {
+/*                    $('.js-category-text').removeClass('dn');
+                    $('.js-category-select').addClass('dn');
+                    $('.js-category-text').focus();*/
                 });
                     
                 

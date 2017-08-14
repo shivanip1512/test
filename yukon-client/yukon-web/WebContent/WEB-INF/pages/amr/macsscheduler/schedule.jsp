@@ -24,7 +24,11 @@
                         <tags:input path="scheduleName" maxlength="60" size="30" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".categoryName">
-                        <tags:selectWithItems path="categoryName" items="${categories}" />
+                        <tags:selectWithItems path="categoryName" items="${categories}" inputClass="fl js-category-select"/>
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <tags:input path="categoryName" inputClass="fl js-category-text dn"/>
+                            <cti:button renderMode="buttonImage" icon="icon-add" classes="js-add-category"/>
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <cti:displayForPageEditModes modes="EDIT">
                         <c:set var="disableType" value="true"/>
@@ -73,7 +77,7 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".startPolicy.startDateTime" rowClass="js-start-dateTime">
-                            <dt:dateTime path="startPolicy.startDateTime" />
+                            <dt:dateTime path="startPolicy.startDateTime"  />
                             <tags:checkbox path="startPolicy.everyYear" />
                             <i:inline key=".startPolicy.everyYear" />
                         </tags:nameValue2>

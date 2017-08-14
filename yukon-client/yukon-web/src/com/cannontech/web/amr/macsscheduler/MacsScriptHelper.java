@@ -145,14 +145,14 @@ public class MacsScriptHelper {
         
         options.setDemandResetSelected(Boolean.valueOf(scriptTemplate.getParameterValue(NOTIFICATION_FLAG_PARAM)));
         
-        String frozen = scriptTemplate.getParameterValue(READ_FROZEN_PARAM);
+/*        String frozen = scriptTemplate.getParameterValue(READ_FROZEN_PARAM);
         if (!Strings.isNullOrEmpty(frozen)) {
             if (frozen.indexOf("72") > 0) {
                 options.setFrozenDemandRegister(ALPHA);
             } else {
                 options.setFrozenDemandRegister(LANDIS);
             }
-        }
+        }*/
         options.setDemandResetRetryCount(Integer.valueOf(scriptTemplate.getParameterValue(RESET_COUNT_PARAM)));
         if(options.getDemandResetRetryCount() > 0) {
             options.setDemandResetSelected(true);
@@ -204,11 +204,7 @@ public class MacsScriptHelper {
             scriptTemplate.setParameterValue(IED_FLAG_PARAM, true);
             scriptTemplate.setParameterValue(TOU_RATE_PARAM, options.getTouRate());
             scriptTemplate.setParameterValue(RESET_COUNT_PARAM, options.getDemandResetRetryCount());
-            if (template.isIed300()) {
-                scriptTemplate.setParameterValue(IED_TYPE_PARAM, Objects.toString(options.getFrozenDemandRegister(), ""));
-            } else if (template.isIed400()) {
-                scriptTemplate.setParameterValue(IED_TYPE_PARAM, Objects.toString(options.getIedType(),""));
-            }
+            scriptTemplate.setParameterValue(IED_TYPE_PARAM, Objects.toString(options.getIedType(), ""));
         }
         return scriptTemplate.buildParameterScript();
     }

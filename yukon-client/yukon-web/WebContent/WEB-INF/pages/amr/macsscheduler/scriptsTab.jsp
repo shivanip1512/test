@@ -75,18 +75,7 @@
                         data-toggle-group="demandReset">
                         <tags:input path="${pathKey}demandResetRetryCount" size="5" />
                     </tags:nameValue2>
-                    <c:set var="clazz" value="${schedule.template.isIed300() ? '' : 'dn'}" />
-                    <tags:nameValue2 nameKey=".scriptOptions.readFrozenDemandRegister"
-                        rowClass="${clazz} js-ied-300">
-                        <div class="button-group">
-                            <c:forEach var="option" items="${frozenDemandRegisterOptions}">
-                                <tags:radio path="${pathKey}frozenDemandRegister" value="${option}"
-                                    label="${option}" classes="yes M0" />
-                            </c:forEach>
-                        </div>
-                    </tags:nameValue2>
-                    <c:set var="clazz" value="${schedule.template.isIed400() ? '' : 'dn'}" />
-                    <tags:nameValue2 nameKey=".scriptOptions.iedType" rowClass="${clazz} js-ied-400">
+                    <tags:nameValue2 nameKey=".scriptOptions.iedType" data-toggle-group="demandReset">
                         <tags:selectWithItems path="${pathKey}iedType" items="${iedTypes}" />
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

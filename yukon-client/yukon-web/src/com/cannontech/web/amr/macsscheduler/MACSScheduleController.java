@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -77,6 +80,7 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private HolidayScheduleDao holidaySchedules;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private MacsScheduleValidator validator;
 
     private final static String scheduleKey = "yukon.web.modules.tools.schedule.";
     
@@ -211,7 +215,6 @@ public class MACSScheduleController extends MultiActionController {
         model.addAttribute("ied300Types", MacsScriptTemplate.getIed300Types());
         model.addAttribute("ied400Types", MacsScriptTemplate.getIed400Types());
         model.addAttribute("iedTypes", MacsScriptOptions.getIedTypes());
-        model.addAttribute("frozenDemandRegisterOptions", MacsScriptHelper.frozenDemandRegisterOptions);
         //check if device or load group
         model.addAttribute("target", "DEVICE");
         if (schedule.getSimpleOptions() != null) {
@@ -244,8 +247,16 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="save", method = RequestMethod.POST)
-    public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, LiteYukonUser user, FlashScope flash, ModelMap model) {
+    public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, LiteYukonUser user, 
+                               FlashScope flash, ModelMap model, HttpServletResponse resp) {
         int id = schedule.getId();
+        validator.validate(schedule, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            setupModel(model, schedule);
+            return "schedule.jsp";
+        }
         try {
             if (id > 0) {
                 service.updateSchedule(schedule, user);

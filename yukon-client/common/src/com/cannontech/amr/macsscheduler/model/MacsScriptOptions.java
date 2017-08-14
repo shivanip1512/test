@@ -31,7 +31,6 @@ public class MacsScriptOptions {
     //Demand Reset
     private boolean isDemandResetSelected;
     private int demandResetRetryCount;
-    private String frozenDemandRegister;
     private String iedType;
     
     //billing
@@ -176,14 +175,6 @@ public class MacsScriptOptions {
 
     public void setDemandResetRetryCount(int demandResetRetryCount) {
         this.demandResetRetryCount = demandResetRetryCount;
-    }
-
-    public String getFrozenDemandRegister() {
-        return frozenDemandRegister;
-    }
-
-    public void setFrozenDemandRegister(String frozenDemandRegister) {
-        this.frozenDemandRegister = frozenDemandRegister;
     }
 
     public String getIedType() {
