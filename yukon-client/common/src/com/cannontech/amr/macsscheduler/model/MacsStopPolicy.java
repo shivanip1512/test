@@ -1,7 +1,8 @@
 package com.cannontech.amr.macsscheduler.model;
 
 import java.util.Arrays;
-import java.util.Date;
+
+import org.joda.time.DateTime;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
@@ -54,12 +55,18 @@ public class MacsStopPolicy {
         this.duration = duration;
     }
     
-/*    *//**
-     * @return the stopTime (must be 8 chars)
-     *//*
     public String getStopTime() {
-        return "00:00:00";
-    }*/
+        return time.getTimeString();
+    }
+    
+    public void buildStopTimeDate(String timeString){
+        if (policy == StopPolicy.ABSOLUTETIME) {
+            DateTime now = DateTime.now();
+            DateTime parsedDate = MacsTimeField.parseDate(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), timeString);
+            time = MacsTimeField.getTimeField(parsedDate);
+        }
+    }
+    
     public MacsTimeField getTime() {
         return time;
     }

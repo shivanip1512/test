@@ -41,6 +41,7 @@ public class MacsScheduleHelper {
         MacsStopPolicy stop = macsSchedule.getStopPolicy();
         schedule.setDuration(getSeconds(stop.getDuration()));
         schedule.setStopPolicy(stop.getPolicy().getPolicyString());
+        schedule.setStopTime(stop.getStopTime());
         
         if (macsSchedule.isScript()) {
             MacsScriptOptions options = macsSchedule.getScriptOptions();
@@ -74,15 +75,13 @@ public class MacsScheduleHelper {
         start.buildStartTimeDate(schedule.getStartMonth(), schedule.getStartDay(), schedule.getStartYear(),
             schedule.getStartTime());
       
-        //start.setManualStartTime(schedule.getStartTime());
         start.setHolidayScheduleId(schedule.getHolidayScheduleId());
         
         //stop policy
         MacsStopPolicy stop = macsSchedule.getStopPolicy();
         stop.setPolicy(StopPolicy.getPolicy(schedule.getStopPolicy()));
         stop.setDuration(getMinutes(stop.getDuration()));
-        
-        // stop.setManualStopTime(manualStopTime);
+        stop.buildStopTimeDate(schedule.getStopTime());
         
         if (macsSchedule.isScript()) {
             MacsScriptOptions options = new MacsScriptOptions();

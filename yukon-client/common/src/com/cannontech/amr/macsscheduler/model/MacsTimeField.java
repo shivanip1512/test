@@ -1,5 +1,12 @@
 package com.cannontech.amr.macsscheduler.model;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 public class MacsTimeField {
     
     private int hours;
@@ -42,4 +49,31 @@ public class MacsTimeField {
         this.amPm = amPm;
     }
 
+    /**
+     * Returns time in 00:00:00 format.
+     */
+    public String getTimeString() {
+        NumberFormat formatter = new DecimalFormat("00");
+        // 00:00:00 AM
+        String timeString = formatter.format(getHours()) + ":" + formatter.format(getMinutes()) + ":00 " + getAmPm();
+        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss a");
+        String dateTimeString = DateTime.now().toString("MM/dd/yyyy") + " " + timeString;
+        DateTime date = dateFormatter.parseDateTime(dateTimeString);
+        return date.toString("HH:mm:ss");
+    }
+    
+    static MacsTimeField getTimeField(DateTime parsedDate){
+        MacsTimeField timeField = new MacsTimeField();
+        timeField.setAmPm(AmPmOptionEnum.valueOf(parsedDate.toString("a")));
+        int hours = parsedDate.getHourOfDay();
+        timeField.setHours(hours > 12 ? hours - 12 : hours);
+        timeField.setMinutes(parsedDate.getMinuteOfHour());
+        return timeField;
+    }
+    
+    static DateTime parseDate(int year, int month, int day, String time) {
+        String date = new DateTime(year, month, day, 00, 00, 00).toString("MM/dd/yyyy") + " " + time;
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
+        return formatter.parseDateTime(date);
+    }
 }

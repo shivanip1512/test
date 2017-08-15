@@ -1,17 +1,12 @@
 package com.cannontech.amr.macsscheduler.model;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
-import com.cannontech.amr.macsscheduler.model.MacsTimeField.AmPmOptionEnum;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.message.macs.message.Schedule;
@@ -108,7 +103,7 @@ public class MacsStartPolicy {
         if (policy == StartPolicy.DATETIME) {
             return startDateTime.toDateTime().getMonthOfYear();
         } else if (policy == StartPolicy.DAYOFMONTH) {
-            return new DateTime().getMonthOfYear();
+            return DateTime.now().getMonthOfYear();
         }
         return 0;
     }
@@ -117,7 +112,7 @@ public class MacsStartPolicy {
         if (policy == StartPolicy.DATETIME) {
             return startDateTime.toDateTime().getYear();
         } else if (policy == StartPolicy.DAYOFMONTH) {
-            return new DateTime().getYear();
+            return DateTime.now().getYear();
         }
         return 0;
     }
@@ -126,13 +121,7 @@ public class MacsStartPolicy {
         if (policy == StartPolicy.DATETIME) {
             return startDateTime.toDateTime().toString("HH:mm:ss");
         } else if (policy == StartPolicy.DAYOFMONTH || policy == StartPolicy.WEEKDAY) {
-            NumberFormat formatter = new DecimalFormat("00");  
-            //00:00:00 AM
-            String timeString = formatter.format(time.getHours()) + ":" + formatter.format(time.getMinutes()) + ":00 "+ time.getAmPm();
-            DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss a");
-            String dateTimeString = DateTime.now().toString("MM/dd/yyyy") + " " + timeString;
-            DateTime date = dateFormatter.parseDateTime(dateTimeString);
-            return date.toString("HH:mm:ss");
+           return time.getTimeString();
         }
         return "";
     }
@@ -173,33 +162,18 @@ public class MacsStartPolicy {
                 year = 1970;
                 everyYear = true;
             }
-            startDateTime = parseDate(year, month, day, timeString).toInstant();
+            startDateTime = MacsTimeField.parseDate(year, month, day, timeString).toInstant();
         } else if (policy == StartPolicy.DAYOFMONTH) {
             dayOfMonth = day;
-            DateTime parsedDate = parseDate(year, month, day, timeString);
-            time = getTimeField(parsedDate);
+            DateTime parsedDate = MacsTimeField.parseDate(year, month, day, timeString);
+            time = MacsTimeField.getTimeField(parsedDate);
         } else if (policy == StartPolicy.WEEKDAY) {
             DateTime now = DateTime.now();
-            DateTime parsedDate = parseDate(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), timeString);
-            time = getTimeField(parsedDate);
+            DateTime parsedDate = MacsTimeField.parseDate(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), timeString);
+            time = MacsTimeField.getTimeField(parsedDate);
         }
     }
     
-    private MacsTimeField getTimeField(DateTime parsedDate){
-        MacsTimeField timeField = new MacsTimeField();
-        timeField.setAmPm(AmPmOptionEnum.valueOf(parsedDate.toString("a")));
-        int hours = parsedDate.getHourOfDay();
-        timeField.setHours(hours > 12 ? hours - 12 : hours);
-        timeField.setMinutes(parsedDate.getMinuteOfHour());
-        return timeField;
-    }
-    
-    private DateTime parseDate(int year, int month, int day, String time) {
-        String date = new DateTime(year, month, day, 00, 00, 00).toString("MM/dd/yyyy") + " " + time;
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
-        return formatter.parseDateTime(date);
-    }
-
     public Instant getStartDateTime() {
         return startDateTime;
     }
