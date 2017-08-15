@@ -30,6 +30,9 @@
 #include "ExecutorFactory.h"
 #include "mgr_config.h"
 #include "std_helper.h"
+#include "config_data_dnp.h"
+#include "config_helpers.h"
+#include "config_exceptions.h"
 
 #include <boost/range/algorithm/for_each.hpp>
 
@@ -63,7 +66,6 @@ using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
 
 CtiTime timeSaver;
-
 
 /*---------------------------------------------------------------------------
     Constructor
@@ -6187,6 +6189,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             {
                                 if ( bank->isControlDeviceTwoWay() )
                                 {
+                                    std::map<Attribute, std::string>    pointOverloads;
+
                                     // config
                                     auto deviceConfig = 
                                         Cti::ConfigManager::getConfigForIdAndType(
@@ -6197,13 +6201,37 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                     {
                                         // build the Attribute -> PointName overlay and send it in the for() below...
 
+                                        struct AttributeAndPointName
+                                        {
+                                            AttributeAndPointName( const Cti::Config::DeviceConfig::ItemsByName &src ) :
+                                                attributeName   ( Cti::Devices::getConfigData( src, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute ) ),
+                                                pointName       ( Cti::Devices::getConfigData( src, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName ) )
+                                            {
+                                            }
+
+                                            std::string attributeName;
+                                            std::string pointName;
+                                        };
+
+                                        // channel selection configuration data
+                                        const std::vector<AttributeAndPointName> cfgAttributesPointName =
+                                                Cti::Devices::getConfigDataVector<AttributeAndPointName>( deviceConfig, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix );
+
+                                        for ( const auto & entry : cfgAttributesPointName )
+                                        {
+                                            pointOverloads[ Attribute::Lookup( entry.attributeName ) ] = entry.pointName;
+                                        }
+
                                     }
 
                                     // add to bank
 
+
+                                    bank->getTwoWayPoints().assignTwoWayPointBulk( cache, pointOverloads );
+
+
                                     for ( const LitePoint & point : cache )
                                     {
-                                        bank->getTwoWayPoints().assignTwoWayPoint( point );
                                         bank->addPointId( point.getPointId() );
 
                                         pointid_capbank_map->insert( std::make_pair( point.getPointId(), bank ) );

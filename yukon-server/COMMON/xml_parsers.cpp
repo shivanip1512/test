@@ -464,6 +464,7 @@ void DeviceConfigCategoryHandler::startElement( const XMLCh * const uri,
         { "enum",     &This::insertField            },
         { "boolean",  &This::insertField            },
         { "integer",  &This::insertField            },
+        { "string",   &This::insertField            },
         { "float",    &This::insertField            },
         { "entry",    &This::insertTimeRateField    },  //  <--- These two need to be converted to indexed fields
         { "map",      &This::setMapEntryPrefix      },  //  <---

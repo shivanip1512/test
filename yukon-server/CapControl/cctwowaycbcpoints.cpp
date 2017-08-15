@@ -14,12 +14,11 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 
 using std::string;
-using std::endl;
 
 extern unsigned long _CC_DEBUG;
-using Cti::CapControl::MissingAttribute;
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -35,6 +34,44 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paot
         _ignoredControlReason( std::move( ignoredControlReason ) )
 {
     // empty...
+}
+
+void CtiCCTwoWayPoints::assignTwoWayPointBulk( const std::vector<LitePoint> & points,
+                                               const std::map<Attribute, std::string> & overloads )
+{
+    for ( const LitePoint & point : points )
+    {
+        _pointidPointtypeMap[ point.getPointId() ] = point.getPointType();      // boo! figure a way to get rid of this guy!!
+
+        std::vector<Attribute> attributes
+            = Cti::DeviceAttributeLookup::AttributeLookup( resolveDeviceType( _paotype ),
+                                                           point.getPointType(),
+                                                           point.getPointOffset() );
+
+        for ( auto attribute : attributes )
+        {
+            _attributes[ attribute ] = point;
+        }
+    }
+
+    if ( ! overloads.empty()   )
+    {
+
+        for ( auto entry : overloads )
+        {
+            auto pointLookup =
+                boost::find_if( points,
+                                [ entry ]( const LitePoint & p )
+                                {
+                                    return p.getPointName() == entry.second;
+                                } );
+
+            if ( pointLookup != points.end() )
+            {
+                _attributes[ entry.first ] = *pointLookup;
+            }
+        }
+    }
 }
 
 void CtiCCTwoWayPoints::assignTwoWayPoint( const LitePoint & point )

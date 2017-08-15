@@ -47,6 +47,7 @@ public:
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
 
+    void assignTwoWayPointBulk( const std::vector<LitePoint> & points, const std::map<Attribute, std::string> & overloads );
     void assignTwoWayPoint( const LitePoint & point );
 
 protected:
