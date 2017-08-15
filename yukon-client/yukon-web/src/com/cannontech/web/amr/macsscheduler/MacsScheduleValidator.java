@@ -5,6 +5,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.amr.macsscheduler.model.MacsSchedule;
 import com.cannontech.amr.macsscheduler.model.MacsStartPolicy;
+import com.cannontech.amr.macsscheduler.model.MacsStopPolicy;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -24,6 +25,16 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
         YukonValidationUtils.checkExceedsMaxLength(errors, "categoryName", schedule.getCategoryName(), 50);
         if (schedule.getStartPolicy().getPolicy() == MacsStartPolicy.StartPolicy.DAYOFMONTH) {
             YukonValidationUtils.checkRange(errors, "startPolicy.dayOfMonth", schedule.getStartPolicy().getDayOfMonth(), 1, 31, true);
+        }
+        if (schedule.getStopPolicy().getPolicy() == MacsStopPolicy.StopPolicy.DURATION) {
+            YukonValidationUtils.checkIsPositiveInt(errors, "stopPolicy.duration", schedule.getStopPolicy().getDuration());
+        }
+        if (schedule.isScript()) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "scriptOptions.fileName", schedule.getScriptOptions().getFileName(), 180);
+        } else {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "simpleOptions.startCommand", schedule.getSimpleOptions().getStartCommand(), 120);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "simpleOptions.stopCommand", schedule.getSimpleOptions().getStopCommand(), 120);
+            YukonValidationUtils.checkIsPositiveInt(errors, "simpleOptions.repeatInterval", schedule.getSimpleOptions().getRepeatInterval());
         }
     }
 
