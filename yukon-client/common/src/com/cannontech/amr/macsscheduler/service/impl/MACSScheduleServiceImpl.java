@@ -159,8 +159,11 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         
         UpdateSchedule modifiedSchedule = new UpdateSchedule();
         modifiedSchedule.setSchedule(schedule);
+        if(macsSchedule.isScript()){
+            modifiedSchedule.setScript(macsSchedule.getScriptOptions().getScriptText());
+        }
 
-        int soeTag = sendMessage(schedule, user.getUsername(), now);
+        int soeTag = sendMessage(modifiedSchedule, user.getUsername(), now);
         
         String description = getDescription("Update schedule (" + schedule.getScheduleName() + ")", soeTag, now);
         getMessage(soeTag, now, description);
@@ -179,7 +182,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         
         AddSchedule newSchedule = new AddSchedule();
         newSchedule.setSchedule(schedule);
-        int soeTag = sendMessage(schedule, user.getUsername(), now);
+        int soeTag = sendMessage(newSchedule, user.getUsername(), now);
 
         String description = getDescription("Create schedule (" + schedule.getScheduleName() + ")", soeTag, now);
         Schedule createdSchedule = (Schedule) getMessage(soeTag, now, description);
@@ -218,7 +221,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         while (true) {
             if (cachedMessages.containsKey(soeTag)) {
                 Message message = cachedMessages.get(soeTag);
-                log.debug("Recieved error from MACS Service for soeTag=" + soeTag + " [" + message + "]");
+                log.info("Recieved message ("+message.getClass().getName()+") from MACS Service for soeTag=" + soeTag + " [" + message + "]");
                 if (message instanceof Info) {
                     MacsException error = new MacsException(MACSExceptionType.PROCESSING_ERROR,
                         description + " Recieved error from MACS Service: " + ((Info) message).getInfo());
@@ -247,6 +250,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
     @Override
     public void messageReceived(MessageEvent e) {
         Message message = e.getMessage();
+        log.info("Recieved message ("+message.getClass().getName()+") from MACS Service " + message);
         if (waiting.contains(message.getSOE_Tag())) {
             waiting.remove(message.getSOE_Tag());
             cachedMessages.put(message.getSOE_Tag(), message);
