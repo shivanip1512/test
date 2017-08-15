@@ -30,12 +30,12 @@ public class MacsScheduleHelper {
         //start policy
         MacsStartPolicy start = macsSchedule.getStartPolicy();
         schedule.setStartPolicy(start.getPolicy().getPolicyString());
-/*        schedule.setStartDay(start.getStartDay());
+        schedule.setStartDay(start.getStartDay());
         schedule.setStartMonth(start.getStartMonth());
         schedule.setStartYear(start.getStartYear());
         if (!Strings.isNullOrEmpty(start.getStartTime())) {
             schedule.setStartTime(start.getStartTime());
-        }*/
+        }
         schedule.setHolidayScheduleId(start.getHolidayScheduleId());
    
         //stop policy
@@ -74,7 +74,10 @@ public class MacsScheduleHelper {
         //start policy
         MacsStartPolicy start = macsSchedule.getStartPolicy();
         start.setPolicy(StartPolicy.getPolicy(schedule.getStartPolicy()));
-        //set day, month, year
+        start.setWeekDays(schedule.getValidWeekDays());
+        start.buildStartTimeDate(schedule.getStartMonth(), schedule.getStartDay(), schedule.getStartYear(),
+            schedule.getStartTime());
+      
         //start.setManualStartTime(schedule.getStartTime());
         start.setHolidayScheduleId(schedule.getHolidayScheduleId());
         
@@ -82,6 +85,7 @@ public class MacsScheduleHelper {
         MacsStopPolicy stop = macsSchedule.getStopPolicy();
         stop.setPolicy(StopPolicy.getPolicy(schedule.getStopPolicy()));
         stop.setDuration(getMinutes(stop.getDuration()));
+        
         // stop.setManualStopTime(manualStopTime);
         
         if (macsSchedule.isScript()) {

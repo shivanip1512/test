@@ -18,7 +18,6 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTIFY_GROUP_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.PORTER_TIMEOUT_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.QUEUE_OFF_COUNT_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.READ_FROZEN_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.READ_WITH_RETRY_FLAG_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.RESET_COUNT_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.RETRY_COUNT_PARAM;
@@ -27,8 +26,6 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,13 +38,9 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.database.data.schedule.script.ScriptParameters;
 import com.cannontech.database.data.schedule.script.ScriptTemplate;
-import com.google.common.base.Strings;
 
 public class MacsScriptHelper {
 
-    public static final String LANDIS = "Landis-Gyr S4";
-    public static final String ALPHA = "Alpha";
-    public static final ArrayList<String> frozenDemandRegisterOptions = new ArrayList<>(Arrays.asList(LANDIS, ALPHA));
     /**
      * Creates script file from schedule.
      * schedule.scriptOptions.scriptText contains script file created.
@@ -144,15 +137,7 @@ public class MacsScriptHelper {
         options.setScriptText(scriptTemplate.buildParameterScript());
         
         options.setDemandResetSelected(Boolean.valueOf(scriptTemplate.getParameterValue(NOTIFICATION_FLAG_PARAM)));
-        
-/*        String frozen = scriptTemplate.getParameterValue(READ_FROZEN_PARAM);
-        if (!Strings.isNullOrEmpty(frozen)) {
-            if (frozen.indexOf("72") > 0) {
-                options.setFrozenDemandRegister(ALPHA);
-            } else {
-                options.setFrozenDemandRegister(LANDIS);
-            }
-        }*/
+
         options.setDemandResetRetryCount(Integer.valueOf(scriptTemplate.getParameterValue(RESET_COUNT_PARAM)));
         if(options.getDemandResetRetryCount() > 0) {
             options.setDemandResetSelected(true);
