@@ -1,5 +1,7 @@
 package com.cannontech.amr.macsscheduler.model;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,44 +96,75 @@ public class MacsStartPolicy {
     }
     
     public int getStartDay() {
-        return startDateTime != null ? startDateTime.toDateTime().getDayOfMonth() : 0;
+        if (policy == StartPolicy.DATETIME) {
+            return startDateTime.toDateTime().getDayOfMonth();
+        } else if (policy == StartPolicy.DAYOFMONTH) {
+            return dayOfMonth;
+        }
+        return 0;
     }
 
     public int getStartMonth() {
-        return startDateTime != null ? startDateTime.toDateTime().getMonthOfYear() : 0;
+        if (policy == StartPolicy.DATETIME) {
+            return startDateTime.toDateTime().getMonthOfYear();
+        } else if (policy == StartPolicy.DAYOFMONTH) {
+            return new DateTime().getMonthOfYear();
+        }
+        return 0;
     }
 
     public int getStartYear() {
-        return startDateTime != null ? startDateTime.toDateTime().getYear() : 0;
+        if (policy == StartPolicy.DATETIME) {
+            return startDateTime.toDateTime().getYear();
+        } else if (policy == StartPolicy.DAYOFMONTH) {
+            return new DateTime().getYear();
+        }
+        return 0;
     }
 
     public String getStartTime() {
-        return startDateTime != null ? startDateTime.toDateTime().toString("HH:mm:ss") : "";
+        if (policy == StartPolicy.DATETIME) {
+            return startDateTime.toDateTime().toString("HH:mm:ss");
+        } else if (policy == StartPolicy.DAYOFMONTH || policy == StartPolicy.WEEKDAY) {
+            NumberFormat formatter = new DecimalFormat("00");  
+            //00:00:00 AM
+            String timeString = formatter.format(time.getHours()) + ":" + formatter.format(time.getMinutes()) + ":00 "+ time.getAmPm();
+            DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss a");
+            String dateTimeString = DateTime.now().toString("MM/dd/yyyy") + " " + timeString;
+            DateTime date = dateFormatter.parseDateTime(dateTimeString);
+            return date.toString("HH:mm:ss");
+        }
+        return "";
     }
 
     // "YYYYYYYN"
     public String getValidWeekDays() {
-        StringBuilder daysString = new StringBuilder();
-        daysString.append(defaultDays.get(DayOfWeek.MONDAY) == false ? "N" : "Y");
-        daysString.append(defaultDays.get(DayOfWeek.TUESDAY) == false ? "N" : "Y");
-        daysString.append(defaultDays.get(DayOfWeek.WEDNESDAY) == false ? "N" : "Y");
-        daysString.append(defaultDays.get(DayOfWeek.THURSDAY) == false ? "N" : "Y");
-        daysString.append(defaultDays.get(DayOfWeek.FRIDAY) == false ? "N" : "Y");
-        daysString.append(defaultDays.get(DayOfWeek.SATURDAY) == false ? "N" : "Y");
-        daysString.append(defaultDays.get(DayOfWeek.SUNDAY) == false ? "N" : "Y");
-        daysString.append("N");
-        return daysString.toString();
+        if (policy == StartPolicy.WEEKDAY) {
+            StringBuilder daysString = new StringBuilder();
+            daysString.append(defaultDays.get(DayOfWeek.MONDAY) == false ? "N" : "Y");
+            daysString.append(defaultDays.get(DayOfWeek.TUESDAY) == false ? "N" : "Y");
+            daysString.append(defaultDays.get(DayOfWeek.WEDNESDAY) == false ? "N" : "Y");
+            daysString.append(defaultDays.get(DayOfWeek.THURSDAY) == false ? "N" : "Y");
+            daysString.append(defaultDays.get(DayOfWeek.FRIDAY) == false ? "N" : "Y");
+            daysString.append(defaultDays.get(DayOfWeek.SATURDAY) == false ? "N" : "Y");
+            daysString.append(defaultDays.get(DayOfWeek.SUNDAY) == false ? "N" : "Y");
+            daysString.append("N");
+            return daysString.toString();
+        }
+        return "";
     }
     
     public void setWeekDays(String weekDays) {
-        int i = 0;
-        defaultDays.put(DayOfWeek.MONDAY, weekDays.charAt(i++) == 'N' ? false : true);
-        defaultDays.put(DayOfWeek.TUESDAY, weekDays.charAt(i++) == 'N' ? false : true);
-        defaultDays.put(DayOfWeek.WEDNESDAY, weekDays.charAt(i++) == 'N' ? false : true);
-        defaultDays.put(DayOfWeek.THURSDAY, weekDays.charAt(i++) == 'N' ? false : true);
-        defaultDays.put(DayOfWeek.FRIDAY, weekDays.charAt(i++) == 'N' ? false : true);
-        defaultDays.put(DayOfWeek.SATURDAY, weekDays.charAt(i++) == 'N' ? false : true);
-        defaultDays.put(DayOfWeek.SUNDAY, weekDays.charAt(i++) == 'N' ? false : true);
+        if (policy == StartPolicy.WEEKDAY) {
+            int i = 0;
+            defaultDays.put(DayOfWeek.SUNDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            defaultDays.put(DayOfWeek.MONDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            defaultDays.put(DayOfWeek.TUESDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            defaultDays.put(DayOfWeek.WEDNESDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            defaultDays.put(DayOfWeek.THURSDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            defaultDays.put(DayOfWeek.FRIDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            defaultDays.put(DayOfWeek.SATURDAY, weekDays.charAt(i++) == 'N' ? false : true);
+        }
     }
     
     public void buildStartTimeDate(int month, int day, int year, String timeString) {
@@ -144,12 +177,21 @@ public class MacsStartPolicy {
         } else if (policy == StartPolicy.DAYOFMONTH) {
             dayOfMonth = day;
             DateTime parsedDate = parseDate(year, month, day, timeString);
-            time = new MacsTimeField();
-            time.setAmPm(AmPmOptionEnum.valueOf(parsedDate.toString("a")));
-            int hours = parsedDate.getHourOfDay();
-            time.setHours(hours > 12 ? hours - 12 : hours);
-            time.setMinutes(parsedDate.getMinuteOfHour());
+            time = getTimeField(parsedDate);
+        } else if (policy == StartPolicy.WEEKDAY) {
+            DateTime now = DateTime.now();
+            DateTime parsedDate = parseDate(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(), timeString);
+            time = getTimeField(parsedDate);
         }
+    }
+    
+    private MacsTimeField getTimeField(DateTime parsedDate){
+        MacsTimeField timeField = new MacsTimeField();
+        timeField.setAmPm(AmPmOptionEnum.valueOf(parsedDate.toString("a")));
+        int hours = parsedDate.getHourOfDay();
+        timeField.setHours(hours > 12 ? hours - 12 : hours);
+        timeField.setMinutes(parsedDate.getMinuteOfHour());
+        return timeField;
     }
     
     private DateTime parseDate(int year, int month, int day, String time) {

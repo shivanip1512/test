@@ -33,18 +33,14 @@ public class MacsScheduleHelper {
         schedule.setStartDay(start.getStartDay());
         schedule.setStartMonth(start.getStartMonth());
         schedule.setStartYear(start.getStartYear());
-        if (!Strings.isNullOrEmpty(start.getStartTime())) {
-            schedule.setStartTime(start.getStartTime());
-        }
+        schedule.setStartTime(start.getStartTime());
+
         schedule.setHolidayScheduleId(start.getHolidayScheduleId());
    
         //stop policy
         MacsStopPolicy stop = macsSchedule.getStopPolicy();
         schedule.setDuration(getSeconds(stop.getDuration()));
         schedule.setStopPolicy(stop.getPolicy().getPolicyString());
-/*        if (!Strings.isNullOrEmpty(stop.getStopTime())) {
-            schedule.setStopTime(stop.getStopTime());
-        }*/
         
         if (macsSchedule.isScript()) {
             MacsScriptOptions options = macsSchedule.getScriptOptions();
