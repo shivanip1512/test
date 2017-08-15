@@ -128,7 +128,7 @@
             <cti:displayForPageEditModes modes="VIEW">
                 <c:set var="disableArea" value="disabled" />
             </cti:displayForPageEditModes>
-            <textarea id="script" name="${pathKey}scriptText" cols="100" rows="20" ${disableArea}></textarea>
+            <textarea id="script" name="${pathKey}scriptText" cols="100" rows="20" ${disableArea}>${schedule.scriptOptions.scriptText}</textarea>
         </cti:tab>
     </cti:tabs>
 
