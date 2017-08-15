@@ -58,10 +58,10 @@ public class MacsStartPolicy {
         
     }
     
-    private StartPolicy policy;
+    private StartPolicy policy = StartPolicy.MANUAL;
     private int holidayScheduleId;
     private MacsTimeField time;
-    private Instant startDateTime = new Instant();
+    private Instant startDateTime;
     private boolean everyYear;
     private Map<DayOfWeek, Boolean> days = new HashMap<>(defaultDays);
     private int dayOfMonth = 1;
@@ -130,13 +130,13 @@ public class MacsStartPolicy {
     public String getValidWeekDays() {
         if (policy == StartPolicy.WEEKDAY) {
             StringBuilder daysString = new StringBuilder();
-            daysString.append(defaultDays.get(DayOfWeek.MONDAY) == false ? "N" : "Y");
-            daysString.append(defaultDays.get(DayOfWeek.TUESDAY) == false ? "N" : "Y");
-            daysString.append(defaultDays.get(DayOfWeek.WEDNESDAY) == false ? "N" : "Y");
-            daysString.append(defaultDays.get(DayOfWeek.THURSDAY) == false ? "N" : "Y");
-            daysString.append(defaultDays.get(DayOfWeek.FRIDAY) == false ? "N" : "Y");
-            daysString.append(defaultDays.get(DayOfWeek.SATURDAY) == false ? "N" : "Y");
-            daysString.append(defaultDays.get(DayOfWeek.SUNDAY) == false ? "N" : "Y");
+            daysString.append(days.get(DayOfWeek.MONDAY) == false ? "N" : "Y");
+            daysString.append(days.get(DayOfWeek.TUESDAY) == false ? "N" : "Y");
+            daysString.append(days.get(DayOfWeek.WEDNESDAY) == false ? "N" : "Y");
+            daysString.append(days.get(DayOfWeek.THURSDAY) == false ? "N" : "Y");
+            daysString.append(days.get(DayOfWeek.FRIDAY) == false ? "N" : "Y");
+            daysString.append(days.get(DayOfWeek.SATURDAY) == false ? "N" : "Y");
+            daysString.append(days.get(DayOfWeek.SUNDAY) == false ? "N" : "Y");
             daysString.append("N");
             return daysString.toString();
         }
@@ -146,13 +146,13 @@ public class MacsStartPolicy {
     public void setWeekDays(String weekDays) {
         if (policy == StartPolicy.WEEKDAY) {
             int i = 0;
-            defaultDays.put(DayOfWeek.SUNDAY, weekDays.charAt(i++) == 'N' ? false : true);
-            defaultDays.put(DayOfWeek.MONDAY, weekDays.charAt(i++) == 'N' ? false : true);
-            defaultDays.put(DayOfWeek.TUESDAY, weekDays.charAt(i++) == 'N' ? false : true);
-            defaultDays.put(DayOfWeek.WEDNESDAY, weekDays.charAt(i++) == 'N' ? false : true);
-            defaultDays.put(DayOfWeek.THURSDAY, weekDays.charAt(i++) == 'N' ? false : true);
-            defaultDays.put(DayOfWeek.FRIDAY, weekDays.charAt(i++) == 'N' ? false : true);
-            defaultDays.put(DayOfWeek.SATURDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.SUNDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.MONDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.TUESDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.WEDNESDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.THURSDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.FRIDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.SATURDAY, weekDays.charAt(i++) == 'N' ? false : true);
         }
     }
     

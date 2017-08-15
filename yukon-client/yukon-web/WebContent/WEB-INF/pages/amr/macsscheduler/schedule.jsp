@@ -26,11 +26,12 @@
                     <tags:nameValue2 nameKey=".categoryName">
                         <tags:selectWithItems path="categoryName" items="${categories}" inputClass="fl js-category-select"/>
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <cti:button renderMode="buttonImage" icon="icon-add" data-popup="#category-popup"/>
+                            <cti:button renderMode="button" nameKey="add" icon="icon-add" data-popup="#category-popup"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <cti:displayForPageEditModes modes="EDIT">
                         <c:set var="disableType" value="true"/>
+                        <tags:hidden path="type"/>
                     </cti:displayForPageEditModes>
                     <tags:nameValue2 nameKey=".type">
                         <tags:selectWithItems path="type" items="${types}" inputClass="js-type" disabled="${disableType}"/>

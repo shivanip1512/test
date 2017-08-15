@@ -38,7 +38,7 @@ public class MacsStopPolicy {
         }
     }
     
-    private StopPolicy policy;
+    private StopPolicy policy = StopPolicy.MANUAL;
     private int duration = 60;
     private MacsTimeField time;
     
