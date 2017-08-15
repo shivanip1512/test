@@ -20,6 +20,7 @@ public class MacsScheduleHelper {
         schedule.setScheduleName(macsSchedule.getScheduleName());
         schedule.setCategoryName(macsSchedule.getCategoryName());
         schedule.setType(macsSchedule.getType().getDbString());
+        schedule.setTemplateType(macsSchedule.getTemplate().getId());
         schedule.setCurrentState(macsSchedule.getState().getStateString());
         if (macsSchedule.getLastRunTime() != null) {
             schedule.setLastRunTime(macsSchedule.getLastRunTime());

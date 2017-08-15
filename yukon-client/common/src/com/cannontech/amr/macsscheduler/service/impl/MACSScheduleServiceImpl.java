@@ -182,6 +182,9 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         
         AddSchedule newSchedule = new AddSchedule();
         newSchedule.setSchedule(schedule);
+        if (macsSchedule.isScript()) {
+            newSchedule.setScript(macsSchedule.getScriptOptions().getScriptText());
+        }
         int soeTag = sendMessage(newSchedule, user.getUsername(), now);
 
         String description = getDescription("Create schedule (" + schedule.getScheduleName() + ")", soeTag, now);
@@ -217,11 +220,12 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
      * Returns the Message from the MACs Service. Waits for the message if it hasn't arrived.
      */
     private Message getMessage(int soeTag, DateTime start, String description) throws MacsException {
-        log.debug(description);
+        log.debug("Waiting for message: " + description);
         while (true) {
             if (cachedMessages.containsKey(soeTag)) {
                 Message message = cachedMessages.get(soeTag);
-                log.info("Recieved message ("+message.getClass().getName()+") from MACS Service for soeTag=" + soeTag + " [" + message + "]");
+                log.info("Proccessing message " + message.getClass().getName() + getDebugMessageText(message)
+                    + " from MACS Service for soeTag=" + soeTag + " [" + message + "]");
                 if (message instanceof Info) {
                     MacsException error = new MacsException(MACSExceptionType.PROCESSING_ERROR,
                         description + " Recieved error from MACS Service: " + ((Info) message).getInfo());
@@ -250,11 +254,23 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
     @Override
     public void messageReceived(MessageEvent e) {
         Message message = e.getMessage();
-        log.info("Recieved message ("+message.getClass().getName()+") from MACS Service " + message);
+        log.info("messageReceived " + message.getClass().getName()  + getDebugMessageText(message)
+            + " from MACS Service " + message);
         if (waiting.contains(message.getSOE_Tag())) {
             waiting.remove(message.getSOE_Tag());
             cachedMessages.put(message.getSOE_Tag(), message);
         }
+    }
+    
+    private String getDebugMessageText(Message message) {
+        if (message instanceof Info) {
+            return " (Info: " + ((Info) message).getInfo() + ")";
+        } else if (message instanceof Schedule) {
+            return " (Schedule: " + ((Schedule) message).getScheduleName() + ")";
+        } else if (message instanceof ScriptFile) {
+            return " (ScriptFile: " + ((ScriptFile) message).getFileName() + ")";
+        }
+        return "";
     }
     
     /**
