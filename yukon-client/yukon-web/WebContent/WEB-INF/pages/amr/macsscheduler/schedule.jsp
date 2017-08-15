@@ -26,8 +26,7 @@
                     <tags:nameValue2 nameKey=".categoryName">
                         <tags:selectWithItems path="categoryName" items="${categories}" inputClass="fl js-category-select"/>
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:input path="categoryName" inputClass="fl js-category-text dn"/>
-                            <cti:button renderMode="buttonImage" icon="icon-add" classes="js-add-category"/>
+                            <cti:button renderMode="buttonImage" icon="icon-add" data-popup="#category-popup"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <cti:displayForPageEditModes modes="EDIT">
@@ -77,7 +76,7 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".startPolicy.startDateTime" rowClass="js-start-dateTime">
-                            <dt:dateTime path="startPolicy.startDateTime"  />
+                            <dt:dateTime path="startPolicy.startDateTime"/>
                             <tags:checkbox path="startPolicy.everyYear" />
                             <i:inline key=".startPolicy.everyYear" />
                         </tags:nameValue2>
@@ -184,4 +183,14 @@
     <cti:toJson id="ied-400-types" object="${ied400Types}"/>
     
     <cti:includeScript link="/resources/js/pages/yukon.ami.macs.js" />
+    
+    <div class="dn" data-dialog id="category-popup"
+        data-title="<cti:msg2 key=".category.title"/>"
+        data-event="yukon:ami:macs:category:add">
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".categoryName">
+                <input id="categoryNameText" size="30" maxlength="50"/>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+    </div>
 </cti:standardPage>

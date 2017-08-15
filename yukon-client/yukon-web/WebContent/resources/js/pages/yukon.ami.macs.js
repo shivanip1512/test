@@ -238,10 +238,11 @@ yukon.ami.macs = (function () {
                     _updateStopPolicyFields();
                 });
                 
-                $(document).on('click', '.js-add-category', function (ev) {
-/*                    $('.js-category-text').removeClass('dn');
-                    $('.js-category-select').addClass('dn');
-                    $('.js-category-text').focus();*/
+                /** User clicked OK on New Category dialog. */
+                $(document).on('yukon:ami:macs:category:add', function (ev) {
+                    var newCategory = $('#categoryNameText').val();
+                    $('.js-category-select').append('<option selected=selected value=' + newCategory + '>' + newCategory + '</option>');
+                    $('#category-popup').dialog('close');
                 });
                     
                 
