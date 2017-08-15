@@ -1,6 +1,5 @@
 package com.cannontech.simulators.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -24,12 +23,11 @@ public class RegulatorEventsSimulatorDaoImpl implements RegulatorEventsSimulator
         
         @Override
         public RegulatorOperations mapRow(YukonResultSet yrs) throws SQLException {
-            ResultSet rs = yrs.getResultSet();
             RegulatorOperations result = new RegulatorOperations();
             result.regulatorId = yrs.getInt("RegulatorId");
             result.eventType = yrs.getEnum("EventType", EventType.class);
             result.timeStamp = yrs.getInstant("TimeStamp");
-            result.setPointValue = yrs.getFloat("SetPointValue");
+            result.setPointValue = yrs.getDouble("SetPointValue");
             return result;
         }
     };
@@ -42,7 +40,7 @@ public class RegulatorEventsSimulatorDaoImpl implements RegulatorEventsSimulator
         sql.append("WHERE EventType").in(
             ImmutableList.of(RegulatorEvent.EventType.TAP_DOWN, RegulatorEvent.EventType.TAP_UP,
                 RegulatorEvent.EventType.DECREASE_SETPOINT, RegulatorEvent.EventType.INCREASE_SETPOINT));
-        sql.append("AND TimeStamp").gt(String.valueOf(start));
+        sql.append("AND TimeStamp").gt(start);
 
         return yukonJdbcTemplate.query(sql, rowMapper);
     }

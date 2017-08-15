@@ -75,7 +75,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private boolean tapPositionsPreloaded = false;
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
-    private final Map<Integer, Float> regulatorSetPointValues = new HashMap<>();
+    private final Map<Integer, Double> regulatorSetPointValues = new HashMap<>();
     private final Map<Integer, Double> regulatorVoltageLoads = new HashMap<>();
     
     Map<Integer, RegulatorVoltageControlMode> regulatorVoltageControlModeConfig = new HashMap<>();
@@ -147,7 +147,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     }
     
     // Load all of the tap up and down operations, add or subtract from tap position depending on operation performed.
-    // TBD: Limits position?
+    // Load all SetPoint positions and adjust the Tap correctly for SetPoint regulators
     private void processNewRegulatorActions() {
 
         // Get the Tap event and Set point operations for all regulators
@@ -167,16 +167,17 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 } else if (regulatorOperations.eventType == EventType.DECREASE_SETPOINT
                     || regulatorOperations.eventType == EventType.INCREASE_SETPOINT) {
                     regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
-                    // Updates the regulator tap positions using the set point value and latest voltage Y
-                    updateSetPointTapPositions(regulatorOperations.regulatorId,
-                        regulatorVoltageLoads.get(regulatorOperations.regulatorId));
-                }
+                    }
                 log.debug("Found " + regulatorEventOperations.size() + " tap and setpoint operations, acting on them.");
                 if (regulatorOperations.timeStamp.isAfter(lastRegulatorEvaluationTime)) {
                     lastRegulatorEvaluationTime = regulatorOperations.timeStamp;
                 }
             }
         }
+        
+        // This can cause changes based on the SetPoint, but also based on the changing voltage values
+        // thus it needs to be called regardless of whether we received new SetPoint actions
+        updateAllSetPointTapPositions();
     }
     
     private void calculateAndSendCapControlPoints() {
@@ -444,23 +445,47 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     }
     
     /**
-     * Returns the current regulator tap position, as per the control type set
+     * Updates all set point positions based on the current position and voltages. This is intended
+     * to be called after SetPoint positions are updated from the db and before new voltages are 
+     * calculated. This is doing its best to mimic a real regulator with a 30 second response delay.
+     * Note a real regulator actually waits 1-2 minutes before responding to a voltage and it looks
+     * at the voltage more than once before committing to a change.
      */
-    private void updateSetPointTapPositions(Integer regulatorId, Double voltageLoad) {
-        int tapChange = INITIAL_TAP_POSITION;
-        RegulatorVoltageControlMode configControlType = regulatorVoltageControlModeConfig.get(regulatorId);
-        if (configControlType != null && configControlType == RegulatorVoltageControlMode.SET_POINT) {
-            if (voltageLoad != null && regulatorSetPointValues.containsKey(regulatorId)) {
-                float setPointVoltage = regulatorSetPointValues.get(regulatorId);
-                int bandwidth = 2;
-                if (Math.abs(setPointVoltage - voltageLoad) > (bandwidth / 2)) {
-                    tapChange = (int) (1
-                        + Math.floor((Math.abs(setPointVoltage - voltageLoad.intValue()) - (bandwidth / 2)) / 0.75));
-                    tapChange = (int) (tapChange * Math.signum(setPointVoltage - voltageLoad));
-                    regulatorTapPositions.put(regulatorId, tapChange);
+    private void updateAllSetPointTapPositions() {
+        for (Integer regulatorId : regulatorSetPointValues.keySet()) {
+            final Double BANDWIDTH = 2.0;
+            RegulatorVoltageControlMode configControlType = regulatorVoltageControlModeConfig.get(regulatorId);
+            if (configControlType != null && configControlType == RegulatorVoltageControlMode.SET_POINT) {
+                Double voltageLoad = regulatorVoltageLoads.get(regulatorId);
+                if (voltageLoad != null && regulatorSetPointValues.containsKey(regulatorId)) {
+                    int tapChange = getSetPointTapChange(regulatorSetPointValues.get(regulatorId), voltageLoad, BANDWIDTH);
+                    regulatorTapPositions.put(regulatorId, getRegulatorTapPosition(regulatorId) + tapChange);
                 }
             }
         }
+    }
+    
+    /*
+     * In SetPoint the regulator is given a voltage it should target. The regulator taps to keep itself
+     * near the voltage but stops once the voltage is within the bandwidth. This means it will not tap
+     * all the way to the exact setpoint, but only close to it. It also does not tap optimally close but
+     * stops immediately once it reaches a value within the range of SetPointVoltage += (bandwidth/2). 
+     * 
+     * So for example of the setpoint is at 123 and this voltage value before taps is 120 but the regulator 
+     * currently has 3 taps the real voltage is 122.25. Without knowing the current voltage, we do not know if 
+     * the tap value should be 3, 4, or 5 - All 3 of those values are legal and fit within the bandwidth. 
+     * The only way to know which one it should be is to have followed the value as the voltages either went 
+     * up or down. If the setpoint was higher and is now being lowered, the taps would be 4 or 5, but if it 
+     * was lower and was being raised the taps would be 3 or 4.
+     */
+    private static int getSetPointTapChange(Double setPointVoltage, Double currentVoltage, Double bandwidth) {
+        int tapChange = 0;
+        if (Math.abs(setPointVoltage - currentVoltage) > (bandwidth / 2)) {
+            tapChange = (int) (1
+                + Math.floor((Math.abs(setPointVoltage - currentVoltage) - (bandwidth / 2)) / 0.75));
+            tapChange = (int) (tapChange * Math.signum(setPointVoltage - currentVoltage));
+        }
+        return tapChange;
     }
 
     // Returns the current regulator tap position, defaults to 3

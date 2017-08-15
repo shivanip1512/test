@@ -12,7 +12,7 @@ public interface RegulatorEventsSimulatorDao {
         public Integer regulatorId;
         public RegulatorEvent.EventType eventType;
         public Instant timeStamp;
-        public Float setPointValue;
+        public Double setPointValue;
     }
     
     List<RegulatorOperations> getRegulatorEventOperationsAfter(Instant lastRegulatorEvaluationTime);
