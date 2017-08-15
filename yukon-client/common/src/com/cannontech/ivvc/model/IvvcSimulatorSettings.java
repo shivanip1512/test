@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class IvvcSimulatorSettings implements Serializable {
 
     private boolean increasedSpeedMode = false;
-    private boolean autoGenerateSubstationBuskWh;
+    private boolean autoGenerateSubstationBuskWh = true;
     private double substationBuskWh = 3000;
     private double localVoltageOffsetVar = 1200;
     private double remoteVoltageOffsetVar = 1200;
