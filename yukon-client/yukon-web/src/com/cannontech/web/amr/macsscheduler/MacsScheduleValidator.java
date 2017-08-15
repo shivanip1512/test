@@ -19,6 +19,7 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
     public void doValidation(MacsSchedule schedule, Errors errors) {
 
         validateName(schedule, errors);
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "categoryName", "yukon.web.error.isBlank");
         YukonValidationUtils.checkExceedsMaxLength(errors, "categoryName", schedule.getCategoryName(), 50);
     }
 

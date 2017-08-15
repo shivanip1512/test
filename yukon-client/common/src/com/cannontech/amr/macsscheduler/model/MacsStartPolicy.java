@@ -64,10 +64,10 @@ public class MacsStartPolicy {
     private StartPolicy policy;
     private int holidayScheduleId;
     private MacsTimeField time;
-    private Instant startDateTime;
+    private Instant startDateTime = new Instant();
     private boolean everyYear;
     private Map<DayOfWeek, Boolean> days = new HashMap<>(defaultDays);
-    private int dayOfMonth;
+    private int dayOfMonth = 1;
     
     private static final Map<DayOfWeek, Boolean> defaultDays = new HashMap<>();
     
@@ -146,7 +146,8 @@ public class MacsStartPolicy {
             DateTime parsedDate = parseDate(year, month, day, timeString);
             time = new MacsTimeField();
             time.setAmPm(AmPmOptionEnum.valueOf(parsedDate.toString("a")));
-            time.setHours(parsedDate.getHourOfDay());
+            int hours = parsedDate.getHourOfDay();
+            time.setHours(hours > 12 ? hours - 12 : hours);
             time.setMinutes(parsedDate.getMinuteOfHour());
         }
     }

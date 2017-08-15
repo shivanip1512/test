@@ -50,13 +50,13 @@
                             <div class="stacked">
                                 <select name="startPolicy.time.hours">
                                     <c:forEach var="hour" begin="1" end="12" step="1">
-                                        <option value="${hour}" <c:if test="${startPolicy.time.hours == hour}">selected</c:if>>${hour}</option>
+                                        <option value="${hour}" <c:if test="${schedule.startPolicy.time.hours == hour}">selected</c:if>>${hour}</option>
                                     </c:forEach>
                                 </select> :
                                 
                                 <select name="startPolicy.time.minutes">
                                     <c:forEach var="minute" begin="0" end="59" step="5">
-                                        <option value="${minute}" <c:if test="${startPolicy.time.minutes == minute}">selected</c:if>>
+                                        <option value="${minute}" <c:if test="${schedule.startPolicy.time.minutes == minute}">selected</c:if>>
                                             <c:if test="${minute < 10}">
                                                 <c:set var="minute" value="0${minute}"/>
                                             </c:if>
@@ -66,10 +66,10 @@
                                 </select>
                                 
                                 <select name="startPolicy.time.amPm">
-                                    <option value="AM" <c:if test="${startPolicy.time.amPm == 'AM'}">selected</c:if>>
+                                    <option value="AM" <c:if test="${schedule.startPolicy.time.amPm == 'AM'}">selected</c:if>>
                                         <i:inline key="yukon.web.components.cronPicker.am"/>
                                     </option>
-                                    <option value="PM" <c:if test="${startPolicy.time.amPm == 'PM'}">selected</c:if>>
+                                    <option value="PM" <c:if test="${schedule.startPolicy.time.amPm == 'PM'}">selected</c:if>>
                                         <i:inline key="yukon.web.components.cronPicker.pm"/>
                                     </option>
                                 </select>
@@ -106,13 +106,13 @@
                             <div class="stacked">
                                 <select name="stopPolicy.time.hours">
                                     <c:forEach var="hour" begin="1" end="12" step="1">
-                                        <option value="${hour}" <c:if test="${stopPolicy.time.hours == hour}">selected</c:if>>${hour}</option>
+                                        <option value="${hour}" <c:if test="${schedule.stopPolicy.time.hours == hour}">selected</c:if>>${hour}</option>
                                     </c:forEach>
                                 </select> :
                                 
                                 <select name="stopPolicy.time.minutes">
                                     <c:forEach var="minute" begin="0" end="59" step="5">
-                                        <option value="${minute}" <c:if test="${stopPolicy.time.minutes == minute}">selected</c:if>>
+                                        <option value="${minute}" <c:if test="${schedule.stopPolicy.time.minutes == minute}">selected</c:if>>
                                             <c:if test="${minute < 10}">
                                                 <c:set var="minute" value="0${minute}"/>
                                             </c:if>
@@ -122,10 +122,10 @@
                                 </select>
                                 
                                 <select name="stopPolicy.time.amPm">
-                                    <option value="AM" <c:if test="${stopPolicy.time.amPm == 'AM'}">selected</c:if>>
+                                    <option value="AM" <c:if test="${schedule.stopPolicy.time.amPm == 'AM'}">selected</c:if>>
                                         <i:inline key="yukon.web.components.cronPicker.am"/>
                                     </option>
-                                    <option value="PM" <c:if test="${stopPolicy.time.amPm == 'PM'}">selected</c:if>>
+                                    <option value="PM" <c:if test="${schedule.stopPolicy.time.amPm == 'PM'}">selected</c:if>>
                                         <i:inline key="yukon.web.components.cronPicker.pm"/>
                                     </option>
                                 </select>

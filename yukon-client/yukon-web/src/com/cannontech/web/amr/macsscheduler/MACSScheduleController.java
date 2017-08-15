@@ -230,9 +230,9 @@ public class MACSScheduleController extends MultiActionController {
         try {
             MacsSchedule schedule = service.getMacsScheduleById(id);
             service.delete(id, user);
-            flash.setConfirm(new YukonMessageSourceResolvable(scheduleKey + ".delete.successful", schedule.getScheduleName()));
+            flash.setConfirm(new YukonMessageSourceResolvable(scheduleKey + "delete.successful", schedule.getScheduleName()));
         } catch (MacsException e) {
-            flash.setError(new YukonMessageSourceResolvable(scheduleKey + ".delete.failure"));
+            flash.setError(new YukonMessageSourceResolvable(scheduleKey + "delete.failure"));
             return "redirect:/macsscheduler/schedules/" + id + "/view";
         }
         return "redirect:/macsscheduler/schedules/view";
