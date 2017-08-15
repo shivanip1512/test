@@ -63,8 +63,8 @@ import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.StringType;
 import com.cannontech.web.input.validate.InputValidator;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 @Component
 public class DeviceConfigurationHelper {
@@ -73,6 +73,8 @@ public class DeviceConfigurationHelper {
     private static final String moduleBaseKey = "yukon.web.modules.tools.configs";
     private static final String categoryBaseKey = moduleBaseKey + ".category";
     private static final String channelErrorBaseKey = categoryBaseKey + ".rfnChannelConfiguration.error";
+
+    private static final Set<PaoType> cbcAttributeTypes = ImmutableSet.of(PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP);
 
     private final Map<EnumOption, DeviceConfigurationInputEnumeration> fieldToEnumerationMap;
     private final Map<MapType, DeviceConfigurationInputEnumeration> fieldToMapTypeMap;
@@ -471,14 +473,10 @@ public class DeviceConfigurationHelper {
     }
 
     public Set<BuiltInAttribute> getCbcAttributesForConfigId(Integer configId) {
+        //  TODO - if we end up supporting more than just the CBC-8000 attribute list, this will need to account for
+        //    the device types associated with the this config ID, similar to the RFN attribute list 
         Multimap<PaoType, Attribute> paoAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
-        Set<PaoType> types = PaoType.getCbcTypes(); 
-        if (configId != null) {
-            types = Sets.intersection(
-                        types,
-                        deviceConfigurationDao.getDeviceConfiguration(configId).getSupportedDeviceTypes());
-        }
-        return types.stream()
+        return cbcAttributeTypes.stream()
                 .map(paoAttributes::get)
                 .flatMap(Collection::stream)
                 .filter(a -> a instanceof BuiltInAttribute)

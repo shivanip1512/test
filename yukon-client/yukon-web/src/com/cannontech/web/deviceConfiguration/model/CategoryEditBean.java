@@ -165,11 +165,12 @@ public class CategoryEditBean {
         int attribIndex = 0;
         for (AttributeMappingInput attribInput : attributeMappingInputs) {
             if (!attribInput.getPointName().isEmpty()) {
-                String prefix = "attributeMappings." + attribIndex++ + ".";
+                String prefix = "attributeMappings." + attribIndex + ".";
                 String attributeField = prefix + "attribute";
                 String pointNameField = prefix + "pointName";
                 items.add(new DeviceConfigCategoryItem(categoryId, attributeField, attribInput.getAttribute().name()));
                 items.add(new DeviceConfigCategoryItem(categoryId, pointNameField, attribInput.getPointName()));
+                attribIndex++;
             }
         }
         if (!attributeMappingInputs.isEmpty()) {
