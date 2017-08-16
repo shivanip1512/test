@@ -3275,9 +3275,9 @@ bool CtiCCFeeder::isAlreadyControlled(long minConfirmPercent, long currentVarPoi
             if (bank->getControlStatus() == CtiCCCapBank::OpenPending ||
                 bank->getControlStatus() == CtiCCCapBank::ClosePending )
             {
-                if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
+                if (ciStringEqual(bank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
                 {
-                    bankId = currentCapBank->getPaoId();
+                    bankId = bank->getPaoId();
                     setLastCapBankControlledDeviceId(bankId);
                     currentCapBank = bank;
                     found = true;
