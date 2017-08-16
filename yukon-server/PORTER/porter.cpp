@@ -616,8 +616,8 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
 // and a message for total queue count
 struct PortQueueCounts
 {
-	unsigned long totalQueCount; // total queue count accross all ports
-	std::unique_ptr<CtiMultiMsg> portQueueCountMsgs;
+    unsigned long totalQueCount; // total queue count accross all ports
+    std::unique_ptr<CtiMultiMsg> portQueueCountMsgs;
 };
 
 void applyPortWorkReport( const long portId, CtiPortSPtr ptPort, void *passedPtr )
@@ -625,31 +625,31 @@ void applyPortWorkReport( const long portId, CtiPortSPtr ptPort, void *passedPtr
     unsigned long queEntCnt = 0;
 
     /* Report on the state of the queues */
-	if( !ptPort->isInhibited() )
-	{
-		queEntCnt = ptPort->getWorkCount();
-		auto queueCounts = static_cast<PortQueueCounts*>( passedPtr );
+    if( !ptPort->isInhibited() )
+    {
+        queEntCnt = ptPort->getWorkCount();
+        auto queueCounts = static_cast<PortQueueCounts*>( passedPtr );
 
-		if( queueCounts )
-		{
-			queueCounts->totalQueCount += queEntCnt;
-			auto deviceType = static_cast<DeviceTypes>( ptPort->getType() );
-			auto typeAndOffset = Cti::DeviceAttributeLookup::Lookup( deviceType, Attribute::PortQueueCount );
+        if( queueCounts )
+        {
+            queueCounts->totalQueCount += queEntCnt;
+            auto deviceType = static_cast<DeviceTypes>( ptPort->getType() );
+            auto typeAndOffset = Cti::DeviceAttributeLookup::Lookup( deviceType, Attribute::PortQueueCount );
 
-			if( typeAndOffset )
-			{
-				auto pointId = GetPIDFromDeviceAndOffset( portId, typeAndOffset->offset );
-				auto pointData = std::make_unique<CtiPointDataMsg>( pointId, queEntCnt, NormalQuality, AnalogPointType );
+            if( typeAndOffset )
+            {
+                auto pointId = GetPIDFromDeviceAndOffset( portId, typeAndOffset->offset );
+                auto pointData = std::make_unique<CtiPointDataMsg>( pointId, queEntCnt, NormalQuality, AnalogPointType );
 
-				if ( pointData )
-				{
-					queueCounts->portQueueCountMsgs->insert( pointData.release() );
-				}
-			}
-		}
-	}
+                if ( pointData )
+                {
+                    queueCounts->portQueueCountMsgs->insert( pointData.release() );
+                }
+            }
+        }
+    }
 
-	/* Print out the port queue information */
+    /* Print out the port queue information */
     CTILOG_INFO( dout, "Port: " << ptPort->getPortID() << " / " << ptPort->getName() << " Port/Device Work Entries: " << queEntCnt );
 }
 
@@ -2196,7 +2196,7 @@ LONG GetCommFailPointID(LONG devid)
 void reportOnWorkObjects()
 {
     extern CtiClientConnection VanGoghConnection;
-	PortQueueCounts	queueCounts{ 0, std::make_unique <CtiMultiMsg>() };
+    PortQueueCounts    queueCounts{ 0, std::make_unique <CtiMultiMsg>() };
     PortManager.apply( applyPortWorkReport, &queueCounts );
 
     if( !queCountPointId )
@@ -2208,17 +2208,17 @@ void reportOnWorkObjects()
     {
         auto pData = std::make_unique<CtiPointDataMsg>( queCountPointId, queueCounts.totalQueCount, NormalQuality, AnalogPointType );
 
-		if ( pData )
-		{
-			queueCounts.portQueueCountMsgs->insert( pData.release() );
-		}
+        if ( pData )
+        {
+            queueCounts.portQueueCountMsgs->insert( pData.release() );
+        }
     }
 
-	if( queueCounts.portQueueCountMsgs->getCount() ) 
-	{
-		if ( !VanGoghConnection.WriteConnQue(queueCounts.portQueueCountMsgs.release(), CALLSITE) )
-		{
-			CTILOG_INFO( dout, "Port Queue Count Messages sent." );
-		}
-	}
+    if( queueCounts.portQueueCountMsgs->getCount() ) 
+    {
+        if ( !VanGoghConnection.WriteConnQue(queueCounts.portQueueCountMsgs.release(), CALLSITE) )
+        {
+            CTILOG_INFO( dout, "Port Queue Count Messages sent." );
+        }
+    }
 }

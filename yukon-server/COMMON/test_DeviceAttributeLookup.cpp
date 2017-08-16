@@ -89,14 +89,14 @@ BOOST_AUTO_TEST_CASE(test_Lookup_success)
         BOOST_CHECK_EQUAL(point->offset, 105);
         BOOST_CHECK_EQUAL(point->type, 1);
     }
-	{
-		auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::PortTypeLocalDirect, Attribute::PortQueueCount);
+    {
+        auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::PortTypeLocalDirect, Attribute::PortQueueCount);
 
-		BOOST_REQUIRE(point);
+        BOOST_REQUIRE(point);
 
-		BOOST_CHECK_EQUAL(point->offset, 1);
-		BOOST_CHECK_EQUAL(point->type, 1);
-	}
+        BOOST_CHECK_EQUAL(point->offset, 1);
+        BOOST_CHECK_EQUAL(point->type, 1);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_Lookup_failure)
