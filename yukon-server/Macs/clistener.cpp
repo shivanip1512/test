@@ -57,12 +57,9 @@ void CtiMCClientListener::interrupt(int id)
   BroadcastMessage
 
   Will replicate and send a CtiMessage to all connected clients.
-  takes ownership and delete the message given to it.
 ----------------------------------------------------------------------------*/
-void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, Cti::ConnectionHandle connectionHandle )
+void CtiMCClientListener::BroadcastMessage( std::unique_ptr<CtiMessage>&& toSend, Cti::ConnectionHandle connectionHandle )
 {
-    std::auto_ptr<CtiMessage> toSend(msg); // take ownership
-
     try
     {
         if( connectionHandle ) // send message to a single connection
@@ -75,7 +72,7 @@ void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, Cti::ConnectionHand
             {
                 if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                 {
-                    CTILOG_DEBUG(dout, "Broadcasting classID: "<< toSend->isA());
+                    CTILOG_DEBUG(dout, "Broadcasting message: "<< *toSend);
                 }
 
                 conn->write(toSend.release());
@@ -91,7 +88,7 @@ void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, Cti::ConnectionHand
                 {
                     if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                     {
-                        CTILOG_DEBUG(dout, "Broadcasting classID: "<< toSend->isA());
+                        CTILOG_DEBUG(dout, "Broadcasting message: " << *toSend);
                     }
 
                     connItr->write(toSend->replicateMessage());

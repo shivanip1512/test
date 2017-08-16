@@ -638,9 +638,9 @@ void CtiMCServer::checkRunningScripts()
 }
 
 
-CtiMessage* replicateWithSOE(const CtiMessage& msg, const int soe)
+std::unique_ptr<CtiMessage> replicateWithSOE(const CtiMessage& msg, const int soe)
 {
-    auto dup = msg.replicateMessage();
+    auto dup = std::unique_ptr<CtiMessage>(msg.replicateMessage());
     dup->setSOE(soe);
     return dup;
 }
@@ -789,7 +789,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
             if( id == CtiMCRetrieveSchedule::AllSchedules )
             {
                 //send all the schedules to the client that requested them
-                auto_ptr<CtiMultiMsg> multi(new CtiMultiMsg());
+                auto multi = std::make_unique<CtiMultiMsg>();
 
                 CtiLockGuard<CtiMutex> guard(_schedule_manager.getMux());
 
@@ -804,7 +804,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
                 }
 
                 multi->setSOE(soe);
-                _client_listener.BroadcastMessage(multi.release(), msg.getConnectionHandle());
+                _client_listener.BroadcastMessage(std::move(multi), msg.getConnectionHandle());
             }
             else
             {
@@ -1049,7 +1049,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
    if( errorMsg.get() )
    {
        errorMsg->setSOE(soe);
-       _client_listener.BroadcastMessage(errorMsg.release(), msg.getConnectionHandle());
+       _client_listener.BroadcastMessage(std::move(errorMsg), msg.getConnectionHandle());
    }
 
    return ret_val;
@@ -1119,7 +1119,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
         }
     }
 
-    _client_listener.BroadcastMessage(sched->replicateMessage());
+    _client_listener.BroadcastMessage(std::unique_ptr<CtiMessage>(sched->replicateMessage()));
 
     if( ! event_text.empty() )
     {
