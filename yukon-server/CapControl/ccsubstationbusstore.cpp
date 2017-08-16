@@ -3223,7 +3223,7 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
 bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 {
 
-    const std::string insertSql =
+    static const std::string insertSql =
         "INSERT INTO "
             "CCEventLog (LogID, "
                         "PointID, "
