@@ -77,6 +77,8 @@
 
 #include "NetworkManagerMessaging.h"
 
+#include "DeviceAttributeLookup.h"
+
 #include <boost/interprocess/ipc/message_queue.hpp>
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/creation_tags.hpp>
@@ -156,7 +158,7 @@ static LONG GetCommFailPointID(LONG devid);
 typedef map< LONG, LONG > CtiCommFailPoints_t;              // pair< LONG deviceid, LONG pointid >
 static CtiCommFailPoints_t commFailDeviceIDToPointIDMap;
 
-ULONG WorkCountPointOffset = 0;
+unsigned long queCountPointId = 0;
 
 bool isTAPTermPort(LONG PortNumber)
 {
@@ -609,26 +611,46 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
         }
     }
 }
-
-void applyPortWorkReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
+    
+// struct used to accumulate point data messages which contain the queue counts for each port 
+// and a message for total queue count
+struct PortQueueCounts
 {
-    ULONG QueEntCnt = 0;
+	unsigned long totalQueCount; // total queue count accross all ports
+	std::unique_ptr<CtiMultiMsg> portQueueCountMsgs;
+};
+
+void applyPortWorkReport( const long portId, CtiPortSPtr ptPort, void *passedPtr )
+{
+    unsigned long queEntCnt = 0;
 
     /* Report on the state of the queues */
+	if( !ptPort->isInhibited() )
+	{
+		queEntCnt = ptPort->getWorkCount();
+		auto queueCounts = static_cast<PortQueueCounts*>( passedPtr );
 
-    if( passedPtr && !ptPort->isInhibited())
-    {
-        QueEntCnt = ptPort->getWorkCount();
+		if( queueCounts )
+		{
+			queueCounts->totalQueCount += queEntCnt;
+			auto deviceType = static_cast<DeviceTypes>( ptPort->getType() );
+			auto typeAndOffset = Cti::DeviceAttributeLookup::Lookup( deviceType, Attribute::PortQueueCount );
 
-        *((ULONG *)passedPtr) += QueEntCnt;
-    }
-    else if( !ptPort->isInhibited() )
-    {
-        QueEntCnt = ptPort->getWorkCount();
-        /* Print out the port queue information */
+			if( typeAndOffset )
+			{
+				auto pointId = GetPIDFromDeviceAndOffset( portId, typeAndOffset->offset );
+				auto pointData = std::make_unique<CtiPointDataMsg>( pointId, queEntCnt, NormalQuality, AnalogPointType );
 
-    }
-    CTILOG_INFO(dout, "Port: " << ptPort->getPortID() << " / " << ptPort->getName() << " Port/Device Work Entries: " << QueEntCnt);
+				if ( pointData )
+				{
+					queueCounts->portQueueCountMsgs->insert( pointData.release() );
+				}
+			}
+		}
+	}
+
+	/* Print out the port queue information */
+    CTILOG_INFO( dout, "Port: " << ptPort->getPortID() << " / " << ptPort->getName() << " Port/Device Work Entries: " << queEntCnt );
 }
 
 
@@ -850,7 +872,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     _sysMsgThread.start();
 
-    if( (WorkReportIntervalInSeconds = gConfigParms.getValueAsULong("PORTER_WORK_COUNT_TIME", 60)) <= 0 )
+    if( (WorkReportIntervalInSeconds = gConfigParms.getValueAsULong("PORTER_totalQueCount_TIME", 60)) <= 0 )
     {
         //This is a failure case
         WorkReportIntervalInSeconds = 60;
@@ -2173,24 +2195,30 @@ LONG GetCommFailPointID(LONG devid)
 
 void reportOnWorkObjects()
 {
-    CtiPointDataMsg *pData = NULL;
     extern CtiClientConnection VanGoghConnection;
-    ULONG workCount = 0;
-    PortManager.apply( applyPortWorkReport, &workCount );
+	PortQueueCounts	queueCounts{ 0, std::make_unique <CtiMultiMsg>() };
+    PortManager.apply( applyPortWorkReport, &queueCounts );
 
-    if( !WorkCountPointOffset )
+    if( !queCountPointId )
     {
-        WorkCountPointOffset = GetPIDFromDeviceAndOffset(0, 1500);
+        queCountPointId = GetPIDFromDeviceAndOffset( 0, 1500 );
     }
 
-    if( WorkCountPointOffset )
+    if( queCountPointId )
     {
-        pData = CTIDBG_new CtiPointDataMsg(WorkCountPointOffset, workCount, NormalQuality, AnalogPointType);
+        auto pData = std::make_unique<CtiPointDataMsg>( queCountPointId, queueCounts.totalQueCount, NormalQuality, AnalogPointType );
+
+		if ( pData )
+		{
+			queueCounts.portQueueCountMsgs->insert( pData.release() );
+		}
     }
 
-    if(pData != NULL)
-    {
-        VanGoghConnection.WriteConnQue(pData, CALLSITE);
-    }
-
+	if( queueCounts.portQueueCountMsgs->getCount() ) 
+	{
+		if ( !VanGoghConnection.WriteConnQue(queueCounts.portQueueCountMsgs.release(), CALLSITE) )
+		{
+			CTILOG_INFO( dout, "Port Queue Count Messages sent." );
+		}
+	}
 }

@@ -189,94 +189,106 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         { "RFN530S4ERX",                 TYPE_RFN530S4ERX },
         { "RFN530S4ERXR",                TYPE_RFN530S4ERXR },
 
-        { "RFN1200",                     TYPE_RFN1200 },
+		{ "RFN1200", TYPE_RFN1200 },
 
-        //  --- RF water meters ---
-        { "RFW201",                      TYPE_RFW201 },
-        { "RFW205",                      TYPE_RFW205 },
+		//  --- RF water meters ---
+		{ "RFW201",                      TYPE_RFW201 },
+		{ "RFW205",                      TYPE_RFW205 },
 
-        //  --- RTU devices ---
-        { "RTU_DART",                    TYPE_DARTRTU },
-        { "RTU_DNP",                     TYPE_DNPRTU },
-        { "RTUILEX",                     TYPE_ILEXRTU },
-        { "SERIES_5_LMI",                TYPE_SERIESVLMIRTU },
-        { "RTU_MODBUS",                  TYPE_MODBUS },
-//      { "rtu-ses92",                   TYPE_SES92RTU },
-        { "RTUWELCO",                    TYPE_WELCORTU },
+		//  --- RTU devices ---
+		{ "RTU_DART",                    TYPE_DARTRTU },
+		{ "RTU_DNP",                     TYPE_DNPRTU },
+		{ "RTUILEX",                     TYPE_ILEXRTU },
+		{ "SERIES_5_LMI",                TYPE_SERIESVLMIRTU },
+		{ "RTU_MODBUS",                  TYPE_MODBUS },
+		//      { "rtu-ses92",                   TYPE_SES92RTU },
+		{ "RTUWELCO",                    TYPE_WELCORTU },
 
-        //  --- GRE { Great River Energy }, transmitters ---
-        { "RTC",                         TYPE_RTC },
-        { "RTM",                         TYPE_RTM },
+		//  --- GRE { Great River Energy }, transmitters ---
+		{ "RTC",                         TYPE_RTC },
+		{ "RTM",                         TYPE_RTM },
 
-        //  --- GRE { Great River Energy }, Load Management groups ---
-        { "LM_GROUP_GOLAY",              TYPE_LMGROUP_GOLAY },
-//      { "sa-105 group",                TYPE_LMGROUP_SA105 },
-        { "LM_GROUP_SA205",              TYPE_LMGROUP_SA205 },
-        { "LM_GROUP_SA305",              TYPE_LMGROUP_SA305 },
-        { "LM_GROUP_SADIGITAL",          TYPE_LMGROUP_SADIGITAL },
+		//  --- GRE { Great River Energy }, Load Management groups ---
+		{ "LM_GROUP_GOLAY",              TYPE_LMGROUP_GOLAY },
+		//      { "sa-105 group",                TYPE_LMGROUP_SA105 },
+		{ "LM_GROUP_SA205",              TYPE_LMGROUP_SA205 },
+		{ "LM_GROUP_SA305",              TYPE_LMGROUP_SA305 },
+		{ "LM_GROUP_SADIGITAL",          TYPE_LMGROUP_SADIGITAL },
 
-        //  --- Load Management ---
-//      { "ci customer",                 TYPE_CI_CUSTOMER },
-        { "LM_CONTROL_AREA",             TYPE_LM_CONTROL_AREA },
-//      { "lm curtail program",          TYPE_LMPROGRAM_CURTAILMENT },
-        { "LM_DIRECT_PROGRAM",           TYPE_LMPROGRAM_DIRECT },
-//      { "lm energy exchange",          TYPE_LMPROGRAM_ENERGYEXCHANGE },
-        { "LM_SEP_PROGRAM",              TYPE_LMPROGRAM_DIRECT },
-        { "LM_GROUP_DIGI_SEP",           TYPE_LMGROUP_DIGI_SEP },
-        { "LM_GROUP_ECOBEE",             TYPE_LMGROUP_ECOBEE },
-        { "LM_GROUP_EMETCON",            TYPE_LMGROUP_EMETCON },
-        { "LM_GROUP_EXPRESSCOMM",        TYPE_LMGROUP_EXPRESSCOM },
-        { "LM_GROUP_RFN_EXPRESSCOMM",    TYPE_LMGROUP_RFN_EXPRESSCOM },
-        { "LM_GROUP_MCT",                TYPE_LMGROUP_MCT },
-        { "LM_GROUP_POINT",              TYPE_LMGROUP_POINT },
-        { "LM_GROUP_RIPPLE",             TYPE_LMGROUP_RIPPLE },
-        { "LM_GROUP_VERSACOM",           TYPE_LMGROUP_VERSACOM },
+		//  --- Load Management ---
+	    //      { "ci customer",                 TYPE_CI_CUSTOMER },
+		{ "LM_CONTROL_AREA",             TYPE_LM_CONTROL_AREA },
+		//      { "lm curtail program",          TYPE_LMPROGRAM_CURTAILMENT },
+		{ "LM_DIRECT_PROGRAM",           TYPE_LMPROGRAM_DIRECT },
+		//      { "lm energy exchange",          TYPE_LMPROGRAM_ENERGYEXCHANGE },
+		{ "LM_SEP_PROGRAM",              TYPE_LMPROGRAM_DIRECT },
+		{ "LM_GROUP_DIGI_SEP",           TYPE_LMGROUP_DIGI_SEP },
+		{ "LM_GROUP_ECOBEE",             TYPE_LMGROUP_ECOBEE },
+		{ "LM_GROUP_EMETCON",            TYPE_LMGROUP_EMETCON },
+		{ "LM_GROUP_EXPRESSCOMM",        TYPE_LMGROUP_EXPRESSCOM },
+		{ "LM_GROUP_RFN_EXPRESSCOMM",    TYPE_LMGROUP_RFN_EXPRESSCOM },
+		{ "LM_GROUP_MCT",                TYPE_LMGROUP_MCT },
+		{ "LM_GROUP_POINT",              TYPE_LMGROUP_POINT },
+		{ "LM_GROUP_RIPPLE",             TYPE_LMGROUP_RIPPLE },
+		{ "LM_GROUP_VERSACOM",           TYPE_LMGROUP_VERSACOM },
 
-        //  --- System ---
-        { "MACRO_GROUP",                 TYPE_MACRO },
-//      { "script",                      0 },
-//      { "simple",                      0 },
-        { "SYSTEM",                      TYPE_SYSTEM },
-        { "VIRTUAL_SYSTEM",              TYPE_VIRTUAL_SYSTEM },
+		//  --- System ---
+		{ "MACRO_GROUP",                 TYPE_MACRO },
+		//      { "script",                      0 },
+		//      { "simple",                      0 },
+		{ "SYSTEM",                      TYPE_SYSTEM },
+		{ "VIRTUAL_SYSTEM",              TYPE_VIRTUAL_SYSTEM },
 
-        //  --- Transmitters ---
-        { "LCU415",                      TYPE_LCU415 },
-        { "LCU_ER",                      TYPE_LCU415ER },
-        { "LCULG",                       TYPE_LCU415LG },
-        { "LCU_T3026",                   TYPE_LCUT3026 },
-        { "RDS_TERMINAL",                TYPE_RDS },
-        { "SNPP_TERMINAL",               TYPE_SNPP },
-        { "TAPTERMINAL",                 TYPE_TAPTERM },
-        { "TCU5000",                     TYPE_TCU5000 },
-        { "TCU5500",                     TYPE_TCU5500 },
-        { "TNPP_TERMINAL",               TYPE_TNPP },
-        { "WCTP_TERMINAL",               TYPE_WCTP },
+		//  --- Transmitters ---
+		{ "LCU415",                      TYPE_LCU415 },
+		{ "LCU_ER",                      TYPE_LCU415ER },
+		{ "LCULG",                       TYPE_LCU415LG },
+		{ "LCU_T3026",                   TYPE_LCUT3026 },
+		{ "RDS_TERMINAL",                TYPE_RDS },
+		{ "SNPP_TERMINAL",               TYPE_SNPP },
+		{ "TAPTERMINAL",                 TYPE_TAPTERM },
+		{ "TCU5000",                     TYPE_TCU5000 },
+		{ "TCU5500",                     TYPE_TCU5500 },
+		{ "TNPP_TERMINAL",               TYPE_TNPP },
+		{ "WCTP_TERMINAL",               TYPE_WCTP },
 
-        //  --- IEDs and electronic meters ---
-        { "ALPHA_A1",                    TYPE_ALPHA_A1 },
-        { "ALPHA_A3",                    TYPE_ALPHA_A3 },
-        { "ALPHA_PPLUS",                 TYPE_ALPHA_PPLUS },
-        { "DAVISWEATHER",                TYPE_DAVIS },
-        { "DCT_501",                     TYPEDCT501 },
-        { "DR_87",                       TYPE_DR87 },
-        { "FOCUS",                       TYPE_FOCUS },
-        { "IPC410FL",                    TYPE_IPC_410FL },
-        { "IPC420FD",                    TYPE_IPC_420FD },
-        { "IPC430S4E",                   TYPE_IPC_430S4E },
-        { "IPC430SL",                    TYPE_IPC_430SL },
-        { "FULCRUM",                     TYPE_FULCRUM },
-        { "ION_7330",                    TYPE_ION7330 },
-        { "ION_7700",                    TYPE_ION7700 },
-        { "ION_8300",                    TYPE_ION8300 },
-        { "KV",                          TYPE_KV2 },
-        { "KVII",                        TYPE_KV2 },
-        { "LANDISGYRS4",                 TYPE_LGS4 },
-        { "QUANTUM",                     TYPE_QUANTUM },
-        { "SENTINEL",                    TYPE_SENTINEL },
-        { "SIXNET",                      TYPE_SIXNET },
-        { "TRANSDATA_MARKV",             TYPE_TDMARKV },
-        { "VECTRON",                     TYPE_VECTRON }
-    };
+		//  --- IEDs and electronic meters ---
+		{ "ALPHA_A1",                    TYPE_ALPHA_A1 },
+		{ "ALPHA_A3",                    TYPE_ALPHA_A3 },
+		{ "ALPHA_PPLUS",                 TYPE_ALPHA_PPLUS },
+		{ "DAVISWEATHER",                TYPE_DAVIS },
+		{ "DCT_501",                     TYPEDCT501 },
+		{ "DR_87",                       TYPE_DR87 },
+		{ "FOCUS",                       TYPE_FOCUS },
+		{ "IPC410FL",                    TYPE_IPC_410FL },
+		{ "IPC420FD",                    TYPE_IPC_420FD },
+		{ "IPC430S4E",                   TYPE_IPC_430S4E },
+		{ "IPC430SL",                    TYPE_IPC_430SL },
+		{ "FULCRUM",                     TYPE_FULCRUM },
+		{ "ION_7330",                    TYPE_ION7330 },
+		{ "ION_7700",                    TYPE_ION7700 },
+		{ "ION_8300",                    TYPE_ION8300 },
+		{ "KV",                          TYPE_KV2 },
+		{ "KVII",                        TYPE_KV2 },
+		{ "LANDISGYRS4",                 TYPE_LGS4 },
+		{ "QUANTUM",                     TYPE_QUANTUM },
+		{ "SENTINEL",                    TYPE_SENTINEL },
+		{ "SIXNET",                      TYPE_SIXNET },
+		{ "TRANSDATA_MARKV",             TYPE_TDMARKV },
+		{ "VECTRON",                     TYPE_VECTRON },
+
+		//  --- Ports ---
+		//PortTypeRfDa remains unused, separate issue?
+		//PortTypeTServerDialback remains unused, ignore for now
+		{ "DIALOUT_POOL",				 PortTypePoolDialout },
+		{ "LOCAL_DIALBACK",				 PortTypeLocalDialBack },
+		{ "LOCAL_DIALUP",	             PortTypeLocalDialup },
+		{ "LOCAL_DIRECT",				 PortTypeLocalDirect },
+		{ "TCPPORT",				     PortTypeTcp },
+		{ "TSERVER_DIALUP",				 PortTypeTServerDialup },
+		{ "TSERVER_DIRECT",				 PortTypeTServerDirect },
+		{ "UDP_PORT",                    PortTypeUdp }
+	};
 
     return mapFindOrDefault( _lookup, type, TYPE_NONE );
 
@@ -293,6 +305,10 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
     (GANG|PHASE)_OPERATED
     LM_SCENARIO
     MCT310IM
+	LOCAL_RADIO
+	LOCAL_SHARED
+	TSERVER_RADIO
+	TSERVER_SHARED
 */
 }
 
