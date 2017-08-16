@@ -66,7 +66,9 @@ public class MacsTimeField {
         MacsTimeField timeField = new MacsTimeField();
         timeField.setAmPm(AmPmOptionEnum.valueOf(parsedDate.toString("a")));
         int hours = parsedDate.getHourOfDay();
-        timeField.setHours(hours > 12 ? hours - 12 : hours);
+        hours = hours > 12 ? hours - 12 : hours;
+        hours = hours == 0 ? hours = 12 : hours;
+        timeField.setHours(hours);
         timeField.setMinutes(parsedDate.getMinuteOfHour());
         return timeField;
     }
