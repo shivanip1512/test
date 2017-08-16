@@ -11,127 +11,46 @@ PointDataHandler::PointDataHandler()
 
 void PointDataHandler::clear()
 {
-    _pointIdMap.clear();
-    _paoIdMap.clear();
+    _pointPao.clear();
 }
 
-bool PointDataHandler::addPoint(int pointId, int paoId)
+auto PointDataHandler::getEntry( const long pointID, const long paoID ) -> PointIDtoPaoIDMap::const_iterator
 {
-    PointIdMapItr pointItr = _pointIdMap.find(pointId);
-    if (pointItr == _pointIdMap.end())
+    for ( auto range = _pointPao.equal_range( pointID );
+          range.first != range.second;
+          ++range.first )
     {
-        set<int> newSet;
-        newSet.insert(paoId);
-
-        _pointIdMap[pointId] = newSet;
-    }
-    else
-    {
-        //Do we care if it fails? Means we re-regitered..
-        pointItr->second.insert(paoId);
-    }
-
-    PaoIdMapItr paoItr = _paoIdMap.find(paoId);
-    if (paoItr == _paoIdMap.end())
-    {
-        set<int> newSet;
-        newSet.insert(pointId);
-
-        _paoIdMap[paoId] = newSet;
-    }
-    else
-    {
-        //Do we care if it fails? Means we re-regitered..
-        paoItr->second.insert(pointId);
-    }
-
-    registerForPoint(pointId);
-
-    return true;
-}
-
-bool PointDataHandler::removePointOnPao(int pointId, int paoId)
-{
-    //Remove Pao from point set
-    PointIdMapItr pointItr = _pointIdMap.find(pointId);
-    if (pointItr != _pointIdMap.end())
-    {
-        pointItr->second.erase(paoId);
-
-        //Check if the set is empty.
-        if (pointItr->second.size() == 0)
+        if ( range.first->second == paoID )
         {
-            _pointIdMap.erase(pointId);
-            unRegisterForPoint(pointId);
+            return range.first;
         }
     }
 
-    //Remove point from pao set
-    PaoIdMapItr paoItr = _paoIdMap.find(paoId);
-    if (paoItr != _paoIdMap.end())
-    {
-        paoItr->second.erase(pointId);
-    }
-
-    return true;
+    return std::end( _pointPao );
 }
 
-bool PointDataHandler::removeAllPointsForPao(int paoId)
+void PointDataHandler::addPointOnPao( const long pointID, const long paoID )
 {
-    //Find all the points this pao is registered for
-    PaoIdMapItr paoItr = _paoIdMap.find(paoId);
-    std::list<int> removeSets;
+    auto entry = getEntry( pointID, paoID );
 
-    if (paoItr != _paoIdMap.end())
+    if ( entry == std::end( _pointPao ) )
     {
-        //Remove the reference to this pao for each point.
-        for each(int pointId in paoItr->second)
-        {
-            PointIdMapItr pointItr = _pointIdMap.find(pointId);
-            if (pointItr != _pointIdMap.end())
-            {
-                pointItr->second.erase(paoId);
-
-                //Check if the set is empty.
-                if (pointItr->second.size() == 0)
-                {
-                    removeSets.push_back(pointId);
-                }
-            }
-        }
-        //Remove this pao
-        _paoIdMap.erase(paoId);
+        _pointPao.emplace( std::make_pair( pointID, paoID ) );
     }
 
-    for each (int i in removeSets)
-    {
-        _pointIdMap.erase(i);
-        unRegisterForPoint(i);
-    }
-
-    return true;
+    registerForPoint( pointID );
 }
 
-bool PointDataHandler::removePointId(int pointId)
+void PointDataHandler::removePointOnPao( const long pointID, const long paoID )
 {
-    //Find all Paos this point is referenced in.
-    PointIdMapItr pointItr = _pointIdMap.find(pointId);
-    if (pointItr != _pointIdMap.end())
+    auto entry = getEntry( pointID, paoID );
+
+    if ( entry != std::end( _pointPao ) )
     {
-        //For each Pao, remove it's reference under the point sets.
-        for each (int paoId in pointItr->second)
-        {
-            PaoIdMapItr paoItr = _paoIdMap.find(paoId);
-            if (paoItr != _paoIdMap.end())
-            {
-                paoItr->second.erase(pointId);
-            }
-        }
-        _pointIdMap.erase(pointId);
-        unRegisterForPoint(pointId);
+        _pointPao.erase( entry );
     }
 
-    return true;
+    unRegisterForPoint( pointID );
 }
 
 /**
@@ -139,26 +58,15 @@ bool PointDataHandler::removePointId(int pointId)
  *
  * @param message
  *
- * @return bool
  */
-bool PointDataHandler::processIncomingPointData( const CtiPointDataMsg & message )
+void PointDataHandler::processIncomingPointData( const CtiPointDataMsg & message )
 {
-    PointDataListener* listener = NULL;
-    int pointId = message.getId();
-
-    PointIdMapItr pointItr = _pointIdMap.find(pointId);
-    if (pointItr != _pointIdMap.end())
+    for ( auto range = _pointPao.equal_range( message.getId() );
+          range.first != range.second;
+          ++range.first )
     {
-        //Get each object from the store and call its handle function.
-        for each (int paoId in pointItr->second)
-        {
-            _pointDataListener->handlePointDataByPaoId(paoId,message);
-        }
-
-        return true;
+        _pointDataListener->handlePointDataByPaoId( range.first->second, message );
     }
-
-    return false;
 }
 
 /**
@@ -178,9 +86,9 @@ void PointDataHandler::processNewMessage(CtiMessage* message)
  */
 void PointDataHandler::getAllPointIds(std::set<long>& pointIds)
 {
-    for (PointIdMapItr itr = _pointIdMap.begin(); itr != _pointIdMap.end(); itr++)
+    for ( const auto & entry : _pointPao )
     {
-        pointIds.insert(itr->first);
+        pointIds.insert( entry.first );
     }
 }
 
@@ -193,3 +101,4 @@ void PointDataHandler::setPointDataListener(PointDataListener* pointDataListener
 {
     _pointDataListener = pointDataListener;
 }
+

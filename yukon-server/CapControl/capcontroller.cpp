@@ -2483,7 +2483,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
 
     try
     {
-        CapControlPointDataHandler pointHandler = store->getPointDataHandler();
+        CapControlPointDataHandler & pointHandler = store->getPointDataHandler();
         pointHandler.processIncomingPointData( message );
 
         pointDataMsgBySubBus(pointID, value, quality, timestamp);

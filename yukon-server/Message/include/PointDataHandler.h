@@ -5,44 +5,36 @@
 #include "MessageListener.h"
 #include "msg_pdata.h"
 
-#include <map>
-#include <list>
 
 class IM_EX_MSG PointDataHandler : public MessageListener
 {
-    public:
-        PointDataHandler();
+public:
+    PointDataHandler();
 
-        void clear();
+    void clear();
 
-        bool addPoint(int pointId, int paoId);
-        bool removePointOnPao(int pointId, int paoId);
+    void addPointOnPao( const long pointID, const long paoID );
+    void removePointOnPao( const long pointID, const long paoID );
 
-        bool removeAllPointsForPao(int paoId);
-        bool removePointId(int pointId);
+    //Change this one to use the new one (processNewMessage) and not be called from the store.
+    void processIncomingPointData( const CtiPointDataMsg & message );
+    void processNewMessage(CtiMessage* message) override;
 
-        //Change this one to use the new one (processNewMessage) and not be called from the store.
-        bool processIncomingPointData( const CtiPointDataMsg & message );
-        void processNewMessage(CtiMessage* message);
+    void getAllPointIds(std::set<long>& pointIds);
 
-        void getAllPointIds(std::set<long>& pointIds);
+    void setPointDataListener(PointDataListener* pointDataListener);
 
-        void setPointDataListener(PointDataListener* pointDataListener);
+private:
 
-    private:
-        virtual void registerForPoint(int pointId) = 0;
-        virtual void unRegisterForPoint(int pointId) = 0;
+    virtual void registerForPoint( const long pointId ) = 0;
+    virtual void unRegisterForPoint( const long pointId ) = 0;
 
-        //To find all paos that are connected to a point. Main map.
-        typedef std::map<int,std::set<int> > PointIdMap;
-        typedef std::map<int,std::set<int> >::iterator PointIdMapItr;
+    using PointIDtoPaoIDMap = std::multimap<long, long>;
 
-        //Used for finding all points related to a pao. Used for maintenance
-        typedef std::map<int,std::set<int> > PaoIdMap;
-        typedef std::map<int,std::set<int> >::iterator PaoIdMapItr;
+    PointIDtoPaoIDMap   _pointPao;
 
-        PointIdMap _pointIdMap;
-        PaoIdMap _paoIdMap;
+    auto getEntry( const long pointID, const long paoID ) -> PointIDtoPaoIDMap::const_iterator;
 
-        PointDataListener * _pointDataListener;
+    PointDataListener * _pointDataListener;
 };
+

@@ -10,13 +10,11 @@
  */
 class CapControlPointDataHandler : public PointDataHandler
 {
-    public:
-        CapControlPointDataHandler();
+public:
+    CapControlPointDataHandler();
 
-    private:
+private:
 
-        virtual void registerForPoint(int pointId);
-        virtual void unRegisterForPoint(int pointId);
-
-        typedef PointDataHandler Inherited;
+    void registerForPoint( const long pointId ) override;
+    void unRegisterForPoint( const long pointId ) override;
 };

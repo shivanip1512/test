@@ -42,21 +42,22 @@ void VoltageRegulatorManager::reload(const long Id)
 
         for ( VoltageRegulatorMap::const_iterator b = results.begin(), e = results.end(); b != e; ++b )
         {
-            unload( b->first );
+            const long paoID = b->first;
+
+            unload( paoID );
 
             if ( _service )
             {
-                results[ b->first ]->loadAttributes( _service );
+                results[ paoID ]->loadAttributes( _service );
             }
 
-            _voltageRegulators[ b->first ] = results[ b->first ];
+            _voltageRegulators[ paoID ] = results[ paoID ];
 
             if ( _handler )
             {
-                VoltageRegulator::IDSet points = b->second->getRegistrationPoints();
-                for each ( VoltageRegulator::IDSet::value_type ID in points )
+                for ( auto & pointID : b->second->getRegistrationPoints() )
                 {
-                    _handler->addPoint( ID, b->first );
+                    _handler->addPointOnPao( pointID, paoID );
                 }
             }
         }
@@ -79,7 +80,10 @@ void VoltageRegulatorManager::unload(const long Id)
         VoltageRegulatorMap::const_iterator iter = _voltageRegulators.find(Id);
         if ( iter != _voltageRegulators.end() )
         {
-            _handler->removeAllPointsForPao(Id);
+            for ( auto & pointID : iter->second->getRegistrationPoints() )
+            {
+                _handler->removePointOnPao( pointID, Id );
+            }
         }
     }
 
@@ -95,7 +99,11 @@ void VoltageRegulatorManager::unloadAll()
     {
         for each ( VoltageRegulatorMap::value_type x in _voltageRegulators )
         {
-            _handler->removeAllPointsForPao(x.first);
+            for ( auto & pointID : x.second->getRegistrationPoints() )
+            {
+                _handler->removePointOnPao( pointID, x.first );
+
+            }
         }
     }
 

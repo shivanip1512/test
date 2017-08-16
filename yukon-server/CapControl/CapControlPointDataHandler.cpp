@@ -4,17 +4,17 @@
 #include "DispatchConnection.h"
 #include "capcontroller.h"
 
-CapControlPointDataHandler::CapControlPointDataHandler() : Inherited()
+CapControlPointDataHandler::CapControlPointDataHandler() : PointDataHandler()
 {
 
 }
 
-void CapControlPointDataHandler::registerForPoint(int pointId)
+void CapControlPointDataHandler::registerForPoint(const long pointId)
 {
     CtiCapController::getInstance()->getDispatchConnection()->registerForPoint(this, pointId);
 }
 
-void CapControlPointDataHandler::unRegisterForPoint(int pointId)
+void CapControlPointDataHandler::unRegisterForPoint(const long pointId)
 {
     CtiCapController::getInstance()->getDispatchConnection()->unRegisterForPoint(this, pointId);
 }
