@@ -13,7 +13,6 @@ public class MacsScriptOptions {
     private String fileName;
     private String scriptText;
     private String description;
-    private DeviceGroup group;
     private String groupName;
     private int porterTimeout;
     private String filePath;
@@ -35,7 +34,6 @@ public class MacsScriptOptions {
     
     //billing
     private boolean isBillingSelected;
-    private DeviceGroup billingGroup;
     private String billingGroupName;
     private String billingFormat;
     private int billingDemandDays;
@@ -48,15 +46,6 @@ public class MacsScriptOptions {
     private String notificationGroupName;
     private String notificationSubject;
     
-
-    public DeviceGroup getGroup() {
-        return group;
-    }
-
-    public void setGroup(DeviceGroup group) {
-        this.group = group;
-    }
-
     public int getPorterTimeout() {
         return porterTimeout;
     }
@@ -121,14 +110,6 @@ public class MacsScriptOptions {
         this.description = description;
     }
     
-    public DeviceGroup getBillingGroup() {
-        return billingGroup;
-    }
-
-    public void setBillingGroup(DeviceGroup billingGroup) {
-        this.billingGroup = billingGroup;
-    }
-
     public int getBillingDemandDays() {
         return billingDemandDays;
     }

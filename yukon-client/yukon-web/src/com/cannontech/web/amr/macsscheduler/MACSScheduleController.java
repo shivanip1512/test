@@ -37,7 +37,6 @@ import com.cannontech.amr.macsscheduler.model.MacsStartPolicy.StartPolicy;
 import com.cannontech.amr.macsscheduler.model.MacsStopPolicy.StopPolicy;
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.billing.FileFormatTypes;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -79,7 +78,6 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private HolidayScheduleDao holidaySchedules;
     @Autowired private ServerDatabaseCache cache;
-    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private MacsScheduleValidator validator;
 
     private final static String scheduleKey = "yukon.web.modules.tools.schedule.";
@@ -193,7 +191,7 @@ public class MACSScheduleController extends MultiActionController {
         if (schedule.isScript()) {
             try {
                 String script = service.getScript(schedule.getId(), user);
-                MacsScriptHelper.loadScheduleFromScript(script, schedule, deviceGroupService);
+                MacsScriptHelper.loadScheduleFromScript(script, schedule);
             } catch (MacsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
