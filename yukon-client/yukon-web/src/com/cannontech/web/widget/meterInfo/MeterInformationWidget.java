@@ -49,6 +49,7 @@ import com.cannontech.web.amr.meter.MeterValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.widget.meterInfo.model.IEDMeterModel;
+import com.cannontech.web.widget.meterInfo.model.MeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
@@ -148,10 +149,12 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
                 model.addAttribute("routes", routes);
             }
-        } else {
+        } else if (meter instanceof IedMeter) {
             model.addAttribute("meter", IEDMeterModel.of((IedMeter) meter));
             List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
             model.addAttribute("ports", ports);
+        } else {
+            model.addAttribute("meter", MeterModel.of(meter));
         }
               
         return "meterInformationWidget/edit.jsp";
