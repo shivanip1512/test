@@ -25,7 +25,7 @@
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".scriptOptions.deviceGroup">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <tags:deviceGroupPicker inputName="${pathKey}groupName"/>
+                        <tags:deviceGroupPicker inputName="scriptOptions.groupName"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         ${schedule.scriptOptions.groupName}
@@ -103,7 +103,7 @@
                         toggleAction="hide" onNameKey=".yes.label" offNameKey=".no.label" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".scriptOptions.deviceGroup" data-toggle-group="billingFile">
-                    <tags:deviceGroupPicker inputName="${pathKey}billingGroupName" />
+                    <tags:deviceGroupPicker inputName="scriptOptions.billingGroupName" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".scriptOptions.fileFormat" data-toggle-group="billingFile">
                     <tags:selectWithItems path="${pathKey}billingFormat" items="${fileFormats}" />
@@ -128,7 +128,7 @@
             <cti:displayForPageEditModes modes="VIEW">
                 <c:set var="disableArea" value="disabled" />
             </cti:displayForPageEditModes>
-            <textarea id="script" name="${pathKey}scriptText" cols="100" rows="20" ${disableArea}>${schedule.scriptOptions.scriptText}</textarea>
+            <textarea id="script" name="scriptOptions.scriptText" cols="100" rows="20" ${disableArea}>${schedule.scriptOptions.scriptText}</textarea>
         </cti:tab>
     </cti:tabs>
 
