@@ -53,7 +53,7 @@ public class MacsScheduleHelper {
                 schedule.setStartCommand(options.getStartCommand());
             }
             if (!Strings.isNullOrEmpty(options.getStopCommand())) {
-                schedule.setStartCommand(options.getStopCommand());
+                schedule.setStopCommand(options.getStopCommand());
             }
             schedule.setRepeatInterval(getSeconds(options.getRepeatInterval()));
             schedule.setTargetPAObjectId(options.getTargetPAObjectId());
