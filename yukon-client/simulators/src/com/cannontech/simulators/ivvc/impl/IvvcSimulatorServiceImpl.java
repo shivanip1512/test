@@ -69,7 +69,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private volatile boolean isRunning; // This refers to the simulator itself
     private volatile boolean isCurrentlyExecuting = false; // This is used to ensure only one timed execution happens at a time
     private volatile double substationBuskWh;
-    private volatile boolean autoGenerateSubstationBuskWh;
+    private volatile boolean autoGenerateSubstationBuskWh = true;
     private volatile double localVoltageOffset;
     private volatile double remoteVoltageOffset;
     private boolean tapPositionsPreloaded = false;
