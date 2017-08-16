@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/4/2017 10:00:33 AM                         */
+/* Created on:     8/16/2017 4:08:04 PM                         */
 /*==============================================================*/
 
 
@@ -791,13 +791,6 @@ create index INDX_CCEventLog_PointId_ActId on CCEventLog (
 /*==============================================================*/
 create index INDX_CCEventLog_ActId on CCEventLog (
    actionId ASC
-);
-
-/*==============================================================*/
-/* Index: INDX_CCEventLog_PointId                               */
-/*==============================================================*/
-create index INDX_CCEventLog_PointId on CCEventLog (
-   PointID ASC
 );
 
 /*==============================================================*/

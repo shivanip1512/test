@@ -38,6 +38,10 @@ ALTER TABLE TemplateDisplay
       ON DELETE CASCADE;
 /* End YUK-17051 */
 
+/* Start YUK-17096 */
+DROP INDEX INDX_CCEventLog_PointId;
+/* End YUK-17096 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -39,6 +39,10 @@ ALTER TABLE TemplateDisplay
 GO
 /* End YUK-17051 */
 
+/* Start YUK-17096 */
+DROP INDEX INDX_CCEventLog_PointId ON CCEventLog;
+/* End YUK-17096 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

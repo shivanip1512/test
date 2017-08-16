@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/4/2017 9:59:50 AM                          */
+/* Created on:     8/16/2017 4:08:54 PM                         */
 /*==============================================================*/
 
 
@@ -841,14 +841,6 @@ go
 /*==============================================================*/
 create index INDX_CCEventLog_ActId on CCEventLog (
 actionId ASC
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_CCEventLog_PointId                               */
-/*==============================================================*/
-create index INDX_CCEventLog_PointId on CCEventLog (
-PointID ASC
 )
 go
 
