@@ -499,8 +499,7 @@ public class ZoneDaoImpl implements ZoneDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EV.LogId, EV.Text, EV.DateTime, PAO.PaoName, EV.Value, EV.UserName");
         sql.append("FROM CCEventLog EV");
-        sql.append("JOIN Point P ON EV.PointId = P.PointId");
-        sql.append("JOIN YukonPAObject PAO ON P.PAObjectId = PAO.PAObjectId");
+        sql.append("JOIN YukonPAObject PAO ON EV.SubID = PAO.PAObjectId");
         sql.append("WHERE EV.EventType").eq_k(CcEventType.CommandSent);
         sql.append("AND PAO.PAObjectId IN (");
         sql.append("  SELECT DeviceId");
@@ -520,10 +519,10 @@ public class ZoneDaoImpl implements ZoneDao {
         Instant since = Instant.now().minus(hours);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EV.LogId, EV.Text, EV.DateTime, YP.PaoName, EV.Value, EV.UserName");
-        sql.append("FROM CcEventLog EV, YukonPaObject YP");
+        sql.append("FROM CcEventLog EV");
+        sql.append("JOIN YukonPAObject YP ON EV.SubID = YP.PAObjectID");
         sql.append("WHERE EV.EventType").eq_k(CcEventType.IvvcCommStatus);
         sql.append("AND EV.SubId").eq(subBusId);
-        sql.append("AND YP.PaObjectid").eq(subBusId);
         sql.append("AND EV.DateTime").gte(since);
 
         List<CcEvent> events = yukonJdbcTemplate.query(sql, ccEventRowMapper);
