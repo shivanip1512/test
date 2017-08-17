@@ -248,7 +248,7 @@ public class MACSScheduleController extends MultiActionController {
             setupModel(model, schedule);
             return "schedule.jsp";
         }
-        MacsScriptHelper.generateScript(schedule);
+        MacsScriptHelper.generateScript(schedule, databaseCache);
         model.addAttribute("script", schedule.getScriptOptions().getScriptText());
         return "scriptEditorDialog.jsp";
     }

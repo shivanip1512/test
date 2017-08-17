@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
+import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.macsscheduler.model.MacsException;
@@ -51,8 +52,8 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
     private IMACSConnection connection;
     @Autowired private ToolsEventLogService eventLog;
     @Autowired private NextValueHelper nextValueHelper;
-    //minutes to wait for reply from MACS Service.
-    private final Minutes minutesToWait = Minutes.minutes(2);
+    //seconds to wait for reply from MACS Service.
+    private final Seconds secondsToWait = Seconds.seconds(10);
     //SOE_Tag/Message - messages received from MACS Service.
     private Map<Integer, Message> cachedMessages = new ConcurrentHashMap<>();
     //SOE_Tag waiting for reply from MACS Service.
@@ -234,7 +235,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
                 }
                 return message;
             } else {
-                boolean stopWaiting = Minutes.minutesBetween(start, DateTime.now()).isGreaterThan(minutesToWait);
+                boolean stopWaiting = Seconds.secondsBetween(start, DateTime.now()).isGreaterThan(secondsToWait);
                 if (stopWaiting) {
                     cachedMessages.remove(soeTag);
                     MacsException error = new MacsException(MACSExceptionType.NO_REPLY,

@@ -42,7 +42,7 @@ public class MacsScriptHelper {
      * Creates script file from schedule.
      * schedule.scriptOptions.scriptText contains script file created.
      */
-    public static void generateScript(MacsSchedule schedule) {
+    public static void generateScript(MacsSchedule schedule, IDatabaseCache databaseCache) {
         MacsScriptOptions options = schedule.getScriptOptions();
         MacsScriptTemplate template = schedule.getTemplate();
         if(template.isNoTemplateSelected()){
@@ -50,7 +50,7 @@ public class MacsScriptHelper {
         }
         StringBuilder script = new StringBuilder();
         script.append(ScriptTemplate.buildScriptHeaderCode());
-        script.append(getInputParameters(template, options));
+        script.append(getInputParameters(template, options, databaseCache));
         String tempText = ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false);
         if (tempText == null) {
             tempText = ScriptTemplate.getScriptCode(template.getId());
@@ -77,12 +77,7 @@ public class MacsScriptHelper {
         ScriptTemplate scriptTemplate = new ScriptTemplate();
         scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
         options.setFileName(scriptTemplate.getParameterValue(SCRIPT_FILE_NAME_PARAM));
-        loadValuesFromTemplate(schedule, scriptTemplate);
-        if (options.isNotificationSelected()) {
-            options.setNotificationGroupId(databaseCache.getAllContactNotificationGroups().stream().filter(
-                g -> g.getNotificationGroupName().equals(
-                    options.getNotificationGroupName())).findFirst().get().getLiteID());
-        }
+        loadValuesFromTemplate(schedule, scriptTemplate, databaseCache);
     }
 
     /**
@@ -91,10 +86,10 @@ public class MacsScriptHelper {
     public static void loadDefaultValues(MacsSchedule schedule) {
         MacsScriptOptions options = schedule.getScriptOptions();
         options.setFileName(schedule.getScheduleName() + ".ctl");
-        loadValuesFromTemplate(schedule, new ScriptTemplate());
+        loadValuesFromTemplate(schedule, new ScriptTemplate(), null);
     }
         
-    private static void loadValuesFromTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate) {
+    private static void loadValuesFromTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate, IDatabaseCache databaseCache) {
 
         MacsScriptOptions options = schedule.getScriptOptions();
         options.setDescription(scriptTemplate.getParameterValue(SCRIPT_DESC_PARAM));
@@ -116,7 +111,6 @@ public class MacsScriptHelper {
         options.setBillingGroupName(scriptTemplate.getParameterValue(BILLING_GROUP_NAME_PARAM));
 
         options.setNotificationSelected(Boolean.valueOf(scriptTemplate.getParameterValue(NOTIFICATION_FLAG_PARAM)));
-        options.setNotificationGroupName(scriptTemplate.getParameterValue(NOTIFY_GROUP_PARAM));
         options.setNotificationSubject(scriptTemplate.getParameterValue(EMAIL_SUBJECT_PARAM));    
         options.setScriptText(scriptTemplate.buildParameterScript());
         
@@ -129,9 +123,15 @@ public class MacsScriptHelper {
 
         options.setTouRate(scriptTemplate.getParameterValue(TOU_RATE_PARAM));
         options.setIedType(scriptTemplate.getParameterValue(IED_TYPE_PARAM));
+        
+        if (options.isNotificationSelected()) {
+            String groupName = scriptTemplate.getParameterValue(NOTIFY_GROUP_PARAM);
+            options.setNotificationGroupId(databaseCache.getAllContactNotificationGroups().stream().filter(
+                g -> g.getNotificationGroupName().equals(groupName)).findFirst().get().getLiteID());
+        }
     }
         
-    private static String getInputParameters(MacsScriptTemplate template, MacsScriptOptions options) {
+    private static String getInputParameters(MacsScriptTemplate template, MacsScriptOptions options, IDatabaseCache databaseCache) {
         ScriptTemplate scriptTemplate = new ScriptTemplate();
         scriptTemplate.setParameterValue(SCRIPT_FILE_NAME_PARAM, Objects.toString(options.getFileName(), ""));
         scriptTemplate.setParameterValue(SCRIPT_DESC_PARAM, Objects.toString(options.getDescription(), ""));
@@ -152,8 +152,11 @@ public class MacsScriptHelper {
 
         if (options.isNotificationSelected()) {
             scriptTemplate.setParameterValue(NOTIFICATION_FLAG_PARAM, true);
-            scriptTemplate.setParameterValue(NOTIFY_GROUP_PARAM,  Objects.toString(options.getNotificationGroupName(), ""));
-            scriptTemplate.setParameterValue(EMAIL_SUBJECT_PARAM, Objects.toString(options.getNotificationSubject(), ""));
+            scriptTemplate.setParameterValue(NOTIFY_GROUP_PARAM,
+                databaseCache.getAllContactNotificationGroups().stream().filter(
+                    g -> g.getLiteID() == options.getNotificationGroupId()).findFirst().get().getNotificationGroupName());
+            scriptTemplate.setParameterValue(EMAIL_SUBJECT_PARAM,
+                Objects.toString(options.getNotificationSubject(), ""));
         }
 
         if (!template.isRetry()) {

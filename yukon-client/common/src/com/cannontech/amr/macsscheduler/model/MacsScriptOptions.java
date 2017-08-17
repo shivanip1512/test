@@ -44,7 +44,6 @@ public class MacsScriptOptions {
     //Notification
     private boolean isNotificationSelected;
     private int notificationGroupId;
-    private String notificationGroupName;
     private String notificationSubject;
     
     public int getPorterTimeout() {
@@ -165,14 +164,6 @@ public class MacsScriptOptions {
 
     public void setIedType(String iedType) {
         this.iedType = iedType;
-    }
-
-    public String getNotificationGroupName() {
-        return notificationGroupName;
-    }
-
-    public void setNotificationGroupName(String notificationGroupName) {
-        this.notificationGroupName = notificationGroupName;
     }
 
     public String getNotificationSubject() {
