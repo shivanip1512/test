@@ -81,7 +81,7 @@ public class MacsScheduleHelper {
         //stop policy
         MacsStopPolicy stop = macsSchedule.getStopPolicy();
         stop.setPolicy(StopPolicy.getPolicy(schedule.getStopPolicy()));
-        stop.setDuration(getMinutes(stop.getDuration()));
+        stop.setDuration(getMinutes(schedule.getDuration()));
         stop.buildStopTimeDate(schedule.getStopTime());
         
         if (macsSchedule.isScript()) {
