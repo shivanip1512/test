@@ -298,6 +298,7 @@ const DeviceLookup deviceFactory {
     { TYPE_LMGROUP_SA305,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA305>) },
     //  Capacitor bank controllers
     { TYPECBCDNP,        MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPECBCDNPLOGICAL, MakeDeviceFunc(makeDevice<DnpDevice>) },
     { TYPECBC7020,       MakeDeviceFunc(makeDevice<Cbc7020Device>) },
     { TYPECBC8020,       MakeDeviceFunc(makeDevice<Cbc8020Device>) },
     { TYPECBC7010,       MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
@@ -414,7 +415,8 @@ const std::set<int> dnpDeviceTypes = {
         TYPE_DNPRTU,
         TYPECBC7020,
         TYPECBC8020,
-        TYPECBCDNP };
+        TYPECBCDNP,
+        TYPECBCDNPLOGICAL };
 }
 
 DLLEXPORT bool isCarrierLPDeviceType(const int type)

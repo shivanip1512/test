@@ -63,6 +63,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("CBC 7010")
         ("CBC 7020")
         ("CBC DNP")
+        ("CBC DNP LOGICAL")
         ("CBC 8020")
         ("RFN-410FL")
         ("RFN-410FX")
@@ -181,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         ("MACRO GROUP")
         ("SYSTEM")
         ("VIRTUAL SYSTEM")
-            .repeat(9834, empty);
+            .repeat(9833, empty);
 
     std::vector<std::string> results;
 

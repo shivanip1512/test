@@ -1212,6 +1212,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPECBC7020:
                     case TYPECBC8020:
                     case TYPECBCDNP:
+                    case TYPECBCDNPLOGICAL:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
                     case TYPE_SERIESVRTU:
@@ -1989,6 +1990,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPECBC7020:
                     case TYPECBC8020:
                     case TYPECBCDNP:
+                    case TYPECBCDNPLOGICAL:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
                     case TYPE_SERIESVRTU:
@@ -2061,6 +2063,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPECBC7020:
                     case TYPECBC8020:
                     case TYPECBCDNP:
+                    case TYPECBCDNPLOGICAL:
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
@@ -2121,6 +2124,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPECBC7020:
                     case TYPECBC8020:
                     case TYPECBCDNP:
+                    case TYPECBCDNPLOGICAL:
                         {
                             CTILOG_WARN(dout, "Function Incomplete");
 

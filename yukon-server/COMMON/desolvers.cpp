@@ -228,7 +228,8 @@ string desolveDeviceType( int aType )
         case TYPECBC7020:                 Ret = "cbc 7020";             break;
         case TYPECBC8020:                 Ret = "cbc 8020";             break;
         case TYPECBCDNP:                  Ret = "cbc dnp";              break;
-
+        case TYPECBCDNPLOGICAL:           Ret = "cbc dnp logical";      break;
+        
         case TYPE_TAPTERM:                Ret = "tap terminal";         break;
         case TYPE_SNPP:                   Ret = "snpp terminal";        break;
         case TYPE_RDS:                    Ret = "rds terminal";         break;

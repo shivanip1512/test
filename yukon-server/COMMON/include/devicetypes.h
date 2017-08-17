@@ -57,6 +57,7 @@ enum DeviceTypes {
     TYPECBC7010,
     TYPECBC7020,
     TYPECBCDNP,
+    TYPECBCDNPLOGICAL,
     TYPECBC8020,
 
     //  RFN Focus

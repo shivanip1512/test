@@ -129,6 +129,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc 8020"),        TYPECBC8020);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc 8024"),        TYPECBC8020);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc dnp"),         TYPECBCDNP);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc dnp logical"), TYPECBCDNPLOGICAL);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc expresscom"),  TYPEEXPRESSCOMCBC);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc fp-2800"),     TYPEFISHERPCBC);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc versacom"),    TYPEVERSACOMCBC);
