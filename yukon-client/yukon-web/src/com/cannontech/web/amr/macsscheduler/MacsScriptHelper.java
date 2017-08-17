@@ -34,6 +34,7 @@ import com.cannontech.amr.macsscheduler.model.MacsSchedule;
 import com.cannontech.amr.macsscheduler.model.MacsScriptOptions;
 import com.cannontech.amr.macsscheduler.model.MacsScriptTemplate;
 import com.cannontech.database.data.schedule.script.ScriptTemplate;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class MacsScriptHelper {
 
@@ -64,7 +65,7 @@ public class MacsScriptHelper {
      * Loads schedule with values from script file.
      * schedule.scriptOptions.scriptText contains script file
      */
-    public static void loadScheduleFromScript(String script, MacsSchedule schedule) {
+    public static void loadScheduleFromScript(String script, MacsSchedule schedule, IDatabaseCache databaseCache) {
         MacsScriptOptions options = schedule.getScriptOptions();
         options.setScriptText(script);
         MacsScriptTemplate template = schedule.getTemplate();
@@ -77,6 +78,11 @@ public class MacsScriptHelper {
         scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
         options.setFileName(scriptTemplate.getParameterValue(SCRIPT_FILE_NAME_PARAM));
         loadValuesFromTemplate(schedule, scriptTemplate);
+        if (options.isNotificationSelected()) {
+            options.setNotificationGroupId(databaseCache.getAllContactNotificationGroups().stream().filter(
+                g -> g.getNotificationGroupName().equals(
+                    options.getNotificationGroupName())).findFirst().get().getLiteID());
+        }
     }
 
     /**

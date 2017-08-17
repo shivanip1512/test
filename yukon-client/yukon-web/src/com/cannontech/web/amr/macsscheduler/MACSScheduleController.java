@@ -65,6 +65,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 @CheckRole(YukonRole.SCHEDULER)
@@ -79,6 +80,7 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private HolidayScheduleDao holidaySchedules;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private MacsScheduleValidator validator;
+    @Autowired private IDatabaseCache databaseCache;
 
     private final static String scheduleKey = "yukon.web.modules.tools.schedule.";
     
@@ -191,7 +193,7 @@ public class MACSScheduleController extends MultiActionController {
         if (schedule.isScript()) {
             try {
                 String script = service.getScript(schedule.getId(), user);
-                MacsScriptHelper.loadScheduleFromScript(script, schedule);
+                MacsScriptHelper.loadScheduleFromScript(script, schedule, databaseCache);
             } catch (MacsException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

@@ -43,6 +43,7 @@ public class MacsScriptOptions {
     
     //Notification
     private boolean isNotificationSelected;
+    private int notificationGroupId;
     private String notificationGroupName;
     private String notificationSubject;
     
@@ -252,5 +253,13 @@ public class MacsScriptOptions {
     
     public static List<String> getIedTypes() {
         return iedTypes;
+    }
+
+    public int getNotificationGroupId() {
+        return notificationGroupId;
+    }
+
+    public void setNotificationGroupId(int notificationGroupId) {
+        this.notificationGroupId = notificationGroupId;
     }
 }
