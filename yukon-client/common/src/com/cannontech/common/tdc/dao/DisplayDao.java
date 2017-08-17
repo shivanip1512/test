@@ -13,9 +13,9 @@ public interface DisplayDao {
     List<Display> getDisplayByType(DisplayType type);
 
     /**
-     * Returns a list of displays for display type
+     * Returns display for display id if found. Else null.
      */
-    Display getDisplayById(int displayId);
+    Display findDisplayById(int displayId);
     
     /**
      * If display id is 0 creates display otherwise updates display, display columns are not updated.

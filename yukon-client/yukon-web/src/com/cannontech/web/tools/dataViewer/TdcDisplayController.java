@@ -132,10 +132,14 @@ public class TdcDisplayController {
     };
 
     @RequestMapping(value = "data-viewer/{displayId}", method = RequestMethod.GET)
-    public String view(YukonUserContext userContext, ModelMap model, @PathVariable int displayId) {
+    public String view(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, FlashScope flashScope) {
 
         model.addAttribute("mode", PageEditMode.VIEW);
-        Display display = displayDao.getDisplayById(displayId);
+        Display display = displayDao.findDisplayById(displayId);
+        if (display == null) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.display.load.error"));
+            return "redirect:/tools/data-viewer";
+        }
         boolean pageable = display.isPageable();
         model.addAttribute("pageable", pageable);
         boolean stateValue = display.getColumns()
@@ -188,7 +192,7 @@ public class TdcDisplayController {
         model.addAttribute("pageable", true);
         
         model.addAttribute("mode", PageEditMode.VIEW);
-        Display display = displayDao.getDisplayById(displayId);
+        Display display = displayDao.findDisplayById(displayId);
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         model.addAttribute("backingBean", new DisplayBackingBean());
@@ -365,7 +369,7 @@ public class TdcDisplayController {
     @ResponseBody
     public Map<String, String> acknowledgeAlarmsForDisplay(YukonUserContext userContext, int displayId) {
 
-        Display display = displayDao.getDisplayById(displayId);
+        Display display = displayDao.findDisplayById(displayId);
         int alarms = tdcService.acknowledgeAlarmsForDisplay(display, userContext.getYukonUser());
         MessageSourceResolvable successMsg =
             new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.ack.success", alarms);
@@ -688,7 +692,7 @@ public class TdcDisplayController {
                            YukonUserContext userContext)
             throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Display display = displayDao.getDisplayById(displayId);
+        Display display = displayDao.findDisplayById(displayId);
         List<DisplayData> displayData = tdcService.getDisplayData(display,
                 userContext.getJodaTimeZone(), PagingParameters.EVERYTHING);
         TdcDownloadHelper helper =
@@ -726,7 +730,7 @@ public class TdcDisplayController {
 
         DisplayBackingBean backingBean = new DisplayBackingBean();
         backingBean.setDisplayId(displayId);
-        Display display = displayDao.getDisplayById(displayId);
+        Display display = displayDao.findDisplayById(displayId);
         model.put("displayName", display.getName());
         model.addAttribute("backingBean", backingBean);
         return "data-viewer/copyPopup.jsp";
@@ -740,7 +744,7 @@ public class TdcDisplayController {
         
         validator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            Display display = displayDao.getDisplayById(backingBean.getDisplayId());
+            Display display = displayDao.findDisplayById(backingBean.getDisplayId());
             model.put("displayName", display.getName());
             model.addAttribute("backingBean", backingBean);
             List<MessageSourceResolvable> messages =
@@ -765,7 +769,7 @@ public class TdcDisplayController {
 
     @RequestMapping(value = "data-viewer/{displayId}/deleteCustomDisplay", method = RequestMethod.GET)
     public String deleteCustomDisplay(FlashScope flash, @PathVariable int displayId) {
-        Display display = displayDao.getDisplayById(displayId);
+        Display display = displayDao.findDisplayById(displayId);
         displayDao.deleteCustomDisplay(displayId);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "display.DELETE.success", display.getName()));
         return "redirect:/tools/data-viewer";

@@ -181,9 +181,10 @@
 
     <entry key="yukon.web.modules.tools.tdc.download">Download</entry>
     <entry key="yukon.web.modules.tools.tdc.copy">Copy</entry>
-        <entry key="yukon.web.modules.tools.tdc.copy.display">Copy Display: {0}</entry>
+    <entry key="yukon.web.modules.tools.tdc.copy.display">Copy Display: {0}</entry>
     <entry key="yukon.web.modules.tools.tdc.copy.name">Display Name</entry>
-
+    <entry key="yukon.web.modules.tools.tdc.display.load.error">Display requested does not exist.</entry>
+    
     <entry key="yukon.web.modules.tools.pao.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.pageHeading">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.crumbTitle">{0}</entry>
