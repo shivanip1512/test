@@ -39,15 +39,21 @@ import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tag.service.TagService;
 import com.cannontech.common.tdc.dao.DisplayDao;
+import com.cannontech.common.tdc.dao.DisplayDataDao.SortBy;
 import com.cannontech.common.tdc.model.AltScanRate;
 import com.cannontech.common.tdc.model.ColumnType;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.tdc.model.DisplayType;
+import com.cannontech.common.tdc.model.IDisplay;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.util.EnabledStatus;
 import com.cannontech.common.util.JsonUtils;
@@ -77,6 +83,7 @@ import com.cannontech.tags.Tag;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
@@ -164,16 +171,19 @@ public class TdcDisplayController {
         if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
             model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));
         }
-        
+        List<SortableColumn> sortableColumns = display.getColumns().stream()
+                                                                   .map(c -> SortableColumn.of(Direction.desc, false, c.getTitle(), c.getTitle()))
+                                                                   .collect(Collectors.toList());
+        model.addAttribute("sortableColumns", sortableColumns);
         SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, paging, totalCount);
         model.addAttribute("result", result);
-        
         return "data-viewer/display.jsp";
     }
     
     @RequestMapping(value = "data-viewer/{displayId}/page", method = RequestMethod.GET)
-    public String page(YukonUserContext userContext, ModelMap model, @PathVariable int displayId,
-                       PagingParameters pagingParameters) {
+    public String page(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
+                       @DefaultSort(dir=Direction.asc, sort="Time Stamp") SortingParameters sorting, 
+                       @DefaultItemsPerPage(50) PagingParameters pagingParameters) {
         
         model.addAttribute("pageable", true);
         
@@ -182,14 +192,84 @@ public class TdcDisplayController {
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         model.addAttribute("backingBean", new DisplayBackingBean());
-        List<DisplayData> displayData =
-                tdcService.getDisplayData(display, userContext.getJodaTimeZone(), pagingParameters);
-        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
-        int totalCount = tdcService.getDisplayDataCount(displayId, userContext.getJodaTimeZone());
-        SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, pagingParameters, totalCount);
-        model.addAttribute("result", result);
         
+        if (display.isPageable()) {
+            SortBy sortBy =  getSortByFromSortingParameter(display, sorting);
+            SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection());
+            model.addAttribute("result", result);
+            model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
+    
+            List<SortableColumn> sortableColumns = display.getColumns().stream()
+                                                          .map(c -> SortableColumn.of(sorting, c.getTitle(), c.getTitle()))
+                                                          .collect(Collectors.toList());
+            model.addAttribute("sortableColumns", sortableColumns);
+        }
+        else {
+            List<DisplayData> displayData = tdcService.getDisplayData(display, userContext.getJodaTimeZone(), pagingParameters);
+            model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
+            int totalCount = tdcService.getDisplayDataCount(displayId, userContext.getJodaTimeZone());
+            SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, pagingParameters, totalCount);
+            model.addAttribute("result", result);
+        }
         return "data-viewer/display.jsp";
+    }
+    
+    private SortBy getSortByFromSortingParameter(Display display, SortingParameters sorting) {
+        if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
+            switch (sorting.getSort()) {
+                case "Time Stamp":
+                    return SortBy.SYS_LOG_DATE_TIME;
+                case "Device Name":
+                    return SortBy.PAO_NAME;
+                case "Point Name":
+                    return SortBy.POINT_NAME;
+                case "Text Message":
+                    return SortBy.SYS_LOG_DESCRIPTION;
+                case "Additional Info":
+                    return SortBy.SYS_LOG_ACTION;
+                case "User Name":
+                    return SortBy.SYS_LOG_USERNAME;
+                default:
+                    return null;
+            }
+        }
+        else if (display.getDisplayId() == IDisplay.TAG_LOG_DISPLAY_NUMBER) {
+            switch (sorting.getSort()) {
+                case "Time Stamp":
+                    return SortBy.TAG_LOG_TAG_TIME;
+                case "Device Name":
+                    return SortBy.PAO_NAME;
+                case "Point Name":
+                    return SortBy.POINT_NAME;
+                case "Tag":
+                    return SortBy.TAGS_TAG_NAME;
+                case "Description":
+                    return SortBy.TAG_LOG_DESCRIPTION;
+                case "Additional Info":
+                    return SortBy.TAG_LOG_ACTION;
+                case "User Name":
+                    return SortBy.TAG_LOG_USERNAME;
+                default:
+                    return null;
+            }
+        }
+        else if (display.getDisplayId() == IDisplay.SOE_LOG_DISPLAY_NUMBER) {
+            switch (sorting.getSort()) {
+                case "Time Stamp":
+                    return SortBy.SYS_LOG_DATE_TIME;
+                case "Device Name":
+                    return SortBy.PAO_NAME;
+                case "Point Name":
+                    return SortBy.POINT_NAME;
+                case "Description":
+                    return SortBy.SYS_LOG_DESCRIPTION;
+                case "Additional Info":
+                    return SortBy.SYS_LOG_ACTION;
+                default:
+                    return null;
+            }
+        }
+        return null;
     }
 
     @RequestMapping(value = "data-viewer/enable-disable", method = RequestMethod.POST)

@@ -5,7 +5,10 @@ import java.util.Map;
 
 import org.joda.time.DateTimeZone;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.tdc.dao.DisplayDataDao.SortBy;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -139,4 +142,8 @@ public interface TdcService {
      * Updates custom display.
      */
     Display updateCustomDisplay(int displayId, String name, String title, String description, List<Integer> pointIds);
+
+    SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone,
+                                                    PagingParameters paging, SortBy sortBy,
+                                                    Direction direction);
 }

@@ -25,7 +25,7 @@ public interface DisplayDataDao {
         PAO_TYPE("y.Type"),
         
         POINT_ID("p.PointId"),
-        POINT_NAME("p.PointName"),
+        POINT_NAME("p.Pointname"),
         POINT_PAO_ID("p.PAObjectId"),
 
         SYS_LOG_ACTION("s.Action"),
@@ -34,7 +34,8 @@ public interface DisplayDataDao {
         SYS_LOG_MILLLIS("s.Millis"),
         SYS_LOG_POINT_ID("s.PointId"),
         SYS_LOG_SOE_TAG("s.SOE_TAG"),
-        
+        SYS_LOG_USERNAME("s.USERNAME"),
+
         TAGS_TAG_NAME("t.Tagname"),
         
         TAG_LOG_TAG_TIME("l.Tagtime"),

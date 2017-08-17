@@ -120,6 +120,7 @@ public class TdcServiceImpl implements TdcService {
         return retVal;
     }
     
+    @Override
     public SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
         SearchResults<DisplayData> searchResults = null;
         switch (display.getDisplayId()) {
