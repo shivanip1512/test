@@ -38,6 +38,7 @@
     <entry key="yukon.web.modules.tools.schedule.generalTab">General</entry>     
     <entry key="yukon.web.modules.tools.schedule.commandsTab">Commands</entry>     
     <entry key="yukon.web.modules.tools.schedule.scriptTab">Script</entry>     
+    <entry key="yukon.web.modules.tools.schedule.viewScript.label">View Script</entry>     
     <entry key="yukon.web.modules.tools.schedule.generateScript.label">Generate Script</entry>     
     <entry key="yukon.web.modules.tools.schedule.name">Name</entry>    
     <entry key="yukon.web.modules.tools.schedule.categoryName">Category</entry>    

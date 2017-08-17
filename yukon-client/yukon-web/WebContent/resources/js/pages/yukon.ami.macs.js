@@ -180,9 +180,11 @@ yukon.ami.macs = (function () {
                         url: yukon.url('/macsscheduler/schedules/createScript'),
                         type: 'GET',
                         success: function (result, status, xhr, $form) {
-                            $('#text-editor').html(xhr.responseText);
-                            var popupTitle = $('#text-editor').data('title');
-                            $('#text-editor').dialog({
+                            var dialog = $('#text-editor'),
+                                popupTitle = dialog.data('title');
+
+                            dialog.html(xhr.responseText);
+                            dialog.dialog({
                                 title: popupTitle,
                                 width: '800px',
                                 modal: true,
@@ -196,7 +198,32 @@ yukon.ami.macs = (function () {
                             yukon.ui.highlightErrorTabs();
                         }
                     });
+                });
+                
+                $(document).on('click', '.js-view-script', function (ev) {
+                    var form = $('#macs-schedule');                    
+                    form.ajaxSubmit({
+                        url: yukon.url('/macsscheduler/schedules/createScript'),
+                        type: 'GET',
+                        success: function (result, status, xhr, $form) {
+                            var dialog = $('#text-editor'),
+                            popupTitle = dialog.data('title');
 
+                            dialog.html(xhr.responseText);
+                            dialog.dialog({
+                                title: popupTitle,
+                                width: '800px',
+                                modal: true,
+                                buttons: yukon.ui.buttons({ })
+                            });
+                            $('#script').prop('disabled', true);
+                        },
+                        error: function (xhr, status, error, $form) {
+                            $('.yukon-page').html(xhr.responseText);
+                            yukon.ui.initContent('#macs-schedule');
+                            yukon.ui.highlightErrorTabs();
+                        }
+                    });
                 });
                 
                 $(document).on('yukon:schedule:saveScript', function (ev) {

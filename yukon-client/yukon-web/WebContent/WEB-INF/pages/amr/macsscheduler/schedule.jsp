@@ -163,6 +163,9 @@
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:url var="editUrl" value="/macsscheduler/schedules/${id}/edit" />
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}" />
+                <c:if test="${schedule.isScript() && !schedule.template.isNoTemplateSelected()}">
+                    <cti:button nameKey="viewScript" classes="js-view-script"/>
+                </c:if>
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT,CREATE">
