@@ -28,11 +28,14 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".scriptOptions.deviceGroup">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:deviceGroupPicker inputName="scriptOptions.groupName" />
+                            <cti:list var="groups">
+                                <cti:item value="${schedule.scriptOptions.groupName}"/>
+                            </cti:list>
+                            <tags:deviceGroupPicker inputName="scriptOptions.groupName" inputValue="${groups}"/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                        ${schedule.scriptOptions.groupName}
-                    </cti:displayForPageEditModes>
+                            ${schedule.scriptOptions.groupName}
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".scriptOptions.porterTimeout">
                         <tags:input path="${pathKey}porterTimeout" size="5" />
@@ -97,9 +100,9 @@
                     <tags:nameValue2 nameKey=".scriptOptions.notifyGroup"
                         data-toggle-group="sendEmail">
                         <tags:pickerDialog type="notificationGroupPicker" id="notifyUserGroupPicker"
-                            selectionProperty="name" destinationFieldId="notifyUserGroupId"
-                            linkType="selection" immediateSelectMode="true" />
-                        <tags:hidden path="${pathKey}notificationGroupName" id="notifyUserGroupId" />
+                            selectionProperty="name" destinationFieldId="notifyUserGroupId" viewOnlyMode="${mode == 'VIEW'}"
+                            linkType="selection" immediateSelectMode="true"/>
+                        <tags:hidden path="${pathKey}notificationGroupId" id="notifyUserGroupId" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".scriptOptions.messageSubject"
                         data-toggle-group="sendEmail">
@@ -112,7 +115,15 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".scriptOptions.deviceGroup"
                         data-toggle-group="billingFile">
-                        <tags:deviceGroupPicker inputName="scriptOptions.billingGroupName" />
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <cti:list var="groups">
+                                <cti:item value="${schedule.scriptOptions.billingGroupName}"/>
+                            </cti:list>
+                            <tags:deviceGroupPicker inputName="scriptOptions.billingGroupName" inputValue="${groups}" />
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            ${schedule.scriptOptions.billingGroupName}
+                        </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".scriptOptions.fileFormat"
                         data-toggle-group="billingFile">
