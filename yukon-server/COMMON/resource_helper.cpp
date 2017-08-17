@@ -204,7 +204,7 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 //      { "rtu-ses92",                   TYPE_SES92RTU },
         { "RTUWELCO",                    TYPE_WELCORTU },
 
-//  --- GRE { Great River Energy }, transmitters ---
+        //  --- GRE { Great River Energy }, transmitters ---
         { "RTC",                         TYPE_RTC },
         { "RTM",                         TYPE_RTM },
 
