@@ -34,6 +34,8 @@ yukon.ami.macs = (function () {
         if (templateType == 'NO_TEMPLATE') {
             $('.js-meter-read-tab').addClass('dn');
             $('.js-options-tab').addClass('dn');
+            $('.js-script-generate').addClass('dn');
+            $('.js-save-button').removeClass('dn');
         } else {
             $('.js-meter-read-tab').removeClass('dn');
             $('.js-options-tab').removeClass('dn');
@@ -47,6 +49,8 @@ yukon.ami.macs = (function () {
             } else {
                 $('.js-ied-section').addClass('dn');
             }
+            $('.js-script-generate').removeClass('dn');
+            $('.js-save-button').addClass('dn');
         }
     },
     
@@ -211,15 +215,25 @@ yukon.ami.macs = (function () {
                 });
                 
                 $(document).on('change', '.js-type', function (ev) {
-                    var type = $(this).val();
+                    var type = $(this).val(),
+                    templateType =  $('.js-template-value').val();
                     if (type == 'SCRIPT') {
                         $('.js-template').removeClass('dn');
                         $('.js-script-tab').removeClass('dn');
                         $('.js-commands-tab').addClass('dn');
+                        if (templateType == 'NO_TEMPLATE') {
+                            $('.js-script-generate').addClass('dn');
+                            $('.js-save-button').removeClass('dn');
+                        } else {
+                            $('.js-script-generate').removeClass('dn');
+                            $('.js-save-button').addClass('dn');
+                        }
                     } else {
                         $('.js-template').addClass('dn');
                         $('.js-script-tab').addClass('dn');
                         $('.js-commands-tab').removeClass('dn');
+                        $('.js-script-generate').addClass('dn');
+                        $('.js-save-button').removeClass('dn');
                     }
                 });
                 
@@ -241,6 +255,7 @@ yukon.ami.macs = (function () {
                             $('.js-command-tab').removeClass('js-get-template');
                         }
                         $('.js-save-button').prop('disabled', false);
+                        $('.js-script-generate').prop('disabled', false);
                     });
                     
                 });

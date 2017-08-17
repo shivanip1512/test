@@ -78,7 +78,7 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".startPolicy.startDateTime" rowClass="js-start-dateTime">
-                            <dt:dateTime path="startPolicy.startDateTime"/>
+<%--                             <dt:dateTime path="startPolicy.startDateTime" value="${schedule.startPolicy.startDateTime}"/> --%>
                             <tags:checkbox path="startPolicy.everyYear" />
                             <i:inline key=".startPolicy.everyYear" />
                         </tags:nameValue2>
@@ -166,14 +166,10 @@
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <c:choose>
-                    <c:when test="${schedule.isScript() && !schedule.template.isNoTemplateSelected()}">
-                        <cti:button nameKey="generateScript" classes="primary action js-save-button js-script-generate" busy="true" disabled="${getTemplate}" />
-                    </c:when>
-                    <c:otherwise>
-                        <cti:button nameKey="save" type="submit" classes="primary action js-save-button" busy="true" disabled="${getTemplate}" />
-                    </c:otherwise>
-                </c:choose>
+                <c:set var="clazz" value="${schedule.isScript() && !schedule.template.isNoTemplateSelected() ? '' : 'dn'}"/>
+                <cti:button nameKey="generateScript" classes="primary action js-script-generate ${clazz}" busy="true" disabled="${getTemplate}" />
+                <c:set var="clazz" value="${schedule.isScript() && !schedule.template.isNoTemplateSelected() ? 'dn' : ''}"/>
+                <cti:button nameKey="save" type="submit" classes="primary action js-save-button ${clazz}" busy="true" disabled="${getTemplate}" />
 
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:url var="deleteUrl" value="/macsscheduler/schedules/${id}/delete" />
