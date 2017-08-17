@@ -339,6 +339,7 @@ bool CtiMCSchedule::operator==(const CtiMCSchedule& ref) const
 
 CtiMCSchedule& CtiMCSchedule::operator=(const CtiMCSchedule& ref)
 {
+    Inherited::operator=(ref);
     if( !checkSchedule() )
     {
         CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
