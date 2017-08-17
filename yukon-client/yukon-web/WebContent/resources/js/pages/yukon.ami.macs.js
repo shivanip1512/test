@@ -170,22 +170,36 @@ yukon.ami.macs = (function () {
                     });
                 });
                 
-                $(document).on('click', '.js-script-text', function (ev) {
-                    var form = $('#macs-schedule');
-                    
-                    $.ajax({
+                $(document).on('click', '.js-script-generate', function (ev) {
+                    var form = $('#macs-schedule');                    
+                    form.ajaxSubmit({
                         url: yukon.url('/macsscheduler/schedules/createScript'),
-                        data: form.serialize()
-                    }).done(function (data, textStatus, jqXHR) {
-                        if (data.script) {
-                            var script = $('#script');
-                            script.html(data.script);
-                        }
-                        else if (data.errorMsg) {
-                            var errors = $('#script-error');
-                            errors.html(data.errorMsg);
+                        type: 'GET',
+                        success: function (result, status, xhr, $form) {
+                            $('#text-editor').html(xhr.responseText);
+                            var popupTitle = $('#text-editor').data('title');
+                            $('#text-editor').dialog({
+                                title: popupTitle,
+                                width: '800px',
+                                modal: true,
+                                buttons: yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:schedule:saveScript', okClass: 'js-save-script' })
+                            });
+                            yukon.ui.unbusy('.js-script-generate');
+                        },
+                        error: function (xhr, status, error, $form) {
+                            $('.yukon-page').html(xhr.responseText);
+                            yukon.ui.initContent('#macs-schedule');
+                            yukon.ui.highlightErrorTabs();
                         }
                     });
+
+                });
+                
+                $(document).on('yukon:schedule:saveScript', function (ev) {
+                    yukon.ui.busy('.js-save-script');
+                    var updatedScriptText = $('#script').val();
+                    $('#savedScriptText').val(updatedScriptText);
+                    $('#macs-schedule').submit();
                 });
                 
                 $(document).on('change', '.js-template', function (ev) {
@@ -226,6 +240,7 @@ yukon.ami.macs = (function () {
                             $('#command-content').html(data);
                             $('.js-command-tab').removeClass('js-get-template');
                         }
+                        $('.js-save-button').prop('disabled', false);
                     });
                     
                 });
@@ -244,9 +259,10 @@ yukon.ami.macs = (function () {
                     $('.js-category-select').append('<option selected=selected value=' + newCategory + '>' + newCategory + '</option>');
                     $('#category-popup').dialog('close');
                 });
-                    
                 
                 _initialized = true;
+                
+                yukon.ui.highlightErrorTabs();
 
             }
     };

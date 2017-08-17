@@ -214,11 +214,11 @@ public class MACSScheduleController extends MultiActionController {
         model.addAttribute("ied400Types", MacsScriptTemplate.getIed400Types());
         model.addAttribute("iedTypes", MacsScriptOptions.getIedTypes());
         //check if device or load group
-        model.addAttribute("target", "DEVICE");
-        if (schedule.getSimpleOptions() != null) {
+        model.addAttribute("target", "LOADGROUP");
+        if (schedule.isSimple() && schedule.getSimpleOptions().getTargetPAObjectId() != 0) {
             LiteYukonPAObject pao = cache.getAllPaosMap().get(schedule.getSimpleOptions().getTargetPAObjectId());
-            if (pao.getPaoType().isLoadGroup()) {
-                model.addAttribute("target", "LOADGROUP");
+            if (pao != null && !pao.getPaoType().isLoadGroup()) {
+                model.addAttribute("target", "DEVICE");
             }
         }
     }
@@ -237,11 +237,18 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="createScript", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> createScript(@ModelAttribute("schedule") MacsSchedule schedule, YukonUserContext yukonUserContext) {
-        Map<String, Object> json = new HashMap<>();
+    public String createScript(@ModelAttribute("schedule") MacsSchedule schedule, YukonUserContext yukonUserContext, 
+                               ModelMap model, BindingResult result, HttpServletResponse resp) {
+        validator.validate(schedule, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            setupModel(model, schedule);
+            return "schedule.jsp";
+        }
         MacsScriptHelper.generateScript(schedule);
-        json.put("script", schedule.getScriptOptions().getScriptText());
-        return json;
+        model.addAttribute("script", schedule.getScriptOptions().getScriptText());
+        return "scriptEditorDialog.jsp";
     }
     
     @RequestMapping(value="save", method = RequestMethod.POST)

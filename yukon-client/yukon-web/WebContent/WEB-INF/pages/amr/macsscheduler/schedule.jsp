@@ -32,6 +32,7 @@
                     <cti:displayForPageEditModes modes="EDIT">
                         <c:set var="disableType" value="true"/>
                         <tags:hidden path="type"/>
+                        <tags:hidden path="template"/>
                     </cti:displayForPageEditModes>
                     <tags:nameValue2 nameKey=".type">
                         <tags:selectWithItems path="type" items="${types}" inputClass="js-type" disabled="${disableType}"/>
@@ -165,8 +166,15 @@
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" classes="primary action" busy="true" />
-                
+                <c:choose>
+                    <c:when test="${schedule.isScript() && !schedule.template.isNoTemplateSelected()}">
+                        <cti:button nameKey="generateScript" classes="primary action js-save-button js-script-generate" busy="true" disabled="${getTemplate}" />
+                    </c:when>
+                    <c:otherwise>
+                        <cti:button nameKey="save" type="submit" classes="primary action js-save-button" busy="true" disabled="${getTemplate}" />
+                    </c:otherwise>
+                </c:choose>
+
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:url var="deleteUrl" value="/macsscheduler/schedules/${id}/delete" />
                     <cti:button id="deleteSchedule" classes="delete" nameKey="delete" href="${deleteUrl}"/>

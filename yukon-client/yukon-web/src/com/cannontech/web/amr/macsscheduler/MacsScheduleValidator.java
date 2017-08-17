@@ -30,7 +30,22 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
             YukonValidationUtils.checkIsPositiveInt(errors, "stopPolicy.duration", schedule.getStopPolicy().getDuration());
         }
         if (schedule.isScript()) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.fileName", "yukon.web.error.isBlank");
             YukonValidationUtils.checkExceedsMaxLength(errors, "scriptOptions.fileName", schedule.getScriptOptions().getFileName(), 180);
+            if (!schedule.getTemplate().isNoTemplateSelected()) {
+                //YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.groupName", "yukon.web.error.isBlank");
+                YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.porterTimeout", schedule.getScriptOptions().getPorterTimeout());
+                if (schedule.getScriptOptions().isDemandResetSelected()) {
+                    YukonValidationUtils.checkRange(errors, "scriptOptions.demandResetRetryCount", schedule.getScriptOptions().getDemandResetRetryCount(), 0, 5, true);
+                }
+                if (!schedule.getTemplate().isRetry()) {
+                    YukonValidationUtils.checkRange(errors, "scriptOptions.retryCount", schedule.getScriptOptions().getRetryCount(), 0, 10, true);
+                    YukonValidationUtils.checkRange(errors, "scriptOptions.queueOffCount", schedule.getScriptOptions().getQueueOffCount(), 0, 10, true);
+                    YukonValidationUtils.checkRange(errors, "scriptOptions.maxRetryHours", schedule.getScriptOptions().getMaxRetryHours(), -10, 10, true);
+                    //Display Max Retry Hours = -1 means no limit (should this range be -1 to 10 instead of -10 to 10?
+                    //Should Queue Off Count be Less than retry count? This displays in the tooltip on the old TDC
+                }
+            }
         } else {
             YukonValidationUtils.checkExceedsMaxLength(errors, "simpleOptions.startCommand", schedule.getSimpleOptions().getStartCommand(), 120);
             YukonValidationUtils.checkExceedsMaxLength(errors, "simpleOptions.stopCommand", schedule.getSimpleOptions().getStopCommand(), 120);
