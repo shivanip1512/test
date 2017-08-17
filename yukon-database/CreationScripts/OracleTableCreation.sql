@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/16/2017 4:08:04 PM                         */
+/* Created on:     8/17/2017 12:55:18 AM                        */
 /*==============================================================*/
 
 
@@ -2036,6 +2036,16 @@ create table CustomerResidence  (
    MainFuelTypeID       NUMBER                          not null,
    Notes                VARCHAR2(300),
    constraint PK_CUSTOMERRESIDENCE primary key (AccountSiteID)
+);
+
+/*==============================================================*/
+/* Table: DBUpdates                                             */
+/*==============================================================*/
+create table DBUpdates  (
+   UpdateId             VARCHAR2(50)                    not null,
+   Version              VARCHAR2(6),
+   InstallDate          DATE,
+   constraint PK_DBUPDATES primary key (UpdateId)
 );
 
 /*==============================================================*/

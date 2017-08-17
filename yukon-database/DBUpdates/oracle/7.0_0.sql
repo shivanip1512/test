@@ -42,6 +42,15 @@ ALTER TABLE TemplateDisplay
 DROP INDEX INDX_CCEventLog_PointId;
 /* End YUK-17096 */
 
+/* Start YUK-17113 */
+CREATE TABLE DBUpdates  (
+   UpdateId             VARCHAR2(50)                    NOT NULL,
+   Version              VARCHAR2(6),
+   InstallDate          DATE,
+   CONSTRAINT PK_DBUPDATES PRIMARY KEY (UpdateId)
+);
+/* End YUK-17113 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

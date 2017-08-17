@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/16/2017 4:08:54 PM                         */
+/* Created on:     8/17/2017 1:07:01 AM                         */
 /*==============================================================*/
 
 
@@ -2178,6 +2178,17 @@ create table CustomerResidence (
    MainFuelTypeID       numeric              not null,
    Notes                varchar(300)         null,
    constraint PK_CUSTOMERRESIDENCE primary key (AccountSiteID)
+)
+go
+
+/*==============================================================*/
+/* Table: DBUpdates                                             */
+/*==============================================================*/
+create table DBUpdates (
+   UpdateId             varchar(50)          not null,
+   Version              varchar(6)           null,
+   InstallDate          datetime             null,
+   constraint PK_DBUPDATES primary key (UpdateId)
 )
 go
 
