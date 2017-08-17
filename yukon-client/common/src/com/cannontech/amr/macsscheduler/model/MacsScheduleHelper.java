@@ -115,10 +115,16 @@ public class MacsScheduleHelper {
         return date;
     }
     
+    /**
+     * Converts seconds to minutes
+     */
     private static int getMinutes(int seconds){
         return Seconds.seconds(seconds).toStandardMinutes().getMinutes();
     }
     
+    /**
+     * Converts minutes to seconds
+     */
     private static int getSeconds(int minutes) {
         return Minutes.minutes(minutes).toStandardSeconds().getSeconds();
     }

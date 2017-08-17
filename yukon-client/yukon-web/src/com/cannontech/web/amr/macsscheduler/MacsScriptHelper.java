@@ -25,6 +25,7 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.SCHEDULE_NAME_PARAM;
 
 import java.util.Objects;
 
@@ -50,13 +51,17 @@ public class MacsScriptHelper {
         }
         StringBuilder script = new StringBuilder();
         script.append(ScriptTemplate.buildScriptHeaderCode());
-        script.append(getInputParameters(template, options, databaseCache));
+        script.append(getInputParameters(schedule, databaseCache));
         String tempText = ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false);
         if (tempText == null) {
-            tempText = ScriptTemplate.getScriptCode(template.getId());
+            script.append(ScriptTemplate.getScriptCode(template.getId()));
         }
-        script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, true));
-        script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, true));
+        if (options.isNotificationSelected()) {
+            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, true));
+        }
+        if (options.isBillingSelected()) {
+            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, true));
+        }
         script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.FOOTER, true));
         options.setScriptText(script.toString());
     }
@@ -131,8 +136,11 @@ public class MacsScriptHelper {
         }
     }
         
-    private static String getInputParameters(MacsScriptTemplate template, MacsScriptOptions options, IDatabaseCache databaseCache) {
+    private static String getInputParameters(MacsSchedule schedule, IDatabaseCache databaseCache) {
+        MacsScriptTemplate template = schedule.getTemplate();
+        MacsScriptOptions options = schedule.getScriptOptions();
         ScriptTemplate scriptTemplate = new ScriptTemplate();
+        scriptTemplate.setParameterValue(SCHEDULE_NAME_PARAM, schedule.getScheduleName());
         scriptTemplate.setParameterValue(SCRIPT_FILE_NAME_PARAM, Objects.toString(options.getFileName(), ""));
         scriptTemplate.setParameterValue(SCRIPT_DESC_PARAM, Objects.toString(options.getDescription(), ""));
         scriptTemplate.setParameterValue(GROUP_NAME_PARAM, Objects.toString(options.getGroupName(), ""));
