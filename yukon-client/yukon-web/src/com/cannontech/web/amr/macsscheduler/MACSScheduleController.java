@@ -281,7 +281,7 @@ public class MACSScheduleController extends MultiActionController {
         }
         // Success
         flash.setConfirm(new YukonMessageSourceResolvable(scheduleKey + "save.successful"));
-        return "redirect:/macsscheduler/schedules/" + id;
+        return "redirect:/macsscheduler/schedules/view";
     }
     
     @RequestMapping(value="{id}/startStop", method = RequestMethod.GET)
