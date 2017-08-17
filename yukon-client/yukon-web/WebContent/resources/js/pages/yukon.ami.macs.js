@@ -28,30 +28,19 @@ yukon.ami.macs = (function () {
         ied300Types = yukon.fromJson('#ied-300-types'),
         ied400Types = yukon.fromJson('#ied-400-types'),
         templateType =  $('.js-template-value').val(),
+        hasTemplate = templateType != 'NO_TEMPLATE',
         isRetry = retryTypes.indexOf(templateType) !== -1,
         isIed300 = ied300Types.indexOf(templateType) !== -1,
         isIed400 = ied400Types.indexOf(templateType) !== -1;
-        if (templateType == 'NO_TEMPLATE') {
-            $('.js-meter-read-tab').addClass('dn');
-            $('.js-options-tab').addClass('dn');
-            $('.js-script-generate').addClass('dn');
-            $('.js-save-button').removeClass('dn');
-        } else {
-            $('.js-meter-read-tab').removeClass('dn');
-            $('.js-options-tab').removeClass('dn');
-            if (isRetry) {
-                $('.js-retry-section').addClass('dn');
-            } else {
-                $('.js-retry-section').removeClass('dn');
-            }
-            if (isIed300 || isIed400) {
-                $('.js-ied-section').removeClass('dn');
-            } else {
-                $('.js-ied-section').addClass('dn');
-            }
-            $('.js-script-generate').removeClass('dn');
-            $('.js-save-button').addClass('dn');
+        $('#script-tabs').toggleClass('dn', !hasTemplate);
+        $('.js-script-generate').toggleClass('dn', !hasTemplate);
+        $('.js-save-button').toggleClass('dn', hasTemplate);
+        if (hasTemplate) {
+            $('.js-retry-section').toggleClass('dn', isRetry);
+            $('.js-ied-section').toggleClass('dn', !isIed300 && !isIed400);
         }
+        $('#savedScriptText').toggleClass('dn', hasTemplate);
+        yukon.ui.initContent('#script-content');
     },
     
     _updateStartPolicyFields = function () {
@@ -91,6 +80,41 @@ yukon.ami.macs = (function () {
         } else {
             $('.js-stop-time').addClass('dn');
         }
+    },
+    
+    _generateScript = function (viewOnly) {
+        var form = $('#macs-schedule');   
+        var buttons = yukon.ui.buttons({ });
+        if (!viewOnly) {
+            buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:schedule:saveScript', okClass: 'js-save-script' });
+        }
+        
+        form.ajaxSubmit({
+            url: yukon.url('/macsscheduler/schedules/createScript'),
+            type: 'GET',
+            success: function (result, status, xhr, $form) {
+                var dialog = $('#text-editor'),
+                    popupTitle = dialog.data('title');
+
+                dialog.html(xhr.responseText);
+                dialog.dialog({
+                    title: popupTitle,
+                    width: '800px',
+                    modal: true,
+                    buttons: buttons
+                });
+                if (viewOnly) {
+                    $('#script').prop('disabled', true);
+                } else {
+                    yukon.ui.unbusy('.js-script-generate');
+                }
+            },
+            error: function (xhr, status, error, $form) {
+                $('.yukon-page').html(xhr.responseText);
+                yukon.ui.initContent('#macs-schedule');
+                yukon.ui.highlightErrorTabs();
+            }
+        });
     },
     
     _initialized = false,
@@ -175,55 +199,11 @@ yukon.ami.macs = (function () {
                 });
                 
                 $(document).on('click', '.js-script-generate', function (ev) {
-                    var form = $('#macs-schedule');                    
-                    form.ajaxSubmit({
-                        url: yukon.url('/macsscheduler/schedules/createScript'),
-                        type: 'GET',
-                        success: function (result, status, xhr, $form) {
-                            var dialog = $('#text-editor'),
-                                popupTitle = dialog.data('title');
-
-                            dialog.html(xhr.responseText);
-                            dialog.dialog({
-                                title: popupTitle,
-                                width: '800px',
-                                modal: true,
-                                buttons: yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:schedule:saveScript', okClass: 'js-save-script' })
-                            });
-                            yukon.ui.unbusy('.js-script-generate');
-                        },
-                        error: function (xhr, status, error, $form) {
-                            $('.yukon-page').html(xhr.responseText);
-                            yukon.ui.initContent('#macs-schedule');
-                            yukon.ui.highlightErrorTabs();
-                        }
-                    });
+                    _generateScript(false);
                 });
                 
                 $(document).on('click', '.js-view-script', function (ev) {
-                    var form = $('#macs-schedule');                    
-                    form.ajaxSubmit({
-                        url: yukon.url('/macsscheduler/schedules/createScript'),
-                        type: 'GET',
-                        success: function (result, status, xhr, $form) {
-                            var dialog = $('#text-editor'),
-                            popupTitle = dialog.data('title');
-
-                            dialog.html(xhr.responseText);
-                            dialog.dialog({
-                                title: popupTitle,
-                                width: '800px',
-                                modal: true,
-                                buttons: yukon.ui.buttons({ })
-                            });
-                            $('#script').prop('disabled', true);
-                        },
-                        error: function (xhr, status, error, $form) {
-                            $('.yukon-page').html(xhr.responseText);
-                            yukon.ui.initContent('#macs-schedule');
-                            yukon.ui.highlightErrorTabs();
-                        }
-                    });
+                    _generateScript(true);
                 });
                 
                 $(document).on('yukon:schedule:saveScript', function (ev) {
@@ -237,31 +217,16 @@ yukon.ami.macs = (function () {
                     _updateTemplateFields();
                 });
                 
-                $(document).on('change', '.js-demand-reset', function (ev) {
-                    _updateTemplateFields();
-                });
-                
                 $(document).on('change', '.js-type', function (ev) {
                     var type = $(this).val(),
-                    templateType =  $('.js-template-value').val();
-                    if (type == 'SCRIPT') {
-                        $('.js-template').removeClass('dn');
-                        $('.js-script-tab').removeClass('dn');
-                        $('.js-commands-tab').addClass('dn');
-                        if (templateType == 'NO_TEMPLATE') {
-                            $('.js-script-generate').addClass('dn');
-                            $('.js-save-button').removeClass('dn');
-                        } else {
-                            $('.js-script-generate').removeClass('dn');
-                            $('.js-save-button').addClass('dn');
-                        }
-                    } else {
-                        $('.js-template').addClass('dn');
-                        $('.js-script-tab').addClass('dn');
-                        $('.js-commands-tab').removeClass('dn');
-                        $('.js-script-generate').addClass('dn');
-                        $('.js-save-button').removeClass('dn');
-                    }
+                        templateType =  $('.js-template-value').val(),
+                        isScript = type == 'SCRIPT',
+                        hasTemplate = templateType != 'NO_TEMPLATE';
+                    $('.js-template').toggleClass('dn', !isScript);
+                    $('.js-script-tab').toggleClass('dn', !isScript);
+                    $('.js-commands-tab').toggleClass('dn', isScript);
+                    $('.js-script-generate').toggleClass('dn', !isScript || (isScript && !hasTemplate));
+                    $('.js-save-button').toggleClass('dn', isScript && hasTemplate);
                 });
                 
                 $(document).on('click', '.js-get-template', function (ev) {
