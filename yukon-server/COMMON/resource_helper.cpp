@@ -201,26 +201,26 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         { "RTUILEX",                     TYPE_ILEXRTU },
         { "SERIES_5_LMI",                TYPE_SERIESVLMIRTU },
         { "RTU_MODBUS",                  TYPE_MODBUS },
-        //      { "rtu-ses92",                   TYPE_SES92RTU },
+//      { "rtu-ses92",                   TYPE_SES92RTU },
         { "RTUWELCO",                    TYPE_WELCORTU },
 
-        //  --- GRE { Great River Energy }, transmitters ---
+//  --- GRE { Great River Energy }, transmitters ---
         { "RTC",                         TYPE_RTC },
         { "RTM",                         TYPE_RTM },
 
         //  --- GRE { Great River Energy }, Load Management groups ---
         { "LM_GROUP_GOLAY",              TYPE_LMGROUP_GOLAY },
-        //      { "sa-105 group",                TYPE_LMGROUP_SA105 },
+//      { "sa-105 group",                TYPE_LMGROUP_SA105 },
         { "LM_GROUP_SA205",              TYPE_LMGROUP_SA205 },
         { "LM_GROUP_SA305",              TYPE_LMGROUP_SA305 },
         { "LM_GROUP_SADIGITAL",          TYPE_LMGROUP_SADIGITAL },
 
         //  --- Load Management ---
-        //      { "ci customer",                 TYPE_CI_CUSTOMER },
+//      { "ci customer",                 TYPE_CI_CUSTOMER },
         { "LM_CONTROL_AREA",             TYPE_LM_CONTROL_AREA },
-        //      { "lm curtail program",          TYPE_LMPROGRAM_CURTAILMENT },
+//      { "lm curtail program",          TYPE_LMPROGRAM_CURTAILMENT },
         { "LM_DIRECT_PROGRAM",           TYPE_LMPROGRAM_DIRECT },
-        //      { "lm energy exchange",          TYPE_LMPROGRAM_ENERGYEXCHANGE },
+//      { "lm energy exchange",          TYPE_LMPROGRAM_ENERGYEXCHANGE },
         { "LM_SEP_PROGRAM",              TYPE_LMPROGRAM_DIRECT },
         { "LM_GROUP_DIGI_SEP",           TYPE_LMGROUP_DIGI_SEP },
         { "LM_GROUP_ECOBEE",             TYPE_LMGROUP_ECOBEE },
@@ -234,8 +234,8 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 
         //  --- System ---
         { "MACRO_GROUP",                 TYPE_MACRO },
-        //      { "script",                      0 },
-        //      { "simple",                      0 },
+//      { "script",                      0 },
+//      { "simple",                      0 },
         { "SYSTEM",                      TYPE_SYSTEM },
         { "VIRTUAL_SYSTEM",              TYPE_VIRTUAL_SYSTEM },
 
@@ -280,13 +280,13 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         //  --- Ports ---
         //PortTypeRfDa remains unused, separate issue?
         //PortTypeTServerDialback remains unused, ignore for now
-        { "DIALOUT_POOL",                 PortTypePoolDialout },
-        { "LOCAL_DIALBACK",                 PortTypeLocalDialBack },
-        { "LOCAL_DIALUP",                 PortTypeLocalDialup },
-        { "LOCAL_DIRECT",                 PortTypeLocalDirect },
+        { "DIALOUT_POOL",                PortTypePoolDialout },
+        { "LOCAL_DIALBACK",              PortTypeLocalDialBack },
+        { "LOCAL_DIALUP",                PortTypeLocalDialup },
+        { "LOCAL_DIRECT",                PortTypeLocalDirect },
         { "TCPPORT",                     PortTypeTcp },
-        { "TSERVER_DIALUP",                 PortTypeTServerDialup },
-        { "TSERVER_DIRECT",                 PortTypeTServerDirect },
+        { "TSERVER_DIALUP",              PortTypeTServerDialup },
+        { "TSERVER_DIRECT",              PortTypeTServerDirect },
         { "UDP_PORT",                    PortTypeUdp }
     };
 
@@ -309,7 +309,7 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
     LOCAL_SHARED
     TSERVER_RADIO
     TSERVER_SHARED
-    */
+*/
 }
 
 }
