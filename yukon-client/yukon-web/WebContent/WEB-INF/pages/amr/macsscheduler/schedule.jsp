@@ -8,6 +8,11 @@
 
 <cti:standardPage module="tools" page="schedule">
 
+<c:set var="clazz" value="${schedule.isRunning() ? '' : 'dn'}"/>
+<div class="${clazz} js-running-warning user-message warning">
+    <i:inline key=".runningEditWarning"/>
+</div>
+
     <tags:setFormEditMode mode="${mode}" />
 
     <cti:url var="action" value="/macsscheduler/schedules/save" />
@@ -162,7 +167,7 @@
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:url var="editUrl" value="/macsscheduler/schedules/${id}/edit" />
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}" busy="true"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}" busy="true" disabled="${schedule.isRunning()}"/>
                 <c:if test="${schedule.isScript() && !schedule.template.isNoTemplateSelected()}">
                     <cti:button nameKey="viewScript" classes="js-view-script" busy="true"/>
                 </c:if>
