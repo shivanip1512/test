@@ -1,9 +1,9 @@
 #include "precompiled.h"
 
 #include "PointDataHandler.h"
-#include "msg_ptreg.h"
+#include "PointDataListener.h"
+#include "msg_pdata.h"
 
-using std::set;
 
 PointDataHandler::PointDataHandler()
 {

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "yukon.h"
-#include "msg_pdata.h"
+
+class CtiPointDataMsg;
+
 
 class PointDataListener
 {
