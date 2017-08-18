@@ -49,20 +49,38 @@ public class MacsScriptHelper {
         if(template.isNoTemplateSelected()){
             return;
         }
+        
+        System.out.println(schedule.getScriptOptions().getScriptText());
+        
+        ScriptTemplate scriptTemplate = loadScriptTemplateFromOptions(schedule, databaseCache);
+        
         StringBuilder script = new StringBuilder();
         script.append(ScriptTemplate.buildScriptHeaderCode());
-        script.append(getInputParameters(schedule, databaseCache));
-        String tempText = ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false);
-        if (tempText == null) {
-            script.append(ScriptTemplate.getScriptCode(template.getId()));
+        
+        if (schedule.getId() == 0) {
+            String tempText = ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false);
+            if (tempText == null) {
+                script.append(ScriptTemplate.getScriptCode(template.getId()));
+            }
+            if (options.isNotificationSelected()) {
+                script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, true));
+            }
+            if (options.isBillingSelected()) {
+                script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, true));
+            }
+            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.FOOTER, true));
+        } else {
+            scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false));
+            if(options.isBillingSelected()){
+                scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, false));
+            }
+            if(options.isNotificationSelected()){
+                scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, false));
+            }
+            scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.FOOTER, false));
         }
-        if (options.isNotificationSelected()) {
-            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, true));
-        }
-        if (options.isBillingSelected()) {
-            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, true));
-        }
-        script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.FOOTER, true));
+        
+        script.append(scriptTemplate.buildParameterScript());
         options.setScriptText(script.toString());
     }
     
@@ -70,7 +88,7 @@ public class MacsScriptHelper {
      * Loads schedule with values from script file.
      * schedule.scriptOptions.scriptText contains script file
      */
-    public static void loadScheduleFromScript(String script, MacsSchedule schedule, IDatabaseCache databaseCache) {
+    public static void loadOptionsFromScriptFile(String script, MacsSchedule schedule, IDatabaseCache databaseCache) {
         MacsScriptOptions options = schedule.getScriptOptions();
         options.setScriptText(script);
         MacsScriptTemplate template = schedule.getTemplate();
@@ -80,23 +98,26 @@ public class MacsScriptHelper {
         }
         
         ScriptTemplate scriptTemplate = new ScriptTemplate();
-        scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));
-        options.setFileName(scriptTemplate.getParameterValue(SCRIPT_FILE_NAME_PARAM));
-        loadValuesFromTemplate(schedule, scriptTemplate, databaseCache);
+        scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.PARAMETER_LIST, false));   
+        loadOptionsFromScriptTemplate(schedule, scriptTemplate, databaseCache);
     }
-
+    
     /**
      * Loads schedule with the values from script file.
      */
-    public static void loadDefaultValues(MacsSchedule schedule) {
+    public static void loadDefaultScriptOptions(MacsSchedule schedule) {
         MacsScriptOptions options = schedule.getScriptOptions();
+        loadOptionsFromScriptTemplate(schedule, new ScriptTemplate(), null);
         options.setFileName(schedule.getScheduleName() + ".ctl");
-        loadValuesFromTemplate(schedule, new ScriptTemplate(), null);
     }
         
-    private static void loadValuesFromTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate, IDatabaseCache databaseCache) {
+    /**
+     * Populates schedule using template values.
+     */
+    private static void loadOptionsFromScriptTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate, IDatabaseCache databaseCache) {
 
         MacsScriptOptions options = schedule.getScriptOptions();
+        options.setFileName(scriptTemplate.getParameterValue(SCRIPT_FILE_NAME_PARAM));
         options.setDescription(scriptTemplate.getParameterValue(SCRIPT_DESC_PARAM));
         options.setFilePath(scriptTemplate.getParameterValue(FILE_PATH_PARAM));
         options.setMissedFileName(scriptTemplate.getParameterValue(MISSED_FILE_NAME_PARAM));
@@ -136,10 +157,13 @@ public class MacsScriptHelper {
         }
     }
         
-    private static String getInputParameters(MacsSchedule schedule, IDatabaseCache databaseCache) {
+    /**
+     * Adds parameters from schedule to script template.
+     */
+    private static ScriptTemplate loadScriptTemplateFromOptions(MacsSchedule schedule, IDatabaseCache databaseCache) {
+        ScriptTemplate scriptTemplate = new ScriptTemplate();
         MacsScriptTemplate template = schedule.getTemplate();
         MacsScriptOptions options = schedule.getScriptOptions();
-        ScriptTemplate scriptTemplate = new ScriptTemplate();
         scriptTemplate.setParameterValue(SCHEDULE_NAME_PARAM, schedule.getScheduleName());
         scriptTemplate.setParameterValue(SCRIPT_FILE_NAME_PARAM, Objects.toString(options.getFileName(), ""));
         scriptTemplate.setParameterValue(SCRIPT_DESC_PARAM, Objects.toString(options.getDescription(), ""));
@@ -180,6 +204,7 @@ public class MacsScriptHelper {
             scriptTemplate.setParameterValue(RESET_COUNT_PARAM, options.getDemandResetRetryCount());
             scriptTemplate.setParameterValue(IED_TYPE_PARAM, Objects.toString(options.getIedType(), ""));
         }
-        return scriptTemplate.buildParameterScript();
+        
+        return scriptTemplate;
     }
 }

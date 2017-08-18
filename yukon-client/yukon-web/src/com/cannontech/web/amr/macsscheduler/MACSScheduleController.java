@@ -160,7 +160,7 @@ public class MACSScheduleController extends MultiActionController {
         model.addAttribute("templateReceived", true);
         if (schedule.isScript()) {
             schedule.setScriptOptions(new MacsScriptOptions());
-            MacsScriptHelper.loadDefaultValues(schedule);
+            MacsScriptHelper.loadDefaultScriptOptions(schedule);
             setupModel(model, schedule);
             return "scriptsTab.jsp";
         } else {
@@ -201,7 +201,10 @@ public class MACSScheduleController extends MultiActionController {
     private void loadScriptInfo(MacsSchedule schedule, LiteYukonUser user) throws MacsException {
         if (schedule.isScript()) {
             String script = service.getScript(schedule.getId(), user);
-            MacsScriptHelper.loadScheduleFromScript(script, schedule, databaseCache);
+            MacsScriptHelper.loadOptionsFromScriptFile(script, schedule, databaseCache);
+            schedule.getScriptOptions().setScriptText(script);
+            System.out.println(schedule.getScriptOptions().getScriptText());
+            System.out.println();
         }
     }
     
