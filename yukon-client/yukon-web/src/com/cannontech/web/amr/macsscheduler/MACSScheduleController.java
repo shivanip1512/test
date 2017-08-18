@@ -203,8 +203,6 @@ public class MACSScheduleController extends MultiActionController {
             String script = service.getScript(schedule.getId(), user);
             MacsScriptHelper.loadOptionsFromScriptFile(script, schedule, databaseCache);
             schedule.getScriptOptions().setScriptText(script);
-            System.out.println(schedule.getScriptOptions().getScriptText());
-            System.out.println();
         }
     }
     
