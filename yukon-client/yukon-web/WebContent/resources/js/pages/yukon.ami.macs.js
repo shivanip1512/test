@@ -57,41 +57,6 @@ yukon.ami.macs = (function () {
         $('.js-stop-time').toggleClass('dn', policy != 'ABSOLUTETIME');
     },
     
-    _generateScript = function (viewOnly) {
-        var form = $('#macs-schedule');   
-        var buttons = yukon.ui.buttons({ });
-        if (!viewOnly) {
-            buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:schedule:saveScript', okClass: 'js-save-script' });
-        }
-        
-        form.ajaxSubmit({
-            url: yukon.url('/macsscheduler/schedules/createScript'),
-            success: function (result, status, xhr, $form) {
-                var dialog = $('#text-editor'),
-                    popupTitle = dialog.data('title');
-
-                dialog.html(xhr.responseText);
-                dialog.dialog({
-                    title: popupTitle,
-                    width: '800px',
-                    modal: true,
-                    buttons: buttons
-                });
-                if (viewOnly) {
-                    $('#script').prop('disabled', true);
-                    yukon.ui.unbusy('.js-view-script');
-                } else {
-                    yukon.ui.unbusy('.js-script-generate');
-                }
-            },
-            error: function (xhr, status, error, $form) {
-                $('.yukon-page').html(xhr.responseText);
-                yukon.ui.initContent('#macs-schedule');
-                yukon.ui.highlightErrorTabs();
-            }
-        });
-    },
-    
     _initialized = false,
 
         mod = {
@@ -175,16 +140,52 @@ yukon.ami.macs = (function () {
                 });
                 
                 $(document).on('click', '.js-script-generate', function (ev) {
-                    _generateScript(false);
+                    var form = $('#macs-schedule'),
+                        buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:schedule:saveScript', okClass: 'js-save-script' });
+                    
+                    form.ajaxSubmit({
+                        url: yukon.url('/macsscheduler/schedules/createScript'),
+                        success: function (result, status, xhr, $form) {
+                            var dialog = $('#text-editor'),
+                                popupTitle = dialog.data('title');
+
+                            dialog.html(xhr.responseText);
+                            dialog.dialog({
+                                title: popupTitle,
+                                width: '800px',
+                                modal: true,
+                                buttons: buttons
+                            });
+                            yukon.ui.unbusy('.js-script-generate');
+                        },
+                        error: function (xhr, status, error, $form) {
+                            $('.yukon-page').html(xhr.responseText);
+                            yukon.ui.initContent('#macs-schedule');
+                            yukon.ui.highlightErrorTabs();
+                        }
+                    });
                 });
                 
                 $(document).on('click', '.js-view-script', function (ev) {
-                    _generateScript(true);
+                    var dialog = $('#text-editor'),
+                        scriptText = $('#savedScriptText').val(),
+                        scriptArea = $('#script'),
+                        popupTitle = dialog.data('title');
+
+                        scriptArea.text(scriptText);
+                        scriptArea.get(0).setSelectionRange(0,0);
+                        dialog.dialog({
+                            title: popupTitle,
+                            width: '800px',
+                            modal: true,
+                            buttons: yukon.ui.buttons({ })
+                        });
+                        yukon.ui.unbusy('.js-view-script');
                 });
                 
                 $(document).on('yukon:schedule:saveScript', function (ev) {
                     yukon.ui.busy('.js-save-script');
-                    var updatedScriptText = $('#script').val();
+                    var updatedScriptText = $('#script').text();
                     $('#savedScriptText').val(updatedScriptText);
                     $('#macs-schedule').submit();
                 });

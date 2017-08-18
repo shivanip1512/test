@@ -181,7 +181,7 @@
 
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:url var="deleteUrl" value="/macsscheduler/schedules/${id}/delete" />
-                    <cti:button id="deleteSchedule" classes="delete" nameKey="delete" href="${deleteUrl}" busy="true"/>
+                    <cti:button id="deleteSchedule" classes="delete" nameKey="delete" href="${deleteUrl}"/>
                     <d:confirm on="#deleteSchedule" nameKey="confirmDelete" argument="${schedule.scheduleName}"/>
                 </cti:displayForPageEditModes>
                 

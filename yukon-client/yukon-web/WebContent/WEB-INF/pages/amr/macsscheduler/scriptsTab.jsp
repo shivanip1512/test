@@ -157,6 +157,7 @@
     
     <div id="text-editor" class="dn"
         data-title="<cti:msg2 key=".scriptOptions.textEditorTab"/>">
+        <%@ include file="scriptEditorDialog.jsp" %>
     </div>
 
 </cti:msgScope>
