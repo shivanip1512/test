@@ -225,7 +225,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
         while (true) {
             if (cachedMessages.containsKey(soeTag)) {
                 Message message = cachedMessages.get(soeTag);
-                log.info("Proccessing message " + message.getClass().getName() + getDebugMessageText(message)
+                log.debug("Proccessing message " + message.getClass().getName() + getDebugMessageText(message)
                     + " from MACS Service for soeTag=" + soeTag + " [" + message + "]");
                 if (message instanceof Info) {
                     MacsException error = new MacsException(MACSExceptionType.PROCESSING_ERROR,
@@ -255,7 +255,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService, MessageList
     @Override
     public void messageReceived(MessageEvent e) {
         Message message = e.getMessage();
-        log.info("messageReceived " + message.getClass().getName()  + getDebugMessageText(message)
+        log.debug("messageReceived " + message.getClass().getName()  + getDebugMessageText(message)
             + " from MACS Service " + message);
         if (waiting.contains(message.getSOE_Tag())) {
             waiting.remove(message.getSOE_Tag());

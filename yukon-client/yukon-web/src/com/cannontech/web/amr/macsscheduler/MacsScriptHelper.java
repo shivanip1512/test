@@ -49,43 +49,31 @@ public class MacsScriptHelper {
         if(template.isNoTemplateSelected()){
             return;
         }
-        
-        System.out.println(schedule.getScriptOptions().getScriptText());
-        
+
         ScriptTemplate scriptTemplate = loadScriptTemplateFromOptions(schedule, databaseCache);
         
         StringBuilder script = new StringBuilder();
         script.append(ScriptTemplate.buildScriptHeaderCode());
-        
-        if (schedule.getId() == 0) {
-            String tempText = ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false);
-            if (tempText == null) {
-                script.append(ScriptTemplate.getScriptCode(template.getId()));
-            }
-            if (options.isNotificationSelected()) {
-                script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, true));
-            }
-            if (options.isBillingSelected()) {
-                script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, true));
-            }
-            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.FOOTER, true));
-        } else {
-            scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false));
-            if(options.isBillingSelected()){
-                scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, false));
-            }
-            if(options.isNotificationSelected()){
-                scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, false));
-            }
-            scriptTemplate.loadParamsFromScript(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.FOOTER, false));
-        }
-        
         script.append(scriptTemplate.buildParameterScript());
+   
+        String tempText = ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.MAIN_CODE, false);
+        if (tempText == null) {
+            script.append(ScriptTemplate.getScriptCode(template.getId()));
+        } else {
+            script.append(tempText);
+        }
+        if (options.isNotificationSelected()) {
+            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.NOTIFICATION, true));
+        }
+        if (options.isBillingSelected()) {
+            script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.BILLING, true));
+        }
+        script.append(ScriptTemplate.getScriptSection(options.getScriptText(), ScriptTemplate.FOOTER, true));
         options.setScriptText(script.toString());
     }
     
     /**
-     * Loads schedule with values from script file.
+     * Loads script option from script file.
      * schedule.scriptOptions.scriptText contains script file
      */
     public static void loadOptionsFromScriptFile(String script, MacsSchedule schedule, IDatabaseCache databaseCache) {
@@ -103,7 +91,7 @@ public class MacsScriptHelper {
     }
     
     /**
-     * Loads schedule with the values from script file.
+     * Loads schedule with default script option.
      */
     public static void loadDefaultScriptOptions(MacsSchedule schedule) {
         MacsScriptOptions options = schedule.getScriptOptions();
@@ -112,7 +100,7 @@ public class MacsScriptHelper {
     }
         
     /**
-     * Populates schedule using template values.
+     * Populates script option with template values.
      */
     private static void loadOptionsFromScriptTemplate(MacsSchedule schedule, ScriptTemplate scriptTemplate, IDatabaseCache databaseCache) {
 
@@ -176,6 +164,7 @@ public class MacsScriptHelper {
         if (options.isBillingSelected()) {
             scriptTemplate.setParameterValue(BILLING_FLAG_PARAM, true);
             scriptTemplate.setParameterValue(BILLING_FILE_NAME_PARAM, Objects.toString(options.getBillingFileName(), ""));
+            scriptTemplate.setParameterValue(BILLING_GROUP_NAME_PARAM, Objects.toString(options.getBillingGroupName(), ""));
             scriptTemplate.setParameterValue(BILLING_FILE_PATH_PARAM, Objects.toString(options.getBillingFilePath(), ""));
             scriptTemplate.setParameterValue(BILLING_FORMAT_PARAM, options.getBillingFormat());
             scriptTemplate.setParameterValue(BILLING_ENERGY_DAYS_PARAM, options.getBillingEnergyDays());
