@@ -2356,3 +2356,32 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
     }
 }
 
+bool CtiCCCapBank::assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType )
+{
+    const std::size_t initialSize = getPointIds()->size();
+
+    switch ( pointType )
+    {
+        case StatusPointType:
+        {
+            if ( pointOffset == Cti::CapControl::Offset_CapbankControlStatus )
+            {
+                setStatusPointId( pointID );
+                addPointId( pointID );
+            }
+            break;
+        }
+        case AnalogPointType:
+        {
+            if ( pointOffset == Cti::CapControl::Offset_CapbankOperationAnalog )
+            {
+                setOperationAnalogPointId( pointID );
+                addPointId( pointID );
+            }
+            break;
+        }
+    }
+
+    return getPointIds()->size() > initialSize;
+}
+

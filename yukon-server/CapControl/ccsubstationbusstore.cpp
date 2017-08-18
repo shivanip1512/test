@@ -5918,162 +5918,139 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             }
         }
         {
-            static const string sqlNoID =  "SELECT FBL.deviceid, FBL.feederid, FBL.controlorder, FBL.closeorder, "
-                                             "FBL.triporder "
-                                           "FROM capbank CB, ccfeederbanklist FBL "
-                                           "WHERE FBL.deviceid = CB.deviceid";
+            static const std::string sql =
+                "SELECT "
+                    "F.DeviceID, "
+                    "F.FeederID, "
+                    "F.ControlOrder, "
+                    "F.CloseOrder, "
+                    "F.TripOrder "
+                "FROM "
+                    "CCFeederBankList F "
+                        "JOIN CAPBANK C "
+                            "ON F.DeviceID = C.DEVICEID";
+
+            static const std::string sqlID = sql +
+                " WHERE "
+                    "C.DEVICEID = ?";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
-            if(capBankId > 0)
+            if ( capBankId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND CB.deviceid = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << capBankId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
-
-            long subbusid;
-            long tempFeederId;
 
             while ( rdr() )
             {
-                long deviceid;
-                long feederid;
-                float controlOrder;
-                float tripOrder;
-                float closeOrder;
+                long deviceid = rdr["DeviceID"].as<long>();
 
-                rdr["deviceid"] >> deviceid;
-                rdr["feederid"] >> feederid;
-                rdr["controlorder"] >> controlOrder;
-                rdr["closeorder"] >> closeOrder;
-                rdr["triporder"] >> tripOrder;
+                if ( CtiCCCapBankPtr currentCCCapBank = findInMap( deviceid, paobject_capbank_map ) )
+                {
+                    long feederid = rdr["FeederID"].as<long>();
 
-                CtiCCCapBankPtr currentCCCapBank = findInMap(deviceid, paobject_capbank_map);
-                if (currentCCCapBank == NULL )
-                {
-                    continue;
-                }
-                CtiCCFeederPtr currentCCFeeder = findInMap(feederid, paobject_feeder_map);
-                if (currentCCFeeder == NULL )
-                {
-                    continue;
-                }
-                currentCCCapBank->setControlOrder(controlOrder);
-                currentCCCapBank->setTripOrder(tripOrder);
-                currentCCCapBank->setCloseOrder(closeOrder);
-                currentCCCapBank->setParentId(feederid);
-
-                if (!ciStringEqual(currentCCCapBank->getOperationalState(),CtiCCCapBank::UninstalledState))
-                {
-                    currentCCFeeder->getCCCapBanks().insert(currentCCCapBank);
-                    capbank_feeder_map->insert(make_pair(deviceid,feederid));
-                    if ( feeder_subbus_map->find(feederid) != feeder_subbus_map->end() )
+                    if ( CtiCCFeederPtr currentCCFeeder = findInMap( feederid, paobject_feeder_map ) )
                     {
-                        subbusid = feeder_subbus_map->find(feederid)->second;
-                        capbank_subbus_map->insert(make_pair(deviceid, subbusid));
+                        float controlOrder = rdr["ControlOrder"].as<float>(),
+                              closeOrder   = rdr["CloseOrder"].as<float>(),
+                              tripOrder    = rdr["TripOrder"].as<float>();
+
+                        currentCCCapBank->setParentId( feederid );
+
+                        currentCCCapBank->setControlOrder( controlOrder );
+                        currentCCCapBank->setCloseOrder( closeOrder );
+                        currentCCCapBank->setTripOrder( tripOrder );
+
+                        if ( ! ciStringEqual( currentCCCapBank->getOperationalState(), CtiCCCapBank::UninstalledState ) )
+                        {
+                            currentCCFeeder->getCCCapBanks().insert( currentCCCapBank );
+                            capbank_feeder_map->insert( std::make_pair( deviceid, feederid ) );
+                            if ( feeder_subbus_map->find( feederid ) != feeder_subbus_map->end() )
+                            {
+                                long subbusid = feeder_subbus_map->find( feederid )->second;
+                                capbank_subbus_map->insert( std::make_pair( deviceid, subbusid ) );
+                            }
+                        }
                     }
                 }
             }
         }
         {
-            static const string sqlNoID =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
-                                           "FROM point PT, capbank CB "
-                                           "WHERE CB.deviceid = PT.paobjectid";
+            static const std::string sql =
+                "SELECT "
+                    "P.PAObjectID, "
+                    "P.POINTID, "
+                    "P.POINTOFFSET, "
+                    "P.POINTTYPE "
+                "FROM "
+                    "POINT P "
+                        "JOIN CAPBANK C "
+                            "ON P.PAObjectID = C.DEVICEID";
+
+            static const std::string sqlID = sql +
+                " WHERE "
+                    "C.DEVICEID = ?";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
-            if(capBankId > 0)
+            if ( capBankId > 0 )
             {
-                static const string sqlID = string(sqlNoID + " AND CB.deviceid = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << capBankId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
             while ( rdr() )
             {
-                long currentCCCapBankId;
-                rdr["paobjectid"] >> currentCCCapBankId;
+                long currentCCCapBankId = rdr["PAObjectID"].as<long>();
 
-                if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCCCapBankId, paobject_capbank_map))
+                if ( auto currentCCCapBank = findInMap( currentCCCapBankId, paobject_capbank_map ) )
                 {
-                    if ( !rdr["pointid"].isNull() )
-                    {
-                        long tempPointId = -1000;
-                        long tempPointOffset = -1000;
-                        string tempPointType = "(none)";
-                        rdr["pointid"] >> tempPointId;
-                        rdr["pointoffset"] >> tempPointOffset;
-                        rdr["pointtype"] >> tempPointType;
+                    currentCCCapBank->assignPoint( rdr );
+                }
+            }
 
-                        if ( resolvePointType(tempPointType) == StatusPointType &&
-                             tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
-                        {
-                            currentCCCapBank->setDisabledStatePointId(tempPointId, capBankId);
-                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            currentCCCapBank->addPointId(tempPointId);
-                        }
-                        else if ( resolvePointType(tempPointType) == StatusPointType &&
-                                  tempPointOffset == Cti::CapControl::Offset_CapbankControlStatus )
-                        {
-                            currentCCCapBank->setStatusPointId(tempPointId);
-                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            currentCCCapBank->addPointId(tempPointId);
-                        }
-                        else if ( resolvePointType(tempPointType) == AnalogPointType &&
-                                  tempPointOffset == Cti::CapControl::Offset_CapbankOperationAnalog )
-                        {
-                            currentCCCapBank->setOperationAnalogPointId(tempPointId);
-                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            currentCCCapBank->addPointId(tempPointId);
-                        }
-                        else if ( resolvePointType(tempPointType) == AnalogPointType &&
-                                  tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
-                                  tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
-                        {
-                            if (currentCCCapBank->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                currentCCCapBank->addPointId(tempPointId);
-                                pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            }
-                        }
-                        else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
-                                  tempPointOffset <= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMax )
-                        {
-                            if (currentCCCapBank->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
-                            {
-                                currentCCCapBank->addPointId(tempPointId);
-                                pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            }
-                        }
-                        else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
-                        {
-                            CTILOG_INFO(dout, "Undefined Cap Bank point offset: " << tempPointOffset);
-                        }
+            if ( capBankId > 0 )
+            {
+                if ( auto currentCCCapBank = findInMap( capBankId, paobject_capbank_map ) )
+                {
+                    for ( long pointID : *currentCCCapBank->getPointIds() )
+                    {
+                        pointid_capbank_map->emplace( pointID, currentCCCapBank );
+                    }
+                }
+            }
+            else
+            {
+                for ( auto entry : *paobject_capbank_map )
+                {
+                    for ( long pointID : *entry.second->getPointIds() )
+                    {
+                        pointid_capbank_map->emplace( pointID, entry.second );
                     }
                 }
             }
@@ -6213,22 +6190,29 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                             std::string pointName;
                                         };
 
-                                        // channel selection configuration data
-                                        const std::vector<AttributeAndPointName> cfgAttributesPointName =
-                                                Cti::Devices::getConfigDataVector<AttributeAndPointName>( deviceConfig, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix );
-
-                                        for ( const auto & entry : cfgAttributesPointName )
+                                        try
                                         {
-                                            pointOverloads[ Attribute::Lookup( entry.attributeName ) ] = entry.pointName;
-                                        }
+                                            // channel selection configuration data
+                                            const std::vector<AttributeAndPointName> cfgAttributesPointName =
+                                                    Cti::Devices::getConfigDataVector<AttributeAndPointName>( deviceConfig, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix );
 
+                                            for ( const auto & entry : cfgAttributesPointName )
+                                            {
+                                                pointOverloads[ Attribute::Lookup( entry.attributeName ) ] = entry.pointName;
+                                            }                                            
+                                        }
+                                        catch ( Cti::Devices::MissingConfigDataException & ex )
+                                        {
+                                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                                            {
+                                                CTILOG_EXCEPTION_WARN( dout, ex, "No Attribute->PointName mappings in the device configuration for bank: " << bank->getPaoName() );
+                                            }
+                                        }
                                     }
 
                                     // add to bank
 
-
                                     bank->getTwoWayPoints().assignTwoWayPointBulk( cache, pointOverloads );
-
 
                                     for ( const LitePoint & point : cache )
                                     {

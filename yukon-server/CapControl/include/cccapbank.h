@@ -313,6 +313,8 @@ public:
 
 private:
 
+    bool assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType ) override;
+
     const std::string& convertOperationalState( int num );
 
     long _parentId; //feederId
