@@ -38,10 +38,10 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
         if(row.hasValue(POINT_OFFSET.NAME)) {
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
             
-            if ((pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.PULSE_ACCUMULATOR_POINT)
-                && accumulatorType == AccumulatorType.PULSE)
-                || (pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.DEMAND_ACCUMULATOR_POINT)
-                    && accumulatorType == AccumulatorType.DEMAND)) {
+            if ((accumulatorType == AccumulatorType.PULSE
+                && pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.PULSE_ACCUMULATOR_POINT))
+                || (accumulatorType == AccumulatorType.DEMAND
+                    && pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.DEMAND_ACCUMULATOR_POINT))) {
                 String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
                 throw new ProcessingException(error, "pointOffsetInUse", pointOffset, deviceName);
             }
