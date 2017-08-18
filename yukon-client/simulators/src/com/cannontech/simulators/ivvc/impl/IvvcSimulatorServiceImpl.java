@@ -226,7 +226,15 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 Map<Integer, Double> feederVoltageRises = feedersBySubBus.stream()
                                                                          .collect(Collectors.toMap(feeder->feeder.getCcId(), 
                                                                                                    feeder->0.0));
-                                                                
+                
+                List<Zone> zonesBySubBusId = zoneService.getZonesBySubBusId(subBus.getCcId());
+                
+                // if there are no zones under this substation, it means the strategy is IVVC.
+                boolean isIvvcStrategy = true;
+                if (CollectionUtils.isEmpty(zonesBySubBusId)) {
+                    isIvvcStrategy = false;
+                }
+                
                 for (Feeder feeder : feedersBySubBus) {
                     int feederActiveBankKVar = 0;
                     
@@ -250,6 +258,34 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                         }
                         
                         capBankToFeeder.put(capBankDevice.getCcId(), feeder.getCcId());
+                        
+                        // IF the strategy is not IVVC, generate CBC points
+                        if (!isIvvcStrategy) {
+                            Map<Integer, Phase> pointsForBankAndPhase = zoneService.getMonitorPointsForBankAndPhase(capBankDevice.getCcId());
+                            
+                            for (Entry<Integer, Phase> points : pointsForBankAndPhase.entrySet()) {
+                                double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, 0, MAX_KW);
+                                voltage = shiftVoltageForPhase(voltage, points.getValue(), 0);
+                                
+                                if (capBankState.getStateText().contains("Close")) {
+                                    voltage += (capBankDevice.getBankSize() / localVoltageOffset); // A bank gives a bonus extra voltage to itself.
+                                }
+                                
+                                // Add in Feeder voltage shift
+                                if (capBankToFeeder.get(capBankDevice.getCcId()) != null) {
+                                    voltage += feederVoltageRises.get(capBankToFeeder.get(capBankDevice.getCcId()));
+                                }
+                                
+                                generatePoint(points.getKey(), voltage, PointType.Analog);
+                            }
+                            addCbcPointsToCbcCache(capBankDevice.getControlDeviceID());
+                        }
+                    }
+                    
+                    //If the strategy is NOT IVVC, we need to generate feeder voltage points here.
+                    if (!isIvvcStrategy) {
+                        generatePoint(feeder.getCurrentVoltLoadPointID(),
+                            120 + feederVoltageRises.get(feeder.getCcId()), PointType.Analog);
                     }
                     
                     // We can't generate a correct feeder Voltage yet, it is below (feeder.getCurrentVoltLoadPointID());
@@ -258,8 +294,6 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
 
                     subBusKVarClosed += feederActiveBankKVar;
                 }
-                
-                List<Zone> zonesBySubBusId = zoneService.getZonesBySubBusId(subBus.getCcId());
                 
                 for (Zone zone : zonesBySubBusId) {
                     List<CapBankToZoneMapping> capBankToZoneMappings = zoneService.getCapBankToZoneMapping(zone.getId());
