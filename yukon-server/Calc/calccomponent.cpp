@@ -165,7 +165,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
 {
     double orignal = input;
 
-    if(_componentPointId > 0)
+    if(_componentPointId != 0)
     {
         // If this component HAS a component ID it means it is associated with a point.  We discover and push the point's value onto the stack
         // so it may be operated upon.  The quality and time are returned to allow the calculation to be graded based upon ALL such returns.
@@ -737,7 +737,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             double state  = _calcpoint->pop();   // This is the state value it must be in.  Return zero if the state is not correct.
 
             retVal = 0;
-            if(_componentPointId > 0)
+            if(_componentPointId != 0)
             {
                 if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId) )
                 {
@@ -768,7 +768,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             int    depth  = _calcpoint->pop();  // This is the storage depth of our regression.
 
             retVal = 0;
-            if(_componentPointId > 0)
+            if(_componentPointId != 0)
             {
                 if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId) )
                 {
@@ -832,7 +832,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             int limitFunc = _calcpoint->pop( );
             retVal = 0;
 
-            if( _componentPointId > 0 )
+            if( _componentPointId != 0 )
             {
                 CtiPointStoreElement* componentPtr = CtiPointStore::find(_componentPointId);
 
@@ -871,7 +871,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             int    needsHistory  = _calcpoint->pop();  // Are we supposed to look at historical values?
 
             retVal = 9999;
-            if(_componentPointId > 0)
+            if(_componentPointId != 0)
             {
                 if( CtiPointStoreElement* calcPointPtr = CtiPointStore::find(_calcpoint->getPointId()) )
                 {
@@ -952,7 +952,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             int    needsHistory  = _calcpoint->pop();  // Are we supposed to look at historical values?
 
             retVal = 0;
-            if(_componentPointId > 0)
+            if(_componentPointId != 0)
             {
                 if( CtiPointStoreElement* calcPointPtr = CtiPointStore::find(_calcpoint->getPointId()) )
                 {
