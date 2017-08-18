@@ -14,6 +14,7 @@ public enum JmsApiCategory {
     RF_GATEWAY,
     RF_MISC, //use for misc single apis that are RF-related
     RF_NETWORK,
+    SMART_NOTIFICATION,
     WIDGET_REFRESH,
     ;
 }

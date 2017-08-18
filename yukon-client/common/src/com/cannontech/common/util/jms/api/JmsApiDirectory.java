@@ -67,6 +67,10 @@ import com.cannontech.common.rfn.message.network.RfnParentReply;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorSmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsSmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveResponse;
@@ -884,6 +888,82 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
+    //TODO: use in SmartNotificationEventCreationServiceImpl
+    //TODO: use in SmartNotificationEventListener
+    public static JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_EVENT =
+            JmsApi.builder(SmartNotificationEvent.class)
+                  .name("Smart Notification Event")
+                  .description("Sent by various services to create smart notification events. These events are "
+                          + "by a listener that pasees them to other services to be recorded in the DB and used to "
+                          + "decide when to send notification emails.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event"))
+                  .requestMessage(SmartNotificationEvent.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    //TODO: use in SmartNotificationEventListener
+    //TODO: use in SmartNotificationEventRecorder
+    public static JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_RECORDER = 
+            JmsApi.builder(SmartNotificationEvent.class)
+                  .name("Smart Notification Event Recorder")
+                  .description("Sent by the Smart Notification Event Listener to the Smart Notification Event "
+                          + "recorders, which insert the event into the database.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.recorder"))
+                  .requestMessage(SmartNotificationEvent.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    //TODO: use in SmartNotificationEventListener
+    //TODO: use in InfrastructureWarningsNotificationEventDecider
+    public static JmsApi<InfrastructureWarningsSmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_DECIDER = 
+            JmsApi.builder(InfrastructureWarningsSmartNotificationEvent.class)
+                  .name("Smart Notifications Infrastructure Warnings Decider")
+                  .description("Sent by the Smart Notification Event Listener to the Infrastructure Warnings Smart "
+                          + "Notification Decider, which determines when to send a notification, who to send it to, "
+                          + "and what format it should take.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.decider.infrastructureWarnings"))
+                  .requestMessage(InfrastructureWarningsSmartNotificationEvent.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    //TODO: use in SmartNotificationEventListener
+    //TODO: use in DeviceDataMonitorNotificationEventDecider
+    public static JmsApi<DeviceDataMonitorSmartNotificationEvent,?,?> SMART_NOTIFICATION_DEVICE_DATA_MONITOR_DECIDER = 
+            JmsApi.builder(DeviceDataMonitorSmartNotificationEvent.class)
+                  .name("Smart Notifications Device Data Monitor Decider")
+                  .description("Sent by the Smart Notification Event Listener to the Device Data Monitor Smart "
+                          + "Notification Decider, which determines when to send a notification, who to send it to, "
+                          + "and what format it should take.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.decider.deviceDataMonitor"))
+                  .requestMessage(DeviceDataMonitorSmartNotificationEvent.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    //TODO: use in DeviceDataMonitorNotificationEventDecider
+    //TODO: use in InfrastructureWarningsNotificationEventDecider
+    //TODO: use in SmartNotificationMessageAssemblerSupervisor
+    //TODO: use in SmartNotificationMessageAssembler
+    public static JmsApi<SmartNotificationMessageParameters,?,?> SMART_NOTIFICATION_ASSEMBLER =
+            JmsApi.builder(SmartNotificationMessageParameters.class)
+                  .name("Smart Notifications Assembler")
+                  .description("Sent by the Smart Notification deciders when they have determined that a notification "
+                          + "message should be sent. Processed by Smart Notification assemblers, which assemble a "
+                          + "complete message to be sent out to recipients.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.assembler"))
+                  .requestMessage(SmartNotificationMessageParameters.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -946,6 +1026,12 @@ public final class JmsApiDirectory {
             .put(RF_MISC, RF_DA_ARCHIVE)
             .put(RF_MISC, RF_EVENT_ARCHIVE)
             .put(RF_MISC, RF_RELAY_ARCHIVE)
+            
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_EVENT)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_RECORDER)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_DECIDER)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DEVICE_DATA_MONITOR_DECIDER)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_ASSEMBLER)
             
             .put(WIDGET_REFRESH, DATA_COLLECTION)
             .put(WIDGET_REFRESH, DATA_COLLECTION_RECALCULATION)
