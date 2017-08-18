@@ -17,6 +17,7 @@
     <form id="stopform">
         <cti:csrfToken />
         <input type="hidden" id="id" value="${schedule.id}" />
+        <div id="errorMsg" class="error">${errorMsg}</div>
         <tags:sectionContainer2 nameKey=".start" styleClass="clearfix">
             <div>
                 <input type="checkbox" name="stopNow" checked="checked" />

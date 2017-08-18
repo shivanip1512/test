@@ -45,41 +45,16 @@ yukon.ami.macs = (function () {
     
     _updateStartPolicyFields = function () {
         var policy = $('.js-start-policy').val();
-        if (policy == 'DATETIME') {
-            $('.js-start-dateTime').removeClass('dn');
-        } else {
-            $('.js-start-dateTime').addClass('dn');
-        }
-        if (policy == 'DAYOFMONTH') {
-            $('.js-start-dayOfMonth').removeClass('dn');
-        } else {
-            $('.js-start-dayOfMonth').addClass('dn');
-        }
-        if (policy == 'WEEKDAY') {
-            $('.js-start-weekDay').removeClass('dn');
-        } else {
-            $('.js-start-weekDay').addClass('dn');
-        }
-        if (policy == 'DAYOFMONTH' || policy == 'WEEKDAY') {
-            $('.js-start-time').removeClass('dn');
-        } else {
-            $('.js-start-time').addClass('dn');
-        }
-        
+        $('.js-start-dateTime').toggleClass('dn', policy != 'DATETIME');
+        $('.js-start-dayOfMonth').toggleClass('dn', policy != 'DAYOFMONTH');
+        $('.js-start-weekDay').toggleClass('dn', policy != 'WEEKDAY');
+        $('.js-start-time').toggleClass('dn', policy != 'DAYOFMONTH' && policy != 'WEEKDAY');
     },
     
     _updateStopPolicyFields = function () {
         var policy = $('.js-stop-policy').val();
-        if (policy == 'DURATION') {
-            $('.js-stop-duration').removeClass('dn');
-        } else {
-            $('.js-stop-duration').addClass('dn');
-        }
-        if (policy == 'ABSOLUTETIME') {
-            $('.js-stop-time').removeClass('dn');
-        } else {
-            $('.js-stop-time').addClass('dn');
-        }
+        $('.js-stop-duration').toggleClass('dn', policy != 'DURATION');
+        $('.js-stop-time').toggleClass('dn', policy != 'ABSOLUTETIME');
     },
     
     _generateScript = function (viewOnly) {
@@ -105,6 +80,7 @@ yukon.ami.macs = (function () {
                 });
                 if (viewOnly) {
                     $('#script').prop('disabled', true);
+                    yukon.ui.unbusy('.js-view-script');
                 } else {
                     yukon.ui.unbusy('.js-script-generate');
                 }
@@ -144,8 +120,9 @@ yukon.ami.macs = (function () {
                         dataType: 'json'
                     }).done(function (data) {
                         if (data.errorMsg) {
-                            var errors = $('#errorMsg');
+                            var errors = $('#js-error-msg');
                             errors.html(data.errorMsg);
+                            errors.removeClass('dn');
                         } else {
                             var params = {};
                             yukon.ui.getSortingPagingParameters(params);
@@ -263,8 +240,13 @@ yukon.ami.macs = (function () {
                 /** User clicked OK on New Category dialog. */
                 $(document).on('yukon:ami:macs:category:add', function (ev) {
                     var newCategory = $('#categoryNameText').val();
-                    $('.js-category-select').append('<option selected=selected value=' + newCategory + '>' + newCategory + '</option>');
-                    $('#category-popup').dialog('close');
+                    if (newCategory == null || newCategory.trim() == ''){
+                        $('.js-category-blank').removeClass('dn');
+                    } else {
+                        $('.js-category-blank').addClass('dn');
+                        $('.js-category-select').append('<option selected=selected value=' + newCategory + '>' + newCategory + '</option>');
+                        $('#category-popup').dialog('close');
+                    }
                 });
                 
                 _initialized = true;

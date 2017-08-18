@@ -78,7 +78,7 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".startPolicy.startDateTime" rowClass="js-start-dateTime">
-<%--                             <dt:dateTime path="startPolicy.startDateTime" value="${schedule.startPolicy.startDateTime}"/> --%>
+<%--                             <dt:dateTime path="startPolicy.startDateTime"/> --%>
                             <tags:checkbox path="startPolicy.everyYear" />
                             <i:inline key=".startPolicy.everyYear" />
                         </tags:nameValue2>
@@ -162,9 +162,9 @@
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:url var="editUrl" value="/macsscheduler/schedules/${id}/edit" />
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}" />
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}" busy="true"/>
                 <c:if test="${schedule.isScript() && !schedule.template.isNoTemplateSelected()}">
-                    <cti:button nameKey="viewScript" classes="js-view-script"/>
+                    <cti:button nameKey="viewScript" classes="js-view-script" busy="true"/>
                 </c:if>
             </cti:displayForPageEditModes>
 
@@ -176,7 +176,7 @@
 
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:url var="deleteUrl" value="/macsscheduler/schedules/${id}/delete" />
-                    <cti:button id="deleteSchedule" classes="delete" nameKey="delete" href="${deleteUrl}"/>
+                    <cti:button id="deleteSchedule" classes="delete" nameKey="delete" href="${deleteUrl}" busy="true"/>
                     <d:confirm on="#deleteSchedule" nameKey="confirmDelete" argument="${schedule.scheduleName}"/>
                 </cti:displayForPageEditModes>
                 
@@ -197,7 +197,8 @@
         data-event="yukon:ami:macs:category:add">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".categoryName">
-                <input id="categoryNameText" size="30" maxlength="50"/>
+                <input id="categoryNameText" size="30" maxlength="50"/><br/>
+                <div class="error dn js-category-blank"><i:inline key=".categoryName.error.blank"/></div>
             </tags:nameValue2>
         </tags:nameValueContainer2>
     </div>

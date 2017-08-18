@@ -83,6 +83,7 @@ public class MACSScheduleController extends MultiActionController {
     @Autowired private IDatabaseCache databaseCache;
 
     private final static String scheduleKey = "yukon.web.modules.tools.schedule.";
+    private final static String scriptsKey = "yukon.web.modules.tools.scripts.";
     
     @RequestMapping("view")
     public String view(ModelMap model, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
@@ -170,34 +171,37 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/view", method = RequestMethod.GET)
-    public String viewSchedule(ModelMap model, @PathVariable int id, LiteYukonUser user) {
+    public String viewSchedule(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         MacsSchedule schedule = service.getMacsScheduleById(id);
         model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.VIEW);
-        loadScriptInfo(schedule, user);
         setupModel(model, schedule);
+        try {
+            loadScriptInfo(schedule, userContext.getYukonUser());
+        } catch (MacsException e) {
+            return addMacsExceptionToError(flash, scheduleKey + "loadScript.failure", e, userContext, "schedule.jsp");
+        }
         return "schedule.jsp";
     }
     
     @RequestMapping(value="{id}/edit", method = RequestMethod.GET)
-    public String editSchedule(ModelMap model, @PathVariable int id, LiteYukonUser user) {
+    public String editSchedule(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         MacsSchedule schedule = service.getMacsScheduleById(id);
         model.addAttribute("schedule", schedule);
         model.addAttribute("mode", PageEditMode.EDIT);
-        loadScriptInfo(schedule, user);
         setupModel(model, schedule);
+        try {
+            loadScriptInfo(schedule, userContext.getYukonUser());
+        } catch (MacsException e) {
+            return addMacsExceptionToError(flash, scheduleKey + "loadScript.failure", e, userContext, "schedule.jsp");
+        }
         return "schedule.jsp";
     }
     
-    private void loadScriptInfo(MacsSchedule schedule, LiteYukonUser user) {
+    private void loadScriptInfo(MacsSchedule schedule, LiteYukonUser user) throws MacsException {
         if (schedule.isScript()) {
-            try {
-                String script = service.getScript(schedule.getId(), user);
-                MacsScriptHelper.loadScheduleFromScript(script, schedule, databaseCache);
-            } catch (MacsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            String script = service.getScript(schedule.getId(), user);
+            MacsScriptHelper.loadScheduleFromScript(script, schedule, databaseCache);
         }
     }
     
@@ -226,14 +230,13 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/delete", method = RequestMethod.GET)
-    public String deleteSchedule(ModelMap model, @PathVariable int id, LiteYukonUser user, FlashScope flash) {
+    public String deleteSchedule(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         try {
             MacsSchedule schedule = service.getMacsScheduleById(id);
-            service.delete(id, user);
+            service.delete(id, userContext.getYukonUser());
             flash.setConfirm(new YukonMessageSourceResolvable(scheduleKey + "delete.successful", schedule.getScheduleName()));
         } catch (MacsException e) {
-            flash.setError(new YukonMessageSourceResolvable(scheduleKey + "delete.failure"));
-            return "redirect:/macsscheduler/schedules/" + id + "/view";
+            return addMacsExceptionToError(flash, scheduleKey + "delete.failure", e, userContext, "redirect:/macsscheduler/schedules/" + id + "/view");
         }
         return "redirect:/macsscheduler/schedules/view";
     }
@@ -254,7 +257,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="save", method = RequestMethod.POST)
-    public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, LiteYukonUser user, 
+    public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, YukonUserContext userContext, 
                                FlashScope flash, ModelMap model, HttpServletResponse resp) {
         int id = schedule.getId();
         validator.validate(schedule, result);
@@ -266,18 +269,19 @@ public class MACSScheduleController extends MultiActionController {
         }
         try {
             if (id > 0) {
-                service.updateSchedule(schedule, user);
+                service.updateSchedule(schedule, userContext.getYukonUser());
             } else {
-                id = service.createSchedule(schedule, user);
+                id = service.createSchedule(schedule, userContext.getYukonUser());
             }
         } catch (DuplicateException e) {
-            flash.setError(new YukonMessageSourceResolvable(scheduleKey + "save.failure"));
+            result.rejectValue("scheduleName", "yukon.web.error.nameConflict");
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
             setupModel(model, schedule);
             return "schedule.jsp";
         } catch (MacsException e) {
-            flash.setError(new YukonMessageSourceResolvable(scheduleKey + "save.failure"));
             setupModel(model, schedule);
-            return "schedule.jsp";
+            return addMacsExceptionToError(flash, scheduleKey + "save.failure", e, userContext, "schedule.jsp");
         }
         // Success
         flash.setConfirm(new YukonMessageSourceResolvable(scheduleKey + "save.successful"));
@@ -324,18 +328,17 @@ public class MACSScheduleController extends MultiActionController {
                 start = dateFormattingService.flexibleDateParser(startTime, yukonUserContext);
             }
             if (start.compareTo(stop) > 0) {
-                json.put("errorMsg", messageSourceAccessor.getMessage("yukon.web.modules.tools.scripts.start.error.startDateBeforeEndDate"));
+                json.put("errorMsg", messageSourceAccessor.getMessage(scriptsKey + "error.startDateBeforeEndDate"));
             } else {
                 try {
                     service.start(id, start, stop, yukonUserContext.getYukonUser());
                 } catch (MacsException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    String errorMsg = messageSourceAccessor.getMessage(scriptsKey + "error.start");
+                    json.put("errorMsg",  messageSourceAccessor.getMessage(scheduleKey + "exception." + e.getType(), errorMsg));
                 }
             }
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            json.put("errorMsg", messageSourceAccessor.getMessage(scriptsKey + "error.start.invalidDate"));
         }
 
         return json;
@@ -346,6 +349,7 @@ public class MACSScheduleController extends MultiActionController {
     public @ResponseBody Map<String, Object> stop(@PathVariable int id, YukonUserContext yukonUserContext, 
                      @RequestParam(value="stopNow", required=false, defaultValue="false") boolean stopNow, 
                      @RequestParam("stop") String stopTime){
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         final TimeZone timeZone = yukonUserContext.getTimeZone();
         Map<String, Object> json = new HashMap<>();
 
@@ -353,8 +357,7 @@ public class MACSScheduleController extends MultiActionController {
         try {
             stop = dateFormattingService.flexibleDateParser(stopTime, yukonUserContext);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            json.put("errorMsg", messageSourceAccessor.getMessage(scriptsKey + "error.stop.invalidDate"));
         }
         if (stopNow) {
             stop = Calendar.getInstance(timeZone).getTime();
@@ -362,27 +365,40 @@ public class MACSScheduleController extends MultiActionController {
         try {
             service.stop(id, stop, yukonUserContext.getYukonUser());
         } catch (MacsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String errorMsg = messageSourceAccessor.getMessage(scriptsKey + "error.stop");
+            json.put("errorMsg",  messageSourceAccessor.getMessage(scheduleKey + "exception." + e.getType(), errorMsg));
         }
         return json;
     }
 
     @RequestMapping(value="{id}/toggleState", method = RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
-    public @ResponseBody Map<String, Object> toggleState(@PathVariable int id, LiteYukonUser user){      
+    public @ResponseBody Map<String, Object> toggleState(@PathVariable int id, YukonUserContext yukonUserContext){    
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
         try {
-            service.enableDisableSchedule(id, user);
+            service.enableDisableSchedule(id, yukonUserContext.getYukonUser());
         } catch (MacsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String errorMsg = messageSourceAccessor.getMessage(scriptsKey + "error.enableDisable");
+            json.put("errorMsg",  messageSourceAccessor.getMessage(scheduleKey + "exception." + e.getType(), errorMsg));
         }
         return json;
     }
     
     private boolean isEditable(LiteYukonUser user) {
     	return rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS, user);
+    }
+    
+    private String addMacsExceptionToError(FlashScope flash, String errorKey, MacsException e, 
+                                           YukonUserContext yukonUserContext, String returnView) {
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
+        String errorMsg = messageSourceAccessor.getMessage(errorKey);
+        flash.setError(new YukonMessageSourceResolvable(scheduleKey + "exception." + e.getType(), errorMsg));
+        if (e.getType() == MacsException.MACSExceptionType.NO_REPLY) {
+            return "redirect:/macsscheduler/schedules/view";
+        } else {
+            return returnView;
+        }
     }
         
     public enum ScriptsSortBy implements DisplayableEnum {

@@ -9,6 +9,7 @@ import com.cannontech.amr.macsscheduler.model.MacsStopPolicy;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.util.WebFileUtils;
 
 @Service
 public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
@@ -30,8 +31,7 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
             YukonValidationUtils.checkIsPositiveInt(errors, "stopPolicy.duration", schedule.getStopPolicy().getDuration());
         }
         if (schedule.isScript()) {
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.fileName", "yukon.web.error.isBlank");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "scriptOptions.fileName", schedule.getScriptOptions().getFileName(), 180);
+            validateFileName(schedule, errors);
             if (!schedule.getTemplate().isNoTemplateSelected()) {
                 //YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.groupName", "yukon.web.error.isBlank");
                 YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.porterTimeout", schedule.getScriptOptions().getPorterTimeout());
@@ -62,5 +62,21 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
             }
         }
         YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", schedule.getScheduleName(), 60);
+    }
+    
+    private void validateFileName(MacsSchedule schedule, Errors errors) {
+        String fileName = schedule.getScriptOptions().getFileName();
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.fileName", "yukon.web.error.isBlank");
+        if (!errors.hasFieldErrors("scriptOptions.fileName")) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "scriptOptions.fileName", fileName, 180);
+            boolean validFileName = WebFileUtils.isValidWindowsFilename(fileName);
+            if (!validFileName) {
+                errors.rejectValue("scriptOptions.fileName", "yukon.web.modules.tools.schedule.scriptOptions.validation.fileName.badCharacters");
+            }
+            if (!fileName.endsWith(".ctl")) {
+                errors.rejectValue("scriptOptions.fileName", "yukon.web.modules.tools.schedule.scriptOptions.validation.fileName.endsInCtl");
+            }
+        }
+
     }
 }

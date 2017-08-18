@@ -4,6 +4,8 @@
 
 <cti:standardPage module="tools" page="scripts">
     <dt:pickerIncludes />
+    
+    <div id="js-error-msg" class="dn user-message error"></div>
 
     <c:set var="url" value="/macsscheduler/schedules/innerView" />
     <cti:url var="baseUrl" value="${url}" />
