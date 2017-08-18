@@ -61,7 +61,7 @@ public class MacsStartPolicy {
     private StartPolicy policy = StartPolicy.MANUAL;
     private int holidayScheduleId;
     private MacsTimeField time;
-    private Instant startDateTime;
+    private Instant startDateTime = Instant.now();
     private boolean everyYear;
     private Map<DayOfWeek, Boolean> days = new HashMap<>(defaultDays);
     private int dayOfMonth = 1;
@@ -162,7 +162,7 @@ public class MacsStartPolicy {
                 year = 1970;
                 everyYear = true;
             }
-            startDateTime = MacsTimeField.parseDate(year, month, day, timeString).toInstant();
+            //startDateTime = MacsTimeField.parseDate(year, month, day, timeString).toInstant();
         } else if (policy == StartPolicy.DAYOFMONTH) {
             dayOfMonth = day;
             DateTime parsedDate = MacsTimeField.parseDate(year, month, day, timeString);

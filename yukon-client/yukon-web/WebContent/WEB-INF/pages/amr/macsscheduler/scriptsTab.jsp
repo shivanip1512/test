@@ -21,10 +21,8 @@
     <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? 'dn' : ''}" />
     <div id="script-tabs" class="${clazz}">
         <cti:tabs>
-            <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? 'dn' : ''}" />
             <cti:msg2 var="meterReadTab" key=".scriptOptions.meterReadTab" />
-            <cti:tab title="${meterReadTab}" headerClasses="${clazz} js-meter-read-tab"
-                selected="${!schedule.template.isNoTemplateSelected()}">
+            <cti:tab title="${meterReadTab}">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".scriptOptions.deviceGroup">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
@@ -88,9 +86,8 @@
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </cti:tab>
-            <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? 'dn' : ''}" />
             <cti:msg2 var="optionsTab" key=".scriptOptions.optionsTab" />
-            <cti:tab title="${optionsTab}" headerClasses="${clazz} js-options-tab">
+            <cti:tab title="${optionsTab}">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".scriptOptions.sendEmailNotification">
                         <tags:switchButton path="${pathKey}notificationSelected"

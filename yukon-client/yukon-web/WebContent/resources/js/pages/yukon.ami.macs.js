@@ -38,6 +38,8 @@ yukon.ami.macs = (function () {
         if (hasTemplate) {
             $('.js-retry-section').toggleClass('dn', isRetry);
             $('.js-ied-section').toggleClass('dn', !isIed300 && !isIed400);
+        } else {
+            $('#savedScriptText').val("");
         }
         $('#savedScriptText').toggleClass('dn', hasTemplate);
         yukon.ui.initContent('#script-content');

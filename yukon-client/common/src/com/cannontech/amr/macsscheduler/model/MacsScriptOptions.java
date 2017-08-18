@@ -3,8 +3,6 @@ package com.cannontech.amr.macsscheduler.model;
 import java.util.Arrays;
 import java.util.List;
 
-import com.cannontech.common.device.groups.model.DeviceGroup;
-
 public class MacsScriptOptions {
 
     private static final List<String> touRates = Arrays.asList("rate T", "rate A", "rate B", "rate C", "rate D");
@@ -14,30 +12,30 @@ public class MacsScriptOptions {
     private String scriptText;
     private String description;
     private String groupName;
-    private int porterTimeout;
+    private Integer porterTimeout;
     private String filePath;
     private String missedFileName;
     private String successFileName;
     
     //retry
-    private int retryCount;
-    private int queueOffCount;
-    private int maxRetryHours;
+    private Integer retryCount;
+    private Integer queueOffCount;
+    private Integer maxRetryHours;
         
     //IED
     private String touRate;
     
     //Demand Reset
     private boolean isDemandResetSelected;
-    private int demandResetRetryCount;
+    private Integer demandResetRetryCount;
     private String iedType;
     
     //billing
     private boolean isBillingSelected;
     private String billingGroupName;
     private String billingFormat;
-    private int billingDemandDays;
-    private int billingEnergyDays;
+    private Integer billingDemandDays;
+    private Integer billingEnergyDays;
     private String billingFileName;
     private String billingFilePath;
     
@@ -46,11 +44,11 @@ public class MacsScriptOptions {
     private int notificationGroupId;
     private String notificationSubject;
     
-    public int getPorterTimeout() {
+    public Integer getPorterTimeout() {
         return porterTimeout;
     }
 
-    public void setPorterTimeout(int porterTimeout) {
+    public void setPorterTimeout(Integer porterTimeout) {
         this.porterTimeout = porterTimeout;
     }
 
@@ -70,19 +68,19 @@ public class MacsScriptOptions {
         this.successFileName = successFileName;
     }
 
-    public int getQueueOffCount() {
+    public Integer getQueueOffCount() {
         return queueOffCount;
     }
 
-    public void setQueueOffCount(int queueOffCount) {
+    public void setQueueOffCount(Integer queueOffCount) {
         this.queueOffCount = queueOffCount;
     }
 
-    public int getMaxRetryHours() {
+    public Integer getMaxRetryHours() {
         return maxRetryHours;
     }
 
-    public void setMaxRetryHours(int maxRetryHours) {
+    public void setMaxRetryHours(Integer maxRetryHours) {
         this.maxRetryHours = maxRetryHours;
     }
 
@@ -94,11 +92,11 @@ public class MacsScriptOptions {
         this.missedFileName = missedFileName;
     }
 
-    public int getRetryCount() {
+    public Integer getRetryCount() {
         return retryCount;
     }
 
-    public void setRetryCount(int retryCount) {
+    public void setRetryCount(Integer retryCount) {
         this.retryCount = retryCount;
     }
 
@@ -110,11 +108,11 @@ public class MacsScriptOptions {
         this.description = description;
     }
     
-    public int getBillingDemandDays() {
+    public Integer getBillingDemandDays() {
         return billingDemandDays;
     }
 
-    public void setBillingDemandDays(int billingDemandDays) {
+    public void setBillingDemandDays(Integer billingDemandDays) {
         this.billingDemandDays = billingDemandDays;
     }
 
@@ -134,11 +132,11 @@ public class MacsScriptOptions {
         this.billingFilePath = billingFilePath;
     }
 
-    public int getBillingEnergyDays() {
+    public Integer getBillingEnergyDays() {
         return billingEnergyDays;
     }
 
-    public void setBillingEnergyDays(int billingEnergyDays) {
+    public void setBillingEnergyDays(Integer billingEnergyDays) {
         this.billingEnergyDays = billingEnergyDays;
     }
 
@@ -150,11 +148,11 @@ public class MacsScriptOptions {
         this.touRate = touRate;
     }
 
-    public int getDemandResetRetryCount() {
+    public Integer getDemandResetRetryCount() {
         return demandResetRetryCount;
     }
 
-    public void setDemandResetRetryCount(int demandResetRetryCount) {
+    public void setDemandResetRetryCount(Integer demandResetRetryCount) {
         this.demandResetRetryCount = demandResetRetryCount;
     }
 

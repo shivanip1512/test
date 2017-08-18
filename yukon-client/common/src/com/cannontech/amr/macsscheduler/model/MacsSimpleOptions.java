@@ -4,7 +4,7 @@ public class MacsSimpleOptions {
     private int targetPAObjectId;
     private String startCommand;
     private String stopCommand;
-    private int repeatInterval;
+    private Integer repeatInterval;
     
     public int getTargetPAObjectId() {
         return targetPAObjectId;
@@ -24,10 +24,10 @@ public class MacsSimpleOptions {
     public void setStopCommand(String stopCommand) {
         this.stopCommand = stopCommand;
     }
-    public int getRepeatInterval() {
+    public Integer getRepeatInterval() {
         return repeatInterval;
     }
-    public void setRepeatInterval(int repeatInterval) {
+    public void setRepeatInterval(Integer repeatInterval) {
         this.repeatInterval = repeatInterval;
     }
 }
