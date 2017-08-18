@@ -3,6 +3,6 @@
 
 <div class="error" id="script-error"></div>
 <cti:displayForPageEditModes modes="VIEW">
-    <c:set var="disableArea" value="disabled" />
+    <c:set var="disableArea" value="readonly" />
 </cti:displayForPageEditModes>
 <textarea id="script" cols="100" rows="20" ${disableArea}>${script}</textarea>

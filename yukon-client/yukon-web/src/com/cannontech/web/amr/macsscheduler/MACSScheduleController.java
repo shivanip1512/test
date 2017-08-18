@@ -244,7 +244,7 @@ public class MACSScheduleController extends MultiActionController {
         return "redirect:/macsscheduler/schedules/view";
     }
     
-    @RequestMapping(value="createScript", method = RequestMethod.GET)
+    @RequestMapping(value="createScript", method = RequestMethod.POST)
     public String createScript(@ModelAttribute("schedule") MacsSchedule schedule, YukonUserContext yukonUserContext, 
                                ModelMap model, BindingResult result, HttpServletResponse resp) {
         validator.validate(schedule, result);

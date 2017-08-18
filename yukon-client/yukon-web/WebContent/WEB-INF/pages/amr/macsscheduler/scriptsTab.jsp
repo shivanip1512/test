@@ -151,7 +151,7 @@
     </div>
     <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? '' : 'dn'}" />
     <cti:displayForPageEditModes modes="VIEW">
-        <c:set var="disableArea" value="disabled" />
+        <c:set var="disableArea" value="readonly" />
     </cti:displayForPageEditModes>
     <textarea id="savedScriptText" name="scriptOptions.scriptText" cols="100" rows="20" class="${clazz}" ${disableArea}>${schedule.scriptOptions.scriptText}</textarea>
     

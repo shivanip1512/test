@@ -66,7 +66,6 @@ yukon.ami.macs = (function () {
         
         form.ajaxSubmit({
             url: yukon.url('/macsscheduler/schedules/createScript'),
-            type: 'GET',
             success: function (result, status, xhr, $form) {
                 var dialog = $('#text-editor'),
                     popupTitle = dialog.data('title');
