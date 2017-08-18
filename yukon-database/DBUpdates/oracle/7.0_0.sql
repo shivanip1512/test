@@ -51,6 +51,16 @@ CREATE TABLE DBUpdates  (
 );
 /* End YUK-17113 */
 
+/* Start YUK-17066 */
+UPDATE 
+(SELECT PU.decimalplaces FROM POINT P 
+    JOIN YukonPAObject YPO ON P.PAObjectID = YPO.PAObjectID
+    JOIN POINTUNIT PU ON PU.POINTID = P.POINTID 
+WHERE YPO.Type IN ('RFW-201', 'RFW-205') AND P.POINTTYPE = 'Analog' 
+    AND P.POINTOFFSET = 6 AND PU.DECIMALPLACES = 3) t 
+SET t.decimalplaces = 0;
+/* End YUK-17066 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
