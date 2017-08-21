@@ -178,4 +178,7 @@ public interface YukonUserDao {
     LiteYukonUser create(NewUser user, boolean forceReset);
     
     List<Integer> getUserIdsForUserGroup(int userGroupId);
+    
+    /** Get count of non residential users **/
+    int getNonResidentialUserCount();
 }

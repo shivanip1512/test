@@ -534,5 +534,17 @@ public class YukonUserDaoImpl implements YukonUserDao {
         
         jdbcTemplate.update(sql);
     }
+    
+    @Override
+    public int getNonResidentialUserCount() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM YukonUser");
+        sql.append("WHERE UserGroupId IN (SELECT groupid FROM YukonGroupRole WHERE roleid IN");
+        sql.append("(SELECT RoleID FROM YukonRole WHERE RoleName NOT LIKE 'RESIDENTIAL_CUSTOMER'))");
+        
+        int count = jdbcTemplate.queryForInt(sql);
+        return count;
+    }
 
 }

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -43,6 +43,7 @@ public class DashboardDaoImpl implements DashboardDao {
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonUserDao userDao;
     SqlStatementBuilder baseDashboardSql = new SqlStatementBuilder();
     {
         baseDashboardSql.append(
@@ -147,7 +148,7 @@ public class DashboardDaoImpl implements DashboardDao {
     /**
      * Converts Dashboard to LiteDashboard and retrieves the user count.
      */
-    private List<LiteDashboard> getLiteDashboards(List<Dashboard> dashboards){
+    private List<LiteDashboard> getLiteDashboards(List<Dashboard> dashboards) {
         if (dashboards.isEmpty()) {
             return new ArrayList<>();
         }
@@ -162,10 +163,39 @@ public class DashboardDaoImpl implements DashboardDao {
                 dashboardIdToUserCount.put(rs.getInt("DashboardId"), rs.getInt("UserCount"));
             }
         });
-        
-        return dashboards.stream()
-                         .map(d -> new LiteDashboard(d, dashboardIdToUserCount.get(d.getDashboardId())))
-                         .collect(Collectors.toList());
+
+        List<Integer> publicDashboard =
+            dashboards.stream().filter(dashboard -> dashboard.getVisibility() == Visibility.PUBLIC).map(
+                Dashboard::getDashboardId).collect(Collectors.toList());
+
+        Integer yukonUserCount = userDao.getNonResidentialUserCount();
+        dashboardIdToUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(), yukonUserCount);
+        dashboardIdToUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(), yukonUserCount);
+
+        SqlStatementBuilder pageAssignmentSql = new SqlStatementBuilder();
+        pageAssignmentSql.append("SELECT PageAssignment, COUNT(userId) AS UserCount ");
+        pageAssignmentSql.append("FROM UserDashboard");
+        pageAssignmentSql.append("WHERE DashboardId").in(publicDashboard);
+        pageAssignmentSql.append("GROUP BY PageAssignment");
+
+        jdbcTemplate.query(pageAssignmentSql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                DashboardPageType type = rs.getEnum("PageAssignment", DashboardPageType.class);
+
+                if (type == DashboardPageType.AMI) {
+                    dashboardIdToUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(),
+                        yukonUserCount - rs.getInt("UserCount"));
+                } else if (type == DashboardPageType.MAIN) {
+                    dashboardIdToUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(),
+                        yukonUserCount - rs.getInt("UserCount"));
+                }
+            }
+        });
+
+        return dashboards.stream().map(
+            d -> new LiteDashboard(d, dashboardIdToUserCount.get(d.getDashboardId()))).collect(Collectors.toList());
+
     }
     
     @Override
