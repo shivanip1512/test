@@ -35,7 +35,7 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
         if (schedule.isScript()) {
             validateFileName(schedule, errors);
             if (!schedule.getTemplate().isNoTemplateSelected()) {
-                //YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.groupName", "yukon.web.error.isBlank");
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.groupName", "yukon.web.error.isBlank");
                 YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.porterTimeout", schedule.getScriptOptions().getPorterTimeout());
                 if (schedule.getScriptOptions().isDemandResetSelected()) {
                     YukonValidationUtils.checkRange(errors, "scriptOptions.demandResetRetryCount", schedule.getScriptOptions().getDemandResetRetryCount(), 0, 5, true);
@@ -49,6 +49,7 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
                     YukonValidationUtils.checkRange(errors, "scriptOptions.maxRetryHours", schedule.getScriptOptions().getMaxRetryHours(), -1, 10, true);
                 }
                 if (schedule.getScriptOptions().isBillingSelected()) {
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scriptOptions.billingGroupName", "yukon.web.error.isBlank");
                     YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.billingDemandDays", schedule.getScriptOptions().getBillingDemandDays());
                     YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.billingEnergyDays", schedule.getScriptOptions().getBillingEnergyDays());
                 }

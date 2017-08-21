@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
@@ -26,10 +27,13 @@
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".scriptOptions.deviceGroup">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <cti:list var="groups">
-                                <cti:item value="${schedule.scriptOptions.groupName}"/>
-                            </cti:list>
-                            <tags:deviceGroupPicker inputName="scriptOptions.groupName" inputValue="${groups}"/>
+                            <spring:bind path="${pathKey}groupName">
+                                <cti:list var="groups">
+                                    <cti:item value="${schedule.scriptOptions.groupName}"/>
+                                </cti:list>
+                                <tags:deviceGroupPicker inputName="scriptOptions.groupName" inputValue="${groups}"/>
+                                <c:if test="${status.error}"><br><form:errors path="${pathKey}groupName" cssClass="error"/></c:if>
+                            </spring:bind>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             ${schedule.scriptOptions.groupName}
@@ -113,10 +117,13 @@
                     <tags:nameValue2 nameKey=".scriptOptions.deviceGroup"
                         data-toggle-group="billingFile">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <cti:list var="groups">
-                                <cti:item value="${schedule.scriptOptions.billingGroupName}"/>
-                            </cti:list>
-                            <tags:deviceGroupPicker inputName="scriptOptions.billingGroupName" inputValue="${groups}" />
+                            <spring:bind path="${pathKey}billingGroupName">
+                                <cti:list var="groups">
+                                    <cti:item value="${schedule.scriptOptions.billingGroupName}"/>
+                                </cti:list>
+                                <tags:deviceGroupPicker inputName="scriptOptions.billingGroupName" inputValue="${groups}" />
+                                <c:if test="${status.error}"><br><form:errors path="${pathKey}billingGroupName" cssClass="error"/></c:if>
+                            </spring:bind>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             ${schedule.scriptOptions.billingGroupName}
