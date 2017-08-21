@@ -77,7 +77,7 @@
 <c:choose>
     <c:when test="${not empty pageScope.path}">
         <spring:bind path="${pageScope.path}">
-            <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="VIEW">${dateTimeValue}</cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:if test="${status.error}"><c:set var="cssClass" value="${cssClass} error"/></c:if>
                 <span class="datetimeEntry_wrap ${wrapperClass}">

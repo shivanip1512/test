@@ -1,11 +1,13 @@
 package com.cannontech.amr.macsscheduler.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
-import org.joda.time.Instant;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
@@ -61,7 +63,7 @@ public class MacsStartPolicy {
     private StartPolicy policy = StartPolicy.MANUAL;
     private int holidayScheduleId;
     private MacsTimeField time;
-    private Instant startDateTime = Instant.now();
+    private Date startDateTime = new Date();
     private boolean everyYear;
     private Map<DayOfWeek, Boolean> days = new HashMap<>(defaultDays);
     private int dayOfMonth = 1;
@@ -92,7 +94,9 @@ public class MacsStartPolicy {
     
     public int getStartDay() {
         if (policy == StartPolicy.DATETIME) {
-            return startDateTime.toDateTime().getDayOfMonth();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startDateTime);
+            return cal.get(Calendar.DAY_OF_MONTH);
         } else if (policy == StartPolicy.DAYOFMONTH) {
             return dayOfMonth;
         }
@@ -101,7 +105,9 @@ public class MacsStartPolicy {
 
     public int getStartMonth() {
         if (policy == StartPolicy.DATETIME) {
-            return startDateTime.toDateTime().getMonthOfYear();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startDateTime);
+            return cal.get(Calendar.MONTH) + 1;
         } else if (policy == StartPolicy.DAYOFMONTH) {
             return DateTime.now().getMonthOfYear();
         }
@@ -110,7 +116,9 @@ public class MacsStartPolicy {
 
     public int getStartYear() {
         if (policy == StartPolicy.DATETIME) {
-            return startDateTime.toDateTime().getYear();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startDateTime);
+            return cal.get(Calendar.YEAR);
         } else if (policy == StartPolicy.DAYOFMONTH) {
             return DateTime.now().getYear();
         }
@@ -119,7 +127,8 @@ public class MacsStartPolicy {
 
     public String getStartTime() {
         if (policy == StartPolicy.DATETIME) {
-            return startDateTime.toDateTime().toString("HH:mm:ss");
+            SimpleDateFormat sdfr = new SimpleDateFormat("HH:mm:ss");
+            return sdfr.format(startDateTime);
         } else if (policy == StartPolicy.DAYOFMONTH || policy == StartPolicy.WEEKDAY) {
            return time.getTimeString();
         }
@@ -162,7 +171,7 @@ public class MacsStartPolicy {
                 year = 1970;
                 everyYear = true;
             }
-            //startDateTime = MacsTimeField.parseDate(year, month, day, timeString).toInstant();
+            startDateTime = MacsTimeField.parseDate(year, month, day, timeString).toDate();
         } else if (policy == StartPolicy.DAYOFMONTH) {
             dayOfMonth = day;
             DateTime parsedDate = MacsTimeField.parseDate(year, month, day, timeString);
@@ -174,11 +183,11 @@ public class MacsStartPolicy {
         }
     }
     
-    public Instant getStartDateTime() {
+    public Date getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(Instant startDateTime) {
+    public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     }
 

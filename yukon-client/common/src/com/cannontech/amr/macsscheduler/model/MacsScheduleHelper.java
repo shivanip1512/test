@@ -34,6 +34,9 @@ public class MacsScheduleHelper {
         schedule.setStartDay(start.getStartDay());
         schedule.setStartMonth(start.getStartMonth());
         schedule.setStartYear(start.getStartYear());
+        if (start.isEveryYear()) {
+            schedule.setStartYear(0);
+        }
         schedule.setStartTime(start.getStartTime());
 
         schedule.setHolidayScheduleId(start.getHolidayScheduleId());

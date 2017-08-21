@@ -84,8 +84,8 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".startPolicy.startDateTime" rowClass="js-start-dateTime">
-<%--                             <dt:dateTime path="startPolicy.startDateTime"/> --%>
-                            <tags:checkbox path="startPolicy.everyYear" />
+                            <dt:dateTime path="startPolicy.startDateTime" value="${schedule.startPolicy.startDateTime}"/>
+                            <tags:checkbox path="startPolicy.everyYear" styleClass="js-start-every-year"/>
                             <i:inline key=".startPolicy.everyYear" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".startPolicy.daysOfWeek" rowClass="js-start-weekDay">

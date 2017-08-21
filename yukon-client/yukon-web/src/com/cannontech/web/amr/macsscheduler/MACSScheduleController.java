@@ -304,7 +304,11 @@ public class MACSScheduleController extends MultiActionController {
         model.addAttribute("zone", userContext.getTimeZone().getDisplayName(true, TimeZone.SHORT));
         
         if (schedule.isRunning() || schedule.isPending()) {
-            model.addAttribute("stopTime", schedule.getNextStopTime());
+            Date stopTime = new Date();
+            if (schedule.getNextStopTime() != null) {
+                stopTime = schedule.getNextStopTime();
+            }
+            model.addAttribute("stopTime", stopTime);
             return "stopDialog.jsp";
         }
         
