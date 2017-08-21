@@ -13,6 +13,8 @@ import com.cannontech.web.util.WebFileUtils;
 
 @Service
 public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
+    
+    private final static String scheduleKey = "yukon.web.modules.tools.schedule.";
 
     public MacsScheduleValidator() {
         super(MacsSchedule.class);
@@ -41,9 +43,14 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
                 if (!schedule.getTemplate().isRetry()) {
                     YukonValidationUtils.checkRange(errors, "scriptOptions.retryCount", schedule.getScriptOptions().getRetryCount(), 0, 10, true);
                     YukonValidationUtils.checkRange(errors, "scriptOptions.queueOffCount", schedule.getScriptOptions().getQueueOffCount(), 0, 10, true);
-                    YukonValidationUtils.checkRange(errors, "scriptOptions.maxRetryHours", schedule.getScriptOptions().getMaxRetryHours(), -10, 10, true);
-                    //Display Max Retry Hours = -1 means no limit (should this range be -1 to 10 instead of -10 to 10?
-                    //Should Queue Off Count be Less than retry count? This displays in the tooltip on the old TDC
+                    if (schedule.getScriptOptions().getQueueOffCount() > schedule.getScriptOptions().getRetryCount()) {
+                        errors.rejectValue("scriptOptions.queueOffCount", scheduleKey + "scriptOptions.validation.queueOffCountLessThanRetryCount");
+                    }
+                    YukonValidationUtils.checkRange(errors, "scriptOptions.maxRetryHours", schedule.getScriptOptions().getMaxRetryHours(), -1, 10, true);
+                }
+                if (schedule.getScriptOptions().isBillingSelected()) {
+                    YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.billingDemandDays", schedule.getScriptOptions().getBillingDemandDays());
+                    YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.billingEnergyDays", schedule.getScriptOptions().getBillingEnergyDays());
                 }
             }
         } else {
@@ -71,10 +78,10 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
             YukonValidationUtils.checkExceedsMaxLength(errors, "scriptOptions.fileName", fileName, 180);
             boolean validFileName = WebFileUtils.isValidWindowsFilename(fileName);
             if (!validFileName) {
-                errors.rejectValue("scriptOptions.fileName", "yukon.web.modules.tools.schedule.scriptOptions.validation.fileName.badCharacters");
+                errors.rejectValue("scriptOptions.fileName", scheduleKey + "scriptOptions.validation.fileName.badCharacters");
             }
             if (!fileName.endsWith(".ctl")) {
-                errors.rejectValue("scriptOptions.fileName", "yukon.web.modules.tools.schedule.scriptOptions.validation.fileName.endsInCtl");
+                errors.rejectValue("scriptOptions.fileName", scheduleKey + "scriptOptions.validation.fileName.endsInCtl");
             }
         }
 
