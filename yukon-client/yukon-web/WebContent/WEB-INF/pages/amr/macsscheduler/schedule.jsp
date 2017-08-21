@@ -19,6 +19,7 @@
     <form:form id="macs-schedule" commandName="schedule" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="id" />
+        <form:hidden path="generateScript"/>
 
         <cti:tabs>
             <cti:msg2 var="generalTab" key=".generalTab" />
@@ -175,7 +176,8 @@
 
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:set var="clazz" value="${schedule.isScript() && !schedule.template.isNoTemplateSelected() ? '' : 'dn'}"/>
-                <cti:button nameKey="generateScript" classes="primary action js-script-generate ${clazz}" busy="true" disabled="${getTemplate}" />
+                <cti:button nameKey="save" classes="primary action js-script-save-generate ${clazz}" busy="true" disabled="${getTemplate}" />
+                <cti:button nameKey="generateScript" classes="js-script-generate ${clazz}" busy="true" disabled="${getTemplate}" />
                 <c:set var="clazz" value="${schedule.isScript() && !schedule.template.isNoTemplateSelected() ? 'dn' : ''}"/>
                 <cti:button nameKey="save" type="submit" classes="primary action js-save-button ${clazz}" busy="true" disabled="${getTemplate}" />
 

@@ -268,6 +268,9 @@ public class MACSScheduleController extends MultiActionController {
             setupModel(model, schedule);
             return "schedule.jsp";
         }
+        if (schedule.isGenerateScript()) {
+            MacsScriptHelper.generateScript(schedule, databaseCache);
+        }
         try {
             if (id > 0) {
                 service.updateSchedule(schedule, userContext.getYukonUser());

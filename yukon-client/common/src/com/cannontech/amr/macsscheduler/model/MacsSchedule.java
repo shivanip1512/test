@@ -74,6 +74,7 @@ public class MacsSchedule implements YukonPao{
     private Date nextStopTime;
     
     private boolean editable;
+    private boolean generateScript;
 
     public String getScheduleName() {
         return scheduleName;
@@ -243,5 +244,13 @@ public class MacsSchedule implements YukonPao{
             // We don't have a valid PaoType yet.
             return null;
         }
+    }
+
+    public boolean isGenerateScript() {
+        return generateScript;
+    }
+
+    public void setGenerateScript(boolean generateScript) {
+        this.generateScript = generateScript;
     }
 }
