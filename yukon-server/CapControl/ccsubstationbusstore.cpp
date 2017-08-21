@@ -6178,11 +6178,14 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                     {
                                         // build the Attribute -> PointName overlay and send it in the for() below...
 
+                                        using Cti::Devices::getConfigData;
+                                        using Cti::Config::DNPStrings;
+
                                         struct AttributeAndPointName
                                         {
                                             AttributeAndPointName( const Cti::Config::DeviceConfig::ItemsByName &src ) :
-                                                attributeName   ( Cti::Devices::getConfigData( src, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute ) ),
-                                                pointName       ( Cti::Devices::getConfigData( src, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName ) )
+                                                attributeName   ( getConfigData( src, DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute ) ),
+                                                pointName       ( getConfigData( src, DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName ) )
                                             {
                                             }
 
@@ -6212,7 +6215,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
                                     // add to bank
 
-                                    bank->getTwoWayPoints().assignTwoWayPointBulk( cache, pointOverloads );
+                                    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, pointOverloads );
 
                                     for ( const LitePoint & point : cache )
                                     {

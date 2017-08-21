@@ -36,8 +36,8 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paot
     // empty...
 }
 
-void CtiCCTwoWayPoints::assignTwoWayPointBulk( const std::vector<LitePoint> & points,
-                                               const std::map<Attribute, std::string> & overloads )
+void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
+                                                         const std::map<Attribute, std::string> & overloads )
 {
     for ( const LitePoint & point : points )
     {
@@ -61,9 +61,9 @@ void CtiCCTwoWayPoints::assignTwoWayPointBulk( const std::vector<LitePoint> & po
         {
             auto pointLookup =
                 boost::find_if( points,
-                                [ entry ]( const LitePoint & p )
+                                [ pointName = entry.second ]( const LitePoint & p )
                                 {
-                                    return p.getPointName() == entry.second;
+                                    return p.getPointName() == pointName;
                                 } );
 
             if ( pointLookup != points.end() )
