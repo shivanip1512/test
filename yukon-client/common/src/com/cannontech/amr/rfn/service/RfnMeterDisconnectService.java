@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
@@ -118,7 +119,10 @@ public class RfnMeterDisconnectService {
                     /* Request failed */
                     MessageSourceResolvable message = YukonMessageSourceResolvable.createSingleCodeWithArguments(confirmError, confirmationReplyMessage);
                     callback.receivedError(message, confirmationReplyMessage.getState(), confirmationReplyMessage.getReplyType());
-                    
+                    if (RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT == confirmationReplyMessage.getReplyType()
+                        || RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT == confirmationReplyMessage.getReplyType()) {
+                        publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
+                    }
                 } else {
                     PointValueQualityHolder pointData = publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
                     /* Confirmation response successful, process point data */
@@ -167,7 +171,7 @@ public class RfnMeterDisconnectService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>(
+        rrrTemplate = new RequestReplyReplyTemplate<>(
                 cparm, configurationSource, connectionFactory, queue, false);
     }
     

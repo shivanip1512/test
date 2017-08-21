@@ -111,12 +111,12 @@ public class DisconnectController {
     }
 
     private class AlertCallback implements SimpleCallback<DisconnectResult> {
-        MessageSourceAccessor accessor;
-        HttpServletRequest request;
+        private MessageSourceAccessor accessor;
+        private String partialUrl;
 
         AlertCallback(YukonUserContext userContext, HttpServletRequest request) {
-            accessor = messageResolver.getMessageSourceAccessor(userContext);
-            this.request = request;
+            this.accessor = messageResolver.getMessageSourceAccessor(userContext);
+            this.partialUrl = ServletUtil.createSafeUrl(request, "/bulk/disconnect/resultDetail");
         }
 
         @Override
@@ -145,9 +145,7 @@ public class DisconnectController {
             } else {
                 template = new ResolvableTemplate("yukon.common.alerts.disconnectCompletion");
             }
-            String url =
-                ServletUtil.createSafeUrl(request, "/bulk/disconnect/resultDetail?resultKey=" + result.getKey() + "&command="
-                                                  + result.getCommand());
+            String url = partialUrl + "?resultKey=" + result.getKey() + "&command=" + result.getCommand();
             template.addData("url", url);
             template.addData("command", accessor.getMessage(result.getCommand()));
             template.addData("percentSuccess", percentSuccess);
