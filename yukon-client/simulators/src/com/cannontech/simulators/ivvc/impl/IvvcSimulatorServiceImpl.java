@@ -229,7 +229,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 
                 List<Zone> zonesBySubBusId = zoneService.getZonesBySubBusId(subBus.getCcId());
                 
-                // if there are no zones under this substation, it means the strategy is IVVC.
+                // if there are no zones under this substation, it means the strategy is not IVVC.
                 boolean isIvvcStrategy = true;
                 if (CollectionUtils.isEmpty(zonesBySubBusId)) {
                     isIvvcStrategy = false;
