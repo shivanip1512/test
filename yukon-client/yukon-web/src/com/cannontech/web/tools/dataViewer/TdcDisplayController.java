@@ -9,13 +9,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSourceResolvable;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.tags.TagUtils;
@@ -167,9 +170,16 @@ public class TdcDisplayController {
             }
             paging = PagingParameters.of(totalCount, 1);
         }
+        if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
+            model.addAttribute("eventViewer", true);
+        }
+        
+        DisplayBackingBean backingBean = new DisplayBackingBean();
+        backingBean.setDate(new DateTime(userContext.getJodaTimeZone()));
+        model.addAttribute("backingBean", backingBean);
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
-        model.addAttribute("backingBean", new DisplayBackingBean());
+
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
         
         if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
@@ -184,90 +194,119 @@ public class TdcDisplayController {
         return "data-viewer/display.jsp";
     }
     
-    @RequestMapping(value = "data-viewer/{displayId}/page", method = RequestMethod.GET)
+    @RequestMapping(value = "data-viewer/{displayId}/{date}/page", method = RequestMethod.GET)
     public String page(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
                        @DefaultSort(dir=Direction.asc, sort="Time Stamp") SortingParameters sorting, 
-                       @DefaultItemsPerPage(50) PagingParameters pagingParameters) {
-        
+                       @DefaultItemsPerPage(50) PagingParameters pagingParameters,
+                       @PathVariable String date) {
+        if (displayId == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
+            model.addAttribute("eventViewer", true);
+        }
         model.addAttribute("pageable", true);
+        model.addAttribute("mode", PageEditMode.VIEW);
+        Display display = displayDao.findDisplayById(displayId); 
+        model.addAttribute("displayName", display.getName());
+        model.addAttribute("display", display);
+        DisplayBackingBean backingBean = new DisplayBackingBean();
+        DateTime dateTime = DateTime.parse(date);
+        backingBean.setDate(dateTime);
+        SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
+        model.addAttribute("backingBean", backingBean);
+        SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
+        model.addAttribute("result", result);
+        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
+        List<SortableColumn> sortableColumns = display.getColumns().stream()
+                                                      .map(c -> SortableColumn.of(sorting, c.getTitle(), c.getTitle()))
+                                                      .collect(Collectors.toList());
+        model.addAttribute("sortableColumns", sortableColumns);
+
+        return "data-viewer/display.jsp";
+    }
+    
+    @RequestMapping(value = "data-viewer/{displayId}/date", method = RequestMethod.POST)
+    public String date(HttpServletRequest request, YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
+                       @DefaultSort(dir=Direction.asc, sort="Time Stamp") SortingParameters sorting, 
+                       @DefaultItemsPerPage(50) PagingParameters pagingParameters,
+                       @RequestParam("date") String date) {
+        model.addAttribute("pageable", true);
         model.addAttribute("mode", PageEditMode.VIEW);
         Display display = displayDao.findDisplayById(displayId);
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
-        model.addAttribute("backingBean", new DisplayBackingBean());
+        if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
+            model.addAttribute("eventViewer", true);
+        }
+        DisplayBackingBean backingBean = new DisplayBackingBean();
+        String datePattern = "MM/dd/yyyy";
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(datePattern));
+        backingBean.setDate(dateTime);
+        model.addAttribute("backingBean", backingBean);
+
+
+        SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
+        SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
+        model.addAttribute("result", result);
+        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
-        if (display.isPageable()) {
-            SortBy sortBy =  getSortByFromSortingParameter(display, sorting);
-            SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection());
-            model.addAttribute("result", result);
-            model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
+        List<SortableColumn> sortableColumns = display.getColumns().stream()
+                                                      .map(c -> SortableColumn.of(sorting, c.getTitle(), c.getTitle()))
+                                                      .collect(Collectors.toList());
+        model.addAttribute("sortableColumns", sortableColumns);
     
-            List<SortableColumn> sortableColumns = display.getColumns().stream()
-                                                          .map(c -> SortableColumn.of(sorting, c.getTitle(), c.getTitle()))
-                                                          .collect(Collectors.toList());
-            model.addAttribute("sortableColumns", sortableColumns);
-        }
-        else {
-            List<DisplayData> displayData = tdcService.getDisplayData(display, userContext.getJodaTimeZone(), pagingParameters);
-            model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
-            int totalCount = tdcService.getDisplayDataCount(displayId, userContext.getJodaTimeZone());
-            SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, pagingParameters, totalCount);
-            model.addAttribute("result", result);
-        }
         return "data-viewer/display.jsp";
     }
     
-    private SortBy getSortByFromSortingParameter(Display display, SortingParameters sorting) {
+    private SortBy getSortByFromSortingParameter(Display display, String sorting) {
         if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
-            switch (sorting.getSort()) {
-                case "Time Stamp":
+            switch (ColumnType.getByName(sorting)) {
+                case TIME_STAMP:
                     return SortBy.SYS_LOG_DATE_TIME;
-                case "Device Name":
+                case DEVICE_NAME:
                     return SortBy.PAO_NAME;
-                case "Point Name":
+                case POINT_NAME:
                     return SortBy.POINT_NAME;
-                case "Text Message":
+                case TEXT_MESSAGE:
                     return SortBy.SYS_LOG_DESCRIPTION;
-                case "Additional Info":
+                case ADDITIONAL_INFO:
                     return SortBy.SYS_LOG_ACTION;
-                case "User Name":
+                case USERNAME:
                     return SortBy.SYS_LOG_USERNAME;
                 default:
                     return null;
             }
         }
         else if (display.getDisplayId() == IDisplay.TAG_LOG_DISPLAY_NUMBER) {
-            switch (sorting.getSort()) {
-                case "Time Stamp":
+            switch (ColumnType.getByName(sorting)) {
+                case TIME_STAMP:
                     return SortBy.TAG_LOG_TAG_TIME;
-                case "Device Name":
+                case DEVICE_NAME:
                     return SortBy.PAO_NAME;
-                case "Point Name":
+                case POINT_NAME:
                     return SortBy.POINT_NAME;
-                case "Tag":
+                case TAG:
                     return SortBy.TAGS_TAG_NAME;
-                case "Description":
+                case DESCRIPTION:
                     return SortBy.TAG_LOG_DESCRIPTION;
-                case "Additional Info":
+                case ADDITIONAL_INFO:
                     return SortBy.TAG_LOG_ACTION;
-                case "User Name":
+                case USERNAME:
                     return SortBy.TAG_LOG_USERNAME;
                 default:
                     return null;
             }
         }
         else if (display.getDisplayId() == IDisplay.SOE_LOG_DISPLAY_NUMBER) {
-            switch (sorting.getSort()) {
-                case "Time Stamp":
+            switch (ColumnType.getByName(sorting)) {
+                case TIME_STAMP:
                     return SortBy.SYS_LOG_DATE_TIME;
-                case "Device Name":
+                case DEVICE_NAME:
                     return SortBy.PAO_NAME;
-                case "Point Name":
+                case POINT_NAME:
                     return SortBy.POINT_NAME;
-                case "Description":
+                case DESCRIPTION:
                     return SortBy.SYS_LOG_DESCRIPTION;
-                case "Additional Info":
+                case ADDITIONAL_INFO:
                     return SortBy.SYS_LOG_ACTION;
                 default:
                     return null;

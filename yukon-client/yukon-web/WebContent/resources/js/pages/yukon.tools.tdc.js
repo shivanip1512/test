@@ -327,6 +327,18 @@ yukon.tools.tdc = (function () {
                     dashboardId = container.data('displayId');
                 window.location.href = yukon.url("/tools/data-viewer/" + dashboardId + "/deleteCustomDisplay");
             });
+            
+            $(document).ready(function() {
+                $('#date').attr('readonly', true)
+            });
+            
+            $(document).on('change', '#date', function (ev) {
+                $('#date-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        $(document.body).html(data);
+                    }
+                });
+            });
         }
     };
     

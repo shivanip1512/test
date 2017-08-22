@@ -3,6 +3,8 @@ package com.cannontech.web.tools.dataViewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import com.cannontech.common.tdc.model.AltScanRate;
 import com.cannontech.common.util.EnabledStatus;
 import com.cannontech.tags.Tag;
@@ -20,6 +22,7 @@ public class DisplayBackingBean {
     private boolean deviceControlInhibited;
     private int rowIndex;
     private String displayName;
+    private DateTime date;
     
     public AltScanRate getAltScanRate() {
         return altScanRate;
@@ -115,5 +118,13 @@ public class DisplayBackingBean {
 
     public void setDisplayId(int displayId) {
         this.displayId = displayId;
+    }
+
+    public DateTime getDate() {
+        return date;
+    }
+
+    public void setDate(DateTime date) {
+        this.date = date;
     }
 }

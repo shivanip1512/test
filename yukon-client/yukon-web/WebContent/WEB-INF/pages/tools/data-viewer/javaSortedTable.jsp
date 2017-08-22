@@ -4,9 +4,15 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
-
-<cti:url var="url" value="/tools/data-viewer/${display.displayId}/page"/>
+<c:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/date"/>
+<form:form id="date-form" action="${dateUrl}"  method="post" commandName="backingBean">
+    <cti:csrfToken/>
+    <dt:date id="date" path="date" value="${backingBean.date}" disabled="${!eventViewer}" cssClass="js-date"/>
+</form:form>
+<c:url var="url" value="/tools/data-viewer/${display.displayId}/${backingBean.date}/page"/>
 <div data-url="${url}" data-static>
     <table class="compact-results-table has-actions has-alerts">
         <thead>
@@ -88,3 +94,8 @@
     </table>
     <tags:pagingResultsControls adjustPageCount="true" result="${result}"/>
 </div>
+<style>
+.date {
+    float: right;
+}
+</style>
