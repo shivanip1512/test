@@ -562,6 +562,15 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             "Sim Regulator category" + devCapControl.getOffset(), StringUtils.EMPTY, categoryItems);
         int categoryId = deviceConfigService.saveCategory(configCategory);
         deviceConfigurationService.changeCategoryAssignment(setPointRegulatorConfigId, categoryId, CategoryType.REGULATOR_CATEGORY);
+        
+        List<DeviceConfigCategoryItem> heartbeatCategoryItems = new ArrayList<>();
+        DeviceConfigCategoryItem heartbeatMode = new DeviceConfigCategoryItem(null, "RegulatorHeartbeatMode", "NONE");
+        heartbeatCategoryItems.add(heartbeatMode);
+        DeviceConfigCategory heartbeatconfigCategory = new DeviceConfigCategory(null, CategoryType.REGULATOR_HEARTBEAT.value(),
+                "Sim Regulator heartbeat" + devCapControl.getOffset(), StringUtils.EMPTY, heartbeatCategoryItems);
+        int regulatorHearbeatCategoryId = deviceConfigService.saveCategory(heartbeatconfigCategory);
+        deviceConfigurationService.changeCategoryAssignment(setPointRegulatorConfigId, regulatorHearbeatCategoryId,
+            CategoryType.REGULATOR_HEARTBEAT);
 
         return setPointRegulatorConfigId;
 

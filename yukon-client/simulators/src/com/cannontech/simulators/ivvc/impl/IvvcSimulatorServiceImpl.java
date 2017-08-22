@@ -72,7 +72,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private volatile boolean autoGenerateSubstationBuskWh = true;
     private volatile double localVoltageOffset;
     private volatile double remoteVoltageOffset;
-    private boolean tapPositionsPreloaded = false;
+    private boolean tapPositionsAndSetPointValuesPreloaded = false;
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
     private final Map<Integer, Double> regulatorSetPointValues = new HashMap<>();
@@ -157,17 +157,23 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         // Adjust the tap positions as per the regulator voltage-control-modes
         if (!regulatorEventOperations.isEmpty()) {
             for (RegulatorOperations regulatorOperations : regulatorEventOperations) {
-                Integer tapPosition =
-                    Optional.ofNullable(regulatorTapPositions.get(regulatorOperations.regulatorId)).orElse(
-                        INITIAL_TAP_POSITION);
-                if (regulatorOperations.eventType == EventType.TAP_UP) {
-                    regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition + 1);
-                } else if (regulatorOperations.eventType == EventType.TAP_DOWN) {
-                    regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition - 1);
-                } else if (regulatorOperations.eventType == EventType.DECREASE_SETPOINT
-                    || regulatorOperations.eventType == EventType.INCREASE_SETPOINT) {
-                    regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
+                if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId).equals(
+                    RegulatorVoltageControlMode.DIRECT_TAP)) {
+                    Integer tapPosition =
+                        Optional.ofNullable(regulatorTapPositions.get(regulatorOperations.regulatorId)).orElse(
+                            INITIAL_TAP_POSITION);
+                    if (regulatorOperations.eventType == EventType.TAP_UP) {
+                        regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition + 1);
+                    } else if (regulatorOperations.eventType == EventType.TAP_DOWN) {
+                        regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition - 1);
                     }
+                } else if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId).equals(
+                    RegulatorVoltageControlMode.SET_POINT)) {
+                    if (regulatorOperations.eventType == EventType.DECREASE_SETPOINT
+                        || regulatorOperations.eventType == EventType.INCREASE_SETPOINT) {
+                        regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
+                    }
+                }
                 log.debug("Found " + regulatorEventOperations.size() + " tap and setpoint operations, acting on them.");
                 if (regulatorOperations.timeStamp.isAfter(lastRegulatorEvaluationTime)) {
                     lastRegulatorEvaluationTime = regulatorOperations.timeStamp;
@@ -430,10 +436,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
 
     // Initialize the list of regulator tap positions from the database or Dispatch
     private void loadRegulatorTapPositionsFromDatabase() {
-        if (!tapPositionsPreloaded) {
+        // pre-load tap positions and set point values from Dispatcher.
+        if (!tapPositionsAndSetPointValuesPreloaded) {
             DateTime start = DateTime.now();
             Set<Integer> regulatorTapPositionPointIds = new HashSet<>();
             Map<Integer, Integer> pointIdToRegulator = new HashMap<>();
+            Set<Integer> setPointValuePointIds = new HashSet<>();
+            Map<Integer, Integer> setPointValueToRegulator = new HashMap<>();
             capControlCache.getAreas().stream()
                                       .filter(area->area.getCcName().startsWith("Sim Area"))
                                       .flatMap(area -> capControlCache.getSubBusesByArea(area.getCcId()).stream())
@@ -441,18 +450,22 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                       .flatMap(zone -> zoneService.getRegulatorsForZone(zone.getId()).stream())
                                       .map(regulatorId -> regulatorService.getRegulatorById(regulatorId))
                                       .forEach((regulator -> { regulator.getMappings().entrySet().stream()
-                                          .filter(mapping -> mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.TAP_POSITION)
-                                          .forEach(tapPositionMapping -> {
-                                              regulatorTapPositionPointIds.add(tapPositionMapping.getValue());
-                                              pointIdToRegulator.put(tapPositionMapping.getValue(), regulator.getId());
-                                              });
-                                              regulatorVoltageControlModeConfig.put(regulator.getId(), null);
+                                          .forEach(mapping -> {
+                                              if (mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.TAP_POSITION) {
+                                                  regulatorTapPositionPointIds.add(mapping.getValue());
+                                                  pointIdToRegulator.put(mapping.getValue(), regulator.getId());
+                                              } else if (mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.FORWARD_SET_POINT) {
+                                                  setPointValuePointIds.add(mapping.getValue());
+                                                  setPointValueToRegulator.put(mapping.getValue(), regulator.getId());
+                                              }
+                                          });
+                                          regulatorVoltageControlModeConfig.put(regulator.getId(), null);
                                     }));
             
-            int successCount = 0;
+            int tapPositionsLoadedsuccessCount = 0;
             
             if (regulatorTapPositionPointIds.size() > 0) {
-                successCount = (int) asyncDynamicDataSource.getPointValues(regulatorTapPositionPointIds)
+                tapPositionsLoadedsuccessCount = (int) asyncDynamicDataSource.getPointValues(regulatorTapPositionPointIds)
                                       .stream()
                                       .filter(pvqh -> pvqh.getValue() < 30 && pvqh.getValue() > -20)
                                       .filter(pvqh -> pvqh.getPointQuality() == PointQuality.Normal)
@@ -466,14 +479,37 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                       })
                                       .filter(i -> i == 1)
                                       .count();
-                                     
-                if (successCount > 0) {
-                    tapPositionsPreloaded = true; // In theory we will keep trying until both capcontrol cache is loaded and Dispatch results come back.
-                }
             }
+            
+            int setPointValuesLoadedsuccessCount = 0;
+            
+            if (setPointValuePointIds.size() > 0) {
+                setPointValuesLoadedsuccessCount = (int) asyncDynamicDataSource.getPointValues(setPointValuePointIds)
+                                      .stream()
+                                      .filter(setPoint -> setPoint.getPointQuality() == PointQuality.Normal)
+                                      .map(setPoint -> {
+                                          Integer regulatorId = setPointValueToRegulator.get(setPoint.getId());
+                                          if (regulatorId != null) {
+                                              regulatorSetPointValues.put(regulatorId, setPoint.getValue());
+                                              return 1;
+                                          }
+                                          return 0;
+                                      })
+                                      .filter(i -> i == 1)
+                                      .count();
+            }
+            
+            if ((CollectionUtils.isNotEmpty(regulatorTapPositionPointIds) && tapPositionsLoadedsuccessCount > 0)
+                && (CollectionUtils.isNotEmpty(setPointValuePointIds) && setPointValuesLoadedsuccessCount > 0)) {
+                tapPositionsAndSetPointValuesPreloaded = true;
+            }
+            
             DateTime stop = DateTime.now();
-            log.debug("Retrieved and loaded " + successCount + " tap point values from Dispatch in " + (stop.getMillis() - start.getMillis())/1000 + " seconds");
+            log.debug("Retrieved and loaded " + tapPositionsLoadedsuccessCount + " tap point values and "
+                + setPointValuesLoadedsuccessCount + " set point values from Dispatch in "
+                + (stop.getMillis() - start.getMillis()) / 1000 + " seconds");
         }
+        
         // Load regulator voltage control modes from DB every 30 seconds
         deviceConfigurationSimulatorDao.getDeviceVoltageControlMode(regulatorVoltageControlModeConfig);
     }
