@@ -4,7 +4,7 @@ public class MacsSimpleOptions {
     private int targetPAObjectId;
     private String startCommand;
     private String stopCommand;
-    private Integer repeatInterval;
+    private Integer repeatInterval = 0;
     
     public int getTargetPAObjectId() {
         return targetPAObjectId;
