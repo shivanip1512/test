@@ -2,6 +2,7 @@ package com.cannontech.common.tdc.dao;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.cannontech.common.model.Direction;
@@ -102,5 +103,5 @@ public interface DisplayDataDao {
 
     SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone,
                                                          PagingParameters paging, SortBy sortBy,
-                                                         Direction direction);
+                                                         Direction direction, DateTime date);
 }

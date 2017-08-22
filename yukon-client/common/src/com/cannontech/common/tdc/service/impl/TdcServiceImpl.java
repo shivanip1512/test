@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,7 @@ public class TdcServiceImpl implements TdcService {
     }
     
     @Override
-    public SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
+    public SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, DateTime date) {
         SearchResults<DisplayData> searchResults = null;
         switch (display.getDisplayId()) {
         case SOE_LOG_DISPLAY_NUMBER:
@@ -131,7 +132,7 @@ public class TdcServiceImpl implements TdcService {
             searchResults = displayDataDao.getTagLogDisplayData(timeZone, paging, sortBy, direction);
             break;
         case EVENT_VIEWER_DISPLAY_NUMBER:
-            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction);
+            searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction, date);
             break;
         }
         return searchResults;

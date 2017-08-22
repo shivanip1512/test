@@ -3,6 +3,7 @@ package com.cannontech.common.tdc.service;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import com.cannontech.common.model.Direction;
@@ -145,5 +146,5 @@ public interface TdcService {
 
     SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone,
                                                     PagingParameters paging, SortBy sortBy,
-                                                    Direction direction);
+                                                    Direction direction, DateTime date);
 }

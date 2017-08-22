@@ -83,8 +83,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     }
     
     @Override
-    public SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction) {
-        DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
+    public SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, DateTime date) {
+        DateTime from = date.withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
         
         int start = paging.getStartIndex();
