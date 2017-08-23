@@ -68,6 +68,9 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         
         DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID,  p.Pointname, s.Description, s.Action, s.Username, s.Pointid, s.Soe_tag");
         sql.append("FROM SystemLog s");
@@ -76,10 +79,9 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("WHERE s.Datetime").gte(from);
         sql.append("    AND s.Datetime").lt(to);
         sql.append("ORDER BY s.Datetime DESC");
-        sql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
-        sql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
-        List<DisplayData> data = yukonJdbcTemplate.query(sql, createEventViewerRowMapper);
-        return data;
+        PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createEventViewerRowMapper);
+        yukonJdbcTemplate.query(sql, rse);
+        return rse.getResultList();
     }
     
     @Override
@@ -87,6 +89,9 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         
         DateTime from = date.withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID,  p.Pointname, s.Description, s.Action, s.Username, s.Pointid, s.Soe_tag");
         sql.append("FROM SystemLog s");
@@ -95,10 +100,9 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("WHERE s.Datetime").gte(from);
         sql.append("    AND s.Datetime").lt(to);
         sql.append("ORDER BY s.Datetime DESC");
-        sql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
-        sql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
-        List<DisplayData> data = yukonJdbcTemplate.query(sql, createEventViewerRowMapper);
-        return data;
+        PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createEventViewerRowMapper);
+        yukonJdbcTemplate.query(sql, rse);
+        return rse.getResultList();
     }
     
     @Override
@@ -210,6 +214,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     public List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging) {
         DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, s.Description, s.Action, s.Millis, p.LogicalGroup");
         sql.append("FROM SystemLog s");
@@ -219,10 +225,11 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("    AND s.Datetime").gte(from);
         sql.append("    AND s.Datetime").lt(to);
         sql.append("ORDER BY s.Datetime DESC, s.Millis DESC");
-        sql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
-        sql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
-        List<DisplayData> data = yukonJdbcTemplate.query(sql, createSoeRowMapper);
-        return data;
+
+        PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createSoeRowMapper);
+        yukonJdbcTemplate.query(sql, rse);
+        
+        return rse.getResultList();
     }
 
     @Override
@@ -278,20 +285,23 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     public List<DisplayData> getTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging) {
         DateTime from = new DateTime(timeZone).withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
+        int start = paging.getStartIndex();
+        int count = paging.getItemsPerPage();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Tagtime, PAOName, PAObjectID, PointName, PointId, Description, Action, Username, Tagname");
-        sql.append("FROM (SELECT l.Tagtime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, l.Description, l.Action, l.Username, t.Tagname,");
-        sql.append("             ROW_NUMBER() OVER (ORDER BY l.tagtime DESC, l.tagid DESC) AS counter ");
-        sql.append("      FROM TagLog l");
-        sql.append("      JOIN Point p ON l.PointId = p.PointId");
-        sql.append("      JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("      JOIN Tags t ON t.Tagid = l.Tagid");
-        sql.append("        AND l.Tagtime").gte(from);
-        sql.append("        AND l.Tagtime").lt(to).append(") tbl");
-        sql.append("WHERE tbl.counter BETWEEN").append(paging.getOneBasedStartIndex());
-        sql.append("AND").append(paging.getOneBasedEndIndex());
-        List<DisplayData> data = yukonJdbcTemplate.query(sql, createTagRowMapper);
-        return data;
+        sql.append("SELECT l.Tagtime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, l.Description, l.Action, l.Username, t.Tagname");
+        sql.append("FROM TagLog l");
+        sql.append("JOIN Point p ON l.PointId = p.PointId");
+        sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
+        sql.append("JOIN Tags t ON t.Tagid = l.Tagid");
+        sql.append("    AND l.Tagtime").gte(from);
+        sql.append("    AND l.Tagtime").lt(to);
+        sql.append("ORDER BY l.Tagtime DESC");
+
+        PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createTagRowMapper);
+        yukonJdbcTemplate.query(sql, rse);
+        
+        return rse.getResultList();
     }
     
     @Override
