@@ -120,10 +120,10 @@ public interface DashboardService {
     /**
      * Set a new owner for a dashboard.
      * 
+     * @throws WidgetParameterValidationException
      * @throws WidgetMissingParameterException
-     * @throws DuplicateException
      */
-    void setOwner(int userId, int dashboardId) throws WidgetParameterValidationException, 
+    void setOwner(int userId, int dashboardId) throws WidgetParameterValidationException,
             WidgetMissingParameterException;
 
     /**

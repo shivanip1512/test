@@ -37,6 +37,8 @@ public interface WidgetService {
     /**
      * Get a Multimap of widget default paramters. See WidgetType for default values
      * 
+     * @param type The type of widget.
+     * @param parameters The user-specified inputs defining the configuration and behavior of the widget.
      * @return A map of parameter name/value pairs filled in with any default values.
      */
     public Map<String, String> setDefaultParameters(WidgetType type, Map<String, String> parameters);
