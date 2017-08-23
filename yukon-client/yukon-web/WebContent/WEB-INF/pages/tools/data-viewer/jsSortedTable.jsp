@@ -16,11 +16,6 @@
                                 <th></th>
                                 <th><i:inline key="yukon.common.value"/></th>
                         </c:when>
-                        <c:when test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
-                            <c:if test="${not stateValue}">
-                                <th>${fn:escapeXml(column.title)}</th>
-                            </c:if>
-                        </c:when>
                         <c:otherwise>
                             <th>${fn:escapeXml(column.title)}</th>
                         </c:otherwise>
@@ -128,9 +123,7 @@
                                     <td>${fn:escapeXml(row.userName)}</td>
                                 </c:if>
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.STATE')}">
-                                    <c:if test="${not stateValue}">
-                                        <td><cti:dataUpdaterValue type="TDC" identifier="STATE/${row.pointId}"/></td>
-                                    </c:if>
+                                    <td><cti:dataUpdaterValue type="TDC" identifier="STATE/${row.pointId}"/></td>
                                 </c:if>
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.TAG')}">
                                     <td>${fn:escapeXml(row.tagName)}</td>

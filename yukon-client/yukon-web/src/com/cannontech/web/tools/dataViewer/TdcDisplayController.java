@@ -149,12 +149,6 @@ public class TdcDisplayController {
 
         boolean pageable = display.isPageable();
         model.addAttribute("pageable", pageable);
-        boolean stateValue = display.getColumns()
-                                    .stream()
-                                    .filter(column -> column.getType() == ColumnType.STATE || column.getType() == ColumnType.POINT_VALUE)
-                                    .toArray()
-                                    .length == 2;
-        model.addAttribute("stateValue", stateValue);
         
         PagingParameters paging = null;
         if (pageable) {
