@@ -72,7 +72,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private volatile boolean autoGenerateSubstationBuskWh = true;
     private volatile double localVoltageOffset;
     private volatile double remoteVoltageOffset;
-    private boolean tapPositionsAndSetPointValuesPreloaded = false;
+    private volatile boolean tapPositionsAndSetPointValuesPreloaded = false;
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
     private final Map<Integer, Double> regulatorSetPointValues = new HashMap<>();
@@ -462,10 +462,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                           regulatorVoltageControlModeConfig.put(regulator.getId(), null);
                                     }));
             
-            int tapPositionsLoadedsuccessCount = 0;
+            int tapPositionsLoadedSuccessCount = 0;
             
             if (regulatorTapPositionPointIds.size() > 0) {
-                tapPositionsLoadedsuccessCount = (int) asyncDynamicDataSource.getPointValues(regulatorTapPositionPointIds)
+                tapPositionsLoadedSuccessCount = (int) asyncDynamicDataSource.getPointValues(regulatorTapPositionPointIds)
                                       .stream()
                                       .filter(pvqh -> pvqh.getValue() < 30 && pvqh.getValue() > -20)
                                       .filter(pvqh -> pvqh.getPointQuality() == PointQuality.Normal)
@@ -499,13 +499,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                       .count();
             }
             
-            if ((CollectionUtils.isNotEmpty(regulatorTapPositionPointIds) && tapPositionsLoadedsuccessCount > 0)
+            if ((CollectionUtils.isNotEmpty(regulatorTapPositionPointIds) && tapPositionsLoadedSuccessCount > 0)
                 && (CollectionUtils.isNotEmpty(setPointValuePointIds) && setPointValuesLoadedsuccessCount > 0)) {
                 tapPositionsAndSetPointValuesPreloaded = true;
             }
             
             DateTime stop = DateTime.now();
-            log.debug("Retrieved and loaded " + tapPositionsLoadedsuccessCount + " tap point values and "
+            log.debug("Retrieved and loaded " + tapPositionsLoadedSuccessCount + " tap point values and "
                 + setPointValuesLoadedsuccessCount + " set point values from Dispatch in "
                 + (stop.getMillis() - start.getMillis()) / 1000 + " seconds");
         }
