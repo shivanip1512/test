@@ -14,6 +14,8 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
+import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
+import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
@@ -21,6 +23,7 @@ import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
 import com.cannontech.web.common.dashboard.service.DashboardService;
+import com.cannontech.web.common.dashboard.widget.service.WidgetService;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -30,6 +33,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired DashboardDao dashboardDao;
     @Autowired YukonUserDao userDao;
     @Autowired DashboardEventLogService dashboardEventLogService;
+    @Autowired private WidgetService widgetService;
  
     @Override
     public Dashboard getAssignedDashboard(int userId, DashboardPageType dashboardType) {
@@ -134,10 +138,14 @@ public class DashboardServiceImpl implements DashboardService {
     
     @Override
     @Transactional
-    public int create(DashboardBase dashboardBase) throws DuplicateException {
+    public int create(DashboardBase dashboardBase) throws DuplicateException, WidgetParameterValidationException,
+            WidgetMissingParameterException {
         int dashboardId = dashboardDao.create(dashboardBase);
         if (dashboardBase instanceof Dashboard) {
             Dashboard dashboard = (Dashboard) dashboardBase;
+            for (Widget widget : dashboard.getAllWidgets()) {
+                widgetService.createWidget(widget.getType(), widget.getParameters());
+            }
             dashboardDao.insertWidgets(dashboardId, dashboard.getColumn1Widgets(), 1);
             dashboardDao.insertWidgets(dashboardId, dashboard.getColumn2Widgets(), 2);
         }
@@ -146,7 +154,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional
-    public int update(LiteYukonUser yukonUser, Dashboard dashboard) throws DuplicateException {
+    public int update(LiteYukonUser yukonUser, Dashboard dashboard) throws DuplicateException,
+            WidgetParameterValidationException, WidgetMissingParameterException {
         ListMultimap<DashboardPageType, Integer> userPageMap = dashboardDao.getPageAssignmentToUserIdMap(dashboard.getDashboardId());
         Dashboard existingDashboard = dashboardDao.getDashboard(dashboard.getDashboardId());
         dashboardDao.deleteDashboard(dashboard.getDashboardId());
@@ -163,7 +172,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional
-    public int copy(int dashboardId, String name, String description, Visibility visibility,int userId) throws DuplicateException{
+    public int copy(int dashboardId, String name, String description, Visibility visibility, int userId)
+            throws DuplicateException, WidgetParameterValidationException, WidgetMissingParameterException {
         Dashboard dashboard = getDashboard(dashboardId);
         dashboard.setOwner(userDao.getLiteYukonUser(userId));
         dashboard.setDashboardId(0);
@@ -181,7 +191,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void setOwner(int userId, int dashboardId) {
+    public void setOwner(int userId, int dashboardId) throws WidgetParameterValidationException,
+            WidgetMissingParameterException {
         Dashboard dashboard = getDashboard(dashboardId);
         LiteYukonUser oldOwner = dashboard.getOwner();
         LiteYukonUser newOwner = userDao.getLiteYukonUser(userId);

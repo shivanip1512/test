@@ -22,12 +22,14 @@ public class WidgetParameter implements Displayable {
     private final MessageSourceResolvable messageKey;
     private final WidgetInputType inputType;
     private final WidgetInputValidator validator;
+    private final String defaultValue;
     
-    public WidgetParameter(String name, WidgetInputType inputType, WidgetInputValidator validator) {
+    public WidgetParameter(String name, WidgetInputType inputType, WidgetInputValidator validator, String defaultValue) {
         this.name = name;
         messageKey = new YukonMessageSourceResolvable(keyBase + name);
         this.inputType = inputType;
         this.validator = validator;
+        this.defaultValue = defaultValue;
     }
     
     /**
@@ -55,5 +57,9 @@ public class WidgetParameter implements Displayable {
     
     public String getKey() {
         return keyBase + name;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 }

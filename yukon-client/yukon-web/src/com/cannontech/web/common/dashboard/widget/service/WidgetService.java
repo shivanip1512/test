@@ -31,5 +31,13 @@ public interface WidgetService {
      * @throws WidgetParameterValidationException If a parameter fails validation.
      * @throws WidgetMissingParameterException If a parameter is missing.
      */
-    public Widget createWidget(WidgetType type, Map<String, Object> parameters) throws WidgetMissingParameterException, WidgetParameterValidationException;
+    public Widget createWidget(WidgetType type, Map<String, String> parameters) throws WidgetMissingParameterException,
+            WidgetParameterValidationException;
+
+    /**
+     * Get a Multimap of widget default paramters. See WidgetType for default values
+     * 
+     * @return A map of parameter name/value pairs filled in with any default values.
+     */
+    public Map<String, String> setDefaultParameters(WidgetType type, Map<String, String> parameters);
 }

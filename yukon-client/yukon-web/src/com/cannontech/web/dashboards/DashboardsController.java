@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.common.exception.DisplayableException;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -162,8 +162,14 @@ public class DashboardsController {
     
     @RequestMapping("{id}/changeOwner/{userId}")
     @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
-    public String changeOwner(@PathVariable int id, @PathVariable int userId, FlashScope flash) {
-        dashboardService.setOwner(userId, id);
+    public String changeOwner(@PathVariable int id, @PathVariable int userId, ModelMap model, FlashScope flash, HttpServletResponse resp) {
+        try {
+            dashboardService.setOwner(userId, id);
+        } catch (DisplayableException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "dashboardAdmin.jsp";
+        }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "changeOwner.success"));
         return "redirect:/dashboards/admin";
     }
@@ -249,6 +255,12 @@ public class DashboardsController {
             result.rejectValue("name", "yukon.web.error.nameConflict");
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
+            setupDashboardDetailsModel(model, yukonUser);
+            return "dashboardDetails.jsp";
+        } catch (DisplayableException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
             setupDashboardDetailsModel(model, yukonUser);
             return "dashboardDetails.jsp";
         }
@@ -351,6 +363,7 @@ public class DashboardsController {
             WidgetType widgetType = WidgetType.valueOf(type);
             Widget widget = new Widget();
             widget.setType(widgetType);
+            widget.setParameters(widgetService.setDefaultParameters(widgetType, new HashMap<String, String>()));
             model.addAttribute("widget", widget);
             model.addAttribute("dashboard", dashboard);
             return "widgetAddRow.jsp";
@@ -390,6 +403,12 @@ public class DashboardsController {
                 model.addAttribute("mode", PageEditMode.EDIT);
                 setupDashboardDetailsModel(model, yukonUser);
                 return "dashboardDetails.jsp";
+            }catch (DisplayableException e) {
+                flash.setError(e.getMessageSourceResolvable());
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                model.addAttribute("mode", PageEditMode.EDIT);
+                setupDashboardDetailsModel(model, yukonUser);
+                return "dashboardDetails.jsp";
             }
         } else {
             return "redirect:/dashboards/manage";
@@ -398,24 +417,21 @@ public class DashboardsController {
     
     @RequestMapping("save")
     public String saveDashboard(@ModelAttribute Dashboard dashboard, LiteYukonUser yukonUser, ModelMap model,
-            FlashScope flash, BindingResult result, HttpServletResponse resp) {
-        boolean isGroupNotSelected = dashboard.getAllWidgets()
-                                              .stream()
-                                              .filter(widget -> widget.getType() == WidgetType.DATA_COLLECTION)
-                                              .anyMatch(widget -> StringUtils.isBlank(widget.getParameters().get("deviceGroup")));
-        if (isGroupNotSelected) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "edit.exception.deviceGroup", dashboard.getName()));
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", PageEditMode.EDIT);
-            setupDashboardDetailsModel(model, yukonUser);
-            return "dashboardEdit.jsp";
-        }
+            FlashScope flash, HttpServletResponse resp) {
         Dashboard existingDashboard = dashboardService.getDashboard(dashboard.getDashboardId());
         if (canUserEditDashboard(yukonUser, existingDashboard, flash)) {
-            dashboard.setOwner(yukonUser);
-            int id = dashboardService.update(yukonUser, dashboard);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success"));
-            return "redirect:/dashboards/" + id + "/view";
+            try {
+                dashboard.setOwner(yukonUser);
+                int id = dashboardService.update(yukonUser, dashboard);
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success"));
+                return "redirect:/dashboards/" + id + "/view";
+            } catch (DisplayableException e) {
+                flash.setError(e.getMessageSourceResolvable());
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                model.addAttribute("mode", PageEditMode.EDIT);
+                setupDashboardDetailsModel(model, yukonUser);
+                return "dashboardEdit.jsp";
+            }
         } else {
             return "redirect:/dashboards/manage";
         }

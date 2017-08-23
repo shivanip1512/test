@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
+import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
@@ -71,21 +73,32 @@ public interface DashboardService {
     
     /**
      * @return The ID of the newly created dashboard.
+     * @throws WidgetMissingParameterException
+     * @throws WidgetParameterValidationException
      */
-    int create(DashboardBase dashboard) throws DuplicateException;
+    int create(DashboardBase dashboard) throws DuplicateException, WidgetParameterValidationException,
+            WidgetMissingParameterException;
     
     /**
      * @return The ID of the modified dashboard.
+     * @throws WidgetMissingParameterException
+     * @throws DuplicateException
+     * @throws WidgetMissingParameterException
      */
-    int update(LiteYukonUser yukonUser, Dashboard dashboard);
+    int update(LiteYukonUser yukonUser, Dashboard dashboard) throws WidgetParameterValidationException,
+            DuplicateException, WidgetMissingParameterException;
     
     /**
      * Copy a dashboard, saving the new copy to the database with the specified owner.
+     * 
      * @return the copy.
      * @throws DuplicateException if attempt to create a dashboard with the same name by the same user is
      *         made.
+     * @throws WidgetParameterValidationException
+     * @throws WidgetMissingParameterException
      */
-    int copy(int dashboardId, String name, String description, Visibility visibility, int userId) throws DuplicateException;
+    int copy(int dashboardId, String name, String description, Visibility visibility, int userId)
+            throws DuplicateException, WidgetParameterValidationException, WidgetMissingParameterException;
     
     /**
      * Delete a dashboard.
@@ -106,8 +119,12 @@ public interface DashboardService {
 
     /**
      * Set a new owner for a dashboard.
+     * 
+     * @throws WidgetMissingParameterException
+     * @throws DuplicateException
      */
-    void setOwner(int userId, int dashboardId);
+    void setOwner(int userId, int dashboardId) throws WidgetParameterValidationException, 
+            WidgetMissingParameterException;
 
     /**
      * Get all dashboards.

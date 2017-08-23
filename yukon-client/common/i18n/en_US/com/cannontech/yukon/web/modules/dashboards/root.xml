@@ -61,9 +61,8 @@
     <entry key="yukon.web.modules.dashboard.edit.exception.notOwner">Unable to edit dashboard {0}. Only the dashboard owner may edit this dashboard.</entry>
     <entry key="yukon.web.modules.dashboard.edit.exception.system">Unable to edit dashboard {0}. System dashboards cannot be edited.</entry>
     <entry key="yukon.web.modules.dashboard.view.exception.notOwner">Unable to view dashboard {0}. You do not have access to this dashboard.</entry>
-    <entry key="yukon.web.modules.dashboard.edit.exception.deviceGroup">Unable to save dashboard {0}. Please select a device group for all Data Collection Widgets.</entry>
-    
-    
+    <entry key="yukon.web.modules.dashboard.exception.deviceGroup.required">Device group is required.</entry>
+    <entry key="yukon.web.modules.dashboard.exception.meter.required">Meter is required.</entry>
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>
     <entry key="yukon.web.modules.dashboard.addWidgets.addWidget.label">Add Widget</entry>

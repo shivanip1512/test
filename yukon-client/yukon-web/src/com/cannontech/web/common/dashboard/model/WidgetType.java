@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.web.common.dashboard.widget.validator.DeviceGroupPickerValidator;
 import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
@@ -65,19 +66,18 @@ public enum WidgetType implements DisplayableEnum {
         widgetSpecificCss = ImmutableListMultimap.of(
             //Add specialized CSS (that only needs to be loaded when the widget is present)
         );
-        
+
         Builder<WidgetType, WidgetParameter> builder = new ImmutableListMultimap.Builder<WidgetType, WidgetParameter>()
-            .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()))
-            .putAll(SYSTEM_MESSAGING, new WidgetParameter("showRfnMeter", WidgetInputType.CHECKBOX, null),
-                                      new WidgetParameter("showRfnLcr", WidgetInputType.CHECKBOX, null),
-                                      new WidgetParameter("showRfGatewayArchive", WidgetInputType.CHECKBOX, null),
-                                      new WidgetParameter("showRfDa", WidgetInputType.CHECKBOX, null),
-                                      new WidgetParameter("showRfGatewayDataRequest", WidgetInputType.CHECKBOX, null),
-                                      new WidgetParameter("showRfGatewayData", WidgetInputType.CHECKBOX, null))
-            .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, null),
-                                     new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null))
-            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null));
-        
+            .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get(), null))
+            .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, DeviceGroupPickerValidator.get(), null), 
+                                     new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null, "false"))
+            .putAll(SYSTEM_MESSAGING, new WidgetParameter("showRfnMeter", WidgetInputType.CHECKBOX, null, "false"),
+                                      new WidgetParameter("showRfnLcr", WidgetInputType.CHECKBOX, null, "false"),
+                                      new WidgetParameter("showRfGatewayArchive", WidgetInputType.CHECKBOX, null, "false"),
+                                      new WidgetParameter("showRfDa", WidgetInputType.CHECKBOX, null, "false"),
+                                      new WidgetParameter("showRfGatewayDataRequest", WidgetInputType.CHECKBOX, null, "false"),
+                                      new WidgetParameter("showRfGatewayData", WidgetInputType.CHECKBOX, null, "false"))
+            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null, null));
         widgetParameters = builder.build();
     }
     

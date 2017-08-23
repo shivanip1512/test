@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.Widget;
@@ -37,7 +39,7 @@ public class WidgetServiceImpl implements WidgetService {
     }
 
     @Override
-    public Widget createWidget(WidgetType type, Map<String, Object> parameters) 
+    public Widget createWidget(WidgetType type, Map<String, String> parameters) 
             throws WidgetMissingParameterException, WidgetParameterValidationException {
         
         Map<String, String> validParameters = validateParameters(type, parameters);
@@ -49,7 +51,7 @@ public class WidgetServiceImpl implements WidgetService {
         return widget;
     }
 
-    private Map<String, String> validateParameters(WidgetType type, Map<String, Object> parameters) 
+    private Map<String, String> validateParameters(WidgetType type, Map<String, String> parameters) 
             throws WidgetMissingParameterException, WidgetParameterValidationException {
 
         // Check that all parameter names match parameter names in definition
@@ -58,17 +60,29 @@ public class WidgetServiceImpl implements WidgetService {
         if (missingParameterNames.size() > 0) {
             throw new WidgetMissingParameterException("Unable to create widget, missing parameters.", missingParameterNames);
         }
-        
         // Validate each parameter against its type-specific validator
         for (WidgetParameter definitionParameter : type.getParameters()) {
-            String parameterName = definitionParameter.getName();
-            Object suppliedParameter = parameters.get(parameterName);
-            definitionParameter.getValidator().validate(parameterName, suppliedParameter);
+            if (definitionParameter.getValidator() != null) {
+                String parameterName = definitionParameter.getName();
+                Object suppliedParameter = parameters.get(parameterName);
+                definitionParameter.getValidator().validate(parameterName, suppliedParameter,
+                    definitionParameter.getInputType());
+            }
         }
         
         return parameters.entrySet()
                          .stream()
                          .collect(Collectors.toMap(entry -> entry.getKey(), 
                                                    entry -> entry.getValue().toString()));
+    }
+
+    public Map<String, String> setDefaultParameters(WidgetType type, Map<String, String> parameters) {
+        for (WidgetParameter definitionParameter : type.getParameters()) {
+            if (StringUtils.isEmpty(parameters.get(definitionParameter.getName()))
+                && definitionParameter.getDefaultValue() != null) {
+                parameters.put(definitionParameter.getName(), definitionParameter.getDefaultValue());
+            }
+        }
+        return parameters;
     }
 }
