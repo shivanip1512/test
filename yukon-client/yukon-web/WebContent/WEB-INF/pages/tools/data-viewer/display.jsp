@@ -31,7 +31,12 @@
             </tags:dynamicChoose>
         </c:if>
         <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-            <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
+            <c:if test="${eventViewer}">
+                <cti:url var="download" value="/tools/data-viewer/${display.displayId}/${backingBean.date}/download"/>                
+            </c:if>
+            <c:if test="${!eventViewer}">
+                <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
+            </c:if>
             <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
         </c:if>
     </div>

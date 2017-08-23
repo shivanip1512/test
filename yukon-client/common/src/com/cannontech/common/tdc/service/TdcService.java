@@ -147,4 +147,8 @@ public interface TdcService {
     SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone,
                                                     PagingParameters paging, SortBy sortBy,
                                                     Direction direction, DateTime date);
+
+    int getDisplayDataCount(int displayId, DateTime date);
+
+    List<DisplayData> getDisplayData(DateTime date, PagingParameters paging);
 }

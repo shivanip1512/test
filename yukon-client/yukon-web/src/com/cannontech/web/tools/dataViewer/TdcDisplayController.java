@@ -210,9 +210,17 @@ public class TdcDisplayController {
         DisplayBackingBean backingBean = new DisplayBackingBean();
         DateTime dateTime = DateTime.parse(date);
         backingBean.setDate(dateTime);
+        int totalCount = 0;
+        if (displayId == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
+            totalCount = tdcService.getDisplayDataCount(displayId, dateTime);
+        }
+        else {
+            totalCount = tdcService.getDisplayDataCount(displayId, userContext.getJodaTimeZone());
+        }
         SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
         model.addAttribute("backingBean", backingBean);
         SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
+        result = SearchResults.pageBasedForSublist(result.getResultList(), pagingParameters, totalCount);
         model.addAttribute("result", result);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
@@ -243,9 +251,10 @@ public class TdcDisplayController {
         backingBean.setDate(dateTime);
         model.addAttribute("backingBean", backingBean);
 
-
+        int totalCount = tdcService.getDisplayDataCount(displayId, dateTime);
         SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
         SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
+        result = SearchResults.pageBasedForSublist(result.getResultList(), pagingParameters, totalCount);
         model.addAttribute("result", result);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
@@ -735,6 +744,29 @@ public class TdcDisplayController {
         Display display = displayDao.findDisplayById(displayId);
         List<DisplayData> displayData = tdcService.getDisplayData(display,
                 userContext.getJodaTimeZone(), PagingParameters.EVERYTHING);
+        TdcDownloadHelper helper =
+            new TdcDownloadHelper(accessor,
+                                  registrationService,
+                                  dateFormattingService,
+                                  tdcService,
+                                  display,
+                                  displayData,
+                                  userContext);
+        List<String> columnNames = helper.getColumnNames();
+        List<List<String>> dataGrid = helper.getDataGrid();
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, display.getName() + ".csv");
+        return null;
+    }
+    
+    @RequestMapping(value = "data-viewer/{displayId}/{date}/download", method = RequestMethod.GET)
+    public String download(HttpServletResponse response, @PathVariable int displayId,
+                           YukonUserContext userContext,
+                           @PathVariable String date)
+            throws IOException {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Display display = displayDao.findDisplayById(displayId);
+        List<DisplayData> displayData = tdcService.getDisplayData(new DateTime(date),
+                PagingParameters.EVERYTHING);
         TdcDownloadHelper helper =
             new TdcDownloadHelper(accessor,
                                   registrationService,

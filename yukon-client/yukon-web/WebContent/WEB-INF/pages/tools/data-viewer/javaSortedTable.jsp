@@ -10,7 +10,9 @@
 <c:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/date"/>
 <form:form id="date-form" action="${dateUrl}"  method="post" commandName="backingBean">
     <cti:csrfToken/>
-    <dt:date id="date" path="date" value="${backingBean.date}" disabled="${!eventViewer}" cssClass="js-date"/>
+    <c:if test="${eventViewer}">
+        <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}" cssClass="js-date"/></span>
+    </c:if>
 </form:form>
 <c:url var="url" value="/tools/data-viewer/${display.displayId}/${backingBean.date}/page"/>
 <div data-url="${url}" data-static>
@@ -94,8 +96,3 @@
     </table>
     <tags:pagingResultsControls adjustPageCount="true" result="${result}"/>
 </div>
-<style>
-.date {
-    float: right;
-}
-</style>

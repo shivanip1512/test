@@ -122,6 +122,13 @@ public class TdcServiceImpl implements TdcService {
     }
     
     @Override
+    public List<DisplayData> getDisplayData(DateTime date, PagingParameters paging) {
+        List<DisplayData> retVal = null;
+        retVal = displayDataDao.getEventViewerDisplayData(date, paging);
+        return retVal;
+    }
+    
+    @Override
     public SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, DateTime date) {
         SearchResults<DisplayData> searchResults = null;
         switch (display.getDisplayId()) {
@@ -156,7 +163,12 @@ public class TdcServiceImpl implements TdcService {
         }
         return count;
     }
-        
+    
+    @Override
+    public int getDisplayDataCount(int displayId, DateTime date) {
+        return displayDataDao.getEventViewerDisplayDataCount(date);
+    }
+    
     @Override
     public void sendPointData(int pointId, double value, LiteYukonUser user){
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);

@@ -104,4 +104,8 @@ public interface DisplayDataDao {
     SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone,
                                                          PagingParameters paging, SortBy sortBy,
                                                          Direction direction, DateTime date);
+
+    int getEventViewerDisplayDataCount(DateTime date);
+
+    List<DisplayData> getEventViewerDisplayData(DateTime date, PagingParameters paging);
 }

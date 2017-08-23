@@ -83,6 +83,25 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     }
     
     @Override
+    public List<DisplayData> getEventViewerDisplayData(DateTime date, PagingParameters paging) {
+        
+        DateTime from = date.withTimeAtStartOfDay();
+        DateTime to = from.plusDays(1);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID,  p.Pointname, s.Description, s.Action, s.Username, s.Pointid, s.Soe_tag");
+        sql.append("FROM SystemLog s");
+        sql.append("JOIN Point p ON s.PointId = p.PointId");
+        sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
+        sql.append("WHERE s.Datetime").gte(from);
+        sql.append("    AND s.Datetime").lt(to);
+        sql.append("ORDER BY s.Datetime DESC");
+        sql.append("    OFFSET").append(paging.getOneBasedStartIndex()).append("ROWS");
+        sql.append("    FETCH NEXT").append(paging.getOneBasedEndIndex()).append("ROWS ONLY");
+        List<DisplayData> data = yukonJdbcTemplate.query(sql, createEventViewerRowMapper);
+        return data;
+    }
+    
+    @Override
     public SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, DateTime date) {
         DateTime from = date.withTimeAtStartOfDay();
         DateTime to = from.plusDays(1);
@@ -129,6 +148,19 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         return yukonJdbcTemplate.queryForInt(sql);
     }
 
+    @Override
+    public int getEventViewerDisplayDataCount(DateTime date) {
+        DateTime from = date.withTimeAtStartOfDay();
+        DateTime to = from.plusDays(1);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT count(*)");
+        sql.append("FROM SystemLog s JOIN Point p ON s.PointId = p.PointId");
+        sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
+        sql.append("WHERE s.Datetime").gte(from);
+        sql.append("  AND s.Datetime").lt(to);
+        return yukonJdbcTemplate.queryForInt(sql);
+    }
+    
     @Override
     public List<DisplayData> getCustomDisplayData(Display display) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
