@@ -599,7 +599,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 TEMPERATURE_DEVICE);
 
         nonIntervalAttributes = ImmutableSet.of(
+                MAXIMUM_VOLTAGE,
+                MINIMUM_VOLTAGE,
                 PEAK_DEMAND,
+                PEAK_DEMAND_DAILY,
                 PEAK_DEMAND_FROZEN,
                 PEAK_DEMAND_FROZEN_RATE_A,
                 PEAK_DEMAND_FROZEN_RATE_B,
@@ -609,12 +612,19 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 PEAK_DEMAND_RATE_B,
                 PEAK_DEMAND_RATE_C,
                 PEAK_DEMAND_RATE_D,
+                PEAK_KVA,
                 PEAK_KVAR,
                 PEAK_KVAR_COIN,
                 PEAK_KVAR_RATE_A,
                 PEAK_KVAR_RATE_B,
                 PEAK_KVAR_RATE_C,
-                PEAK_KVAR_RATE_D);
+                PEAK_KVAR_RATE_D,
+                SUM_PEAK_DEMAND,
+                SUM_PEAK_DEMAND_RATE_A,
+                SUM_PEAK_KVA,
+                SUM_PEAK_KVA_RATE_A,
+                SUM_PEAK_KVAR,
+                SUM_PEAK_KVAR_RATE_A);
 
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
