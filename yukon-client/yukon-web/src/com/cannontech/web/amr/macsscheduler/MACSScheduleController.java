@@ -145,6 +145,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="create", method = RequestMethod.GET)
+    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public String createSchedule(ModelMap model) {
         MacsSchedule schedule = new MacsSchedule();
         model.addAttribute("schedule", schedule);
@@ -185,6 +186,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/edit", method = RequestMethod.GET)
+    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public String editSchedule(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         MacsSchedule schedule = service.getMacsScheduleById(id);
         model.addAttribute("schedule", schedule);
@@ -231,6 +233,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/delete", method = RequestMethod.GET)
+    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public String deleteSchedule(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         try {
             MacsSchedule schedule = service.getMacsScheduleById(id);
@@ -243,6 +246,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="createScript", method = RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public String createScript(@ModelAttribute("schedule") MacsSchedule schedule, YukonUserContext yukonUserContext, 
                                ModelMap model, BindingResult result, HttpServletResponse resp) {
         validator.validate(schedule, result);
@@ -258,6 +262,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="save", method = RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
     public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, YukonUserContext userContext, 
                                FlashScope flash, ModelMap model, HttpServletResponse resp) {
         int id = schedule.getId();

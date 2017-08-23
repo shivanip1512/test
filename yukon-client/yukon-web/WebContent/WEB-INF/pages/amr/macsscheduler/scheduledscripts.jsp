@@ -13,10 +13,12 @@
         <jsp:include page="${url}" />
     </div>
 
-    <div class="action-area">
-        <cti:url var="createUrl" value="/macsscheduler/schedules/create" />
-        <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}" />
-    </div>
+    <cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS">
+        <div class="action-area">
+            <cti:url var="createUrl" value="/macsscheduler/schedules/create" />
+            <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}" />
+        </div>
+    </cti:checkRolesAndProperties>
 
     <cti:includeScript link="/resources/js/pages/yukon.ami.macs.js" />
 </cti:standardPage>
