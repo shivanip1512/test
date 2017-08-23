@@ -185,6 +185,15 @@
     <entry key="yukon.web.modules.tools.tdc.copy.name">Display Name</entry>
     <entry key="yukon.web.modules.tools.tdc.display.load.error">Display requested does not exist.</entry>
     
+    <entry key="yukon.web.modules.tools.tdc.TIME_STAMP">Time Stamp</entry>    
+    <entry key="yukon.web.modules.tools.tdc.DEVICE_NAME">Device Name</entry>    
+    <entry key="yukon.web.modules.tools.tdc.POINT_NAME">Point Name</entry>    
+    <entry key="yukon.web.modules.tools.tdc.TEXT_MESSAGE">Text Message</entry>    
+    <entry key="yukon.web.modules.tools.tdc.ADDITIONAL_INFO">Additional Info</entry>    
+    <entry key="yukon.web.modules.tools.tdc.USERNAME">User Name</entry>    
+    <entry key="yukon.web.modules.tools.tdc.TAG">Tag</entry>    
+    <entry key="yukon.web.modules.tools.tdc.DESCRIPTION">Description</entry>    
+    
     <entry key="yukon.web.modules.tools.pao.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.pageHeading">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.crumbTitle">{0}</entry>

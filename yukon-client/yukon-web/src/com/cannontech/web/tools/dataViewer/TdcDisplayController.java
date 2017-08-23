@@ -189,10 +189,13 @@ public class TdcDisplayController {
         if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
             model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));
         }
-        List<SortableColumn> sortableColumns = display.getColumns().stream()
-                                                                   .map(c -> SortableColumn.of(Direction.desc, false, c.getTitle(), c.getTitle()))
-                                                                   .collect(Collectors.toList());
-        model.addAttribute("sortableColumns", sortableColumns);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        if (pageable) {
+            List<SortableColumn> sortableColumns = display.getColumns().stream()
+                                                                       .map(c -> SortableColumn.of(Direction.desc, false, accessor.getMessage(baseKey+c.getType().name()), c.getType().name()))
+                                                                       .collect(Collectors.toList());
+            model.addAttribute("sortableColumns", sortableColumns);
+        }
         SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, paging, totalCount);
         model.addAttribute("result", result);
         return "data-viewer/display.jsp";
@@ -200,7 +203,7 @@ public class TdcDisplayController {
     
     @RequestMapping(value = "data-viewer/{displayId}/{date}/page", method = RequestMethod.GET)
     public String page(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
-                       @DefaultSort(dir=Direction.asc, sort="Time Stamp") SortingParameters sorting, 
+                       @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
                        @PathVariable String date) {
         if (displayId == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
@@ -228,8 +231,9 @@ public class TdcDisplayController {
         model.addAttribute("result", result);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<SortableColumn> sortableColumns = display.getColumns().stream()
-                                                      .map(c -> SortableColumn.of(sorting, c.getTitle(), c.getTitle()))
+                                                      .map(c -> SortableColumn.of(sorting, accessor.getMessage(baseKey+c.getType().name()), c.getType().name()))
                                                       .collect(Collectors.toList());
         model.addAttribute("sortableColumns", sortableColumns);
 
@@ -238,7 +242,7 @@ public class TdcDisplayController {
     
     @RequestMapping(value = "data-viewer/{displayId}/date", method = RequestMethod.POST)
     public String date(HttpServletRequest request, YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
-                       @DefaultSort(dir=Direction.asc, sort="Time Stamp") SortingParameters sorting, 
+                       @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
                        @RequestParam("date") String date) {
         model.addAttribute("pageable", true);
@@ -262,8 +266,9 @@ public class TdcDisplayController {
         model.addAttribute("result", result);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<SortableColumn> sortableColumns = display.getColumns().stream()
-                                                      .map(c -> SortableColumn.of(sorting, c.getTitle(), c.getTitle()))
+                                                      .map(c -> SortableColumn.of(sorting, accessor.getMessage(baseKey+c.getType().name()), c.getType().name()))
                                                       .collect(Collectors.toList());
         model.addAttribute("sortableColumns", sortableColumns);
     
@@ -272,7 +277,7 @@ public class TdcDisplayController {
     
     private SortBy getSortByFromSortingParameter(Display display, String sorting) {
         if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
-            switch (ColumnType.getByName(sorting)) {
+            switch (ColumnType.valueOf(sorting)) {
                 case TIME_STAMP:
                     return SortBy.SYS_LOG_DATE_TIME;
                 case DEVICE_NAME:
@@ -290,7 +295,7 @@ public class TdcDisplayController {
             }
         }
         else if (display.getDisplayId() == IDisplay.TAG_LOG_DISPLAY_NUMBER) {
-            switch (ColumnType.getByName(sorting)) {
+            switch (ColumnType.valueOf(sorting)) {
                 case TIME_STAMP:
                     return SortBy.TAG_LOG_TAG_TIME;
                 case DEVICE_NAME:
@@ -310,7 +315,7 @@ public class TdcDisplayController {
             }
         }
         else if (display.getDisplayId() == IDisplay.SOE_LOG_DISPLAY_NUMBER) {
-            switch (ColumnType.getByName(sorting)) {
+            switch (ColumnType.valueOf(sorting)) {
                 case TIME_STAMP:
                     return SortBy.SYS_LOG_DATE_TIME;
                 case DEVICE_NAME:
