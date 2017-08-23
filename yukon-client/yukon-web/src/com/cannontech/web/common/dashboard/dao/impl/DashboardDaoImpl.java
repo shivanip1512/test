@@ -168,7 +168,7 @@ public class DashboardDaoImpl implements DashboardDao {
             dashboards.stream().filter(dashboard -> dashboard.getVisibility() == Visibility.PUBLIC).map(
                 Dashboard::getDashboardId).collect(Collectors.toList());
 
-        Integer yukonUserCount = userDao.getNonResidentialUserCount();
+        Integer yukonUserCount = userDao.getActiveNonResidentialUserCount();
         dashboardIdToUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(), yukonUserCount);
         dashboardIdToUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(), yukonUserCount);
 

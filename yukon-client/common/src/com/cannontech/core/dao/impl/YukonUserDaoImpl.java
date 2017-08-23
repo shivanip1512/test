@@ -19,6 +19,7 @@ import com.cannontech.common.user.NewUser;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -27,6 +28,7 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.TypeRowMapper;
@@ -43,6 +45,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -62,6 +67,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     
     public static final int numberOfRandomChars = 5;
     
@@ -536,15 +542,37 @@ public class YukonUserDaoImpl implements YukonUserDao {
     }
     
     @Override
-    public int getNonResidentialUserCount() {
+    public int getActiveNonResidentialUserCount() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM YukonUser");
-        sql.append("WHERE UserGroupId IN (SELECT groupid FROM YukonGroupRole WHERE roleid IN");
-        sql.append("(SELECT RoleID FROM YukonRole WHERE RoleName NOT LIKE 'RESIDENTIAL_CUSTOMER'))");
+        sql.append("SELECT (");
+        sql.append("  (SELECT COUNT(DISTINCT UserID) ");
+        sql.append("   FROM YukonUser");
+        sql.append("   WHERE UserGroupId IS NOT NULL AND Status").eq(LoginStatusEnum.ENABLED);
+        sql.append("   )");
+        sql.append("-");
+        sql.append("  (SELECT COUNT(DISTINCT UserID)");
+        sql.append("   FROM YukonUser yu ");
+        sql.append("     JOIN UserGroupToYukonGroupMapping ugm ON yu.UserGroupId = ugm.UserGroupId");
+        sql.append("     JOIN YukonGroupRole yg ON ugm.GroupId = yg.GroupID");
+        sql.append("   WHERE RoleID").eq(YukonRole.RESIDENTIAL_CUSTOMER);
+        sql.append("))");
+        sql.append(getTable());
+        sql.append(" UserCount");
         
         int count = jdbcTemplate.queryForInt(sql);
         return count;
+    }
+    
+    private SqlFragmentSource getTable() {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
+        sqla.append("");
+
+        SqlBuilder sqlb = builder.buildOther();
+        sqlb.append(" FROM Dual");
+
+        return builder;
     }
 
 }
