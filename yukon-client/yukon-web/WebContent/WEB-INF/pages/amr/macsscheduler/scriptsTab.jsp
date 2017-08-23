@@ -31,7 +31,7 @@
                                 <cti:list var="groups">
                                     <cti:item value="${schedule.scriptOptions.groupName}"/>
                                 </cti:list>
-                                <tags:deviceGroupPicker inputName="scriptOptions.groupName" inputValue="${groups}"/>
+                                <tags:deviceGroupPicker inputName="scriptOptions.groupName" inputValue="${groups}" predicates="MODIFIABLE, NON_HIDDEN"/>
                                 <c:if test="${status.error}"><br><form:errors path="${pathKey}groupName" cssClass="error"/></c:if>
                             </spring:bind>
                         </cti:displayForPageEditModes>
