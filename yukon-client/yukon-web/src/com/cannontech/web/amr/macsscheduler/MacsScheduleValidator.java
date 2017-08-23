@@ -53,6 +53,11 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
                     YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.billingDemandDays", schedule.getScriptOptions().getBillingDemandDays());
                     YukonValidationUtils.checkIsPositiveInt(errors, "scriptOptions.billingEnergyDays", schedule.getScriptOptions().getBillingEnergyDays());
                 }
+                if (schedule.getScriptOptions().isNotificationSelected()) {
+                    if (schedule.getScriptOptions().getNotificationGroupId() == 0) {
+                        errors.rejectValue("scriptOptions.notificationGroupId", "yukon.web.error.isBlank");
+                    }
+                }
             }
         } else {
             YukonValidationUtils.checkExceedsMaxLength(errors, "simpleOptions.startCommand", schedule.getSimpleOptions().getStartCommand(), 120);
