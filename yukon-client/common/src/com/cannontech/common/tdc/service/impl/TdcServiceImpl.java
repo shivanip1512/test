@@ -364,7 +364,7 @@ public class TdcServiceImpl implements TdcService {
 
     @Override
     public int getUnackAlarmCountForDisplay(int displayId) {
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         int count = 0;
         List<DisplayData> displayData = getDisplayData(display, null, null);
         for(DisplayData data :displayData){
@@ -526,7 +526,7 @@ public class TdcServiceImpl implements TdcService {
     @Override
     @Transactional
     public Display copyCustomDisplay(int displayId, String name) {
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> data = displayDataDao.getCustomDisplayData(display);
         return updateCustomDisplay(0, name, display.getTitle(), display.getDescription(),
             data.stream().map(d -> d.getPointId()).collect(Collectors.toList()), display.getColumns());
@@ -549,7 +549,7 @@ public class TdcServiceImpl implements TdcService {
     @Transactional
     public Display updateCustomDisplay(int displayId, String name, String title, String description,
             List<Integer> pointIds) {
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         return updateCustomDisplay(displayId, name, display.getTitle(), display.getDescription(), pointIds,
             display.getColumns());
     }

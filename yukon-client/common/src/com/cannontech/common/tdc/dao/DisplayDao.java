@@ -15,7 +15,7 @@ public interface DisplayDao {
     /**
      * Returns display for display id if found. Else null.
      */
-    Display findDisplayById(int displayId);
+    Display getDisplayById(int displayId);
     
     /**
      * If display id is 0 creates display otherwise updates display, display columns are not updated.

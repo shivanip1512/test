@@ -21,6 +21,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -138,11 +139,14 @@ public class TdcDisplayController {
     public String view(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, FlashScope flashScope) {
 
         model.addAttribute("mode", PageEditMode.VIEW);
-        Display display = displayDao.findDisplayById(displayId);
-        if (display == null) {
+        Display display;
+        try {
+            display = displayDao.getDisplayById(displayId);
+        } catch (EmptyResultDataAccessException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.display.load.error"));
             return "redirect:/tools/data-viewer";
         }
+
         boolean pageable = display.isPageable();
         model.addAttribute("pageable", pageable);
         boolean stateValue = display.getColumns()
@@ -204,7 +208,7 @@ public class TdcDisplayController {
         }
         model.addAttribute("pageable", true);
         model.addAttribute("mode", PageEditMode.VIEW);
-        Display display = displayDao.findDisplayById(displayId); 
+        Display display = displayDao.getDisplayById(displayId); 
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         DisplayBackingBean backingBean = new DisplayBackingBean();
@@ -239,7 +243,7 @@ public class TdcDisplayController {
                        @RequestParam("date") String date) {
         model.addAttribute("pageable", true);
         model.addAttribute("mode", PageEditMode.VIEW);
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
@@ -417,7 +421,7 @@ public class TdcDisplayController {
     @ResponseBody
     public Map<String, String> acknowledgeAlarmsForDisplay(YukonUserContext userContext, int displayId) {
 
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         int alarms = tdcService.acknowledgeAlarmsForDisplay(display, userContext.getYukonUser());
         MessageSourceResolvable successMsg =
             new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.ack.success", alarms);
@@ -741,7 +745,7 @@ public class TdcDisplayController {
                            YukonUserContext userContext)
             throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> displayData = tdcService.getDisplayData(display,
                 userContext.getJodaTimeZone(), PagingParameters.EVERYTHING);
         TdcDownloadHelper helper =
@@ -764,7 +768,7 @@ public class TdcDisplayController {
                            @PathVariable String date)
             throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> displayData = tdcService.getDisplayData(new DateTime(date),
                 PagingParameters.EVERYTHING);
         TdcDownloadHelper helper =
@@ -802,7 +806,7 @@ public class TdcDisplayController {
 
         DisplayBackingBean backingBean = new DisplayBackingBean();
         backingBean.setDisplayId(displayId);
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         model.put("displayName", display.getName());
         model.addAttribute("backingBean", backingBean);
         return "data-viewer/copyPopup.jsp";
@@ -816,7 +820,7 @@ public class TdcDisplayController {
         
         validator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            Display display = displayDao.findDisplayById(backingBean.getDisplayId());
+            Display display = displayDao.getDisplayById(backingBean.getDisplayId());
             model.put("displayName", display.getName());
             model.addAttribute("backingBean", backingBean);
             List<MessageSourceResolvable> messages =
@@ -841,7 +845,7 @@ public class TdcDisplayController {
 
     @RequestMapping(value = "data-viewer/{displayId}/deleteCustomDisplay", method = RequestMethod.GET)
     public String deleteCustomDisplay(FlashScope flash, @PathVariable int displayId) {
-        Display display = displayDao.findDisplayById(displayId);
+        Display display = displayDao.getDisplayById(displayId);
         displayDao.deleteCustomDisplay(displayId);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "display.DELETE.success", display.getName()));
         return "redirect:/tools/data-viewer";

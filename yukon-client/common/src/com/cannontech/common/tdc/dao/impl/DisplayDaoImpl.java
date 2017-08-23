@@ -65,19 +65,15 @@ public class DisplayDaoImpl implements DisplayDao {
     }
 
     @Override
-    public Display findDisplayById(int displayId) {
+    public Display getDisplayById(int displayId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
         sql.append("FROM DISPLAY");
         sql.append("WHERE DISPLAYNUM").eq(displayId);
-        try {
-            Display display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
-            addColumnsToDisplay(display);
-            return display;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+        Display display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
+        addColumnsToDisplay(display);
+        return display;
     }
     
 
@@ -279,7 +275,7 @@ public class DisplayDaoImpl implements DisplayDao {
             log.debug("Updating display=" + display);
         }
 
-        return findDisplayById(displayId);
+        return getDisplayById(displayId);
     }
     
     /**
