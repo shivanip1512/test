@@ -163,19 +163,19 @@ public class DashboardDaoImpl implements DashboardDao {
                 dashboardIdToUserCount.put(rs.getInt("DashboardId"), rs.getInt("UserCount"));
             }
         });
-
-        List<Integer> publicDashboard =
-            dashboards.stream().filter(dashboard -> dashboard.getVisibility() == Visibility.PUBLIC).map(
-                Dashboard::getDashboardId).collect(Collectors.toList());
-
+        
         Integer yukonUserCount = userDao.getActiveNonResidentialUserCount();
         dashboardIdToUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(), yukonUserCount);
         dashboardIdToUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(), yukonUserCount);
 
         SqlStatementBuilder pageAssignmentSql = new SqlStatementBuilder();
-        pageAssignmentSql.append("SELECT PageAssignment, COUNT(userId) AS UserCount ");
+        pageAssignmentSql.append("SELECT PageAssignment, COUNT(UserId) AS UserCount ");
         pageAssignmentSql.append("FROM UserDashboard");
-        pageAssignmentSql.append("WHERE DashboardId").in(publicDashboard);
+        pageAssignmentSql.append("WHERE DashboardId IN ");
+        pageAssignmentSql.append("  (SELECT DashboardId");
+        pageAssignmentSql.append("   FROM Dashboard ");
+        pageAssignmentSql.append("   WHERE Visibility").neq(Visibility.SYSTEM);
+        pageAssignmentSql.append("  )");
         pageAssignmentSql.append("GROUP BY PageAssignment");
 
         jdbcTemplate.query(pageAssignmentSql, new YukonRowCallbackHandler() {
