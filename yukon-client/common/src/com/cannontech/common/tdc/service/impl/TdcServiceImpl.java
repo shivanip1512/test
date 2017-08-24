@@ -99,15 +99,6 @@ public class TdcServiceImpl implements TdcService {
     public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging) {
         List<DisplayData> retVal = null;
         switch (display.getDisplayId()) {
-        case SOE_LOG_DISPLAY_NUMBER:
-            retVal = displayDataDao.getSoeLogDisplayData(timeZone, paging, null, null).getResultList();
-            break;
-        case TAG_LOG_DISPLAY_NUMBER:
-            retVal = displayDataDao.getTagLogDisplayData(timeZone, paging, null, null).getResultList();
-            break;
-        case EVENT_VIEWER_DISPLAY_NUMBER:
-            retVal = displayDataDao.getEventViewerDisplayData(timeZone, paging, null, null, null).getResultList();
-            break;
         case GLOBAL_ALARM_DISPLAY:
             retVal = getAlarms(true);
             break;

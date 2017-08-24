@@ -155,7 +155,13 @@ public class TdcDisplayController {
             paging = PagingParameters.of(itemsPerPage, 1);
         }
         DateTimeZone tz = userContext.getJodaTimeZone();
-        List<DisplayData> displayData = tdcService.getDisplayData(display, tz, paging);
+        List<DisplayData> displayData;
+        if (pageable) {
+            displayData = tdcService.getSortedDisplayData(display, tz, paging, null, null, null).getResultList();
+        }
+        else {
+            displayData = tdcService.getDisplayData(display, tz, paging);
+        }
         int totalCount;
         
         if (pageable) {
@@ -211,17 +217,9 @@ public class TdcDisplayController {
         DisplayBackingBean backingBean = new DisplayBackingBean();
         DateTime dateTime = DateTime.parse(date);
         backingBean.setDate(dateTime);
-        int totalCount = 0;
-        if (displayId == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
-            totalCount = tdcService.getDisplayDataCount(displayId, dateTime);
-        }
-        else {
-            totalCount = tdcService.getDisplayDataCount(displayId, userContext.getJodaTimeZone());
-        }
         SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
         model.addAttribute("backingBean", backingBean);
         SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
-        result = SearchResults.pageBasedForSublist(result.getResultList(), pagingParameters, totalCount);
         model.addAttribute("result", result);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
@@ -253,10 +251,8 @@ public class TdcDisplayController {
         backingBean.setDate(dateTime);
         model.addAttribute("backingBean", backingBean);
 
-        int totalCount = tdcService.getDisplayDataCount(displayId, dateTime);
         SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
         SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
-        result = SearchResults.pageBasedForSublist(result.getResultList(), pagingParameters, totalCount);
         model.addAttribute("result", result);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         

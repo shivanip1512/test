@@ -94,7 +94,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         yukonJdbcTemplate.query(allRowsSql, rse);
 
         SearchResults<DisplayData> searchResults = new SearchResults<>();
-        searchResults.setBounds(start, count, getEventViewerDisplayDataCount(timeZone));
+        searchResults.setBounds(start, count, getEventViewerDisplayDataCount(date));
         searchResults.setResultList(rse.getResultList());
         
         return searchResults;
