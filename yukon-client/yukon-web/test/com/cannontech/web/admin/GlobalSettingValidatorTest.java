@@ -201,6 +201,26 @@ public class GlobalSettingValidatorTest {
         service.doValidation(command, errors);
         assertTrue("Incorrect global setting values for category "+GlobalSettingSubCategory.MISC ,
             errors.getErrorCount() == 3);
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.AMI);
+        globalSettings.put(GlobalSettingType.IGNORE_OLDER_DATA, 3);
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.AMI);
+        globalSettings.put(GlobalSettingType.IGNORE_OLDER_DATA, 280);
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
 
     }
 }
