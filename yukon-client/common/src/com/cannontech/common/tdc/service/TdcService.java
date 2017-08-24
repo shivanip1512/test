@@ -144,11 +144,14 @@ public interface TdcService {
      */
     Display updateCustomDisplay(int displayId, String name, String title, String description, List<Integer> pointIds);
 
+    /**
+     * @param sortBy nullable.
+     * @param direction nullable.
+     */
     SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone,
                                                     PagingParameters paging, SortBy sortBy,
                                                     Direction direction, DateTime date);
 
     int getDisplayDataCount(int displayId, DateTime date);
 
-    List<DisplayData> getDisplayData(DateTime date, PagingParameters paging);
 }

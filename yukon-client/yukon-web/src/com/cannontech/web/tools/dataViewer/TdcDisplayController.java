@@ -768,8 +768,7 @@ public class TdcDisplayController {
             throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Display display = displayDao.getDisplayById(displayId);
-        List<DisplayData> displayData = tdcService.getDisplayData(new DateTime(date),
-                PagingParameters.EVERYTHING);
+        List<DisplayData> displayData = tdcService.getSortedDisplayData(display, null, PagingParameters.EVERYTHING, null, null, new DateTime(date)).getResultList();
         TdcDownloadHelper helper =
             new TdcDownloadHelper(accessor,
                                   registrationService,

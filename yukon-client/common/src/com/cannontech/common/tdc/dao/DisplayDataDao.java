@@ -56,24 +56,9 @@ public interface DisplayDataDao {
     }
     
     /**
-     * Gets Event Viewer display data
-     */
-    List<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone, PagingParameters paging);
-
-    /**
      * Gets Custom display data
      */
     List<DisplayData> getCustomDisplayData(Display display);
-
-    /**
-     * Gets SOE log display data
-     */
-    List<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging);
-
-    /**
-     * Gets TAG log display data
-     */
-    List<DisplayData> getTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging);
 
     /**
      * Gets number of SOE log Display Data count
@@ -95,17 +80,28 @@ public interface DisplayDataDao {
      */
     void updateDisplay2Waydata(Integer displayId, List<Integer> pointIds);
 
+    /**
+     * @param sortBy nullable.
+     * @param direction nullable.
+     */
     SearchResults<DisplayData> getTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
                                                  SortBy sortBy, Direction direction);
-
+    
+    /**
+     * @param sortBy nullable.
+     * @param direction nullable.
+     */
     SearchResults<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
                                                     SortBy sortBy, Direction direction);
 
+    /**
+     * @param sortBy nullable.
+     * @param direction nullable.
+     */
     SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone,
                                                          PagingParameters paging, SortBy sortBy,
                                                          Direction direction, DateTime date);
 
     int getEventViewerDisplayDataCount(DateTime date);
 
-    List<DisplayData> getEventViewerDisplayData(DateTime date, PagingParameters paging);
 }
