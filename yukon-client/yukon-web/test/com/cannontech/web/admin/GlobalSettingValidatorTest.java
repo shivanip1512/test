@@ -210,7 +210,7 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
 
         service.doValidation(command, errors);
-        assertTrue(errors.hasErrors());
+        assertFalse(errors.hasErrors());
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.AMI);
