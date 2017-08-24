@@ -11,12 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -137,7 +135,6 @@ public class TdcDisplayController {
 
     @RequestMapping(value = "data-viewer/{displayId}", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, FlashScope flashScope) {
-
         model.addAttribute("mode", PageEditMode.VIEW);
         Display display;
         try {
@@ -146,55 +143,30 @@ public class TdcDisplayController {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.display.load.error"));
             return "redirect:/tools/data-viewer";
         }
-
-        boolean pageable = display.isPageable();
-        model.addAttribute("pageable", pageable);
+        if (display.isPageable()) {
+            PagingParameters pagingParameter = PagingParameters.of(50, 1);
+            SortingParameters sorting = SortingParameters.of(ColumnType.TIME_STAMP.name(), Direction.asc);
+            return setupPageableModel(userContext, model, displayId, sorting, pagingParameter, new DateTime(userContext.getJodaTimeZone()));
+        }
         
         PagingParameters paging = null;
-        if (pageable) {
-            paging = PagingParameters.of(itemsPerPage, 1);
-        }
-        DateTimeZone tz = userContext.getJodaTimeZone();
-        List<DisplayData> displayData;
-        if (pageable) {
-            displayData = tdcService.getSortedDisplayData(display, tz, paging, null, null, null).getResultList();
-        }
-        else {
-            displayData = tdcService.getDisplayData(display, tz, paging);
-        }
-        int totalCount;
+        List<DisplayData> displayData = tdcService.getDisplayData(display);
         
-        if (pageable) {
-            totalCount = tdcService.getDisplayDataCount(displayId, tz);
-        } else {
-            totalCount = displayData.size();
-            //display all the data on one page
-            if (totalCount == 0) {
-                totalCount = itemsPerPage;
-            }
-            paging = PagingParameters.of(totalCount, 1);
+        int totalCount = displayData.size();
+        //display all the data on one page
+        if (totalCount == 0) {
+            totalCount = itemsPerPage;
         }
-        if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
-            model.addAttribute("eventViewer", true);
-        }
-        
+        paging = PagingParameters.of(totalCount, 1);
+    
         DisplayBackingBean backingBean = new DisplayBackingBean();
-        backingBean.setDate(new DateTime(userContext.getJodaTimeZone()));
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
-
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
         
         if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
             model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));
-        }
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        if (pageable) {
-            List<SortableColumn> sortableColumns = display.getColumns().stream()
-                                                                       .map(c -> SortableColumn.of(Direction.desc, false, accessor.getMessage(baseKey+c.getType().name()), c.getType().name()))
-                                                                       .collect(Collectors.toList());
-            model.addAttribute("sortableColumns", sortableColumns);
         }
         SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, paging, totalCount);
         model.addAttribute("result", result);
@@ -206,37 +178,22 @@ public class TdcDisplayController {
                        @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
                        @PathVariable String date) {
-        if (displayId == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
-            model.addAttribute("eventViewer", true);
-        }
-        model.addAttribute("pageable", true);
-        model.addAttribute("mode", PageEditMode.VIEW);
-        Display display = displayDao.getDisplayById(displayId); 
-        model.addAttribute("displayName", display.getName());
-        model.addAttribute("display", display);
-        DisplayBackingBean backingBean = new DisplayBackingBean();
         DateTime dateTime = DateTime.parse(date);
-        backingBean.setDate(dateTime);
-        SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
-        model.addAttribute("backingBean", backingBean);
-        SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
-        model.addAttribute("result", result);
-        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
-        
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        List<SortableColumn> sortableColumns = display.getColumns().stream()
-                                                      .map(c -> SortableColumn.of(sorting, accessor.getMessage(baseKey+c.getType().name()), c.getType().name()))
-                                                      .collect(Collectors.toList());
-        model.addAttribute("sortableColumns", sortableColumns);
-
-        return "data-viewer/display.jsp";
+        return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
     }
     
     @RequestMapping(value = "data-viewer/{displayId}/date", method = RequestMethod.POST)
-    public String date(HttpServletRequest request, YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
+    public String date(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
                        @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
                        @RequestParam("date") String date) {
+        String datePattern = "MM/dd/yyyy";
+        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(datePattern));
+        return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
+    }
+    
+    private String setupPageableModel(YukonUserContext userContext, ModelMap model, int displayId, 
+                                      SortingParameters sorting, PagingParameters pagingParameters, DateTime dateTime) {
         model.addAttribute("pageable", true);
         model.addAttribute("mode", PageEditMode.VIEW);
         Display display = displayDao.getDisplayById(displayId);
@@ -246,15 +203,13 @@ public class TdcDisplayController {
             model.addAttribute("eventViewer", true);
         }
         DisplayBackingBean backingBean = new DisplayBackingBean();
-        String datePattern = "MM/dd/yyyy";
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(datePattern));
+
         backingBean.setDate(dateTime);
         model.addAttribute("backingBean", backingBean);
 
         SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
         SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
         model.addAttribute("result", result);
-        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, result.getResultList()));
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<SortableColumn> sortableColumns = display.getColumns().stream()
@@ -748,7 +703,7 @@ public class TdcDisplayController {
 
         }
         else {
-            displayData = tdcService.getDisplayData(display, userContext.getJodaTimeZone(), PagingParameters.EVERYTHING);
+            displayData = tdcService.getDisplayData(display);
         }
         TdcDownloadHelper helper =
             new TdcDownloadHelper(accessor,

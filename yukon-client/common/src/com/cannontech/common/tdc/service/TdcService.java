@@ -44,7 +44,7 @@ public interface TdcService {
     /**
      * Get display data
      */
-    List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging);
+    List<DisplayData> getDisplayData(Display display);
 
     /**
      * Unacknowledged alarms for a point

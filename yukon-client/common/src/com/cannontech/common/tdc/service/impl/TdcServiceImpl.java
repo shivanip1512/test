@@ -96,7 +96,7 @@ public class TdcServiceImpl implements TdcService {
     };
 
     @Override
-    public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging) {
+    public List<DisplayData> getDisplayData(Display display) {
         List<DisplayData> retVal = null;
         switch (display.getDisplayId()) {
         case GLOBAL_ALARM_DISPLAY:
@@ -196,7 +196,7 @@ public class TdcServiceImpl implements TdcService {
     @Override
     public int acknowledgeAlarmsForDisplay(Display display, LiteYukonUser user){
         int count  = 0;
-        List<DisplayData> displayData = getDisplayData(display, null, null);
+        List<DisplayData> displayData = getDisplayData(display);
         for(DisplayData data :displayData){
             count += acknowledgeAlarmsForPoint(data.getPointId(), user);
         }
@@ -350,7 +350,7 @@ public class TdcServiceImpl implements TdcService {
     public int getUnackAlarmCountForDisplay(int displayId) {
         Display display = displayDao.getDisplayById(displayId);
         int count = 0;
-        List<DisplayData> displayData = getDisplayData(display, null, null);
+        List<DisplayData> displayData = getDisplayData(display);
         for(DisplayData data :displayData){
             // there might be more then one alarm for a point
             count += getUnackAlarmCountForPoint(data.getPointId());
