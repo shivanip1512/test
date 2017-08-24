@@ -737,34 +737,19 @@ public class TdcDisplayController {
 
     @RequestMapping(value = "data-viewer/{displayId}/download", method = RequestMethod.GET)
     public String download(HttpServletResponse response, @PathVariable int displayId,
-                           YukonUserContext userContext)
-            throws IOException {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Display display = displayDao.getDisplayById(displayId);
-        List<DisplayData> displayData = tdcService.getDisplayData(display,
-                userContext.getJodaTimeZone(), PagingParameters.EVERYTHING);
-        TdcDownloadHelper helper =
-            new TdcDownloadHelper(accessor,
-                                  registrationService,
-                                  dateFormattingService,
-                                  tdcService,
-                                  display,
-                                  displayData,
-                                  userContext);
-        List<String> columnNames = helper.getColumnNames();
-        List<List<String>> dataGrid = helper.getDataGrid();
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, display.getName() + ".csv");
-        return null;
-    }
-    
-    @RequestMapping(value = "data-viewer/{displayId}/{date}/download", method = RequestMethod.GET)
-    public String download(HttpServletResponse response, @PathVariable int displayId,
                            YukonUserContext userContext,
-                           @PathVariable String date)
+                           String date)
             throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Display display = displayDao.getDisplayById(displayId);
-        List<DisplayData> displayData = tdcService.getSortedDisplayData(display, null, PagingParameters.EVERYTHING, null, null, new DateTime(date)).getResultList();
+        List<DisplayData> displayData;
+        if (display.isPageable()) {
+            displayData = tdcService.getSortedDisplayData(display, null, PagingParameters.EVERYTHING, null, null, new DateTime(date)).getResultList();
+
+        }
+        else {
+            displayData = tdcService.getDisplayData(display, userContext.getJodaTimeZone(), PagingParameters.EVERYTHING);
+        }
         TdcDownloadHelper helper =
             new TdcDownloadHelper(accessor,
                                   registrationService,
