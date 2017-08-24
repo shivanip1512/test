@@ -57,6 +57,7 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 			if (flashScopeMessage.getMessages().size() > 0) {
 			
 				out.println("<div class=\"user-message " + flashScopeMessage.getType().getClassName() + "\">");
+                out.println("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\"></i>");
 				
 				if (flashScopeMessage.getMessages().size() == 1) {
 				    MessageSourceResolvable messageSourceResolvable = Iterables.getOnlyElement(flashScopeMessage.getMessages());
