@@ -5,10 +5,16 @@ package com.cannontech.dbeditor.wizard.port;
  */
 
 import java.awt.Dimension;
+import java.util.List;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.LocalDirectPortBase;
+import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
  
 public class SimpleLocalPortSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjBaudRateLabel = null;
@@ -289,9 +295,36 @@ public Object getValue(Object val)
 	{
 		((LocalDirectPortBase) val).getPortLocalSerial().setPhysicalPort( physicalPort );
 	}
+        SmartMultiDBPersistent smartDB = createSmartDBPersistent((DirectPort) val);
+        smartDB.setOwnerDBPersistent((DirectPort) val);
+        return smartDB;
+    }
 
-	return val;
-}
+    /**
+     * Returns a SmartMultiDBPersistent for the DirectPort. Includes all points
+     * and the DirectPort as the OwnerDBPersistent.
+     */
+    private SmartMultiDBPersistent createSmartDBPersistent(DirectPort directPort) {
+        if (directPort == null) {
+            return null;
+        }
+        SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
+        smartDB.addOwnerDBPersistent(directPort);
+
+        PaoDefinitionService paoDefinitionService =
+            (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
+        YukonPAObject ypo = new YukonPAObject();
+        ypo.setPaObjectID(directPort.getPAObjectID());
+        ypo.setPaoName(directPort.getPAOName());
+        ypo.setPaoType(directPort.getPaoType());
+
+        List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(ypo);
+        for (PointBase point : defaultPoints) {
+            smartDB.addDBPersistent(point);
+        }
+        return smartDB;
+    }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable

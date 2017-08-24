@@ -6,7 +6,9 @@ package com.cannontech.dbeditor.wizard.port;
  
 import java.awt.Dimension;
 
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.port.LocalDialupPortBase;
+import com.cannontech.database.data.port.LocalDirectPortBase;
 import com.cannontech.database.data.port.TerminalServerDialupPort;
   
 public class SimpleDialupModemPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -127,11 +129,17 @@ public Object getValue(Object val) {
 	
 	if( val instanceof com.cannontech.database.data.port.LocalDialupPortBase )
 	{
-		((LocalDialupPortBase) val).getPortDialupModem().setModemType( modemType );
+		((LocalDialupPortBase) val). getPortDialupModem().setModemType( modemType );
 	}
 	else if( val instanceof com.cannontech.database.data.port.TerminalServerDialupPort )
 	{
 		((TerminalServerDialupPort) val).getPortDialupModem().setModemType( modemType );
+	} else if(val instanceof SmartMultiDBPersistent){
+        LocalDirectPortBase localDirectPortBase =
+            (LocalDirectPortBase) ((SmartMultiDBPersistent) val).getOwnerDBPersistent();
+        if (localDirectPortBase instanceof LocalDialupPortBase) {
+            ((LocalDialupPortBase) localDirectPortBase).getPortDialupModem().setModemType(modemType);
+        }
 	}
 /*	
 	else if( val instanceof com.cannontech.database.data.port.PortDialBack )

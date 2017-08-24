@@ -1,12 +1,11 @@
 package com.cannontech.dbeditor.wizard.port;
 import java.awt.Dimension;
-import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.port.PooledPort;
 import com.cannontech.database.db.pao.PAOowner;
 import com.cannontech.yukon.IDatabaseCache;
@@ -225,6 +224,11 @@ public Dimension getPreferredSize() {
  */
 public Object getValue(Object val) 
 {
+    SmartMultiDBPersistent smartMultiDBPersistent = null;
+    if (val instanceof SmartMultiDBPersistent) {
+        smartMultiDBPersistent = (SmartMultiDBPersistent) val;
+        val = smartMultiDBPersistent.getOwnerDBPersistent();
+    }
 	//be sure we have not left over children
 	((PooledPort)val).getPortVector().removeAllElements();
 	
@@ -246,7 +250,9 @@ public Object getValue(Object val)
 	}
 
 	((PooledPort) val).setPortVector( portVector );
-
+	if(smartMultiDBPersistent != null){
+	    return smartMultiDBPersistent;
+	}
 	return val;
 }
 

@@ -11,9 +11,11 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -28,6 +30,10 @@ public class CommChannelTreeModel extends DBTreeModel {
     private static final LiteYukonPAObject DUMMY_LITE_PAO = new LiteYukonPAObject(Integer.MIN_VALUE, "**DUMMY**",
         PaoType.SYSTEM, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE);
 
+    private boolean showPoints = true;
+    // a Vector only needed to store temporary things
+    private List<LitePoint> pointTempList = new java.util.Vector<LitePoint>(20);
+    
     // a Vector only needed to store temporary things
     private List<LiteYukonPAObject> tempList = new Vector<>(32);
 
@@ -80,7 +86,10 @@ public class CommChannelTreeModel extends DBTreeModel {
             for (int i = 0; i < ports.size(); i++) {
                 DBTreeNode portNode = new DBTreeNode(ports.get(i));
                 rootNode.add(portNode);
-                portID = ports.get(i).getYukonID();
+                if (showPoints) {
+                    portNode.setWillHaveChildren(true);
+                }
+               portID = ports.get(i).getYukonID();
 
                 boolean devicesFound = false;
 
@@ -132,7 +141,7 @@ public class CommChannelTreeModel extends DBTreeModel {
 
             if (liteYuk.getPaoType().isPort()) {
                 DBTreeNode node = new DBTreeNode(lb);
-
+                node.setWillHaveChildren(true);
                 // add all new tree nodes to the top, for now
                 int[] indexes = { 0 };
 
@@ -210,6 +219,11 @@ public class CommChannelTreeModel extends DBTreeModel {
 
     @Override
     public synchronized void treePathWillExpand(TreePath path) {
+        
+        if (!showPoints) {
+            return;
+        }
+
         // Watch out, this reloads the children every TIME!!!
         DBTreeNode node = (DBTreeNode) path.getLastPathComponent();
 
@@ -224,15 +238,25 @@ public class CommChannelTreeModel extends DBTreeModel {
                 DUMMY_LITE_PAO.setPortID(portID);
 
                 // lock our point list down
-                synchronized (tempList) {
+                synchronized (pointTempList) {
                     node.removeAllChildren();
-                    tempList.clear();
+                    pointTempList.clear();
+
+                    PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
+                    pointTempList = pointDao.getLitePointsByPaObjectId(portID);
+
+                    // sorts the pointList according to name or offset, (default is set to sort by name)
+                    Collections.sort(pointTempList, LiteComparators.liteStringComparator);
 
                     // makes a list of points associated with the current deviceNode
-                    createPaoChildList(paos, tempList);
+                    synchronized (tempList) {
+                        tempList.clear();
+                        createPaoChildList(paos, tempList);
+                    }
 
                     // add all points and point types to the deviceNode
                     addPaos(node);
+                    addPoints(node);
                 }
             }
         }
@@ -248,4 +272,90 @@ public class CommChannelTreeModel extends DBTreeModel {
         // tempList is cleared
         tempList.clear();
     }
+    
+    private void addPoints(DBTreeNode portNode) {
+        // type nodes of point types
+        DBTreeNode anNode = null;
+        DBTreeNode stNode = null;
+        DBTreeNode accDmndNode = null;
+        DBTreeNode accPulsNode = null;
+        DBTreeNode calcNode = null;
+
+        // the points in the pointList are added to the port node
+        // pseudo points are added to the end of the list if sorting by point offset
+        // if sorting by name, all points are added in alphabetical order, regardless if pseudo points
+        for (LitePoint lp : pointTempList) {
+
+            if (isPointValid(lp)) {
+                switch (lp.getPointTypeEnum()) {
+                case Analog:
+                    anNode = addDummyTreeNode(lp, anNode, "Analog", portNode);
+                    break;
+                case Status:
+                    stNode = addDummyTreeNode(lp, stNode, "Status", portNode);
+                    break;
+                case PulseAccumulator:
+                    accPulsNode = addDummyTreeNode(lp, accPulsNode, "Pulse Accumulator", portNode);
+                    break;
+                case DemandAccumulator:
+                    accDmndNode = addDummyTreeNode(lp, accDmndNode, "Demand Accumulator", portNode);
+                    break;
+                case CalcAnalog:
+                case CalcStatus:
+                    calcNode = addDummyTreeNode(lp, calcNode, "Calculated", portNode);
+                    break;
+                }
+            }
+        }
+
+        // finally, add typeNodes to the port -- added here to ensure they are added in the same order every
+        // time
+        // if a type node is null, it means there are no points of that type and the type node will not be
+        // added
+        if (anNode != null)
+            portNode.add(anNode);
+        if (stNode != null)
+            portNode.add(stNode);
+        if (accPulsNode != null)
+            portNode.add(accPulsNode);
+        if (accDmndNode != null)
+            portNode.add(accDmndNode);
+        if (calcNode != null)
+            portNode.add(calcNode);
+
+        // pointList is cleared - only points associated with the current device are held in here
+        pointTempList.clear();
+    }
+
+    protected DBTreeNode getNewNode(Object obj) {
+        return new DBTreeNode(obj);
+    }
+
+    protected DBTreeNode addDummyTreeNode(LitePoint lp, DBTreeNode node, String text, DBTreeNode portNode) {
+        if (node == null) {
+            DummyTreeNode retNode = new DummyTreeNode(text);
+
+            int indx = -1;
+            for (int i = 0; i < portNode.getChildCount(); i++) {
+                if (portNode.getChildAt(i).equals(retNode)) {
+                    indx = i;
+                    break;
+                }
+            }
+
+            if (indx >= 0) {
+                node = (DummyTreeNode) portNode.getChildAt(indx);
+            } else {
+                node = retNode;
+            }
+        }
+
+        node.add(getNewNode(lp));
+        return node;
+    }
+
+    protected boolean isPointValid(LitePoint lp) {
+        return true; // all points are valid by default
+    }
+
 }

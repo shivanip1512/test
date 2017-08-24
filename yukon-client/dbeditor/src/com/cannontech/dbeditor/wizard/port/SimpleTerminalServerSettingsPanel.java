@@ -2,14 +2,20 @@ package com.cannontech.dbeditor.wizard.port;
 
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.event.CaretListener;
 
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.version.DBEditorDefines;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.TerminalServerPortBase;
+import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 
 public class SimpleTerminalServerSettingsPanel extends DataInputPanel implements ActionListener, CaretListener {
     private javax.swing.JComboBox<String> ivjBaudRateComboBox = null;
@@ -190,9 +196,36 @@ public class SimpleTerminalServerSettingsPanel extends DataInputPanel implements
         ((TerminalServerPortBase) val).getPortSettings().setBaudRate(baudRate);
         ((TerminalServerPortBase) val).getPortSettings().setLineSettings("8N1");
 
-        return val;
+        SmartMultiDBPersistent smartDB = createSmartDBPersistent((TerminalServerPortBase) val);
+        smartDB.setOwnerDBPersistent((TerminalServerPortBase) val);
+        return smartDB;
     }
 
+    /**
+     * Returns a SmartMultiDBPersistent for the TerminalServerPortBase. Includes all points
+     * and the TerminalServerPortBase as the OwnerDBPersistent.
+     */
+    private SmartMultiDBPersistent createSmartDBPersistent(TerminalServerPortBase terminalServerPortBase) {
+        if (terminalServerPortBase == null) {
+            return null;
+        }
+        SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
+        smartDB.addOwnerDBPersistent(terminalServerPortBase);
+
+        PaoDefinitionService paoDefinitionService =
+            (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
+        YukonPAObject ypo = new YukonPAObject();
+        ypo.setPaObjectID(terminalServerPortBase.getPAObjectID());
+        ypo.setPaoName(terminalServerPortBase.getPAOName());
+        ypo.setPaoType(terminalServerPortBase.getPaoType());
+
+        List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(ypo);
+        for (PointBase point : defaultPoints) {
+            smartDB.addDBPersistent(point);
+        }
+        return smartDB;
+    }
+    
     private void handleException(Throwable exception) {
     }
 

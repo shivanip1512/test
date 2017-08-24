@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LOCAL_SHARED" displayGroup="PORT" displayName="Dialout Pool" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LOCAL_DIALBACK" displayGroup="PORT" displayName="Dialout Pool" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>PORT.xml</pointFile>
     </pointFiles>

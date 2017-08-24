@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.port;
 
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -12,9 +13,14 @@ import javax.swing.event.CaretListener;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.version.DBEditorDefines;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.port.TcpPort;
+import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 
 public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListener, CaretListener {
     private JComboBox<String> baudRateCombo = null;
@@ -127,7 +133,34 @@ public class TcpTypeQuestionPanel extends DataInputPanel implements ActionListen
         ((TcpPort) val).setPortName(name);
         ((TcpPort) val).getPortSettings().setBaudRate(baudRate);
 
-        return val;
+        SmartMultiDBPersistent smartDB = createSmartDBPersistent((TcpPort) val);
+        smartDB.setOwnerDBPersistent((TcpPort) val);
+        return smartDB;
+    }
+
+    /**
+     * Returns a SmartMultiDBPersistent for the TcpPort. Includes all points
+     * and the TcpPort as the OwnerDBPersistent.
+     */
+    private SmartMultiDBPersistent createSmartDBPersistent(TcpPort tcpPort) {
+        if (tcpPort == null) {
+            return null;
+        }
+        SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
+        smartDB.addOwnerDBPersistent(tcpPort);
+
+        PaoDefinitionService paoDefinitionService =
+            (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
+        YukonPAObject ypo = new YukonPAObject();
+        ypo.setPaObjectID(tcpPort.getPAObjectID());
+        ypo.setPaoName(tcpPort.getPAOName());
+        ypo.setPaoType(tcpPort.getPaoType());
+
+        List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(ypo);
+        for (PointBase point : defaultPoints) {
+            smartDB.addDBPersistent(point);
+        }
+        return smartDB;
     }
 
     private void handleException(Throwable exception) {
