@@ -432,7 +432,8 @@ public class TdcDisplayController {
         PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
         if (litePoint.getPointType() == PointTypes.STATUS_POINT
             || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
-            model.put("stateList", getStateList(litePoint));
+            LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
+            model.put("stateList", group.getStatesList());
             backingBean.setStateId((int) pointValue.getValue());
         } else {
             backingBean.setValue(pointValue.getValue());
@@ -493,7 +494,17 @@ public class TdcDisplayController {
             PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
             backingBean.setValue(pointValue.getValue());
         } else if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
-            model.put("stateList", getStateList(litePoint));
+            LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
+            List<LiteState> stateList = new ArrayList<>(group.getStatesList());
+            
+            if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
+                long tags = asyncDynamicDataSource.getTags(litePoint.getLiteID());
+                boolean controllable = TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags);
+                if (controllable) {
+                    stateList.removeIf(state -> state.getLiteID() < 0 || state.getLiteID() > 1);
+                }
+            }
+            model.put("stateList", stateList);
         }
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
         model.put("deviceName", liteYukonPAO.getPaoName());
@@ -502,21 +513,6 @@ public class TdcDisplayController {
         return "data-viewer/manualControlPopup.jsp";
     }
     
-    private List<LiteState> getStateList(LitePoint litePoint){
-        LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
-        List<LiteState> stateList = new ArrayList<>(group.getStatesList());
-        
-        if (litePoint.getPointType() == PointTypes.STATUS_POINT) {
-            long tags = asyncDynamicDataSource.getTags(litePoint.getLiteID());
-            boolean controllable = TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags);
-            if (controllable) {
-                stateList.removeIf(state -> state.getLiteID() < 0 || state.getLiteID() > 1);
-            }
-        }
-        
-        return stateList;
-    }
-
     @RequestMapping(value = "data-viewer/manualControlSend", method = RequestMethod.POST)
     public String manualControlSend(HttpServletResponse response, YukonUserContext userContext,
                                     @ModelAttribute("backingBean") DisplayBackingBean backingBean,
