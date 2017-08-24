@@ -14,6 +14,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.model.Column;
 import com.cannontech.common.tdc.model.ColumnType;
@@ -31,7 +32,9 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -41,6 +44,7 @@ public class DisplayDaoImpl implements DisplayDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final Logger log = YukonLogManager.getLogger(DisplayDaoImpl.class);
     private final YukonRowMapper<Display> displayRowMapper = createDisplayRowMapper();
 
@@ -234,15 +238,17 @@ public class DisplayDaoImpl implements DisplayDao {
         final YukonRowMapper<Column> mapper = new YukonRowMapper<Column>() {
             @Override
             public Column mapRow(YukonResultSet rs) throws SQLException {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
                 final Column column = new Column();
                 column.setDisplayId(rs.getInt("DISPLAYNUM"));
                 column.setTitle(rs.getStringSafe("TITLE"));
                 column.setOrder(rs.getInt("ORDERING"));
                 if (mappedDisplays.get(column.getDisplayId()).getType() == DisplayType.CUSTOM_DISPLAYS) {
                     column.setType(ColumnType.getByTypeId(rs.getInt("TYPENUM")));
-                } else {
+                } else {                    
                     column.setType(ColumnType.getByName(column.getTitle()));
                 }
+                column.setTitle(accessor.getMessage("yukon.web.modules.tools.tdc."+column.getType().name()));
                 column.setWidth(rs.getInt("WIDTH"));
                 return column;
             }
@@ -282,11 +288,12 @@ public class DisplayDaoImpl implements DisplayDao {
      * Create columns only if this is a new display. Web TDC can't update columns.
      */
     private void createColumns(int displayId, List<Column> columns) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         List<List<Object>> values = columns.stream()
                 .map(column -> {
                     List<Object> row = Lists.newArrayList(
                         displayId,
-                        column.getTitle(),
+                        accessor.getMessage("yukon.web.modules.tools.tdc."+column.getType().name()),
                         column.getType().getTypeId(),
                         column.getOrder(),
                         column.getWidth());

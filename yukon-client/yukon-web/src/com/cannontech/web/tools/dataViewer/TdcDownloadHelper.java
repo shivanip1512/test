@@ -54,7 +54,7 @@ public class TdcDownloadHelper {
                                                    new Function<Column, String>() {
                                                        @Override
                                                        public String apply(Column column) {
-                                                           return column.getTitle();
+                                                           return accessor.getMessage("yukon.web.modules.tools.tdc."+column.getType().name());
                                                        }
                                                    }
 
