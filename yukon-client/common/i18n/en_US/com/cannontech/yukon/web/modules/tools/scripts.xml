@@ -112,10 +112,6 @@
     <entry key="yukon.web.modules.tools.schedule.exception.ERROR">{0} An error occurred or no connection was made with the MACS Service.  Please check the logs for more information.</entry>    
     <entry key="yukon.web.modules.tools.schedule.exception.NO_REPLY">{0} There was no reply from the MACS Service.</entry>    
     <entry key="yukon.web.modules.tools.schedule.exception.PROCESSING_ERROR">{0} There was an error received from the MACS Service.  Please check the logs for more information.</entry>    
-     
-    <!-- Types -->
-    <entry key="yukon.web.modules.tools.schedule.type.SIMPLE">Simple</entry>    
-    <entry key="yukon.web.modules.tools.schedule.type.SCRIPT">Script</entry>  
     
     <entry key="yukon.web.modules.tools.schedule.startPolicy.type.DATETIME">Date/Time</entry>
     <entry key="yukon.web.modules.tools.schedule.startPolicy.type.DAYOFMONTH">Monthly</entry>

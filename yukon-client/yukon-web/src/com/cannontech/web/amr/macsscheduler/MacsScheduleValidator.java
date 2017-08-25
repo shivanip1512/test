@@ -43,8 +43,10 @@ public class MacsScheduleValidator extends SimpleValidator<MacsSchedule> {
                 if (!schedule.getTemplate().isRetry()) {
                     YukonValidationUtils.checkRange(errors, "scriptOptions.retryCount", schedule.getScriptOptions().getRetryCount(), 0, 10, true);
                     YukonValidationUtils.checkRange(errors, "scriptOptions.queueOffCount", schedule.getScriptOptions().getQueueOffCount(), 0, 10, true);
-                    if (schedule.getScriptOptions().getQueueOffCount() > schedule.getScriptOptions().getRetryCount()) {
-                        errors.rejectValue("scriptOptions.queueOffCount", scheduleKey + "scriptOptions.validation.queueOffCountLessThanRetryCount");
+                    if (!errors.hasFieldErrors("scriptOptions.retryCount") && !errors.hasFieldErrors("scriptOptions.queueOffCount")) {
+                        if (schedule.getScriptOptions().getQueueOffCount() > schedule.getScriptOptions().getRetryCount()) {
+                            errors.rejectValue("scriptOptions.queueOffCount", scheduleKey + "scriptOptions.validation.queueOffCountLessThanRetryCount");
+                        }
                     }
                     YukonValidationUtils.checkRange(errors, "scriptOptions.maxRetryHours", schedule.getScriptOptions().getMaxRetryHours(), -1, 10, true);
                 }
