@@ -2,6 +2,7 @@
 
 #include "GangOperatedVoltageRegulator.h"
 #include "ccsubstationbusstore.h"
+#include "std_helper.h"
 
 // Objects
 using Cti::CapControl::VoltageRegulator;
@@ -39,16 +40,27 @@ public:
 class TestAttributeService : public AttributeService
 {
 public:
-
-    virtual LitePoint getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
+    virtual AttributeMapping getPointsByPaoAndAttributes( int paoId, std::vector<Attribute>& attributes ) override
     {
-        AttributeStore::const_iterator iter = _store.find( std::make_pair(paoId, attribute) );
+        AttributeMapping pointMapping;
 
-        return iter != _store.end()
-                    ? iter->second
-                    : LitePoint();
+        for( Attribute attribute : attributes )
+        {
+            auto storeKey = std::make_pair( paoId, attribute );
+            LitePoint point = Cti::mapFindOrDefault( _store, storeKey, LitePoint() );
+
+            try
+            {
+                pointMapping.emplace( attribute, point );
+            }
+            catch( AttributeNotFound::exception & ex )
+            {
+                CTILOG_EXCEPTION_WARN( dout, ex );
+            }
+        }
+
+        return pointMapping;
     }
-
 private:
 
     typedef std::map<std::pair<int, Attribute>, LitePoint>     AttributeStore;
@@ -78,7 +90,7 @@ const TestAttributeService::AttributeStore TestAttributeService::_store = initSt
 
 struct TestCapControlBusStore : public CtiCCSubstationBusStore
 {
-    void setVoltageRegulatorManager(std::unique_ptr<Cti::CapControl::VoltageRegulatorManager> manager)
+    void setVoltageRegulatorManager(std::unique_ptr<Cti::CapControl::VoltageRegulatorManager>& manager)
     {
         _voltageRegulatorManager = std::move(manager);
     }

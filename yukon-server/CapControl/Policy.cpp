@@ -14,14 +14,18 @@ namespace CapControl    {
 
 void Policy::loadAttributes( AttributeService & service, const long paoID )
 {
-    for ( const auto & attribute : getSupportedAttributes() )
+    auto supportedAttributes = getSupportedAttributes();
+    if( supportedAttributes.size() > 0 )
     {
-        LitePoint point = service.getPointByPaoAndAttribute( paoID, attribute );
+        const auto pointMapping = service.getPointsByPaoAndAttributes(paoID, supportedAttributes);
 
-        if ( point.getPointType() != InvalidPointType )
+        for (const auto & map : pointMapping)
         {
-            _pointMapping.insert( std::make_pair( attribute, point ) );
-            _pointIDs.insert( point.getPointId() );
+            if (map.second.getPointType() != InvalidPointType)
+            {
+                _pointMapping.insert(map);
+                _pointIDs.insert(map.second.getPointId());
+            }
         }
     }
 }

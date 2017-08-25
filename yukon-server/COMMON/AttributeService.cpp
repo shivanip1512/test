@@ -15,51 +15,74 @@ using Cti::Database::DatabaseReader;
  * Returns the point associated with the ExtraPao and Attribute.
  *
  * @param paoId
- * @param attribute
+ * @param attributes
  *
- * @return LitePoint
+ * @return LitePoints
  */
-LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
+AttributeService::AttributeMapping AttributeService::getPointsByPaoAndAttributes( int paoId, std::vector<Attribute>& attributes )
 {
+
     // new style Attribute to old style PointAttribute mappings
     //  for things that use CapControl Policy based classes -- regulators and cbc heartbeat stuff
 
-    static const std::map< std::string, std::string >  _translation
-    {
-        { "SOURCE_VOLTAGE",         "VOLTAGE_X"         },
-        { "VOLTAGE",                "VOLTAGE_Y"         },
-        { "HEARTBEAT_TIMER_CONFIG", "KEEP_ALIVE_TIMER"  }
-    };
-
-    static const std::string sql = 
+    std::string sql =
         "SELECT "
-            "PointId "
+            "EP.Attribute, "
+            "P.PointId, "
+            "P.PointType, "
+            "P.PointName, "
+            "P.PAOBjectId, "
+            "P.PointOffset, "
+            "P.StateGroupId, "
+            "PC.ControlOffset, "
+            "PSC.ControlType, "
+            "PSC.StateZeroControl, "
+            "PSC.StateOneControl, "
+            "PSC.CloseTime1, "
+            "PSC.CloseTime2, "
+            "COALESCE(PACC.MULTIPLIER, PA.MULTIPLIER) AS MULTIPLIER "
         "FROM "
-            "ExtraPaoPointAssignment "
+            "ExtraPaoPointAssignment EP "
+            "JOIN Point P ON EP.PointId = P.POINTID "
+            "LEFT OUTER JOIN POINTCONTROL PC ON P.PointId = PC.PointId "
+            "LEFT OUTER JOIN POINTSTATUSCONTROL PSC ON PC.PointId = PSC.PointId "
+            "LEFT OUTER JOIN POINTACCUMULATOR PACC ON PACC.POINTID = P.POINTID "
+            "LEFT OUTER JOIN POINTANALOG PA ON PA.POINTID = P.POINTID "
         "WHERE "
-            "PAObjectId = ? "
-                "AND Attribute = ?";
+            "EP.PAObjectId = ? "
+                "AND EP.Attribute IN (";
+ 
+    for (const auto & attribute : attributes)
+    {
+        sql += "'" + attribute.getName() + "'";
+        sql += ",";
+    }
 
-	std::string name = Cti::mapFindOrDefault( _translation, attribute.getName(), attribute.getName() );
+    sql.replace(sql.find_last_of(","), 1, ")");
 
     DatabaseConnection  conn;
-    DatabaseReader      rdr( conn, sql );
+    DatabaseReader      rdr(conn, sql);
 
-    rdr
-        << paoId
-        << name
-            ;
+    rdr << paoId;
 
     rdr.execute();
 
-    int pointId = 0;
+    AttributeMapping pointMapping;
 
-    if ( rdr() )
+    while ( rdr() )
     {
-        rdr["PointId"] >> pointId;
+        try 
+        {
+            pointMapping.emplace( Attribute::Lookup( rdr["Attribute"].as<std::string>() ), rdr );
+        }
+        catch( AttributeNotFound::exception & ex )
+        {
+            CTILOG_EXCEPTION_WARN( dout, ex );
+        }
     }
 
-    return pointId == 0 ? LitePoint() : getLitePointById(pointId);
+    return pointMapping;
+
 }
 
 LitePoint AttributeService::getLitePointById(int pointId)
@@ -95,26 +118,13 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
             "PSC.StateOneControl, "
             "PSC.CloseTime1, "
             "PSC.CloseTime2, "
-            "X.MULTIPLIER "
+            "COALESCE(PACC.MULTIPLIER, PA.MULTIPLIER) AS MULTIPLIER "
         "FROM "
             "Point P "
             "LEFT OUTER JOIN POINTCONTROL PC ON P.PointId = PC.PointId "
             "LEFT OUTER JOIN POINTSTATUSCONTROL PSC ON PC.PointId = PSC.PointId "
-            "LEFT OUTER JOIN ("
-                "SELECT "
-                    "PACC.POINTID, "
-                    "PACC.MULTIPLIER "
-                "FROM "
-                    "POINTACCUMULATOR PACC "
-                    "JOIN POINT P ON PACC.POINTID = P.POINTID "
-                "UNION "
-                "SELECT "
-                    "PA.POINTID, "
-                    "PA.MULTIPLIER "
-                "FROM "
-                    "POINTANALOG PA "
-                    "JOIN POINT P ON PA.POINTID = P.POINTID"
-                ") X ON X.POINTID = P.POINTID "
+            "LEFT OUTER JOIN POINTACCUMULATOR PACC ON PACC.POINTID = P.POINTID "
+            "LEFT OUTER JOIN POINTANALOG PA ON PA.POINTID = P.POINTID "
         "WHERE "
             "P.POINTID IN (";
 

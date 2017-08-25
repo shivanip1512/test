@@ -11,7 +11,7 @@
  * information.
  *
  * It is to mirror the Java class in functionality but currently
- * only supports the using the Database tables to access the
+ * only supports the using of Database tables to access the
  * attributes.
  *
  * When implemented this file should also be used to access the
@@ -22,7 +22,8 @@
 class IM_EX_CTIBASE AttributeService
 {
     public:
-        virtual LitePoint getPointByPaoAndAttribute(int paoId, const Attribute& attribute);
+        using AttributeMapping = std::map<Attribute, LitePoint>;
+        virtual AttributeMapping getPointsByPaoAndAttributes(int paoId, std::vector<Attribute>& AttributeList);
 
         // sacrilege
         virtual LitePoint getLitePointById(int pointId);

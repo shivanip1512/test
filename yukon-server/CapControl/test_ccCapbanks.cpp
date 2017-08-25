@@ -53,14 +53,25 @@ struct cbc_heartbeat_fixture_core
 
     struct TestAttributeService : public AttributeService
     {
-        virtual LitePoint getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
+        virtual AttributeMapping getPointsByPaoAndAttributes( int paoId, std::vector<Attribute>& attributes ) override
         {
-            if ( boost::optional<LitePoint> point = Cti::mapFind( _attr, attribute ) )
+            AttributeMapping pointMapping;
+
+            for( Attribute attribute : attributes )
             {
-                return *point;
+                LitePoint point = Cti::mapFindOrDefault( _attr, attribute, {} );
+
+                try
+                {
+                    pointMapping.emplace( attribute, point );
+                }
+                catch ( AttributeNotFound::exception & ex )
+                {
+                    CTILOG_EXCEPTION_WARN( dout, ex );
+                }
             }
 
-            return LitePoint();
+            return pointMapping;
         }
 
         std::map<Attribute, LitePoint>  _attr;
