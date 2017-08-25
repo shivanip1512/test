@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSourceResolvable;
@@ -70,6 +71,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -178,7 +180,8 @@ public class TdcDisplayController {
                        @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
                        @PathVariable String date) {
-        DateTime dateTime = DateTime.parse(date);
+        DateTimeZone timeZone = userContext.getJodaTimeZone();
+        DateTime dateTime = DateTime.parse(date).withZone(timeZone);
         return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
     }
     
@@ -187,8 +190,9 @@ public class TdcDisplayController {
                        @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
                        @RequestParam("date") String date) {
-        String datePattern = "MM/dd/yyyy";
-        DateTime dateTime = DateTime.parse(date, DateTimeFormat.forPattern(datePattern));
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
+        DateTimeZone timeZone = userContext.getJodaTimeZone();
+        DateTime dateTime = formatter.parseDateTime(date).withTimeAtStartOfDay().withZone(timeZone);
         return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
     }
     
