@@ -370,6 +370,8 @@
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_8024.summary"></entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_DNP.title">CBC Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_DNP.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_DNP_LOGICAL.title">CBC Editor: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.edit.CBC_DNP_LOGICAL.summary"></entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_FP_2800.title">CBC Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_FP_2800.summary"></entry>
 

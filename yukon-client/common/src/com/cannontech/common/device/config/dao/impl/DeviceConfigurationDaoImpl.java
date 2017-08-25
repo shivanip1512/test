@@ -86,6 +86,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                                PaoType.CBC_8020,
                                                PaoType.CBC_8024,
                                                PaoType.CBC_DNP,
+                                               PaoType.CBC_DNP_LOGICAL,
                                                PaoType.RTU_DNP),
 
         defaultRegulatorConfigId, PaoType.getRegulatorTypes()

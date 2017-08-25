@@ -345,6 +345,7 @@ public final class DeviceTypesFuncs {
         case CBC_8020:
         case CBC_8024:
         case CBC_DNP:
+        case CBC_DNP_LOGICAL:
             return true;
 
         default:

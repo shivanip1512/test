@@ -14,6 +14,7 @@ import com.cannontech.database.data.capcontrol.CapBankController7024;
 import com.cannontech.database.data.capcontrol.CapBankController8020;
 import com.cannontech.database.data.capcontrol.CapBankController8024;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
+import com.cannontech.database.data.capcontrol.CapBankControllerDNPLogical;
 import com.cannontech.database.data.capcontrol.CapBankControllerExpresscom;
 import com.cannontech.database.data.capcontrol.CapBankControllerVersacom;
 import com.cannontech.database.data.capcontrol.CapBankController_FP_2800;
@@ -447,6 +448,10 @@ public final class DeviceFactory {
 
         case CBC_DNP:
             returnDevice = new CapBankControllerDNP();
+            break;
+
+        case CBC_DNP_LOGICAL:
+            returnDevice = new CapBankControllerDNPLogical();
             break;
 
             //The new MCT broadcast group (lead meter broadcast)

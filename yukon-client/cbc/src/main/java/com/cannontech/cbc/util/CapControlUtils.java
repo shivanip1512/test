@@ -483,6 +483,7 @@ public final class CapControlUtils {
             case CBC_EXPRESSCOM:
             case CAPBANKCONTROLLER:
             case CBC_DNP:
+            case CBC_DNP_LOGICAL:
             case CBC_FP_2800:
                 return true;
         default:

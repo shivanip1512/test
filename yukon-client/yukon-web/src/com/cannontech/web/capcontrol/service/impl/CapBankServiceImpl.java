@@ -124,8 +124,10 @@ public class CapBankServiceImpl implements CapBankService {
                 int portId = capbank.getCbcCommChannel() != null ? capbank.getCbcCommChannel() : 0;
                 PaoIdentifier cbcId = ccCreationService.createCbc(capbank.getCbcType(), capbank.getCbcControllerName(), false, portId, configuration);
                 capbank.getCapBank().setControlDeviceID(cbcId.getPaoId());
-                LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
-                capbank.getCapBank().setControlPointID(point.getPointID());
+                if(capbank.getCbcType() != PaoType.CBC_DNP_LOGICAL){
+                    LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
+                    capbank.getCapBank().setControlPointID(point.getPointID());
+                }
             }
             create(capbank);
         } else {
