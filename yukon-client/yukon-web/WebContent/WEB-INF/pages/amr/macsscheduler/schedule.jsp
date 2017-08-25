@@ -88,9 +88,9 @@
                             <tags:checkbox path="startPolicy.everyYear" styleClass="js-start-every-year"/>
                             <i:inline key=".startPolicy.everyYear" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".startPolicy.daysOfWeek" rowClass="js-start-weekDay">
+                        <tags:nameValue2 nameKey=".startPolicy.daysOfWeek" rowClass="js-start-weekDay" valueClass="button-group M0">
                             <c:forEach var="dayOfWeek" items="${daysOfWeek}">
-                                <tags:checkbox path="startPolicy.days[${dayOfWeek}]" descriptionNameKey="yukon.common.day.${dayOfWeek}.short"/>
+                                <tags:check path="startPolicy.days[${dayOfWeek}]" key="yukon.common.day.${dayOfWeek}.short" classes="M0"/>
                             </c:forEach>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".startPolicy.dayOfMonth" rowClass="js-start-dayOfMonth">

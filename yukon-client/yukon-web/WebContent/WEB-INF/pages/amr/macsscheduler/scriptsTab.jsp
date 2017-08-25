@@ -6,17 +6,17 @@
 
 <cti:msgScope paths="modules.tools.schedule">
     <c:set var="pathKey" value="${templateReceived ? 'schedule.scriptOptions.' : 'scriptOptions.'}" />
+    <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? 'dn' : ''}" />
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".scriptOptions.fileName">
             <tags:input path="${pathKey}fileName" maxlength="180" size="30" />
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".scriptOptions.description">
+        <tags:nameValue2 nameKey=".scriptOptions.description" rowClass="${clazz} js-script-description">
             <tags:input path="${pathKey}description" maxlength="180" size="30" />
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <br />
-    <c:set var="clazz" value="${schedule.template.isNoTemplateSelected() ? 'dn' : ''}" />
     <div id="script-tabs" class="${clazz}">
         <cti:tabs>
             <cti:msg2 var="meterReadTab" key=".scriptOptions.meterReadTab" />

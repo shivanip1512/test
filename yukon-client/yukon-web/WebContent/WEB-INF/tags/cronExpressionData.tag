@@ -88,17 +88,17 @@
 </div>
 
 <%-- WEEKLY --%>
-<div id="${id}-cron-exp-weekly" class="stacked dn">
+<div id="${id}-cron-exp-weekly" class="stacked dn button-group">
     <c:forEach var="cronDay" items="${state.allCronDays}">
         <c:set var="cronDayChecked" value=""/>
         <c:set var="found" value="false"/>
         <c:forEach var="selectedCronDay" items="${state.selectedCronDays}">
             <c:if test="${!found && selectedCronDay == cronDay}">
-                <c:set var="cronDayChecked" value="checked"/>
+                <c:set var="cronDayChecked" value="true"/>
                 <c:set var="found" value="true"/>
             </c:if>
         </c:forEach>
-        <label class="wsnw"><input type="checkbox" name="${id}_${cronDay.requestName}" value="${cronDay.number}" ${cronDayChecked}>${cronDay.abbreviatedName}</label>&nbsp;
+        <tags:check name="${id}_${cronDay.requestName}" value="${cronDay.number}" label="${cronDay.abbreviatedName}" checked="${cronDayChecked}" classes="M0"/>
     </c:forEach>
 </div>
 

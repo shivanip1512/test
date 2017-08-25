@@ -33,6 +33,7 @@ yukon.ami.macs = (function () {
         isIed300 = ied300Types.indexOf(templateType) !== -1,
         isIed400 = ied400Types.indexOf(templateType) !== -1;
         $('#script-tabs').toggleClass('dn', !hasTemplate);
+        $('.js-script-description').toggleClass('dn', !hasTemplate);
         $('.js-script-save-generate').toggleClass('dn', !hasTemplate);
         $('.js-script-generate').toggleClass('dn', !hasTemplate);
         $('.js-save-button').toggleClass('dn', hasTemplate);
@@ -211,6 +212,7 @@ yukon.ami.macs = (function () {
                     $('.js-template').toggleClass('dn', !isScript);
                     $('.js-script-tab').toggleClass('dn', !isScript);
                     $('.js-commands-tab').toggleClass('dn', isScript);
+                    $('.js-script-description').toggleClass('dn', !isScript || (isScript && !hasTemplate));
                     $('.js-script-save-generate').toggleClass('dn', !isScript || (isScript && !hasTemplate));
                     $('.js-script-generate').toggleClass('dn', !isScript || (isScript && !hasTemplate));
                     $('.js-save-button').toggleClass('dn', isScript && hasTemplate);

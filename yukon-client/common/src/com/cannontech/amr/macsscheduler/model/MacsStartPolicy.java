@@ -155,13 +155,13 @@ public class MacsStartPolicy {
     public void setWeekDays(String weekDays) {
         if (policy == StartPolicy.WEEKDAY) {
             int i = 0;
-            days.put(DayOfWeek.SUNDAY, weekDays.charAt(i++) == 'N' ? false : true);
             days.put(DayOfWeek.MONDAY, weekDays.charAt(i++) == 'N' ? false : true);
             days.put(DayOfWeek.TUESDAY, weekDays.charAt(i++) == 'N' ? false : true);
             days.put(DayOfWeek.WEDNESDAY, weekDays.charAt(i++) == 'N' ? false : true);
             days.put(DayOfWeek.THURSDAY, weekDays.charAt(i++) == 'N' ? false : true);
             days.put(DayOfWeek.FRIDAY, weekDays.charAt(i++) == 'N' ? false : true);
             days.put(DayOfWeek.SATURDAY, weekDays.charAt(i++) == 'N' ? false : true);
+            days.put(DayOfWeek.SUNDAY, weekDays.charAt(i++) == 'N' ? false : true);
         }
     }
     
