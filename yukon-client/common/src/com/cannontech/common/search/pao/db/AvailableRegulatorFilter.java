@@ -27,7 +27,7 @@ public class AvailableRegulatorFilter implements SqlFilter {
         notAttachedToAnyZone.append("  SELECT ypo.PAObjectID");
         notAttachedToAnyZone.append("  FROM yukonPAObject ypo");
         notAttachedToAnyZone.append("  JOIN ExtraPaoPointAssignment eppa ON ypo.PAObjectID = eppa.PAObjectId");
-        notAttachedToAnyZone.append("  WHERE eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
+        notAttachedToAnyZone.append("  WHERE eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE);
         notAttachedToAnyZone.append(")");
         
         return notAttachedToAnyZone;

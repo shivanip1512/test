@@ -928,8 +928,8 @@
 	<li>Lower Tap Position - TAP_DOWN</li>
 	<li>Tap Position - TAP_POSITION</li>
 	<li>Terminate - TERMINATE</li>
-	<li>Voltage X - VOLTAGE_X</li>
-	<li>Voltage Y - VOLTAGE_Y</li>
+	<li>Voltage Source - SOURCE_VOLTAGE</li>
+	<li>Voltage - VOLTAGE</li>
 	<li>Keep Alive - KEEP_ALIVE</li>
 	<li>Forward Set Point - FORWARD_SET_POINT</li>
 	<li>Forward Bandwidth - FORWARD_BANDWIDTH</li>
@@ -985,8 +985,8 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TAP_DOWN">Lower Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TAP_POSITION">Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TERMINATE">Terminate</entry>
-    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_X">Voltage Source</entry>
-    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_Y">Voltage Load</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.SOURCE_VOLTAGE">Voltage Source</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE">Voltage Load</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE">Keep Alive</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_SET_POINT">Set Point</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_BANDWIDTH">Set Point Bandwidth</entry>
@@ -1071,7 +1071,7 @@
     <entry key="yukon.web.modules.capcontrol.regulator.delete.hovertext">Regulator cannot be deleted while it is attached to a zone.</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.error.invalidType">Unable to change device type</entry>
     <entry key="yukon.web.modules.capcontrol.regulator.error.invalidConfig">Configuration is not assignable for selected device type.</entry>
-    <entry key="yukon.web.modules.capcontrol.regulator.error.noVoltageY">Voltage Load is required when attached to a zone.</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.error.noVoltage">Voltage Load is required when attached to a zone.</entry>
 
     <entry key="yukon.web.modules.capcontrol.events.shown">Show for Last:</entry>
     <entry key="yukon.web.modules.capcontrol.events.emptylist">No Events</entry>

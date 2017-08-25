@@ -39,7 +39,7 @@ public interface CcMonitorBankListDao {
     public int addAdditionalMonitorPoint(int pointId, int substationBusId, Phase phase);
     
     /**
-     * Inserts new entry for voltage Y point on the specified regulator.
+     * Inserts new entry for voltage point on the specified regulator.
      * @return 
      */
     public int addRegulatorPoint(int regulatorId);
@@ -51,13 +51,13 @@ public interface CcMonitorBankListDao {
     public int addRegulatorPoint(int regulatorId, Phase phase, int substationBusId);
     
     /**
-     * Updates the entry for voltage Y point on the specified regulator.
+     * Updates the entry for voltage point on the specified regulator.
      */
     public void updateRegulatorPhase(int regulatorId, Phase phase);
     
     /**
-     * Removes the voltage Y point entry for the specified regulator unless
-     * the voltage Y pointId matches the specified pointId.
+     * Removes the voltage point entry for the specified regulator unless
+     * the voltage pointId matches the specified pointId.
      * @return true if a point was deleted, otherwise false
      * 
      * @deprecated use {@link #updateRegulatorVoltagePoint()} or {@link #removeByDeviceId()}

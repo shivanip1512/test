@@ -218,7 +218,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getPointIdSql.append("SELECT PointId");
         getPointIdSql.append("FROM ExtraPaoPointAssignment");
         getPointIdSql.append("WHERE PaObjectId").eq(regulatorId);
-        getPointIdSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
+        getPointIdSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE);
         
         int pointId;
         try {
@@ -269,10 +269,10 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getRegulatorPointSql.append("FROM CcMonitorBankList cc");
         getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON cc.DeviceId = eppa.PAObjectId");
         getRegulatorPointSql.append("WHERE cc.DeviceId").eq(regulatorId);
-        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
+        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE);
         
         try {
-            //if there is no voltage_y point assigned, this will throw an exception
+            //if there is no voltage point assigned, this will throw an exception
             int pointId = yukonJdbcTemplate.queryForInt(getRegulatorPointSql);
             
             //check to see if it matches the specified pointId. Only delete if it
@@ -295,10 +295,10 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getRegulatorPointSql.append("FROM CcMonitorBankList cc");
         getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON cc.DeviceId = eppa.PAObjectId");
         getRegulatorPointSql.append("WHERE cc.DeviceId").eq(regulatorId);
-        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
+        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE);
         
         try {
-            //if there is no voltage_y point assigned, this will throw an exception
+            //if there is no voltage point assigned, this will throw an exception
             int existingPointId = yukonJdbcTemplate.queryForInt(getRegulatorPointSql);
             
             //check to see if it matches the specified pointId. Only delete if it
@@ -374,12 +374,12 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getZoneInfoSql.append("JOIN CcMonitorBankList cc ON rtz.RegulatorId = cc.DeviceId");
         getZoneInfoSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
         getZoneInfoSql.append("WHERE rtz.RegulatorId").eq(regulatorId);
-        getZoneInfoSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
+        getZoneInfoSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE);
         
         try {
             return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
         } catch(EmptyResultDataAccessException e) {
-            //regulator does not have a Voltage Y point assigned.
+            //regulator does not have a Voltage point assigned.
             return null;
         }
     }

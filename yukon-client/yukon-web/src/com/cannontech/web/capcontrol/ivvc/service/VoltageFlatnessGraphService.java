@@ -43,7 +43,7 @@ public interface VoltageFlatnessGraphService {
     public long getLargestPointTimeForZoneGraph(int zoneId);
 
     /**
-     * Returns true if the regulators for all zones have a point existing for the RegulatorPointMapping VOLTAGE_Y. 
+     * Returns true if the regulators for all zones have a point existing for the RegulatorPointMapping VOLTAGE. 
      * This method may change in the future to check more than just this RegulatorPointMapping.
      * @param subBusId
      * @param user
@@ -52,7 +52,7 @@ public interface VoltageFlatnessGraphService {
     public boolean allZonesHaveRequiredRegulatorPointMapping(int subBusId, LiteYukonUser user);
 
     /**
-     * Returns true if the regulators for this zone have a point existing for the RegulatorPointMapping VOLTAGE_Y. 
+     * Returns true if the regulators for this zone have a point existing for the RegulatorPointMapping VOLTAGE. 
      * This method may change in the future to check more than just this RegulatorPointMapping.
      * @param zoneId
      * @param user

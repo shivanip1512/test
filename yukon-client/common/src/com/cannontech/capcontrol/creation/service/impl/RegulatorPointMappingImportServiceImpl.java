@@ -203,8 +203,8 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
     //does the actual insert, and also updates ccMonitorBankList, if appropriate
     private void insertPointMapping(RegulatorPointMapping mapping, YukonPao regulatorPao, int pointId, boolean overwriteExistingPoint) {
         extraPaoPointAssignmentDao.addAssignment(regulatorPao, pointId, mapping, overwriteExistingPoint);
-        //If mapping is voltage y, update ccmonitorbanklist
-        if(mapping == RegulatorPointMapping.VOLTAGE_Y) {
+        //If mapping is voltage, update ccmonitorbanklist
+        if(mapping == RegulatorPointMapping.VOLTAGE) {
             int regulatorId = regulatorPao.getPaoIdentifier().getPaoId();
             ccMonitorBankListDao.updateRegulatorVoltagePoint(regulatorId, pointId);
         }

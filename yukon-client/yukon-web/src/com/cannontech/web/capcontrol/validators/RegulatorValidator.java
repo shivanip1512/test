@@ -71,9 +71,9 @@ public class RegulatorValidator extends SimpleValidator<Regulator> {
                 //Throws an exception if regulator is not attached to a zone.
                 zoneDao.getZoneByRegulatorId(regulator.getId());
 
-                Integer pointId = regulator.getMappings().get(RegulatorPointMapping.VOLTAGE_Y);
+                Integer pointId = regulator.getMappings().get(RegulatorPointMapping.VOLTAGE);
                 if (pointId == null || pointId < 0) {
-                    errors.rejectValue("mappings[" + RegulatorPointMapping.VOLTAGE_Y.name() + "]", basekey + "noVoltageY");
+                    errors.rejectValue("mappings[" + RegulatorPointMapping.VOLTAGE.name() + "]", basekey + "noVoltage");
                 }
 
                 PaoType existingPaoType = dbCache.getAllPaosMap().get(regulator.getId()).getPaoType();

@@ -32,7 +32,7 @@ public class RegulatorMappingResultTest {
         
         successResult = new RegulatorMappingResult(regulatorPao);
         
-        successResult.addPointDetail(RegulatorPointMapping.VOLTAGE_Y, RegulatorPointMappingResult.SUCCESS);
+        successResult.addPointDetail(RegulatorPointMapping.VOLTAGE, RegulatorPointMappingResult.SUCCESS);
         successResult.addPointDetail(RegulatorPointMapping.TAP_DOWN, RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE);
         
         YukonPao regulatorPao2 = new YukonPao() {
@@ -47,7 +47,7 @@ public class RegulatorMappingResultTest {
         
         partialSuccessResult.addPointDetail(RegulatorPointMapping.FORWARD_BANDWIDTH, RegulatorPointMappingResult.SUCCESS);
         partialSuccessResult.addPointDetail(RegulatorPointMapping.KEEP_ALIVE, RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE);
-        partialSuccessResult.addPointDetail(RegulatorPointMapping.VOLTAGE_Y, RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND);
+        partialSuccessResult.addPointDetail(RegulatorPointMapping.VOLTAGE, RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND);
         partialSuccessResult.addPointDetail(RegulatorPointMapping.TAP_UP, RegulatorPointMappingResult.NO_POINTS_FOUND);
         
         YukonPao regulatorPao3 = new YukonPao() {
@@ -98,18 +98,18 @@ public class RegulatorMappingResultTest {
         Map<RegulatorPointMapping, RegulatorPointMappingResult> partialSuccessResults = partialSuccessResult.getPointMappingResults();
         Map<RegulatorPointMapping, RegulatorPointMappingResult> failResults = failResult.getPointMappingResults();
         
-        RegulatorPointMappingResult successVoltY = successResults.get(RegulatorPointMapping.VOLTAGE_Y);
+        RegulatorPointMappingResult successVolt = successResults.get(RegulatorPointMapping.VOLTAGE);
         RegulatorPointMappingResult successTapDown = successResults.get(RegulatorPointMapping.TAP_DOWN);
-        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS, successVoltY);
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS, successVolt);
         Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE, successTapDown);
         
         RegulatorPointMappingResult partSuccessFwdBand = partialSuccessResults.get(RegulatorPointMapping.FORWARD_BANDWIDTH);
         RegulatorPointMappingResult partSuccessKeepAlive = partialSuccessResults.get(RegulatorPointMapping.KEEP_ALIVE);
-        RegulatorPointMappingResult partSuccessVoltY = partialSuccessResults.get(RegulatorPointMapping.VOLTAGE_Y);
+        RegulatorPointMappingResult partSuccessVolt = partialSuccessResults.get(RegulatorPointMapping.VOLTAGE);
         RegulatorPointMappingResult partSuccessTapUp = partialSuccessResults.get(RegulatorPointMapping.TAP_UP);
         Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS, partSuccessFwdBand);
         Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.SUCCESS_WITH_OVERWRITE, partSuccessKeepAlive);
-        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND, partSuccessVoltY);
+        Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.MULTIPLE_POINTS_FOUND, partSuccessVolt);
         Assert.assertEquals("Incorrect result type for point.", RegulatorPointMappingResult.NO_POINTS_FOUND, partSuccessTapUp);
         
         RegulatorPointMappingResult failAutoRemoteControl = failResults.get(RegulatorPointMapping.AUTO_REMOTE_CONTROL);

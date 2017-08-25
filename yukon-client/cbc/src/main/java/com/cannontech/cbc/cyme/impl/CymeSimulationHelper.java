@@ -104,7 +104,7 @@ public class CymeSimulationHelper {
         if (regulator != null) {
             try {
                 log.debug("regulatorName="+regulatorName+" paoType="+paoType);
-                LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.VOLTAGE_Y);
+                LitePoint litePoint = extraPaoPointAssignmentDao.getLitePoint(regulator, RegulatorPointMapping.VOLTAGE);
                 simplePointAccessDao.setPointValue(litePoint, timestamp, value);
                 // for the purpose of CYMDIST integration it is necessary to support set point and bandwidth on a single
                 // phase regulator and NOT on the gang operated regulator.
@@ -113,7 +113,7 @@ public class CymeSimulationHelper {
                 }
                 return true;
             } catch (NotFoundException e) {
-                log.warn("CYME CONFIG: Missing Voltage_Y attribute on Regulator: " + regulatorName);
+                log.warn("CYME CONFIG: Missing Voltage attribute on Regulator: " + regulatorName);
             }
         }
         return false;
@@ -128,10 +128,10 @@ public class CymeSimulationHelper {
             return;
         }
         try {
-            LitePoint voltagePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE_Y);
+            LitePoint voltagePoint = extraPaoPointAssignmentDao.getLitePoint(pao, RegulatorPointMapping.VOLTAGE);
             simplePointAccessDao.setPointValue(voltagePoint, simulationTime, cymeObject.getPhaseA().getVoltage());
         } catch (NotFoundException e) {
-            log.warn("CYME CONFIG: Missing Voltage_Y attribute on LTC: " + cymeObject.getPhaseA().getVoltage() );
+            log.warn("CYME CONFIG: Missing Voltage attribute on LTC: " + cymeObject.getPhaseA().getVoltage() );
         }  
         
         proccessSetPointValueAndBandwith(pao, cymeObject.getLtcSetPoint(), cymeObject.getLtcBandwidth(),simulationTime) ;

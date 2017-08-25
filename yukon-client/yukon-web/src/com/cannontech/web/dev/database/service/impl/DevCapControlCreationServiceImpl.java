@@ -253,8 +253,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         PointBase terminate = createStatusPoint(regulator.getName() + "-Terminate", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
         
         PointBase tapPosition = createAnalogPoint(regulator.getName() + "-Tap Position", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase voltageX = createAnalogPoint(regulator.getName() + "-Voltage X", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
-        PointBase voltageY = createAnalogPoint(regulator.getName() + "-Voltage Y", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
+        PointBase sourceVoltage = createAnalogPoint(regulator.getName() + "-Source Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
+        PointBase voltage = createAnalogPoint(regulator.getName() + "-Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
         PointBase keepAlive = createAnalogPoint(regulator.getName() + "-Keep Alive", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
         PointBase forwardSetPoint = createAnalogPoint(regulator.getName() + "-Forward Set Point", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
         PointBase forwardBandwidth = createAnalogPoint(regulator.getName() + "-Forward Bandwidth", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
@@ -266,8 +266,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         .put(RegulatorPointMapping.TAP_DOWN, tapDown.getPoint().getPointID())
         .put(RegulatorPointMapping.TAP_POSITION, tapPosition.getPoint().getPointID())
         .put(RegulatorPointMapping.TERMINATE, terminate.getPoint().getPointID())
-        .put(RegulatorPointMapping.VOLTAGE_X, voltageX.getPoint().getPointID())
-        .put(RegulatorPointMapping.VOLTAGE_Y, voltageY.getPoint().getPointID())
+        .put(RegulatorPointMapping.SOURCE_VOLTAGE, sourceVoltage.getPoint().getPointID())
+        .put(RegulatorPointMapping.VOLTAGE, voltage.getPoint().getPointID())
         .put(RegulatorPointMapping.KEEP_ALIVE, keepAlive.getPoint().getPointID())
         .put(RegulatorPointMapping.FORWARD_SET_POINT, forwardSetPoint.getPoint().getPointID())
         .put(RegulatorPointMapping.FORWARD_BANDWIDTH, forwardBandwidth.getPoint().getPointID())

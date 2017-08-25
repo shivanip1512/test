@@ -296,7 +296,7 @@ public class ZoneDetailController {
     public @ResponseBody Map<String, Object> chart(YukonUserContext userContext, int zoneId) {
         boolean zoneAttributesExist = 
                 voltageFlatnessGraphService.zoneHasRequiredRegulatorPointMapping(zoneId,
-                                                      RegulatorPointMapping.VOLTAGE_Y,
+                                                      RegulatorPointMapping.VOLTAGE,
                                                       userContext.getYukonUser());
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
@@ -354,7 +354,7 @@ public class ZoneDetailController {
     private VfGraph setupChart(ModelMap model, YukonUserContext userContext, int zoneId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService
                 .zoneHasRequiredRegulatorPointMapping(zoneId,
-                                                      RegulatorPointMapping.VOLTAGE_Y,
+                                                      RegulatorPointMapping.VOLTAGE,
                                                       userContext.getYukonUser());
         VfGraph graph = null;
         if (zoneAttributesExist) {

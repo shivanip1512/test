@@ -321,7 +321,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 case TAP_POSITION:
                                     generatePoint(mapping.getValue(), getRegulatorTapPosition(regulatorId), PointType.Analog);
                                     break;
-                                case VOLTAGE_X:
+                                case SOURCE_VOLTAGE:
                                     generatePoint(mapping.getValue(), 120, PointType.Analog); // Yes, hardcoded 120V.
                                     break;
                                 case KEEP_ALIVE:
@@ -339,8 +339,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 case FORWARD_BANDWIDTH:
                                     generatePoint(mapping.getValue(), 2, PointType.Analog); // Really not used, here to generate point data
                                     break;
-                                case VOLTAGE_Y:
-                                    // Voltage Y is special, and needs phase information. We are looking it up via zoneService and not using the mapping
+                                case VOLTAGE:
+                                    // Voltage is special, and needs phase information. We are looking it up via zoneService and not using the mapping
                                     Map<Integer, Phase> pointsForRegulatorAndPhase =
                                     zoneService.getMonitorPointsForBankAndPhase(regulatorId);
                             

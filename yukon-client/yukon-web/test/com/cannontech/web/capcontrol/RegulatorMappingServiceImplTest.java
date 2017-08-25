@@ -54,8 +54,8 @@ public class RegulatorMappingServiceImplTest {
                                .put(RegulatorPointMapping.TAP_DOWN, 104)
                                .put(RegulatorPointMapping.TAP_POSITION, 105)
                                .put(RegulatorPointMapping.TERMINATE, 106)
-                               .put(RegulatorPointMapping.VOLTAGE_X, 107)
-                               .put(RegulatorPointMapping.VOLTAGE_Y, 108)
+                               .put(RegulatorPointMapping.SOURCE_VOLTAGE, 107)
+                               .put(RegulatorPointMapping.VOLTAGE, 108)
                                .put(RegulatorPointMapping.KEEP_ALIVE, 109)
                                .put(RegulatorPointMapping.FORWARD_SET_POINT, 111)
                                .put(RegulatorPointMapping.FORWARD_BANDWIDTH, 112)
@@ -67,8 +67,8 @@ public class RegulatorMappingServiceImplTest {
                                .put(RegulatorPointMapping.TAP_DOWN, 204)
                                .put(RegulatorPointMapping.TAP_POSITION, 205)
                                .put(RegulatorPointMapping.TERMINATE, 206)
-                               .put(RegulatorPointMapping.VOLTAGE_X, 207)
-                               .put(RegulatorPointMapping.VOLTAGE_Y, 208)
+                               .put(RegulatorPointMapping.SOURCE_VOLTAGE, 207)
+                               .put(RegulatorPointMapping.VOLTAGE, 208)
                                .put(RegulatorPointMapping.KEEP_ALIVE, 209)
                                .put(RegulatorPointMapping.FORWARD_SET_POINT, 211)
                                .put(RegulatorPointMapping.FORWARD_BANDWIDTH, 212)
@@ -82,8 +82,8 @@ public class RegulatorMappingServiceImplTest {
                                                        .put("GoRegulator-Tap Down", 104)
                                                        .put("GoRegulator-Tap Position", 105)
                                                        .put("GoRegulator-Terminate", 106)
-                                                       .put("GoRegulator-Voltage X", 107)
-                                                       .put("GoRegulator-Voltage Y", 108)
+                                                       .put("GoRegulator-Source Voltage", 107)
+                                                       .put("GoRegulator-Voltage", 108)
                                                        .put("GoRegulator-Keep Alive", 109)
                                                        .put("GoRegulator-Keep Alive Timer", 110)
                                                        .put("GoRegulator-Forward Set Point", 111)
@@ -93,8 +93,8 @@ public class RegulatorMappingServiceImplTest {
                                                        .put("PoRegulator-Tap Down", 204)
                                                        .put("PoRegulator-Tap Position", 205)
                                                        .put("PoRegulator-Terminate", 206)
-                                                       .put("PoRegulator-Voltage X", 207)
-                                                       .put("PoRegulator-Voltage Y", 208)
+                                                       .put("PoRegulator-Source Voltage", 207)
+                                                       .put("PoRegulator-Voltage", 208)
                                                        .put("PoRegulator-Keep Alive", 209)
                                                        .put("PoRegulator-Keep Alive Timer", 210)
                                                        .put("PoRegulator-Forward Set Point", 211)
@@ -173,7 +173,7 @@ public class RegulatorMappingServiceImplTest {
         //we expect from the test data.
         ExtraPaoPointAssignmentDao eppaDao = getMockEppaDao();
         
-        //This mock expects to have 2 methods hit twice, for both Voltage Y points that will be mapped.
+        //This mock expects to have 2 methods hit twice, for both Voltage points that will be mapped.
         CcMonitorBankListDao ccmblDao = EasyMock.createStrictMock(CcMonitorBankListDao.class);
         EasyMock.expect(ccmblDao.updateRegulatorVoltagePoint(1, 108)).andReturn(true);
         EasyMock.expect(ccmblDao.updateRegulatorVoltagePoint(2, 208)).andReturn(true);

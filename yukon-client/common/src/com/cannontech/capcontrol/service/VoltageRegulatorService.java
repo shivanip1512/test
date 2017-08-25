@@ -112,13 +112,13 @@ public class VoltageRegulatorService {
         //Point Mappings
 
         Map<RegulatorPointMapping, Integer> eppMappings = new HashMap<>();
-        int voltageYPointId = 0;
+        int voltagePointId = 0;
         for (Entry<RegulatorPointMapping, Integer> mapping : regulator.getMappings().entrySet()) {
             if (mapping.getValue() != null) {
                 eppMappings.put(mapping.getKey(), mapping.getValue());
-                //check to see if a voltage Y point is still attached
-                if (mapping.getKey() == RegulatorPointMapping.VOLTAGE_Y) {
-                    voltageYPointId = mapping.getValue();
+                //check to see if a voltage point is still attached
+                if (mapping.getKey() == RegulatorPointMapping.VOLTAGE) {
+                    voltagePointId = mapping.getValue();
                 }
             }
         }
@@ -127,8 +127,8 @@ public class VoltageRegulatorService {
         
         //Regulator voltage point for CcMonitorBankList
 
-        if (voltageYPointId > 0) {
-            ccMonitorBankListDao.updateRegulatorVoltagePoint(completeRegulator.getPaObjectId(), voltageYPointId);
+        if (voltagePointId > 0) {
+            ccMonitorBankListDao.updateRegulatorVoltagePoint(completeRegulator.getPaObjectId(), voltagePointId);
         } else {
             ccMonitorBankListDao.removeByDeviceId(completeRegulator.getPaObjectId(), null);
         }

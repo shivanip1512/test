@@ -358,11 +358,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     
     private LitePoint getRegulatorVoltagePoint(int regulatorId) {
         YukonPao regulatorPao = paoDao.getYukonPao(regulatorId);
-        RegulatorPointMapping regulatorVoltageMapping = RegulatorPointMapping.VOLTAGE_Y;
+        RegulatorPointMapping regulatorVoltageMapping = RegulatorPointMapping.VOLTAGE;
         try {
             return extraPaoPointAssignmentDao.getLitePoint(regulatorPao, regulatorVoltageMapping);
         } catch (NotFoundException e) {
-            log.debug("Regulator with id(" + regulatorId + ") does not have VOLTAGE_Y regulator point mapping.");
+            log.debug("Regulator with id(" + regulatorId + ") does not have VOLTAGE regulator point mapping.");
             return null;
         }
     }
@@ -400,7 +400,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         List<Zone> zones = zoneService.getZonesBySubBusId(subBusId);
         for (Zone zone : zones) {
             boolean hasRequiredAttribute = zoneHasRequiredRegulatorPointMapping(zone.getId(), 
-                                                                    RegulatorPointMapping.VOLTAGE_Y,
+                                                                    RegulatorPointMapping.VOLTAGE,
                                                                     user);
             if (!hasRequiredAttribute) {
                 return false;
