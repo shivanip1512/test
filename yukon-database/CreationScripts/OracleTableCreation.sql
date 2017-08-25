@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/17/2017 12:55:18 AM                        */
+/* Created on:     8/24/2017 4:18:00 PM                         */
 /*==============================================================*/
 
 
@@ -5275,6 +5275,13 @@ create table ExtraPaoPointAssignment  (
    PointId              NUMBER                          not null,
    Attribute            VARCHAR2(255)                   not null,
    constraint PK_ExtraPAOPointAsgmt primary key (PAObjectId, Attribute)
+);
+
+/*==============================================================*/
+/* Index: INDX_EPPA_PointId                                     */
+/*==============================================================*/
+create index INDX_EPPA_PointId on ExtraPaoPointAssignment (
+   PointId ASC
 );
 
 /*==============================================================*/

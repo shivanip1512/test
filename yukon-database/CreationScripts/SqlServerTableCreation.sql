@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/17/2017 1:07:01 AM                         */
+/* Created on:     8/24/2017 4:18:52 PM                         */
 /*==============================================================*/
 
 
@@ -5551,6 +5551,14 @@ create table ExtraPaoPointAssignment (
    PointId              numeric              not null,
    Attribute            varchar(255)         not null,
    constraint PK_ExtraPAOPointAsgmt primary key (PAObjectId, Attribute)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_EPPA_PointId                                     */
+/*==============================================================*/
+create index INDX_EPPA_PointId on ExtraPaoPointAssignment (
+PointId ASC
 )
 go
 

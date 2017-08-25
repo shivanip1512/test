@@ -63,6 +63,21 @@ WHERE YPO.Type IN ('RFW-201', 'RFW-205') AND P.POINTTYPE = 'Analog'
 GO
 /* End YUK-17066 */
 
+/* Start YUK-17159 */
+UPDATE ExtraPaoPointAssignment
+SET Attribute = 'VOLTAGE'
+WHERE Attribute = 'VOLTAGE_Y';
+
+UPDATE ExtraPaoPointAssignment
+SET Attribute = 'SOURCE_VOLTAGE'
+WHERE Attribute = 'VOLTAGE_X';
+
+CREATE INDEX INDX_EPPA_PointId ON ExtraPaoPointAssignment (
+    PointId ASC
+);
+GO
+/* End YUK-17159 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
