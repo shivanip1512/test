@@ -253,7 +253,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         PointBase terminate = createStatusPoint(regulator.getName() + "-Terminate", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
         
         PointBase tapPosition = createAnalogPoint(regulator.getName() + "-Tap Position", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase sourceVoltage = createAnalogPoint(regulator.getName() + "-Voltage Source", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
+        PointBase sourceVoltage = createAnalogPoint(regulator.getName() + "-Source Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
         PointBase voltage = createAnalogPoint(regulator.getName() + "-Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
         PointBase keepAlive = createAnalogPoint(regulator.getName() + "-Keep Alive", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
         PointBase forwardSetPoint = createAnalogPoint(regulator.getName() + "-Forward Set Point", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);

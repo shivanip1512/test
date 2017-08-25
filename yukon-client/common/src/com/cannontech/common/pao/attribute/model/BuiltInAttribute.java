@@ -493,7 +493,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SCADA_OVERRIDE_ENABLE("SCADA Override Enable", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_HEARTBEAT("SCADA Override Heartbeat", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_MODE("SCADA Override Mode", AttributeGroup.CAPCONTROL, false),
-    SOURCE_VOLTAGE("Voltage Source", AttributeGroup.CAPCONTROL, false),
+    SOURCE_VOLTAGE("Source Voltage", AttributeGroup.CAPCONTROL, false),
     TAP_DOWN("Tap Down", AttributeGroup.CAPCONTROL, false),
     TAP_POSITION("Tap Position", AttributeGroup.CAPCONTROL, false),
     TAP_UP("Tap Up", AttributeGroup.CAPCONTROL, false),

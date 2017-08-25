@@ -928,7 +928,7 @@
 	<li>Lower Tap Position - TAP_DOWN</li>
 	<li>Tap Position - TAP_POSITION</li>
 	<li>Terminate - TERMINATE</li>
-	<li>Voltage Source - SOURCE_VOLTAGE</li>
+	<li>Source Voltage - SOURCE_VOLTAGE</li>
 	<li>Voltage - VOLTAGE</li>
 	<li>Keep Alive - KEEP_ALIVE</li>
 	<li>Forward Set Point - FORWARD_SET_POINT</li>
@@ -985,7 +985,7 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TAP_DOWN">Lower Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TAP_POSITION">Tap Position</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TERMINATE">Terminate</entry>
-    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.SOURCE_VOLTAGE">Voltage Source</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.SOURCE_VOLTAGE">Source Voltage</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE">Voltage Load</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE">Keep Alive</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.FORWARD_SET_POINT">Set Point</entry>

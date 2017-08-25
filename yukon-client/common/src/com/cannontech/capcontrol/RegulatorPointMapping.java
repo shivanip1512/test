@@ -16,7 +16,7 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     TAP_DOWN("Tap Down", PointType.Status, PointType.CalcStatus),
     TAP_POSITION("Tap Position", PointType.Analog, PointType.CalcAnalog),
     TERMINATE("Terminate", PointType.Status, PointType.CalcStatus),
-    SOURCE_VOLTAGE("Voltage Source", PointType.Analog, PointType.CalcAnalog),
+    SOURCE_VOLTAGE("Source Voltage", PointType.Analog, PointType.CalcAnalog),
     VOLTAGE("Voltage", PointType.Analog, PointType.CalcAnalog),
     KEEP_ALIVE("Keep Alive", PointType.Analog, PointType.CalcAnalog),
     FORWARD_SET_POINT("Forward Set Point", PointType.Analog, PointType.CalcAnalog),
