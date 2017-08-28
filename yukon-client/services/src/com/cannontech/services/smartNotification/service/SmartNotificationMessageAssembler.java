@@ -24,8 +24,7 @@ public class SmartNotificationMessageAssembler implements SupervisedQueueProcess
     @Override
     public void start() {
         //Spin up a processor in a new thread. 
-        //1. Pull messages from the assemblerQueue  
-        //2. Compare with user prefs to figure out who to notify, how to notify
+        //1. Pull SmartNotificationMessageParameter objects from the assemblerQueue 
         //3. Build up actual messages
         //4. Send out messages via Notification service
     }
