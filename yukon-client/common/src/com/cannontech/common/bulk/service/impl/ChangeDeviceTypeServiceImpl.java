@@ -56,15 +56,16 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
             }
         }
         catch (IllegalArgumentException e) {
-            throw new ProcessingException("Invalid device type: " + newDeviceType, "invalidDeviceType", e, newDeviceType );
+            throw new ProcessingException("Invalid device type: " + newDeviceType, "invalidDeviceType", e,
+                newDeviceType, paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()));
         } catch (DataRetrievalFailureException e) {
-            throw new ProcessingException("Could not find device with id: " + device.getDeviceId(), "deviceNotFoundWithId",
-                                          e, device.getDeviceId());
+            throw new ProcessingException("Could not find device with id: " + device.getDeviceId(),
+                "deviceNotFoundWithId", e, device.getDeviceId(),
+                paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()));
         } catch (PersistenceException e) {
             throw new ProcessingException("Could not change device type for device with id: " + device.getDeviceId(),
-                                          "changeDeviceType",
-                                          e,
-                                          device.getDeviceId());
+                "changeDeviceType", e, device.getDeviceId(),
+                paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()));
         }
     }
 }

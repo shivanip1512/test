@@ -1,7 +1,6 @@
 package com.cannontech.web.bulk;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -159,7 +158,9 @@ public class UpdateController {
         model.addAttribute("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
         model.addAttribute("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
         model.addAttribute("callbackResult", callbackResult);
-
+        if (bulkUpdateFileInfo.getFileResource() != null) {
+            model.addAttribute("fileName", bulkUpdateFileInfo.getFileResource().getFilename());
+        }
         return "update/updateResults.jsp";
     }
     

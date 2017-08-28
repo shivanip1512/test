@@ -9,12 +9,13 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.service.PaoLoadingService;
 
 public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     
     private DeviceDao deviceDao;
     @Autowired private DeviceUpdateService deviceUpdateService;
-    
+    @Autowired private PaoLoadingService paoLoadingService;
     @Override
     public void updateField(SimpleDevice device, YukonDeviceDto value) {
 
@@ -38,7 +39,7 @@ public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
             throw new ProcessingException("Could not " + status + " device with id: " + device.getDeviceId(),
                                           status+"Device",
                                           e,
-                                          device.getDeviceId());
+                                          device.getDeviceId(), paoLoadingService.getDisplayablePao(device).getName());
         }
     }
     

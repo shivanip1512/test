@@ -8,7 +8,14 @@
 <table class="compact-results-table">
     <thead>
         <tr>
-            <th><i:inline key=".lineNumber"/></th>
+            <c:choose>
+                <c:when test="${isFileUpload}">
+                    <th><i:inline key=".lineNumber"/></th>
+                </c:when>
+                <c:otherwise>
+                    <th><i:inline key=".deviceName"/></th>
+                </c:otherwise>
+            </c:choose>
             <th><i:inline key="yukon.common.error"/></th>
         </tr>
     </thead>
@@ -16,7 +23,14 @@
     <tbody>
         <c:forEach var="e" items="${exceptionRowNumberMap}">
             <tr>
-                <td><i:inline key=".line" arguments="${e.key + 2}"/></td>
+                <c:choose>
+                    <c:when test="${isFileUpload}">
+                        <td><i:inline key=".line" arguments="${e.key + 2}"/></td>
+                    </c:when>
+                    <c:otherwise>
+                        <td>${e.value.args[1]}</td>
+                        </c:otherwise>
+                </c:choose>
                 <td><cti:msg2 key="${e.value}" htmlEscape="true"/></td>
             </tr>
         </c:forEach>

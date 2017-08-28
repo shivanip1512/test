@@ -83,6 +83,7 @@
         </a>
         <cti:url var="url" value="/bulk/processing-errors">
             <cti:param name="resultsId" value="${resultsId}"/>
+            <cti:param name="isFileUpload" value="${not empty fileName}"/>
         </cti:url>
         <div id="processing-errors-${resultsId}" data-url="${url}" class="dn buffered"></div>
     </c:if>

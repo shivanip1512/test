@@ -122,7 +122,7 @@ public abstract class AddRemovePointsControllerBase {
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         AddRemovePointsCallbackResult callbackResult = (AddRemovePointsCallbackResult)recentResultsCache.getResult(resultsId);
         model.addAttribute("callbackResult", callbackResult);
-        
+        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
         // device collection
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
     }

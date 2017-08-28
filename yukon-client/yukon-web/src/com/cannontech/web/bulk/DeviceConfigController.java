@@ -194,6 +194,7 @@ public class DeviceConfigController {
         ConfigurationCallbackResult callbackResult = (ConfigurationCallbackResult)recentResultsCache.getResult(resultsId);
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
         model.addAttribute("callbackResult", callbackResult);
+        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
     }
 
     /**

@@ -147,7 +147,7 @@ public class ChangeDeviceTypeController {
         
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
         model.addAttribute("callbackResult", callbackResult);
-
+        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
         return "changeDeviceType/changeDeviceTypeResults.jsp";
     }
     

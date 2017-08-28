@@ -219,9 +219,13 @@ public class AddPointsController extends AddRemovePointsControllerBase {
                     	log.debug("No points selected for device type, none added or updated: deviceId=" + device.getPaoIdentifier().getPaoId());
                     }
                 } catch (PersistenceException e) {
-                    throw new ProcessingException("Add point failed", "addPointFailed", e );
+                    throw new ProcessingException("Add point failed", "addPointFailed", e,
+                        paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()),
+                        paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()));
                 } catch (NotFoundException e) {
-                    throw new ProcessingException("Add point failed", "addPointFailed", e);
+                    throw new ProcessingException("Add point failed", "addPointFailed", e,
+                        paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()),
+                        paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()));
                 }
             }
         };

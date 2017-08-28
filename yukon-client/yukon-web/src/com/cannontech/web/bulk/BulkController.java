@@ -229,11 +229,11 @@ public class BulkController {
     }
 
     @RequestMapping("processing-errors")
-    public String processingErrors(ModelMap model, String resultsId) {
+    public String processingErrors(ModelMap model, String resultsId, boolean isFileUpload) {
         
         BackgroundProcessResultHolder bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
         model.addAttribute("exceptionRowNumberMap", bulkUpdateOperationResults.getProcessingExceptionRowNumberMap());
-        
+        model.addAttribute("isFileUpload", isFileUpload);
         return "processingExceptionErrorsList.jsp";
     }
     

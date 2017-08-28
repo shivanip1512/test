@@ -177,7 +177,9 @@ public class ImportController {
         
         model.addAttribute("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
         model.addAttribute("callbackResult", callbackResult);
-        
+        if (bulkImportFileInfo.getFileResource() != null) {
+            model.addAttribute("fileName", bulkImportFileInfo.getFileResource().getFilename());
+        }
         return "import/importResults.jsp";
     }
     

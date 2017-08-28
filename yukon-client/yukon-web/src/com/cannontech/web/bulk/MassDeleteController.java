@@ -76,7 +76,7 @@ public class MassDeleteController {
     public String doMassDelete(ModelMap model, HttpServletRequest request) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        
+        boolean isFileUpload = !StringUtils.isEmpty(deviceCollection.getUploadFileName());
         // CALLBACK
     	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
@@ -94,7 +94,7 @@ public class MassDeleteController {
         SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
-                processDeviceDelete(device);
+                processDeviceDelete(device, isFileUpload);
             }
         };
         
@@ -106,7 +106,7 @@ public class MassDeleteController {
         return "redirect:massDeleteResults";
     }
     
-    private void processDeviceDelete(SimpleDevice device) {
+    private void processDeviceDelete(SimpleDevice device, boolean isFileUpload) {
         try {
             if (paoPersistenceDao.supports(device)) {
                 paoPersistenceService.deletePao(device);
@@ -115,18 +115,24 @@ public class MassDeleteController {
             }
         } catch (DataRetrievalFailureException e) {
             String displayablePao = paoLoadingService.getDisplayablePao(device).getName();
-            throw new ProcessingException("Could not find device: " +displayablePao+ " (id=" + device.getDeviceId() + ")",
-                                          "paoNotFound",
-                                          e,
-                                          displayablePao,
-                                          device.getDeviceId());
+            if (isFileUpload) {
+                throw new ProcessingException("Could not find device: " + displayablePao + " (id="
+                    + device.getDeviceId() + ")", "paoNotFound", e, displayablePao, device.getDeviceId());
+            } else {
+                throw new ProcessingException("Could not find device: " + displayablePao + " (id="
+                    + device.getDeviceId() + ")", "paoNotFoundForSelectedDevices", e, device.getDeviceType(), displayablePao,
+                    device.getDeviceId());
+            }
         } catch (Exception e) {
             String displayablePao = paoLoadingService.getDisplayablePao(device).getName();
-            throw new ProcessingException("Could not delete device: " + displayablePao + " (id=" + device.getDeviceId() + ")",
-                                          "deleteDevice",
-                                          e,
-                                          displayablePao,
-                                          device.getDeviceId());
+            if (isFileUpload) {
+                throw new ProcessingException("Could not delete device: " + displayablePao + " (id="
+                    + device.getDeviceId() + ")", "deleteDevice", e, displayablePao, device.getDeviceId());
+            } else {
+                throw new ProcessingException("Could not delete device: " + displayablePao + " (id="
+                    + device.getDeviceId() + ")", "deleteSelectedDevices", e, device.getDeviceType(), displayablePao,
+                    device.getDeviceId());
+            }
         }
     }
     
@@ -140,7 +146,7 @@ public class MassDeleteController {
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         MassDeleteCallbackResult callbackResult = (MassDeleteCallbackResult)recentResultsCache.getResult(resultsId);
         model.addAttribute("callbackResult", callbackResult);
-
+        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
         return "massDelete/massDeleteResults.jsp";
     }
 

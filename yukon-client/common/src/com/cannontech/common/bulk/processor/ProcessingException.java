@@ -35,9 +35,9 @@ public class ProcessingException extends DisplayableRuntimeException implements
         super(message, cause, keyBase + key);
     }
 
-    public ProcessingException(String message, String key, Throwable cause, int deviceId,
+    public ProcessingException(String message, String key, Throwable cause, int deviceId, String deviceName,
             String route) {
-        super(message, cause, keyBase + key, deviceId, route);
+        super(message, cause, keyBase + key, deviceId, deviceName, route);
     }
 
     public ProcessingException(String message, String key, int address) {
@@ -56,11 +56,19 @@ public class ProcessingException extends DisplayableRuntimeException implements
         super(message, cause, keyBase + key, deviceId);
     }
     
+    public ProcessingException(String message, String key, Throwable cause, int deviceId, String deviceName) {
+        super(message, cause, keyBase + key, deviceId, deviceName);
+    }
+
     /**
      * objectName can be columnValue or RouteName
      */
     public ProcessingException(String message, String key, Throwable cause, String objectName) {
         super(message, cause, keyBase + key, objectName);
+    }
+
+    public ProcessingException(String message, String key, Throwable cause, String objectName, String deviceName) {
+        super(message, cause, keyBase + key, objectName, deviceName);
     }
 
     /**
@@ -94,6 +102,14 @@ public class ProcessingException extends DisplayableRuntimeException implements
 
     public ProcessingException(String message, String key, Throwable cause, PaoType paoType) {
         super(message, cause, keyBase + key, paoType);
+    }
+
+    public ProcessingException(String message, String key, Throwable cause, PaoType paoType, String paoName) {
+        super(message, cause, keyBase + key, paoType, paoName);
+    }
+
+    public ProcessingException(String message, String key, Throwable cause, PaoType paoType, String paoName, int paoId) {
+        super(message, cause, keyBase + key, paoType, paoName, paoId);
     }
 
     public ProcessingException(String message, String key, String deviceName, PaoType paoType) {

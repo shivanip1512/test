@@ -4,6 +4,7 @@
 
     <entry key="yukon.common.device.bulk.lineNumber">Line #</entry>
     <entry key="yukon.common.device.bulk.line">Line {0}</entry>
+    <entry key="yukon.common.device.bulk.deviceName">Device Name</entry>
 
     <entry key="yukon.web.modules.tools.bulk.home.pageName">Bulk Operations</entry>
     

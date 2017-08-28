@@ -66,7 +66,7 @@ public class MassChangeController {
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
         model.addAttribute("massChangeBulkFieldName", callbackResult.getMassChangeBulkFieldColumnHeader().getFieldName());
         model.addAttribute("callbackResult", callbackResult);
-
+        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
         return "massChange/massChangeResults.jsp";
     }
 
