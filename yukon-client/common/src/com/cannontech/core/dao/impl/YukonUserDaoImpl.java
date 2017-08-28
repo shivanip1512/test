@@ -19,7 +19,6 @@ import com.cannontech.common.user.NewUser;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -31,9 +30,9 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PagingResultSetExtractor;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonMappingRowCallbackHandler;
@@ -45,9 +44,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.database.vendor.DatabaseVendor;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -67,7 +64,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private DatabaseVendorResolver dbVendorResolver;
     
     public static final int numberOfRandomChars = 5;
     
@@ -557,22 +554,12 @@ public class YukonUserDaoImpl implements YukonUserDao {
         sql.append("     JOIN YukonGroupRole yg ON ugm.GroupId = yg.GroupID");
         sql.append("   WHERE RoleID").eq(YukonRole.RESIDENTIAL_CUSTOMER);
         sql.append("))");
-        sql.append(getTable());
+        if (dbVendorResolver.getDatabaseVendor().isOracle()) {
+            sql.append("FROM Dual");
+        }
         sql.append(" UserCount");
         
         int count = jdbcTemplate.queryForInt(sql);
         return count;
     }
-    
-    private SqlFragmentSource getTable() {
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
-        sqla.append("");
-
-        SqlBuilder sqlb = builder.buildOther();
-        sqlb.append(" FROM Dual");
-
-        return builder;
-    }
-
 }
