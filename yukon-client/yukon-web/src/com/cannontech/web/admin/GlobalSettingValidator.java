@@ -100,7 +100,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
             }
         });
         
-        validators.put(GlobalSettingType.IGNORE_OLDER_DATA, new TypeValidator() {
+        validators.put(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT, new TypeValidator() {
             @Override
             public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
                 Integer noOfMonths = (Integer) value;

@@ -398,8 +398,8 @@
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     
-    <entry key="yukon.common.setting.IGNORE_OLDER_DATA">Ignore Older Data Than (In Month)</entry>
-    <entry key="yukon.common.setting.IGNORE_OLDER_DATA.description">Do not archive data older than these months.</entry>
+    <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT">RFN Incoming Data Timestamp Limit</entry>
+    <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT.description">Incoming RFN data having timestamps older than this number (in months) will not be processed nor archived.</entry>
     
     <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Gateway connection warning minutes</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES.description">The number of minutes a gateway must be disconnected to generate a warning.</entry>

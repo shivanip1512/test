@@ -204,7 +204,7 @@ public class GlobalSettingValidatorTest {
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.AMI);
-        globalSettings.put(GlobalSettingType.IGNORE_OLDER_DATA, 3);
+        globalSettings.put(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT, 3);
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
@@ -214,7 +214,7 @@ public class GlobalSettingValidatorTest {
         
         command = new GlobalSettingsEditorBean();
         command.setCategory(GlobalSettingSubCategory.AMI);
-        globalSettings.put(GlobalSettingType.IGNORE_OLDER_DATA, 280);
+        globalSettings.put(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT, 280);
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");

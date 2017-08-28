@@ -24,7 +24,7 @@ public final class RfnDataValidator {
      */
     public static boolean isTimestampValid(Instant timestamp, Instant now) {
         int monthsToSubstact =
-                globalSettingDao.getInteger(GlobalSettingType.IGNORE_OLDER_DATA);
+                globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
 
         if (monthsToSubstact == 0) {
             return timestamp.isAfter(y2k) && timestamp.isBefore(now.plus(year));
