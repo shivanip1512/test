@@ -72,7 +72,7 @@ public class DeviceConfigurationCategoryController {
         PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD,
         PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD);
     private final Set<PaoType> disconnectDisplayDisabledTypes =
-        ImmutableSet.of(PaoType.RFN420CL, PaoType.MCT420FD, PaoType.MCT420CL, PaoType.MCT420CD);
+        ImmutableSet.of(PaoType.RFN420CD, PaoType.MCT420FD, PaoType.MCT420CD);
     private final Set<Class<?>> specialFields = ImmutableSet.of(RateMapField.class, RfnChannelField.class, AttributeMappingField.class);
     
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);
