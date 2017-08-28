@@ -2,6 +2,8 @@ package com.cannontech.development.service;
 
 import java.io.IOException;
 
+import org.apache.commons.codec.DecoderException;
+
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.impl.DRReport;
@@ -20,7 +22,7 @@ public interface RfnEventTestingService {
      * Sends out relay archive messages on the ActiveMQ queue.
      */
     void sendRelayArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
-    public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException;
+    public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException, DecoderException;
     void calculationStressTest();
 
     void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude,

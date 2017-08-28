@@ -15,8 +15,8 @@ public enum DRReport {
     // has verification messages
     DR_REPORT_6600_V1_1_1M(PaoType.LCR6600_RFN,			"0.0.3", "DRReport_6600_v1_1_1(ex2).drr",    "CPS", "1082", true,  false),
     // has verification messages and expresscom header
-    DR_REPORT_6600_V1_1_1MXCOM(PaoType.LCR6600_RFN,		"0.0.3", "DRReport_6600_v1_1_1(ex3).drr",    "CPS", "1082", true,  true);
-
+    DR_REPORT_6600_V1_1_1MXCOM(PaoType.LCR6600_RFN,		"0.0.3", "DRReport_6600_v1_1_1(ex3).drr",    "CPS", "1082", true,  true),
+    DR_REPORT_6700(PaoType.LCR6700_RFN, "0.0.4", "DRReport_v1_6700.txt", "CPS", "1083", true, true);
 	DRReport(PaoType type, String schema, String report, String manufacturer,
 			String model, boolean hasVerificationMessages,
 			boolean hasExpresscomHeader) {
@@ -35,6 +35,7 @@ public enum DRReport {
     private final String model;
     private final boolean hasVerificationMessages;
     private final PaoType type;
+
     private final boolean hasExpresscomHeader;
     private static final String classpath = "classpath:com/cannontech/dr/rfn/service/";
     
@@ -63,4 +64,9 @@ public enum DRReport {
     public String getModel() {
         return model;
     }
+
+    public PaoType getType() {
+        return type;
+    }
+
 }

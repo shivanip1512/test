@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -37,6 +40,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
@@ -245,7 +249,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
     
     @Override
-    public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException {
+    public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException, DecoderException {
         if (serialTo < serialFrom) {
             serialTo = serialFrom;
         }
@@ -256,11 +260,13 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
                 RfnLcrReading data = new RfnLcrReading();
                 
-                // Read test encoded EXI file from classpath, assign it to payload.
+                // Read test encoded EXI/TLV file from classpath, assign it to payload.
                 byte[] payload;
                 Resource payloadResource = loader.getResource(drReport.getClasspath());
-                if (payloadResource.exists()) {
+                if (payloadResource.exists() && drReport.getType() != PaoType.LCR6700_RFN) {
                     payload = FileCopyUtils.copyToByteArray(payloadResource.getInputStream());
+                } else if (drReport.getType() == PaoType.LCR6700_RFN) {
+                    payload = Hex.decodeHex(IOUtils.toCharArray(payloadResource.getInputStream()));
                 } else {
                     payload = new byte[64];
                 }

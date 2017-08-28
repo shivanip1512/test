@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,14 +33,13 @@ import org.xml.sax.SAXException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.YukonLogManager.RfnLogger;
-import com.cannontech.common.exception.ParseExiException;
+import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.service.ExiParsingService;
+import com.cannontech.dr.rfn.service.ParsingService;
 
-public class ExiParsingServiceImpl implements ExiParsingService {
-    
-    private final static byte expresscomPayloadHeader = (byte) 0xE2;
+public class ExiParsingServiceImpl implements ExiParsingService <SimpleXPathTemplate> {
     
     @Autowired ResourceLoader loader;
     private static final Logger log = YukonLogManager.getLogger(ExiParsingServiceImpl.class);
@@ -60,7 +58,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
 
         //Get the schema version from the header
         byte[] header = Arrays.copyOfRange(data, 0, 4);
-        Schema schema = getSchema(header);
+        Schema schema = ParsingService.getSchema(header);
         EXISchema exiSchema = getExiSchema(schema);
         
         // Create grammar using RF LCR reading schema & default options.
@@ -103,11 +101,11 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         try {
             reader.parse(new InputSource(bis));
         } catch (IOException | SAXException | ArrayIndexOutOfBoundsException e) {
-            throw new ParseExiException("Error while parsing the RF LCR payload.", e);
+            throw new ParseException("Error while parsing the RF LCR payload.", e);
         } catch (OutOfMemoryError e) {
             // While not normally done, we catch OOM here since the error can't be handled at a lower level, it isn't
             // affecting application stability, and the memory footprint does not grow when this is reached.
-            throw new ParseExiException("Out of heap memory when parsing EXI payload, likely due to malformed EXI encoded data.", e);
+            throw new ParseException("Out of heap memory when parsing EXI payload, likely due to malformed EXI encoded data.", e);
         }
        
         final String reconstitutedString = xmlWriter.getBuffer().toString();
@@ -119,28 +117,6 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(reconstitutedString);
         return template;
-    }
-    
-    /**
-     * Parse the schema version from the header and return a schema
-     */
-    private Schema parseSchema(byte[] exiHeader){
-    	ByteBuffer header = ByteBuffer.wrap(exiHeader);
-        StringBuilder version = new StringBuilder();
-        ByteBuffer majorMinorBuffer = ByteBuffer.allocate(1);
-        majorMinorBuffer.put(header.array(), 2, 1);
-        //majorMinorBuffer.put((byte) 0xEA); to test
-        int major = (majorMinorBuffer.get(0) & 0xF0) >>> 4;
-        int minor = majorMinorBuffer.get(0) & 0x0F;
-        version.append(major);
-        version.append(".");
-        version.append(minor);
-        version.append(".");
-        ByteBuffer revisionBuffer = ByteBuffer.allocate(1);
-        revisionBuffer.put(header.array(), 3, 1);
-        version.append(revisionBuffer.get(0));        
-        log.debug("Parsed schema version: " + version);
-        return Schema.getSchema(version.toString());
     }
     
     /**
@@ -197,17 +173,6 @@ public class ExiParsingServiceImpl implements ExiParsingService {
             output = Arrays.copyOf(byteArray, byteArray.length);
         }
         return output;
-    }
-
-    @Override
-    public Schema getSchema(byte[] payload) {
-        byte[] header;
-        if (payload[0] == expresscomPayloadHeader) {
-            header = Arrays.copyOfRange(payload, 3, 8);
-        } else {
-            header = Arrays.copyOfRange(payload, 0, 4);
-        }
-        return parseSchema(header);
     }
 
 }

@@ -3,6 +3,7 @@ package com.cannontech.services.rfn.endpoint;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -19,21 +20,17 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
-import com.cannontech.common.exception.ParseExiException;
+import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.util.Range;
-import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
-import com.cannontech.dr.rfn.service.ExiParsingService;
-import com.cannontech.dr.rfn.service.ExiParsingService.Schema;
-import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
-import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
+import com.cannontech.dr.rfn.service.ParsingService;
+import com.cannontech.dr.rfn.service.ParsingService.Schema;
+import com.cannontech.dr.rfn.service.RfnLcrParsingStrategy;
 import com.cannontech.message.dispatch.DispatchClientConnection;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -47,7 +44,7 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import java.util.AbstractMap.SimpleEntry;
 
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
@@ -57,15 +54,13 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private EnrollmentDao enrollmentService;
-    @Autowired private ExiParsingService exiParsingService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private LmHardwareCommandService commandService;
-    @Autowired private RfnLcrDataMappingService rfnLcrDataMappingService;
-    @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
+    private RfnLcrParsingStrategy rfnLcrParsingStrategy;
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
-    
+    private  Map<Schema, RfnLcrParsingStrategy> strategies;
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
@@ -103,17 +98,13 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             }
             
             if (request instanceof RfnLcrReadingArchiveRequest) {
-                
                 RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
-                SimpleXPathTemplate decodedPayload = null;
-                
                 byte[] payload = reading.getData().getPayload();
+                Schema schema = ParsingService.getSchema(payload);
+                rfnLcrParsingStrategy = strategies.get(schema);
                 try {
-                    if (log.isDebugEnabled()) {
-                        log.debug("decoding: " + rfnDevice);
-                    }
-                    decodedPayload = exiParsingService.parseRfLcrReading(rfnDevice.getRfnIdentifier(), payload);
-                } catch (ParseExiException e) {
+                    rfnLcrParsingStrategy.praseRfLcrReading(request, rfnDevice, archivedReadings);
+                } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);
                     log.error(
@@ -122,34 +113,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                         ". Payload may be corrupt or not schema compliant.");
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
                 }
-                
-                // Handle broadcast verification messages
-                Schema schema = exiParsingService.getSchema(payload);
-                if (schema.supportsBroadcastVerificationMessages()) {
-                    // Verification Messages should be processed even if there is no connection to dispatch.
-                    Map<Long, Instant> verificationMsgs =
-                        rfnLcrDataMappingService.mapBroadcastVerificationMessages(decodedPayload);
-                    Range<Instant> range =
-                        rfnLcrDataMappingService.mapBroadcastVerificationUnsuccessRange(decodedPayload, rfnDevice);
-                    rfnPerformanceVerificationService.processVerificationMessages(rfnDevice, verificationMsgs, range);
-                }
-                
-                // Discard all the data before 1/1/2001
-                if (rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)) {
-                    // Handle point data
-                    List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
-                    messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
-                    asyncDynamicDataSource.putValues(messagesToSend);
-                    archivedReadings.addAndGet(messagesToSend.size());
-                    if (log.isDebugEnabled()) {
-                        log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
-                    }
-                    
-                    // Handle addressing data
-                    rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
-                }
                 incrementProcessedArchiveRequest();
-                
+    
             } else {
                 // Just an LCR archive request, these happen when devices join the network
                 InventoryIdentifier inventory =
@@ -247,5 +212,14 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     public int getNumPausedQueues() {
         return numPausedQueues.get();
     }
-    
+
+    @Autowired
+    public void setStrategies(List<RfnLcrParsingStrategy> strategyList) {
+
+        strategies = strategyList.stream()
+                                 .flatMap(strategy -> strategy.getSchema().stream()
+                                                                          .map(schema -> new SimpleEntry<>(schema, strategy)))
+                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+    }
 }

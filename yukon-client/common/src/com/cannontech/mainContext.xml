@@ -404,10 +404,14 @@
     <bean class="com.cannontech.common.rfn.simulation.service.impl.NmNetworkSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
-    <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnPerformanceVerificationServiceImpl"/>
-    
+    <bean class="com.cannontech.dr.rfn.service.impl.TLVParsingServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrExiDataMappingServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrTlvDataMappingServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrExiParsingStrategy"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrTlvParsingStrategy"/>
+
     <bean class="com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl"/>
     <bean class="com.cannontech.dr.dao.impl.SepReportedAddressDaoImpl"/>
     

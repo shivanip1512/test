@@ -13,6 +13,7 @@ import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -605,7 +606,7 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("sendLcrReadArchiveRequest")
-    public String sendLcrReadArchive(int serialFrom, int serialTo, int days, String drReport) throws IOException {
+    public String sendLcrReadArchive(int serialFrom, int serialTo, int days, String drReport) throws IOException, DecoderException {
         rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, days, DRReport.valueOf(drReport));
         return "redirect:viewLcrReadArchiveRequest";
     }

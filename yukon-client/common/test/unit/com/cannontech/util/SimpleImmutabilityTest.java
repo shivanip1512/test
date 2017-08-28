@@ -273,6 +273,8 @@ import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
+import com.cannontech.dr.rfn.model.RfnLcr6700PointDataMap;
+import com.cannontech.dr.rfn.model.RfnLcr6700RelayMap;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
@@ -502,7 +504,9 @@ public class SimpleImmutabilityTest {
             RfnLcrRelayDataMap.class,
             StandardResponse.class,
             Status.class,
-            ThermostatRampRateValues.class
+            ThermostatRampRateValues.class,
+            RfnLcr6700PointDataMap.class,
+            RfnLcr6700RelayMap.class
         );
          // @formatter:on
     }

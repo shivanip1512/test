@@ -19,13 +19,13 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
-import com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl;
+import com.cannontech.dr.rfn.service.impl.RfnLcrExiDataMappingServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnLcrDataMappingServiceTest {
 
     private AttributeService attributeService = new MockAttributeServiceImpl();
-    private RfnLcrDataMappingServiceImpl dataMappingServiceImpl = new RfnLcrDataMappingServiceImpl();
+    private RfnLcrExiDataMappingServiceImpl dataMappingServiceImpl = new RfnLcrExiDataMappingServiceImpl();
     {
         ReflectionTestUtils.setField(dataMappingServiceImpl, "attributeService", attributeService);
 
