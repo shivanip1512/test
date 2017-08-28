@@ -90,7 +90,7 @@ const TestAttributeService::AttributeStore TestAttributeService::_store = initSt
 
 struct TestCapControlBusStore : public CtiCCSubstationBusStore
 {
-    void setVoltageRegulatorManager(std::unique_ptr<Cti::CapControl::VoltageRegulatorManager>& manager)
+    void setVoltageRegulatorManager(std::unique_ptr<Cti::CapControl::VoltageRegulatorManager> manager)
     {
         _voltageRegulatorManager = std::move(manager);
     }
