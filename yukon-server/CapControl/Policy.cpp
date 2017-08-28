@@ -17,7 +17,7 @@ void Policy::loadAttributes( AttributeService & service, const long paoID )
     auto supportedAttributes = getSupportedAttributes();
     if( supportedAttributes.size() > 0 )
     {
-        const auto pointMapping = service.getPointsByPaoAndAttributes(paoID, supportedAttributes);
+        const auto pointMapping( std::move( service.getPointsByPaoAndAttributes( paoID, supportedAttributes ) ) );
 
         for (const auto & map : pointMapping)
         {
