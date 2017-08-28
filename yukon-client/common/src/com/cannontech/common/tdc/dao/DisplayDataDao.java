@@ -1,5 +1,6 @@
 package com.cannontech.common.tdc.dao;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -8,6 +9,7 @@ import org.joda.time.DateTimeZone;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.tdc.model.ColumnType;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 
@@ -15,43 +17,33 @@ public interface DisplayDataDao {
     
     public enum SortBy{
 
-        PAO_CATEGORY("y.Category"),
-        PAO_CLASS("y.PAOClass"),
-        PAO_DESCRIPTION("y.Description"),
-        PAO_DEVICE_NAME("y.DeviceName"),
-        PAO_DISABLED_FLAG("y.DisableFlag"),
-        PAO_ID("y.PAObjectID"),
-        PAO_NAME("y.PAOName"),
-        PAO_STATISTICS("y.PAOStatistics"),
-        PAO_TYPE("y.Type"),
-        
-        POINT_ID("p.PointId"),
-        POINT_NAME("p.Pointname"),
-        POINT_PAO_ID("p.PAObjectId"),
-
-        SYS_LOG_ACTION("s.Action"),
-        SYS_LOG_DATE_TIME("s.Datetime"),
-        SYS_LOG_DESCRIPTION("s.Description"),
-        SYS_LOG_MILLLIS("s.Millis"),
-        SYS_LOG_POINT_ID("s.PointId"),
-        SYS_LOG_SOE_TAG("s.SOE_TAG"),
-        SYS_LOG_USERNAME("s.USERNAME"),
-
-        TAGS_TAG_NAME("t.Tagname"),
-        
-        TAG_LOG_TAG_TIME("l.Tagtime"),
-        TAG_LOG_DESCRIPTION("l.Description"),
-        TAG_LOG_ACTION("l.Action"),
-        TAG_LOG_USERNAME("l.Username");       
-        
-        private SortBy(String dbString) {
+        DEVICE_NAME("DeviceName", ColumnType.DEVICE_NAME),
+        POINT_NAME("PointName", ColumnType.POINT_NAME),
+        ADDITIONAL_INFO("AdditionalInfo", ColumnType.ADDITIONAL_INFO),
+        TIME_STAMP("Timestamp", ColumnType.TIME_STAMP),
+        DESCRIPTION("Description", ColumnType.DESCRIPTION),
+        TEXT_MESSAGE("Description", ColumnType.TEXT_MESSAGE),
+        USERNAME("Username", ColumnType.USERNAME),
+        TAG("Tagname", ColumnType.TAG);
+                      
+        private SortBy(String dbString, ColumnType column) {
             this.dbString = dbString;
+            this.column = column;
         }
         
         private final String dbString;
+        private final ColumnType column;
 
         public String getDbString() {
             return dbString;
+        }
+        
+        public ColumnType getColumn() {
+            return column;
+        }
+
+        public static SortBy getSortBy(ColumnType column) {
+            return Arrays.stream(SortBy.values()).filter(x -> x.getColumn() == column).findFirst().get();
         }
     }
     

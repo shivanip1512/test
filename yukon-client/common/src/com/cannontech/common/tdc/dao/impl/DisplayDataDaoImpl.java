@@ -75,14 +75,14 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         int count = paging.getItemsPerPage();
         
         if (sortBy == null) {
-            sortBy = SortBy.SYS_LOG_DATE_TIME;
+            sortBy = SortBy.TIME_STAMP;
         }
         if (direction == null) {
             direction = Direction.desc;
         }
         
         SqlStatementBuilder allRowsSql = new SqlStatementBuilder();
-        allRowsSql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID,  p.Pointname, s.Description, s.Action, s.Username, s.Pointid, s.Soe_tag");
+        allRowsSql.append("SELECT s.Datetime as Timestamp, y.PAOName as DeviceName, y.PAObjectID,  p.Pointname as PointName, s.Description as Description, s.Action as AdditionalInfo, Username, s.Pointid, s.Soe_tag");
         allRowsSql.append("FROM SystemLog s");
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
@@ -180,14 +180,14 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         int count = paging.getItemsPerPage();
         
         if (sortBy == null) {
-            sortBy = SortBy.SYS_LOG_DATE_TIME;
+            sortBy = SortBy.TIME_STAMP;
         }
         if (direction == null) {
             direction = Direction.desc;
         }
         
         SqlStatementBuilder allRowsSql = new SqlStatementBuilder();
-        allRowsSql.append("SELECT s.Datetime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, s.Description, s.Action, s.Millis, p.LogicalGroup");
+        allRowsSql.append("SELECT s.Datetime as Timestamp, y.PAOName as DeviceName, y.PAObjectID, p.Pointname as PointName, p.PointId, s.Description as Description, s.Action as AdditionalInfo, s.Millis, p.LogicalGroup");
         allRowsSql.append("FROM SystemLog s");
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
@@ -229,14 +229,14 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         int count = paging.getItemsPerPage();
         
         if (sortBy == null) {
-            sortBy = SortBy.TAG_LOG_TAG_TIME;
+            sortBy = SortBy.TIME_STAMP;
         }
         if (direction == null) {
             direction = Direction.desc;
         }
         
         SqlStatementBuilder allRowsSql = new SqlStatementBuilder();
-        allRowsSql.append("SELECT l.Tagtime, y.PAOName, y.PAObjectID, p.Pointname, p.PointId, l.Description, l.Action, l.Username, t.Tagname");
+        allRowsSql.append("SELECT l.Tagtime as Timestamp, y.PAOName as DeviceName, y.PAObjectID, p.Pointname as PointName, p.PointId, l.Description as Description, l.Action as AdditionalInfo, Username, Tagname");
         allRowsSql.append("FROM TagLog l");
         allRowsSql.append("JOIN Point p ON l.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
@@ -274,23 +274,23 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
             @Override
             public DisplayData mapRow(YukonResultSet rs) throws SQLException {
                 DisplayData row = new DisplayData();
-                row.setDeviceName(rs.getString("PAOName"));
-                row.setPointName(rs.getString("pointname"));
+                row.setDeviceName(rs.getString("DeviceName"));
+                row.setPointName(rs.getString("PointName"));
                 row.setDescription(rs.getString("description"));
-                row.setAdditionalInfo(rs.getString("action"));
+                row.setAdditionalInfo(rs.getString("AdditionalInfo"));
                 row.setPointId(rs.getInt("pointid"));
                 if (displayId == EVENT_VIEWER_DISPLAY_NUMBER) {
                     row.setUserName(rs.getString("username"));
-                    row.setDate(rs.getInstant("datetime"));
+                    row.setDate(rs.getInstant("Timestamp"));
                     row.setTextMessage(rs.getString("description"));
                 }
                 else if (displayId == TAG_LOG_DISPLAY_NUMBER) {
                     row.setUserName(rs.getString("username"));
                     row.setTagName(rs.getString("tagname"));
-                    row.setDate(rs.getInstant("tagtime"));
+                    row.setDate(rs.getInstant("Timestamp"));
                 }
                 else if (displayId == SOE_LOG_DISPLAY_NUMBER) {
-                    row.setDate(rs.getInstant("datetime"));
+                    row.setDate(rs.getInstant("Timestamp"));
                 }
                 return row;
             }
@@ -349,8 +349,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     
     public SqlStatementBuilder addSortByClause(SqlStatementBuilder sql, SortBy sortBy, Direction direction) {
         sql.append("ORDER BY");
-        if (sortBy == SortBy.SYS_LOG_DATE_TIME) {
-            return sql.append(sortBy.getDbString()).append(direction).append(",").append(SortBy.SYS_LOG_MILLLIS.getDbString()).append(direction);
+        if (sortBy == SortBy.TIME_STAMP) {
+            return sql.append(sortBy.getDbString()).append(direction).append(",").append("s.Millis").append(direction);
         } else {
             return sql.append(sortBy.getDbString()).append(direction);
         }

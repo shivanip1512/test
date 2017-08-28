@@ -148,7 +148,7 @@ public class TdcDisplayController {
         }
         if (display.isPageable()) {
             PagingParameters pagingParameter = PagingParameters.of(50, 1);
-            SortingParameters sorting = SortingParameters.of(ColumnType.TIME_STAMP.name(), Direction.asc);
+            SortingParameters sorting = SortingParameters.of(ColumnType.TIME_STAMP.name(), Direction.desc);
             return setupPageableModel(userContext, model, displayId, sorting, pagingParameter, new DateTime(userContext.getJodaTimeZone()));
         }
         
@@ -217,24 +217,23 @@ public class TdcDisplayController {
         return "redirect:/tools/data-viewer/" + display.getDisplayId();
     }
     
-    @RequestMapping(value = "data-viewer/{displayId}/{date}/page", method = RequestMethod.GET)
+    @RequestMapping(value = "data-viewer/{displayId}/page", method = RequestMethod.GET)
     public String page(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
-                       @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
+                       @DefaultSort(dir=Direction.desc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
-                       @PathVariable String date) {
-        DateTimeZone timeZone = userContext.getJodaTimeZone();
-        DateTime dateTime = DateTime.parse(date).withZone(timeZone);
-        return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
-    }
-    
-    @RequestMapping(value = "data-viewer/{displayId}/date", method = RequestMethod.POST)
-    public String date(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
-                       @DefaultSort(dir=Direction.asc, sort="TIME_STAMP") SortingParameters sorting, 
-                       @DefaultItemsPerPage(50) PagingParameters pagingParameters,
-                       @RequestParam("date") String date) {
-        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
-        DateTimeZone timeZone = userContext.getJodaTimeZone();
-        DateTime dateTime = formatter.parseDateTime(date).withTimeAtStartOfDay().withZone(timeZone);
+                       String date) {
+        String[] dates = date.split(",");
+        DateTime dateTime = null;
+        if (dates.length == 1) {
+            DateTimeZone timeZone = userContext.getJodaTimeZone();
+            dateTime = DateTime.parse(dates[0]).withZone(timeZone);
+        }
+        else {
+            DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
+            DateTimeZone timeZone = userContext.getJodaTimeZone();
+            dateTime = formatter.parseDateTime(dates[1]).withTimeAtStartOfDay().withZone(timeZone);
+        }
+
         return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
     }
     
@@ -253,7 +252,8 @@ public class TdcDisplayController {
         backingBean.setDate(dateTime);
         model.addAttribute("backingBean", backingBean);
 
-        SortBy sortBy =  getSortByFromSortingParameter(display, sorting.getSort());
+        ColumnType column = ColumnType.valueOf(sorting.getSort());
+        SortBy sortBy =  SortBy.getSortBy(column);
         SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
         model.addAttribute("result", result);
         
@@ -266,64 +266,6 @@ public class TdcDisplayController {
         return "data-viewer/display.jsp";
     }
     
-    private SortBy getSortByFromSortingParameter(Display display, String sorting) {
-        if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER) {
-            switch (ColumnType.valueOf(sorting)) {
-                case TIME_STAMP:
-                    return SortBy.SYS_LOG_DATE_TIME;
-                case DEVICE_NAME:
-                    return SortBy.PAO_NAME;
-                case POINT_NAME:
-                    return SortBy.POINT_NAME;
-                case TEXT_MESSAGE:
-                    return SortBy.SYS_LOG_DESCRIPTION;
-                case ADDITIONAL_INFO:
-                    return SortBy.SYS_LOG_ACTION;
-                case USERNAME:
-                    return SortBy.SYS_LOG_USERNAME;
-                default:
-                    return null;
-            }
-        }
-        else if (display.getDisplayId() == IDisplay.TAG_LOG_DISPLAY_NUMBER) {
-            switch (ColumnType.valueOf(sorting)) {
-                case TIME_STAMP:
-                    return SortBy.TAG_LOG_TAG_TIME;
-                case DEVICE_NAME:
-                    return SortBy.PAO_NAME;
-                case POINT_NAME:
-                    return SortBy.POINT_NAME;
-                case TAG:
-                    return SortBy.TAGS_TAG_NAME;
-                case DESCRIPTION:
-                    return SortBy.TAG_LOG_DESCRIPTION;
-                case ADDITIONAL_INFO:
-                    return SortBy.TAG_LOG_ACTION;
-                case USERNAME:
-                    return SortBy.TAG_LOG_USERNAME;
-                default:
-                    return null;
-            }
-        }
-        else if (display.getDisplayId() == IDisplay.SOE_LOG_DISPLAY_NUMBER) {
-            switch (ColumnType.valueOf(sorting)) {
-                case TIME_STAMP:
-                    return SortBy.SYS_LOG_DATE_TIME;
-                case DEVICE_NAME:
-                    return SortBy.PAO_NAME;
-                case POINT_NAME:
-                    return SortBy.POINT_NAME;
-                case DESCRIPTION:
-                    return SortBy.SYS_LOG_DESCRIPTION;
-                case ADDITIONAL_INFO:
-                    return SortBy.SYS_LOG_ACTION;
-                default:
-                    return null;
-            }
-        }
-        return null;
-    }
-
     @RequestMapping(value = "data-viewer/enable-disable", method = RequestMethod.POST)
     public String enableDisable(YukonUserContext userContext, ModelMap model, int pointId) {
 
