@@ -356,11 +356,20 @@ yukon.tools.tdc = (function () {
                 .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
             });
             
+            /** User clicked on Remove Point button */
+            $(document).on('click', '.js-remove', function () {
+                $(this).parent().remove();
+                selectedContainer.closest('.select-box')
+                .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+            });
+            
             $(document).on('click', '.js-save-display', function (ev) {
                 var container = $('#assigned'),
                     selectedPoints = [];
                 container.find('.select-box-item').each(function (idx, item) {
-                    selectedPoints.push($(item).data('id'));
+                    if ($(item).is(':visible')) {
+                        selectedPoints.push($(item).data('id'));
+                    }
                 });
                 
                 $('#selectedPoints').val(selectedPoints.join(','));

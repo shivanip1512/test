@@ -6,21 +6,16 @@
 <cti:msgScope paths="picker">
 
 <div id="${id}" data-picker="${id}">
-    <div class="column-12-12 clearfix stacked">
-        <div class="column one">
-            <label>
-                <i:inline key="yukon.common.search"/>
-                <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field"
-                ><cti:button renderMode="buttonImage" icon="icon-cross-gray" classes="dn fn vat right M0 js-picker-show-all"
-                        id="picker-${id}-show-all-link"/>
-            </label>
-        </div>
-        <div class="column two nogutter paging-area">
-            <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()" nextUrl="javascript:yukon.pickers['${id}'].next()"/>
-        </div>
-    </div>
+        <label> <i:inline key="yukon.common.search" /> <input type="text"
+                id="picker-${id}-ss" name="ss" class="js-picker-search-field">
+            <cti:button renderMode="buttonImage" icon="icon-cross-gray"
+                classes="dn fn vat right M0 js-picker-show-all" id="picker-${id}-show-all-link" />
+        </label>
 
-    <div id="picker-${id}-nothing-selected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
+        <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()"
+            nextUrl="javascript:yukon.pickers['${id}'].next()" />
+
+        <div id="picker-${id}-nothing-selected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
     <div class="js-block-this">
         <div id="picker-${id}-results"></div>
         <div id="picker-${id}-no-results" style="display: none" class="buffered empty-list">

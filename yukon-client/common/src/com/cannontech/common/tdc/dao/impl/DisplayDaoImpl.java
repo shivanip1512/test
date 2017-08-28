@@ -260,14 +260,14 @@ public class DisplayDaoImpl implements DisplayDao {
     @Transactional
     public Display updateDisplay(Display display) {
         
+        int displayId = display.getDisplayId();
         SqlStatementBuilder displaySql = new SqlStatementBuilder();
-        SqlParameterSink displaySink = displaySql.insertInto("DISPLAY");
+        SqlParameterSink displaySink = displayId == 0 ? displaySql.insertInto("DISPLAY") : displaySql.update("DISPLAY");
         displaySink.addValue("NAME", display.getName());
         displaySink.addValue("DESCRIPTION", display.getDescription());
         displaySink.addValue("TITLE", display.getTitle());
         displaySink.addValue("TYPE", display.getType().getDatabaseRepresentation());
         
-        int displayId = display.getDisplayId();
         if (displayId == 0) {
             displayId = nextValueHelper.getNextValue("DISPLAY");
             display.setDisplayId(displayId);
@@ -276,7 +276,7 @@ public class DisplayDaoImpl implements DisplayDao {
             yukonJdbcTemplate.update(displaySql);
             createColumns(displayId, display.getColumns());
         } else {
-            displaySink.addValue("DISPLAYNUM", displayId);
+            displaySql.append("WHERE DISPLAYNUM").eq(displayId);
             yukonJdbcTemplate.update(displaySql);
             log.debug("Updating display=" + display);
         }
