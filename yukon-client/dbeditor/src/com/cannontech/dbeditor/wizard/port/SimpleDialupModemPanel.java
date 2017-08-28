@@ -129,17 +129,17 @@ public Object getValue(Object val) {
 	
 	if( val instanceof com.cannontech.database.data.port.LocalDialupPortBase )
 	{
-		((LocalDialupPortBase) val). getPortDialupModem().setModemType( modemType );
+		((LocalDialupPortBase) val).getPortDialupModem().setModemType( modemType );
 	}
 	else if( val instanceof com.cannontech.database.data.port.TerminalServerDialupPort )
 	{
 		((TerminalServerDialupPort) val).getPortDialupModem().setModemType( modemType );
-	} else if(val instanceof SmartMultiDBPersistent){
-        LocalDirectPortBase localDirectPortBase =
-            (LocalDirectPortBase) ((SmartMultiDBPersistent) val).getOwnerDBPersistent();
-        if (localDirectPortBase instanceof LocalDialupPortBase) {
-            ((LocalDialupPortBase) localDirectPortBase).getPortDialupModem().setModemType(modemType);
-        }
+	} else if (val instanceof SmartMultiDBPersistent) {
+            LocalDirectPortBase localDirectPortBase =
+                (LocalDirectPortBase) ((SmartMultiDBPersistent) val).getOwnerDBPersistent();
+            if (localDirectPortBase instanceof LocalDialupPortBase) {
+                ((LocalDialupPortBase) localDirectPortBase).getPortDialupModem().setModemType(modemType);
+            }
 	}
 /*	
 	else if( val instanceof com.cannontech.database.data.port.PortDialBack )
