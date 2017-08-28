@@ -116,6 +116,7 @@ public class TdcDisplayController {
     @Autowired private TagDao tagDao;
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private TdcCustomDisplayValidator customDisplayValidator;
     
     private final static String baseKey = "yukon.web.modules.tools.tdc.";
     private final static int itemsPerPage = 50;
@@ -199,8 +200,14 @@ public class TdcDisplayController {
     }
     
     @RequestMapping(value = "data-viewer/save", method = RequestMethod.POST)
-    public String saveCustomView(@ModelAttribute("display") Display display, ModelMap model,             
+    public String saveCustomView(@ModelAttribute("display") Display display, ModelMap model, BindingResult result, HttpServletResponse resp,             
                                  @RequestParam(value="pointIds", required=false, defaultValue="") String pointIds) {
+        customDisplayValidator.validate(display, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            return "data-viewer/customDisplay.jsp";
+        }
         String name = display.getName();
         String title = display.getTitle();
         String description = display.getDescription();
@@ -212,7 +219,7 @@ public class TdcDisplayController {
         if (id != 0) {
             tdcService.updateCustomDisplay(id, name, title, description, pointList);
         } else {
-            tdcService.createCustomDisplayForPoints(name, title, description, pointList);
+            display = tdcService.createCustomDisplayForPoints(name, title, description, pointList);
         }
         return "redirect:/tools/data-viewer/" + display.getDisplayId();
     }
