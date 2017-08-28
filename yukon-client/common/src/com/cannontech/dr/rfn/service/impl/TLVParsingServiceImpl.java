@@ -47,7 +47,7 @@ public class TLVParsingServiceImpl implements ParsingService<ListMultimap<FieldT
      * Parses tlv report data
      */
 
-    private static ListMultimap<FieldType, byte[]> parseTlvReport(final byte[] report, RfnIdentifier rfnId) {
+    private ListMultimap<FieldType, byte[]> parseTlvReport(final byte[] report, RfnIdentifier rfnId) {
         ListMultimap<FieldType, byte[]> fieldTypeValues = ArrayListMultimap.create();
 
         for (int postion = 0; postion < report.length - 1;) {
