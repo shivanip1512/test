@@ -40,8 +40,10 @@
     <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
     
         <div id="page-actions" class="dn">    
-            <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
-                <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
+            <cti:url var="createUrl" value="/tools/data-viewer/create"/>
+            <cm:dropdownOption key="components.button.create.label" href="${createUrl}" icon="icon-plus-green"/>
+            <cti:url var="editUrl" value="/tools/data-viewer/${display.displayId}/edit"/>
+            <cm:dropdownOption key="components.button.edit.label" href="${editUrl}" icon="icon-pencil"/>
             <cti:url var="copy" value="/tools/data-viewer/${display.displayId}/copy"/>
             <cti:msg2 key=".copy" var="copyTitle"/>
                 <cm:dropdownOption key="yukon.web.modules.tools.tdc.copy" icon="icon-disk-multiple"
@@ -50,6 +52,9 @@
             <cm:dropdownOption id="deleteCustomDisplay_${display.displayId}" key=".display.DELETE" icon="icon-cross"
                 data-display-id="${display.displayId}" data-ok-event="yukon:display:remove"/>
             <d:confirm on="#deleteCustomDisplay_${display.displayId}" nameKey="confirmDelete" argument="${display.name}"/>
+            <li class="divider"/>
+            <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download"/>
+            <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
         </div>
     </c:if>
     <c:choose>

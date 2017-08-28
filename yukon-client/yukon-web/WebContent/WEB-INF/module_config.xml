@@ -188,15 +188,16 @@
       <page name="tdc.home" type="BASIC">
         <link>/tools/data-viewer</link>
         <pages>
-          <page name="tdc.display.CREATE" type="BASIC"/>
+          <page name="tdc.display.CREATE" type="BASIC">
+            <link>/tools/data-viewer/create</link>
+          </page>
           <page name="tdc.display.VIEW" type="DETAIL">
             <link>/tools/data-viewer/{displayId}</link>
             <labelArgument>${displayName}</labelArgument>
-            <pages>
-              <page name="tdc.display.EDIT" type="BASIC">
-                <link>/tools/data-viewer/{displayId}/edit</link>
-              </page>
-            </pages>
+          </page>
+          <page name="tdc.display.EDIT" type="DETAIL" hideFavorite="true">
+            <link>/tools/data-viewer/{displayId}/edit</link>
+            <labelArgument>${display.name}</labelArgument>
           </page>
         </pages>
       </page>

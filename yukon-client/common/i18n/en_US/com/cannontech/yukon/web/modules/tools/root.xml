@@ -113,11 +113,20 @@
     <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageName">Display</entry>
     <entry key="yukon.web.modules.tools.tdc.display.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.tdc.display.EDIT.pageName">Edit</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.tools.tdc.display.CREATE.pageName">Create Display</entry>
     <entry key="yukon.web.modules.tools.tdc.display.custom">Custom Displays</entry>
     <entry key="yukon.web.modules.tools.tdc.display.event">Event Displays</entry>
     <entry key="yukon.web.modules.tools.tdc.display.DELETE">Delete</entry>
     <entry key="yukon.web.modules.tools.tdc.display.DELETE.success">Display {0} successfully deleted.</entry>
+    
+    <!-- Edit Custom Display -->
+    <entry key="yukon.web.modules.tools.tdc.display.name">Name</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.title">Title</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.description">Description</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.available">Available</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.selected">Selected</entry>
+    
 
     <entry key="yukon.web.modules.tools.tdc.tags.title">Tags</entry>
     <entry key="yukon.web.modules.tools.tdc.tags.controlOnPointButton.label">Control On Point</entry>

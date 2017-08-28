@@ -94,6 +94,7 @@ import com.cannontech.web.updater.point.PointDataRegistrationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -173,6 +174,47 @@ public class TdcDisplayController {
         SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, paging, totalCount);
         model.addAttribute("result", result);
         return "data-viewer/display.jsp";
+    }
+    
+    @RequestMapping(value = "data-viewer/{displayId}/edit", method = RequestMethod.GET)
+    public String editCustomView(ModelMap model, @PathVariable int displayId, FlashScope flashScope, YukonUserContext userContext) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        Display display = displayDao.getDisplayById(displayId);
+        if (display == null) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.display.load.error"));
+            return "redirect:/tools/data-viewer";
+        }
+        model.addAttribute("display", display);
+        List<DisplayData> displayData = tdcService.getDisplayData(display);
+        model.addAttribute("displayData", displayData);
+
+        return "data-viewer/customDisplay.jsp";
+    }
+    
+    @RequestMapping(value = "data-viewer/create", method = RequestMethod.GET)
+    public String createCustomView(ModelMap model) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        model.addAttribute("display", new Display());
+        return "data-viewer/customDisplay.jsp";
+    }
+    
+    @RequestMapping(value = "data-viewer/save", method = RequestMethod.POST)
+    public String saveCustomView(@ModelAttribute("display") Display display, ModelMap model,             
+                                 @RequestParam(value="pointIds", required=false, defaultValue="") String pointIds) {
+        String name = display.getName();
+        String title = display.getTitle();
+        String description = display.getDescription();
+        List<String> pointIdStrings = Lists.newArrayList(pointIds.split(","));
+        List<Integer> pointList = Lists.transform(pointIdStrings, new Function<String, Integer>(){
+            @Override public Integer apply(String input) {return Integer.parseInt(input);}
+        });
+        int id = display.getDisplayId();
+        if (id != 0) {
+            tdcService.updateCustomDisplay(id, name, title, description, pointList);
+        } else {
+            tdcService.createCustomDisplayForPoints(name, title, description, pointList);
+        }
+        return "redirect:/tools/data-viewer/" + display.getDisplayId();
     }
     
     @RequestMapping(value = "data-viewer/{displayId}/{date}/page", method = RequestMethod.GET)

@@ -339,6 +339,33 @@ yukon.tools.tdc = (function () {
                     }
                 });
             });
+            
+            $(document).on('click', '.js-add-points', function (ev) {
+                var selectedPoints = yukon.pickers['displayPointPicker'].selectedItems,
+                    selectedContainer = $('#assigned');
+                
+                selectedPoints.forEach(function (point) {
+                    var templateRow = $('.template-row').clone();
+                    templateRow.attr('data-id', point.pointId);
+                    var children = templateRow.children();
+                    templateRow.text(point.deviceName + " - " + point.pointName).append(children);
+                    templateRow.removeClass('dn template-row');
+                    templateRow.appendTo(selectedContainer);
+                });
+                selectedContainer.closest('.select-box')
+                .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+            });
+            
+            $(document).on('click', '.js-save-display', function (ev) {
+                var container = $('#assigned'),
+                    selectedPoints = [];
+                container.find('.select-box-item').each(function (idx, item) {
+                    selectedPoints.push($(item).data('id'));
+                });
+                
+                $('#selectedPoints').val(selectedPoints.join(','));
+                $('#custom-form').submit();
+            });
         }
     };
     

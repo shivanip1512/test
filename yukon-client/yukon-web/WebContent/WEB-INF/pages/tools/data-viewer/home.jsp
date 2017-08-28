@@ -51,21 +51,27 @@
                         </c:forEach>
                     </ul>
                 </div>
-
-                <div id="custom_displays" class="clearfix scroll-lg">
-                    <ul class="display-list simple-list">
-                        <c:forEach var="customEvent" items="${customEvents}">
-                            <cti:url var="view" value="/tools/data-viewer/${customEvent.displayId}" />
-                            <li><c:choose>
-                                    <c:when test="${fn:length(customEvent.columns) > 0}">
-                                        <a href="${view}">${fn:escapeXml(customEvent.name)}</a>
-                                    </c:when>
-                                    <c:otherwise>
+                <div id="custom_displays">
+                    <div class="clearfix scroll-lg">
+                        <ul class="display-list simple-list">
+                            <c:forEach var="customEvent" items="${customEvents}">
+                                <cti:url var="view"
+                                    value="/tools/data-viewer/${customEvent.displayId}" />
+                                <li><c:choose>
+                                        <c:when test="${fn:length(customEvent.columns) > 0}">
+                                            <a href="${view}">${fn:escapeXml(customEvent.name)}</a>
+                                        </c:when>
+                                        <c:otherwise>
                                        ${fn:escapeXml(customEvent.name)}
                                     </c:otherwise>
-                                </c:choose></li>
-                        </c:forEach>
-                    </ul>
+                                    </c:choose></li>
+                            </c:forEach>
+                        </ul>
+                    </div>
+                    <div class="action-area">
+                        <cti:url var="createUrl" value="/tools/data-viewer/create" />
+                        <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}" />
+                    </div>
                 </div>
             </div>
         </div>
