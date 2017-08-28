@@ -68,8 +68,8 @@ public enum WidgetType implements DisplayableEnum {
         );
 
         Builder<WidgetType, WidgetParameter> builder = new ImmutableListMultimap.Builder<WidgetType, WidgetParameter>()
-            .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get(), null))
-            .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, DeviceGroupPickerValidator.get(), null), 
+            .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()))
+            .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, DeviceGroupPickerValidator.get()), 
                                      new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null, "false"))
             .putAll(SYSTEM_MESSAGING, new WidgetParameter("showRfnMeter", WidgetInputType.CHECKBOX, null, "false"),
                                       new WidgetParameter("showRfnLcr", WidgetInputType.CHECKBOX, null, "false"),
@@ -77,7 +77,7 @@ public enum WidgetType implements DisplayableEnum {
                                       new WidgetParameter("showRfDa", WidgetInputType.CHECKBOX, null, "false"),
                                       new WidgetParameter("showRfGatewayDataRequest", WidgetInputType.CHECKBOX, null, "false"),
                                       new WidgetParameter("showRfGatewayData", WidgetInputType.CHECKBOX, null, "false"))
-            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null, null));
+            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null));
         widgetParameters = builder.build();
     }
     

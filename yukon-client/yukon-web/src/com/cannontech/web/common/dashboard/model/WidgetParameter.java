@@ -31,7 +31,15 @@ public class WidgetParameter implements Displayable {
         this.validator = validator;
         this.defaultValue = defaultValue;
     }
-    
+
+    public WidgetParameter(String name, WidgetInputType inputType, WidgetInputValidator validator) {
+        this.name = name;
+        messageKey = new YukonMessageSourceResolvable(keyBase + name);
+        this.inputType = inputType;
+        this.validator = validator;
+        this.defaultValue = null;
+    }
+
     /**
      * @return The name identifying this parameter.
      */
