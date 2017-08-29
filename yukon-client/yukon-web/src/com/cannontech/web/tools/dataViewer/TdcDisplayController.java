@@ -229,18 +229,15 @@ public class TdcDisplayController {
                        @DefaultSort(dir=Direction.desc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
                        String date) {
-        String[] dates = date.split(",");
         DateTime dateTime = null;
-        if (dates.length == 1) {
-            DateTimeZone timeZone = userContext.getJodaTimeZone();
-            dateTime = DateTime.parse(dates[0]).withZone(timeZone);
+        DateTimeZone timeZone = userContext.getJodaTimeZone();
+        if (date.contains("-")) {
+            dateTime = DateTime.parse(date).withZone(timeZone);
         }
         else {
             DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
-            DateTimeZone timeZone = userContext.getJodaTimeZone();
-            dateTime = formatter.parseDateTime(dates[1]).withTimeAtStartOfDay().withZone(timeZone);
+            dateTime = formatter.parseDateTime(date).withTimeAtStartOfDay().withZone(timeZone);
         }
-
         return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
     }
     

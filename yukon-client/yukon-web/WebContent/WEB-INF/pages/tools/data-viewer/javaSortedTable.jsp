@@ -8,7 +8,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <c:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/page">
-    <cti:param name="date" value="${backingBean.date}"/>
 </c:url>
 <form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">
     <cti:csrfToken/>
