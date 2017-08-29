@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 
 /**
  * Holds Type ID information
+ * Enum represents name of the field and holds Identifier value and is used to get field value
  */
 public enum FieldType {
 

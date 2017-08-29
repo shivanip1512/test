@@ -15,6 +15,24 @@ import com.google.common.collect.ListMultimap;
 /**
  * Tag-Length-Value parser. The TLV-format is used in LCR 6700
  * 
+ * File Header
+ * e2 01 70    -- Expresscom Message response 0xE2, 0x170 bytes to follow
+ * 04 3e 00 04 -- SSPEC 1086, schema version 0.0.4
+ * 
+ * TLV format(TLV Report):
+ * 
+ * Type (1 byte + nibble (half byte)) -- It has a unique type associated with it
+ * Length (nibble (Half byte) + 1 byte) -- Length in bytes of the value.
+ * Value (3+) -- The value of the field
+ * 
+ * Example :- 00 d0 04 20 b8 6a 80 - Relay Interval Start time is 0x20B86A80
+ * 
+ * Type   -- 00d (Type ID)
+ * Length -- 004 (4 Byte length of value)
+ * Value  -- 0x20B86A80 (Value - 4 Byte)
+ * 
+ * The above format applies for each filed in TLV report except header part
+ * 
  */
 public class TLVParsingServiceImpl implements ParsingService<ListMultimap<FieldType, byte[]>> {
     private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();

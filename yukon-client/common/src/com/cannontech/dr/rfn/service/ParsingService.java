@@ -63,7 +63,8 @@ public interface ParsingService<T> {
     public T parseRfLcrReading(RfnIdentifier rfnId, byte[] payload) throws ParseException;
 
     /**
-     * Parse the schema version from the header and return a schema
+     * Parse the schema version from the header and return a schema(TLV format supports 0.0.4 version and
+     * binary format support 0.0.2 or 0.0.3)
      */
     public static Schema getSchema(byte[] payload) {
         ByteBuffer header;
