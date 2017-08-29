@@ -73,7 +73,8 @@
                                 </div>
                             </div>
                         </c:forEach>
-                        <div class="dn template-row select-box-item cm" data-id="0"
+                    </div>
+                    <div class="dn template-row select-box-item cm" data-id="0"
                             style="min-height: 35px;">
                             <cti:button icon="icon-cross" renderMode="buttonImage"
                                 classes="select-box-item-remove js-remove" />
@@ -85,7 +86,6 @@
                                     disabled="${true}" />
                             </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>

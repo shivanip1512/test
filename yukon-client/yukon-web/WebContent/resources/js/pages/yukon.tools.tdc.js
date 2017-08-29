@@ -359,7 +359,15 @@ yukon.tools.tdc = (function () {
             /** User clicked on Remove Point button */
             $(document).on('click', '.js-remove', function () {
                 $(this).parent().remove();
-                selectedContainer.closest('.select-box')
+                $('#assigned').closest('.select-box')
+                .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+            });
+            
+            $(document).on('dblclick', '.select-box-item', function () {
+                var templateRow = $('.template-row').clone();
+                templateRow.removeClass('dn template-row');
+                templateRow.insertAfter($(this));
+                $('#assigned').closest('.select-box')
                 .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
             });
             
