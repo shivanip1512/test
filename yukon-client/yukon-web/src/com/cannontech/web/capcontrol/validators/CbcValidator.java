@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -46,7 +45,6 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         validateSerialNumber(cbc, errors);
 
         if (cbc.isTwoWay()) {
-            validateDnpConfig(cbc, errors);
             validateCommPort(cbc, errors);
         }
 
@@ -77,12 +75,6 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
                     errors.rejectValue("name", "yukon.web.error.nameConflict");
                 }
             }
-        }
-    }
-    private void validateDnpConfig(CapControlCBC cbc, Errors errors) {
-        LightDeviceConfiguration config = new LightDeviceConfiguration(cbc.getDnpConfigId(), null, null);
-        if (!deviceConfigurationDao.isTypeSupportedByConfiguration(config, cbc.getPaoType())) {
-            errors.rejectValue("dnpConfigId", basekey + ".invalidConfig");
         }
     }
 

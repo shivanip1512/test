@@ -23,6 +23,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -68,7 +69,7 @@ public class CbcController {
     @Autowired private CapbankDao capbankDao;
     @Autowired private CapControlCache ccCache;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
     
     private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
@@ -118,8 +119,12 @@ public class CbcController {
             FlashScope flash) {
 
         cbcValidator.validate(cbc, result);
+        boolean isValidDNP = cbc.isTwoWay() ? isValidDnpConfig(cbc) : true;
 
-        if (result.hasErrors()) {
+        if (result.hasErrors() || !isValidDNP) {
+            if (!isValidDNP){
+                flash.setError(new YukonMessageSourceResolvable(baseKey + ".error.invalidConfig"));
+            }
             if (cbc.isTwoWay() && cbc.getDeviceDirectCommSettings() == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + ".error.noCommChannel"));
             }
@@ -276,7 +281,7 @@ public class CbcController {
 
         model.addAttribute("tcpCommPorts", tcpPorts);
 
-        List<LightDeviceConfiguration> configs = deviceConfigDao.getAllConfigurationsByType(cbc.getPaoType());
+        List<LightDeviceConfiguration> configs = deviceConfigurationService.getAllConfigurationsByType(cbc.getPaoType());
         model.addAttribute("configs", configs);
 
         return "cbc.jsp";
@@ -292,6 +297,11 @@ public class CbcController {
         }
 
         return "redirect:cbc/" + cbc.getId() + "/edit";
+    }
+
+    private boolean isValidDnpConfig(CapControlCBC cbc) {
+        LightDeviceConfiguration config = new LightDeviceConfiguration(cbc.getDnpConfigId(), null, null);
+        return deviceConfigDao.isTypeSupportedByConfiguration(config, cbc.getPaoType());
     }
 
 }

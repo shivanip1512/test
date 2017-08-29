@@ -1,6 +1,7 @@
 package com.cannontech.common.device.config.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,6 +15,7 @@ import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -27,6 +29,7 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DeviceConfigEventLogService eventLogService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     @Override
     public int saveConfigurationBase(Integer deviceConfigurationId, String name, String description) {
@@ -148,5 +151,18 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
                                             DEVICE_OBJECT_TYPE,
                                             DbChangeType.DELETE);
         }
+    }
+
+    @Override
+    public List<LightDeviceConfiguration> getAllConfigurationsByType(PaoType paoType) {
+        List<String> requiredCategories = 
+                paoDefinitionDao.getCategoryToPaoTypeMap().asMap().entrySet()
+                                                                  .stream()
+                                                                  .filter(entry -> entry.getValue().contains(paoType) 
+                                                                                           && entry.getKey().isRequired())
+                                                                  .map(entry -> entry.getKey().getType().value())
+                                                                  .collect(Collectors.toList());
+
+        return deviceConfigurationDao.getAllAssignableConfigurationsByType(paoType, requiredCategories);
     }
 }

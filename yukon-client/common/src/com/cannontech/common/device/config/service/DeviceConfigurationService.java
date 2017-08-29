@@ -1,5 +1,7 @@
 package com.cannontech.common.device.config.service;
 
+import java.util.List;
+
 import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
@@ -81,5 +83,12 @@ public interface DeviceConfigurationService {
      * @param categoryType the type of category whose assignment is being updated.
      */
     void changeCategoryAssignment(int deviceConfigurationId, int newCategoryId, CategoryType categoryType);
+
+    /**
+     * Find all configurations in the database that support the provided pao type and having all 
+     * required categories assigned to it.
+     * @param paoType the pao type whose matching configurations are being retrieved.
+     */
+    List<LightDeviceConfiguration> getAllConfigurationsByType(PaoType paoType);
 
 }

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
@@ -905,6 +907,38 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         List<LightDeviceConfiguration> configurations = jdbcTemplate.query(sql, new LightConfigurationRowMapper());
         
         return configurations;
+    }
+    
+    @Override
+    public List<LightDeviceConfiguration> getAllAssignableConfigurationsByType(PaoType paoType , List<String> requiredCategories) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DC.DeviceConfigurationId, DC.Name, DC.Description, DCC.CategoryType");
+        sql.append("FROM DeviceConfiguration DC");
+        sql.append("   JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationId = DCDT.DeviceConfigurationId");
+        sql.append("   JOIN DeviceConfigCategoryMap DCCM ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationID");
+        sql.append("   JOIN DeviceConfigCategory DCC ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId");
+        sql.append("WHERE DCDT.PaoType").eq(paoType);
+        sql.append("   AND DCC.CategoryType").in(requiredCategories);
+        Multimap<LightDeviceConfiguration, String> deviceConfigToCategoryMap = ArrayListMultimap.create();
+
+        jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+                                                       int configurationId = rs.getInt("DeviceConfigurationId");
+                                                       String name = rs.getString("Name");
+                                                       String description = rs.getString("Description");
+                deviceConfigToCategoryMap.put(new LightDeviceConfiguration(configurationId, name, description),
+                                                                             rs.getString("CategoryType"));
+        }); 
+
+        List<LightDeviceConfiguration> assignableConfigurations =
+            deviceConfigToCategoryMap.entries()
+                                     .stream()
+                                     .filter(e -> deviceConfigToCategoryMap.get(e.getKey()).containsAll(requiredCategories))
+                                     .map(e -> e.getKey())
+                                     .distinct()
+                                     .sorted((Comparator.comparing(LightDeviceConfiguration::getConfigurationId)))
+                                     .collect(Collectors.toList());
+
+        return assignableConfigurations;
     }
     
     @Override

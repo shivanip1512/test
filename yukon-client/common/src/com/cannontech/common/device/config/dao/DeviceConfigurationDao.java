@@ -285,4 +285,13 @@ public interface DeviceConfigurationDao {
      * @return the string representation of the value for the specified item.
      */
     String getValueForItemName(int configId, CategoryType categoryType, String itemName);
+
+    /**
+     * Find all configurations in the database that support the provided pao type and having all required categories assigned.
+     * @param paoType the pao type whose matching configurations are being retrieved.
+     *  @param requiredCategories list of required categories for selected pao type
+     * @return a list of {@link LightDeviceConfiguration} objects representing all of the configurations in the
+     *      database that support the provided pao type with all required categories.
+     */
+    List<LightDeviceConfiguration> getAllAssignableConfigurationsByType(PaoType paoType, List<String> requiredCategories);
 }
