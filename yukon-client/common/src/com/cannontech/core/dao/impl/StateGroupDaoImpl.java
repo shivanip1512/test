@@ -133,7 +133,7 @@ public class StateGroupDaoImpl implements StateGroupDao {
         }
         
         //this is a internal error
-        log.debug("Unable to find the state for StateGroupID = " + stateGroupId + " and rawState = " + rawState );
+        log.error("Unable to find the state for StateGroupID = " + stateGroupId + " and rawState = " + rawState );
         return null;
     }
  

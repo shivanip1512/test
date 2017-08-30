@@ -157,8 +157,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         // Adjust the tap positions as per the regulator voltage-control-modes
         if (!regulatorEventOperations.isEmpty()) {
             for (RegulatorOperations regulatorOperations : regulatorEventOperations) {
-                if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId).equals(
-                    RegulatorVoltageControlMode.DIRECT_TAP)) {
+                if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId) == RegulatorVoltageControlMode.DIRECT_TAP) {
                     Integer tapPosition =
                         Optional.ofNullable(regulatorTapPositions.get(regulatorOperations.regulatorId)).orElse(
                             INITIAL_TAP_POSITION);
@@ -167,8 +166,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     } else if (regulatorOperations.eventType == EventType.TAP_DOWN) {
                         regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition - 1);
                     }
-                } else if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId).equals(
-                    RegulatorVoltageControlMode.SET_POINT)) {
+                } else if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId) == RegulatorVoltageControlMode.SET_POINT) {
                     if (regulatorOperations.eventType == EventType.DECREASE_SETPOINT
                         || regulatorOperations.eventType == EventType.INCREASE_SETPOINT) {
                         regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
@@ -249,7 +247,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     for (CapBankDevice capBankDevice : capBanksByFeeder) {
                         // There might be a better way to do this check!
                         LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
-                          if (capBankState.getStateText().contains("Close")) {
+                        if (capBankState != null && capBankState.getStateText().contains("Close")) {
                             feederActiveBankKVar += capBankDevice.getBankSize();
                             
                             for (Entry<Integer, Double> feederVoltage : feederVoltageRises.entrySet()) {
@@ -273,7 +271,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, 0, MAX_KW);
                                 voltage = shiftVoltageForPhase(voltage, points.getValue(), 0);
                                 
-                                if (capBankState.getStateText().contains("Close")) {
+                                if (capBankState != null && capBankState.getStateText().contains("Close")) {
                                     voltage += (capBankDevice.getBankSize() / localVoltageOffset); // A bank gives a bonus extra voltage to itself.
                                 }
                                 
@@ -392,7 +390,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             
                             // Check if the bank itself is closed
                             LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
-                            if(capBankState.getStateText().contains("Close")) {
+                            if(capBankState != null && capBankState.getStateText().contains("Close")) {
                                 voltage += (capBankDevice.getBankSize() / localVoltageOffset); // A bank gives a bonus extra voltage to itself.
                             }
                             
