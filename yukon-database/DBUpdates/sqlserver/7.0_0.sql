@@ -46,7 +46,7 @@ DROP INDEX INDX_CCEventLog_PointId ON CCEventLog;
 /* Start YUK-17113 */
 CREATE TABLE DBUpdates (
    UpdateId             VARCHAR(50)          NOT NULL,
-   Version              VARCHAR(6)           NULL,
+   Version              VARCHAR(10)           NULL,
    InstallDate          DATETIME             NULL,
    CONSTRAINT PK_DBUPDATES PRIMARY KEY (UpdateId)
 );

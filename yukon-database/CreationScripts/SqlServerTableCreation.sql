@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/24/2017 4:18:52 PM                         */
+/* Created on:     8/30/2017 8:41:09 AM                         */
 /*==============================================================*/
 
 
@@ -2186,7 +2186,7 @@ go
 /*==============================================================*/
 create table DBUpdates (
    UpdateId             varchar(50)          not null,
-   Version              varchar(6)           null,
+   Version              varchar(10)          null,
    InstallDate          datetime             null,
    constraint PK_DBUPDATES primary key (UpdateId)
 )

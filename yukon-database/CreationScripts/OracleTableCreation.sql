@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/24/2017 4:18:00 PM                         */
+/* Created on:     8/30/2017 8:42:05 AM                         */
 /*==============================================================*/
 
 
@@ -2043,7 +2043,7 @@ create table CustomerResidence  (
 /*==============================================================*/
 create table DBUpdates  (
    UpdateId             VARCHAR2(50)                    not null,
-   Version              VARCHAR2(6),
+   Version              VARCHAR2(10),
    InstallDate          DATE,
    constraint PK_DBUPDATES primary key (UpdateId)
 );
