@@ -106,8 +106,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             if(paoDefinition.isCreatable()){
                 creatablePaoDefinitions.add(paoDefinition);
             }
-            paoDisplayGroupMap.put(paoDefinition.getDisplayGroup(), paoDefinition);
-            changeGroupPaosMap.put(paoDefinition.getChangeGroup(), paoDefinition);
+            if (paoDefinition.getDisplayGroup() != null) {
+                paoDisplayGroupMap.put(paoDefinition.getDisplayGroup(), paoDefinition);
+            }
+            if (paoDefinition.getChangeGroup() != null) {
+                changeGroupPaosMap.put(paoDefinition.getChangeGroup(), paoDefinition);
+            }
         }
         paoCommandMap = definitionLoaderService.getPaoCommandMap();
         supportedTagsByType = definitionLoaderService.getSupportedTagsByType();

@@ -262,10 +262,11 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
         // Initialize the device type map
         PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
         this.deviceDisplayGroupMap = paoDefinitionService.getCreatablePaoDisplayGroupMap();
-        
         // These strings are hard-coded in the paoDefinintion.xml file, we want them "createable", just not by DatabaseEditor
         this.deviceDisplayGroupMap.removeAll("Demand Response");
         this.deviceDisplayGroupMap.removeAll("Volt/Var");
+        this.deviceDisplayGroupMap.removeAll("PORT");
+        this.deviceDisplayGroupMap.removeAll("System");
 
         try {
             setName("DeviceTypePanel");
