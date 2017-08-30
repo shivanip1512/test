@@ -44,6 +44,8 @@ public class DashboardDaoImpl implements DashboardDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private YukonUserDao userDao;
+    private Integer yukonUserCount;
+    
     SqlStatementBuilder baseDashboardSql = new SqlStatementBuilder();
     {
         baseDashboardSql.append(
@@ -164,7 +166,10 @@ public class DashboardDaoImpl implements DashboardDao {
             }
         });
         
-        Integer yukonUserCount = userDao.getActiveNonResidentialUserCount();
+        if(yukonUserCount == null){
+            yukonUserCount = userDao.getActiveNonResidentialUserCount();
+        }
+        
         dashboardIdToUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(), yukonUserCount);
         dashboardIdToUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(), yukonUserCount);
 
