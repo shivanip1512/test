@@ -178,7 +178,7 @@ public class TdcDisplayController {
     }
     
     @RequestMapping(value = "data-viewer/{displayId}/edit", method = RequestMethod.GET)
-    public String editCustomView(ModelMap model, @PathVariable int displayId, FlashScope flashScope, YukonUserContext userContext) {
+    public String editCustomView(ModelMap model, @PathVariable int displayId, FlashScope flashScope) {
         model.addAttribute("mode", PageEditMode.EDIT);
         Display display = displayDao.getDisplayById(displayId);
         if (display == null) {
