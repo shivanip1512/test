@@ -126,6 +126,7 @@
     <entry key="yukon.web.modules.tools.tdc.display.description">Description</entry>
     <entry key="yukon.web.modules.tools.tdc.display.available">Available</entry>
     <entry key="yukon.web.modules.tools.tdc.display.selected">Selected</entry>
+    <entry key="yukon.web.modules.tools.tdc.display.SAVE.success">Display was saved successfully.</entry>
     
 
     <entry key="yukon.web.modules.tools.tdc.tags.title">Tags</entry>

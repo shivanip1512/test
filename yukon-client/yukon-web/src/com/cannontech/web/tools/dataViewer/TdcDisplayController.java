@@ -201,7 +201,7 @@ public class TdcDisplayController {
     
     @RequestMapping(value = "data-viewer/save", method = RequestMethod.POST)
     public String saveCustomView(@ModelAttribute("display") Display display, ModelMap model, BindingResult result, HttpServletResponse resp,             
-                                 @RequestParam(value="pointIds", required=false, defaultValue="") String pointIds) {
+                                 @RequestParam(value="pointIds", required=false, defaultValue="") String pointIds, FlashScope flash) {
         customDisplayValidator.validate(display, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -221,6 +221,7 @@ public class TdcDisplayController {
         } else {
             display = tdcService.createCustomDisplayForPoints(name, title, description, pointList);
         }
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "display.SAVE.success"));
         return "redirect:/tools/data-viewer/" + display.getDisplayId();
     }
     
