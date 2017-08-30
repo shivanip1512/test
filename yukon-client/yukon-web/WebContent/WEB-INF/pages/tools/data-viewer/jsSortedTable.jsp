@@ -6,7 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <cti:url var="url" value="/tools/data-viewer/${display.displayId}/page"/>
 <div data-url="${url}" data-static>
-    <table class="compact-results-table has-actions has-alerts">
+    <table class="compact-results-table has-actions has-alerts" data-sortable>
             <thead>
                 <tr>
                     <th></th>
@@ -14,14 +14,18 @@
                     <c:choose>
                         <c:when test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
                                 <th></th>
-                                <th><i:inline key="yukon.common.value"/></th>
+                                <th data-sorted="false"><i:inline key="yukon.common.value"/>
+                                    <i class="icon icon=blank"/>    
+                                </th>
                         </c:when>
                         <c:otherwise>
-                            <th>${fn:escapeXml(column.title)}</th>
+                            <th data-sorted="false">${fn:escapeXml(column.title)}
+                                <i class="icon icon=blank"/>    
+                            </th>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
-                <th class="action-column"><c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}"><cti:icon icon="icon-cog" classes="M0"/></c:if></th>
+                <th class="action-column" data-sortable="false"><c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}"><cti:icon icon="icon-cog" classes="M0"/></c:if></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -281,3 +285,5 @@
         <tags:pagingResultsControls adjustPageCount="true" result="${result}"/>
     </c:if>
 </div>
+<cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>
+<cti:includeCss link="/resources/js/lib/sortable/sortable.css"/>

@@ -1,0 +1,17 @@
+th[data-sorted]{
+    color: #555 !important;
+}
+th:hover {
+    color: #06c !important;
+    cursor: pointer;
+    text-decoration: none;
+}
+th[data-sorted] .icon {
+    margin: 0;
+    float: none;
+    background-position: 16px 16px;
+}
+th[data-sorted-direction="ascending"] .icon { background-position: -208px -48px; }
+th[data-sorted-direction="descending"] .icon,
+th[data-sorted="false"]:hover .icon { background-position: -176px -48px; }
+th.action-column .icon-cog { background-position: -560px -80px; }
