@@ -267,6 +267,7 @@ public class DeviceTypePanel extends DataInputPanel implements ListSelectionList
         this.deviceDisplayGroupMap.removeAll("Volt/Var");
         this.deviceDisplayGroupMap.removeAll("PORT");
         this.deviceDisplayGroupMap.removeAll("System");
+        this.deviceDisplayGroupMap.removeAll("Route");
 
         try {
             setName("DeviceTypePanel");
