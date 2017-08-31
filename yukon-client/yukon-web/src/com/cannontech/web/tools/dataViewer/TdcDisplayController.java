@@ -211,10 +211,13 @@ public class TdcDisplayController {
         String name = display.getName();
         String title = display.getTitle();
         String description = display.getDescription();
-        List<String> pointIdStrings = Lists.newArrayList(pointIds.split(","));
-        List<Integer> pointList = Lists.transform(pointIdStrings, new Function<String, Integer>(){
-            @Override public Integer apply(String input) {return Integer.parseInt(input);}
-        });
+        List<Integer> pointList = new ArrayList<Integer>();
+        if (!pointIds.isEmpty()) {
+            List<String> pointIdStrings = Lists.newArrayList(pointIds.split(","));
+            pointList = Lists.transform(pointIdStrings, new Function<String, Integer>(){
+                @Override public Integer apply(String input) {return Integer.parseInt(input);}
+            });
+        }
         int id = display.getDisplayId();
         if (id != 0) {
             tdcService.updateCustomDisplay(id, name, title, description, pointList);
