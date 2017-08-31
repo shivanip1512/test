@@ -2,6 +2,7 @@ package com.cannontech.web.tools.dataViewer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class TdcHomeController {
     public String home(ModelMap model) {
         
        List<Display> custom = displayDao.getDisplayByType(DisplayType.CUSTOM_DISPLAYS);
+       custom.sort(Comparator.comparing(Display::getName));
        List<Display> events = displayDao.getDisplayByType(DisplayType.ALARMS_AND_EVENTS);
        List<Display> topEvents = new ArrayList<>();
        ListIterator<Display> it =  events.listIterator();

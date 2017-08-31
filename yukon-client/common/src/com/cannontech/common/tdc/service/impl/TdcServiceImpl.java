@@ -60,7 +60,10 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.command.service.CommandService;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.base.Function;
@@ -84,6 +87,7 @@ public class TdcServiceImpl implements TdcService {
     @Autowired private DisplayDao displayDao;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DisplayDataDao displayDataDao;
+    @Autowired private DbChangeManager dbChangeManager;
 
     private Map<Integer, String> stateColorMap;
     private final String defaultAlertStr = "alert"; // yukon.css 
@@ -512,21 +516,27 @@ public class TdcServiceImpl implements TdcService {
     public Display copyCustomDisplay(int displayId, String name) {
         Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> data = displayDataDao.getCustomDisplayData(display);
-        return updateCustomDisplay(0, name, display.getTitle(), display.getDescription(),
+        display = updateCustomDisplay(0, name, display.getTitle(), display.getDescription(),
             data.stream().map(d -> d.getPointId()).collect(Collectors.toList()), display.getColumns());
+        dbChangeManager.processDbChange(display.getDisplayId(), DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.ADD);
+        return display;
     }
 
     @Override
     @Transactional
     public Display createCustomDisplayForPoints(String name, String title, String description, List<Integer> pointIds) {
-        return updateCustomDisplay(0, name, title, description, pointIds, Column.getDefaultColumns());
+        Display display = updateCustomDisplay(0, name, title, description, pointIds, Column.getDefaultColumns());
+        dbChangeManager.processDbChange(display.getDisplayId(), DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.ADD);
+        return display;
     }
 
     @Override
     @Transactional
     public Display createCustomDisplayForDevices(String name, String title, String description,
             List<Integer> deviceIds) {
-        return updateCustomDisplay(0, name, title, description, getPoints(deviceIds), Column.getDefaultColumns());
+        Display display = updateCustomDisplay(0, name, title, description, getPoints(deviceIds), Column.getDefaultColumns());
+        dbChangeManager.processDbChange(display.getDisplayId(), DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.ADD);
+        return display;
     }
 
     @Override
@@ -534,8 +544,17 @@ public class TdcServiceImpl implements TdcService {
     public Display updateCustomDisplay(int displayId, String name, String title, String description,
             List<Integer> pointIds) {
         Display display = displayDao.getDisplayById(displayId);
-        return updateCustomDisplay(displayId, name, display.getTitle(), display.getDescription(), pointIds,
+        display = updateCustomDisplay(displayId, name, display.getTitle(), display.getDescription(), pointIds,
             display.getColumns());
+        dbChangeManager.processDbChange(displayId, DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.UPDATE);
+        return display;
+    }
+    
+    @Override
+    @Transactional
+    public void deleteCustomDisplay(int displayId) {
+        displayDao.deleteCustomDisplay(displayId);
+        dbChangeManager.processDbChange(displayId, DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.DELETE);
     }
     
     /**

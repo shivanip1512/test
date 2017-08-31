@@ -154,4 +154,9 @@ public interface TdcService {
 
     int getDisplayDataCount(int displayId, DateTime date);
 
+    /**
+     * Delete custom display.
+     */
+    void deleteCustomDisplay(int displayId);
+
 }
