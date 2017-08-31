@@ -13,5 +13,5 @@ th[data-sorted] .icon {
 }
 th[data-sorted-direction="ascending"] .icon { background-position: -208px -48px; }
 th[data-sorted-direction="descending"] .icon,
-th[data-sorted="false"]:hover .icon { background-position: -176px -48px; }
+th[data-sorted="false"]:hover:not(.action-column) .icon { background-position: -176px -48px; }
 th.action-column .icon-cog { background-position: -560px -80px; }
