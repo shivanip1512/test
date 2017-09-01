@@ -70,8 +70,10 @@
         }
         var elementArray;
         elementArray = document.getElementsByClassName("vh");
-        while (elementArray.length) {
-            elementArray[0].className = "dn";
+        for (i = 0; i < elementArray.length; i++) {
+            if (elementArray[i].tagName == 'TR') {
+                elementArray[i].className = "dn";
+            }
         }
         sorted = this.getAttribute('data-sorted') === 'true';
         sortedDirection = this.getAttribute('data-sorted-direction');
