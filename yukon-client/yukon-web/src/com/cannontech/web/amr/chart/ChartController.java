@@ -1,5 +1,6 @@
 package com.cannontech.web.amr.chart;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -58,8 +60,12 @@ public class ChartController {
         String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
         String yLabelUnits = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
 
-        Instant start = new Instant(startDate);
-        Instant stop = new Instant(endDate);
+        Date stDate = TimeUtil.adjustDateToStartingOfDay(new Date(startDate));
+        Instant start = new Instant(stDate);
+
+        Date eDate = TimeUtil.adjustDateToEndingOfDay(new Date(endDate));
+        Instant stop = new Instant(eDate);
+
         Map<String, Object> graphAsJSON = flotChartService.getMeterGraphData(ids, start, stop, yMin, yMax, interval,
                                                                     converterType, graphType, yLabelUnits, userContext);
         

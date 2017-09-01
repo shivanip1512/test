@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.chart.service.NormalizedUsageService;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -50,9 +51,12 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         
         Date stopDateDate = new Date();
         stopDateDate.setTime(stopDate);
-        
+
+        Date roundedDownStartDate = TimeUtil.adjustDateToStartingOfDay(startDateDate);
+        Date roundedUpEndDate = TimeUtil.adjustDateToEndingOfDay(stopDateDate);
+
         // get raw data
-        List<PointValueHolder> pvhList = rphDao.getPointData(pointId, startDateDate, stopDateDate);
+        List<PointValueHolder> pvhList = rphDao.getPointData(pointId, roundedDownStartDate, roundedUpEndDate);
         
         // get normalized data
         List<PointValueHolder> normalizedUsage = normalizedUsageService.getNormalizedUsage(pvhList, getAttribute());
@@ -76,12 +80,16 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         LitePoint litePoint = pointDao.getLitePoint(getPointId());
         int deviceId = litePoint.getPaobjectID();
         LiteYukonPAObject device = DefaultDatabaseCache.getInstance().getAllPaosMap().get(deviceId);
+        Date roundedDownStartDate = TimeUtil.adjustDateToStartingOfDay(new Date(startDate));
+        Date roundedUpEndDate = TimeUtil.adjustDateToEndingOfDay(new Date(stopDate));
 
         info.put("Device Name", device.getPaoName());
         info.put("Point", litePoint.getPointName() +  " (id: " + Integer.toString(getPointId()) + ")");
-        info.put("Start Date", dateFormattingService.format(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
-        info.put("Stop Date", dateFormattingService.format(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
-        return info;
+        info.put("Start Date",
+            dateFormattingService.format(roundedDownStartDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Stop Date",
+            dateFormattingService.format(roundedUpEndDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
+       return info;
     }
 
     @Override
@@ -134,4 +142,5 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
     public Attribute getAttribute() {
         return attribute;
     }
+
 }
