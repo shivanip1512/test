@@ -40,7 +40,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrTlvParsingStrategy.class);
 
     @Override
-    public void praseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice,
+    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice,
             AtomicInteger archivedReadings) throws ParseException {
         RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
         ListMultimap<FieldType, byte[]> decodedPayload = null;

@@ -57,8 +57,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private LmHardwareCommandService commandService;
-    private RfnLcrParsingStrategy rfnLcrParsingStrategy;
-    
+
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private  Map<Schema, RfnLcrParsingStrategy> strategies;
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
@@ -101,9 +100,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
                 byte[] payload = reading.getData().getPayload();
                 Schema schema = ParsingService.getSchema(payload);
-                rfnLcrParsingStrategy = strategies.get(schema);
                 try {
-                    rfnLcrParsingStrategy.praseRfLcrReading(request, rfnDevice, archivedReadings);
+                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);

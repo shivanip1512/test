@@ -39,7 +39,7 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrExiParsingStrategy.class);
 
     @Override
-    public void praseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings)
+    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings)
             throws ParseException {
         RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
         SimpleXPathTemplate decodedPayload = null;
