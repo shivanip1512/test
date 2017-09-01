@@ -6,10 +6,11 @@
 <cti:msgScope paths="picker">
 
 <div id="${id}" data-picker="${id}">
-        <label> <i:inline key="yukon.common.search" /> <input type="text"
-                id="picker-${id}-ss" name="ss" class="js-picker-search-field">
+        <label class="dib M0"> 
+            <i:inline key="yukon.common.search" /> 
+            <input type="text" id="picker-${id}-ss" name="ss" class="js-picker-search-field">
             <cti:button renderMode="buttonImage" icon="icon-cross-gray"
-                classes="dn fn vat right M0 js-picker-show-all" id="picker-${id}-show-all-link" />
+                classes="dn fr right vat M0 js-picker-show-all" id="picker-${id}-show-all-link" />
         </label>
 
         <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()"

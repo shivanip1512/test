@@ -367,13 +367,7 @@ yukon.protoPicker = function (okText,
         this.inSearch = true;
         block.call(this);
         ss = this.ssInput.value;
-        if (ss) {
-            $(this.ssInput).addClass('left');
-            $(this.showAllLink).removeClass('dn');
-        } else {
-            $(this.ssInput).removeClass('left');
-            $(this.showAllLink).addClass('dn');
-        }
+        $(this.showAllLink).toggleClass('dn', !ss);
         this.currentSearch = ss;
         if (this.memoryGroup) {
             yukon.protoPicker.rememberedSearches[this.memoryGroup] = ss;
