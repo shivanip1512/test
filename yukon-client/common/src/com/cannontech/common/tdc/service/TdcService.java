@@ -12,6 +12,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tdc.dao.DisplayDataDao.SortBy;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface TdcService {
@@ -130,7 +131,7 @@ public interface TdcService {
      * Creates custom display if one of the point ids is 0 inserts a blank line.
      */
 
-    Display createCustomDisplayForPoints(String name, String title, String description, List<Integer> pointIds);
+    Display createCustomDisplayForPoints(String name, String title, String description, List<Integer> pointIds) throws DuplicateException;
 
     /**
      * Creates custom display with all the points for the devices. Blank line is inserted as a separator
@@ -142,7 +143,7 @@ public interface TdcService {
     /**
      * Updates custom display.
      */
-    Display updateCustomDisplay(int displayId, String name, String title, String description, List<Integer> pointIds);
+    Display updateCustomDisplay(int displayId, String name, String title, String description, List<Integer> pointIds) throws DuplicateException;
 
     /**
      * @param sortBy nullable.

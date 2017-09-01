@@ -63,6 +63,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -202,15 +203,6 @@ public class TdcDisplayController {
     @RequestMapping(value = "data-viewer/save", method = RequestMethod.POST)
     public String saveCustomView(@ModelAttribute("display") Display display, ModelMap model, BindingResult result, HttpServletResponse resp,             
                                  @RequestParam(value="pointIds", required=false, defaultValue="") String pointIds, FlashScope flash) {
-        customDisplayValidator.validate(display, result);
-        if (result.hasErrors()) {
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", PageEditMode.EDIT);
-            return "data-viewer/customDisplay.jsp";
-        }
-        String name = display.getName();
-        String title = display.getTitle();
-        String description = display.getDescription();
         List<Integer> pointList = new ArrayList<Integer>();
         if (!pointIds.isEmpty()) {
             List<String> pointIdStrings = Lists.newArrayList(pointIds.split(","));
@@ -218,14 +210,46 @@ public class TdcDisplayController {
                 @Override public Integer apply(String input) {return Integer.parseInt(input);}
             });
         }
+        customDisplayValidator.validate(display, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            model.addAttribute("displayData", generateDisplayDataFromPoints(pointList));
+            return "data-viewer/customDisplay.jsp";
+        }
+        String name = display.getName();
+        String title = display.getTitle();
+        String description = display.getDescription();
+
         int id = display.getDisplayId();
-        if (id != 0) {
-            tdcService.updateCustomDisplay(id, name, title, description, pointList);
-        } else {
-            display = tdcService.createCustomDisplayForPoints(name, title, description, pointList);
+        try {
+            if (id != 0) {
+                tdcService.updateCustomDisplay(id, name, title, description, pointList);
+            } else {
+                display = tdcService.createCustomDisplayForPoints(name, title, description, pointList);
+            }
+        } catch (DuplicateException e) {
+            result.rejectValue("name", "yukon.web.error.nameConflict");
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            model.addAttribute("displayData", generateDisplayDataFromPoints(pointList));
+            return "data-viewer/customDisplay.jsp";
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "display.SAVE.success"));
         return "redirect:/tools/data-viewer/" + display.getDisplayId();
+    }
+    
+    private List<DisplayData> generateDisplayDataFromPoints (List<Integer> pointIds) {
+        List<DisplayData> data = new ArrayList<DisplayData>();
+        pointIds.forEach(id -> {
+            DisplayData dd = new DisplayData();
+            dd.setPointId(id);
+            LitePoint point = pointDao.getLitePoint(id);
+            dd.setPointName(point.getPointName());
+            dd.setDeviceName(paoDao.getLiteYukonPAO(point.getPaobjectID()).getPaoName());
+            data.add(dd);
+        });
+        return data;
     }
     
     @RequestMapping(value = "data-viewer/{displayId}/page", method = RequestMethod.GET)

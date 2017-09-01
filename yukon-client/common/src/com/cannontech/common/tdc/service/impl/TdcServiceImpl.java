@@ -45,6 +45,7 @@ import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -542,7 +543,7 @@ public class TdcServiceImpl implements TdcService {
     @Override
     @Transactional
     public Display updateCustomDisplay(int displayId, String name, String title, String description,
-            List<Integer> pointIds) {
+            List<Integer> pointIds) throws DuplicateException {
         Display display = displayDao.getDisplayById(displayId);
         display = updateCustomDisplay(displayId, name, display.getTitle(), display.getDescription(), pointIds,
             display.getColumns());
@@ -561,7 +562,7 @@ public class TdcServiceImpl implements TdcService {
      * Creates display if the displayId is 0 otherwise updates display.
      */
     public Display updateCustomDisplay(int displayId, String name, String title, String description,
-            List<Integer> pointIds, List<Column> columns) {
+            List<Integer> pointIds, List<Column> columns) throws DuplicateException{
         Display display = new Display();
         display.setDisplayId(displayId);
         display.setName(name);

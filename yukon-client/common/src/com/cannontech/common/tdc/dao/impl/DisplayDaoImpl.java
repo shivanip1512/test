@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -259,7 +261,7 @@ public class DisplayDaoImpl implements DisplayDao {
     @Override
     @Transactional
     public Display updateDisplay(Display display) {
-        
+       
         int displayId = display.getDisplayId();
         SqlStatementBuilder displaySql = new SqlStatementBuilder();
         SqlParameterSink displaySink = displayId == 0 ? displaySql.insertInto("DISPLAY") : displaySql.update("DISPLAY");
@@ -273,7 +275,11 @@ public class DisplayDaoImpl implements DisplayDao {
             display.setDisplayId(displayId);
             displaySink.addValue("DISPLAYNUM", displayId);
             log.debug("Creating display=" + display);
-            yukonJdbcTemplate.update(displaySql);
+            try {
+                yukonJdbcTemplate.update(displaySql);
+            } catch (DataIntegrityViolationException e) {
+                throw new DuplicateException("Unable to save Display.", e);
+            }
             createColumns(displayId, display.getColumns());
         } else {
             displaySql.append("WHERE DISPLAYNUM").eq(displayId);

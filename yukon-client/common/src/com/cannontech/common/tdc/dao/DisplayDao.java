@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayType;
+import com.cannontech.core.dao.DuplicateException;
 
 public interface DisplayDao {
 
@@ -20,7 +21,7 @@ public interface DisplayDao {
     /**
      * If display id is 0 creates display otherwise updates display, display columns are not updated.
      */
-    Display updateDisplay(Display display);
+    Display updateDisplay(Display display) throws DuplicateException;
 
     /**
      * Returns display for display name if found. Else null.

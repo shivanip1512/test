@@ -27,20 +27,19 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
 
-        <div class="column-12-12 clearfix select-box"
-            style="border: 1px solid #ccc; padding: 10px; margin-top: 30px;">
+        <div class="column-12-12 clearfix select-box bordered-div" style="margin-top: 30px;">
             <div class="column one">
                 <h3>
                     <i:inline key=".available" />
                 </h3>
 
-                <div style="border: 1px solid #ccc; padding: 10px; height: 700px;overflow-y:scroll">
+                <div class="bordered-div" style="height: 700px;">
                     <div id="unassigned">
                         <tags:pickerDialog id="displayPointPicker" type="pointPicker"
                             container="unassigned" multiSelectMode="${true}" />
                     </div>
                     <div>
-                        <cti:button nameKey="add" classes="fr js-add-points" icon="icon-plus-green"/>
+                        <cti:button nameKey="add" classes="fr js-add-points" icon="icon-add"/>
                     </div>
                 </div>
             </div>
@@ -49,7 +48,7 @@
                     <i:inline key=".selected" />
                 </h3>
 
-                <div style="border: 1px solid #ccc; padding: 10px; height: 700px;font-size:12px;overflow-y:scroll">
+                <div class="bordered-div" style="height: 700px;font-size:12px;">
 
                     <div id="assigned" class="select-box-selected js-with-movables"
                         data-item-selector=".select-box-item" style="min-height: 150px;">
