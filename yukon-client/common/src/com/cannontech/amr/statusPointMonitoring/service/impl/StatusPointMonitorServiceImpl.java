@@ -25,20 +25,20 @@ public class StatusPointMonitorServiceImpl implements StatusPointMonitorService 
     @Override
     public void create(StatusPointMonitor statusPointMonitor) {
         statusPointMonitorDao.save(statusPointMonitor);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, statusPointMonitor.getStatusPointMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.STATUS_POINT_MONITOR, statusPointMonitor.getStatusPointMonitorId());
     }
     
     @Override
     public void update(StatusPointMonitor statusPointMonitor) {
         statusPointMonitorDao.save(statusPointMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, statusPointMonitor.getStatusPointMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.STATUS_POINT_MONITOR, statusPointMonitor.getStatusPointMonitorId());
     }
 
     @Override
     public boolean delete(int statusPointMonitorId) throws NotFoundException {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.STATUS_POINT_MONITOR, statusPointMonitorId);
         boolean deleted = statusPointMonitorDao.deleteStatusPointMonitor(statusPointMonitorId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, statusPointMonitorId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.STATUS_POINT_MONITOR, statusPointMonitorId);
         return deleted;
     }
     
@@ -53,7 +53,7 @@ public class StatusPointMonitorServiceImpl implements StatusPointMonitorService 
 
         // update
         statusPointMonitorDao.save(statusPointMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, statusPointMonitor.getStatusPointMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.STATUS_POINT_MONITOR, statusPointMonitor.getStatusPointMonitorId());
         log.debug("Updated statusPointMonitor evaluator status: status=" + newStatus + ", statusPointMonitor=" + statusPointMonitor);
 
         return newStatus;

@@ -1,6 +1,6 @@
 package com.cannontech.web.widget;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,17 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
+import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
-import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
-import com.cannontech.amr.porterResponseMonitor.dao.PorterResponseMonitorDao;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
-import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
-import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
-import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -41,12 +36,7 @@ import com.google.common.base.Joiner;
 
 public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
 
-    @Autowired protected DeviceDataMonitorDao deviceDataMonitorDao;
-    @Autowired protected OutageMonitorDao outageMonitorDao;
-    @Autowired protected TamperFlagMonitorDao tamperFlagMonitorDao;
-    @Autowired protected StatusPointMonitorDao statusPointMonitorDao;
-    @Autowired protected PorterResponseMonitorDao porterResponseMonitorDao;
-    @Autowired protected ValidationMonitorDao validationMonitorDao;
+    @Autowired protected MonitorCacheService monitorCacheService;
 
     public AllMonitorsWidget() {
     }
@@ -72,29 +62,32 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
     }
 
     protected void putMonitorsInModel(ModelMap model, HttpServletRequest request) {
-        List<DeviceDataMonitor> deviceDataMonitors = deviceDataMonitorDao.getAllMonitors();
-        Collections.sort(deviceDataMonitors);
+        sortMonitorsAndAddToModel(monitorCacheService.getDeviceDataMonitors(), monitorCacheService.getOutageMonitors(),
+            monitorCacheService.getTamperFlagMonitors(), monitorCacheService.getStatusPointMonitors(),
+            monitorCacheService.getPorterResponseMonitors(), monitorCacheService.getValidationMonitors(), model);
+    }
+
+    protected void sortMonitorsAndAddToModel(List<DeviceDataMonitor> deviceDataMonitors,
+            List<OutageMonitor> outageMonitors, List<TamperFlagMonitor> tamperFlagMonitors,
+            List<StatusPointMonitor> statusPointMonitors, List<PorterResponseMonitor> porterResponseMonitors,
+            List<ValidationMonitor> validationMonitors, ModelMap model) {
+        
+        deviceDataMonitors.sort(Comparator.comparing(DeviceDataMonitor::getName));
         model.addAttribute("deviceDataMonitors", deviceDataMonitors);
         
-        List<OutageMonitor> outageMonitors = outageMonitorDao.getAll();
-        Collections.sort(outageMonitors);
+        outageMonitors.sort(Comparator.comparing(OutageMonitor::getOutageMonitorName));
         model.addAttribute("outageMonitors", outageMonitors);
         
-        List<TamperFlagMonitor> tamperFlagMonitors = tamperFlagMonitorDao.getAll();
-        Collections.sort(tamperFlagMonitors);
+        tamperFlagMonitors.sort(Comparator.comparing(TamperFlagMonitor::getTamperFlagMonitorName));
         model.addAttribute("tamperFlagMonitors", tamperFlagMonitors);
         
-        List<StatusPointMonitor> statusPointMonitors = statusPointMonitorDao.getAllStatusPointMonitors();
-        Collections.sort(statusPointMonitors);
+        statusPointMonitors.sort(Comparator.comparing(StatusPointMonitor::getStatusPointMonitorName));
         model.addAttribute("statusPointMonitors", statusPointMonitors);
         
-        List<PorterResponseMonitor> porterResponseMonitors = porterResponseMonitorDao.getAllMonitors();
-        Collections.sort(porterResponseMonitors);
+        porterResponseMonitors.sort(Comparator.comparing(PorterResponseMonitor::getName));
         model.addAttribute("porterResponseMonitors", porterResponseMonitors);
         
-        List<ValidationMonitor> validationMonitors = validationMonitorDao.getAll();
-        Collections.sort(validationMonitors);
-        model.addAttribute("validationMonitors", validationMonitors);
-        
+        validationMonitors.sort(Comparator.comparing(ValidationMonitor::getName));
+        model.addAttribute("validationMonitors", validationMonitors);  
     }
 }

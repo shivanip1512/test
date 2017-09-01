@@ -1,13 +1,8 @@
 package com.cannontech.amr.porterResponseMonitor.service;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -16,9 +11,8 @@ import javax.jms.StreamMessage;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.amr.monitors.message.PorterResponseMessage;
-import com.cannontech.amr.porterResponseMonitor.dao.PorterResponseMonitorDao;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorTransaction;
@@ -29,11 +23,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
@@ -44,58 +34,17 @@ public class PorterResponseMessageListener implements MessageListener {
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private IDatabaseCache databaseCache;
-    @Autowired private PorterResponseMonitorDao porterResponseMonitorDao;
+    @Autowired private MonitorCacheService monitorCacheService;
     private static final Logger log = YukonLogManager.getLogger(PorterResponseMessageListener.class);
-    private Map<Integer, PorterResponseMonitor> monitors = new ConcurrentHashMap<Integer, PorterResponseMonitor>();
+  
 
     //Map entries will be removed after 12 hours
     private Cache<TransactionIdentifier, PorterResponseMonitorTransaction> transactions
                 = CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
 
-    @PostConstruct
-    public void initialize() {
-        List<PorterResponseMonitor> monitorsList = porterResponseMonitorDao.getAllMonitors();
-        for (PorterResponseMonitor monitor : monitorsList) {
-            if (monitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
-                monitors.put(monitor.getMonitorId(), monitor);
-            }
-        }
-        createDatabaseChangeListener();
-    }
-
-    private void createDatabaseChangeListener(){
-        DatabaseChangeEventListener addOrUpdateListener = new DatabaseChangeEventListener() {
-            @Override
-            public void eventReceived(DatabaseChangeEvent event) {
-                PorterResponseMonitor newMonitor = 
-                    porterResponseMonitorDao.getMonitorById(event.getPrimaryKey());
-
-                if (newMonitor.getEvaluatorStatus() == MonitorEvaluatorStatus.ENABLED) {
-                    monitors.put(newMonitor.getMonitorId(), newMonitor);
-                } else {
-                    monitors.remove(newMonitor.getMonitorId());
-                }
-            }
-        };
-
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.PORTER_RESPONSE_MONITOR,
-                                                              EnumSet.of(DbChangeType.ADD, DbChangeType.UPDATE),
-                                                              addOrUpdateListener);
-        DatabaseChangeEventListener deleteListener = new DatabaseChangeEventListener() {
-            @Override
-            public void eventReceived(DatabaseChangeEvent event) {
-                monitors.remove(event.getPrimaryKey());
-            }
-        };
-
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.PORTER_RESPONSE_MONITOR,
-                                                              EnumSet.of(DbChangeType.DELETE),
-                                                              deleteListener);
-    }
-
     @Override
     public void onMessage(Message message) {
-        if (monitors.isEmpty()) {
+        if (monitorCacheService.getEnabledPorterResponseMonitors().isEmpty()) {
             log.trace("Received porter response message from jms queue: not processing because " +
             		"no monitors exist or they are all disabled");
             return;
@@ -160,7 +109,7 @@ public class PorterResponseMessageListener implements MessageListener {
     }
 
     private void processTransaction(PorterResponseMonitorTransaction transaction) {
-        for (PorterResponseMonitor monitor : monitors.values()) {
+        for (PorterResponseMonitor monitor : monitorCacheService.getEnabledPorterResponseMonitors()) {
             for (PorterResponseMonitorRule rule : monitor.getRules()) {
                 if(shouldSendPointData(transaction, rule)) {
                     sendPointData(monitor, rule, transaction);
@@ -236,19 +185,25 @@ public class PorterResponseMessageListener implements MessageListener {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             TransactionIdentifier other = (TransactionIdentifier) obj;
-            if (!getOuterType().equals(other.getOuterType()))
+            if (!getOuterType().equals(other.getOuterType())) {
                 return false;
-            if (connectionId != other.connectionId)
+            }
+            if (connectionId != other.connectionId) {
                 return false;
-            if (userMessageId != other.userMessageId)
+            }
+            if (userMessageId != other.userMessageId) {
                 return false;
+            }
             return true;
         }
 
@@ -256,11 +211,11 @@ public class PorterResponseMessageListener implements MessageListener {
             return PorterResponseMessageListener.this;
         }
     }
-
+    
     /** 
      * Only for testing
      */
-    public void setMonitors(Map<Integer, PorterResponseMonitor> monitors) {
-        this.monitors = monitors;
+    public void setMonitorCache(MonitorCacheService monitorCacheService) {
+        this.monitorCacheService = monitorCacheService;
     }
 }

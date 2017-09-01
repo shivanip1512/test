@@ -2,6 +2,9 @@ package com.cannontech.web.widget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -15,6 +18,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
+import com.cannontech.amr.monitors.impl.MonitorCacheServiceImpl;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
@@ -55,12 +59,13 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
 
     @Override
     protected void putMonitorsInModel(ModelMap model, HttpServletRequest request) {
-        List<Integer> monitorIds = new ArrayList<Integer>();
+        log.info("start");
+        List<Integer> monitorIds = new ArrayList<>();
+        model.addAttribute("isSubscribedWidget", true);
         try {
             String monitors = WidgetParameterHelper.getStringParameter(request, "selectMonitors");
             if (monitors == null || monitors.trim().isEmpty()) {
                 super.putMonitorsInModel(model, request);
-                model.addAttribute("isSubscribedWidget", true);
                 return;
             }
             Pattern pattern = Pattern.compile(",");
@@ -72,7 +77,6 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         }
         if (monitorIds == null || monitorIds.size() == 0) {
             super.putMonitorsInModel(model, request);
-            model.addAttribute("isSubscribedWidget", true);
             return;
         }
         List<DeviceDataMonitor> deviceDataMonitors = new ArrayList<>();
@@ -82,41 +86,45 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
         List<PorterResponseMonitor> porterResponseMonitors = new ArrayList<>();
         List<ValidationMonitor> validationMonitors = new ArrayList<>();
 
-        SearchResults<UltraLightMonitor> sr = monitorLuceneSearcher.all(null, 0, Integer.MAX_VALUE);
-        for(UltraLightMonitor monitor: sr.getResultList()) {
-            if (monitorIds.contains(monitor.getId())) {
-                switch (monitor.getType()) {
-                case "Device Data":
-                    deviceDataMonitors.add(deviceDataMonitorDao.getMonitorById(monitor.getSubId()));
-                    break;
-                case "Outage":
-                    outageMonitors.add(outageMonitorDao.getById(monitor.getSubId()));
-                    break;
-                case "Tamper Flag":
-                    tamperFlagMonitors.add(tamperFlagMonitorDao.getById(monitor.getSubId()));
-                    break;
-                case "Status Point":
-                    statusPointMonitors.add(statusPointMonitorDao.getStatusPointMonitorById(monitor.getSubId()));
-                    break;
-                case "Porter Response":
-                    porterResponseMonitors.add(porterResponseMonitorDao.getMonitorById(monitor.getSubId()));
-                    break;
-                case "Validation":
-                    validationMonitors.add(validationMonitorDao.getById(monitor.getSubId()));
-                    break;
-                default:
-                    //Non-monitor subscription
+        Map<Integer, UltraLightMonitor> monitors = Optional.ofNullable(monitorLuceneSearcher.all(null, 0, Integer.MAX_VALUE))
+                .map(results -> results.getResultList())
+                .orElse(new ArrayList<>())
+                .stream()
+                .collect(Collectors.toMap(UltraLightMonitor::getId, Function.identity()));
+        
+        for(int id: monitorIds){
+            UltraLightMonitor monitor = monitors.get(id);
+            if(monitor == null){
+                continue;
+            }
+            int monitorId = monitor.getSubId();
+            switch (monitor.getType()) {
+            case "Device Data":
+                deviceDataMonitors.add(monitorCacheService.getDeviceMonitor(monitorId));
                 break;
-                }
+            case "Outage":
+                outageMonitors.add(monitorCacheService.getOutageMonitor(monitorId));
+                break;
+            case "Tamper Flag":
+                tamperFlagMonitors.add(monitorCacheService.getTamperFlagMonitor(monitorId));
+                break;
+            case "Status Point":
+                statusPointMonitors.add(monitorCacheService.getStatusPointMonitor(monitorId));
+                break;
+            case "Porter Response":
+                porterResponseMonitors.add(monitorCacheService.getPorterResponseMonitor(monitorId));
+                break;
+            case "Validation":
+                validationMonitors.add(monitorCacheService.getValidationMonitor(monitorId));
+                break;
+            default:
+                //Non-monitor subscription
+            break;
             }
         }
-
-        model.addAttribute("isSubscribedWidget", true);
-        model.addAttribute("deviceDataMonitors", deviceDataMonitors);
-        model.addAttribute("outageMonitors", outageMonitors);
-        model.addAttribute("tamperFlagMonitors", tamperFlagMonitors);
-        model.addAttribute("statusPointMonitors", statusPointMonitors);
-        model.addAttribute("porterResponseMonitors", porterResponseMonitors);
-        model.addAttribute("validationMonitors", validationMonitors);
+        
+        sortMonitorsAndAddToModel(deviceDataMonitors, outageMonitors, tamperFlagMonitors, statusPointMonitors,
+            porterResponseMonitors, validationMonitors, model);
+        log.info("end");
     }
 }

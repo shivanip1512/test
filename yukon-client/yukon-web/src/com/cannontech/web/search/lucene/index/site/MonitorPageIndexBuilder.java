@@ -1,7 +1,6 @@
 package com.cannontech.web.search.lucene.index.site;
 
 import static com.cannontech.message.dispatch.message.DbChangeCategory.DEVICE_DATA_MONITOR;
-import static com.cannontech.message.dispatch.message.DbChangeCategory.MONITOR;
 import static com.cannontech.message.dispatch.message.DbChangeCategory.PORTER_RESPONSE_MONITOR;
 
 import java.sql.SQLException;
@@ -20,6 +19,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class MonitorPageIndexBuilder extends DbPageIndexBuilder {
@@ -196,14 +196,11 @@ public class MonitorPageIndexBuilder extends DbPageIndexBuilder {
     public boolean isAllowedToView(Document document, LiteYukonUser user) {
         return true;
     }
-    
+
     @Override
     protected boolean isValidDbChange(DbChangeType dbChangeType, int id, int database, String category) {
-        if (database == MONITOR.getDbChangeMsgDatabaseId() ||
-            database == PORTER_RESPONSE_MONITOR.getDbChangeMsgDatabaseId() ||
-            database == DEVICE_DATA_MONITOR.getDbChangeMsgDatabaseId()) {
-            return true;
-        }
-        return false;
+        boolean isPresent = DbChangeCategory.getMonitorCategories().stream().filter(
+            c -> c.getDbChangeMsgDatabaseId() == database).findFirst().isPresent();
+        return isPresent;
     }
 }

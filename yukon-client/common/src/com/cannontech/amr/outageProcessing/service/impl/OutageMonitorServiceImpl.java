@@ -36,13 +36,13 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
     @Override
     public void create(OutageMonitor outageMonitor) {
         outageMonitorDao.saveOrUpdate(outageMonitor);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, outageMonitor.getOutageMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.OUTAGE_MONITOR, outageMonitor.getOutageMonitorId());
     }
     
     @Override
     public void update(OutageMonitor outageMonitor) {
         outageMonitorDao.saveOrUpdate(outageMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, outageMonitor.getOutageMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.OUTAGE_MONITOR, outageMonitor.getOutageMonitorId());
     }
     
     @Override
@@ -61,7 +61,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.OUTAGE_MONITOR, outageMonitorId);
         // delete processor
         boolean deleted = outageMonitorDao.delete(outageMonitorId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, outageMonitorId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.OUTAGE_MONITOR, outageMonitorId);
         return deleted;
     }
 
@@ -81,7 +81,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
 
         // update
         outageMonitorDao.saveOrUpdate(outageMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, outageMonitorId);
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.OUTAGE_MONITOR, outageMonitorId);
         log.debug("Updated outageMonitor evaluator status: status=" + newEvaluatorStatus + ", outageMonitor=" + outageMonitor.toString());
 
         return newEvaluatorStatus;

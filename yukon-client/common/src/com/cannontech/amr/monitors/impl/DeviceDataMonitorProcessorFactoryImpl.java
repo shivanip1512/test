@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
-import com.cannontech.amr.monitors.DeviceDataMonitorCacheService;
 import com.cannontech.amr.monitors.DeviceDataMonitorProcessorFactory;
+import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -40,7 +40,7 @@ import com.google.common.cache.CacheBuilder;
 public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFactoryBase<DeviceDataMonitor> implements DeviceDataMonitorProcessorFactory {
 
     @Autowired private AttributeService attributeService;
-    @Autowired private DeviceDataMonitorCacheService deviceDataMonitorCacheService;
+    @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private DeviceDataMonitorCalculationService deviceDataMonitorCalculationService;
     @Autowired private PointDao pointDao;
     @Autowired private DeviceGroupService deviceGroupService;
@@ -54,7 +54,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
     @Override
     protected List<DeviceDataMonitor> getAllMonitors() {
-        return deviceDataMonitorCacheService.getAllEnabledMonitors();
+        return monitorCacheService.getEnabledDeviceDataMonitors();
     }
 
     @Override
@@ -78,7 +78,9 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         }
         
         /* check if this point is of type status and who's Pao is of category Device */
-        if (!isPointStatusAndBelongsToDevice(richPointData.getPaoPointIdentifier())) return;
+        if (!isPointStatusAndBelongsToDevice(richPointData.getPaoPointIdentifier())) {
+            return;
+        }
         
         DeviceGroup groupToMonitor = deviceGroupService.findGroupName(monitor.getGroupName());
         if (groupToMonitor == null) {

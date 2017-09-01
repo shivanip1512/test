@@ -37,13 +37,13 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
     @Override
     public void create(TamperFlagMonitor tamperFlagMonitor) {
         tamperFlagMonitorDao.saveOrUpdate(tamperFlagMonitor);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, tamperFlagMonitor.getTamperFlagMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.TAMPER_FLAG_MONITOR, tamperFlagMonitor.getTamperFlagMonitorId());
     }
     
     @Override
     public void update(TamperFlagMonitor tamperFlagMonitor) {
         tamperFlagMonitorDao.saveOrUpdate(tamperFlagMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, tamperFlagMonitor.getTamperFlagMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.TAMPER_FLAG_MONITOR, tamperFlagMonitor.getTamperFlagMonitorId());
     }
     
     @Override
@@ -62,7 +62,7 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.TAMPER_FLAG_MONITOR, tamperFlagMonitorId);
         // delete monitor
         boolean deleted = tamperFlagMonitorDao.delete(tamperFlagMonitorId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, tamperFlagMonitorId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.TAMPER_FLAG_MONITOR, tamperFlagMonitorId);
         return deleted;
     }
 
@@ -82,7 +82,7 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
 
         // update
         tamperFlagMonitorDao.saveOrUpdate(tamperFlagMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, tamperFlagMonitorId);
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.TAMPER_FLAG_MONITOR, tamperFlagMonitorId);
         log.debug("Updated tamperFlagMonitor evaluator status: status=" + newEvaluatorStatus + ", tamperFlagMonitor=" + tamperFlagMonitor.toString());
 
         return newEvaluatorStatus;

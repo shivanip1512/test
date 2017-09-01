@@ -29,7 +29,7 @@ import org.springframework.jms.core.MessagePostProcessor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
-import com.cannontech.amr.monitors.DeviceDataMonitorCacheService;
+import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
@@ -68,7 +68,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private AttributeService attributeService;
     @Autowired private ConnPool connPool;
-    @Autowired private DeviceDataMonitorCacheService deviceDataMonitorCacheService;
+    @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
@@ -96,7 +96,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                     dispatchConnection.waitForValidConnection();
                 }
 
-                deviceDataMonitorCacheService.getAllEnabledMonitors().forEach(monitor -> {
+                monitorCacheService.getEnabledDeviceDataMonitors().forEach(monitor -> {
                     startWork(monitor);
                 });
 
@@ -245,7 +245,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         
         DeviceGroup monitorGroup = deviceGroupService.findGroupName(monitor.getGroupName());
 
-        Set<SimpleDevice> devicesInGroupAndSubgroups = new HashSet<SimpleDevice>();
+        Set<SimpleDevice> devicesInGroupAndSubgroups = new HashSet<>();
         monitor.getProcessorAttributes().forEach(attribute -> {
             devicesInGroupAndSubgroups.addAll(attributeService.getDevicesInGroupThatSupportAttribute(monitorGroup, attribute));
         });

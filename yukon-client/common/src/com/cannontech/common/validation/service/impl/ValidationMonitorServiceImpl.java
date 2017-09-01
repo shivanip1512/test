@@ -25,13 +25,13 @@ public class ValidationMonitorServiceImpl implements ValidationMonitorService {
     @Override
     public void create(ValidationMonitor validationMonitor) {
         validationMonitorDao.saveOrUpdate(validationMonitor);
-        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.MONITOR, validationMonitor.getValidationMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.ADD, DbChangeCategory.VALIDATION_MONITOR, validationMonitor.getValidationMonitorId());
     }
     
     @Override
     public void update(ValidationMonitor validationMonitor) {
         validationMonitorDao.saveOrUpdate(validationMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, validationMonitor.getValidationMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.VALIDATION_MONITOR, validationMonitor.getValidationMonitorId());
     }
     
     @Override
@@ -40,7 +40,7 @@ public class ValidationMonitorServiceImpl implements ValidationMonitorService {
         // delete monitor
 
         boolean deleted = validationMonitorDao.delete(validationMonitorId);
-        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.MONITOR, validationMonitorId);
+        dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.VALIDATION_MONITOR, validationMonitorId);
         return deleted;
     }
     
@@ -60,7 +60,7 @@ public class ValidationMonitorServiceImpl implements ValidationMonitorService {
 
         // update
         validationMonitorDao.saveOrUpdate(validationMonitor);
-        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.MONITOR, validationMonitor.getValidationMonitorId());
+        dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.VALIDATION_MONITOR, validationMonitor.getValidationMonitorId());
         log.debug("Updated validationMonitor evaluator status: status=" + newEvaluatorStatus + ", validationMonitor=" + validationMonitor.toString());
 
         return newEvaluatorStatus;

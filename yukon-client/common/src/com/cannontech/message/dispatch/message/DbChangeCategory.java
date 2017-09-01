@@ -1,5 +1,8 @@
 package com.cannontech.message.dispatch.message;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 /**
@@ -21,15 +24,21 @@ public enum DbChangeCategory {
     WAREHOUSE,
     YUKON_SELECTION_LIST("YukonSelectionList"), 
     YUKON_LIST_ENTRY("YukonListEntry"),
-    PORTER_RESPONSE_MONITOR,
-    DEVICE_DATA_MONITOR,
     CC_MONITOR_BANK_LIST,
     GLOBAL_SETTING("GlobalSetting"),
     ENERGY_COMPANY_SETTING("EnergyCompanySetting"),
     REPEATING_JOB("RepeatingJob"),
     DATA_EXPORT_FORMAT("DataExportFormat"),
-    MONITOR("Monitor"),
     CHANGE_OPTOUT,
+       
+    DEVICE_DATA_MONITOR,
+    OUTAGE_MONITOR,
+    TAMPER_FLAG_MONITOR,
+    STATUS_POINT_MONITOR,
+    PORTER_RESPONSE_MONITOR,
+    VALIDATION_MONITOR
+    ;
+    
     
     
 //  WORK_ORDER("WorkOrder"),
@@ -98,5 +107,10 @@ public enum DbChangeCategory {
      */
     public int getDbChangeMsgDatabaseId() {
         return DBChangeMsg.USES_NEW_CATEGORY_ENUM - this.ordinal();
+    }
+    
+    public static Set<DbChangeCategory> getMonitorCategories(){
+        return EnumSet.of(DEVICE_DATA_MONITOR, OUTAGE_MONITOR, TAMPER_FLAG_MONITOR, STATUS_POINT_MONITOR,
+            PORTER_RESPONSE_MONITOR, VALIDATION_MONITOR);
     }
 }

@@ -96,16 +96,15 @@ public class MonitorIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database,
-                                              String category) {
-        if (database == DbChangeCategory.MONITOR.getDbChangeMsgDatabaseId() ||
-                database == DbChangeCategory.PORTER_RESPONSE_MONITOR.getDbChangeMsgDatabaseId() ||
-                database == DbChangeCategory.DEVICE_DATA_MONITOR.getDbChangeMsgDatabaseId()) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
+        boolean isPresent = DbChangeCategory.getMonitorCategories().stream().filter(
+            c -> c.getDbChangeMsgDatabaseId() == database).findFirst().isPresent();
+        if (isPresent) {
             rebuildIndex();
         }
         return null;
     }
-    
+
     @Override
     public synchronized void rebuildIndex() {
         super.rebuildIndex();

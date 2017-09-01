@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.amr.monitors.impl.MonitorCacheServiceImpl;
 import com.cannontech.amr.monitors.message.PorterResponseMessage;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorErrorCode;
@@ -58,7 +59,9 @@ public class PorterResponseMessageListenerTest {
                 sentPointData.add(rule.getStateInt());
             }
         };
-        listener.setMonitors(ImmutableMap.of(1, standard));
+        MonitorCacheServiceImpl cache = new MonitorCacheServiceImpl();
+        listener.setMonitorCache(cache);
+        cache.setMonitors(ImmutableMap.of(1, standard));
     }
     
     @Test
