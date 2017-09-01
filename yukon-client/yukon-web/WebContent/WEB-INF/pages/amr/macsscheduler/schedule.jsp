@@ -167,7 +167,7 @@
 
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="VIEW">
-                <cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS">
+                <cti:checkRolesAndProperties value="MACS_SCRIPTS" level="UPDATE">
                     <cti:url var="editUrl" value="/macsscheduler/schedules/${id}/edit" />
                     <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}" busy="true" disabled="${schedule.isRunning()}"/>
                 </cti:checkRolesAndProperties>

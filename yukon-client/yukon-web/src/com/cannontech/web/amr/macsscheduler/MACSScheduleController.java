@@ -50,6 +50,7 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.HolidayScheduleDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -63,8 +64,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -145,7 +146,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="create", method = RequestMethod.GET)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.CREATE)
     public String createSchedule(ModelMap model) {
         MacsSchedule schedule = new MacsSchedule();
         model.addAttribute("schedule", schedule);
@@ -186,7 +187,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/edit", method = RequestMethod.GET)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.UPDATE)
     public String editSchedule(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         MacsSchedule schedule = service.getMacsScheduleById(id);
         model.addAttribute("schedule", schedule);
@@ -233,7 +234,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/delete", method = RequestMethod.GET)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.OWNER)
     public String deleteSchedule(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         try {
             MacsSchedule schedule = service.getMacsScheduleById(id);
@@ -246,7 +247,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="createScript", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.CREATE)
     public String createScript(@ModelAttribute("schedule") MacsSchedule schedule, YukonUserContext yukonUserContext, 
                                ModelMap model, BindingResult result, HttpServletResponse resp) {
         validator.validate(schedule, result);
@@ -262,7 +263,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="save", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.UPDATE)
     public String saveSchedule(@ModelAttribute("schedule") MacsSchedule schedule, BindingResult result, YukonUserContext userContext, 
                                FlashScope flash, ModelMap model, HttpServletResponse resp) {
         int id = schedule.getId();
@@ -298,7 +299,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/startStop", method = RequestMethod.GET)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
     public String startStop(ModelMap model, YukonUserContext userContext, @PathVariable int id) throws Exception {        
         MacsSchedule schedule = service.getMacsScheduleById(id);
         final Calendar cal = dateFormattingService.getCalendar(userContext);
@@ -324,7 +325,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/start", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
     public @ResponseBody Map<String, Object> start(@PathVariable int id, YukonUserContext yukonUserContext, 
                       @RequestParam(value="startNow", required=false, defaultValue="false") Boolean startNow, 
                       @RequestParam("start") String startTime, @RequestParam("stop") String stopTime){
@@ -358,7 +359,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     @RequestMapping(value="{id}/stop", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
     public @ResponseBody Map<String, Object> stop(@PathVariable int id, YukonUserContext yukonUserContext, 
                      @RequestParam(value="stopNow", required=false, defaultValue="false") boolean stopNow, 
                      @RequestParam("stop") String stopTime){
@@ -385,7 +386,7 @@ public class MACSScheduleController extends MultiActionController {
     }
 
     @RequestMapping(value="{id}/toggleState", method = RequestMethod.POST)
-    @CheckRoleProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS)
+    @CheckPermissionLevel(property = YukonRoleProperty.MACS_SCRIPTS, level = HierarchyPermissionLevel.LIMITED)
     public @ResponseBody Map<String, Object> toggleState(@PathVariable int id, YukonUserContext yukonUserContext){    
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = new HashMap<>();
@@ -399,7 +400,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     private boolean isEditable(LiteYukonUser user) {
-    	return rolePropertyDao.checkProperty(YukonRoleProperty.ENABLE_DISABLE_SCRIPTS, user);
+    	return rolePropertyDao.checkLevel(YukonRoleProperty.MACS_SCRIPTS, HierarchyPermissionLevel.UPDATE, user);
     }
     
     private String addMacsExceptionToError(FlashScope flash, String errorKey, MacsException e, 

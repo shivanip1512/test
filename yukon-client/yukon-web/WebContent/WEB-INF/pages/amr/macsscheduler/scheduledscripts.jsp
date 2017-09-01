@@ -13,7 +13,7 @@
         <jsp:include page="${url}" />
     </div>
 
-    <cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS">
+    <cti:checkRolesAndProperties value="MACS_SCRIPTS" level="CREATE">
         <div class="action-area">
             <cti:url var="createUrl" value="/macsscheduler/schedules/create" />
             <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}" />

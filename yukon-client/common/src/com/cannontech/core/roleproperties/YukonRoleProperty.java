@@ -276,7 +276,7 @@ public enum YukonRoleProperty {
 
     ODDS_FOR_CONTROL_ROLE_EXISTS(ODDS_FOR_CONTROL, ODDS_FOR_CONTROL.getBasePropertyId(), booleanType()),
     
-    ENABLE_DISABLE_SCRIPTS(SCHEDULER, SCHEDULER.getBasePropertyId(), booleanType()),
+    MACS_SCRIPTS(SCHEDULER, SCHEDULER.getBasePropertyId(), InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
     MANAGE_SCHEDULES(SCHEDULER, SCHEDULER.getBasePropertyId() - 1, booleanType()),
     
     WORK_ORDER_SHOW_ALL(WORK_ORDER, WORK_ORDER.getBasePropertyId(), booleanType()),

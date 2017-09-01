@@ -288,7 +288,6 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 }
 
                 if (canAddRole(group, YukonRole.SCHEDULER)) {
-                    setRoleProperty(group, YukonRoleProperty.ENABLE_DISABLE_SCRIPTS,true);
                     setRoleProperty(group, YukonRoleProperty.MANAGE_SCHEDULES,true);
                     results.put(YukonRole.SCHEDULER, true);
                 } else {

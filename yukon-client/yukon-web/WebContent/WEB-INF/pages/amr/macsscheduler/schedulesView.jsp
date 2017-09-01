@@ -14,7 +14,10 @@
             <tags:sort column="${currentState}"/>
             <tags:sort column="${startDateTime}"/>
             <tags:sort column="${stopDateTime}"/>
-            <th class="action-column"><cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS"><cti:icon icon="icon-cog" classes="M0"/></cti:checkRolesAndProperties></th>
+            <th class="action-column">
+                <cti:checkRolesAndProperties value="MACS_SCRIPTS" level="LIMITED">
+                    <cti:icon icon="icon-cog" classes="M0"/>
+                </cti:checkRolesAndProperties></th>
         </thead>
         <tfoot>
         </tfoot>
@@ -77,7 +80,7 @@
                     <td>
                         <cti:formatDate value="${schedule.nextStopTime}" type="BOTH" nullText="----"/>
                     </td>
-                    <cti:checkRolesAndProperties value="ENABLE_DISABLE_SCRIPTS">
+                    <cti:checkRolesAndProperties value="MACS_SCRIPTS" level="LIMITED">
                         <td>
                             <cm:dropdown icon="icon-cog">
                                 <cti:url var="startStopUrl" value="/macsscheduler/schedules/${id}/startStop" />
