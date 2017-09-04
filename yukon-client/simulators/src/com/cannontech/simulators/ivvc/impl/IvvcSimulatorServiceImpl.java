@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.capcontrol.model.BankState;
 import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
 import com.cannontech.capcontrol.model.Zone;
@@ -247,7 +248,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     for (CapBankDevice capBankDevice : capBanksByFeeder) {
                         // There might be a better way to do this check!
                         LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
-                        if (capBankState != null && capBankState.getStateText().contains("Close")) {
+                        if (capBankState != null && isCapBankInOneOfCloseStates(capBankState.getStateRawState())) {
                             feederActiveBankKVar += capBankDevice.getBankSize();
                             
                             for (Entry<Integer, Double> feederVoltage : feederVoltageRises.entrySet()) {
@@ -271,7 +272,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, 0, MAX_KW);
                                 voltage = shiftVoltageForPhase(voltage, points.getValue(), 0);
                                 
-                                if (capBankState != null && capBankState.getStateText().contains("Close")) {
+                                if (capBankState != null && isCapBankInOneOfCloseStates(capBankState.getStateRawState())) {
                                     voltage += (capBankDevice.getBankSize() / localVoltageOffset); // A bank gives a bonus extra voltage to itself.
                                 }
                                 
@@ -390,7 +391,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             
                             // Check if the bank itself is closed
                             LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
-                            if(capBankState != null && capBankState.getStateText().contains("Close")) {
+                            if(capBankState != null && isCapBankInOneOfCloseStates(capBankState.getStateRawState())) {
                                 voltage += (capBankDevice.getBankSize() / localVoltageOffset); // A bank gives a bonus extra voltage to itself.
                             }
                             
@@ -745,5 +746,11 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     @Override
     public void startSimulatorWithCurrentSettings() {
         start(getCurrentSettings());
+    }
+    
+    private boolean isCapBankInOneOfCloseStates(int rawState) {
+        return rawState == BankState.CLOSE.getRawState() || rawState == BankState.CLOSE_FAIL.getRawState()
+            || rawState == BankState.CLOSE_PENDING.getRawState()
+            || rawState == BankState.CLOSE_QUESTIONABLE.getRawState();
     }
 }
