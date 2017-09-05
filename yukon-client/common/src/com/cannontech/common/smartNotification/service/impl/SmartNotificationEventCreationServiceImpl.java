@@ -21,6 +21,9 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     @PostConstruct
     public void init() {
         jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(true);
+        jmsTemplate.setPubSubDomain(false);
     }
     
     @Override

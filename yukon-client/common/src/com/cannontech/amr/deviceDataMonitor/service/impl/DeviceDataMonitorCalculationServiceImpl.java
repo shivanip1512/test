@@ -1,5 +1,7 @@
 package com.cannontech.amr.deviceDataMonitor.service.impl;
 
+import static com.cannontech.common.smartNotification.model.DeviceDataMonitorSmartNotificationEvent.MonitorState.*;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessagePostProcessor;
@@ -47,6 +50,8 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorSmartNotificationEvent;
+import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -73,6 +78,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PointDao pointDao;
+    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
 
     private JmsTemplate jmsTemplate;
     private DispatchClientConnection dispatchConnection;
@@ -271,6 +277,8 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             }
         }
         log.info("Recalculation done for " + monitor);
+        
+        sendSmartNotifications(inViolationGroup, violating, monitor.getId());
     }
 
     /**
@@ -326,7 +334,29 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         int pointValueAsInt = (int) pointValue.getValue();
         return processorPointValue == pointValueAsInt;
     }
-
+    
+    /**
+     * Send smart notification events for devices that are entering or exiting violation. Events will not be sent for
+     * devices that were previously in violation and are still in violation.
+     */
+    private void sendSmartNotifications(Set<Integer> oldViolatingDeviceIds, Set<Integer> newViolatingDeviceIds, int monitorId) {
+        log.debug("Creating smart notification events for monitor id: " + monitorId);
+        
+        Instant now = Instant.now();
+        
+        // Devices are entering violation if they were not in the group previously and are now being added.
+        newViolatingDeviceIds.stream()
+                             .filter(paoId -> !oldViolatingDeviceIds.contains(paoId))
+                             .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, IN_VIOLATION, paoId))
+                             .forEach(event -> smartNotificationEventCreationService.sendEvent(event));
+        
+        // Devices are exiting violation if they were in the group previously, but are not being added now.
+        oldViolatingDeviceIds.stream()
+                             .filter(paoId -> !newViolatingDeviceIds.contains(paoId))
+                             .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, OUT_OF_VIOLATION, paoId))
+                             .forEach(event -> smartNotificationEventCreationService.sendEvent(event));
+    }
+    
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);

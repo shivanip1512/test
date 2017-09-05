@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.joda.time.Instant;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -13,10 +12,10 @@ import com.google.common.collect.ImmutableMap;
 public class DeviceDataMonitorSmartNotificationEvent extends SmartNotificationEvent {
     private final MonitorState monitorState;
     private final int deviceDataMonitorId;
-    private final PaoIdentifier paoId;
+    private final int paoId;
     
     public DeviceDataMonitorSmartNotificationEvent(Instant timestamp, int deviceDataMonitorId, 
-                                                   MonitorState monitorState, PaoIdentifier paoId) {
+                                                   MonitorState monitorState, int paoId) {
         super(SmartNotificationEventType.DEVICE_DATA_MONITOR, timestamp);
         this.deviceDataMonitorId = deviceDataMonitorId;
         this.monitorState = monitorState;
@@ -26,7 +25,7 @@ public class DeviceDataMonitorSmartNotificationEvent extends SmartNotificationEv
     @Override
     public Map<String, Object> getParameters() {
         return ImmutableMap.of(
-            "PaoId", paoId.getPaoId(),
+            "PaoId", paoId,
             "MonitorId", deviceDataMonitorId,
             "MonitorState", monitorState
         );
@@ -40,7 +39,7 @@ public class DeviceDataMonitorSmartNotificationEvent extends SmartNotificationEv
         return deviceDataMonitorId;
     }
 
-    public PaoIdentifier getPaoId() {
+    public int getPaoId() {
         return paoId;
     }
 

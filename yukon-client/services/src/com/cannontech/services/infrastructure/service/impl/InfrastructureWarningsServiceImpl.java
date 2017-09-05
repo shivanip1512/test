@@ -17,6 +17,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.InfrastructureEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsSmartNotificationEvent;
+import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -31,8 +33,8 @@ import com.google.common.collect.ImmutableList;
 
 public class InfrastructureWarningsServiceImpl implements InfrastructureWarningsService {
     private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsServiceImpl.class);
-    private static final int initialDelayMinutes = 5;
-    private static final int runFrequencyMinutes = 15;
+    private static final int initialDelayMinutes = 1;
+    private static final int runFrequencyMinutes = 1;
     private static AtomicBoolean isRunning = new AtomicBoolean();
     private MessageSourceAccessor systemMessageSourceAccessor;
     private List<PaoType> warnableTypes = new ImmutableList.Builder<PaoType>()
@@ -49,6 +51,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     
     /**
      * The thread where the calculation is done.
@@ -86,6 +89,8 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             
             log.info("Calculating infrastructure warnings");
             
+            List<InfrastructureWarning> oldWarnings = infrastructureWarningsDao.getWarnings();
+            
             List<PaoType> currentTypes = getCurrentWarnableTypes();
             
             List<InfrastructureWarning> warnings = evaluators.stream()
@@ -109,10 +114,23 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             persistedSystemValueDao.setValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME, Instant.now());
             isRunning.set(false);
             log.info("Infrastructure warnings calculation complete");
+            
+            sendSmartNotifications(oldWarnings, warnings);
         } catch (Exception e) {
             log.error("Unexpected exception: ", e);
             isRunning.set(false);
         }
+    }
+    
+    /**
+     * Send smart notification events for warnings. Events will only be sent for warnings that weren't in the old list,
+     * but are in the new list.
+     */
+    private void sendSmartNotifications(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
+        newWarnings.stream()
+                   .filter(warning -> !oldWarnings.contains(warning))
+                   .map(warning -> new InfrastructureWarningsSmartNotificationEvent(warning))
+                   .forEach(event -> smartNotificationEventCreationService.sendEvent(event));
     }
     
     private List<PaoType> getCurrentWarnableTypes() {

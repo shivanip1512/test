@@ -1,5 +1,6 @@
 package com.cannontech.infrastructure.model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.springframework.context.MessageSourceResolvable;
@@ -11,7 +12,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 /**
  * Represents a single infrastructure warning for a particular device.
  */
-public class InfrastructureWarning implements Displayable {
+public class InfrastructureWarning implements Displayable, Serializable {
+    private static final long serialVersionUID = 1L;
     private final PaoIdentifier paoIdentifier;
     private final InfrastructureWarningType warningType;
     private final Object[] arguments;
@@ -73,4 +75,43 @@ public class InfrastructureWarning implements Displayable {
         return "InfrastructureWarning [paoIdentifier=" + paoIdentifier + ", warningType=" + warningType + ", arguments="
                + Arrays.toString(arguments) + ", severity=" + severity + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
+        result = prime * result + ((severity == null) ? 0 : severity.hashCode());
+        result = prime * result + ((warningType == null) ? 0 : warningType.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        InfrastructureWarning other = (InfrastructureWarning) obj;
+        if (paoIdentifier == null) {
+            if (other.paoIdentifier != null) {
+                return false;
+            }
+        } else if (!paoIdentifier.equals(other.paoIdentifier)) {
+            return false;
+        }
+        if (severity != other.severity) {
+            return false;
+        }
+        if (warningType != other.warningType) {
+            return false;
+        }
+        return true;
+    }
+    
 }
