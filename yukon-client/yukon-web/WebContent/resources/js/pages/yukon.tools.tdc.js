@@ -363,12 +363,18 @@ yukon.tools.tdc = (function () {
                 .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
             });
             
-            $(document).on('dblclick', '.select-box-item', function () {
-                var templateRow = $('.template-row').clone();
-                templateRow.removeClass('dn template-row');
-                templateRow.insertAfter($(this));
-                $('#assigned').closest('.select-box')
-                .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+            /** User double clicked to add a blank line */
+            $(document).on('dblclick', '.select-box-item', function (ev) {
+                var target = $(ev.target);
+                //don't add blank line if the user has clicked on the up/down arrows
+                if (!target.hasClass('js-move-up') && !target.hasClass('js-move-down')
+                        && !target.hasClass('icon-bullet-go-up') && !target.hasClass('icon-bullet-go-down')) {
+                    var templateRow = $('.template-row').clone();
+                    templateRow.removeClass('dn template-row');
+                    templateRow.insertAfter($(this));
+                    $('#assigned').closest('.select-box')
+                    .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                }
             });
             
             $(document).on('click', '.js-save-display', function (ev) {
