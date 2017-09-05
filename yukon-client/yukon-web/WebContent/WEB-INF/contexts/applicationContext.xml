@@ -1295,4 +1295,7 @@
      <bean class="com.cannontech.web.amr.usageThresholdReport.dao.impl.ThresholdReportDaoImpl"/>
      
      <bean class="com.cannontech.infrastructure.dao.impl.InfrastructureWarningsDaoImpl"/>
+     
+     <bean class="com.cannontech.common.smartNotification.dao.impl.SmartNotificationSubscriptionDaoImpl"/>
+     <bean class="com.cannontech.common.smartNotification.service.impl.SmartNotificationSubscriptionServiceImpl"/>
 </beans>

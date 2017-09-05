@@ -396,5 +396,8 @@
       <sequence name="MACSServiceRequest">
         <table name="MACSServiceRequest" identitycolumn="requestSeqNumber"/>
       </sequence>
+      <sequence name="SmartNotificationSubscription">
+        <table name="SmartNotificationSubscription" identitycolumn="SubscriptionId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
