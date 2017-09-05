@@ -68,13 +68,6 @@
         } else {
           return false;
         }
-        var elementArray;
-        elementArray = document.getElementsByClassName("vh");
-        for (i = 0; i < elementArray.length; i++) {
-            if (elementArray[i].tagName == 'TR') {
-                elementArray[i].className = "dn";
-            }
-        }
         sorted = this.getAttribute('data-sorted') === 'true';
         sortedDirection = this.getAttribute('data-sorted-direction');
         if (sorted) {
@@ -136,6 +129,13 @@
             tBody.appendChild(row);
           }
         }
+        
+        var elementArray;
+        elementArray = document.querySelectorAll("tr.vh");
+        for (i = 0; i < elementArray.length; i++) {
+            elementArray[i].className = "dn";
+        }
+        
         if (typeof window['CustomEvent'] === 'function') {
           return typeof table.dispatchEvent === "function" ? table.dispatchEvent(new CustomEvent('Sortable.sorted', {
             bubbles: true
