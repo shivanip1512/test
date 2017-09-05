@@ -13,7 +13,7 @@ public interface SmartNotificationSubscriptionService {
     void deleteSubscription(int id);
     
     /**
-     * If id is 0 creates subscription otherwise saves subscription.
+     * If id is 0 creates subscription otherwise updates subscription.
      */
     int saveSubscription(SmartNotificationSubscription subscription);
     

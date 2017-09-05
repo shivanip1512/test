@@ -31,7 +31,7 @@ public interface SmartNotificationSubscriptionDao {
     List<SmartNotificationSubscription> getSubscriptions(int userId, SmartNotificationEventType type);
 
     /**
-     * If id is 0 creates subscription otherwise saves subscription.
+     * If id is 0 creates subscription otherwise updates subscription.
      */
     int saveSubscription(SmartNotificationSubscription subscription);
 }

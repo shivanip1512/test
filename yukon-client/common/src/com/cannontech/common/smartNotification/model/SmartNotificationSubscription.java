@@ -14,7 +14,7 @@ public class SmartNotificationSubscription {
     private SmartNotificationFrequency frequency;
     private String recipient;
     private SmartNotificationVerbosity verbosity;
-    private Map<String, String> parameters = new HashMap<>();
+    private Map<String, Object> parameters = new HashMap<>();
     
     public int getUserId() {
         return userId;
@@ -58,13 +58,13 @@ public class SmartNotificationSubscription {
     public void setFrequency(SmartNotificationFrequency frequency) {
         this.frequency = frequency;
     }
-    public Map<String, String> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
-    public void setParameters(Map<String, String> parameters) {
+    public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
-    public void addParameters(String name, String value) {
+    public void addParameters(String name, Object value) {
         parameters.put(name, value);
     }
     

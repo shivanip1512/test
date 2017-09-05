@@ -116,7 +116,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         return subscriptions;
     }
     
-    private void saveSubscriptionParameters(int id, Map<String, String> params) {
+    private void saveSubscriptionParameters(int id, Map<String, Object> params) {
         List<List<Object>> values = new ArrayList<>();
         params.forEach((k, v) -> {
             values.add(Lists.newArrayList(id, k, v));
@@ -161,7 +161,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 SmartNotificationSubscription subscription = idMap.get(rs.getInt("SubscriptionId"));
-                subscription.addParameters(rs.getString("Name"), rs.getString("Value"));
+                subscription.addParameters(rs.getString("Name"), rs.getObject("Value"));
             }
         });
     }
