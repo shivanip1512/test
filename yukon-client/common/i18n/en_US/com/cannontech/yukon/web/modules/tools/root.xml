@@ -204,10 +204,10 @@
     <entry key="yukon.web.modules.tools.tdc.DEVICE_CURRENT_STATE">Device Current State</entry>    
     <entry key="yukon.web.modules.tools.tdc.DEVICE_ID">Device ID</entry>    
     <entry key="yukon.web.modules.tools.tdc.POINT_VALUE">Point Value</entry>    
-    <entry key="yukon.web.modules.tools.tdc.POINT_QUALITY">Point Quality</entry>    
-    <entry key="yukon.web.modules.tools.tdc.POINT_TIME_STAMP">Point Timestamp</entry>    
+    <entry key="yukon.web.modules.tools.tdc.POINT_QUALITY">Quality</entry>    
+    <entry key="yukon.web.modules.tools.tdc.POINT_TIME_STAMP">Timestamp</entry>    
     <entry key="yukon.web.modules.tools.tdc.U_OF_M">UofM</entry>    
-    <entry key="yukon.web.modules.tools.tdc.STATE">State</entry>    
+    <entry key="yukon.web.modules.tools.tdc.STATE">Status</entry>    
     <entry key="yukon.web.modules.tools.tdc.TIME_STAMP">Timestamp</entry>    
     <entry key="yukon.web.modules.tools.tdc.TEXT_MESSAGE">Text Message</entry>    
     <entry key="yukon.web.modules.tools.tdc.USERNAME">Username</entry>    
