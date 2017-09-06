@@ -1,9 +1,9 @@
 package com.cannontech.web.amr.chart;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +19,6 @@ import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -60,11 +59,8 @@ public class ChartController {
         String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
         String yLabelUnits = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
 
-        Date stDate = TimeUtil.adjustDateToStartingOfDay(new Date(startDate));
-        Instant start = new Instant(stDate);
-
-        Date eDate = TimeUtil.adjustDateToEndingOfDay(new Date(endDate));
-        Instant stop = new Instant(eDate);
+        Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
+        Instant stop = new DateTime(endDate).withTimeAtStartOfDay().plusDays(1).toInstant();
 
         Map<String, Object> graphAsJSON = flotChartService.getMeterGraphData(ids, start, stop, yMin, yMax, interval,
                                                                     converterType, graphType, yLabelUnits, userContext);

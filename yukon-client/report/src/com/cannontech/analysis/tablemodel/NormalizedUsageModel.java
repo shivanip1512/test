@@ -5,14 +5,17 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.chart.service.NormalizedUsageService;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.util.TimeUtil;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -52,12 +55,14 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         Date stopDateDate = new Date();
         stopDateDate.setTime(stopDate);
 
-        Date roundedDownStartDate = TimeUtil.adjustDateToStartingOfDay(startDateDate);
-        Date roundedUpEndDate = TimeUtil.adjustDateToEndingOfDay(stopDateDate);
+        Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
+        Instant end = new DateTime(stopDate).withTimeAtStartOfDay().plusDays(1).toInstant();
+
+        Range<Instant> instantRange = Range.exclusiveInclusive(start, end);
 
         // get raw data
-        List<PointValueHolder> pvhList = rphDao.getPointData(pointId, roundedDownStartDate, roundedUpEndDate);
-        
+        List<PointValueHolder> pvhList = rphDao.getPointData(pointId, instantRange, Order.FORWARD);
+
         // get normalized data
         List<PointValueHolder> normalizedUsage = normalizedUsageService.getNormalizedUsage(pvhList, getAttribute());
         
@@ -80,15 +85,16 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
         LitePoint litePoint = pointDao.getLitePoint(getPointId());
         int deviceId = litePoint.getPaobjectID();
         LiteYukonPAObject device = DefaultDatabaseCache.getInstance().getAllPaosMap().get(deviceId);
-        Date roundedDownStartDate = TimeUtil.adjustDateToStartingOfDay(new Date(startDate));
-        Date roundedUpEndDate = TimeUtil.adjustDateToEndingOfDay(new Date(stopDate));
+
+        Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
+        Instant end = new DateTime(stopDate).withTimeAtStartOfDay().plusDays(1).toInstant();
 
         info.put("Device Name", device.getPaoName());
         info.put("Point", litePoint.getPointName() +  " (id: " + Integer.toString(getPointId()) + ")");
         info.put("Start Date",
-            dateFormattingService.format(roundedDownStartDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
+            dateFormattingService.format(start.toDate(), DateFormattingService.DateFormatEnum.BOTH, userContext));
         info.put("Stop Date",
-            dateFormattingService.format(roundedUpEndDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
+            dateFormattingService.format(end.toDate(), DateFormattingService.DateFormatEnum.BOTH, userContext));
        return info;
     }
 

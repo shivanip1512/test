@@ -3,7 +3,6 @@ package com.cannontech.common.util;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -374,32 +373,4 @@ public static int differenceMinutes(Date from, Date to) {
     public static boolean isXMinutesBeforeNow(int minutes, ReadableInstant value) {
         return value.isBefore(Instant.now().minus(Duration.standardMinutes(minutes)));
     }
-
-    /**
-     * Adjusts date to its starting time i.e roundsDateDown to starting of the day
-     */
-    public static Date adjustDateToStartingOfDay(Date date) {
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
-    }
-
-    /**
-     * Adjusts date to its end time i.e starting of the next day
-     */
-    public static Date adjustDateToEndingOfDay(Date date) {
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
-    }
-
 }
