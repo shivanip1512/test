@@ -1,6 +1,9 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.*;
+import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -172,6 +175,8 @@ public enum GlobalSettingType implements DisplayableEnum {
     GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3500),
     GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
     GATEWAY_READY_NODES_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 25),
+    PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
+    PORTER_QUEUE_COUNTS_READING_PER_POINT(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 129600) // 1min interval data x 3 months
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;
