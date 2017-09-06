@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
@@ -49,6 +50,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         baseSubscriptionSql.append("FROM SmartNotificationSubscription");
     }
     
+    @Transactional
     @Override
     public int saveSubscription(SmartNotificationSubscription subscription) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -110,6 +112,16 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
         sql.append("WHERE UserId").eq(userId);
         sql.append("AND Type").eq_k(type);
+        List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
+        addParameters(subscriptions);
+        
+        return subscriptions;
+    }
+    
+    @Override
+    public List<SmartNotificationSubscription> getSubscriptions(int userId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
+        sql.append("WHERE UserId").eq(userId);
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
         addParameters(subscriptions);
         

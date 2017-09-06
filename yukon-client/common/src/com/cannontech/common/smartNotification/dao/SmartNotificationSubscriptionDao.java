@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
+import com.cannontech.common.util.SqlStatementBuilder;
 
 /**
  * Dao for saving and retrieving users' Smart Notification subscriptions.
@@ -34,4 +35,9 @@ public interface SmartNotificationSubscriptionDao {
      * If id is 0 creates subscription otherwise updates subscription.
      */
     int saveSubscription(SmartNotificationSubscription subscription);
+
+    /**
+     * Returns subscriptions by user id.
+     */
+    List<SmartNotificationSubscription> getSubscriptions(int userId);
 }
