@@ -1298,6 +1298,7 @@
      
      <bean class="com.cannontech.common.smartNotification.dao.impl.SmartNotificationSubscriptionDaoImpl"/>
      <bean class="com.cannontech.common.smartNotification.service.impl.SmartNotificationSubscriptionServiceImpl"/>
-     
+     <bean class="com.cannontech.common.smartNotification.dao.impl.SmartNotificationEventDaoImpl"/>
+ 
      <bean class="com.cannontech.web.common.widgets.service.impl.PorterQueueCountsWidgetServiceImpl"/>
 </beans>
