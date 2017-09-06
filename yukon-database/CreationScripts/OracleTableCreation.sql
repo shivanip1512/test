@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/30/2017 8:42:05 AM                         */
+/* Created on:     9/6/2017 12:26:28 PM                         */
 /*==============================================================*/
 
 
@@ -9950,7 +9950,7 @@ insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Add
 INSERT INTO YukonRoleProperty VALUES(-21100,-211,'C&I Curtailment Operator','true','Controls access to the C&I Curtailment operator functionality. When false, only the C&I Curtailment user pages are available.');
 
 /* Scheduler Role Properties */
-INSERT INTO YukonRoleProperty VALUES (-21200,-212,'Enable/Disable Scripts','true','Controls access to enable or disable a script.'); 
+INSERT INTO YukonRoleProperty VALUES (-21200,-212,'MACS Scripts','UPDATE','Controls the ability to view, start/stop, enable/disable, edit, create, delete for MACS Script.'); 
 INSERT INTO YukonRoleProperty VALUES (-21201,-212,'Manage Schedules','true','Controls access to create, delete, or update scheduled reads. If false, access is view only.');
 
 /* Device Actions Role Properties */

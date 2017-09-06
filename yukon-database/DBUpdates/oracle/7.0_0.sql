@@ -75,6 +75,19 @@ CREATE INDEX INDX_EPPA_PointId ON ExtraPaoPointAssignment (
 );
 /* End YUK-17159 */
 
+/* Start YUK-17166 */
+UPDATE YukonGroupRole 
+SET Value = 'CREATE' 
+WHERE RoleID = -212;
+
+UPDATE YukonRoleProperty
+SET 
+    KeyName = 'MACS Scripts', 
+    DefaultValue = 'UPDATE', 
+    Description = 'Controls the ability to view, start/stop, enable/disable, edit, create, delete for MACS Script.'
+WHERE RolePropertyID = -21200;
+/* End YUK-17166 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
