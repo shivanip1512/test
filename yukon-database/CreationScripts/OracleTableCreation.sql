@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/6/2017 12:26:28 PM                         */
+/* Created on:     9/6/2017 2:27:59 PM                          */
 /*==============================================================*/
 
 
@@ -8115,6 +8115,38 @@ create table SiteInformation  (
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotificationSub                                  */
+/*==============================================================*/
+create table SmartNotificationSub  (
+   SubscriptionId       NUMBER                          not null,
+   UserId               NUMBER                          not null,
+   Type                 VARCHAR2(30)                    not null,
+   Media                VARCHAR2(30)                    not null,
+   Frequency            VARCHAR2(30)                    not null,
+   Verbosity            VARCHAR2(30)                    not null,
+   Recipient            VARCHAR2(100)                   not null,
+   constraint PK_SmartNotificationSub primary key (SubscriptionId)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifSub_UserId_Type                        */
+/*==============================================================*/
+create index INDX_SmartNotifSub_UserId_Type on SmartNotificationSub (
+   UserId ASC,
+   Type ASC
+);
+
+/*==============================================================*/
+/* Table: SmartNotificationSubParam                             */
+/*==============================================================*/
+create table SmartNotificationSubParam  (
+   SubscriptionId       NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Value                VARCHAR2(100)                   not null,
+   constraint PK_SmartNotificationSubParam primary key (SubscriptionId, Name, Value)
+);
+
+/*==============================================================*/
 /* Table: State                                                 */
 /*==============================================================*/
 create table State  (
@@ -13100,6 +13132,16 @@ alter table Shipment
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
+
+alter table SmartNotificationSub
+   add constraint FK_SmartNotifSub_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+      on delete cascade;
+
+alter table SmartNotificationSubParam
+   add constraint FK_SmartNotifSP_SmartNotifS foreign key (SubscriptionId)
+      references SmartNotificationSub (SubscriptionId)
+      on delete cascade;
 
 alter table State
    add constraint FK_State_StateGroup foreign key (StateGroupId)

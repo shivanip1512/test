@@ -88,6 +88,41 @@ SET
 WHERE RolePropertyID = -21200;
 /* End YUK-17166 */
 
+/* Start YUK-17126 */
+CREATE TABLE SmartNotificationSub  (
+   SubscriptionId       NUMBER                          NOT NULL,
+   UserId               NUMBER                          NOT NULL,
+   Type                 VARCHAR2(30)                    NOT NULL,
+   Media                VARCHAR2(30)                    NOT NULL,
+   Frequency            VARCHAR2(30)                    NOT NULL,
+   Verbosity            VARCHAR2(30)                    NOT NULL,
+   Recipient            VARCHAR2(100)                   NOT NULL,
+   CONSTRAINT PK_SmartNotificationSub PRIMARY KEY (SubscriptionId)
+);
+
+CREATE TABLE SmartNotificationSubParam  (
+   SubscriptionId       NUMBER                          NOT NULL,
+   Name                 VARCHAR2(30)                    NOT NULL,
+   Value                VARCHAR2(100)                   NOT NULL,
+   CONSTRAINT PK_SmartNotificationSubParam PRIMARY KEY (SubscriptionId, Name, Value)
+);
+
+ALTER TABLE SmartNotificationSub
+   ADD CONSTRAINT FK_SmartNotifSub_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserID)
+      ON DELETE CASCADE;
+
+ALTER TABLE SmartNotificationSubParam
+   ADD CONSTRAINT FK_SmartNotifSP_SmartNotifS FOREIGN KEY (SubscriptionId)
+      REFERENCES SmartNotificationSub (SubscriptionId)
+      ON DELETE CASCADE;
+
+CREATE INDEX INDX_SmartNotifSub_UserId_Type ON SmartNotificationSub (
+   UserId ASC,
+   Type ASC
+);
+/* End YUK-17126 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
