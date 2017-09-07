@@ -81,7 +81,7 @@ GO
 /* Start YUK-17166 */
 UPDATE YukonGroupRole 
 SET Value = 'CREATE' 
-WHERE RoleID = -212;
+WHERE RolePropertyID = -21200;
 
 UPDATE YukonRoleProperty
 SET 
