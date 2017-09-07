@@ -123,6 +123,27 @@ CREATE INDEX INDX_SmartNotifSub_UserId_Type ON SmartNotificationSub (
 );
 /* End YUK-17126 */
 
+/* Start YUK-17120 */
+CREATE TABLE SmartNotificationEvent  (
+    EventId         NUMBER              NOT NULL,
+    Type            VARCHAR2(30)        NOT NULL,
+    Timestamp       TIMESTAMP           NOT NULL,
+    CONSTRAINT PK_SmartNotificationEvent PRIMARY KEY (EventId)
+);
+
+CREATE TABLE SmartNotificationEventParam  (
+    EventId         NUMBER              NOT NULL,
+    Name            VARCHAR2(30)        NOT NULL,
+    Value           VARCHAR2(100)       NOT NULL,
+    CONSTRAINT PK_SmartNotificationEventParam PRIMARY KEY (EventId, Name, Value)
+);      
+
+ALTER TABLE SmartNotificationEventParam
+    ADD CONSTRAINT FK_SmartNotifEP_SmartNotifE FOREIGN KEY (EventId)
+        REFERENCES SmartNotificationEvent (EventId)
+        ON DELETE CASCADE;
+/* End YUK-17120 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

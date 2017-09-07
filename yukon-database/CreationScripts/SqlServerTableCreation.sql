@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/6/2017 2:26:22 PM                          */
+/* Created on:     9/7/2017 10:10:22 AM                         */
 /*==============================================================*/
 
 
@@ -8623,6 +8623,28 @@ go
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotificationEvent                                */
+/*==============================================================*/
+create table SmartNotificationEvent (
+   EventId              numeric              not null,
+   Type                 varchar(30)          not null,
+   Timestamp            timestamp            not null,
+   constraint PK_SmartNotificationEvent primary key (EventId)
+)
+go
+
+/*==============================================================*/
+/* Table: SmartNotificationEventParam                           */
+/*==============================================================*/
+create table SmartNotificationEventParam (
+   EventId              numeric              not null,
+   Name                 varchar(30)          not null,
+   Value                varchar(100)         not null,
+   constraint PK_SmartNotificationEventParam primary key (EventId, Name, Value)
+)
+go
+
+/*==============================================================*/
 /* Table: SmartNotificationSub                                  */
 /*==============================================================*/
 create table SmartNotificationSub (
@@ -14304,6 +14326,12 @@ go
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID)
+go
+
+alter table SmartNotificationEventParam
+   add constraint FK_SmartNotifEP_SmartNotifE foreign key (EventId)
+      references SmartNotificationEvent (EventId)
+         on delete cascade
 go
 
 alter table SmartNotificationSub

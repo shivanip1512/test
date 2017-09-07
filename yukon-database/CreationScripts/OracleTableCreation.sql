@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/6/2017 2:27:59 PM                          */
+/* Created on:     9/7/2017 10:11:07 AM                         */
 /*==============================================================*/
 
 
@@ -8115,6 +8115,26 @@ create table SiteInformation  (
 INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 
 /*==============================================================*/
+/* Table: SmartNotificationEvent                                */
+/*==============================================================*/
+create table SmartNotificationEvent  (
+   EventId              NUMBER                          not null,
+   Type                 VARCHAR2(30)                    not null,
+   Timestamp            TIMESTAMP                       not null,
+   constraint PK_SmartNotificationEvent primary key (EventId)
+);
+
+/*==============================================================*/
+/* Table: SmartNotificationEventParam                           */
+/*==============================================================*/
+create table SmartNotificationEventParam  (
+   EventId              NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Value                VARCHAR2(100)                   not null,
+   constraint PK_SmartNotificationEventParam primary key (EventId, Name, Value)
+);
+
+/*==============================================================*/
 /* Table: SmartNotificationSub                                  */
 /*==============================================================*/
 create table SmartNotificationSub  (
@@ -13132,6 +13152,11 @@ alter table Shipment
 alter table SiteInformation
    add constraint FK_Sub_Si foreign key (SubstationID)
       references Substation (SubstationID);
+
+alter table SmartNotificationEventParam
+   add constraint FK_SmartNotifEP_SmartNotifE foreign key (EventId)
+      references SmartNotificationEvent (EventId)
+      on delete cascade;
 
 alter table SmartNotificationSub
    add constraint FK_SmartNotifSub_YukonUser foreign key (UserId)
