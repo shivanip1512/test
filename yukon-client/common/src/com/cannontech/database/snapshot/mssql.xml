@@ -62363,11 +62363,11 @@
             <i__table reference="../../.."/>
             <i__columnName>Timestamp</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>timestamp</i__typeName>
+            <i__typeName>datetime</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>8</i__columnSize>
+            <i__columnSize>23</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
-            <i__decimalDigits>0</i__decimalDigits>
+            <i__decimalDigits>3</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
             <i__nullable>0</i__nullable>
             <i__nullableDiffers>false</i__nullableDiffers>
