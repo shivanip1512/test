@@ -373,9 +373,12 @@ void UnsolicitedHandler::purgeDeviceWork(const device_activity_map::value_type &
     device_record &dr = *active_device.first;
 
     //  first, purge all of the work
-    for each( OUTMESS *om in dr.outbound )
+    for( OUTMESS *om : dr.outbound )
     {
-        handleDeviceError(om, error_code);
+        if( om )
+        {
+            handleDeviceError(om, error_code);
+        }
     }
 
     dr.outbound.clear();
