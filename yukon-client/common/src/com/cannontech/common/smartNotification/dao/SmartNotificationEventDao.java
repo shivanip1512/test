@@ -1,5 +1,7 @@
 package com.cannontech.common.smartNotification.dao;
 
+import java.util.List;
+
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 
 /**
@@ -8,8 +10,9 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 public interface SmartNotificationEventDao {
     
     /**
-     * Insert an event into the database.
+     * Insert events into the database.
      */
-    void save(SmartNotificationEvent event);
+
+    void save(List<SmartNotificationEvent> event);
     
 }

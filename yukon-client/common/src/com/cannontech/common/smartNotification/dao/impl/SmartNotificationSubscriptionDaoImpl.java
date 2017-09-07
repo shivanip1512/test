@@ -47,7 +47,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     SqlStatementBuilder baseSubscriptionSql = new SqlStatementBuilder();
     {
         baseSubscriptionSql.append("SELECT SubscriptionId, UserId, Type, Media, Frequency, Recipient, Verbosity");
-        baseSubscriptionSql.append("FROM SmartNotificationSubscription");
+        baseSubscriptionSql.append("FROM SmartNotificationSub");
     }
     
     @Transactional
@@ -55,19 +55,19 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     public int saveSubscription(SmartNotificationSubscription subscription) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SubscriptionId");
-        sql.append("FROM SmartNotificationSubscription");
+        sql.append("FROM SmartNotificationSub");
         sql.append("WHERE SubscriptionId").eq(subscription.getId());
 
         SqlStatementBuilder updateCreateSql = new SqlStatementBuilder();
         try {
             jdbcTemplate.queryForInt(sql);
-            SqlParameterSink params = updateCreateSql.update("SmartNotificationSubscription");
+            SqlParameterSink params = updateCreateSql.update("SmartNotificationSub");
             initParameterSink(subscription, params);
             updateCreateSql.append("WHERE SubscriptionId").eq(subscription.getId());
             deleteSubscriptionParameters(subscription.getId());
         } catch (EmptyResultDataAccessException e) {
-            subscription.setId(nextValueHelper.getNextValue("SmartNotificationSubscription"));
-            SqlParameterSink params = updateCreateSql.insertInto("SmartNotificationSubscription");
+            subscription.setId(nextValueHelper.getNextValue("SmartNotificationSub"));
+            SqlParameterSink params = updateCreateSql.insertInto("SmartNotificationSub");
             initParameterSink(subscription, params);
         }
 
@@ -81,7 +81,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     @Override
     public void deleteSubscription(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM SmartNotificationSubscription");
+        sql.append("DELETE FROM SmartNotificationSub");
         sql.append("WHERE SubscriptionId").eq(id);
 
         jdbcTemplate.update(sql);
@@ -135,7 +135,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         });
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.batchInsertInto("SmartNotificationSubscriptionParameter")
+        sql.batchInsertInto("SmartNotificationSubParam")
            .columns("SubscriptionId", "Name", "Value")
            .values(values);
         jdbcTemplate.yukonBatchUpdate(sql);
@@ -153,7 +153,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     
     private void deleteSubscriptionParameters(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM SmartNotificationSubscriptionParameter");
+        sql.append("DELETE FROM SmartNotificationSubParam");
         sql.append("WHERE SubscriptionId").eq(id);
 
         jdbcTemplate.update(sql);
@@ -166,7 +166,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         template.query(e -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT SubscriptionId, Name, Value");
-            sql.append("FROM SmartNotificationSubscriptionParameter");
+            sql.append("FROM SmartNotificationSubParam");
             sql.append("WHERE SubscriptionId").in(e);
             return sql;
         }, idMap.keySet(), new RowCallbackHandler() {
