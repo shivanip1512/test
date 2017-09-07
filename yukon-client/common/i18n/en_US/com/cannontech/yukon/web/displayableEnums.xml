@@ -172,6 +172,11 @@
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET">Dashboard Widgets</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET.description">System-wide dashboard widget settings</entry>
     
+    <!-- VisiblityEnum -->
+    <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>
+    <entry key="yukon.web.modules.dashboard.visibility.PUBLIC">Public</entry>
+    <entry key="yukon.web.modules.dashboard.visibility.PRIVATE">Private</entry>
+    
     <!-- YukonSettingCategory -->
     <entry key="yukon.common.setting.category.APPLICATION">Application</entry>
     <entry key="yukon.common.setting.category.SYSTEM_SETUP">System Setup</entry>
