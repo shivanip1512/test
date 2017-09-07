@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/7/2017 10:10:22 AM                         */
+/* Created on:     9/7/2017 3:08:12 PM                          */
 /*==============================================================*/
 
 
@@ -8628,7 +8628,7 @@ INSERT INTO SiteInformation VALUES (0,'(none)','(none)','(none)','(none)',0);
 create table SmartNotificationEvent (
    EventId              numeric              not null,
    Type                 varchar(30)          not null,
-   Timestamp            timestamp            not null,
+   Timestamp            datetime             not null,
    constraint PK_SmartNotificationEvent primary key (EventId)
 )
 go

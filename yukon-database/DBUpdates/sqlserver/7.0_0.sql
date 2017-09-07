@@ -133,7 +133,7 @@ GO
 CREATE TABLE SmartNotificationEvent (
     EventId         NUMERIC         NOT NULL,
     Type            VARCHAR(30)     NOT NULL,
-    Timestamp       TIMESTAMP       NOT NULL,
+    Timestamp       DATETIME        NOT NULL,
     CONSTRAINT PK_SmartNotificationEvent PRIMARY KEY (EventId)
 );
 

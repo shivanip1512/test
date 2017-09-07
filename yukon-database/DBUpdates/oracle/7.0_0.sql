@@ -127,7 +127,7 @@ CREATE INDEX INDX_SmartNotifSub_UserId_Type ON SmartNotificationSub (
 CREATE TABLE SmartNotificationEvent  (
     EventId         NUMBER              NOT NULL,
     Type            VARCHAR2(30)        NOT NULL,
-    Timestamp       TIMESTAMP           NOT NULL,
+    Timestamp       DATE                NOT NULL,
     CONSTRAINT PK_SmartNotificationEvent PRIMARY KEY (EventId)
 );
 
