@@ -151,6 +151,9 @@ public class BulkController {
         } catch (ObjectMappingException | UnsupportedOperationException e) {
             view = "redirect:/bulk/deviceSelection";
             model.addAttribute("errorMsg", e.getMessage());
+        } catch(IllegalArgumentException exception) {
+            view = "redirect:/bulk/deviceSelection";
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".unsupportedFileFormat"));
         }
         
         return view;

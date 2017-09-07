@@ -514,4 +514,5 @@
     <entry key="yukon.web.modules.search.ACCOUNT_TEST.summary"></entry>
 
 	<entry key="yukon.web.modules.tools.collectionActions.deviceUploadFailed">{0} errors were encountered while processing the import file.</entry>
+    <entry key="yukon.web.modules.tools.collectionActions.unsupportedFileFormat">Incorrect File format.</entry>
 </properties>

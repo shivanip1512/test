@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionProducer;
@@ -29,14 +29,12 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
 import com.cannontech.common.bulk.iterator.CsvColumnReaderIterator;
-import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory.FileMapperEnum;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.tools.csv.CSVReader;
@@ -46,10 +44,7 @@ import com.google.common.collect.Sets;
 public class DeviceFileUploadCollectionProducer implements DeviceCollectionProducer {
     private final Logger log = YukonLogManager.getLogger(DeviceFileUploadCollectionProducer.class);
     
-    @Autowired private ObjectMapperFactory objectMapperFactory;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionProducer;
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private MeterDao meterDao;
     @Autowired private IDatabaseCache databaseCache;
     
     @Override
@@ -69,6 +64,11 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
 
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
+            String ext = FilenameUtils.getExtension(dataFile.getOriginalFilename());
+            if (!(ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("text") || ext.equalsIgnoreCase("dat")
+                || ext.equalsIgnoreCase("csv"))) {
+                throw new IllegalArgumentException("Incorrect file format.");
+            }
             if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
                 throw new UnsupportedOperationException("Data file is not found.");
             }
