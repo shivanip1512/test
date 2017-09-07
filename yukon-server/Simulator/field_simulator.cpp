@@ -17,6 +17,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
+#include <WinDNS.h>
+
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 
 PROJECT_ID("Field Simulator");
@@ -41,9 +43,17 @@ void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int por
 void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, Logger &logger);
 template<class CcuType>
 bool validRequest(SocketComms &socket_interface);
+bool validateEatonNetwork();
 
 int SimulatorMainFunction(int argc, char **argv)
 {
+    if( ! validateEatonNetwork() )
+    {
+        std::cerr << "Field Simulator can only be run inside the Eaton network." << std::endl;
+
+        std::exit(-1);
+    }
+
     int strategy = 0,
         port_min = 0,
         port_max = 0;
@@ -526,6 +536,45 @@ bool validRequest(SocketComms &socket_interface)
         // fits this specific device.
         return (CcuType::validateCommand(socket_interface));
     }
+}
+
+bool validateEatonNetwork()
+{
+    bool success = false;
+
+    //  Form up eaton.ad.etn.com out of srand(42) + rand() values
+    //    Make sure eaton.ad.etn.com doesn't show up in strings output
+    const std::array<size_t, 16> indices { 71, 84, 191, 197, 261, 262, 267, 276, 280, 362, 569, 603, 616, 622, 644, 671 };
+
+    std::string s;
+
+    std::srand(42);
+
+    size_t i = 0;
+
+    for( const auto index : indices )
+    {
+        while( i++ < index )
+        {
+            std::rand();
+        }
+        s.push_back((std::rand() % 71) + 46);
+    }
+
+    struct delete_helper {
+        PDNS_RECORD results;
+        ~delete_helper() { if( results ) DnsRecordListFree(results, DnsFreeRecordList); }
+    } helper{ nullptr };
+
+    if( ! DnsQuery(s.c_str(), DNS_TYPE_A, DNS_QUERY_STANDARD, nullptr, &helper.results, nullptr) )
+    {
+        if( helper.results->wDataLength == sizeof(DNS_A_DATA) )
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 }
