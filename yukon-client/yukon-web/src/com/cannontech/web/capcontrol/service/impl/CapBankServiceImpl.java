@@ -18,6 +18,8 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.CompleteCapBank;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
@@ -49,6 +51,7 @@ public class CapBankServiceImpl implements CapBankService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PointDao pointDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
+    @Autowired private AttributeService attributeService;
     
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -73,7 +76,7 @@ public class CapBankServiceImpl implements CapBankService {
     
     @Override
     public List<CCMonitorBankList> getUnassignedPoints(CapBank capBank) {
-        List<CCMonitorBankList> unassignedPoints = new ArrayList<CCMonitorBankList>();
+        List<CCMonitorBankList> unassignedPoints = new ArrayList<>();
         List<Integer> alreadyAssignedPoints = new ArrayList<>();
         capBank.getCcMonitorBankList().forEach(monitor -> alreadyAssignedPoints.add(monitor.getId()));
         int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
@@ -124,8 +127,8 @@ public class CapBankServiceImpl implements CapBankService {
                 int portId = capbank.getCbcCommChannel() != null ? capbank.getCbcCommChannel() : 0;
                 PaoIdentifier cbcId = ccCreationService.createCbc(capbank.getCbcType(), capbank.getCbcControllerName(), false, portId, configuration);
                 capbank.getCapBank().setControlDeviceID(cbcId.getPaoId());
-                if(capbank.getCbcType() != PaoType.CBC_DNP_LOGICAL){
-                    LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
+                LitePoint point = attributeService.findPointForAttribute(cbcId, BuiltInAttribute.CONTROL_POINT);
+                if (point != null) {
                     capbank.getCapBank().setControlPointID(point.getPointID());
                 }
             }
