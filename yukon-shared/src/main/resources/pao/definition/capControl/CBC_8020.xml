@@ -101,6 +101,9 @@
         <pointInfo name="VAR Control Total Voltage"/>
         <pointInfo name="VAr Reverse Power Flow"/>
         <pointInfo name="Voltage Control Flags" init="true" attributes="VOLTAGE_CONTROL"/>
+        <pointInfo name="Va Secondary"/>
+        <pointInfo name="Vb Secondary"/>
+        <pointInfo name="Vc Secondary"/>
     </pointInfos>
     <commands>
         <command name="Integrity Scan">
