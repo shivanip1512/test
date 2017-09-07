@@ -44,6 +44,8 @@ public class DataStreamingPorterConnection {
     private static final Logger log = YukonLogManager.getLogger(DataStreamingPorterConnection.class);
     private static final CommandCallback sendCallback = new PorterCommandCallback("putconfig behavior rfndatastreaming");
     private static final CommandCallback readCallback = new PorterCommandCallback("getconfig behavior rfndatastreaming");
+    private static final String porterJsonTag = "json";
+    private static final String porterJsonPrefix = porterJsonTag + "{";
 
 
     @Autowired private CommandRequestDeviceExecutor commandExecutor;
@@ -99,7 +101,7 @@ public class DataStreamingPorterConnection {
                 log.info("Recieved error for device="+ command.getDevice()+" error="+error);
                 ReportedDataStreamingConfig config = null;
                 //  If the error is a JSON string, it's a config report
-                if (error.getPorter().startsWith("json{")) {
+                if (error.getPorter().startsWith(porterJsonPrefix)) {
                     try {
                         config = extractReportedDataStreamingConfig(error.getPorter());
                     } catch(IOException e) {
@@ -113,8 +115,11 @@ public class DataStreamingPorterConnection {
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
                 try {
-                    ReportedDataStreamingConfig config = extractReportedDataStreamingConfig(value);
-                    configCallback.receivedConfigReport(device, config);
+                    ReportedDataStreamingConfig config = null;
+                    if (value.startsWith(porterJsonPrefix)) {
+                        config = extractReportedDataStreamingConfig(value);
+                    }
+                    configCallback.receivedConfigSuccess(device, config);
                     log.debug("last result="+value);
                 } catch(IOException e) {
                     DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(1027);
@@ -138,7 +143,8 @@ public class DataStreamingPorterConnection {
              */
             private ReportedDataStreamingConfig extractReportedDataStreamingConfig(String porterJson)
                     throws IOException {
-                return JsonUtils.fromJson(porterJson.substring(4), ReportedDataStreamingConfig.class);
+                String rawJson = porterJson.substring(porterJsonTag.length());
+                return JsonUtils.fromJson(rawJson, ReportedDataStreamingConfig.class);
             }
 
             @Override

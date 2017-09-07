@@ -79,7 +79,7 @@ YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandPar
     }
     if( parse.isKeyValid("behavior") )
     {
-        return executePutConfigBehavior(pReq, parse, returnMsgs, rfnRequests);
+        return executePutConfigBehavior(*pReq, parse, returnMsgs, rfnRequests);
     }
     if( parse.isKeyValid("tou") )
     {
@@ -106,7 +106,7 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
     }
     if( parse.isKeyValid("behavior") )
     {
-        return executeGetConfigBehavior(pReq, parse, returnMsgs, rfnRequests);
+        return executeGetConfigBehavior(*pReq, parse, returnMsgs, rfnRequests);
     }
     if( parse.isKeyValid("tou") )
     {
@@ -124,7 +124,7 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetConfigBehavior(const CtiRequestMsg& pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     if( auto behaviorType = parse.findStringForKey("behavior") )
     {
@@ -139,20 +139,20 @@ YukonError_t RfnMeterDevice::executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCo
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfigBehavior(const CtiRequestMsg& pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     if( auto behaviorType = parse.findStringForKey("behavior") )
     {
         if( *behaviorType == "rfndatastreaming" )
         {
-            return executePutConfigBehaviorRfnDataStreaming(returnMsgs, rfnRequests);
+            return executePutConfigBehaviorRfnDataStreaming(pReq, returnMsgs, rfnRequests);
         }
     }
 
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(ReturnMsgList& returnMsgs, RfnCommandList& rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiRequestMsg& req, ReturnMsgList& returnMsgs, RfnCommandList& rfnRequests)
 {
     using Behaviors::RfnDataStreamingBehavior;
     using Channel     = RfnDataStreamingBehavior::Channel;
@@ -262,9 +262,29 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(ReturnMsgL
             details.add("Device channels") << deviceState->channels;
             details.add("Behavior channels") << behavior->channels;
 
-            CTILOG_ERROR(dout, "Device already matches behavior." << details);
+            Cti::StreamBuffer buf;
 
-            return ClientErrors::ConfigCurrent;
+            buf << "Device already matches behavior." << details;
+
+            auto msg = buf.extractToString();
+
+            CTILOG_INFO(dout, msg);
+
+            auto retMsg = 
+                std::make_unique<CtiReturnMsg>(
+                    req.DeviceId(),
+                    req.CommandString(),
+                    msg,
+                    ClientErrors::None,
+                    0,
+                    MacroOffset::none,
+                    0,
+                    req.GroupMessageId(),
+                    req.UserMessageId() );
+
+            returnMsgs.push_back( retMsg.release() );
+
+            return ClientErrors::None;  //  do not return ConfigCurrent - we want it to be Success for now (until YUK-17192).
         }
 
         MetricList metrics;

@@ -10,9 +10,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface DataStreamingConfigCallback {
     
     /**
-     * Handle a success response, with the reported configuration.
+     * Handle a success response, with an optional reported configuration.
      */
-    void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config);
+    void receivedConfigSuccess(SimpleDevice device, ReportedDataStreamingConfig config);
     
     /**
      * Handle a failure response, with the reported error, and store the reported config if not null.

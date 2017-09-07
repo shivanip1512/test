@@ -1568,17 +1568,19 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         }
 
         @Override
-        public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
+        public void receivedConfigSuccess(SimpleDevice device, ReportedDataStreamingConfig config) {
             
-            BehaviorReport reportedBehavior = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.CONFIRMED);
-                                
             if (!isComplete()) {
                 // Add to result
                 // mark device as success
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
             }
-            
-            handleReportedDataStreamingConfig(device, config, reportedBehavior);
+
+            if (config != null) {
+                BehaviorReport reportedBehavior = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.CONFIRMED);
+
+                handleReportedDataStreamingConfig(device, config, reportedBehavior);
+            }
         }
 
         private void handleReportedDataStreamingConfig(SimpleDevice device, ReportedDataStreamingConfig config, BehaviorReport reportedBehavior) {

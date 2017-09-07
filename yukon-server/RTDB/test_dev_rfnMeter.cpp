@@ -765,13 +765,16 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_mat
 
     b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
         { "enabled", "true" },
-        { "channels", "2" },
+        { "channels", "3" },
         { "channels.0.attribute", "VOLTAGE" },
         { "channels.0.interval", "4" },
         { "channels.0.enabled", "true" },
         { "channels.1.attribute", "DELIVERED_DEMAND" },
         { "channels.1.interval", "7" },
-        { "channels.1.enabled", "true" }};
+        { "channels.1.enabled", "true" },
+        { "channels.2.attribute", "DEMAND" },
+        { "channels.2.interval", "0" },
+        { "channels.2.enabled", "true" }};
 
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
@@ -783,8 +786,13 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_mat
         {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL(returnMsg.Status(), 220);
-            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config is current");
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), 
+                "Device already matches behavior."
+                "\nDevice name       : "
+                "\nDevice id         : -1"
+                "\nDevice channels   : [DEMAND@0min,DELIVERED_DEMAND@7min,VOLTAGE@4min]"
+                "\nBehavior channels : [DELIVERED_DEMAND@7min,VOLTAGE@4min]");
         }
     }
 }
