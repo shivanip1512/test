@@ -7,8 +7,8 @@ import com.google.common.base.Joiner;
 
 public class ImportFileCreater {
 
-    public static void writeHardwareFile(Writer writer, int numAccounts, int startAccountNum, int numHardware,
-            int startSerialNum, String programName, String loadGroup, String appCat, String[] deviceTypes)
+    public static void writeHardwareFile(Writer writer, long numAccounts, int startAccountNum, int numHardware,
+            long startSerialNum, String programName, String loadGroup, String appCat, String[] deviceTypes)
             throws IOException {
 
         writeCsvLine(writer, "ACCOUNT_NO", "HW_Action", "Device_Type", "Serial_No", "Install_Date", "Remove_Date",
@@ -19,9 +19,9 @@ public class ImportFileCreater {
         for (int i = 0; i < numAccounts; i++) {
             int accountNum = startAccountNum + i;
             for (int h = 0; h < numHardware; h++) {
-                int serialNumber = startSerialNum + h + serialNumberOffset;
+                long serialNumber = startSerialNum + h + serialNumberOffset;
                 // Cycles through the provided device types
-                String deviceType = deviceTypes[serialNumber % deviceTypes.length];
+                String deviceType = deviceTypes[(int) (serialNumber % deviceTypes.length)];
                 newHwLine(writer, accountNum, deviceType, serialNumber, programName, loadGroup, appCat);
             }
             serialNumberOffset += numHardware;
@@ -29,7 +29,7 @@ public class ImportFileCreater {
         writer.flush();
     }
 
-    public static void writeAccountFile(Writer writer, int numAccounts, int startAccountNum, String userGroup)
+    public static void writeAccountFile(Writer writer, long numAccounts, int startAccountNum, String userGroup)
             throws IOException {
         RandomAccountInfoGenerator randomInfo = new RandomAccountInfoGenerator();
 
@@ -43,9 +43,9 @@ public class ImportFileCreater {
         writer.flush();
     }
 
-    private static void newHwLine(Writer writer, int accNum, String deviceType, int serialNum, String programName,
+    private static void newHwLine(Writer writer, int accNum, String deviceType, long serialNum, String programName,
             String loadGroup, String appCat) throws IOException {
-        writeCsvLine(writer, Integer.toString(accNum), "INSERT", deviceType, Integer.toString(serialNum), "6/21/2010",
+        writeCsvLine(writer, Integer.toString(accNum), "INSERT", deviceType, Long.toString(serialNum), "6/21/2010",
             "", "", programName, loadGroup, appCat, "", "1", "", "", "");
     }
 

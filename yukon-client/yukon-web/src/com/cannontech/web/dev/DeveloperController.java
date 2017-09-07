@@ -239,7 +239,7 @@ public class DeveloperController {
 
     @RequestMapping("/download-hardware-file")
     public String createHardwareFile(HttpServletResponse response, int numberOfAccounts, int accountNumberStart,
-            int numberOfHardware, int serialNumberStart, int appCatId, int programId, String loadGroup,
+            int numberOfHardware, long serialNumberStart, int appCatId, int programId, String loadGroup,
             String[] deviceTypes) throws IOException {
 
         ApplianceCategory appCat = applianceCategoryDao.getById(appCatId);
@@ -285,12 +285,12 @@ public class DeveloperController {
         return jdbcTemplate.queryForInt(sql) + 1;
     }
 
-    private int getNextSerialNumber() {
+    private long getNextSerialNumber() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT").append(maxNumber("ManufacturerSerialNumber"));
         sql.append("FROM LMHardwareBase WHERE ManufacturerSerialNumber NOT LIKE '%[^0-9]%'");
 
-        return jdbcTemplate.queryForInt(sql) + 1;
+        return jdbcTemplate.queryForLong(sql) + 1;
     }
 
     private SqlFragmentSource maxNumber(String colName) {
