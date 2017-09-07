@@ -6851,13 +6851,11 @@ bool CtiCCSubstationBus::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCap
                                 && otherPoint->getValue() - pResponse.getDelta() < lowerBound )
                         {
                             CTILOG_INFO( dout,
-                                         "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Bus: "
+                                         "Attention - Other Monitor Point Voltages will be overly affected on Bus: "
                                             << getPaoName() << " CapBank: " << potentialCap->getPaoName()
                                             << " otherPoint: " << otherPoint->getPointId() << " " << otherPoint->getDeviceId()
                                             << " Value: " << otherPoint->getValue() << " Delta: " << pResponse.getDelta()
                                             << " pResponse: " << pResponse.getPointId() << " " << pResponse.getDeviceId() );
-                            retVal = false;
-                            break;
                         }
                         else
                         {

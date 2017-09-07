@@ -4194,13 +4194,11 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
                                 && otherPoint->getValue() - pResponse.getDelta() < lowerBound )
                         {
                             CTILOG_INFO( dout,
-                                         "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "
+                                         "Attention - Other Monitor Point Voltages will be overly affected on Feeder: "
                                             << getPaoName() << " CapBank: " << potentialCap->getPaoName()
                                             << " MULTIVOLT: otherPoint: " << otherPoint->getPointId() << " " << otherPoint->getDeviceId()
                                             << " Value: " << otherPoint->getValue() << " Delta: " << pResponse.getDelta()
                                             << " pResponse: " << pResponse.getPointId() << " " << pResponse.getDeviceId() );
-                            retVal = false;
-                            break;
                         }
                         else
                         {
