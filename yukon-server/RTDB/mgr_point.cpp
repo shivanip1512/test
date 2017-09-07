@@ -557,7 +557,7 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
     //  No errors, so note down which PAOs were fully loaded
     if( paoids && ! errors )
     {
-        coll_type::reader_lock_guard_t guard(_smartMap.getLock());
+        coll_type::writer_lock_guard_t guard(_smartMap.getLock());
 
         copy(ids_to_load.begin(), ids_to_load.end(), inserter(_paoids_loaded, _paoids_loaded.begin()));
     }
