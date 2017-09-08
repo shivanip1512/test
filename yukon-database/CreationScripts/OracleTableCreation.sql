@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/7/2017 2:58:54 PM                          */
+/* Created on:     9/8/2017 1:34:11 PM                          */
 /*==============================================================*/
 
 
@@ -8121,6 +8121,7 @@ create table SmartNotificationEvent  (
    EventId              NUMBER                          not null,
    Type                 VARCHAR2(30)                    not null,
    Timestamp            DATE                            not null,
+   ProcessedTime        DATE,
    constraint PK_SmartNotificationEvent primary key (EventId)
 );
 

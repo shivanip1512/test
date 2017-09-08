@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/7/2017 3:08:12 PM                          */
+/* Created on:     9/8/2017 1:33:24 PM                          */
 /*==============================================================*/
 
 
@@ -8629,6 +8629,7 @@ create table SmartNotificationEvent (
    EventId              numeric              not null,
    Type                 varchar(30)          not null,
    Timestamp            datetime             not null,
+   ProcessedTime        datetime             null,
    constraint PK_SmartNotificationEvent primary key (EventId)
 )
 go
