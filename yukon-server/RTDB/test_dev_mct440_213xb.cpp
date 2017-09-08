@@ -4381,7 +4381,7 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
         }
 
         // add Timezone config
-        test_cfg.insertValue( MCTStrings::TimeZoneOffset, "1" );
+        test_cfg.insertValue( MCTStrings::TimeZoneOffset, "NORONHA" );
 
         {
             ////// 3 valid configuration //////
@@ -4395,14 +4395,14 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
-            BOOST_CHECK_EQUAL( outList.size(), 6 );
-            BOOST_CHECK_EQUAL( retList.size(), 9 );
+            BOOST_CHECK_EQUAL( outList.size(), 7 );
+            BOOST_CHECK_EQUAL( retList.size(), 10 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 3 error messages + 6 message sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 3 error messages + 7 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4423,14 +4423,14 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
-            BOOST_CHECK_EQUAL( outList.size(), 7 );
-            BOOST_CHECK_EQUAL( retList.size(), 9 );
+            BOOST_CHECK_EQUAL( outList.size(), 8 );
+            BOOST_CHECK_EQUAL( retList.size(), 10 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 2 error messages + 7 messages sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 2 error messages + 8 messages sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4454,14 +4454,14 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
-            BOOST_CHECK_EQUAL( outList.size(), 8 );
-            BOOST_CHECK_EQUAL( retList.size(), 9 );
+            BOOST_CHECK_EQUAL( outList.size(), 9 );
+            BOOST_CHECK_EQUAL( retList.size(), 10 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 1 error messages + 8 message sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 1 error messages + 9 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4483,14 +4483,14 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
             BOOST_CHECK_EQUAL( ClientErrors::None, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
-            BOOST_CHECK_EQUAL( outList.size(), 9 );
-            BOOST_CHECK_EQUAL( retList.size(), 9 );
+            BOOST_CHECK_EQUAL( outList.size(), 10 );
+            BOOST_CHECK_EQUAL( retList.size(), 10 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 9 message sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 10 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );

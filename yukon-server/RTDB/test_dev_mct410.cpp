@@ -2519,15 +2519,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("connectMinutes", "17");
         config.insertValue("reconnectParam", "ARM");
         config.insertValue("demandFreezeDay", "12");
-        config.insertValue("timeZoneOffset", "-6");
+        config.insertValue("timeZoneOffset", "CHICAGO");
 
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 5 );
-        BOOST_REQUIRE_EQUAL( outList.size(), 5 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 6 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
         auto retList_itr = retList.begin();
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
@@ -2639,6 +2639,22 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 om->Buffer.BSt.Message,
                 om->Buffer.BSt.Message + om->Buffer.BSt.Length );
         }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all_alternate)
     {
@@ -2654,15 +2670,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("connectMinutes", "18");
         config.insertValue("reconnectParam", "IMMEDIATE");
         config.insertValue("demandFreezeDay", "21");
-        config.insertValue("timeZoneOffset", "-6");
+        config.insertValue("timeZoneOffset", "CHICAGO");
 
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 5 );
-        BOOST_REQUIRE_EQUAL( outList.size(), 5 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 6 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
         auto retList_itr = retList.begin();
         BOOST_CHECK( isSentOnRouteMsg(*retList_itr++) );
@@ -2774,6 +2790,22 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 om->Buffer.BSt.Message,
                 om->Buffer.BSt.Message + om->Buffer.BSt.Length );
         }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_demand_threshold)
     {

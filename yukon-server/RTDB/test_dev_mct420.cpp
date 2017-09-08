@@ -2018,7 +2018,7 @@ struct putconfigInstall_helper : beginExecuteRequest_helper
         fixtureConfig->insertValue("displayDigits", "5" );
 
         //  Time zone category
-        fixtureConfig->insertValue("timeZoneOffset", "-6");
+        fixtureConfig->insertValue("timeZoneOffset", "CHICAGO");
 
         //  Display category
         fixtureConfig->insertValue("displayItem1", Cti::Config::DisplayItemValues::NO_SEGMENTS);    //1
@@ -2061,7 +2061,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 5 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2141,6 +2141,43 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
 
         // This validates the read-after-write behavior... write message has higher priority
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Timezone message
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = {
+                0xe8 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length);
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
     BOOST_AUTO_TEST_CASE(test_mct420cd_putconfig_install_all)
     {
@@ -2151,7 +2188,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 7 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 8 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2268,6 +2305,43 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
 
         // This validates the read-after-write behavior... write message has higher priority
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Timezone message
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = {
+                0xe8 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length);
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
     BOOST_AUTO_TEST_CASE(test_mct420fl_putconfig_install_all)
     {
@@ -2278,7 +2352,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 7 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 8 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2395,6 +2469,43 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
 
         // This validates the read-after-write behavior... write message has higher priority
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Timezone message
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = {
+                0xe8 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length);
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
     BOOST_AUTO_TEST_CASE(test_mct420fd_putconfig_install_all)
     {
@@ -2405,7 +2516,7 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 7 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 8 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2522,6 +2633,43 @@ BOOST_FIXTURE_TEST_SUITE(test_putconfig_install, putconfigInstall_helper)
 
         // This validates the read-after-write behavior... write message has higher priority
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Timezone message
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = {
+                0xe8 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length);
+        }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            readMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK(writeMsgPriority > readMsgPriority);
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
