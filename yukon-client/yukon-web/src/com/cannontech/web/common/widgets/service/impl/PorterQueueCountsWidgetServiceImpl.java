@@ -1,10 +1,10 @@
 package com.cannontech.web.common.widgets.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -14,6 +14,7 @@ import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -37,13 +38,9 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
 
     @Override
     public Map<Integer, LiteYukonPAObject> getPointIdToPaoMap(List<Integer> portIds) {
-        Map<Integer, LiteYukonPAObject> portPaoToPointId = new HashMap<Integer, LiteYukonPAObject>();
-        paoDao.getLiteYukonPaos(portIds)
-              .stream()
-              .forEach(pao -> {
-                  portPaoToPointId.put(new Integer(pointDao.getPointIDByDeviceID_Offset_PointType(pao.getLiteID(), 1, PointTypes.ANALOG_POINT)), pao);
-              });
-        return portPaoToPointId;
+        return paoDao.getLiteYukonPaos(portIds)
+                .stream()
+                .collect(StreamUtils.mapToSelf(pao -> pointDao.getPointIDByDeviceID_Offset_PointType(pao.getLiteID(), 1, PointTypes.ANALOG_POINT)));
     }
     
     @Override
@@ -53,8 +50,8 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
         pointIds.forEach(pointId -> {
             pointIdToPointValueHolder.put(pointId, null);
         });
-            
-        Range<Instant> range = new Range(getEarliestStartDate().toInstant(), false, Instant.now(), true);
+
+        Range<Instant> range = Range.exclusiveInclusive(getEarliestStartDate().toInstant(), Instant.now());
         List<PointValueHolder> values = rawPointHistoryDao.getPointData(pointIds, range, false, Order.FORWARD);
         
         values.forEach(pvh -> {
@@ -67,21 +64,17 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     @Override
     public List<Object[]> graphDataProvider(List<PointValueHolder> data) {
         log.debug("graphDataProvider called");
-        List<Object[]> values = new ArrayList<>();
-        data.stream().forEach(pvh -> {
-            Object[] value = {pvh.getPointDataTimeStamp().getTime(), pvh.getValue() };
-            values.add(value);
-        });
+        List<Object[]> values = data.stream()
+                .map(pvh -> new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()})
+                .collect(Collectors.toList());
         log.debug("graphDataProvider returned " + values.size() + " {time, value} pairs");
         return values;
     }
 
     @Override
     public boolean isRefreshEligible(Instant lastGraphDataRefreshTime) {
-        if (lastGraphDataRefreshTime == null || Instant.now().isAfter(lastGraphDataRefreshTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH))) {
-            return true;
-        }
-        return false;
+        return lastGraphDataRefreshTime == null || 
+                Instant.now().isAfter(lastGraphDataRefreshTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH));
     }
     
     /**

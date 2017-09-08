@@ -18,8 +18,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public interface PorterQueueCountsWidgetService {
     /**
      * Return a map of Porter Queue Count point Id's to their corresponding port PAO.
-     * The idea behind this function is for PorterQueueCountsWidget to be able to take portIds as
-     * a widget parameter, and and display info in the trend graph (e.g. port name).
+     * The idea behind this function is for the PorterQueueCountsWidget to be able to take portIds
+     * as a widget parameter, and get the pao info to display in the trend graph (e.g. port name).
      * @param Integer list of portIds
      * @return a map of the Porter Queue Counts point Id's to port PAO's
      */
