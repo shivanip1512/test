@@ -12,7 +12,6 @@ public interface SmartNotificationEventDao {
     /**
      * Insert events into the database.
      */
-
     void save(List<SmartNotificationEvent> event);
     
 }

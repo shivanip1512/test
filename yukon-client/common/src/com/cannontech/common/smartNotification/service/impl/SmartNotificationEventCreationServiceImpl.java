@@ -9,6 +9,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 
@@ -31,5 +32,16 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
         log.debug("Sending Smart Notification event");
         log.trace(event);
         jmsTemplate.convertAndSend(eventQueue, event);
+    }
+    
+    @Override
+    public void sendEvents(SmartNotificationEventMulti multi) {
+        log.debug("Sending Smart Notification event multi");
+        if (log.isTraceEnabled()) {
+            for(SmartNotificationEvent event : multi.getEvents()) {
+                log.trace(event);
+            }
+        }
+        jmsTemplate.convertAndSend(eventQueue, multi);
     }
 }

@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -51,6 +52,8 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorSmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -345,16 +348,24 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         Instant now = Instant.now();
         
         // Devices are entering violation if they were not in the group previously and are now being added.
-        newViolatingDeviceIds.stream()
-                             .filter(paoId -> !oldViolatingDeviceIds.contains(paoId))
-                             .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, IN_VIOLATION, paoId))
-                             .forEach(event -> smartNotificationEventCreationService.sendEvent(event));
+        List<SmartNotificationEvent> enteringViolationEvents = newViolatingDeviceIds.stream()
+                .filter(paoId -> !oldViolatingDeviceIds.contains(paoId))
+                .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, IN_VIOLATION, paoId))
+                .collect(Collectors.toList());
         
         // Devices are exiting violation if they were in the group previously, but are not being added now.
-        oldViolatingDeviceIds.stream()
-                             .filter(paoId -> !newViolatingDeviceIds.contains(paoId))
-                             .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, OUT_OF_VIOLATION, paoId))
-                             .forEach(event -> smartNotificationEventCreationService.sendEvent(event));
+        List<SmartNotificationEvent> exitingViolationEvents = oldViolatingDeviceIds.stream()
+                .filter(paoId -> !newViolatingDeviceIds.contains(paoId))
+                .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, OUT_OF_VIOLATION, paoId))
+                .collect(Collectors.toList());
+        
+        List<SmartNotificationEvent> events = Stream.of(enteringViolationEvents, exitingViolationEvents)
+                                                    .flatMap(List::stream)
+                                                    .collect(Collectors.toList());
+        
+        if (!events.isEmpty()) {
+            smartNotificationEventCreationService.sendEvents(new SmartNotificationEventMulti(events));
+        }
     }
     
     @Autowired
