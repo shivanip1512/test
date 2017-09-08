@@ -197,6 +197,10 @@
                                     <div class="js-state-group"><input type="hidden" name="${ctrlName}" value="${processor.stateGroup.liteID}">${processor.stateGroup.stateGroupName}</div>
                                 </c:otherwise>
                             </c:choose>
+                            <span class="dn js-calc-indicator">
+                                <cti:icon icon="icon-spinner"/>
+                                <span class="b-label"><i:inline key=".calculating"/></span>
+                            </span>
                             </td>
                             <td>
                                 <form:select path="processors[${status.index}].state" cssClass="js-states">

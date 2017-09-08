@@ -441,6 +441,7 @@ yukon.ami.ddm = (function () {
         _update_state_groups_worker = function (ev) {
             
             var row = $(ev.target).closest('tr');
+            var attributeSelect = row.find('select.js-attribute');
             var attr_val = row.find('select.js-attribute').find(':selected').val();
             var DOM_stategroups = row.find('.js-state-group');
             var select_sg = row.find('select.js-state-group');
@@ -450,15 +451,15 @@ yukon.ami.ddm = (function () {
             var selectEl;
             var selectParent;
             var savedSelect;
-            var DOM_feedback = $('.js-calc-indicator').clone();
+            var calculatingIndicator = row.find('.js-calc-indicator');
             var row_id = _get_proc_row_id_from_elem_name(row.find('select.js-attribute'));
+            
+            attributeSelect.prop('disabled', true);
             
             DOM_stategroups.hide();
             row.find('.js-states').hide();
             
-            DOM_feedback.removeClass('js-calc-indicator');
-            $(DOM_stategroups.closest('td')).append(DOM_feedback);
-            DOM_feedback.show().flash({ color: '#dae2ff', duration: 3000 });
+            calculatingIndicator.show().flash({ color: '#dae2ff', duration: 3000 });
             
             if (_supported_counts_xhr 
                     && _supported_counts_xhr[row_id] 
@@ -474,7 +475,8 @@ yukon.ami.ddm = (function () {
                 }
             }).done(function (data, textStatus, jqXHR) {
                 
-                DOM_feedback.remove();
+                calculatingIndicator.hide();
+                attributeSelect.prop('disabled', false);
                 
                 if (data.stateGroups.length > 1) {
                     
