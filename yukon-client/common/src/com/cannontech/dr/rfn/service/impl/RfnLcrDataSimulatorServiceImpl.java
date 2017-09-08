@@ -3,6 +3,8 @@ package com.cannontech.dr.rfn.service.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,6 +15,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.encoders.Hex;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -53,6 +56,39 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
 public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  implements RfnLcrDataSimulatorService {
+    
+    public enum TLVField {
+        SERIAL_NUMBER((byte)0x02, 4, 1),
+        SSPEC((byte)0x03, 2, 1),
+        FIRMWARE_VERSION((byte)0x04, 2, 1),
+        SPID((byte)0x05, 2, 1),
+        GEO_ADDRESS((byte)0x06, 2, 1),
+        FEEDER_ADDRESS((byte)0x07, 2, 1),
+        ZIP_ADDRESS((byte)0x08, 4, 1),
+        UDA_ADDRESS((byte)0x09, 2, 1),
+        REQUIRED_ADDRESS((byte)0x0a, 1, 1),
+        SUBSTATION_ADDRESS((byte)0x0b, 2, 1),
+        BLINK_COUNT((byte)0x0c, 1, 1),
+        RELAY_INTERVAL_START_TIME((byte)0x0d, 4, 1),
+        RELAY_N_RUNTIME((byte)0x0e, 25, 2),
+        RELAY_N_SHEDTIME((byte)0x0f, 25, 2),
+        RELAY_N_PROGRAM_ADDRESS((byte)0x10, 2, 2),
+        RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 2),
+        RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 2),
+        PROTECTION_TIME_RELAY_N((byte)0x13, 3, 2),
+        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 2),
+        BROADCAST_VERIFICATION_MESSAGES((byte)0x16, 8, 1);
+
+        private final byte type;
+        private final int length;
+        private final int frequency;
+
+        private TLVField(byte type, int length, int frequency) {
+            this.type = type;
+            this.length = length;
+            this.frequency = frequency;
+        }
+    }
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
 
     private final static String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
@@ -112,11 +148,11 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
      *
      * @param devices - minute of the day to send a request at/list of devices to send a read request to
      */
-    private void addDevice(RfnIdentifier rfnIdentifier, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices){
+    private void addDevice(RfnIdentifier rfnIdentifier, SetMultimap<Integer, RfnLcrReadSimulatorDeviceParameters> devices, PaoType paoType){
         int minuteOfTheDay = getMinuteOfTheDay(rfnIdentifier.getSensorSerialNumber());
                 
         RfnLcrReadSimulatorDeviceParameters parameters =
-                new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60);
+                new RfnLcrReadSimulatorDeviceParameters(rfnIdentifier, 0, 0, 3, 60, 24 * 60, paoType);
         devices.put(minuteOfTheDay,  parameters);
     }
     
@@ -132,7 +168,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             }
             List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfLcrTypes());
             for (RfnDevice device : devices) {
-                addDevice(device.getRfnIdentifier(), allDevices);
+                addDevice(device.getRfnIdentifier(), allDevices, device.getPaoIdentifier().getPaoType());
             }
             //check if execution was canceled
             if (!allDevices.isEmpty() && allDevicesStatus.isRunning().get()) {
@@ -176,7 +212,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             RfnIdentifier rfnIdentifier =
                 new RfnIdentifier(String.valueOf(from), model.getManufacturer(), model.getModel());
             log.debug("createDevicesByRange="+rfnIdentifier);
-            addDevice(rfnIdentifier, rangeDevices);
+            addDevice(rfnIdentifier, rangeDevices, model.getType());
             from++;
         }
     }
@@ -279,7 +315,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     }
 
     /**
-     * Creates the archive request by generating a simulated XML payload, encoding it into the EXI format and
+     * Creates the archive request by generating a simulated XML/TLV (for LCR-6700) payload, encoding it into the EXI format(for LCR-6200 and LCR-6600) and
      * placing it into the RfnLcrReadingArchiveRequest object.
      * 
      * @param simulatorSettings The current simulation settings, including MessageId & timestamp.
@@ -290,6 +326,32 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
      */
     private RfnLcrReadingArchiveRequest createReadArchiveRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters)
             throws RfnLcrSimulatorException, IOException {
+        byte[] payload = null;
+        if (deviceParameters.getPaoType() == PaoType.LCR6700_RFN) {
+            try {
+                //Header with expresscom Message response 0xE2 and schema version 0.0.4
+                byte[] header = Hex.decode("E20170043e00040000020044");
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                outputStream.write(header);
+                // Add UTC 
+                writeUTC(outputStream);
+                // Generate TLV message
+                byte[] message = getTLVMessage();
+                outputStream.write(message);
+                // Add LUF events
+                byte[] lufEvents = Hex.decode("01700200000180020000");
+                outputStream.write(lufEvents);
+                // Service and Control state
+                byte[] serviceAndControlState = Hex.decode("0190010101a00101");
+                outputStream.write(serviceAndControlState);
+
+                payload = outputStream.toByteArray();
+            } catch (Exception e) {
+                throw new RfnLcrSimulatorException("There was an error generating the TLV payload for serial number "
+                        + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
+            }
+        }
+        else {
         // Generate raw XML for archive reading.
         String xmlData = null;
         try {
@@ -316,7 +378,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 + deviceParameters.getRfnIdentifier().getSensorModel() + "/"
                 + deviceParameters.getRfnIdentifier().getSensorSerialNumber(), e);
         }
-        byte[] payload = createPayload(deviceParameters, encodedXml);
+        payload = createPayload(deviceParameters, encodedXml);
+        }
 
         RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
         RfnLcrReading reading = new RfnLcrReading();
@@ -326,6 +389,53 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         readArchiveRequest.setRfnIdentifier(deviceParameters.getRfnIdentifier());
         readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
         return readArchiveRequest;
+    }
+
+    private void writeUTC(ByteArrayOutputStream outputStream) {
+        // UTC type
+        outputStream.write((0x01 >> 4) & 0x0f);
+        outputStream.write((0x01 & 0x0f) << 4);
+        // UTC length as 4-byte
+        outputStream.write(4);
+        // Generate UTC field values (4-byte)
+        long timeInSec = (Instant.now().getMillis()) / 1000;
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        byte[] utc = buffer.putLong(timeInSec).array();
+        utc = Arrays.copyOfRange(utc, 4, utc.length);
+
+        for (int i = 0; i < utc.length; i++) {
+            outputStream.write(utc[i]);
+        }
+    }
+    /**
+     * Generate byte Array (part of TLV report) from TLVField enum and generate random values for each field.
+     */
+    private byte[] getTLVMessage() {
+        byte[] data = new byte[247];
+        int index = 0;
+        for (TLVField field : TLVField.values()) {
+            int fieldCount = 0;
+             while (fieldCount < field.frequency) {
+                    int valueIndex = 0;
+                    // Upper Nibble of first bye and Lower nibble of second byte makes FieldType in TLV format
+                    data[index++] = (byte) ((field.type >> 4) & 0x0f);
+                    data[index++] = (byte) ((field.type & 0x0f) << 4);
+                    data[index++] = (byte) (field.length);
+                    if (field.equals(TLVField.RELAY_N_RUNTIME) || field.equals(TLVField.RELAY_N_SHEDTIME)
+                        || field.equals(TLVField.RELAY_N_PROGRAM_ADDRESS)
+                        || field.equals(TLVField.RELAY_N_SPLINTER_ADDRESS)) {
+                        data[index++] = (byte) fieldCount;
+                        valueIndex++;
+                    }
+                    while (valueIndex < field.length) {
+                        data[index] = (byte) (Math.random() * (15 - 0));
+                        index++;
+                        valueIndex++;
+                    }
+                    fieldCount++;
+                }
+        }
+        return data;
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.model;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public final class RfnLcrReadSimulatorDeviceParameters {
@@ -10,9 +11,10 @@ public final class RfnLcrReadSimulatorDeviceParameters {
     private final int revision;
     private final int recordingInterval;
     private final int reportingInterval;
+    private final PaoType paoType;
 
     public RfnLcrReadSimulatorDeviceParameters(RfnIdentifier rfnIdentifier, int majorVersion, int minorVersion,
-            int revision, int recordingInterval, int reportingInterval) {
+            int revision, int recordingInterval, int reportingInterval, PaoType paoType) {
         super();
         this.rfnIdentifier = rfnIdentifier;
         this.majorVersion = majorVersion;
@@ -20,6 +22,7 @@ public final class RfnLcrReadSimulatorDeviceParameters {
         this.revision = revision;
         this.recordingInterval = recordingInterval;
         this.reportingInterval = reportingInterval;
+        this.paoType = paoType;
     }
 
     public RfnIdentifier getRfnIdentifier() {
@@ -44,5 +47,9 @@ public final class RfnLcrReadSimulatorDeviceParameters {
 
     public int getReportingInterval() {
         return reportingInterval;
+    }
+
+    public PaoType getPaoType() {
+        return paoType;
     }
 }
