@@ -1,6 +1,5 @@
 package com.cannontech.common.smartNotification.dao.impl;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +40,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         sql.batchInsertInto("SmartNotificationEvent")
            .columns("EventId", "Type", "Timestamp")
            .values(values);
+        jdbcTemplate.yukonBatchUpdate(sql);
         saveEventParameters(params);
     }
     
