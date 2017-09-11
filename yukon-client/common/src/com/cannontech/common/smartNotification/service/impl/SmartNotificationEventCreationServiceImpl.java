@@ -28,13 +28,6 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     }
     
     @Override
-    public void sendEvent(SmartNotificationEvent event) {
-        log.debug("Sending Smart Notification event");
-        log.trace(event);
-        jmsTemplate.convertAndSend(eventQueue, event);
-    }
-    
-    @Override
     public void sendEvents(SmartNotificationEventMulti multi) {
         log.debug("Sending Smart Notification event multi");
         if (log.isTraceEnabled()) {
