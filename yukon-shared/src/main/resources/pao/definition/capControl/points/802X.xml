@@ -50,6 +50,24 @@
         <unitofmeasure value="PERCENT"/>
         <decimalplaces value="0"/>
     </point>
+    <point offset="39" type="Analog">
+        <name>Va Secondary</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="40" type="Analog">
+        <name>Vb Secondary</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="41" type="Analog">
+        <name>Vc Secondary</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
     <point offset="114" type="Analog">
         <name>Ignored Control Reason</name>
         <multiplier value="1"/>
@@ -317,24 +335,6 @@
         <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="39" type="Analog">
-        <name>Va Secondary</name>
-        <multiplier value="0.1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="1"/>
-    </point>
-    <point offset="40" type="Analog">
-        <name>Vb Secondary</name>
-        <multiplier value="0.1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="1"/>
-    </point>
-    <point offset="41" type="Analog">
-        <name>Vc Secondary</name>
-        <multiplier value="0.1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="1"/>
-    </point> 
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="PulseAccumulator">
         <name>Total Op Count</name>
