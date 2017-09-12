@@ -147,6 +147,10 @@
                         </td>
                         <td>
                             <div class="js-state-group"><input type="hidden" name="" value="" data-name="processors[0].stateGroup"></div>
+                            <span class="dn js-calc-indicator">
+                                <cti:icon icon="icon-spinner"/>
+                                <span class="b-label"><i:inline key=".calculating"/></span>
+                            </span>
                         </td>
                         <td>
                             <div class="js-states"><input type="hidden" name="" value="" data-name="processors[0].state"></div>
