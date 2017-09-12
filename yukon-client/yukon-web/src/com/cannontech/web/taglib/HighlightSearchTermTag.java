@@ -73,7 +73,7 @@ public class HighlightSearchTermTag extends BodyTagSupport {
 
     private static String doReplace(String replaceWithin, String replaceWhat, boolean startWordDivision) {
         String result = replaceWithin.replaceFirst("(?i)"
-                + (startWordDivision ? "(?<=" + PrefixTokenizer.TOKEN_DELIMITER_PATTERN + ")" : "")
+                + (startWordDivision ? "(?<=" + PrefixTokenizer.TOKEN_DELIMITER_PATTERN + ") \\b" : "")
                 + "(" + replaceWhat + ")", "<strong>$1</strong>");
         return result;
     }
