@@ -80,10 +80,14 @@
                             <tags:sectionContainer2 nameKey="cbcControllerSection">
                                 <tags:nameValueContainer2 tableClass="natural-width">
                                     <tags:nameValue2 nameKey=".createCBC">
-                                        <tags:switchButton path="createCBC" classes="js-create-cbc" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="newCBC" toggleAction="hide" />
+                                        <tags:switchButton path="createCBC" classes="js-create-cbc"
+                                            inputClass="js-createCBC" offNameKey=".no.label"
+                                            onNameKey=".yes.label" toggleGroup="newCBC"
+                                            toggleAction="hide" />
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbcControllerName" data-toggle-group="newCBC">
-                                        <tags:input path="cbcControllerName" size="25" maxlength="60"/>
+                                        <tags:input path="cbcControllerName" size="25" maxlength="60"
+                                            inputClass="js-cbcControllerName" />
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbcType" data-toggle-group="newCBC">
                                         <tags:selectWithItems id="pao-type" items="${cbcTypes}" path="cbcType"/>

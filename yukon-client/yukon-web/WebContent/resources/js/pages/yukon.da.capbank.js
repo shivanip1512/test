@@ -20,6 +20,13 @@ yukon.da.capbank = (function () {
     var twoWayTypes = [];
 
     var updatePaoTypeFields = function () {
+         var isCreateCBC = $('.js-createCBC').prop('checked');
+         //Resets new CBC field and also the errors if any.
+         if(!isCreateCBC){
+             $('.js-cbcControllerName').val("");
+             $('.js-cbcControllerName').removeClass("error");
+             $("[id='cbcControllerName.errors']").remove();
+         }
         $('#comm-port').attr("disabled", true); 
         var paoTypeField = $('#pao-type');
         
