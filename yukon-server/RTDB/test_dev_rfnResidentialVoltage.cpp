@@ -14,13 +14,6 @@ struct test_RfnResidentialVoltageDevice : RfnResidentialVoltageDevice
 {
     using RfnResidentialDevice::handleCommandResult;
     using CtiDeviceBase::setDeviceType;
-
-    double test_nmCompatibility = 6.5;
-
-    virtual double getNmCompatibilityVersion() const override
-    {
-        return test_nmCompatibility;
-    }
 };
 
 struct test_state_rfnResidentialVoltage
@@ -523,6 +516,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
             // channel config
             ( CategoryDefinition(
                 "rfnChannelConfiguration", map_list_of
+                    ( RfnStrings::enableDataStreaming, "false" )
                     ( RfnStrings::voltageDataStreamingIntervalMinutes, "2" )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
@@ -540,19 +534,20 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
         7,      // add OVUV config                  -> +6 request
         9,      // add TOU config                   -> +2 request
         10,     // add temperature alarming config  -> +1 request
-        13      // add channel config               -> +3 request
+        14      // add channel config               -> +4 request
     };
 
     const std::vector< std::vector<bool> > returnExpectMoreExp
     {
-        { true, true, true, true, true, true, true, true, true, true, true, false },
-                                                             // no config data -> 12 error messages, NOTE: last expectMore expected to be false
+        { true, true, true, true, true, true, true, true, true, true, true, true, true, false },
+                                                             // no config data -> 14 error messages, NOTE: last expectMore expected to be false
+        { true, true, true, true, true, true, true, true, true, true, true, true, true },
+                                                             // add demand freeze day config     -> 13 error messages
         { true, true, true, true, true, true, true, true, true, true, true },
-                                                             // add demand freeze day config     -> 11 error messages
+                                                             // add OVUV config                  -> 11 error messages
         { true, true, true, true, true, true, true, true, true },
-                                                             // add OVUV config                  -> 9 error messages
-        { true, true, true, true, true, true, true },        // add TOU config                   -> 7 error messages
-        { true, true, true, true, true },                    // add temperature alarming config  -> 5 error messages
+                                                             // add TOU config                   -> 9 error messages
+        { true, true, true, true, true, true, true },        // add temperature alarming config  -> 7 error messages
         { true }                                             // add channel config               -> config sent successfully
     };
 
@@ -720,6 +715,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
             // channel config
             ( CategoryDefinition(
                 "rfnChannelConfiguration", map_list_of
+                    ( RfnStrings::enableDataStreaming, "false" )
                     ( RfnStrings::voltageDataStreamingIntervalMinutes, "2" )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
@@ -813,6 +809,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount, "3");
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, "121");
 
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabled, "false");
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds, "7380");
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds, "27360");
     dut.setDynamicInfo(CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics, std::vector<unsigned long>() );
@@ -1020,7 +1017,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
             ( CategoryDefinition( // channel config
                 "rfnChannelConfiguration", map_list_of
-                    ( RfnStrings::voltageDataStreamingIntervalMinutes, "2")
+                    ( RfnStrings::enableDataStreaming, "false" )
+                    ( RfnStrings::voltageDataStreamingIntervalMinutes, "2" )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" )
                     ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
                       RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
@@ -1038,20 +1036,21 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
         8,      // add OVUV config                  -> +6 request
         10,     // add TOU config                   -> +1 request
         11,     // add temperature alarming config  -> +1 request
-        14,     // add channel config               -> +3 request
+        15,     // add channel config               -> +4 request
     };
 
     const std::vector< std::vector<bool> > returnExpectMoreExp
     {
-        { true, true, true, true, true, true, true, true, true, true, true, true, true, false },
-                                                                   // no config data                  -> 14 error messages, NOTE: last expectMore expected to be false
+        { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false },
+                                                                   // no config data                  -> 16 error messages, NOTE: last expectMore expected to be false
+        { true, true, true, true, true, true, true, true, true, true, true, true, true, true, true },
+                                                                   // add remote disconnect config    -> 15 error messages
         { true, true, true, true, true, true, true, true, true, true, true, true, true },
-                                                                   // add remote disconnect config    -> 13 error messages
+                                                                   // add demand freeze day config    -> 13 error messages
         { true, true, true, true, true, true, true, true, true, true, true },
-                                                                   // add demand freeze day config    -> 11 error messages
-        { true, true, true, true, true, true, true, true, true },  // add OVUV config                 -> 9 error messages
-        { true, true, true, true, true, true, true },              // add TOU config                  -> 7 error messages
-        { true, true, true, true, true },                          // add temperature alarming config -> 5 error messages
+                                                                   // add OVUV config                 -> 11 error messages
+        { true, true, true, true, true, true, true, true, true },  // add TOU config                  -> 9 error messages
+        { true, true, true, true, true, true, true },              // add temperature alarming config -> 7 error messages
         { true }                                                   // add channel config              -> config sent successfully
     };
 
@@ -1248,35 +1247,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
-
-        {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_enable_nm7 )
-{
-    test_RfnResidentialVoltageDevice    dut;
-
-    dut.test_nmCompatibility = 7.0;
-    dut.setDeviceType(TYPE_RFN420FX);
-
-    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-    cfg.insertValue( RfnStrings::enableDataStreaming,   "true" );
-
-    using Bytes = std::vector<unsigned char>;
-
-    {
-        CtiCommandParser parse("putconfig install voltageprofile");
-
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
@@ -1322,11 +1292,10 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_disable_nm7 )
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltageprofile_disable )
 {
     test_RfnResidentialVoltageDevice    dut;
 
-    dut.test_nmCompatibility = 7.0;
     dut.setDeviceType(TYPE_RFN420FX);
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture

@@ -42,9 +42,6 @@ protected:
     void handleCommandResult( const Commands::RfnLoadProfileSetTemporaryRecordingCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetPermanentRecordingCommand & cmd ) override;
 
-    bool NmCompatibilityAtLeast( const double minimumVersion );
-    virtual double getNmCompatibilityVersion() const;
-
 public:
 
     RfnResidentialVoltageDevice() {};

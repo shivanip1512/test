@@ -76,16 +76,6 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
 }   // anonymous
 
 
-bool RfnResidentialVoltageDevice::NmCompatibilityAtLeast( const double minimumVersion )
-{
-    return getNmCompatibilityVersion() >= minimumVersion;
-}
-
-double RfnResidentialVoltageDevice::getNmCompatibilityVersion() const
-{
-    return gConfigParms.getValueAsDouble( "NM_COMPATIBILITY" );
-}
-
 RfnMeterDevice::ConfigMap RfnResidentialVoltageDevice::getConfigMethods(InstallType installType)
 {
     ConfigMap m = RfnResidentialDevice::getConfigMethods( installType );
@@ -94,23 +84,13 @@ RfnMeterDevice::ConfigMap RfnResidentialVoltageDevice::getConfigMethods(InstallT
     {
          m.emplace(ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigVoltageAveragingInterval, this ) );
          m.emplace(ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigOvUv,                     this ) );
-    }                                            
+         m.emplace(ConfigPart::voltageprofile,   bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigPermanentVoltageProfile,  this ) );
+    }
     else                                         
     {                                            
          m.emplace(ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterval, this ) ); 
          m.emplace(ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigOvUv,                     this ) );
-    }
-
-    if ( NmCompatibilityAtLeast( 7.0 ) )
-    {
-        if( installType == InstallType::GetConfig )
-        {
-            m.emplace(ConfigPart::voltageprofile, bindConfigMethod( &RfnResidentialVoltageDevice::executeGetConfigPermanentVoltageProfile,  this ) );
-        }
-        else
-        {
-            m.emplace(ConfigPart::voltageprofile, bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfile,  this ) );
-        }
+         m.emplace(ConfigPart::voltageprofile,   bindConfigMethod( &RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfile,  this ) );
     }
 
     return m;
