@@ -118,7 +118,14 @@
                                 busy="true" 
                                 icon="icon-pencil" 
                                 title="${editBtnTitle}"/>
-                            
+                                
+                            <cti:button nameKey="unassign" 
+                                data-config-id="${configCategories.configId}" 
+                                data-category-type="${catType}" 
+                                classes="js-unassign-category" 
+                                busy="true" 
+                                icon="icon-cross"/>
+                                
                             <div class="category-fields-title">
                                 <div class="fl revealer"
                                     data-show-hide=".category-fields-content[data-category-id='${category.categoryId}']">

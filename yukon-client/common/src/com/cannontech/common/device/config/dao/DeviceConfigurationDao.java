@@ -294,4 +294,6 @@ public interface DeviceConfigurationDao {
      *      database that support the provided pao type with all required categories.
      */
     List<LightDeviceConfiguration> getAllAssignableConfigurationsByType(PaoType paoType, List<String> requiredCategories);
+
+    void removeCategoryAssignment(int deviceConfigurationId, CategoryType categoryType);
 }

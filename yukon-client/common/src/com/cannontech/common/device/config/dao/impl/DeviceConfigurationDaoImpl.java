@@ -564,6 +564,25 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
+    public void removeCategoryAssignment(int deviceConfigurationId, CategoryType categoryType) {
+        SqlStatementBuilder idSql = new SqlStatementBuilder();
+        idSql.append("SELECT DCCM.DeviceConfigCategoryId");
+        idSql.append("FROM DeviceConfigCategoryMap DCCM");
+        idSql.append("   JOIN DeviceConfigCategory DCC ON DCCM.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId");
+        idSql.append("WHERE DCC.CategoryType").eq(categoryType.value());
+        idSql.append("   AND DCCM.DeviceConfigurationId").eq(deviceConfigurationId);
+        
+        List<Integer> previousId = jdbcTemplate.query(idSql, TypeRowMapper.INTEGER_NULLABLE);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM DeviceConfigCategoryMap");
+        sql.append("WHERE DeviceConfigurationId").eq(deviceConfigurationId);
+        sql.append("   AND DeviceConfigCategoryId").eq(previousId.get(0));  
+        jdbcTemplate.update(sql);
+        
+    }
+    
+    @Override
     public void addSupportedDeviceTypes(int deviceConfigurationId, Set<PaoType> paoTypes) {
         for (PaoType paoType : paoTypes) {
             int id = nextValueHelper.getNextValue("DeviceConfigDeviceTypes");

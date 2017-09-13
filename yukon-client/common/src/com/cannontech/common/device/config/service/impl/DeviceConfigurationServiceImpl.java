@@ -137,6 +137,17 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     }
     
     @Override
+    public void removeCategoryAssignment(int deviceConfigurationId, CategoryType categoryType) {
+        deviceConfigurationDao.removeCategoryAssignment(deviceConfigurationId, categoryType);
+
+        dbChangeManager.processDbChange(deviceConfigurationId,
+                                        DBChangeMsg.CHANGE_CONFIG_DB,
+                                        DBChangeMsg.CAT_DEVICE_CONFIG,
+                                        CONFIG_OBJECT_TYPE,
+                                        DbChangeType.DELETE);
+    }
+    
+    @Override
     public void removeSupportedDeviceType(int deviceConfigurationId, PaoType paoType)
             throws InvalidConfigurationRemovalException {
 

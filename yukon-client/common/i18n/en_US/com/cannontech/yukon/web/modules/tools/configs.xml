@@ -579,6 +579,7 @@
     <entry key="yukon.web.modules.tools.configs.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.tools.configs.collectionAction">Collection Actions</entry>
     <entry key="yukon.web.modules.tools.configs.changeOut.label">Change Out</entry>
+    <entry key="yukon.web.modules.tools.configs.unassign.label">Unassign</entry>
     <entry key="yukon.web.modules.tools.configs.select.label">Select</entry>
     <entry key="yukon.web.modules.tools.configs.warning.title">Modification Warning</entry>
     <entry key="yukon.web.modules.tools.configs.categoryName">Category Name</entry>

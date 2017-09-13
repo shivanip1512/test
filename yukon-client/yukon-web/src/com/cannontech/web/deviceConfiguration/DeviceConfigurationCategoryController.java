@@ -161,6 +161,15 @@ public class DeviceConfigurationCategoryController {
         return categoryPopup(categoryEditBean, model, configId, userContext);
     }
 
+    @RequestMapping("unassign")
+    public String unassign(ModelMap model, int categoryId, int configId, YukonUserContext userContext) {
+
+        DeviceConfigCategory category = deviceConfigDao.getDeviceConfigCategory(categoryId);
+        CategoryType categoryType = CategoryType.fromValue(category.getCategoryType());
+        deviceConfigService.removeCategoryAssignment(configId, categoryType);
+        return "redirect:/deviceConfiguration/config/view?configId="+configId;
+    }
+    
     @RequestMapping("quick-view")
     public String quickView(ModelMap model, int categoryId, int configId, YukonUserContext userContext) {
 

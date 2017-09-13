@@ -91,4 +91,6 @@ public interface DeviceConfigurationService {
      */
     List<LightDeviceConfiguration> getAllConfigurationsByType(PaoType paoType);
 
+    void removeCategoryAssignment(int deviceConfigurationId, CategoryType categoryType);
+
 }

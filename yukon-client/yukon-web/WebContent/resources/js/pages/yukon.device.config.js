@@ -319,6 +319,16 @@ yukon.deviceConfig = (function () {
                 _openCategoryPopup(btn, url);
             });
 
+            $('.js-unassign-category').click(function (ev) {
+
+                var btn = $(this),
+                    categoryId = $('#categoryId_' + btn.data('categoryType')).val(),
+                    configId = btn.data('configId'),
+                    url = yukon.url('/deviceConfiguration/category/unassign?categoryId='
+                          + categoryId + '&configId=' + configId);
+                window.location.href = url;
+            });
+            
             /** Save button click on cateogry edit or create popup. Post form and handle results */
             $('#category-popup').on('yukon.deviceConfigs.category.save', function (ev) {
                 $('#category-form').ajaxSubmit({
