@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
@@ -17,6 +18,7 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
     private static final String eventQueue = JmsApiDirectory.SMART_NOTIFICATION_EVENT.getQueue().getName();
     @Autowired private ConnectionFactory connectionFactory;
+    @Autowired SmartNotificationEventDao eventsDao;
     private JmsTemplate jmsTemplate;
     
     @PostConstruct
@@ -30,6 +32,7 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     @Override
     public void sendEvents(SmartNotificationEventMulti multi) {
         log.debug("Sending Smart Notification event multi");
+        eventsDao.save(multi.getEventType(), multi.getEvents());
         if (log.isTraceEnabled()) {
             for(SmartNotificationEvent event : multi.getEvents()) {
                 log.trace(event);

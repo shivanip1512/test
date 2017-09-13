@@ -15,6 +15,7 @@ import org.joda.time.Instant;
  */
 public class SmartNotificationEvent implements Serializable {
     private final static long serialVersionUID = 1L;
+    private int eventId;
     private final Instant timestamp;
     private Map<String, Object> parameters = new HashMap<>();
     
@@ -41,5 +42,17 @@ public class SmartNotificationEvent implements Serializable {
     
     public Object getParameter(String key){
         return parameters.get(key);
+    }
+    
+    public void addParameters(String name, Object value) {
+        parameters.put("name", value);
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }

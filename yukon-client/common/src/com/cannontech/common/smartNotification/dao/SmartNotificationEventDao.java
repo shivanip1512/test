@@ -19,6 +19,13 @@ public interface SmartNotificationEventDao {
      */
     void save(SmartNotificationEventType type, List<SmartNotificationEvent> event);
 
+    /**
+     * Returns events for type and time ranges.
+     */
     Map<Integer, SmartNotificationEvent> getEvents(SmartNotificationEventType type, Range<Instant> range);
-    
+
+    /**
+     * Updates events with the processed timestamp.
+     */
+    void markEventsAsProcessed(List<SmartNotificationEvent> events, Instant processedTime); 
 }
