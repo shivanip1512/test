@@ -67,9 +67,8 @@ import com.cannontech.common.rfn.message.network.RfnParentReply;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
-import com.cannontech.common.smartNotification.model.DeviceDataMonitorSmartNotificationEvent;
-import com.cannontech.common.smartNotification.model.InfrastructureWarningsSmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
@@ -919,30 +918,15 @@ public final class JmsApiDirectory {
     
     //TODO: use in SmartNotificationEventListener
     //TODO: use in InfrastructureWarningsNotificationEventDecider
-    public static JmsApi<InfrastructureWarningsSmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_DECIDER = 
-            JmsApi.builder(InfrastructureWarningsSmartNotificationEvent.class)
+    public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_DECIDER = 
+            JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Infrastructure Warnings Decider")
                   .description("Sent by the Smart Notification Event Listener to the Infrastructure Warnings Smart "
                           + "Notification Decider, which determines when to send a notification, who to send it to, "
                           + "and what format it should take.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.decider.infrastructureWarnings"))
-                  .requestMessage(InfrastructureWarningsSmartNotificationEvent.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
-    //TODO: use in SmartNotificationEventListener
-    //TODO: use in DeviceDataMonitorNotificationEventDecider
-    public static JmsApi<DeviceDataMonitorSmartNotificationEvent,?,?> SMART_NOTIFICATION_DEVICE_DATA_MONITOR_DECIDER = 
-            JmsApi.builder(DeviceDataMonitorSmartNotificationEvent.class)
-                  .name("Smart Notifications Device Data Monitor Decider")
-                  .description("Sent by the Smart Notification Event Listener to the Device Data Monitor Smart "
-                          + "Notification Decider, which determines when to send a notification, who to send it to, "
-                          + "and what format it should take.")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.decider.deviceDataMonitor"))
-                  .requestMessage(DeviceDataMonitorSmartNotificationEvent.class)
+                  .requestMessage(SmartNotificationEventMulti.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
@@ -1030,7 +1014,6 @@ public final class JmsApiDirectory {
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_EVENT)
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_RECORDER)
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_DECIDER)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DEVICE_DATA_MONITOR_DECIDER)
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_ASSEMBLER)
             
             .put(WIDGET_REFRESH, DATA_COLLECTION)
