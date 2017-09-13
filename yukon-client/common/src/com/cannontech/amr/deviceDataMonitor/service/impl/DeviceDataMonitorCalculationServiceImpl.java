@@ -1,7 +1,5 @@
 package com.cannontech.amr.deviceDataMonitor.service.impl;
 
-import static com.cannontech.common.smartNotification.model.DeviceDataMonitorSmartNotificationEvent.MonitorState.*;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,9 +49,11 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.smartNotification.model.DeviceDataMonitorSmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -350,13 +350,13 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         // Devices are entering violation if they were not in the group previously and are now being added.
         List<SmartNotificationEvent> enteringViolationEvents = newViolatingDeviceIds.stream()
                 .filter(paoId -> !oldViolatingDeviceIds.contains(paoId))
-                .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, IN_VIOLATION, paoId))
+                .map(paoId -> DeviceDataMonitorEventAssembler.assemble(now, monitorId, MonitorState.IN_VIOLATION, paoId))
                 .collect(Collectors.toList());
         
         // Devices are exiting violation if they were in the group previously, but are not being added now.
         List<SmartNotificationEvent> exitingViolationEvents = oldViolatingDeviceIds.stream()
                 .filter(paoId -> !newViolatingDeviceIds.contains(paoId))
-                .map(paoId -> new DeviceDataMonitorSmartNotificationEvent(now, monitorId, OUT_OF_VIOLATION, paoId))
+                .map(paoId -> DeviceDataMonitorEventAssembler.assemble(now, monitorId, MonitorState.OUT_OF_VIOLATION, paoId))
                 .collect(Collectors.toList());
         
         List<SmartNotificationEvent> events = Stream.of(enteringViolationEvents, exitingViolationEvents)
@@ -364,7 +364,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                                                     .collect(Collectors.toList());
         
         if (!events.isEmpty()) {
-            smartNotificationEventCreationService.sendEvents(new SmartNotificationEventMulti(events));
+            smartNotificationEventCreationService.sendEvents(new SmartNotificationEventMulti(events, SmartNotificationEventType.DEVICE_DATA_MONITOR));
         }
     }
     

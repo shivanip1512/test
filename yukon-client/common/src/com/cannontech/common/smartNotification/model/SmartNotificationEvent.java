@@ -1,6 +1,7 @@
 package com.cannontech.common.smartNotification.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.Instant;
@@ -12,35 +13,33 @@ import org.joda.time.Instant;
  * functionality. These sub-classes should contain any additional information necessary for notifications related to
  * that functionality. Any fields in the sub-class that need to be persisted should be returned in the parameters map.
  */
-public abstract class SmartNotificationEvent implements Serializable {
+public class SmartNotificationEvent implements Serializable {
     private final static long serialVersionUID = 1L;
-    private final SmartNotificationEventType type;
     private final Instant timestamp;
+    private Map<String, Object> parameters = new HashMap<>();
     
-    public SmartNotificationEvent(SmartNotificationEventType type) {
-        this(type, Instant.now());
-    }
-    
-    public SmartNotificationEvent(SmartNotificationEventType type, Instant timestamp) {
-        this.type = type;
+    public SmartNotificationEvent(Instant timestamp) {
         this.timestamp = timestamp;
     }
-    
-    public SmartNotificationEventType getType() {
-        return type;
-    }
-    
+        
     public Instant getTimestamp() {
         return timestamp;
     }
     
-    /**
-     * @return A map of parameters that are specific to the event sub-type.
-     */
-    public abstract Map<String,Object> getParameters();
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
 
     @Override
     public String toString() {
-        return "SmartNotificationEvent [type=" + type + ", timestamp=" + timestamp + ", parameters=" + getParameters() + "]";
+        return "SmartNotificationEvent [timestamp=" + timestamp + ", parameters=" + getParameters() + "]";
+    }
+    
+    public Object getParameter(String key){
+        return parameters.get(key);
     }
 }

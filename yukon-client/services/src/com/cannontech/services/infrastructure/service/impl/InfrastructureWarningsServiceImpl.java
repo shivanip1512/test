@@ -17,9 +17,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.InfrastructureEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.smartNotification.model.InfrastructureWarningsSmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
@@ -129,13 +130,14 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
      * but are in the new list.
      */
     private void sendSmartNotifications(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
+        Instant now = Instant.now();
         List<SmartNotificationEvent> events = newWarnings.stream()
                    .filter(warning -> !oldWarnings.contains(warning))
-                   .map(warning -> new InfrastructureWarningsSmartNotificationEvent(warning))
+                   .map(warning -> InfrastructureWarningsParametersAssembler.assemble(now, warning))
                    .collect(Collectors.toList());
         
         if (!events.isEmpty()) {
-            smartNotificationEventCreationService.sendEvents(new SmartNotificationEventMulti(events));
+            smartNotificationEventCreationService.sendEvents(new SmartNotificationEventMulti(events, SmartNotificationEventType.INFRASTRUCTURE_WARNING));
         }
     }
     
