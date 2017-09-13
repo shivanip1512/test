@@ -14,15 +14,15 @@ import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.widgets.service.PorterQueueCountsWidgetService;
@@ -31,7 +31,7 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
 
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private PointDao pointDao;
+    @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
     private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(15);
     private static final Logger log = YukonLogManager.getLogger(PorterQueueCountsWidgetServiceImpl.class);
@@ -40,7 +40,7 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     public Map<Integer, LiteYukonPAObject> getPointIdToPaoMap(List<Integer> portIds) {
         return paoDao.getLiteYukonPaos(portIds)
                 .stream()
-                .collect(StreamUtils.mapToSelf(pao -> pointDao.getPointIDByDeviceID_Offset_PointType(pao.getLiteID(), 1, PointTypes.ANALOG_POINT)));
+                .collect(StreamUtils.mapToSelf(pao -> attributeService.getPointForAttribute(pao, BuiltInAttribute.PORT_QUEUE_COUNT).getPointID()));
     }
     
     @Override
