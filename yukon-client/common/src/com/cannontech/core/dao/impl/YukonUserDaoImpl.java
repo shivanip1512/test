@@ -543,17 +543,18 @@ public class YukonUserDaoImpl implements YukonUserDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT (");
-        sql.append("  (SELECT COUNT(DISTINCT UserID) ");
+        sql.append("  (SELECT COUNT(UserID) ");
         sql.append("   FROM YukonUser");
         sql.append("   WHERE UserGroupId IS NOT NULL AND Status").eq(LoginStatusEnum.ENABLED);
         sql.append("   )");
         sql.append("-");
-        sql.append("  (SELECT COUNT(DISTINCT UserID)");
+        sql.append("  (SELECT COUNT(UserID)");
         sql.append("   FROM YukonUser yu ");
-        sql.append("     JOIN UserGroupToYukonGroupMapping ugm ON yu.UserGroupId = ugm.UserGroupId");
-        sql.append("     JOIN YukonGroupRole yg ON ugm.GroupId = yg.GroupID");
-        sql.append("   WHERE RoleID").eq(YukonRole.RESIDENTIAL_CUSTOMER);
-        sql.append("))");
+        sql.append("   WHERE Status").eq(LoginStatusEnum.ENABLED);
+        sql.append("     AND UserGroupId IS NOT NULL");
+        sql.append("     AND UserGroupId IN (SELECT UserGroupId FROM UserGroupToYukonGroupMapping WHERE GroupId IN (");
+        sql.append("       SELECT DISTINCT GroupId FROM YukonGroupRole WHERE RoleID").eq(YukonRole.RESIDENTIAL_CUSTOMER);
+        sql.append("))))");
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
             sql.append("FROM Dual");
         }
@@ -561,5 +562,24 @@ public class YukonUserDaoImpl implements YukonUserDao {
         
         int count = jdbcTemplate.queryForInt(sql);
         return count;
+    }
+    
+    @Override
+    public List<Integer> getActiveNonResidentialUsers() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserID ");
+        sql.append("FROM YukonUser");
+        sql.append("WHERE Status").eq(LoginStatusEnum.ENABLED);
+        sql.append("  AND UserGroupId IS NOT NULL");
+        sql.append("  AND UserGroupId NOT IN ");
+        sql.append("  (SELECT UserGroupId FROM UserGroupToYukonGroupMapping WHERE GroupId IN (");
+        sql.append("   SELECT DISTINCT GroupId FROM YukonGroupRole WHERE RoleID").eq(YukonRole.RESIDENTIAL_CUSTOMER);
+        sql.append("  ))");
+        
+        List<Integer> userIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+        return userIds;
+        
+        
     }
 }

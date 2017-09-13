@@ -352,7 +352,9 @@
 
     <bean name="ecOperatorCandidatePicker" class="com.cannontech.web.picker.ECOperatorCandidatePicker"/>
         
-    <bean name="dashboardUsersPicker" class="com.cannontech.web.picker.DashboardUsersPicker"/>
+    <bean name="dashboardUsersPicker" class="com.cannontech.web.picker.DashboardUsersPicker">
+        <property name="searcher" ref="userSearcherLucene"/>
+    </bean>
     
     <bean class="com.cannontech.web.capcontrol.service.impl.CapBankServiceImpl"/>
     <bean class="com.cannontech.web.capcontrol.service.impl.StrategyServiceImpl"/>

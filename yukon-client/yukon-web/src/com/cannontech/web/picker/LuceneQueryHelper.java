@@ -43,6 +43,17 @@ public class LuceneQueryHelper {
         query.add(energyCompanyIdQuery.build(), BooleanClause.Occur.MUST);
     }
     
+    public static void buildQueryWithDashboardIDs(BooleanQuery.Builder query, Set<Integer> userIds) {
+        BooleanQuery.Builder userIdQuery = new BooleanQuery.Builder();
+        
+        for (Integer userId : userIds) {
+            userIdQuery.add(buildQuery("userid", Integer.toString(userId)), 
+                    BooleanClause.Occur.SHOULD);
+        }
+        
+        query.add(userIdQuery.build(), BooleanClause.Occur.SHOULD);
+    }
+    
     private static TermQuery buildQuery(String field, String value) {
         TermQuery termQuery = new TermQuery(new Term(field, value));
         

@@ -4,6 +4,8 @@ import static com.cannontech.web.common.dashboard.model.DashboardScope.GENERAL;
 
 import java.util.Set;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -15,6 +17,15 @@ public enum DashboardPageType {
     //DR(GENERAL),
     //METER_HOME(GENERAL, DEVICE_SPECIFIC),
     ;
+    private static final ImmutableMap<Integer, DashboardPageType> dashboardTypeLookup;
+    
+    static {
+        Builder<Integer, DashboardPageType> builder = ImmutableMap.builder();
+        for (DashboardPageType type : values()) {
+            builder.put(type.getDefaultDashboardId(), type);
+        }
+        dashboardTypeLookup = builder.build();
+    }
     
     private int defaultDashboardId;
     private Set<DashboardScope> scopes;
@@ -31,4 +42,9 @@ public enum DashboardPageType {
     public int getDefaultDashboardId() {
         return defaultDashboardId;
     }
+    
+    public static DashboardPageType getDashboardTypeById(int id) {
+        return dashboardTypeLookup.get(id);
+    }
+
 }
