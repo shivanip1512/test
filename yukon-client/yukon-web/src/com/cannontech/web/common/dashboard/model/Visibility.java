@@ -6,9 +6,9 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * Describes which users can see a dashboard.
  */
 public enum Visibility implements  DisplayableEnum {
-    SYSTEM, //Built-in, cannot be deleted
-    PUBLIC, // Visible to everyone
     PRIVATE, // Only visible to owner
+    PUBLIC, // Visible to everyone
+    SYSTEM, //Built-in, cannot be deleted
     ;
 
     @Override
