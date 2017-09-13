@@ -1,12 +1,12 @@
 package com.cannontech.common.smartNotification.model;
 
+import java.util.Map;
+
 import org.joda.time.Instant;
 
 import com.google.common.collect.ImmutableMap;
 
-/**
- * A Smart Notification event sent when a device is added or removed from the violation group by a Device Data Monitor.
- */
+
 public class DeviceDataMonitorEventAssembler {
     public static final String PAO_ID = "paoId";
     public static final String MONITOR_ID = "MonitorId";
@@ -25,5 +25,20 @@ public class DeviceDataMonitorEventAssembler {
         IN_VIOLATION,
         OUT_OF_VIOLATION,
         ;
+    }
+    
+    public static int getMonitorId(Map<String, Object> parameters){
+        int monitorId = (int) parameters.get(MONITOR_ID);
+        return monitorId;
+    }
+    
+    public static int getPaoId(Map<String, Object> parameters){
+        int paoId = (int) parameters.get(PAO_ID);
+        return paoId;
+    }
+    
+    public static MonitorState getState(Map<String, Object> parameters){
+        MonitorState state = MonitorState.valueOf(parameters.get(STATE).toString());
+        return state;
     }
 }
