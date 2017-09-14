@@ -287,7 +287,7 @@ CtiPointSPtr CtiDeviceBase::getDevicePointByID(INT pointID)
     return pPoint;
 }
 
-CtiPointSPtr CtiDeviceBase::getDevicePointEqualByName(string pname)
+CtiPointSPtr CtiDeviceBase::getDevicePointByName(string pname)
 {
     CtiPointSPtr pPoint;
 

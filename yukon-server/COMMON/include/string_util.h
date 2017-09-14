@@ -271,8 +271,28 @@ class IM_EX_CTIBASE FormattedList : public Loggable, private boost::noncopyable
     void updateLastItem();
     StreamBufferSink& add();
 
+    template<typename First, typename Second, typename ... Others>
+    FormattedList& addItems(std::string firstname, First&& firstval, std::string secondname, Second&& secondval, Others ... othervals)
+    {
+        return addItems(firstname, firstval).addItems(secondname, secondval, othervals...);
+    }
+
+    template<typename First>
+    FormattedList& addItems(std::string firstname, First&& firstval)
+    {
+        add(firstname) << firstval;
+
+        return *this;
+    }
+
 public:
     FormattedList();
+
+    template<typename First, typename ... Others>
+    static std::string of(std::string firstname, First&& firstval, Others ... othervals)
+    {
+        return FormattedList{}.addItems(firstname, firstval, othervals...).toString();
+    }
 
     StreamBufferSink& add(std::string name);
 

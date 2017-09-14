@@ -806,7 +806,7 @@ YukonError_t CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser
         {
             // Must have provided only a name... Find it the hard way.
             string pname = parse.getsValue("point");
-            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointEqualByName(pname));
+            ctlPoint = boost::static_pointer_cast<CtiPointStatus>(getDevicePointByName(pname));
         }
         else
         {
