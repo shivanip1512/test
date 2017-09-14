@@ -29,22 +29,20 @@
     <entry key="yukon.web.modules.smartNotifications.saveSuccessful">Notification was successfully saved.</entry>
     <entry key="yukon.web.modules.smartNotifications.email.invalid">Not a valid email address.</entry>
     <entry key="yukon.web.modules.smartNotifications.helpText">
-        <![CDATA[
-        Setup notifications for an event.
-        <ul>
-            <li><b>Type:</b> The event to trigger notifications.</li>
-            <li><b>Frequency:</b> 
-                <ul>
+        <![CDATA[<div style="font-size:85%;">
+            <b>Type:</b> The event to trigger notifications.<br/>
+            <b>Frequency:</b> 
+            <ul style="list-style-type:none;margin:0;">
                 <li><b>Immediate</b> - receive a notification for every event.</li>  
                 <li><b>Grouped</b> - group notifications based on time.</li>
                 <li><b>Daily</b> - receive one notification a day with all events.</li>
-                </ul>
-            <li><b>Send Time:</b> Select a time for the daily notification (only applicable for Daily).</li>
-            <li><b>Combine All Daily:</b> Combines all daily notifications into one notification.</li>
-            <li><b>Media:</b> Select the media for the notification.</li>
-            <li><b>Email:</b> Enter an email address for the notification.</li>
-            <li><b>Message Detail:</b> Select whether to receive a Summary notification or Detailed notification.</li>
-        </ul>
+            </ul>
+            <b>Send Time:</b> Select a time for the daily notification (only applicable for Daily).<br/>
+            <b>Combine All Daily:</b> Combines all daily notifications into one notification.<br/>
+            <b>Media:</b> Select the media for the notification.<br/>
+            <b>Email:</b> Enter an email address for the notification.<br/>
+            <b>Message Detail:</b> Select whether to receive a Summary notification or Detailed notification.
+            </div>
     ]]>
     </entry>
     
