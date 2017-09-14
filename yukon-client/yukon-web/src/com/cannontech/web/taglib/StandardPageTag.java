@@ -1,7 +1,9 @@
 package com.cannontech.web.taglib;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
@@ -14,6 +16,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 
 /**
@@ -38,6 +41,8 @@ public class StandardPageTag extends BodyTagSupport {
     private String menuSelection = null;
     private boolean skipPage;
     private StandardPageInfo model;
+    private SmartNotificationEventType smartNotificationsEvent;
+    private Map<String, Object> smartNotificationsParameters = new HashMap<>();
     
     @Override
     public int doStartTag() throws JspException {
@@ -54,6 +59,8 @@ public class StandardPageTag extends BodyTagSupport {
         model.setHtmlLevel(getHtmlLevel());
         model.setModuleName(getModule());
         model.setPageName(getPage());
+        model.setSmartNotificationsEvent(smartNotificationsEvent);
+        model.setSmartNotificationsParameters(smartNotificationsParameters);
         
         pageContext.setAttribute(STANDARD_PAGE_INFO_ATTR, model, PageContext.REQUEST_SCOPE);
         
@@ -218,6 +225,22 @@ public class StandardPageTag extends BodyTagSupport {
     
     public List<String> getScriptFiles() {
         return scriptFiles;
+    }
+
+    public SmartNotificationEventType getSmartNotificationsEvent() {
+        return smartNotificationsEvent;
+    }
+
+    public void setSmartNotificationsEvent(SmartNotificationEventType smartNotificationsEvent) {
+        this.smartNotificationsEvent = smartNotificationsEvent;
+    }
+
+    public Map<String, Object> getSmartNotificationsParameters() {
+        return smartNotificationsParameters;
+    }
+
+    public void setSmartNotificationsParameters(Map<String, Object> smartNotificationsParameters) {
+        this.smartNotificationsParameters = smartNotificationsParameters;
     }
     
 }

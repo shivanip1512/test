@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.user.checker.UserChecker;
 
 public abstract class WidgetControllerBase implements WidgetDefinitionBean, BeanNameAware, WidgetController {
@@ -18,6 +19,7 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
     private boolean lazyLoad = false;
     private Set<WidgetInput> inputs;
     private UserChecker roleAndPropertiesChecker;
+    private SmartNotificationEventType smartNotificationsEvent;
 
     public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView(identityPath);
@@ -86,6 +88,14 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
             inputs = new HashSet<>();
         }
         inputs.add(input);
+    }
+
+    public SmartNotificationEventType getSmartNotificationsEvent() {
+        return smartNotificationsEvent;
+    }
+
+    public void setSmartNotificationsEvent(SmartNotificationEventType smartNotificationsEvent) {
+        this.smartNotificationsEvent = smartNotificationsEvent;
     }
     
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.web.PageEditMode;
 
 public class StandardPageInfo {
@@ -19,6 +20,8 @@ public class StandardPageInfo {
     private String pageName;
     private String servletPath;
     private Map<String, String> layoutParts = new HashMap<>();
+    private SmartNotificationEventType smartNotificationsEvent;
+    private Map<String, Object> smartNotificationsParameters = new HashMap<>();
 
     public String getBreadCrumbs() {
         return breadCrumbs;
@@ -114,5 +117,21 @@ public class StandardPageInfo {
 
     public void addLayoutPart(String name, String contents) {
         layoutParts.put(name, contents);
+    }
+
+    public SmartNotificationEventType getSmartNotificationsEvent() {
+        return smartNotificationsEvent;
+    }
+
+    public void setSmartNotificationsEvent(SmartNotificationEventType smartNotificationsEvent) {
+        this.smartNotificationsEvent = smartNotificationsEvent;
+    }
+
+    public Map<String, Object> getSmartNotificationsParameters() {
+        return smartNotificationsParameters;
+    }
+
+    public void setSmartNotificationsParameters(Map<String, Object> smartNotificationsParameters) {
+        this.smartNotificationsParameters = smartNotificationsParameters;
     }
 }

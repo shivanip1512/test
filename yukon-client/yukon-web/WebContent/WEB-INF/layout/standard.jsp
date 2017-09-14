@@ -52,6 +52,11 @@
     <script src="<cti:url value="${file}"/>"></script>
 </c:forEach>
 
+<c:if test="${!empty info.smartNotificationsEvent}">
+    <script src="<cti:url value="/resources/js/common/yukon.format.time.js"/>"></script>
+    <script src="<cti:url value="/resources/js/pages/yukon.smart.notifications.js"/>"></script>
+</c:if>
+
 <audio id="alert-audio">
     <source src="<cti:url value="/WebConfig/yukon/audio/beep1-shortened.mp3"/>" type="audio/mpeg">
 </audio>
@@ -134,7 +139,11 @@
                                     ${requestScope['com.cannontech.web.layout.part.headingSuffix']}</h1>
                             </c:if>
                             <div class="page-actions">
-                                <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn"/>
+                                <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn">
+                                    <c:if test="${!empty info.smartNotificationsEvent}">
+                                        <cm:dropdownOption key="yukon.web.modules.smartNotifications.actionLink" icon="icon-email-open" data-popup="#subscriptionPopup"/>
+                                    </c:if>
+                                </cm:dropdown>
                                 <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults"
                                     renderMode="buttonImage" icon="icon-resultset-first-gray"/>
                             </div>
@@ -255,5 +264,15 @@
             
         </div>
     </cti:msgScope>
+    <c:if test="${!empty info.smartNotificationsEvent}">
+       <cti:url var="subscriptionUrl" value="/notifications/subscription/popup/${info.smartNotificationsEvent}">
+        <c:forEach var="parameter" items="${info.smartNotificationsParameters}">
+            <cti:param name="${parameter.key}" value="${parameter.value}"/>
+        </c:forEach>
+       </cti:url>
+       <div id="subscriptionPopup" class="dn js-smart-notifications-popup" data-dialog data-url="${subscriptionUrl}" 
+        data-event="yukon:notifications:save" data-width="600" data-load-event="yukon:notifications:load"
+        data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"></div>
+    </c:if>
 </body>
 </html>

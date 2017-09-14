@@ -182,6 +182,12 @@
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>smartNotifications</servlet-name>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>deviceConfiguration</servlet-name>
@@ -494,6 +500,11 @@
     <servlet-mapping>
         <servlet-name>dashboards</servlet-name>
         <url-pattern>/dashboards/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>smartNotifications</servlet-name>
+        <url-pattern>/notifications/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

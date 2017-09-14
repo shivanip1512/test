@@ -17,7 +17,7 @@
 
 <tags:simpleDialog id="drDialog"/>
 <c:if test="${showSeasonReset}">
-    <div id="page-actions">
+    <div id="page-actions" class="dn">
         <cm:dropdownOption key=".seasonCntlHrs.reset" icon="icon-arrow-swap" 
             classes="js-reset-season-hrs" data-ok-event="yukon:dr:season-cntl-hrs-reset"/>
     </div>

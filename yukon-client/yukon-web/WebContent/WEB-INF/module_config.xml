@@ -960,6 +960,14 @@
       </page>
     </pages>
   </module>
+  
+    <module name="smartNotifications">
+    <skin name="STANDARD" />
+    <pages>
+      <page name="settings" type="BASIC"/>
+      <page name="detail" type="BASIC"/>
+    </pages>
+  </module>
 
     <module name="adminSetup">
         <skin name="STANDARD" />

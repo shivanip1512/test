@@ -275,6 +275,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/systemActionsMenuWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/infrastructureWarnings</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dashboards/root</value>
+                <value>classpath:com/cannontech/yukon/web/modules/smartNotifications/root</value>
             </list>
         </constructor-arg>
     </bean>

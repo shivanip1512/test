@@ -377,6 +377,16 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>smartNotificationsEvent</name>
+      <required>false</required>
+    </attribute>
+    <attribute>
+      <name>smartNotificationsParameters</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.util.HashMap</type> 
+    </attribute>
   </tag>
   
   <tag>

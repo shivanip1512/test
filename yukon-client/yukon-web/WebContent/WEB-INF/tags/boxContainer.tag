@@ -15,6 +15,12 @@
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="titleLinkHtml" %>
 <%@ attribute name="showArrows" type="java.lang.Boolean" %>
+<%@ attribute name="smartNotificationsEvent" %>
+
+<c:if test="${not empty pageScope.smartNotificationsEvent}">
+    <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
+    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
+</c:if>
 
 <cti:default var="hideEnabled" value="${true}"/>
 <cti:default var="showInitially" value="${true}"/>
@@ -50,22 +56,24 @@
                 <c:otherwise>${pageScope.title}</c:otherwise>
             </c:choose>
         </h3>
-        <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
-            <cti:icon icon="icon-help" classes="cp" data-popup="#box-container-info-popup-${thisId}" data-popup-toggle=""/>
-        </c:if>
-        <c:if test="${hideEnabled}">
-            <div class="controls"><cti:icon icon="show-hide"/></div>
-        </c:if>
-        <c:if test="${showArrows}">
-            <div class="controls">
-                <cti:button renderMode="image" icon="icon-bullet-go-up" classes="arrows js-move-up"/>
-                <cti:button renderMode="image" icon="icon-bullet-go-down" classes="arrows js-move-down"/>
-                <cti:button renderMode="image" icon="icon-bullet-go-left" classes="arrows js-move-left"/>
-                <cti:button renderMode="image" icon="icon-bullet-go" classes="arrows js-move-right"/>
-                <cti:button renderMode="image" icon="icon-cross" classes="arrows js-remove"/>
-            </div>
-        </c:if>
-        
+        <div class="controls">
+            <c:if test="${not empty pageScope.smartNotificationsEvent}">
+                <cti:button renderMode="image" icon="icon-email-open" classes="widget-controls" data-popup="#smart-notifications-popup-${thisId}"/>
+            </c:if>
+            <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl}">
+                <cti:button renderMode="image" icon="icon-help" classes="widget-controls" data-popup="#box-container-info-popup-${thisId}"/>
+            </c:if>
+            <c:if test="${hideEnabled}">
+                <cti:button renderMode="image" icon="show-hide" classes="widget-controls"/>
+            </c:if>
+            <c:if test="${showArrows}">
+                <cti:button renderMode="image" icon="icon-bullet-go-up" classes="widget-controls js-move-up"/>
+                <cti:button renderMode="image" icon="icon-bullet-go-down" classes="widget-controls js-move-down"/>
+                <cti:button renderMode="image" icon="icon-bullet-go-left" classes="widget-controls js-move-left"/>
+                <cti:button renderMode="image" icon="icon-bullet-go" classes="widget-controls js-move-right"/>
+                <cti:button renderMode="image" icon="icon-cross" classes="widget-controls js-remove"/>
+            </c:if>
+        </div>
     </div>
     
     <div id="${thisId}_content" class="content clearfix"><jsp:doBody/></div>
@@ -77,4 +85,13 @@
             data-title="${pageScope.title}"
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if> 
             data-width="600">${helpText}</div>
+</c:if>
+<c:if test="${not empty pageScope.smartNotificationsEvent}">
+    <cti:url var="smartNotificationsUrl" value="/notifications/subscription/popup/${pageScope.smartNotificationsEvent}"/>
+    <div id="smart-notifications-popup-${thisId}" data-dialog
+            class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
+            data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
+            data-load-event="yukon:notifications:load"
+            data-url="${smartNotificationsUrl}" 
+            data-width="600"></div>
 </c:if>

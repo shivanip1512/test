@@ -68,7 +68,8 @@
                 showInitially="true" 
                 hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" 
                 helpText="${pageScope.helpText}"
-                helpUrl="${pageScope.helpUrl}">
+                helpUrl="${pageScope.helpUrl}"
+                smartNotificationsEvent="${beanInst.smartNotificationsEvent}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                     <c:when test="${!authorized}">

@@ -531,8 +531,7 @@ yukon.ui = (function () {
         var pageActionsButton = $('#b-page-actions');
         var menu = pageActionsButton.find('.dropdown-menu');
         if (pageActions.length) {
-            pageActions.remove();
-            menu.html(pageActions.html());
+            menu.append(pageActions.html());
         }
 
         /** Init page buttons */

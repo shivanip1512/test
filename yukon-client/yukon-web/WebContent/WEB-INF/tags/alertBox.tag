@@ -11,10 +11,16 @@
                                       
 <%@ attribute name="arguments" type="java.lang.Object"
                          description="Arguments to use when resolving the i18n message. Only valid when 'key' is used." %>
+<%@ attribute name="classes" %>
+<%@ attribute name="includeCloseButton" type="java.lang.Boolean" %>
 
+                         
 <cti:default var="type" value="error"/>
 
-<div class="user-message ${type}">
+<div id="user-message" class="user-message ${type} ${classes}">
+    <c:if test="${includeCloseButton}">
+        <i class="cp fr icon icon-close-x" onclick="$(this).parent().addClass('dn');"></i>
+    </c:if>
     <c:choose>
         <c:when test="${not empty pageScope.key}">
             <i:inline key="${key}" arguments="${arguments}"/>

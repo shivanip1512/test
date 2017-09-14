@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.user.checker.UserChecker;
 
 public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBean, BeanNameAware {
@@ -20,6 +21,7 @@ public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBe
     private boolean lazyLoad = false;
     private Set<WidgetInput> inputs;
     private UserChecker roleAndPropertiesChecker;
+    private SmartNotificationEventType smartNotificationsEvent;
     
     final public String getShortName() {
         return shortName;
@@ -96,6 +98,14 @@ public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBe
             inputs = new HashSet<>();
         }
         inputs.add(input);
+    }
+
+    public SmartNotificationEventType getSmartNotificationsEvent() {
+        return smartNotificationsEvent;
+    }
+
+    public void setSmartNotificationsEvent(SmartNotificationEventType smartNotificationsEvent) {
+        this.smartNotificationsEvent = smartNotificationsEvent;
     }
     
 }
