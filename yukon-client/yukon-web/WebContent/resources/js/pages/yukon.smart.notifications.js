@@ -13,6 +13,13 @@ yukon.smart.notifications = (function () {
     var
     _initialized = false,
     
+    updateTypeFields = function (popup) {
+        var type = popup.find('.js-type').val(),
+            deviceDataMonitor = type == 'DEVICE_DATA_MONITOR';
+        popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
+        popup.find('#device-data-monitor').prop("disabled", !deviceDataMonitor);
+   };
+    
     mod = {
         
         /** Initialize this module. */
@@ -48,6 +55,7 @@ yukon.smart.notifications = (function () {
                 sendTimeField.val(defaultValue);
                 timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
                 timeSlider.val(defaultValue);
+                updateTypeFields(popup);
             });
             
             /** 'Save' button clicked on the notifications popup. */
@@ -79,11 +87,7 @@ yukon.smart.notifications = (function () {
             });
             
             $(document).on('change', '.js-type', function (ev) {
-                var type = $(this).val(),
-                    form = $(this).closest('#notification-details'),
-                    deviceDataMonitor = type == 'DEVICE_DATA_MONITOR';
-                form.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
-                form.find('#device-data-monitor').prop("disabled", !deviceDataMonitor);
+                updateTypeFields($(this.closest('#notification-details')));
             });
                         
             _initialized = true;

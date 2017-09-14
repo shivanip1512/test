@@ -19,7 +19,7 @@
                 <c:choose>
                     <c:when test="${!empty subscription.type}">
                         <cti:msg2 key="${subscription.type.formatKey}"/>
-                        <form:hidden path="type"/>
+                        <form:hidden path="type" cssClass="js-type"/>
                     </c:when>
                     <c:otherwise>
                         <tags:selectWithItems path="type" items="${eventTypes}" inputClass="js-type"/>
