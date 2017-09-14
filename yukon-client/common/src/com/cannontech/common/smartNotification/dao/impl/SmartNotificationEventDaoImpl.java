@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +38,12 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private ChunkingSqlTemplate chunkingTemplate;
+    private ChunkingSqlTemplate chunkingTemplate;
+    
+    @PostConstruct
+    public void init() {
+        chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+    }
 
     @Transactional
     @Override
