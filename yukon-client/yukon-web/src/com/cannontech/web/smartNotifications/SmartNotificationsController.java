@@ -3,7 +3,6 @@ package com.cannontech.web.smartNotifications;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +46,7 @@ public class SmartNotificationsController {
     @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private SmartNotificationSubscriptionValidator subscriptionValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private DeviceDataMonitorSubscriptionHelper ddmHelper;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
 
@@ -69,38 +68,14 @@ public class SmartNotificationsController {
         model.addAttribute("mode", PageEditMode.CREATE);
         SmartNotificationSubscription subscription = new SmartNotificationSubscription();
         subscription.setType(type);
-        //TODO: Move a lot of this code specific to Device Data Monitors
-        int monitorId = ServletRequestUtils.getIntParameter(request, "monitorId", 0);
-        if (type.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
-            if (monitorId != 0) {
-                subscription.addParameters("monitorId",  monitorId);
-                model.addAttribute("monitorName", monitorCacheService.getDeviceMonitor(monitorId).getName());
-            }
-        }
+        setDefaultEmail(userContext, subscription);
         //check if subscription already exists for user and type
         List<SmartNotificationSubscription> subscriptions = subscriptionDao.getSubscriptions(userContext.getYukonUser().getUserID(), type);
-        boolean existingFound = false;
-        if (!subscriptions.isEmpty()) {
-            if (type.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
-                if (monitorId != 0) {
-                    Optional<SmartNotificationSubscription> ddmSub = subscriptions.stream()
-                        .filter(sub -> monitorId == Integer
-                            .parseInt((String) sub.getParameters().get("monitorId")))
-                        .findFirst();
-                    if (ddmSub.isPresent()) {
-                        subscription = ddmSub.get();
-                        existingFound = true;
-                    }
-                }
-            } else {
-                subscription = subscriptions.get(0);
-                existingFound = true;
-            }
-        } 
-        if (existingFound) {
-            model.addAttribute("mode", PageEditMode.EDIT);
-        } else {
-            setDefaultEmail(userContext, subscription);
+        if (type.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
+            subscription = ddmHelper.retrieveSubscription(model, request, subscriptions, subscription);
+        }
+        else if (!subscriptions.isEmpty()) {
+            subscription = subscriptions.get(0);
         }
         setupPopupModel(model);
         model.addAttribute("subscription", subscription);
