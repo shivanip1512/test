@@ -407,6 +407,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="cmd_rfn_TouConfiguration.cpp">
     </ClCompile>
+    <ClCompile Include="config_helpers.cpp" />
     <ClCompile Include="dev_710.cpp">
     </ClCompile>
     <ClCompile Include="dev_a1.cpp">

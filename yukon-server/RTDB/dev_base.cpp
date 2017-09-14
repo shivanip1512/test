@@ -1163,7 +1163,7 @@ inline ULONG CtiDeviceBase::getUniqueIdentifier() const
 
 Cti::Config::DeviceConfigSPtr CtiDeviceBase::getDeviceConfig()
 {
-    return Cti::ConfigManager::getConfigForIdAndType( getID(), static_cast<DeviceTypes>( getType() ) );
+    return Cti::ConfigManager::getConfigForIdAndType( getID(), getDeviceType() );
 }
 
 Cti::DeviceQueueInterface* CtiDeviceBase::getDeviceQueueHandler()

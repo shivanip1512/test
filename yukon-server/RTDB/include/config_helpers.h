@@ -1,11 +1,11 @@
 #pragma once
 
-
 #include "config_device.h"
 #include "config_exceptions.h"
 
+#include "std_helper.h"
+
 #include <boost/optional.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include <limits>
 #include <string>
@@ -139,13 +139,11 @@ std::set<T> getConfigDataSet( Config::DeviceConfigSPtr &deviceConfig, const std:
     unsigned index = 0;
     std::set<T> result;
 
-    std::vector<T> values = getConfigDataVector<T>( deviceConfig, prefix, key );
-
-    for each( const T& val in values )
+    for( const T& val : getConfigDataVector<T>(deviceConfig, prefix, key) )
     {
         if( ! result.insert(val).second )
         {
-            std::string configKey = prefix + "." + boost::lexical_cast<std::string>(index) + "."+ key;
+            std::string configKey = prefix + "." + std::to_string(index) + "."+ key;
 
             std::ostringstream cause;
             cause << "Unexpected duplicated config data \"" << val << "\"";
@@ -194,8 +192,15 @@ typename MapType::mapped_type getConfigDataEnum(Config::DeviceConfigSPtr deviceC
     return resolveConfigData(m, configValue, configKey);
 }
 
-
 } // Anonymous
+
+struct IM_EX_DEVDB AttributeAndPointName
+{
+    AttributeAndPointName(const Cti::Config::DeviceConfig::ItemsByName &src);
+
+    std::string attributeName;
+    std::string pointName;
+};
 
 } // Devices
 } // Cti

@@ -6172,32 +6172,20 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                     auto deviceConfig = 
                                         Cti::ConfigManager::getConfigForIdAndType(
                                             bank->getControlDeviceId(),
-                                            static_cast<DeviceTypes>( resolvePAOType( bank->getPaoCategory(),
-                                                                                      bank->getControlDeviceType() ) ) );
+                                            resolveDeviceType( bank->getControlDeviceType() ) );
+
                                     if ( deviceConfig )
                                     {
                                         // build the Attribute -> PointName overlay and send it in the for() below...
 
-                                        using Cti::Devices::getConfigData;
-                                        using Cti::Config::DNPStrings;
-
-                                        struct AttributeAndPointName
-                                        {
-                                            AttributeAndPointName( const Cti::Config::DeviceConfig::ItemsByName &src ) :
-                                                attributeName   ( getConfigData( src, DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute ) ),
-                                                pointName       ( getConfigData( src, DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName ) )
-                                            {
-                                            }
-
-                                            std::string attributeName;
-                                            std::string pointName;
-                                        };
+                                        using AMC  = Cti::Config::DNPStrings::AttributeMappingConfiguration;
+                                        using AAPN = Cti::Devices::AttributeAndPointName;
+                                        using Cti::Devices::getConfigDataVector;
 
                                         try
                                         {
                                             // channel selection configuration data
-                                            const std::vector<AttributeAndPointName> cfgAttributesPointName =
-                                                    Cti::Devices::getConfigDataVector<AttributeAndPointName>( deviceConfig, Cti::Config::DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix );
+                                            const auto cfgAttributesPointName = getConfigDataVector<AAPN>( deviceConfig, AMC::AttributeMappings_Prefix );
 
                                             for ( const auto & entry : cfgAttributesPointName )
                                             {
