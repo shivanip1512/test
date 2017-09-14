@@ -1,12 +1,17 @@
 #include "precompiled.h"
 
 #include "dev_cbc8020.h"
-
 #include "pt_status.h"
+
+#include "mgr_config.h"
+#include "config_data_dnp.h"
+#include "config_helpers.h"
+
+#include "desolvers.h"
+
+#include "Attribute.h"
 #include "std_helper.h"
 
-#include <boost/optional.hpp>
-using namespace std;
 namespace Cti {
 namespace Devices {
 
@@ -27,24 +32,21 @@ namespace Devices {
  * increase by one and all major and minor revision messages
  * previously in the vector will remain there untouched.
  */
-void Cbc8020Device::combineFirmwarePoints( Protocols::Interface::pointlist_t &points )
+void Cbc8020Device::combineFirmwarePoints( Protocols::Interface::pointlist_t &points, const FirmwareRevisionOffsets firmwareOffsets )
 {
-    CtiPointDataMsg *major = 0, *minor = 0;
-    Protocols::Interface::pointlist_t::iterator itr, end = points.end();
+    CtiPointDataMsg *major = nullptr, *minor = nullptr;
 
     // We need to check if the firmware analog points are present, then consolidate
     // them into single points for processing.
-    for( itr = points.begin(); itr != end; itr++ )
+    for( auto pt_msg : points )
     {
-        CtiPointDataMsg *pt_msg = *itr;
-
         if( pt_msg && pt_msg->getType() == AnalogPointType )
         {
-            if( pt_msg->getId() == PointOffset_FirmwareRevisionMajor )
+            if( pt_msg->getId() == firmwareOffsets.major )
             {
                 major = pt_msg;
             }
-            if( pt_msg->getId() == PointOffset_FirmwareRevisionMinor )
+            if( pt_msg->getId() == firmwareOffsets.minor )
             {
                 minor = pt_msg;
             }
@@ -110,13 +112,144 @@ void Cbc8020Device::combineFirmwarePoints( Protocols::Interface::pointlist_t &po
     }
 }
 
+void Cbc8020Device::refreshAttributeOverrides()
+{
+    if( auto deviceConfig = ConfigManager::getConfigForIdAndType(getID(), getDeviceType()) )
+    {
+        if( deviceConfig->getInstanceId() != _lastConfigId )
+        {
+            _lastConfigId = deviceConfig->getInstanceId();
+
+            using AMC  = Cti::Config::DNPStrings::AttributeMappingConfiguration;
+            using AAPN = Cti::Devices::AttributeAndPointName;
+
+            if( const auto indexed = deviceConfig->getIndexedItem(AMC::AttributeMappings_Prefix) )
+            {
+                for( const auto & entry : std::vector<AAPN> { indexed->begin(), indexed->end() } )
+                {
+                    static const std::map<std::string, std::string Cbc8020Device::*> pointNames {
+                        { Attribute::FirmwareVersionMajor.getName(),     &Cbc8020Device::_pointNameFirmwareMajor            },
+                        { Attribute::FirmwareVersionMinor.getName(),     &Cbc8020Device::_pointNameFirmwareMinor            },
+                        { Attribute::EnableOvuvControl.getName(),        &Cbc8020Device::_pointNameEnableControlOvuv        },
+                        { Attribute::EnableTemperatureControl.getName(), &Cbc8020Device::_pointNameEnableControlTemperature },
+                        { Attribute::EnableTimeControl.getName(),        &Cbc8020Device::_pointNameEnableControlTime        },
+                        { Attribute::EnableVarControl.getName(),         &Cbc8020Device::_pointNameEnableControlVar         }};
+
+                    if( auto inputVar = mapFind(pointNames, entry.attributeName) )
+                    {
+                        this->*(*inputVar) = entry.pointName;
+                    }
+                }
+            }
+        }
+    }
+}
+
+long Cbc8020Device::getPointOffset(const std::string& overridePointName, long defaultOffset)
+{
+    if( ! overridePointName.empty() )
+    {
+        if( auto pt = getDevicePointByName(overridePointName) )
+        {
+            if( ! pt->isNumeric() )
+            {
+                CTILOG_WARN(dout, "Override point not Numeric type" <<
+                    FormattedList::of(
+                        "Override point name", overridePointName,
+                        "Override point ID", pt->getPointID(),
+                        "Override point type", desolvePointType(pt->getType())));
+            }
+
+            if( pt->getPointOffset() > 0 )
+            {
+                return pt->getPointOffset();
+            }
+            else
+            {
+                CTILOG_ERROR(dout, "Override point offset not valid" <<
+                    FormattedList::of(
+                        "Override point name",   overridePointName,
+                        "Override point ID",     pt->getPointID(),
+                        "Override point offset", pt->getPointOffset()));
+            }
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Override point not found" <<
+                FormattedList::of(
+                    "Override point name", overridePointName));
+        }
+    }
+
+    return defaultOffset;
+}
+
 void Cbc8020Device::processPoints( Protocols::Interface::pointlist_t &points )
 {
-    combineFirmwarePoints(points);
+    refreshAttributeOverrides();
+
+    const long pointOffsetFirmwareMajor = getPointOffset(_pointNameFirmwareMajor, PointOffset_FirmwareRevisionMajor);
+    const long pointOffsetFirmwareMinor = getPointOffset(_pointNameFirmwareMinor, PointOffset_FirmwareRevisionMinor);
+
+    combineFirmwarePoints(points, { pointOffsetFirmwareMajor, pointOffsetFirmwareMinor });
 
     //  do the final processing
     DnpDevice::processPoints(points);
 }
+
+long Cbc8020Device::getControlOffset(const std::string& overridePointName, long defaultControlOffset)
+{
+    if( ! overridePointName.empty() )
+    {
+        if( const auto pt = getDevicePointByName(overridePointName) )
+        {
+            if( pt->isStatus() )
+            {
+                CtiPointStatus& statusPt = static_cast<CtiPointStatus&>(*pt);
+
+                if( const auto control = statusPt.getControlParameters() )
+                {
+                    if( control->getControlOffset() > 0 )
+                    {
+                        return control->getControlOffset();
+                    }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "Control offset override not valid" <<
+                            FormattedList::of(
+                                "Override point name", overridePointName,
+                                "Override point ID", pt->getPointID(),
+                                "Override control offset", control->getControlOffset()));
+                    }
+                }
+                else
+                {
+                    CTILOG_ERROR(dout, "Control offset override point does not have control parameters" <<
+                        FormattedList::of(
+                            "Override point name", overridePointName,
+                            "Override point ID", pt->getPointID()));
+                }
+            }
+            else
+            {
+                CTILOG_ERROR(dout, "Control offset override point not Status type" <<
+                    FormattedList::of(
+                        "Override point name", overridePointName,
+                        "Override point ID", pt->getPointID(),
+                        "Override point type", desolvePointType(pt->getType())));
+            }
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Override point not found" <<
+                FormattedList::of(
+                    "Override point name", overridePointName));
+        }
+    }
+
+    return defaultControlOffset;
+}
+
 
 YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
@@ -124,20 +257,32 @@ YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
     {
         if ( parse.isKeyValid( "local_control_type" ) && parse.isKeyValid( "local_control_state" ) )
         {
-            static const std::map<std::string, int> _offsetLookup
+            refreshAttributeOverrides();
+
+            struct ControlOffsetInfo 
             {
-                { "ovuv",   14 },
-                { "var",    15 },
-                { "temp",   16 },
-                { "time",   23 }
+                long defaultControlOffset;
+                std::string Cbc8020Device::*overridePointName;
+            };
+
+            static const std::map<std::string, ControlOffsetInfo> _offsetLookup
+            {
+                { "ovuv",   { ControlOffset_EnableControlOvuv,          &Cbc8020Device::_pointNameEnableControlOvuv        } },
+                { "temp",   { ControlOffset_EnableControlTemperature,   &Cbc8020Device::_pointNameEnableControlTemperature } },
+                { "time",   { ControlOffset_EnableControlTime,          &Cbc8020Device::_pointNameEnableControlTime        } },
+                { "var",    { ControlOffset_EnableControlVar,           &Cbc8020Device::_pointNameEnableControlVar         } },
             };
 
             const std::string controlType   = parse.getsValue("local_control_type");
             const std::string controlAction = parse.getsValue("local_control_state") == "enable" ? "close" : "open";
 
-            if ( auto offset = Cti::mapFind( _offsetLookup, controlType ) )
+            if ( auto offsetInfo = Cti::mapFind( _offsetLookup, controlType ) )
             {
-                const std::string command = "control " + controlAction + " offset " + std::to_string( *offset );
+                const std::string& overridePointName = this->*(offsetInfo->overridePointName);
+
+                const long controlOffset = getControlOffset(overridePointName, offsetInfo->defaultControlOffset);
+
+                const std::string command = "control " + controlAction + " offset " + std::to_string( controlOffset );
 
                 pReq->setCommandString( command );
                 parse = CtiCommandParser( pReq->CommandString() );
@@ -165,7 +310,7 @@ YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
             {
                 CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
 
-                if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                if( const auto controlParameters = pStatus->getControlParameters() )
                 {
                     if( controlParameters->getControlOffset() > 0 )
                     {

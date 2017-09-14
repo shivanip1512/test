@@ -21,7 +21,11 @@ struct TestCbc8020Device : Cti::Devices::Cbc8020Device
     using Cbc8020Device::PointOffset_FirmwareRevisionMajor;
     using Cbc8020Device::PointOffset_FirmwareRevisionMinor;
     using Cbc8020Device::PointOffset_FirmwareRevision;
-    using Cbc8020Device::combineFirmwarePoints;
+    
+    static void combineFirmwarePoints(pointlist_t &points)
+    {
+        Cbc8020Device::combineFirmwarePoints(points, {3, 4});
+    }
 };
 
 BOOST_AUTO_TEST_CASE(test_firmware_points_no_points_present)

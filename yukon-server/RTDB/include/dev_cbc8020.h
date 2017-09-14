@@ -8,7 +8,6 @@ namespace Devices {
 class IM_EX_DEVDB Cbc8020Device : public Cbc7020Device
 {
 public:
-    Cbc8020Device() {};
 
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
@@ -28,10 +27,39 @@ protected:
         PointOffset_FirmwareRevision      = 9999
     };
 
+    enum ControlOffsets
+    {
+        ControlOffset_EnableControlOvuv        = 14,
+        ControlOffset_EnableControlVar         = 15,
+        ControlOffset_EnableControlTemperature = 16,
+        ControlOffset_EnableControlTime        = 23,
+    };
+
     void processPoints( Protocols::Interface::pointlist_t &points ) override;
 
-    static void combineFirmwarePoints( Protocols::Interface::pointlist_t &points );
+    struct FirmwareRevisionOffsets
+    {
+        long major;
+        long minor;
+    };
 
+    static void combineFirmwarePoints( Protocols::Interface::pointlist_t &points, const FirmwareRevisionOffsets firmwareOffsets );
+
+    void refreshAttributeOverrides();
+
+private:
+    
+    std::string _pointNameFirmwareMajor;
+    std::string _pointNameFirmwareMinor;
+    std::string _pointNameEnableControlOvuv;
+    std::string _pointNameEnableControlTemperature;
+    std::string _pointNameEnableControlTime;
+    std::string _pointNameEnableControlVar;
+
+    long getPointOffset  (const std::string& overridePointName, long defaultOffset);
+    long getControlOffset(const std::string& overridePointName, long defaultControlOffset);
+
+    size_t _lastConfigId = 0;
 };
 
 }
