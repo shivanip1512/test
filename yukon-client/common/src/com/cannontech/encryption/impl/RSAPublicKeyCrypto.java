@@ -10,7 +10,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
@@ -30,7 +30,7 @@ public class RSAPublicKeyCrypto {
         byte[] cipherText = null;
         try {
             
-            Cipher cipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleProvider());
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleFipsProvider());
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             plainText = CryptoUtils.appendSalt(plainText, numRandomBytes);
             cipherText = cipher.doFinal(plainText);
@@ -58,7 +58,7 @@ public class RSAPublicKeyCrypto {
     public static byte[] decrypt(byte[] cipherText, PrivateKey privateKey) throws CryptoException {
         byte[] decryptedText = null;
         try {
-            Cipher cipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleProvider());
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleFipsProvider());
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedText = cipher.doFinal(cipherText);
             decryptedText = CryptoUtils.removeSalt(decryptedText, numRandomBytes);

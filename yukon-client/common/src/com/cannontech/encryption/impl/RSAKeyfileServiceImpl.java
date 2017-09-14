@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
@@ -15,14 +14,14 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
@@ -157,43 +156,22 @@ public class RSAKeyfileServiceImpl implements RSAKeyfileService {
     }
     
     @Override
-    public SecurityKeyPair getKeyPair(String keyString) throws IOException, NoSuchAlgorithmException,
-            InvalidKeySpecException {
-        Security.addProvider(new BouncyCastleProvider());
-        StringBuilder pkcs8Lines = new StringBuilder();
-        BufferedReader rdr = new BufferedReader(new StringReader(keyString));
-        String line;
-        while ((line = rdr.readLine()) != null) {
-            pkcs8Lines.append(line);
-        }
-
-        // Remove the "BEGIN" and "END" lines, as well as any whitespace
-        String pkcs8Pem = pkcs8Lines.toString();
-        pkcs8Pem = pkcs8Pem.replace("-----BEGIN RSA PRIVATE KEY-----", "");
-        pkcs8Pem = pkcs8Pem.replace("-----END RSA PRIVATE KEY-----", "");
-        pkcs8Pem = pkcs8Pem.replaceAll("\\s+", "");
-
-        byte[] pkcs8EncodedBytes = new Base64().decode(pkcs8Pem);
-
-        // extract the private key
-
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
-        KeyFactory kf = KeyFactory.getInstance(ALGORITHM);
-        PrivateKey privateKey = kf.generatePrivate(keySpec);
-
+    public SecurityKeyPair getKeyPair(String keyString)
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        Security.addProvider(new BouncyCastleFipsProvider());
+        
+        BufferedReader bufferedReader = new BufferedReader(new StringReader(keyString));
+        PEMParser pemParser = new PEMParser(bufferedReader);
+        PEMKeyPair pemKeyPair = (PEMKeyPair) pemParser.readObject();
+        KeyPair keyPair = new JcaPEMKeyConverter().getKeyPair(pemKeyPair);
+        pemParser.close();
+        PrivateKey privateKey = keyPair.getPrivate();
+        
         byte privateKeyEncoded[] = privateKey.getEncoded();
-        byte[] privateKeyEncoded64 = Base64.encodeBase64(privateKeyEncoded);
-        String privateKeyString = new String(privateKeyEncoded64);
-
-        RSAPrivateKeySpec priv = kf.getKeySpec(privateKey, RSAPrivateKeySpec.class);
-        RSAPublicKeySpec rsaKeySpec = new RSAPublicKeySpec(priv.getModulus(), new BigInteger("65537"));
-        PublicKey publicKey = kf.generatePublic(rsaKeySpec);
-
-        byte publicKeyEncoded[] = publicKey.getEncoded();
-        byte[] publicKeyEncoded64 = Base64.encodeBase64(publicKeyEncoded);
-        String publicKeyString = new String(publicKeyEncoded64);
-
-        SecurityKeyPair pair = new SecurityKeyPair(privateKeyString, publicKeyString);
-        return pair;
+        String privateKeyString = new String(Base64.encodeBase64(privateKeyEncoded));
+        byte publicKeyEncoded[] = keyPair.getPublic().getEncoded();
+        String publicKeyString = new String(Base64.encodeBase64(publicKeyEncoded));
+        
+        return new SecurityKeyPair(privateKeyString, publicKeyString);
     }
 }

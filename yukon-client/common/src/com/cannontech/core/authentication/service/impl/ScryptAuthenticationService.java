@@ -5,7 +5,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-import org.bouncycastle.crypto.generators.SCrypt;
+import org.bouncycastle.crypto.general.KDF;
+import org.bouncycastle.crypto.general.KDF.SCryptFactory;
+import org.bouncycastle.crypto.general.KDF.ScryptParameters;
 import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class ScryptAuthenticationService implements AuthenticationProvider, PasswordSetProvider, PasswordEncrypter {
     @Autowired private YukonUserPasswordDao userPasswordDao;
 
+    private static SCryptFactory scryptFactory;
     private final static int derivedKeyLength = 32;
 
     /**
@@ -28,6 +31,10 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
     private final static int cpuCostParam = 16384;
     private final static int memoryCostParam = 8;
     private final static int parallelParam = 1;
+    
+    public ScryptAuthenticationService() {
+        scryptFactory = new SCryptFactory();
+    }
 
     @Override
     public void setPassword(LiteYukonUser user, String newPassword) {
@@ -72,9 +79,10 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         try {
             byte[] salt = new byte[16];
             SecureRandom.getInstance("SHA1PRNG").nextBytes(salt);
-            byte[] fullHashedPasswordString =
-                SCrypt.generate(password.getBytes("UTF-8"), salt, cpuCostParam, memoryCostParam, parallelParam,
-                    derivedKeyLength);
+            byte[] fullHashedPasswordString = new byte[derivedKeyLength];
+            ScryptParameters scryptParameters =
+                KDF.SCRYPT.using(salt, cpuCostParam, memoryCostParam, parallelParam, password.getBytes("UTF-8"));
+            scryptFactory.createKDFCalculator(scryptParameters).generateBytes(fullHashedPasswordString);
             StringBuilder sb = new StringBuilder((salt.length + fullHashedPasswordString.length) * 2);
             sb.append("$").append(cpuCostParam).append("$").append(memoryCostParam).append("$").append(parallelParam);
             sb.append("$").append(new String(Base64.encode(salt))).append('$');
@@ -103,14 +111,16 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         try {
             if (cpuCostParam == storedCpuCostParam && memoryCostParam == storedMemoryCostParam
                 && parallelParam == storedParallelParam) {
-                byte[] fullHashedPasswordString =
-                    SCrypt.generate(password.getBytes("UTF-8"), salt, cpuCostParam, memoryCostParam, parallelParam,
-                        derivedKeyLength);
+                byte[] fullHashedPasswordString = new byte[derivedKeyLength];
+                ScryptParameters scryptParameters =
+                    KDF.SCRYPT.using(salt, cpuCostParam, memoryCostParam, parallelParam, password.getBytes("UTF-8"));
+                scryptFactory.createKDFCalculator(scryptParameters).generateBytes(fullHashedPasswordString);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
             } else {
-                byte[] fullHashedPasswordString =
-                    SCrypt.generate(password.getBytes("UTF-8"), salt, storedCpuCostParam, storedMemoryCostParam,
-                        storedParallelParam, derivedKeyLength);
+                byte[] fullHashedPasswordString = new byte[derivedKeyLength];
+                ScryptParameters scryptParameters = KDF.SCRYPT.using(salt, storedCpuCostParam, storedMemoryCostParam,
+                    storedParallelParam, password.getBytes("UTF-8"));
+                scryptFactory.createKDFCalculator(scryptParameters).generateBytes(fullHashedPasswordString);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
                 if (isPasswordMatched && isSetPasswordRequired) {
                     setPassword(user, password);

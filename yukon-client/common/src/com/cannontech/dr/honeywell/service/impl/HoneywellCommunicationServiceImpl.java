@@ -26,7 +26,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -271,7 +271,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             byte[] encoded = new Base64().decode(decryptedPrivateKey);
 
             // PKCS8 decode the encoded RSA private key
-            java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+            java.security.Security.addProvider(new BouncyCastleFipsProvider());
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
             KeyFactory keyFactory;
 
@@ -313,7 +313,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             // Step 4: Sign it with the certificate
             // Get the private key
-            Security.addProvider(new BouncyCastleProvider());
+            Security.addProvider(new BouncyCastleFipsProvider());
 
             // Sign
             Signature signature = Signature.getInstance("SHA1WithRSA");

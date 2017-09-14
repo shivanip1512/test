@@ -16,7 +16,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.encryption.CryptoException;
@@ -51,7 +51,6 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
     private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
     private static final String ENCRYPTION_ALGORITHM = "AES";
     private static final String AUTHENTICATION_ALGORITHM = "HmacSHA256";
-    private static final String SECURITY_PROVIDER = "BC";
     
     /**
      * Calls AESPasswordBasedSymmetricCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters)
@@ -86,22 +85,22 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      */
     private AESPasswordBasedCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters) throws CryptoException {
         try {
-            Security.addProvider(new BouncyCastleProvider());
+            Security.addProvider(new BouncyCastleFipsProvider());
 
             byte[] salt = CryptoUtils.pbkdf2(password, keyByteLength, CryptoUtils.getYukonsalt(), saltIters);
             byte[] initVector = CryptoUtils.pbkdf2(password, keyByteLength, salt, ivIters);
             byte[] hmacKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, hmacKeyIters);
             byte[] aesKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, aesKeyIters);
 
-            hMac = Mac.getInstance(AUTHENTICATION_ALGORITHM, SECURITY_PROVIDER);
+            hMac = Mac.getInstance(AUTHENTICATION_ALGORITHM, BouncyCastleFipsProvider.PROVIDER_NAME);
             Key hMacKey = new SecretKeySpec(hmacKey, AUTHENTICATION_ALGORITHM);
             hMac.init(hMacKey);
 
             Key aesSpec = new SecretKeySpec(aesKey,ENCRYPTION_ALGORITHM);
-            encryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleProvider());
+            encryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleFipsProvider());
             encryptingCipher.init(Cipher.ENCRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
 
-            decryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleProvider());
+            decryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleFipsProvider());
             decryptingCipher.init(Cipher.DECRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
         } catch (Exception e) {
             throw new CryptoException(e);
