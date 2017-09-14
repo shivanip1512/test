@@ -44,7 +44,7 @@
         <pointInfo name="kW (Channel 3)"/>
         <pointInfo name="kW-LP" init="true" attributes="LOAD_PROFILE"/>
         <pointInfo name="kW-LP (Channel 2)" attributes="PROFILE_CHANNEL_2"/>
-        <pointInfo name="kW-LP (Channel 3)"/>
+        <pointInfo name="kW-LP (Channel 3)" attributes="PROFILE_CHANNEL_3"/>
         <pointInfo name="kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="kWh (Channel 2)" attributes="RECEIVED_KWH"/>
         <pointInfo name="kWh (Channel 3)"/>
@@ -53,7 +53,7 @@
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
-        <pointInfo name="Peak kW (Channel 2)" init="true"/>
+        <pointInfo name="Peak kW (Channel 2)" init="true" attributes="RECEIVED_PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Channel 3)" init="true"/>
         <pointInfo name="Peak kW (Rate A kW)" attributes="PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>

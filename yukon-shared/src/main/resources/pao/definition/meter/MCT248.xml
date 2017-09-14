@@ -23,10 +23,10 @@
         <pointInfo name="Load Survey Active Flag"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Over Flow Flag"/>
-        <pointInfo name="Power Fail" init="true"/>
+        <pointInfo name="Power Fail" init="true" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Power Fail Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="Short Power Fail Flag"/>
-        <pointInfo name="Tamper Flag"/>
+        <pointInfo name="Tamper Flag" attributes="TAMPER_FLAG"/>
         <pointInfo name="Time Sync Flag"/>
     </pointInfos>
     <commands>

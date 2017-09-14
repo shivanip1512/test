@@ -24,7 +24,7 @@
         <pointInfo name="kWh" init="true" attributes="USAGE"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Over Flow Flag"/>
-        <pointInfo name="Power Fail" init="true"/>
+        <pointInfo name="Power Fail" init="true" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Short Power Fail Flag"/>
     </pointInfos>
     <commands>

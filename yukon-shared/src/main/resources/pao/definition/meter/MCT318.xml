@@ -22,7 +22,7 @@
         <pointInfo name="kW (Channel 2)"/>
         <pointInfo name="kW (Channel 3)"/>
         <pointInfo name="kWh" init="true" attributes="USAGE"/>
-        <pointInfo name="kWh (Channel 2)"/>
+        <pointInfo name="kWh (Channel 2)" attributes="RECEIVED_KWH"/>
         <pointInfo name="kWh (Channel 3)"/>
         <pointInfo name="Max OR Off Peak Demand (Pulse Input 1)" attributes="PEAK_DEMAND"/>
         <pointInfo name="Max OR Off Peak Demand (Pulse Input 2)"/>
@@ -32,7 +32,7 @@
         <pointInfo name="Min OR On Peak Demand (Pulse Input 3)"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Over Flow Flag"/>
-        <pointInfo name="Power Fail" init="true"/>
+        <pointInfo name="Power Fail" init="true" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Pulse Input #1 (Frozen)"/>
         <pointInfo name="Pulse Input #2 (Frozen)"/>
         <pointInfo name="Pulse Input #3 (Frozen)"/>

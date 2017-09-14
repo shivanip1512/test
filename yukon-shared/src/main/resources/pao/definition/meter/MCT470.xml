@@ -34,12 +34,12 @@
     </configuration>
     <pointInfos>
         <pointInfo name="Average Power Factor" attributes="POWER_FACTOR"/>
-        <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Blink Count" init="true"/>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="IED Blink Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="IED Demand Reset Count" init="true" attributes="IED_DEMAND_RESET_COUNT"/>
         <pointInfo name="kVArh" init="true"/>
-        <pointInfo name="kW" init="true" attributes="DEMAND"/>
+        <pointInfo name="kW" init="true"/>
         <pointInfo name="kW (Channel 2)"/>
         <pointInfo name="kW (Channel 3)"/>
         <pointInfo name="kW (Channel 4)"/>
@@ -47,8 +47,8 @@
         <pointInfo name="kW-LP (Channel 2)" attributes="PROFILE_CHANNEL_2"/>
         <pointInfo name="kW-LP (Channel 3)" attributes="PROFILE_CHANNEL_3"/>
         <pointInfo name="kW-LP (Channel 4)" attributes="VOLTAGE_PROFILE"/>
-        <pointInfo name="kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
-        <pointInfo name="kWh (Channel 2)" attributes="RECEIVED_KWH"/>
+        <pointInfo name="kWh" init="true"/>
+        <pointInfo name="kWh (Channel 2)"/>
         <pointInfo name="kWh (Channel 3)"/>
         <pointInfo name="kWh (Channel 4)"/>
         <pointInfo name="Last Interval kVAr" attributes="KVAR"/>
@@ -64,7 +64,7 @@
         <pointInfo name="Peak kVAr (Rate B kVAr)" attributes="PEAK_KVAR_RATE_B"/>
         <pointInfo name="Peak kVAr (Rate C kVAr)" attributes="PEAK_KVAR_RATE_C"/>
         <pointInfo name="Peak kVAr (Rate D kVAr)" attributes="PEAK_KVAR_RATE_D"/>
-        <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
+        <pointInfo name="Peak kW" init="true"/>
         <pointInfo name="Peak kW (Channel 2)"/>
         <pointInfo name="Peak kW (Channel 3)"/>
         <pointInfo name="Peak kW (Channel 4)"/>

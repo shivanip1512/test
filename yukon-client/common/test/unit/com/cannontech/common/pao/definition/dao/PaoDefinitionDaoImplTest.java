@@ -102,6 +102,7 @@ public class PaoDefinitionDaoImplTest {
         expectedAttributes.add(BuiltInAttribute.BLINK_COUNT);
         expectedAttributes.add(BuiltInAttribute.OUTAGE_STATUS);
         expectedAttributes.add(BuiltInAttribute.COMM_STATUS);
+        expectedAttributes.add(BuiltInAttribute.POWER_FAIL_FLAG);
 
         Set<AttributeDefinition> actualAttributes = dao.getDefinedAttributes(device.getDeviceType());
         assertAttributeLookupsMatch("Expected attributes did not match: ", expectedAttributes, actualAttributes);
