@@ -225,12 +225,12 @@ bool CtiFDR_ValmetMulti::readConfig()
             Cti::StreamBuffer sb;
             sb <<"Valmet Multi logging only these ports: ";
 
-            for each(int port in _portsToLog)
+            for( int port : _portsToLog )
             {
                 sb << port << " ";
             }
 
-            loglist << sb;
+            loglist << sb.extractToString();
         }
 
         CTILOG_DEBUG(dout, loglist);
