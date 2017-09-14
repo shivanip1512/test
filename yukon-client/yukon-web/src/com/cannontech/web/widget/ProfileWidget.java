@@ -32,6 +32,7 @@ import com.cannontech.amr.device.ProfileAttributeChannel;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.toggleProfiling.model.RfnVoltageProfile;
 import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -354,7 +355,12 @@ public class ProfileWidget extends WidgetControllerBase {
             msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
-            msgData.put("physAddress", device.getAddress());
+            if (device.getPaoType().isRfMeter()) {
+                RfnMeter rfMeter = meterDao.getRfnMeterForId(deviceId);
+                msgData.put("physAddress/serialNumber", rfMeter.getRfnIdentifier().getSensorSerialNumber());
+            } else {
+                msgData.put("physAddress/serialNumber", device.getAddress());
+            }
             // e-mail callback service expects startDate & stopDate of type Date
             msgData.put("startDate", startDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone()).toDate()); 
             msgData.put("stopDate", stopDate.toDateTimeAtStartOfDay(userContext.getJodaTimeZone()).toDate());
