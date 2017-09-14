@@ -431,6 +431,38 @@ BOOST_AUTO_TEST_CASE(test_string_list_digits)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_formatted_list_of)
+{
+    int val1           = 345;
+    unsigned val2      = 554;
+    float val3         = 2.5999999;
+    unsigned char val4 = 123;
+
+    std::ostringstream oss;
+    oss << "this is oss";
+
+    const auto act = 
+        FormattedList::of(
+            "element0",      true,
+            "element1",      false,
+            "Element2 ABCD", val1,
+            "element 3",     val2,
+            "element 6",     val3,
+            "ele 7",         val4,
+            "ostringstream", oss);
+
+    const std::string exp =
+        "\nelement0      : true"
+        "\nelement1      : false"
+        "\nElement2 ABCD : 345"
+        "\nelement 3     : 554"
+        "\nelement 6     : 2.5999999"
+        "\nele 7         : 123"
+        "\nostringstream : this is oss";
+
+    BOOST_CHECK_EQUAL(act, exp);
+}
+
 BOOST_AUTO_TEST_CASE(test_string_list_separator)
 {
     Cti::FormattedList itemList;

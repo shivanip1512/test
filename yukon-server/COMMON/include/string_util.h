@@ -272,7 +272,7 @@ class IM_EX_CTIBASE FormattedList : public Loggable, private boost::noncopyable
     StreamBufferSink& add();
 
     template<typename First, typename Second, typename ... Others>
-    FormattedList& addItems(std::string firstname, First&& firstval, std::string secondname, Second&& secondval, Others ... othervals)
+    FormattedList& addItems(std::string firstname, First&& firstval, std::string secondname, Second&& secondval, Others&& ... othervals)
     {
         return addItems(firstname, firstval).addItems(secondname, secondval, othervals...);
     }
@@ -289,17 +289,15 @@ public:
     FormattedList();
 
     template<typename First, typename ... Others>
-    static std::string of(std::string firstname, First&& firstval, Others ... othervals)
+    static std::string of(std::string firstname, First&& firstval, Others&& ... othervals)
     {
         return FormattedList{}.addItems(firstname, firstval, othervals...).toString();
     }
 
     StreamBufferSink& add(std::string name);
 
-    template<typename T> StreamBufferSink& operator<< (T& val)          { return (add() << val); }
     template<typename T> StreamBufferSink& operator<< (const T& val)    { return (add() << val); }
-    template<typename T> StreamBufferSink& operator<< (T *ptr)          { return (add() << ptr); }
-    template<typename T> StreamBufferSink& operator<< (const T *ptr)    { return (add() << ptr); }
+    template<typename T> StreamBufferSink& operator<< (const T* ptr)    { return (add() << ptr); }
 
     StreamBufferSink& operator<< (std::ostream& (*pf)(std::ostream&))   { return (add() << pf); }
     StreamBufferSink& operator<< (std::ios& (*pf)(std::ios&))           { return (add() << pf); }
