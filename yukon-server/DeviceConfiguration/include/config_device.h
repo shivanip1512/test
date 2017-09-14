@@ -73,20 +73,16 @@ protected:
     bool insertValue( std::string identifier, const std::string & value );
     bool getLongValue( const std::string & key, long & value ) const;
 
-    DeviceConfig(Cti::Test::use_in_unit_tests_only&);
-
 private:
 
     friend class ConfigManager;
-
-    DeviceConfig();
 
     ItemsByName        _items;
     IndexedItemsByName _indexedItems;
 
     static std::atomic_size_t _instances;
 
-    size_t _instanceId;
+    size_t _instanceId { ++_instances };
 
     boost::optional<std::string> lookup( std::string key ) const;
 };
