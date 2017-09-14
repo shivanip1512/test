@@ -1,14 +1,19 @@
 package com.cannontech.encryption.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Security;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -29,6 +34,12 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
     private Cipher encryptingCipher;
     private Cipher decryptingCipher;
     private Mac hMac;
+    
+    private final byte[] salt;
+    private final byte[] initVector;
+    private final byte[] hmacKey;
+    private final byte[] aesKey;
+
 
     /************************
       Default Encryption Values. Do not change!
@@ -55,17 +66,6 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
     /**
      * Calls AESPasswordBasedSymmetricCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters)
      * with values saltIters=2005, ivIters=4019, hmacKeyIters=7003, aesKeyIters=10098.
-     *      and generates a random password using CryptoUtils.generateRandomPasskey(16)
-     *
-     * @throws CryptoException
-     */
-    public AESPasswordBasedCrypto() throws CryptoException {
-        this(CryptoUtils.generateRandomPasskey(keyByteLength));
-    }
-
-    /**
-     * Calls AESPasswordBasedSymmetricCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters)
-     * with values saltIters=2005, ivIters=4019, hmacKeyIters=7003, aesKeyIters=10098.
      * 
      * @param password : char[] - password which is used to derive data used by the cipher
      * @throws CryptoException
@@ -87,11 +87,23 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
         try {
             Security.addProvider(new BouncyCastleFipsProvider());
 
-            byte[] salt = CryptoUtils.pbkdf2(password, keyByteLength, CryptoUtils.getYukonsalt(), saltIters);
-            byte[] initVector = CryptoUtils.pbkdf2(password, keyByteLength, salt, ivIters);
-            byte[] hmacKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, hmacKeyIters);
-            byte[] aesKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, aesKeyIters);
+            salt = CryptoUtils.pbkdf2(password, keyByteLength, CryptoUtils.getYukonsalt(), saltIters);
+            initVector = CryptoUtils.pbkdf2(password, keyByteLength, salt, ivIters);
+            hmacKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, hmacKeyIters);
+            aesKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, aesKeyIters);
 
+            reset();
+        } catch (Exception e) {
+            throw new CryptoException(e);
+        }
+    }
+
+    /*
+     * This sets up the hMac and Ciphers. When exceptions are thrown this needs to be re-executed.
+     * This is due to the Cipher and hMac doFinal calls leaving them in a bad state after an exception
+     */
+    private void reset() throws CryptoException {
+        try {
             hMac = Mac.getInstance(AUTHENTICATION_ALGORITHM, BouncyCastleFipsProvider.PROVIDER_NAME);
             Key hMacKey = new SecretKeySpec(hmacKey, AUTHENTICATION_ALGORITHM);
             hMac.init(hMacKey);
@@ -105,6 +117,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
         } catch (Exception e) {
             throw new CryptoException(e);
         }
+        
     }
 
 	/**
@@ -157,6 +170,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
 			return cipherText;
 		} catch (Exception e) {
+		    reset();
 			throw new CryptoException("Unable to encrypt the plain-text", e);
 		}
 	}
@@ -180,6 +194,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
 			return plainText;
 		} catch (BadPaddingException | IllegalBlockSizeException e) {
+		    reset();
 			throw new CryptoException("Failed to decrypt cipher text.", e);
 		}
 	}
@@ -200,6 +215,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 				throw new CryptoException("CipherText is not authentic. Message Authentication Failed.");
 			}
 		} catch (IllegalBlockSizeException| BadPaddingException e) {
+		    reset();
 			throw new CryptoException("CipherText is not authentic. Decryption failed.", e);
 		}
 	}

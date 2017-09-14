@@ -225,8 +225,8 @@ public class YukonSecurityController {
                 EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
                 if (honeywellEncryptionKey != null) {
                     try {
-                        String decryptedPublicKeyValue =
-                            new String(aes.decryptHexStr(honeywellEncryptionKey.getPublicKey()));
+                        String decryptedPublicKeyValue = 
+                                aes.decryptHexStr(honeywellEncryptionKey.getPublicKey());
                         model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
                     } catch (CryptoException | DecoderException e) {
                         flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".honeywellKeyDecryptionFailed",

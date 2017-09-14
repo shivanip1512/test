@@ -3,7 +3,6 @@ package com.cannontech.encryption;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -123,16 +122,6 @@ public class AESPasswordBasedCryptoTest  {
         assertEquals(true, aes.isAuthentic(cipherText3));
         byte[] plainText3 = aes.decrypt(cipherText3);
         assertEquals(true, Arrays.equals(plainText3,plainText));
-    }
-
-    @Test
-    public void test_encryptionAndDecryptionDefault() {
-        try {
-            AESPasswordBasedCrypto aesDefaultConstructor = new AESPasswordBasedCrypto();
-            testCipher(aesDefaultConstructor);
-        } catch (CryptoException e) {
-            fail();
-        }
     }
 
     @Test
