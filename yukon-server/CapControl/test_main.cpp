@@ -2,12 +2,16 @@
 
 #include "amq_connection.h"
 
+#include "boost_test_helpers.h"
+
 #include <boost/test/unit_test.hpp>
 
 #include <memory>
 
 //  Prevents database connections.  Currently not enabled for Cap Control, since some tests still invoke connections to the DB.
 //#include "test_main.hpp"
+
+Cti::Test::use_in_unit_tests_only test_tag;
 
 // Close all yukon messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;

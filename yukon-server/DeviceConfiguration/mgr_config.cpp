@@ -179,9 +179,9 @@ void ConfigManager::executeLoadItems( const std::string & sql )
         rdr["ItemValue"] >> currentCategory->items[itemName];
     }
 
-    for each( const std::pair<long, CategoryBuffer> pair in categories )
+    for ( const auto pair : categories )
     {
-        Config::CategorySPtr category = Config::Category::ConstructCategory( pair.second.type, pair.second.items );
+        auto category = Config::Category::ConstructCategory( pair.second.type, pair.second.items );
 
         if( category.get() )
         {
@@ -270,7 +270,7 @@ void ConfigManager::processDBUpdate( const long          ID,
 
             // de-cache any config that contains this (category)ID
 
-            for each ( const ConfigurationToCategoriesMap::value_type & configIter in _configurations )
+            for ( const auto & configIter : _configurations )
             {
                 const CategoryIds & configCategories = configIter.second;
 
@@ -301,18 +301,18 @@ void ConfigManager::processDBUpdate( const long          ID,
 Config::DeviceConfigSPtr  ConfigManager::buildConfig( const long configID, const DeviceTypes deviceType )
 {
     // grab device type categories
-    DeviceConfigDescription::CategoryNames deviceCategories = DeviceConfigDescription::GetCategoryNamesForDeviceType( deviceType );
+    const auto deviceCategories = DeviceConfigDescription::GetCategoryNamesForDeviceType( deviceType );
 
     // grab the config
-    if ( const boost::optional<CategoryIds> configCategoryIds = mapFind( _configurations, configID ) )
+    if ( const auto configCategoryIds = mapFind( _configurations, configID ) )
     {
-        Config::DeviceConfigSPtr  deviceConfiguration( new Config::DeviceConfig );
+        auto deviceConfiguration = Config::DeviceConfigSPtr(new Config::DeviceConfig);
 
         // iterate the config's categories
-        for each ( const long categoryID in *configCategoryIds )
+        for ( const long categoryID : *configCategoryIds )
         {
             // grab the category
-            if ( const boost::optional<Config::CategorySPtr> category = mapFind( _categories, categoryID ) )
+            if ( const auto category = mapFind( _categories, categoryID ) )
             {
                 // is it one of our device's categories?
                 if ( deviceCategories.count( (*category)->getType() ) )
@@ -355,9 +355,9 @@ Config::DeviceConfigSPtr  ConfigManager::fetchConfig( const long deviceID, const
         configID = configIDSearch->second;
 
         //  Do a read-only search first - we only have the reader lock
-        if( const boost::optional<DeviceTypeToDeviceConfigMap &> configsPerType = mapFindRef(_cache, configID) )
+        if( const auto configsPerType = mapFindRef(_cache, configID) )
         {
-            if( const boost::optional<Config::DeviceConfigSPtr> cachedConfig = mapFind(*configsPerType, deviceType) )
+            if( const auto cachedConfig = mapFind(*configsPerType, deviceType) )
             {
                 //  Found it in our cache
                 return *cachedConfig;

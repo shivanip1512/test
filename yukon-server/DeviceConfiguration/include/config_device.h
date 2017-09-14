@@ -2,10 +2,12 @@
 
 #include "yukon.h"
 #include "dllbase.h"
+#include "utility.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>
 
+#include <atomic>
 
 namespace Cti {
 
@@ -63,18 +65,28 @@ public:
 
     boost::optional<IndexedItem> getIndexedItem( const std::string & prefix );
 
+    size_t getInstanceId() const;
+
 protected:
 
     void addCategory( const CategorySPtr & category );
     bool insertValue( std::string identifier, const std::string & value );
     bool getLongValue( const std::string & key, long & value ) const;
 
+    DeviceConfig(Cti::Test::use_in_unit_tests_only&);
+
 private:
 
     friend class ConfigManager;
 
+    DeviceConfig();
+
     ItemsByName        _items;
     IndexedItemsByName _indexedItems;
+
+    static std::atomic_size_t _instances;
+
+    size_t _instanceId;
 
     boost::optional<std::string> lookup( std::string key ) const;
 };

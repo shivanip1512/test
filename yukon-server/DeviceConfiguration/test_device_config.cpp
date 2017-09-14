@@ -1,10 +1,14 @@
 #include <boost/test/unit_test.hpp>
 
+#include "boost_test_helpers.h"
+
 #include "boostutil.h"
 #include "config_device.h"
 
 struct test_DeviceConfig : public Cti::Config::DeviceConfig
 {
+    test_DeviceConfig() : DeviceConfig(test_tag) {}
+
     using DeviceConfig::insertValue;
 };
 

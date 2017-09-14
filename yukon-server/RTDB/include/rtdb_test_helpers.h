@@ -22,6 +22,8 @@ namespace {
 
 struct test_DeviceConfig : public Config::DeviceConfig
 {
+    test_DeviceConfig() : DeviceConfig(test_tag) {}
+
     using DeviceConfig::insertValue;
     using DeviceConfig::findValue;
     using DeviceConfig::addCategory;

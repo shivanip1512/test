@@ -15,6 +15,23 @@ namespace Config {
 
 const std::string BoolTrue = "true";
 
+std::atomic_size_t DeviceConfig::_instances;
+
+DeviceConfig::DeviceConfig()
+    : _instanceId { ++_instances }
+{
+}
+
+DeviceConfig::DeviceConfig(Test::use_in_unit_tests_only&) 
+    : DeviceConfig()
+{
+}
+
+
+size_t DeviceConfig::getInstanceId() const
+{
+    return _instanceId;
+}
 
 // Inserts a value into the mapping, this is a protected function and is
 // not meant to be called by devices
