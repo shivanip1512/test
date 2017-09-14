@@ -40,7 +40,13 @@
         <pointInfo name="Emergency OV Threshold" init="true"/>
         <pointInfo name="Emergency UV Threshold" init="true"/>
         <pointInfo name="Enable SCADA Override" attributes="SCADA_OVERRIDE_ENABLE"/>
+        <pointInfo name="Enable OVUV Control" attributes="ENABLE_OVUV_CONTROL"/>
+        <pointInfo name="Enable Temperature Control" attributes="ENABLE_TEMPERATURE_CONTROL"/>
+        <pointInfo name="Enable Time Control" attributes="ENABLE_TIME_CONTROL"/>
+        <pointInfo name="Enable VAR Control" attributes="ENABLE_VAR_CONTROL"/>
         <pointInfo name="Firmware Version" init="true" attributes="FIRMWARE_VERSION"/>
+        <pointInfo name="Firmware Major Version" attributes="FIRMWARE_VERSION_MAJOR"/>
+        <pointInfo name="Firmware Minor Version" attributes="FIRMWARE_VERSION_MINOR"/>
         <pointInfo name="High Voltage" init="true"/>
         <pointInfo name="Ignore SCADA Override Time of Day"/>
         <pointInfo name="Ignored Control Reason" init="true" attributes="IGNORED_CONTROL_REASON"/>

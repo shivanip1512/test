@@ -429,6 +429,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_RECEIVED_KVARH_RATE_D">Net Received kVArh Rate D</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION">Firmware Version</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION_MAJOR">Firmware Major Version</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FIRMWARE_VERSION_MINOR">Firmware Minor Version</entry>
     <entry key="yukon.common.attribute.builtInAttribute.IP_ADDRESS">IP Address</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT_SENSOR">Neutral Current Sensor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SERIAL_NUMBER">Serial Number</entry>
@@ -502,6 +504,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.DAILY_MAX_OPERATION">Daily Max Operation</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELTA_VOLTAGE">Delta Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DST_ACTIVE">DST Active</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.ENABLE_OVUV_CONTROL">Enable OVUV Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.ENABLE_TEMPERATURE_CONTROL">Enable Temperature Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.ENABLE_TIME_CONTROL">Enable Time Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.ENABLE_VAR_CONTROL">Enable VAR Control</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_BANDWIDTH">Forward Bandwidth</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_SET_POINT">Forward Set Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.HEARTBEAT_TIMER_CONFIG">Heartbeat Timer Config</entry>

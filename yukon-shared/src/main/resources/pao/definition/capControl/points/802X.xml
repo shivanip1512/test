@@ -14,6 +14,18 @@
         <decimalplaces value="0"/>
         <analogstategroup value="Last Control"/>
     </point>
+    <point offset="3" type="Analog">
+        <name>Firmware Major Version</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Firmware Minor Version</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
     <point offset="5" type="Analog">
         <name>Temperature</name>
         <multiplier value="0.1"/>
@@ -367,6 +379,38 @@
         <decimalplaces value="0"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="-5" type="Status">
+        <name>Enable Time Control</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="23"/>
+        <stateZeroControl value="PULSE"/>
+        <stateOneControl value="PULSE"/>
+        <stategroup value="YesNo"/>
+    </point>
+    <point offset="-4" type="Status">
+        <name>Enable Temperature Control</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="16"/>
+        <stateZeroControl value="PULSE"/>
+        <stateOneControl value="PULSE"/>
+        <stategroup value="YesNo"/>
+    </point>
+    <point offset="-3" type="Status">
+        <name>Enable VAR Control</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="15"/>
+        <stateZeroControl value="PULSE"/>
+        <stateOneControl value="PULSE"/>
+        <stategroup value="YesNo"/>
+    </point>
+    <point offset="-2" type="Status">
+        <name>Enable OVUV Control</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="14"/>
+        <stateZeroControl value="PULSE"/>
+        <stateOneControl value="PULSE"/>
+        <stategroup value="YesNo"/>
+    </point>
     <point offset="-1" type="Status">
         <name>Enable SCADA Override</name>
         <controlType value="NORMAL"/>

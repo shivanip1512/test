@@ -398,6 +398,8 @@ public:
     static const Attribute  ReadyNodes;
 
     static const Attribute  FirmwareVersion;
+    static const Attribute  FirmwareVersionMajor;
+    static const Attribute  FirmwareVersionMinor;
     static const Attribute  IgnoredControlReason;
     static const Attribute  IpAddress;
     static const Attribute  LastControlReason;
@@ -450,6 +452,10 @@ public:
     static const Attribute  DailyMaxOperations;
     static const Attribute  DeltaVoltage;
     static const Attribute  DSTActive;
+    static const Attribute  EnableOvuvControl;
+    static const Attribute  EnableVarControl;
+    static const Attribute  EnableTemperatureControl;
+    static const Attribute  EnableTimeControl;
     static const Attribute  ForwardBandwidth;
     static const Attribute  ForwardSetPoint;
     static const Attribute  HeartbeatTimerConfig;
