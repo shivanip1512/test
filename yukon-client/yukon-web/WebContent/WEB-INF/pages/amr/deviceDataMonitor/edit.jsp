@@ -8,7 +8,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
-<cti:standardPage module="amr" page="deviceDataMonitor.${mode}">
+<jsp:useBean id="paramMap" class="java.util.HashMap"/>
+<c:set target="${paramMap}" property="monitorId" value="${monitor.id}"/>
+<cti:standardPage module="amr" page="deviceDataMonitor.${mode}" smartNotificationsEvent="DEVICE_DATA_MONITOR" smartNotificationsParameters="${paramMap}">
 
     <div class="dn js-calculating-warning warning">
         <i:inline key=".calculatingWarning"/>

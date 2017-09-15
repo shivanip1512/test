@@ -12,7 +12,7 @@
         <span class="fr">
             <cti:link href="/notifications/settings" key="yukon.web.modules.smartNotifications.settingsLink"/>
             <cti:button renderMode="image" icon="icon-help" classes="fr" onclick="$('#user-message').removeClass('dn');"/>
-        </span>
+        </span><br/>
         <tags:alertBox type="info" key=".helpText" classes="dn" includeCloseButton="true"/>
 
         <tags:nameValueContainer2>

@@ -140,9 +140,11 @@
                             </c:if>
                             <div class="page-actions">
                                 <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn">
-                                    <c:if test="${!empty info.smartNotificationsEvent}">
-                                        <cm:dropdownOption key="yukon.web.modules.smartNotifications.actionLink" icon="icon-email-open" data-popup="#subscriptionPopup"/>
-                                    </c:if>
+                                    <cti:displayForPageEditModes modes="EDIT,VIEW">
+                                        <c:if test="${!empty info.smartNotificationsEvent}">
+                                            <cm:dropdownOption key="yukon.web.modules.smartNotifications.actionLink" icon="icon-email-open" data-popup="#subscriptionPopup"/>
+                                        </c:if>
+                                    </cti:displayForPageEditModes>
                                 </cm:dropdown>
                                 <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults"
                                     renderMode="buttonImage" icon="icon-resultset-first-gray"/>
