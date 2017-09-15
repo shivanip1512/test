@@ -34,11 +34,16 @@
             <b>Frequency:</b> 
             <ul style="list-style-type:none;margin:0;">
                 <li><b>Immediate</b> - receive a notification for every event.</li>  
-                <li><b>Grouped</b> - group notifications based on time.</li>
-                <li><b>Daily</b> - receive one notification a day with all events.</li>
+                <li><b>Grouped</b> - group notifications based on time:</li>
+                    <ul style="list-style-type:none;margin:0;">
+                        <li>1st Notification - 1st event</li>
+                        <li>2nd Notification - when 10 events occurred or 1 minute passed.</li>
+                        <li>3rd Notification - when 25 events occurred or 5 minutes passed.</li>
+                        <li>4th Notification - when 100 events occurred or 30 minutes passed.</li>
+                        <li>5th Notification - when 1000 events occurred or 1 hour passed.</li>
+                    </ul>
+                <li><b>Daily</b> - receive one notification a day.  Select a time to send the notification and whether to combine all daily notifications into one notification.</li>
             </ul>
-            <b>Send Time:</b> Select a time for the daily notification (only applicable for Daily).<br/>
-            <b>Combine All Daily:</b> Combines all daily notifications into one notification.<br/>
             <b>Media:</b> Select the media for the notification.<br/>
             <b>Email:</b> Enter an email address for the notification.<br/>
             <b>Message Detail:</b> Select whether to receive a Summary notification or Detailed notification.
