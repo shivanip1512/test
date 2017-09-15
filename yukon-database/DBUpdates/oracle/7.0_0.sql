@@ -145,6 +145,27 @@ ALTER TABLE SmartNotificationEventParam
         ON DELETE CASCADE;
 /* End YUK-17120 */
 
+/* Start YUK-17209 */
+/* @start-block */
+DECLARE
+    v_newConfigCategoryId       NUMBER;
+    v_newConfigCategoryItemId   NUMBER;
+    v_newConfigDeviceType       NUMBER;
+
+BEGIN
+    SELECT MAX(DeviceConfigCategoryId) + 1      INTO v_newConfigCategoryId      FROM DeviceConfigCategory;
+    SELECT MAX(DeviceConfigCategoryItemId) + 1  INTO v_newConfigCategoryItemId  FROM DeviceConfigCategoryItem;
+    SELECT MAX(DeviceConfigDeviceTypeId) + 1    INTO v_newConfigDeviceType      FROM DeviceConfigDeviceTypes;
+
+    INSERT INTO DeviceConfigCategory        VALUES (v_newConfigCategoryId, 'cbcAttributeMapping', 'Default CBC Attribute Mapping', NULL);
+    INSERT INTO DeviceConfigCategoryItem    VALUES (v_newConfigCategoryItemId, v_newConfigCategoryId, 'attributeMappings', '0');
+    INSERT INTO DeviceConfigCategoryMap     VALUES (-1, v_newConfigCategoryId); /* -1 is the ID for the default DNP Configuration */
+    INSERT INTO DeviceConfigDeviceTypes     VALUES (v_newConfigDeviceType, -1, 'CBC DNP Logical');
+END;
+/
+/* @end-block */
+/* End YUK-17209 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

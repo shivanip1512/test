@@ -153,6 +153,26 @@ ALTER TABLE SmartNotificationEventParam
 GO
 /* End YUK-17120 */
 
+/* Start YUK-17209 */
+/* @start-block */
+DECLARE
+    @newConfigCategoryId        NUMERIC,
+    @newConfigCategoryItemId    NUMERIC,
+    @newConfigDeviceType        NUMERIC
+
+BEGIN
+    SET @newConfigCategoryId =      (SELECT MAX(DeviceConfigCategoryId) + 1 FROM DeviceConfigCategory);
+    SET @newConfigCategoryItemId =  (SELECT MAX(DeviceConfigCategoryItemId) + 1 FROM DeviceConfigCategoryItem);
+    SET @newConfigDeviceType =      (SELECT MAX(DeviceConfigDeviceTypeId) + 1 FROM DeviceConfigDeviceTypes);
+
+    INSERT INTO DeviceConfigCategory        VALUES (@newConfigCategoryId, 'cbcAttributeMapping', 'Default CBC Attribute Mapping', NULL);
+    INSERT INTO DeviceConfigCategoryItem    VALUES (@newConfigCategoryItemId, @newConfigCategoryId, 'attributeMappings', '0');
+    INSERT INTO DeviceConfigCategoryMap     VALUES (-1, @newConfigCategoryId); /* -1 is the ID for the default DNP Configuration */
+    INSERT INTO DeviceConfigDeviceTypes     VALUES (@newConfigDeviceType, -1, 'CBC DNP Logical');
+END;
+/* @end-block */
+/* End YUK-17209 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
