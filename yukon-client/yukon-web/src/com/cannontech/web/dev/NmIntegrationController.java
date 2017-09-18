@@ -58,6 +58,7 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -816,6 +817,29 @@ public class NmIntegrationController {
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.STOP);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStop"), flash);       
         return "redirect:viewMappingSimulator";
+    }
+    
+    @RequestMapping("smartNotificationsSimulator")
+    public String smartNotificationsSimulator() {
+        return "rfn/smartNotificationsSimulator.jsp";
+    }
+    
+    @RequestMapping("clearAllSubscriptions")
+    public String clearAllSubscriptions() {
+        //TODO: Clear out all subscriptions
+        return "redirect:smartNotificationsSimulator";
+    }
+    
+    @RequestMapping("createEvents")
+    public String createEvents() {
+        //TODO: Create Events for subscriptions
+        return "redirect:smartNotificationsSimulator";
+    }
+    
+    @RequestMapping(value="smartNotificationsSimulator/saveSubscription", method=RequestMethod.POST)
+    public String saveSmartNotificationsSubscription(@ModelAttribute("subscription") SmartNotificationSubscription subscription, @RequestParam int userGroupId) throws Exception {
+        //TODO: Save subscription
+        return "redirect:smartNotificationsSimulator";
     }
     
     private SimulatorResponseBase sendRequest(SimulatorRequest request, YukonMessageSourceResolvable confirmation, FlashScope flash){
