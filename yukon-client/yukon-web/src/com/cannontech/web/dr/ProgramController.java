@@ -403,7 +403,7 @@ public class ProgramController extends ProgramControllerBase {
     
     @RequestMapping("/program/setEnabled")
     public @ResponseBody Map<String, String> setEnabled(int programId, boolean isEnabled, YukonUserContext userContext,
-                                        Boolean suppressRestoration, FlashScope flashScope) {
+            Boolean suppressRestoration, FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
