@@ -16,6 +16,13 @@
     <form id="sendEnableForm" action="<cti:url value="/dr/program/setEnabled"/>">
         <input type="hidden" name="programId" value="${program.paoIdentifier.paoId}"/>
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
+                <c:if test="${!isEnabled}">
+        <br>
+        <label>
+            <input type="checkbox" name="suppressRestoration" value="true">
+            <cti:msg2 key=".suppressRestoration"/>
+        </label>
+    </c:if>
         <div class="action-area">
             <cti:button nameKey="ok" classes="primary action" onclick="submitFormViaAjax('drDialog', 'sendEnableForm')"/>
             <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>

@@ -403,7 +403,7 @@ public class ProgramController extends ProgramControllerBase {
     
     @RequestMapping("/program/setEnabled")
     public @ResponseBody Map<String, String> setEnabled(int programId, boolean isEnabled, YukonUserContext userContext,
-                                                        FlashScope flashScope) {
+                                        Boolean suppressRestoration, FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -412,7 +412,11 @@ public class ProgramController extends ProgramControllerBase {
                                                      Permission.LM_VISIBLE, 
                                                      Permission.CONTROL_COMMAND);
         
-        programService.setEnabled(programId, isEnabled);
+        if (!isEnabled && (suppressRestoration != null && suppressRestoration)) {
+            programService.disableAndSupressRestoration(programId);
+        } else {
+            programService.setEnabled(programId, isEnabled);
+        }
 
         if(isEnabled) {
             demandResponseEventLogService.threeTierProgramEnabled(yukonUser, program.getName());
