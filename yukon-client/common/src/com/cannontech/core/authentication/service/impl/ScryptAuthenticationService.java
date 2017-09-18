@@ -79,7 +79,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         try {
             byte[] salt = new byte[16];
             SecureRandom.getInstance("SHA1PRNG").nextBytes(salt);
-            byte[] fullHashedPasswordString = getHashedPasswordString(salt, cpuCostParam,
+            byte[] fullHashedPasswordString = getHashedPassword(salt, cpuCostParam,
                 memoryCostParam, parallelParam, password);
             StringBuilder sb = new StringBuilder((salt.length + fullHashedPasswordString.length) * 2);
             sb.append("$").append(cpuCostParam).append("$").append(memoryCostParam).append("$").append(parallelParam);
@@ -109,11 +109,11 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         try {
             if (cpuCostParam == storedCpuCostParam && memoryCostParam == storedMemoryCostParam
                 && parallelParam == storedParallelParam) {
-                byte[] fullHashedPasswordString = getHashedPasswordString(salt, cpuCostParam,
+                byte[] fullHashedPasswordString = getHashedPassword(salt, cpuCostParam,
                     memoryCostParam, parallelParam, password);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
             } else {
-                byte[] fullHashedPasswordString = getHashedPasswordString(salt,
+                byte[] fullHashedPasswordString = getHashedPassword(salt,
                     storedCpuCostParam, storedMemoryCostParam, storedParallelParam, password);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
                 if (isPasswordMatched && isSetPasswordRequired) {
@@ -127,7 +127,7 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         return isPasswordMatched;
     }
     
-    private static byte[] getHashedPasswordString(byte[] salt, int cpuCost, int memoryCost, int parallelizationParam,
+    private static byte[] getHashedPassword(byte[] salt, int cpuCost, int memoryCost, int parallelizationParam,
             String password) throws UnsupportedEncodingException {
         byte[] fullHashedPasswordString = new byte[derivedKeyLength];
         ScryptParameters scryptParameters =
