@@ -120,7 +120,8 @@ public class RfnMeterDisconnectService {
                     MessageSourceResolvable message = YukonMessageSourceResolvable.createSingleCodeWithArguments(confirmError, confirmationReplyMessage);
                     callback.receivedError(message, confirmationReplyMessage.getState(), confirmationReplyMessage.getReplyType());
                     if (RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT == confirmationReplyMessage.getReplyType()
-                        || RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT == confirmationReplyMessage.getReplyType()) {
+                        || RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT == confirmationReplyMessage.getReplyType()
+                        || RfnMeterDisconnectConfirmationReplyType.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD == confirmationReplyMessage.getReplyType()) {
                         publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
                     }
                 } else {

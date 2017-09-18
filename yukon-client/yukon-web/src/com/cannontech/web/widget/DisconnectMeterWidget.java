@@ -190,10 +190,13 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
                     errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
                                                                   YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected")));
                     return;
-                }
-                if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
+                } else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
                     errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT), 
                                                                   YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.noLoadSideVoltageDetectedWhileConnected")));
+                    return;
+                } else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD) {
+                    errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD), 
+                                                                  YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageHigherThanThreshold")));
                     return;
                 }
                 errors.add(new SpecificDeviceErrorDescription(errorDescription, message));

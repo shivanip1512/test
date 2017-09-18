@@ -1200,6 +1200,11 @@
         <porter>No load side voltage detected while connected.</porter>
         <description>No load side voltage detected while connected.</description>
     </error>
+    <error code="1030">
+        <category>Network Manager</category>
+        <porter>No load side voltage detected while connected.</porter>
+        <description>Load side voltage higher than the configurable threshold prevented the switch from closing.</description>
+    </error>
     <error code="2000">
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>

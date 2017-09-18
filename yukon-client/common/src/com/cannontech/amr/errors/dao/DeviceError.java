@@ -102,6 +102,7 @@ public enum DeviceError {
     
     FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT(NETWORK_MANAGER, 1028),
     FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT(NETWORK_MANAGER, 1029),
+    FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD(NETWORK_MANAGER, 1030),
 
     // COMMON ERRORS
     INVALID_ACTION(YUKON_SYSTEM, 2000), 
@@ -134,7 +135,7 @@ public enum DeviceError {
         + ".troubleshooting");
     
     private static Map<? extends Integer, ? extends DeviceError> initializeMapping() {
-        Map<Integer, DeviceError> map = new HashMap<Integer, DeviceError>();
+        Map<Integer, DeviceError> map = new HashMap<>();
         for (DeviceError error : DeviceError.values()) {
             map.put(error.getCode(), error);
         }
