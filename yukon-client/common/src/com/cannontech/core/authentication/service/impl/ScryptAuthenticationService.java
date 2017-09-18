@@ -79,10 +79,8 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         try {
             byte[] salt = new byte[16];
             SecureRandom.getInstance("SHA1PRNG").nextBytes(salt);
-            byte[] fullHashedPasswordString = new byte[derivedKeyLength];
-            ScryptParameters scryptParameters =
-                KDF.SCRYPT.using(salt, cpuCostParam, memoryCostParam, parallelParam, password.getBytes("UTF-8"));
-            scryptFactory.createKDFCalculator(scryptParameters).generateBytes(fullHashedPasswordString);
+            byte[] fullHashedPasswordString = getHashedPasswordString(salt, cpuCostParam,
+                memoryCostParam, parallelParam, password);
             StringBuilder sb = new StringBuilder((salt.length + fullHashedPasswordString.length) * 2);
             sb.append("$").append(cpuCostParam).append("$").append(memoryCostParam).append("$").append(parallelParam);
             sb.append("$").append(new String(Base64.encode(salt))).append('$');
@@ -111,16 +109,12 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         try {
             if (cpuCostParam == storedCpuCostParam && memoryCostParam == storedMemoryCostParam
                 && parallelParam == storedParallelParam) {
-                byte[] fullHashedPasswordString = new byte[derivedKeyLength];
-                ScryptParameters scryptParameters =
-                    KDF.SCRYPT.using(salt, cpuCostParam, memoryCostParam, parallelParam, password.getBytes("UTF-8"));
-                scryptFactory.createKDFCalculator(scryptParameters).generateBytes(fullHashedPasswordString);
+                byte[] fullHashedPasswordString = getHashedPasswordString(salt, cpuCostParam,
+                    memoryCostParam, parallelParam, password);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
             } else {
-                byte[] fullHashedPasswordString = new byte[derivedKeyLength];
-                ScryptParameters scryptParameters = KDF.SCRYPT.using(salt, storedCpuCostParam, storedMemoryCostParam,
-                    storedParallelParam, password.getBytes("UTF-8"));
-                scryptFactory.createKDFCalculator(scryptParameters).generateBytes(fullHashedPasswordString);
+                byte[] fullHashedPasswordString = getHashedPasswordString(salt,
+                    storedCpuCostParam, storedMemoryCostParam, storedParallelParam, password);
                 isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
                 if (isPasswordMatched && isSetPasswordRequired) {
                     setPassword(user, password);
@@ -131,5 +125,14 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
         }
 
         return isPasswordMatched;
+    }
+    
+    private static byte[] getHashedPasswordString(byte[] salt, int cpuCost, int memoryCost, int parallelizationParam,
+            String password) throws UnsupportedEncodingException {
+        byte[] fullHashedPasswordString = new byte[derivedKeyLength];
+        ScryptParameters scryptParameters =
+            KDF.SCRYPT.using(salt, cpuCost, memoryCost, parallelizationParam, password.getBytes("UTF-8"));
+        scryptFactory.createKDFCalculator(scryptParameters).generateBytes(fullHashedPasswordString);
+        return fullHashedPasswordString;
     }
 }
