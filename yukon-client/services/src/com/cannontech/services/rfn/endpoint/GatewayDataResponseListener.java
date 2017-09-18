@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.jms.ConnectionFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
@@ -18,6 +19,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.UpdateServerConfigHelper;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
@@ -37,6 +39,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private RfnGatewayDataCache gatewayCache;
+    @Autowired private UpdateServerConfigHelper updateServerConfigHelper;
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private JmsTemplate outgoingJmsTemplate;
     private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
@@ -113,6 +116,9 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                 if (message instanceof GatewayDataResponse) {
                     GatewayDataResponse gatewayDataMessage = (GatewayDataResponse) message;
                     handleDataMessage(gatewayDataMessage);
+                    if (StringUtils.isEmpty(gatewayDataMessage.getUpdateServerUrl())) {
+                        updateServerConfigHelper.sendNMConfiguration();
+                    }
                 }
             } catch (Exception e) {
                 log.warn("Data processing failed for " + rfnDevice, e);

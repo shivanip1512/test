@@ -443,6 +443,7 @@
     
     <bean id="meterTypeHelper" class="com.cannontech.common.pao.meter.model.MeterTypeHelper"/>
     <bean class="com.cannontech.common.config.YukonHttpProxyHandler" />
+    <bean class="com.cannontech.common.config.UpdateServerConfigHelper" />
     
     <bean class="com.cannontech.common.smartNotification.dao.impl.SmartNotificationEventDaoImpl"/>
     <bean class="com.cannontech.common.smartNotification.service.impl.SmartNotificationEventCreationServiceImpl"/>
