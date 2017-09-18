@@ -1724,7 +1724,6 @@
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
               <page name="rfnTest.viewMappingSimulator" type="BASIC"/>
-              <page name="rfnTest.smartNotificationsSimulator" type="BASIC"/>
             </pages>            
           </page>
           <page name="ecobee.mockTest" type="BASIC"/>
@@ -1732,6 +1731,7 @@
           <page name="i18nDemo.scopes" type="BASIC"/>
           <page name="jsTesting" type="BASIC"/>
           <page name="paoDefinitionTesting" type="BASIC"/>
+          <page name="smartNotificationsSimulator" type="BASIC"/>
           <page name="yukon-js-lib" type="BASIC"/>
           <page name="yukon-pages" type="BASIC"/>
           <page name="styleguide" type="BASIC">

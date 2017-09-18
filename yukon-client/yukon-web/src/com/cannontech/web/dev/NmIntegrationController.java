@@ -819,29 +819,6 @@ public class NmIntegrationController {
         return "redirect:viewMappingSimulator";
     }
     
-    @RequestMapping("smartNotificationsSimulator")
-    public String smartNotificationsSimulator() {
-        return "rfn/smartNotificationsSimulator.jsp";
-    }
-    
-    @RequestMapping("clearAllSubscriptions")
-    public String clearAllSubscriptions() {
-        //TODO: Clear out all subscriptions
-        return "redirect:smartNotificationsSimulator";
-    }
-    
-    @RequestMapping("createEvents")
-    public String createEvents() {
-        //TODO: Create Events for subscriptions
-        return "redirect:smartNotificationsSimulator";
-    }
-    
-    @RequestMapping(value="smartNotificationsSimulator/saveSubscription", method=RequestMethod.POST)
-    public String saveSmartNotificationsSubscription(@ModelAttribute("subscription") SmartNotificationSubscription subscription, @RequestParam int userGroupId) throws Exception {
-        //TODO: Save subscription
-        return "redirect:smartNotificationsSimulator";
-    }
-    
     private SimulatorResponseBase sendRequest(SimulatorRequest request, YukonMessageSourceResolvable confirmation, FlashScope flash){
         SimulatorResponseBase response = null;
         try {

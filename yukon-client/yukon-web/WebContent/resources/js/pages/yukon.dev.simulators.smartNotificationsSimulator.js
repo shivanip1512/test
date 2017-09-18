@@ -26,7 +26,7 @@ yukon.dev.smartNotificationsSimulator = (function() {
             combineDailyField.attr('value', combineDailySwitch.prop('checked'));
             
                 $.ajax({
-                    url: yukon.url('/dev/rfn/smartNotificationsSimulator/saveSubscription?userGroupId=' + userGroupId),
+                    url: yukon.url('/dev/saveSubscription?userGroupId=' + userGroupId),
                     type: 'post',
                     data: form.serialize()
                 }).done( function(data) {
