@@ -17,6 +17,7 @@ import javax.xml.bind.Marshaller;
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Hex;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.openexi.proc.common.EXIOptionsException;
@@ -31,6 +32,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
@@ -56,7 +58,12 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
 public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  implements RfnLcrDataSimulatorService {
-    
+    /**
+     * This enum is used for TLV report generation. 
+     * type : Each entry has a unique type associated with it. 
+     * length : Length in bytes of the value.
+     * frequency : Occurrence of field entry in the report. This helps to generate TLV report in single iteration.
+     */
     public enum TLVField {
         SERIAL_NUMBER((byte)0x02, 4, 1),
         SSPEC((byte)0x03, 2, 1),
@@ -70,13 +77,13 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         SUBSTATION_ADDRESS((byte)0x0b, 2, 1),
         BLINK_COUNT((byte)0x0c, 1, 1),
         RELAY_INTERVAL_START_TIME((byte)0x0d, 4, 1),
-        RELAY_N_RUNTIME((byte)0x0e, 25, 2),
-        RELAY_N_SHEDTIME((byte)0x0f, 25, 2),
-        RELAY_N_PROGRAM_ADDRESS((byte)0x10, 2, 2),
-        RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 2),
-        RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 2),
-        PROTECTION_TIME_RELAY_N((byte)0x13, 3, 2),
-        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 2),
+        RELAY_N_RUNTIME((byte)0x0e, 25, 3),
+        RELAY_N_SHEDTIME((byte)0x0f, 25, 3),
+        RELAY_N_PROGRAM_ADDRESS((byte)0x10, 2, 3),
+        RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 3),
+        RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 3),
+        PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
+        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
         BROADCAST_VERIFICATION_MESSAGES((byte)0x16, 8, 1);
 
         private final byte type;
@@ -94,7 +101,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     private final static String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
-    @Autowired private ExiParsingService exiParsingService;
+    @Autowired private ExiParsingService<SimpleXPathTemplate> exiParsingService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     
@@ -341,8 +348,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 // Add LUF events
                 byte[] lufEvents = Hex.decode("01700200000180020000");
                 outputStream.write(lufEvents);
-                // Service and Control state
-                byte[] serviceAndControlState = Hex.decode("0190010101a00101");
+                // Service (In-service) and Control state (false)
+                byte[] serviceAndControlState = Hex.decode("0190010001a00100");
                 outputStream.write(serviceAndControlState);
 
                 payload = outputStream.toByteArray();
@@ -398,7 +405,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         // UTC length as 4-byte
         outputStream.write(4);
         // Generate UTC field values (4-byte)
-        long timeInSec = (Instant.now().getMillis()) / 1000;
+        long timeInSec = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().getMillis()/1000;
         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
         byte[] utc = buffer.putLong(timeInSec).array();
         utc = Arrays.copyOfRange(utc, 4, utc.length);
@@ -411,7 +418,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
      * Generate byte Array (part of TLV report) from TLVField enum and generate random values for each field.
      */
     private byte[] getTLVMessage() {
-        byte[] data = new byte[247];
+        // Fixed length message (assuming 3-relay are present)
+        byte[] data = new byte[333];
         int index = 0;
         for (TLVField field : TLVField.values()) {
             int fieldCount = 0;
@@ -427,6 +435,20 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                         data[index++] = (byte) fieldCount;
                         valueIndex++;
                     }
+
+                    if(field.equals(TLVField.RELAY_INTERVAL_START_TIME)) {
+                        // Add relay interval start time in sec(24 hour before UTC field value).Hourly data will be added after this till UTC (field value).
+                        long intervalStartTime = new DateTime(DateTimeZone.UTC).minusHours(24).withTimeAtStartOfDay().getMillis()/1000;
+                        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+                        byte[] relayStartTime = buffer.putLong(intervalStartTime).array();
+                        // Add relay interval start time to byte array.
+                        for (int i = 4; i < relayStartTime.length; i++) {
+                            data[index] = relayStartTime[i];
+                            index++;
+                        }
+                        valueIndex = field.length;
+                    }
+                    // Generate random byte data for specified field type. 
                     while (valueIndex < field.length) {
                         data[index] = (byte) (Math.random() * (15 - 0));
                         index++;

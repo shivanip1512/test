@@ -16,7 +16,7 @@ public enum DRReport {
     DR_REPORT_6600_V1_1_1M(PaoType.LCR6600_RFN,			"0.0.3", "DRReport_6600_v1_1_1(ex2).drr",    "CPS", "1082", true,  false),
     // has verification messages and expresscom header
     DR_REPORT_6600_V1_1_1MXCOM(PaoType.LCR6600_RFN,		"0.0.3", "DRReport_6600_v1_1_1(ex3).drr",    "CPS", "1082", true,  true),
-    DR_REPORT_6700(PaoType.LCR6700_RFN, "0.0.4", "DRReport_v1_6700.txt", "CPS", "1083", true, true);
+    DR_REPORT_6700(PaoType.LCR6700_RFN, "0.0.4", "DRReport_v1_6700.txt", "CPS", "1086", true, true);
 	DRReport(PaoType type, String schema, String report, String manufacturer,
 			String model, boolean hasVerificationMessages,
 			boolean hasExpresscomHeader) {
