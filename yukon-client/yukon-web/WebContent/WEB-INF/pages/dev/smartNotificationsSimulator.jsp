@@ -13,11 +13,17 @@
         <cti:button label="Settings" data-popup="#create-popup"/>
         
     </tags:sectionContainer>
+    
+    <tags:nameValueContainer tableClass="natural-width">
+        <tags:nameValue name="Wait time in seconds">
+            <input id="waitTime" value="0"/>
+        </tags:nameValue>
+    </tags:nameValueContainer>
 
     <div class="page-action-area">
 
+        <cti:button label="Create Events" type="button" classes="js-create-events"/>
         <cti:button label="Clear All Subscriptions" type="button" href="clearAllSubscriptions"/>
-        <cti:button label="Create Events" type="button" href="createEvents"/>
     
     </div>
     

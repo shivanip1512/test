@@ -34,6 +34,11 @@ yukon.dev.smartNotificationsSimulator = (function() {
                 });
             });
             
+            $(document).on('click', '.js-create-events', function () {
+                var waitTime = $('#waitTime').val();
+                window.location.href = yukon.url('/dev/createEvents?waitTime=' + waitTime);
+            });
+            
             _initialized = true;
         },
 

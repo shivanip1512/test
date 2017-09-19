@@ -24,7 +24,7 @@ public class SmartNotificationsTestingController {
     }
     
     @RequestMapping("createEvents")
-    public String createEvents() {
+    public String createEvents(@RequestParam int waitTime) {
         //TODO: Create Events for subscriptions
         return "redirect:smartNotificationsSimulator";
     }
