@@ -1301,4 +1301,5 @@
      <bean class="com.cannontech.web.smartNotifications.DeviceDataMonitorSubscriptionHelper"/>
  
      <bean class="com.cannontech.web.common.widgets.service.impl.PorterQueueCountsWidgetServiceImpl"/>
+     <bean id="fileUploadValidator" class="com.cannontech.common.validator.FileUploadValidator"/>
 </beans>

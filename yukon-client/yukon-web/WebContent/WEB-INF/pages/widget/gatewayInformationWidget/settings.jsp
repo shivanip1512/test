@@ -55,7 +55,7 @@
                 <tags:password path="admin.password" cssClass="js-gateway-edit-password M0" 
                       placeholder="${phPassword}" tabindex="4" showPassword="true" includeShowHideButton="true"/>
                 <c:if test="${mode == 'EDIT'}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn admin" 
                          disabled="true" nameKey="testConnection" tabindex="5"/>
                 </c:if>
             </spring:bind>
@@ -75,7 +75,7 @@
                         placeholder="${phPassword}" tabindex="7" showPassword="true" includeShowHideButton="true"/>
                 </div>
                 <c:if test="${mode == 'EDIT'}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn superAdmin" 
                          disabled="true" nameKey="testConnection" tabindex="8"/>
                 </c:if>
             </spring:bind>
