@@ -126,12 +126,15 @@ yukon.assets.gateway.shared = (function () {
         adjustTestConnectionButtons: function () {
             var ip = $('.js-gateway-edit-ip').val(),
                 usernames = $('.js-gateway-edit-username');
-            
             if (ip) {
                 usernames.each(function (idx, item) {
                     item = $(item);
                     var disabled = !item.val().trim();
-                    item.siblings('.button').prop('disabled', disabled);
+                    if (item.attr('id') == 'admin.username') {
+                        $('.admin').prop('disabled', disabled);
+                    } else {
+                        $('.superAdmin').prop('disabled', disabled);
+                    }
                 });
             } else {
                 $('.js-gateway-edit-super-admin .button,' 
