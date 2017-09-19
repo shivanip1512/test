@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -53,10 +54,12 @@ import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao.RegulatorOperat
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.ivvc.IvvcSimulatorService;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private static final Logger log = YukonLogManager.getLogger(IvvcSimulatorServiceImpl.class);
     
+    @Autowired private IDatabaseCache dbCache;
     @Autowired private CapControlCache capControlCache;
     @Autowired private ZoneService zoneService;
     @Autowired private VoltageRegulatorService regulatorService;
@@ -283,7 +286,9 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 
                                 generatePoint(points.getKey(), voltage, PointType.Analog);
                             }
-                            addCbcPointsToCbcCache(capBankDevice.getControlDeviceID());
+                            int cbcId = capBankDevice.getControlDeviceID();
+                            String cbcName = dbCache.getAllPaosMap().get(cbcId).getPaoName();
+                            addCbcPointsToCbcCache(cbcId, cbcName);
                         }
                     }
                     
@@ -408,7 +413,9 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             generatePoint(points.getKey(), voltage, PointType.Analog);
                         }
                         
-                        addCbcPointsToCbcCache(capBankDevice.getControlDeviceID());
+                        int cbcId = capBankDevice.getControlDeviceID();
+                        String cbcName = dbCache.getAllPaosMap().get(cbcId).getPaoName();
+                        addCbcPointsToCbcCache(cbcId, cbcName);
                     }
                     
                 }
@@ -617,8 +624,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         }
     }
     
-    private void addCbcPointsToCbcCache(int cbcId) {
-        if (!cbcPointsLoaded.contains(cbcId)) {
+    private void addCbcPointsToCbcCache(int cbcId, String cbcName) {
+        if (!cbcPointsLoaded.contains(cbcId) && StringUtils.startsWith(cbcName, "Sim CBC")) {
             // We are going to try hard to only do this once per cbc simulator run as this is a pretty big lookup.
             cbcPointsLoaded.add(cbcId);
             Map<PointType, List<PointInfo>> cbcPointMap = pointDao.getAllPointNamesAndTypesForPAObject(cbcId);
