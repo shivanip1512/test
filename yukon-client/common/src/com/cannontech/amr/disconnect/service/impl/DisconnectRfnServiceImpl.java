@@ -169,11 +169,16 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             int errorCode = 0;
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
-
+            
             if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
                 disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(YukonUserContext.system.getYukonUser(), databaseCache.getAllPaosMap().get(meter.getDeviceId()).getPaoName());
                 error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
                                                            YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected"));
+                callback.failed(meter, error);
+                errorCode = error.getErrorCode();
+            }else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD) {
+                error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD),
+                                                           YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageHigherThanThreshold"));
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
             }
