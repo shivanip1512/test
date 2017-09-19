@@ -115,19 +115,26 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			if (paoType.isCbc()) {
 			    CbcImportData cbcData = new CbcImportData(name, importAction, paoType);
 			    
-				// There are required fields we KNOW are here. Set them, then try the non-requireds.
-				int cbcSerialNumber = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.CBC_SERIAL_NUMBER)]);
-				cbcData.setCbcSerialNumber(cbcSerialNumber);
-                if (!StringUtils.isBlank(line[headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS)]))
-                    cbcData.setMasterAddress(Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS)]));
-
-                if (!StringUtils.isBlank(line[headerColumnMap.get(CapControlImporterCbcField.SLAVE_ADDRESS)]))
-                    cbcData.setSlaveAddress(Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.SLAVE_ADDRESS)]));
-
-				String commChannel = line[headerColumnMap.get(CapControlImporterCbcField.COMM_CHANNEL)];
-			    cbcData.setCommChannel(commChannel);
-		        
-		        // Template name may or may not be there. Check.
+			    Integer cbcSerialNumberColumn = headerColumnMap.get(CapControlImporterCbcField.CBC_SERIAL_NUMBER);
+			    if (cbcSerialNumberColumn != null) {
+    				int cbcSerialNumber = Integer.decode(line[cbcSerialNumberColumn]);
+    				cbcData.setCbcSerialNumber(cbcSerialNumber);
+			    }
+			    Integer masterAddressColumn = headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS);
+			    if (masterAddressColumn != null) {
+                    if (!StringUtils.isBlank(line[masterAddressColumn]))
+                        cbcData.setMasterAddress(Integer.decode(line[masterAddressColumn]));
+			    }
+			    Integer slaveAddressColumn = headerColumnMap.get(CapControlImporterCbcField.SLAVE_ADDRESS);
+			    if (slaveAddressColumn != null) {
+                    if (!StringUtils.isBlank(line[slaveAddressColumn]))
+                        cbcData.setSlaveAddress(Integer.decode(line[slaveAddressColumn]));
+			    }
+			    Integer commChannelColumn = headerColumnMap.get(CapControlImporterCbcField.COMM_CHANNEL);
+			    if (commChannelColumn != null) {
+    				String commChannel = line[commChannelColumn];
+    			    cbcData.setCommChannel(commChannel);
+			    }
 		        if (headerColumnMap.containsKey(CapControlImporterCbcField.TEMPLATE_NAME)) {
 		            cbcData.setTemplateName(line[headerColumnMap.get(CapControlImporterCbcField.TEMPLATE_NAME)]);
 		        }

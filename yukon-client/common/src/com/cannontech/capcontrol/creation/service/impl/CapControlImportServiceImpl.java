@@ -191,9 +191,10 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
             pao = new CompleteTwoWayCbc();
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)pao;
-            cbc.setMasterAddress(cbcImportData.getMasterAddress());
-            cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            
+            if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+                cbc.setMasterAddress(cbcImportData.getMasterAddress());
+                cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
+            }
             if (cbcImportData.getScanEnabled() != null && cbcImportData.getScanEnabled().booleanValue()) {
                 cbc.setScanEnabled(true);
                 if (cbcImportData.getAltInterval() != null) {
@@ -203,14 +204,15 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                     cbc.setIntervalRate(cbcImportData.getScanInterval());
                 }
             }
-            
-            commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
-                                                       PaoCategory.PORT, PaoClass.PORT);
-            if (commChannel != null) {
-                cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
-            } else {
-                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
-                return;
+            if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+                commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
+                                                           PaoCategory.PORT, PaoClass.PORT);
+                if (commChannel != null) {
+                    cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
+                } else {
+                    results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
+                    return;
+                }
             }
         } else {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_TYPE));
@@ -221,8 +223,9 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
-        
-        pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+            pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        }
         pao.setPaoName(cbcImportData.getCbcName());
         
         paoPersistenceService.createPaoWithDefaultPoints(pao, cbcImportData.getCbcType());
@@ -297,18 +300,18 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         } else if (paoDefinitionDao.isTagSupported(templateIdentifier.getPaoType(), PaoTag.TWO_WAY_DEVICE)) {
             template = paoPersistenceService.retreivePao(templateIdentifier, CompleteTwoWayCbc.class);
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)template;
-            cbc.setMasterAddress(cbcImportData.getMasterAddress());
-            cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            
-            YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
-                                                       PaoCategory.PORT, PaoClass.PORT);
-            if (commChannel != null) {
-                cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
-            } else {
-                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
-                return;
+            if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+                cbc.setMasterAddress(cbcImportData.getMasterAddress());
+                cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
+                YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
+                                                           PaoCategory.PORT, PaoClass.PORT);
+                if (commChannel != null) {
+                    cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
+                } else {
+                    results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_COMM_CHANNEL));
+                    return;
+                }
             }
-            
             if (cbcImportData.getScanEnabled() != null) {
                 if (cbcImportData.getScanEnabled().booleanValue()) {
                     cbc.setScanEnabled(true);
@@ -344,8 +347,9 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
-        
-        template.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+            template.setSerialNumber(cbcImportData.getCbcSerialNumber());
+        }
         template.setPaoName(cbcImportData.getCbcName());
 
         paoPersistenceService.createPaoWithCustomPoints(template, template.getPaoType(), copyPoints);
@@ -533,9 +537,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                                                               HierarchyImportResultType.NO_SUCH_OBJECT));
             return;
         }
-        
-        int childId = child.getPaoIdentifier().getPaoId();
-        
+                
         PaoRetriever paoRetriever = paoRetrievers.get(child.getPaoIdentifier().getPaoType());
         if (paoRetriever == null) {
             results.add(new HierarchyImportCompleteDataResult(hierarchyImportData,
