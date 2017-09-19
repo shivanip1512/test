@@ -10,15 +10,65 @@
 
 #include "resolvers.h"
 
+#include <regex>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/filtered.hpp>
-#include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 
-using std::string;
-
 extern unsigned long _CC_DEBUG;
+
+using Cti::CapControl::deserializeFlag;
+
+namespace Transport
+{
+
+TwoWayDynamicDataTransport::TwoWayDynamicDataTransport( Cti::RowReader & rdr )
+{
+    rdr[ "DeviceID" ]               >> DeviceID;
+    rdr[ "LastControl" ]            >> LastControl;
+    rdr[ "Condition" ]              >> Condition;
+    rdr[ "AnalogInputOne" ]         >> AnalogInputOne;
+    rdr[ "RSSI" ]                   >> RSSI;
+    rdr[ "IgnoredReason" ]          >> IgnoredReason;
+    rdr[ "TotalOpCount" ]           >> TotalOpCount;
+    rdr[ "UvOpCount" ]              >> UvOpCount;
+    rdr[ "OvOpCount" ]              >> OvOpCount;
+    rdr[ "OvUvTrackTime" ]          >> OvUvTrackTime;
+    rdr[ "NeutralCurrentSensor" ]   >> NeutralCurrentSensor;
+    rdr[ "IPAddress" ]              >> IPAddress;
+    rdr[ "UDPPort" ]                >> UDPPort;
+
+    rdr[ "Voltage" ]                        >> Voltage;
+    rdr[ "HighVoltage" ]                    >> HighVoltage;
+    rdr[ "LowVoltage" ]                     >> LowVoltage;
+    rdr[ "DeltaVoltage" ]                   >> DeltaVoltage;
+    rdr[ "Temp" ]                           >> Temp;
+    rdr[ "UvSetPoint" ]                     >> UvSetPoint;
+    rdr[ "OvSetPoint" ]                     >> OvSetPoint;
+    rdr[ "NeutralCurrentAlarmSetPoint" ]    >> NeutralCurrentAlarmSetPoint;
+
+    std::string flag;
+
+    rdr[ "RecloseBlocked" ]         >> flag;    RecloseBlocked          = deserializeFlag( flag );
+    rdr[ "ControlMode" ]            >> flag;    ControlMode             = deserializeFlag( flag );
+    rdr[ "AutoVoltControl" ]        >> flag;    AutoVoltControl         = deserializeFlag( flag );
+    rdr[ "OpFailedNeutralCurrent" ] >> flag;    OpFailedNeutralCurrent  = deserializeFlag( flag );
+    rdr[ "NeutralCurrentFault" ]    >> flag;    NeutralCurrentFault     = deserializeFlag( flag );
+    rdr[ "BadRelay" ]               >> flag;    BadRelay                = deserializeFlag( flag );
+    rdr[ "DailyMaxOps" ]            >> flag;    DailyMaxOps             = deserializeFlag( flag );
+    rdr[ "VoltageDeltaAbnormal" ]   >> flag;    VoltageDeltaAbnormal    = deserializeFlag( flag );
+    rdr[ "TempAlarm" ]              >> flag;    TempAlarm               = deserializeFlag( flag );
+    rdr[ "DSTActive" ]              >> flag;    DSTActive               = deserializeFlag( flag );
+    rdr[ "NeutralLockout" ]         >> flag;    NeutralLockout          = deserializeFlag( flag );
+    rdr[ "IgnoredIndicator" ]       >> flag;    IgnoredIndicator        = deserializeFlag( flag );
+
+    rdr[ "OvUvCountResetDate" ] >> OvUvCountResetDate;
+    rdr[ "LastOvUvDateTime" ]   >> LastOvUvDateTime;
+}
+
+}
+
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -29,7 +79,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paot
     :   _paoid( paoid ),
         _paotype( paotype ),
         _insertDynamicDataFlag( true ),
-        _dirty( true ),
+        _dirty( false ),
         _lastControlReason( std::move( lastControlReason ) ),
         _ignoredControlReason( std::move( ignoredControlReason ) )
 {
@@ -39,24 +89,24 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paot
 void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                                          const std::map<Attribute, std::string> & overloads )
 {
+    const DeviceTypes   deviceType = resolveDeviceType( _paotype );
+
     for ( const LitePoint & point : points )
     {
-        _pointidPointtypeMap[ point.getPointId() ] = point.getPointType();      // boo! figure a way to get rid of this guy!!
+        _points.emplace( point.getPointId(), point );
 
         std::vector<Attribute> attributes
-            = Cti::DeviceAttributeLookup::AttributeLookup( resolveDeviceType( _paotype ),
+            = Cti::DeviceAttributeLookup::AttributeLookup( deviceType,
                                                            point.getPointType(),
                                                            point.getPointOffset() );
-
         for ( auto attribute : attributes )
         {
-            _attributes[ attribute ] = point;
+            _attributes[ attribute ] = point.getPointId();
         }
     }
 
-    if ( ! overloads.empty()   )
+    if ( ! overloads.empty() )
     {
-
         for ( auto entry : overloads )
         {
             auto pointLookup =
@@ -68,25 +118,10 @@ void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LiteP
 
             if ( pointLookup != points.end() )
             {
-                _attributes[ entry.first ] = *pointLookup;
+                _attributes[ entry.first ] = pointLookup->getPointId();
             }
         }
     }
-}
-
-void CtiCCTwoWayPoints::assignTwoWayPoint( const LitePoint & point )
-{
-    std::vector<Attribute> attributes
-        = Cti::DeviceAttributeLookup::AttributeLookup( resolveDeviceType( _paotype ),
-                                                       point.getPointType(),
-                                                       point.getPointOffset() );
-
-    for ( auto attribute : attributes )
-    {
-        _attributes[ attribute ] = point;
-    }
-
-    _pointidPointtypeMap[ point.getPointId() ] = point.getPointType();      // boo! figure a way to get rid of this guy!!
 }
 
 long CtiCCTwoWayPoints::getPAOId() const
@@ -101,6 +136,8 @@ void CtiCCTwoWayPoints::setPAOId(long paoId)
 
 void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    using std::string;
+
     if( ! _dirty )
     {
         return;
@@ -257,12 +294,12 @@ LitePoint CtiCCTwoWayPoints::getPointByAttribute( const Attribute & attribute ) 
 {
     static const LitePoint  invalidPoint;   // <-- return this guy if lookup fails - pointID == 0
 
-    return Cti::mapFindOrDefault( _attributes, attribute, invalidPoint );
+    return Cti::mapFindOrDefault( _points, getPointIdByAttribute( attribute ), invalidPoint );
 }
 
 long CtiCCTwoWayPoints::getPointIdByAttribute( const Attribute & attribute ) const
 {
-    return getPointByAttribute( attribute ).getPointId();
+    return  Cti::mapFindOrDefault( _attributes, attribute, 0 );
 }
 
 double CtiCCTwoWayPoints::getPointValueByAttribute( const Attribute & attribute, const double sentinel ) const
@@ -272,17 +309,24 @@ double CtiCCTwoWayPoints::getPointValueByAttribute( const Attribute & attribute,
     return value;
 }
 
-bool CtiCCTwoWayPoints::isTimestampNew(long pointID, CtiTime timestamp)
+bool CtiCCTwoWayPoints::isTimestampNew( const long pointID, const CtiTime & timestamp )
 {
     CtiTime prevTime = gInvalidCtiTime;
     return ! (_pointValues.getPointTime(pointID, prevTime) && timestamp <= prevTime);
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPointValue(long pointID, double value, CtiPointType_t type, CtiTime timestamp)
+bool CtiCCTwoWayPoints::setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp )
 {
-    boost::optional<CtiPointType_t> lookupType = Cti::mapFind( _pointidPointtypeMap, pointID );
-    if ( lookupType && *lookupType == type && isTimestampNew( pointID, timestamp ) )
+    CtiPointType_t  lookupType = InvalidPointType;
+
+    if ( auto pointLookup = Cti::mapFind( _points, pointID ) )
     {
+        lookupType = pointLookup->getPointType();
+    }
+
+    if ( lookupType == type && isTimestampNew( pointID, timestamp ) )
+    {
+        // maybe check if the value is different before we set _dirty = true
         _pointValues.addPointValue(pointID, value, timestamp);
         _dirty = true;
         return true;
@@ -290,27 +334,26 @@ bool CtiCCTwoWayPoints::setTwoWayPointValue(long pointID, double value, CtiPoint
     return false;
 }
 
-bool CtiCCTwoWayPoints::setTwoWayStatusPointValue(long pointID, long value, CtiTime timestamp)
+bool CtiCCTwoWayPoints::setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp )
 {
     return setTwoWayPointValue( pointID, value, StatusPointType, timestamp );
 }
 
-bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp)
+bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue( const long pointID,  const double value,  const CtiTime & timestamp )
 {
     return setTwoWayPointValue( pointID, value, AnalogPointType, timestamp );
 }
 
-bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp)
+bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp )
 {
     return setTwoWayPointValue( pointID, value, PulseAccumulatorPointType, timestamp );
 }
 
-void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& pointList)
+void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg( std::set<long> & pointList ) const
 {
     boost::copy( _attributes
                     | boost::adaptors::map_values
-                    | boost::adaptors::transformed( std::mem_fun_ref( &LitePoint::getPointId ) )
-                    | boost::adaptors::filtered( std::bind2nd( std::greater<long>(), 0 ) ),
+                    | boost::adaptors::filtered( []( const long ID ){ return ID > 0; } ),
                  std::inserter( pointList, pointList.begin() ) );
 }
 
@@ -339,100 +382,57 @@ bool CtiCCTwoWayPoints::isControlAccepted()
     return _ignoredControlReason->checkControlAccepted( *this );
 }
 
-struct ColumnMapping
+void CtiCCTwoWayPoints::setDynamicData( Transport::TwoWayDynamicDataTransport & transport,
+                                        const long cbcState,
+                                        const CtiTime & timestamp )
 {
-    enum
-    {
-        Boolean,
-        Long,
-        Double
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::ControlPoint ), cbcState, timestamp );
 
-    } type;
-    const char *name;
-    const Attribute &attribute;
-}
-static const TwoWayColumns[] =
-{
-    { ColumnMapping::Boolean, "recloseblocked",                 Attribute::RecloseBlocked                   },
-    { ColumnMapping::Boolean, "controlmode",                    Attribute::ControlMode                      },
-    { ColumnMapping::Boolean, "autovoltcontrol",                Attribute::AutoVoltageControl               },
-    { ColumnMapping::Boolean, "opfailedneutralcurrent",         Attribute::OperationFailedNeutralCurrent    },
-    { ColumnMapping::Boolean, "neutralcurrentfault",            Attribute::NeutralCurrentFault              },
-    { ColumnMapping::Boolean, "badrelay",                       Attribute::BadRelay                         },
-    { ColumnMapping::Boolean, "dailymaxops",                    Attribute::DailyMaxOperations               },
-    { ColumnMapping::Boolean, "voltagedeltaabnormal",           Attribute::VoltageDeltaAbnormal             },
-    { ColumnMapping::Boolean, "tempalarm",                      Attribute::TemperatureAlarm                 },
-    { ColumnMapping::Boolean, "dstactive",                      Attribute::DSTActive                        },
-    { ColumnMapping::Boolean, "neutrallockout",                 Attribute::NeutralLockout                   },
-    { ColumnMapping::Double,  "voltage",                        Attribute::Voltage                          },
-    { ColumnMapping::Double,  "highvoltage",                    Attribute::HighVoltage                      },
-    { ColumnMapping::Double,  "lowvoltage",                     Attribute::LowVoltage                       },
-    { ColumnMapping::Double,  "deltavoltage",                   Attribute::DeltaVoltage                     },
-    { ColumnMapping::Long,    "analoginputone",                 Attribute::AnalogInputOne                   },
-    { ColumnMapping::Double,  "temp",                           Attribute::TemperatureofDevice              },
-    { ColumnMapping::Long,    "rssi",                           Attribute::RadioSignalStrengthIndicator     },
-    { ColumnMapping::Long,    "totalopcount",                   Attribute::TotalOperationCount              },
-    { ColumnMapping::Long,    "uvopcount",                      Attribute::UnderVoltageCount                },
-    { ColumnMapping::Long,    "ovopcount",                      Attribute::OverVoltageCount                 },
-    { ColumnMapping::Double,  "uvsetpoint",                     Attribute::UnderVoltageThreshold            },
-    { ColumnMapping::Double,  "ovsetpoint",                     Attribute::OverVoltageThreshold             },
-    { ColumnMapping::Long,    "ovuvtracktime",                  Attribute::OverUnderVoltageTrackTime        },
-    { ColumnMapping::Long,    "neutralcurrentsensor",           Attribute::NeutralCurrentSensor             },
-    { ColumnMapping::Double,  "neutralcurrentalarmsetpoint",    Attribute::NeutralCurrentAlarmThreshold     },
-    { ColumnMapping::Long,    "ipaddress",                      Attribute::IpAddress                        },
-    { ColumnMapping::Long,    "udpport",                        Attribute::UdpPort                          }
-};
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::RecloseBlocked ), transport.RecloseBlocked, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::ControlMode ), transport.ControlMode, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::AutoVoltageControl ), transport.AutoVoltControl, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OperationFailedNeutralCurrent ), transport.OpFailedNeutralCurrent, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentFault ), transport.NeutralCurrentFault, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::BadRelay ), transport.BadRelay, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DailyMaxOperations ), transport.DailyMaxOps, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::VoltageDeltaAbnormal ), transport.VoltageDeltaAbnormal, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TemperatureAlarm ), transport.TempAlarm, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DSTActive ), transport.DSTActive, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralLockout ), transport.NeutralLockout, timestamp );
 
-void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTime timestamp)
-{
-    _pointValues.addPointValue(getPointIdByAttribute( Attribute::ControlPoint ), cbcState, timestamp);
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::AnalogInputOne ), transport.AnalogInputOne, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::RadioSignalStrengthIndicator ), transport.RSSI, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TotalOperationCount ), transport.TotalOpCount, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltageCount ), transport.UvOpCount, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltageCount ), transport.OvOpCount, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverUnderVoltageTrackTime ), transport.OvUvTrackTime, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentSensor ), transport.NeutralCurrentSensor, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::IpAddress ), transport.IPAddress, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UdpPort ), transport.UDPPort, timestamp );
 
-    for each( const ColumnMapping &cm in TwoWayColumns )
-    {
-        double value;
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::Voltage ), transport.Voltage, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::HighVoltage ), transport.HighVoltage, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::LowVoltage ), transport.LowVoltage, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::DeltaVoltage ), transport.DeltaVoltage, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::TemperatureofDevice ), transport.Temp, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltageThreshold ), transport.UvSetPoint, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltageThreshold ), transport.OvSetPoint, timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::NeutralCurrentAlarmThreshold ), transport.NeutralCurrentAlarmSetPoint, timestamp );
 
-        if( cm.type == ColumnMapping::Boolean )
-        {
-            string tempBoolString;
-            rdr[cm.name] >> tempBoolString;
-            value = ciStringEqual(tempBoolString, "y");
-        }
-        else if( cm.type == ColumnMapping::Long )
-        {
-            long tempLong;
-            rdr[cm.name] >> tempLong;
-            value = tempLong;
-        }
-        else  //  cm.type == ColumnMapping::Double
-        {
-            rdr[cm.name] >> value;
-        }
+    _lastControlReason->deserialize( *this, transport.LastControl, timestamp );
 
-        _pointValues.addPointValue(getPointIdByAttribute(cm.attribute), value, timestamp);
-    }
+    _ignoredControlReason->deserializeIndicator( *this, transport.IgnoredIndicator, timestamp );
+    _ignoredControlReason->deserializeReason( *this, transport.IgnoredReason, timestamp );
 
-    rdr["ovuvcountresetdate"] >> _ovuvCountResetDate; //toADD
-    rdr["lastovuvdatetime"] >> _lastOvUvDateTime; //toAdd
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::UnderVoltage ), !!( transport.Condition & 0x01 ), timestamp );
+    _pointValues.addPointValue( getPointIdByAttribute( Attribute::OverVoltage ),  !!( transport.Condition & 0x02 ), timestamp );
 
-    int lastControlReason;
-    rdr["lastcontrol"] >> lastControlReason;
-    _lastControlReason->deserialize( *this, lastControlReason, timestamp );
-
-    std::string ignoredControlIndicator;
-    rdr["ignoredindicator"] >> ignoredControlIndicator;
-    _ignoredControlReason->deserializeIndicator( *this, ciStringEqual(ignoredControlIndicator, "Y"), timestamp );
-
-    int ignoredControlReason;
-    rdr["ignoredreason"] >> ignoredControlReason;
-    _ignoredControlReason->deserializeReason( *this, ignoredControlReason, timestamp );
-
-    int condition;
-    rdr["condition"] >> condition;
-    _pointValues.addPointValue(getPointIdByAttribute( Attribute::UnderVoltage ), !!(condition & 0x01), timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute( Attribute::OverVoltage ),  !!(condition & 0x02), timestamp);
+    _ovuvCountResetDate = transport.OvUvCountResetDate;
+    _lastOvUvDateTime   = transport.LastOvUvDateTime;
 
     _insertDynamicDataFlag = false;
-    _dirty = false;
+
+    _dirty = false;     // _pointValues.addPointValue( .. ) may have made this dirty... reset to clean since we just restored from the db
 }
 
 
@@ -475,6 +475,52 @@ CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( const long paoid, const std:
 // ------------------------------
 
 
+CtiCCTwoWayPointsCbcDnpLogical::CtiCCTwoWayPointsCbcDnpLogical( const long paoid, const std::string & paotype,
+                                                                std::unique_ptr<LastControlReason>    lastControlReason,
+                                                                std::unique_ptr<IgnoredControlReason> ignoredControlReason )
+    :   CtiCCTwoWayPoints( paoid, paotype, std::move( lastControlReason ), std::move( ignoredControlReason ) )
+{
+    // empty...
+}
+
+void CtiCCTwoWayPointsCbcDnpLogical::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
+                                                                      const std::map<Attribute, std::string> & overloads )
+{
+    for ( const LitePoint & point : points )
+    {
+        _points.emplace( point.getPointId(), point );
+    }
+
+    if ( ! overloads.empty() )
+    {
+        // match size : 2
+        //  match[ 0 ] == entire point name including the CBC name
+        //  match[ 1 ] == just the point name
+        const std::regex pointname_regex( "^\\*Logical<.*> (.*)$" );
+
+        for ( auto entry : overloads )
+        {
+            for ( const LitePoint & point : points )
+            {
+                std::smatch pieces_match;
+                std::string pointName = point.getPointName();
+
+                if ( std::regex_match( pointName, pieces_match, pointname_regex ) )
+                {
+                    if ( pieces_match.size() == 2 
+                            && pieces_match[ 1 ].str() == entry.second )
+                    {
+                        _attributes[ entry.first ] = point.getPointId();
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ------------------------------
+
+
 CtiCCTwoWayPoints * CtiCCTwoWayPointsFactory::Create( const long paoID, const std::string & paoType )
 {
     if ( stringContainsIgnoreCase( paoType, "CBC 702" ) )
@@ -489,11 +535,17 @@ CtiCCTwoWayPoints * CtiCCTwoWayPointsFactory::Create( const long paoID, const st
                                              std::make_unique<LastControlReasonCbc802x>(),
                                              std::make_unique<IgnoredControlReasonCbc802x>() );
     }
-    if ( stringContainsIgnoreCase( paoType, "CBC DNP" ) )
+    if ( ciStringEqual( paoType, "CBC DNP" ) )
     {
         return new CtiCCTwoWayPointsCbcDnp( paoID, paoType,
                                             std::make_unique<LastControlReasonCbcDnp>(),
                                             std::make_unique<IgnoredControlReasonCbcDnp>() );
+    }
+    if ( ciStringEqual( paoType, "CBC DNP Logical" ) )
+    {
+        return new CtiCCTwoWayPointsCbcDnpLogical( paoID, paoType,
+                                                   std::make_unique<LastControlReasonCbcDnp>(),
+                                                   std::make_unique<IgnoredControlReasonCbcDnp>() );
     }
 
     // Apparently 1-way devices need one of these guys even though they don't use it for anything,

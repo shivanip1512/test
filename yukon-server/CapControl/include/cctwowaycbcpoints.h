@@ -15,6 +15,63 @@ namespace Database {
 }
 }
 
+class CtiCCTwoWayPoints;
+
+
+namespace Transport
+{
+
+struct TwoWayDynamicDataTransport
+{
+    TwoWayDynamicDataTransport( Cti::RowReader & rdr );
+
+    long 
+        DeviceID,
+        LastControl,
+        Condition,
+        AnalogInputOne,
+        RSSI,
+        IgnoredReason,
+        TotalOpCount,
+        UvOpCount,
+        OvOpCount,
+        OvUvTrackTime,
+        NeutralCurrentSensor,
+        IPAddress,
+        UDPPort;
+
+    double
+        Voltage,
+        HighVoltage,
+        LowVoltage,
+        DeltaVoltage,
+        Temp,
+        UvSetPoint,
+        OvSetPoint,
+        NeutralCurrentAlarmSetPoint;
+
+    bool
+        RecloseBlocked,
+        ControlMode,
+        AutoVoltControl,
+        OpFailedNeutralCurrent,
+        NeutralCurrentFault,
+        BadRelay,
+        DailyMaxOps,
+        VoltageDeltaAbnormal,
+        TempAlarm,
+        DSTActive,
+        NeutralLockout,
+        IgnoredIndicator;
+
+    CtiTime 
+        OvUvCountResetDate,
+        LastOvUvDateTime;
+};
+
+}
+
+
 class CtiCCTwoWayPoints
 {
 public:
@@ -37,40 +94,35 @@ public:
     long getPointIdByAttribute( const Attribute & attribute ) const;
     double getPointValueByAttribute( const Attribute & attribute, const double sentinel = 0 ) const;
 
-    bool setTwoWayStatusPointValue(long pointID, long value, CtiTime timestamp);
-    bool setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp);
-    bool setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp);
+    bool setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp );
+    bool setTwoWayAnalogPointValue( const long pointID, const double value, const CtiTime & timestamp );
+    bool setTwoWayPulseAccumulatorPointValue( const long pointID, const double value, const CtiTime & timestamp );
 
-    void addAllCBCPointsToRegMsg(std::set<long>& pointList);
+    void addAllCBCPointsToRegMsg( std::set<long> & pointList ) const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    void restore(Cti::RowReader& rdr);
-    void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
+    void setDynamicData( Transport::TwoWayDynamicDataTransport & transport,
+                         const long cbcState,
+                         const CtiTime & timestamp );
 
-    void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                          const std::map<Attribute, std::string> & overloads );
-    void assignTwoWayPoint( const LitePoint & point );
+    virtual void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
+                                                  const std::map<Attribute, std::string> & overloads );
 
 protected:
 
     std::unique_ptr<LastControlReason>      _lastControlReason;
     std::unique_ptr<IgnoredControlReason>   _ignoredControlReason;
 
-private:
-
-    bool isTimestampNew(long pointID, CtiTime timestamp);
-    bool setTwoWayPointValue(long pointID, double value, CtiPointType_t type, CtiTime timestamp);
+    bool isTimestampNew( const long pointID, const CtiTime & timestamp );
+    bool setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp );
 
     long _paoid;
     std::string _paotype;
 
+    std::map<long, LitePoint>   _points;
+    std::map<Attribute, long>   _attributes;
+
     PointValueHolder  _pointValues;
-
-    std::map <int, CtiPointType_t> _pointidPointtypeMap;
-
-    using AttributeToPointInfo = std::map<Attribute, LitePoint>;
-
-    AttributeToPointInfo    _attributes;
 
     CtiTime _ovuvCountResetDate;
     CtiTime _lastOvUvDateTime;
@@ -127,6 +179,22 @@ public:
     CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype,
                               std::unique_ptr<LastControlReason>    lastControlReason,
                               std::unique_ptr<IgnoredControlReason> ignoredControlReason );
+};
+
+
+// ------------------------------
+
+
+class CtiCCTwoWayPointsCbcDnpLogical : public CtiCCTwoWayPoints
+{
+public:
+
+    CtiCCTwoWayPointsCbcDnpLogical( const long paoid, const std::string & paotype,
+                                    std::unique_ptr<LastControlReason>    lastControlReason,
+                                    std::unique_ptr<IgnoredControlReason> ignoredControlReason );
+
+    void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
+                                          const std::map<Attribute, std::string> & overloads ) override;
 };
 
 

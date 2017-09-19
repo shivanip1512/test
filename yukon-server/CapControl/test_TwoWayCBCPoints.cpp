@@ -93,15 +93,12 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 {
     std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 575, "CBC DNP" ) );
 
-    LitePoint   databaseInput[] =
+    std::vector<LitePoint>  databaseInput =
     {
         LitePoint( 761, StatusPointType, "foobar", 0, 1, "", "", 1.0, 0 )
     };
 
-    for ( const auto & item : databaseInput )
-    {
-        points->assignTwoWayPoint( item );
-    }
+    points->assignTwoWayPointsAndAttributes( databaseInput, {} );
 
     std::set<long>
         registrationPoints,
@@ -126,7 +123,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 {
     std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 7022" ) );
 
-    LitePoint   databaseInput[] =
+    std::vector<LitePoint>  databaseInput =
     {
         // These type/offsets are defined in the 2-way point code for CBC 702X devices
         LitePoint( 715, AnalogPointType,            "", 0,     3, "", "", 1.0, 0 ),
@@ -202,10 +199,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
         LitePoint( 740, StatusPointType,            "", 0,  2001, "", "", 1.0, 0 )
     };
 
-    for ( const auto & item : databaseInput )
-    {
-        points->assignTwoWayPoint( item );
-    }
+    points->assignTwoWayPointsAndAttributes( databaseInput, {} );
 
     std::set<long>
         registrationPoints,
@@ -567,7 +561,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
             std::make_unique<test_LastControlReasonCbc802x>(),
             std::make_unique<test_IgnoredControlReasonCbc802x>() );
 
-    LitePoint   databaseInput[] =
+    std::vector<LitePoint>  databaseInput =
     {
         // These type/offsets are defined in the 2-way point code for CBC 802X devices
         LitePoint( 342, AnalogPointType,            "", 0,     1, "", "", 1.0, -17 ),
@@ -626,10 +620,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         LitePoint( 346, StatusPointType,            "", 0,  2001, "", "", 1.0, -17 )
     };
 
-    for ( const auto & item : databaseInput )
-    {
-        points.assignTwoWayPoint( item );
-    }
+    points.assignTwoWayPointsAndAttributes( databaseInput, {} );
 
     std::set<long>
         registrationPoints,
