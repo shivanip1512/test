@@ -572,12 +572,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         idSql.append("WHERE DCC.CategoryType").eq(categoryType.value());
         idSql.append("   AND DCCM.DeviceConfigurationId").eq(deviceConfigurationId);
         
-        List<Integer> previousId = jdbcTemplate.query(idSql, TypeRowMapper.INTEGER_NULLABLE);
+        Integer previousId = jdbcTemplate.queryForObject(idSql, TypeRowMapper.INTEGER_NULLABLE);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM DeviceConfigCategoryMap");
         sql.append("WHERE DeviceConfigurationId").eq(deviceConfigurationId);
-        sql.append("   AND DeviceConfigCategoryId").eq(previousId.get(0));  
+        sql.append("   AND DeviceConfigCategoryId").eq(previousId);  
         jdbcTemplate.update(sql);
         
     }
