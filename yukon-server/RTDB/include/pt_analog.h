@@ -64,17 +64,11 @@ public:
         }
     }
 
-    static unsigned makeStaticTags(const bool isControlAvailable, const bool isControlInhibited)
-    {
-        return (TAG_ATTRIB_CONTROL_AVAILABLE * isControlAvailable) |
-               (TAG_DISABLE_CONTROL_BY_POINT * isControlInhibited);
-    }
-
     unsigned adjustStaticTags(unsigned& tag) const
     {
-        tag &= ~(TAG_ATTRIB_CONTROL_AVAILABLE | TAG_DISABLE_CONTROL_BY_POINT);
+        tag &= ~TAG_MASK_CONTROL;
 
-        tag |= makeStaticTags(
+        tag |= makeStaticControlTags(
                     _pointControl || getType() == AnalogOutputPointType,
                     _pointControl && _pointControl->isControlInhibited());
 

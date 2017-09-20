@@ -40,6 +40,8 @@ public:
    CtiPointType_t  getType() const;
 
    static unsigned makeStaticTags(bool isPseudoPoint, bool isOutOfService, bool isAlarmDisabled);
+   static unsigned makeStaticControlTags(bool isControlAvailable, bool isControlInhibited);
+
    virtual unsigned adjustStaticTags(unsigned& tag) const;
 
    virtual double getDefaultValue( ) const;
@@ -49,6 +51,11 @@ public:
 
    static bool isNumeric(CtiPointType_t type);
    static bool isStatus (CtiPointType_t type);
+
+protected:
+
+    static const unsigned TAG_MASK_BASE;
+    static const unsigned TAG_MASK_CONTROL;
 };
 
 typedef boost::shared_ptr< CtiPointBase > CtiPointSPtr;

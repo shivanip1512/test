@@ -187,4 +187,14 @@ BOOST_AUTO_TEST_CASE(test_makeStaticTags)
     BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(X, X, X), 0x20000003);
 }
 
+BOOST_AUTO_TEST_CASE(test_makeStaticControlTags)
+{
+    const bool X = true, _ = false;
+
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticControlTags(_, _), 0x00000000);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticControlTags(_, X), 0x00000004);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticControlTags(X, _), 0x10000000);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticControlTags(X, X), 0x10000004);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

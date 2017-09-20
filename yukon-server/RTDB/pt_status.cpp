@@ -53,20 +53,15 @@ void CtiPointStatus::DecodeDatabaseReader(Cti::RowReader &rdr)
     }
 }
 
-unsigned CtiPointStatus::makeStaticTags(const bool isControlAvailable, const bool isControlInhibited)
-{
-    return (TAG_ATTRIB_CONTROL_AVAILABLE * isControlAvailable) |
-           (TAG_DISABLE_CONTROL_BY_POINT * isControlInhibited);
-}
-
 unsigned CtiPointStatus::adjustStaticTags(unsigned& tag) const
 {
-    tag &= ~(TAG_ATTRIB_CONTROL_AVAILABLE | TAG_DISABLE_CONTROL_BY_POINT);
+    tag &= ~TAG_MASK_CONTROL;
 
     if( _pointStatusControl )
     {
-        tag |= makeStaticTags(_pointStatusControl->getControlType() != ControlType_Invalid,
-                              _pointStatusControl->isControlInhibited());
+        tag |= makeStaticControlTags(
+                    _pointStatusControl->getControlType() != ControlType_Invalid,
+                    _pointStatusControl->isControlInhibited());
     }
 
     return Inherited::adjustStaticTags(tag);

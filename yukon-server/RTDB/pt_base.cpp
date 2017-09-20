@@ -90,6 +90,11 @@ void CtiPointBase::setType(CtiPointType_t type)
     _pointBase.setType(type);
 }
 
+const unsigned CtiPointBase::TAG_MASK_BASE = 
+        TAG_ATTRIB_PSEUDO
+        | TAG_DISABLE_POINT_BY_POINT 
+        | TAG_DISABLE_ALARM_BY_POINT;
+
 unsigned CtiPointBase::makeStaticTags(const bool isPseudoPoint, const bool isOutOfService, const bool isAlarmDisabled)
 {
     return
@@ -98,9 +103,19 @@ unsigned CtiPointBase::makeStaticTags(const bool isPseudoPoint, const bool isOut
         | TAG_DISABLE_ALARM_BY_POINT * isAlarmDisabled;
 }
 
+const unsigned CtiPointBase::TAG_MASK_CONTROL = 
+        TAG_ATTRIB_CONTROL_AVAILABLE | 
+        TAG_DISABLE_CONTROL_BY_POINT;
+
+unsigned CtiPointBase::makeStaticControlTags(const bool isControlAvailable, const bool isControlInhibited)
+{
+    return (TAG_ATTRIB_CONTROL_AVAILABLE * isControlAvailable) |
+           (TAG_DISABLE_CONTROL_BY_POINT * isControlInhibited);
+}
+
 unsigned CtiPointBase::adjustStaticTags(unsigned& tag) const
 {
-    tag &= ~(TAG_ATTRIB_PSEUDO | TAG_DISABLE_POINT_BY_POINT | TAG_DISABLE_ALARM_BY_POINT);
+    tag &= ~TAG_MASK_BASE;
 
     tag |= makeStaticTags(isPseudoPoint(), isOutOfService(), isAlarmDisabled());
 
