@@ -59,5 +59,3 @@ protected:
 };
 
 typedef boost::shared_ptr< CtiPointBase > CtiPointSPtr;
-typedef boost::weak_ptr< CtiPointBase > CtiPointWPtr;
-

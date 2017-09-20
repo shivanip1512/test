@@ -1055,19 +1055,21 @@ void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     {
                         pMulti->getData().push_back(pSigMulti.release());
                     }
-
-                    if( !results.missingIds.empty() )
-                    {
-                        payload_status = CtiServerResponseMsg::ERR;
-                        payload_string =
-                            results.missingIds.size() == 1
-                                ? "Point id not found: "
-                                : "Point ids not found: ";
-                        payload_string += Cti::join(results.missingIds, ",");
-                    }
                 }
 
-                if( CtiServer::ptr_type sptrCM = findConnectionManager(Cmd->getConnectionHandle()) )
+                if( ! results.missingIds.empty() )
+                {
+                    payload_status = CtiServerResponseMsg::ERR;
+                    payload_string =
+                        results.missingIds.size() == 1
+                            ? "Point id not found: "
+                            : "Point ids not found: ";
+                    payload_string += Cti::join(results.missingIds, ",");
+
+                    CTILOG_WARN(dout, "PointDataRequest could not be fulfilled:" << std::endl << payload_string);
+                }
+
+                if( auto sptrCM = findConnectionManager(Cmd->getConnectionHandle()) )
                 {
                     if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
                     {

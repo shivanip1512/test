@@ -91,16 +91,20 @@ string CtiTablePointDispatch::getSQLforPointValues(size_t count)
 {
     static const string sqlNoID =
         "SELECT"
-            " DPD.pointid, DPD.timestamp,"
-            " DPD.quality, DPD.value,"
-            " DPD.tags, DPD.millis,"
-            " P.POINTTYPE"
+            " P.POINTID, P.POINTTYPE, P.SERVICEFLAG, P.ALARMINHIBIT, P.PSEUDOFLAG, P.POINTOFFSET"
+            ", PS.INITIALSTATE"
+            ", PC.ControlOffset, PC.ControlInhibit"
+            ", PSC.ControlType"
+            ", DPD.TIMESTAMP, DPD.QUALITY, DPD.VALUE, DPD.TAGS, DPD.millis"
         " FROM"
-            " DynamicPointDispatch DPD"
-            " JOIN Point P ON DPD.pointid=P.pointid"
+            " POINT P"
+            " LEFT OUTER JOIN PointStatus PS ON P.POINTID = PS.POINTID"
+            " LEFT OUTER JOIN PointControl PC ON P.POINTID = PC.PointId"
+            " LEFT OUTER JOIN PointStatusControl PSC ON P.POINTID = PSC.PointId"
+            " LEFT OUTER JOIN DynamicPointDispatch DPD ON P.POINTID = DPD.POINTID"
         " WHERE ";
 
-    return sqlNoID + Cti::Database::createIdInClause("DPD", "pointid", count);
+    return sqlNoID + Cti::Database::createIdInClause("P", "pointid", count);
 }
 
 bool CtiTablePointDispatch::Restore()

@@ -34,6 +34,8 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/adaptor/map.hpp>
 
+#include <boost/make_shared.hpp>
+
 #include <list>
 
 using namespace std;
@@ -43,21 +45,24 @@ using Cti::Database::DatabaseReader;
 
 #define POINT_REFRESH_SIZE 950 //This is overriden by cparm.
 
+static const CtiTime Startup;
+
 /*
- *  This method initializes each point's dynamic data to it's default/initial values.
+ *  This method initializes each point's dynamic data to its default/initial values.
  */
 void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void* d)
 {
     CtiPointClientManager *pointManager = (CtiPointClientManager*)d;
     CtiDynamicPointDispatchSPtr pDyn = pointManager->getDynamic(*pTempPoint);
 
-    if(!pDyn)
+    if( ! pDyn )
     {
-        if((pDyn = CtiDynamicPointDispatchSPtr(CTIDBG_new CtiDynamicPointDispatch(pTempPoint->getID()))))
+        if( pDyn = boost::make_shared<CtiDynamicPointDispatch>(pTempPoint->getID()) )
         {
             UINT statictags = pDyn->getDispatch().getTags();
             pTempPoint->adjustStaticTags(statictags);
 
+            pDyn->getDispatch().setTimeStamp(Startup);
             pDyn->getDispatch().setValue(pTempPoint->getDefaultValue());
             pDyn->getDispatch().setTags(statictags);
             pDyn->getDispatch().setDirty( TRUE );                           // Make it update if it doesn't get reloaded!
@@ -1513,6 +1518,88 @@ auto CtiPointClientManager::generatePointDataSqlStatements(const std::vector<int
 }
 
 
+long createBaseTags(DatabaseReader& rdr)
+{
+    const long offset = rdr["POINTOFFSET"].as<long>();
+    const auto pseudoFlag   = rdr["PSEUDOFLAG"  ].is<'p'>();
+    const auto serviceFlag  = rdr["SERVICEFLAG" ].is<'y'>();
+    const auto alarmInhibit = rdr["ALARMINHIBIT"].is<'y'>();
+
+    return CtiPointBase::makeStaticTags( ! offset || pseudoFlag, serviceFlag, alarmInhibit);
+}
+
+long createAnalogTags(DatabaseReader& rdr, const CtiPointType_t type)
+{
+    auto tags = createBaseTags(rdr);
+
+    rdr["ControlInhibit"];  //  move the reader to the ControlInhibit column
+
+    const bool isControlAvailable = type == AnalogOutputPointType || rdr.isNotNull();
+    const bool isControlInhibited = rdr.is<'y'>();
+
+    return tags | CtiPointBase::makeStaticControlTags(isControlAvailable, isControlInhibited);
+}
+
+long createStatusTags(DatabaseReader& rdr)
+{
+    auto tags = createBaseTags(rdr);
+
+    rdr["ControlType"];  //  move the reader to the ControlType column
+
+    if( rdr.isNotNull() )
+    {
+        const bool isControlAvailable = ControlType_Invalid != resolveControlType(rdr.as<std::string>());
+        const bool isControlInhibited = rdr["ControlInhibit"].is<'y'>();
+
+        tags |= CtiPointBase::makeStaticControlTags(isControlAvailable, isControlInhibited);
+    }
+
+    return tags;
+}
+
+
+std::unique_ptr<CtiPointDataMsg> createPointDataMsg(DatabaseReader& rdr, const long pointId)
+{
+    std::unique_ptr<CtiPointDataMsg> pDat;
+
+    //  No DynamicPaoInfo entry
+    if( rdr["value"].isNull() )
+    {
+        const auto pointType = resolvePointType(rdr["pointtype"].as<std::string>());
+        const bool isStatus  = CtiPointBase::isStatus(pointType);
+
+        const double value = isStatus ? rdr["initialstate"].as<double>() : 0.0;
+
+        const long tags = isStatus ? createStatusTags(rdr) : createAnalogTags(rdr, pointType);
+
+        pDat = std::make_unique<CtiPointDataMsg>(
+            pointId,
+            value,
+            UnintializedQuality,
+            pointType,
+            string(),
+            tags);
+
+        pDat->setTime(Startup);
+    }
+    else
+    {
+        pDat = std::make_unique<CtiPointDataMsg>(
+            pointId,
+            rdr["value"].as<double>(),
+            rdr["quality"].as<int>(),
+            resolvePointType(rdr["pointtype"].as<std::string>()),
+            string(),
+            rdr["tags"].as<long>());
+
+        pDat->setTime(rdr["timestamp"].as<CtiTime>());
+    }
+
+    return pDat;
+}
+
+
+
 //  Collects current point values from cached points if loaded, and reads the rest from the database
 auto CtiPointClientManager::getCurrentPointData(const std::vector<int>& pointIds) -> PointDataResults
 {
@@ -1572,16 +1659,7 @@ auto CtiPointClientManager::getCurrentPointData(const std::vector<int>& pointIds
             {
                 const auto pointId = rdr["pointid"].as<long>();
 
-                auto pDat =
-                    std::make_unique<CtiPointDataMsg>(
-                        pointId,
-                        rdr["value"].as<double>(),
-                        rdr["quality"].as<int>(),
-                        resolvePointType(rdr["pointtype"].as<std::string>()),
-                        string(),
-                        rdr["tags"].as<long>());
-
-                pDat->setTime(rdr["timestamp"].as<CtiTime>());
+                auto pDat = createPointDataMsg(rdr, pointId);
 
                 auto itr = cacheMisses.find(pointId);
                 if( itr != cacheMisses.end() )

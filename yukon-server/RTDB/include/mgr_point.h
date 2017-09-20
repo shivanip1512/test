@@ -15,8 +15,6 @@ public:
    typedef coll_type::spiterator        spiterator;
    typedef coll_type::insert_pair       insert_pair;
 
-   typedef std::map<LONG, CtiPointWPtr> WeakPointMap;
-
 private:
 
     coll_type      _smartMap;

@@ -83,6 +83,26 @@ public:
         return operator T();  
     }
 
+    //  Check if the column's string representation is a case-insensitive match to the template character.
+    //  Null column always returns false.
+    template<char Ch>
+    bool is()
+    {
+        if( isNull() )
+        {
+            return false;
+        }
+
+        const auto str = as<std::string>();
+
+        return str.size() == 1 && std::tolower(str[0]) == Ch;
+    }
+
+    bool isNotNull() 
+    { 
+        return ! isNull(); 
+    }
+
     // inputs for variable binding
     virtual RowReader &operator<<(const bool operand) = 0;
     virtual RowReader &operator<<(const short operand) = 0;
