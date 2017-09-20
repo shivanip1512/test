@@ -31,8 +31,11 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.dr.model.PerformanceVerificationEventMessage;
+import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
@@ -40,6 +43,8 @@ import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.jaxb.DRReport;
+import com.cannontech.dr.rfn.model.jaxb.DRReport.BroadcastVerificationMessages;
+import com.cannontech.dr.rfn.model.jaxb.DRReport.BroadcastVerificationMessages.Event;
 import com.cannontech.dr.rfn.model.jaxb.DRReport.ControlEvents;
 import com.cannontech.dr.rfn.model.jaxb.DRReport.ExtendedAddresssing;
 import com.cannontech.dr.rfn.model.jaxb.DRReport.HostDeviceID;
@@ -104,7 +109,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     @Autowired private ExiParsingService<SimpleXPathTemplate> exiParsingService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-    
+    @Autowired private PerformanceVerificationDao performanceVerificationDao;
+    private List<PerformanceVerificationEventMessage> eventMessages = null;
     private static final JAXBContext jaxbContext = initJaxbContext();
     
     //minute of the day to send a request at/list of devices to send a read request to
@@ -517,11 +523,40 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             LUVEvents luvEvents = objectFactory.createDRReportLUVEvents();
             drReport.getLUVEvents().add(luvEvents);
 
+            // Create broadcast verification message ids
+            BroadcastVerificationMessages verificationMessages =
+                objectFactory.createDRReportBroadcastVerificationMessages();
+            loadPerformanceVerificationEventMessages();
+
+            if (eventMessages != null && !eventMessages.isEmpty()) {
+                for (PerformanceVerificationEventMessage eventMsg : eventMessages) {
+                    Event event = objectFactory.createDRReportBroadcastVerificationMessagesEvent();
+                    event.setUnused(0); // This element is not used & should be set to 0 to match firmware
+                                        // message format.
+                    event.setUniqueIdentifier(eventMsg.getMessageId());
+                    // Sets received timestamp to the time the message was sent + up to 5 minutes depending on
+                    // serial number
+                    event.setReceivedTimestamp(eventMsg.getTimeMessageSent().getMillis() / 1000
+                        + Integer.parseInt(deviceParameters.getRfnIdentifier().getSensorSerialNumber()) % 300);
+                    verificationMessages.getEvent().add(event);
+                }
+            }
+
+            drReport.getBroadcastVerificationMessages().add(verificationMessages);
             marshaller.marshal(drReport, sw);
         } catch (Exception e) {
             throw e;
         }
         return sw.toString();
+    }
+
+    /*
+     * This method loads Performance Verification Event Messages for the simulator
+     */
+    private void loadPerformanceVerificationEventMessages() {
+        Instant now = new Instant();
+        Range<Instant> last24HourRange = Range.inclusive(now.minus(Duration.standardHours(24)), now);
+        eventMessages = performanceVerificationDao.getEventMessages(last24HourRange);
     }
 
     /**
