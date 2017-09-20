@@ -19,7 +19,6 @@ public:
    static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   void DecodeAttributeDatabaseReader(Cti::RowReader &rdr);
 
    INT             getArchiveInterval() const;
    INT             getArchiveType() const;
@@ -33,9 +32,9 @@ public:
 
    LONG            getStateGroupID() const;
 
-   BOOL            isAlarmDisabled() const;
-
-   BOOL            isPseudoPoint() const;
+   bool            isAlarmDisabled() const;
+   bool            isOutOfService() const;
+   bool            isPseudoPoint() const;
 
    void            setType(CtiPointType_t type);
    CtiPointType_t  getType() const;

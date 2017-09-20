@@ -465,8 +465,10 @@
     </ClCompile>
     <ClCompile Include="test_mgr_point.cpp">
     </ClCompile>
+    <ClCompile Include="test_pt_analog.cpp" />
     <ClCompile Include="test_pt_base.cpp">
     </ClCompile>
+    <ClCompile Include="test_pt_status.cpp" />
     <ClCompile Include="test_rte_ccu.cpp">
     </ClCompile>
     <ClCompile Include="test_slctdev.cpp">

@@ -212,5 +212,11 @@
     <ClCompile Include="test_dev_rfn_LgyrFocus_al.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_pt_analog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_pt_status.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
