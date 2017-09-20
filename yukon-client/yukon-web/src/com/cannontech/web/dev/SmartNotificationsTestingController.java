@@ -23,8 +23,14 @@ public class SmartNotificationsTestingController {
         return "redirect:smartNotificationsSimulator";
     }
     
+    @RequestMapping("clearAllEvents")
+    public String clearAllEvents() {
+        //TODO: Clear out all events
+        return "redirect:smartNotificationsSimulator";
+    }
+    
     @RequestMapping("createEvents")
-    public String createEvents(@RequestParam int waitTime) {
+    public String createEvents(@RequestParam int waitTime, @RequestParam int eventsPerMessage) {
         //TODO: Create Events for subscriptions
         return "redirect:smartNotificationsSimulator";
     }

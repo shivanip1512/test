@@ -19,12 +19,7 @@ yukon.dev.smartNotificationsSimulator = (function() {
                 var popup = $(ev.target),
                 form = popup.find('#notification-details'),
                 userGroupPicker = yukon.pickers['userGroupPicker'],
-                userGroupId = $('#userGroupId').val(),
-                //post combine daily with true/false values
-                combineDailyField = popup.find('#combineDailyField'),
-                combineDailySwitch = popup.find('.js-combine-daily');
-            combineDailyField.attr('value', combineDailySwitch.prop('checked'));
-            
+                userGroupId = $('#userGroupId').val();
                 $.ajax({
                     url: yukon.url('/dev/saveSubscription?userGroupId=' + userGroupId),
                     type: 'post',
@@ -35,8 +30,9 @@ yukon.dev.smartNotificationsSimulator = (function() {
             });
             
             $(document).on('click', '.js-create-events', function () {
-                var waitTime = $('#waitTime').val();
-                window.location.href = yukon.url('/dev/createEvents?waitTime=' + waitTime);
+                var waitTime = $('#waitTime').val(),
+                    eventsPerMessage = $('#eventsPerMessage').val();
+                window.location.href = yukon.url('/dev/createEvents?waitTime=' + waitTime + "&eventsPerMessage=" + eventsPerMessage);
             });
             
             _initialized = true;
