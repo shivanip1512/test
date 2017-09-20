@@ -1,5 +1,6 @@
 #include "precompiled.h"
 
+#include "ctidate.h"
 #include "pt_base.h"
 #include "logger.h"
 #include "mgr_ptclients.h"
@@ -45,7 +46,7 @@ using Cti::Database::DatabaseReader;
 
 #define POINT_REFRESH_SIZE 950 //This is overriden by cparm.
 
-static const CtiTime Startup;
+static const CtiTime UninitializedTimestamp { CtiDate { 1, 1, 2010 }, 12, 0, 0 };
 
 /*
  *  This method initializes each point's dynamic data to its default/initial values.
@@ -62,7 +63,7 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
             UINT statictags = pDyn->getDispatch().getTags();
             pTempPoint->adjustStaticTags(statictags);
 
-            pDyn->getDispatch().setTimeStamp(Startup);
+            pDyn->getDispatch().setTimeStamp(UninitializedTimestamp);
             pDyn->getDispatch().setValue(pTempPoint->getDefaultValue());
             pDyn->getDispatch().setTags(statictags);
             pDyn->getDispatch().setDirty( TRUE );                           // Make it update if it doesn't get reloaded!
@@ -1580,7 +1581,7 @@ std::unique_ptr<CtiPointDataMsg> createPointDataMsg(DatabaseReader& rdr, const l
             string(),
             tags);
 
-        pDat->setTime(Startup);
+        pDat->setTime(UninitializedTimestamp);
     }
     else
     {
