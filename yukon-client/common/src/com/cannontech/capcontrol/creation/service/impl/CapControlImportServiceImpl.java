@@ -191,10 +191,6 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
             pao = new CompleteTwoWayCbc();
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)pao;
-            if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
-                cbc.setMasterAddress(cbcImportData.getMasterAddress());
-                cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            }
             if (cbcImportData.getScanEnabled() != null && cbcImportData.getScanEnabled().booleanValue()) {
                 cbc.setScanEnabled(true);
                 if (cbcImportData.getAltInterval() != null) {
@@ -205,6 +201,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 }
             }
             if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+                cbc.setMasterAddress(cbcImportData.getMasterAddress());
+                cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
                 commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
                                                            PaoCategory.PORT, PaoClass.PORT);
                 if (commChannel != null) {
