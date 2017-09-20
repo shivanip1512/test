@@ -52,6 +52,7 @@
         <pointInfo name="Inactive Phase Current Diagnostic Error" attributes="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR"/>
         <pointInfo name="kVA" attributes="KVA"/>
         <pointInfo name="kVA at Peak kW Coincidental" attributes="KVA_PEAK_DEMAND_COIN"/>
+        <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
         <pointInfo name="kVAh" attributes="KVAH"/>
         <pointInfo name="kVAh Lagging"/>
         <pointInfo name="kVAh Lagging Rate A"/>

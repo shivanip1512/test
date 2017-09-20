@@ -403,6 +403,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NET_KW_LOAD_PROFILE">Net kW Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVA_LOAD_PROFILE">Sum kVA Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAR_LOAD_PROFILE">Sum kVAr Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVA_LOAD_PROFILE">kVA Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH">Forward Inductive kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH">Reverse Inductive kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_INDUCTIVE_KVARH_PER_INTERVAL">Forward Inductive kVArh per Interval</entry>

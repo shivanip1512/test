@@ -283,6 +283,7 @@ public:
     static const Attribute  NetkWLoadProfile;
     static const Attribute  SumkVALoadProfile;
     static const Attribute  SumkVArLoadProfile;
+    static const Attribute  kVALoadProfile;
 
     static const Attribute  NetkVArh;
     static const Attribute  NetDeliveredkVArh;

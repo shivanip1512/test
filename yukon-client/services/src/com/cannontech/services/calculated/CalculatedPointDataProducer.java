@@ -94,7 +94,8 @@ public class CalculatedPointDataProducer {
                                                                     BuiltInAttribute.SUM_KVARH, 
                                                                     BuiltInAttribute.SUM_KVAH,
                                                                     BuiltInAttribute.KVARH,
-                                                                    BuiltInAttribute.USAGE_WATER);
+                                                                    BuiltInAttribute.USAGE_WATER,
+                                                                    BuiltInAttribute.KVAH);
         
         ImmutableMap.Builder<PaoTypePointIdentifier, PointCalculator> b = ImmutableMap.builder();
         for (PaoType type : types) {

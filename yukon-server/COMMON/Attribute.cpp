@@ -296,6 +296,7 @@ INIT_ATTRIBUTE( SumkWLoadProfile,                                   "SUM_KW_LOAD
 INIT_ATTRIBUTE( NetkWLoadProfile,                                   "NET_KW_LOAD_PROFILE" );
 INIT_ATTRIBUTE( SumkVALoadProfile,                                  "SUM_KVA_LOAD_PROFILE" );
 INIT_ATTRIBUTE( SumkVArLoadProfile,                                 "SUM_KVAR_LOAD_PROFILE" );
+INIT_ATTRIBUTE( kVALoadProfile,                                     "KVA_LOAD_PROFILE" );
 
 INIT_ATTRIBUTE( NetkVArh,                                           "NET_KVARH" );
 INIT_ATTRIBUTE( NetDeliveredkVArh,                                  "NET_DELIVERED_KVARH" );

@@ -141,7 +141,13 @@
         <property name="basedOn" value="KVARH"/>
         <property name="perInterval"><null/></property>
         <property name="loadProfile" value="DELIVERED_KVAR_LOAD_PROFILE"></property>
-        <qualifier value="DeliveredKvarh "/>
+        <qualifier value="DeliveredKvarh"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="KVAH"/>
+        <property name="perInterval"><null/></property>
+        <property name="loadProfile" value="KVA_LOAD_PROFILE"></property>
+        <qualifier value="kVAh"/>
     </bean>
     <bean id= "missingGatewayFirstDataTimes" class="java.util.concurrent.ConcurrentHashMap"/>
        

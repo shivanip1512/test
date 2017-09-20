@@ -291,6 +291,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NET_KW_LOAD_PROFILE("Net kW Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
+    KVA_LOAD_PROFILE("kVA Load Profile", AttributeGroup.PROFILE, false), //calculated, not readable
 
     NET_KVARH("Net kVArh", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH("Net Delivered kVArh", AttributeGroup.REACTIVE),
