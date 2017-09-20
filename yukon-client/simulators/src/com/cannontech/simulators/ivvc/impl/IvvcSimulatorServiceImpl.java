@@ -625,6 +625,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     }
     
     private void addCbcPointsToCbcCache(int cbcId, String cbcName) {
+        // The second condition is prevent point data generation for user created CBC by not adding points for such CBC 
+        // to the cbcPointCache
         if (!cbcPointsLoaded.contains(cbcId) && StringUtils.startsWith(cbcName, "Sim CBC")) {
             // We are going to try hard to only do this once per cbc simulator run as this is a pretty big lookup.
             cbcPointsLoaded.add(cbcId);
