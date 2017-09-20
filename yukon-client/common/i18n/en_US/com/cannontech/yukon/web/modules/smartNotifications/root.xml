@@ -8,6 +8,7 @@
     <entry key="yukon.web.modules.smartNotifications.settings.pageHeading">Notifications</entry>
     <entry key="yukon.web.modules.smartNotifications.settings.crumbTitle">Notifications</entry>
     <entry key="yukon.web.modules.smartNotifications.settings.pageTitle">Notifications</entry>    
+    <entry key="yukon.web.modules.smartNotifications.settings.subscribe.label">Subscribe</entry>    
     
     <!-- Event Detail page -->
     <entry key="yukon.web.modules.smartNotifications.detail.pageHeading">Notification Event Detail</entry>
@@ -22,7 +23,6 @@
     <entry key="yukon.web.modules.smartNotifications.monitor">Monitor</entry>
     <entry key="yukon.web.modules.smartNotifications.frequency">Frequency</entry>
     <entry key="yukon.web.modules.smartNotifications.sendTime">Send Time</entry>
-    <entry key="yukon.web.modules.smartNotifications.combineAllDaily">Combine All Daily</entry>
     <entry key="yukon.web.modules.smartNotifications.media">Media</entry>
     <entry key="yukon.web.modules.smartNotifications.email">Email</entry>
     <entry key="yukon.web.modules.smartNotifications.detail">Message Detail</entry>
@@ -34,15 +34,17 @@
             <b>Frequency:</b> 
             <ul style="list-style-type:none;margin:0;">
                 <li><b>Immediate</b> - receive a notification for every event.</li>  
-                <li><b>Grouped</b> - group notifications based on time:</li>
+                <li><b>Aggregate</b> - group notifications based on time.  Send the first notification immediately and if there are more events, send notifications at the following intervals:</li>
                     <ul style="list-style-type:none;margin:0;">
-                        <li>1st Notification - 1st event</li>
-                        <li>2nd Notification - when 10 events occurred or 1 minute passed.</li>
-                        <li>3rd Notification - when 25 events occurred or 5 minutes passed.</li>
-                        <li>4th Notification - when 100 events occurred or 30 minutes passed.</li>
-                        <li>5th Notification - when 1000 events occurred or 1 hour passed.</li>
+                        <li>First event – send a notification immediately.</li>
+                        <li>Wait 1 minute.</li>
+                        <li>Wait 3 minutes.</li>
+                        <li>Wait 5 minutes.</li>
+                        <li>Wait 15 minutes.</li>
+                        <li>Wait 30 minutes.</li>
+                        <li>(Continue sending ½ hour notifications so long as there are events.)</li>
                     </ul>
-                <li><b>Daily</b> - receive one notification a day.  Select a time to send the notification and whether to combine all daily notifications into one notification.</li>
+                <li><b>Daily</b> - receive one notification a day.  Select a time to send the notification.</li>
             </ul>
             <b>Media:</b> Select the media for the notification.<br/>
             <b>Email:</b> Enter an email address for the notification.<br/>
@@ -57,7 +59,7 @@
     
     <!-- Frequency -->
     <entry key="yukon.web.modules.smartNotifications.frequency.ALL">Immediate</entry>
-    <entry key="yukon.web.modules.smartNotifications.frequency.COALESCING">Grouped</entry>
+    <entry key="yukon.web.modules.smartNotifications.frequency.COALESCING">Aggregate</entry>
     <entry key="yukon.web.modules.smartNotifications.frequency.DAILY_DIGEST">Daily</entry>
     
     <!-- Frequency -->

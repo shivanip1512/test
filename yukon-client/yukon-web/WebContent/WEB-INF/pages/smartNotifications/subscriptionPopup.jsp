@@ -57,11 +57,6 @@
                     </div>
                 </div>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".combineAllDaily" rowClass="js-daily ${dailyClass}">
-                <c:set var="checked" value="${subscription.parameters['combineAllDaily'] == 'true'}"/>
-                <form:hidden path="parameters['combineAllDaily']" id="combineDailyField" disabled="${disableDaily}"/>
-                <tags:switchButton name="combineDaily" checked="${checked}" onNameKey=".yes.label" offNameKey=".no.label" inputClass="js-combine-daily"/>
-           </tags:nameValue2>
             <tags:nameValue2 nameKey=".media">
                 <tags:selectWithItems path="media" items="${mediaTypes}"/>
             </tags:nameValue2>

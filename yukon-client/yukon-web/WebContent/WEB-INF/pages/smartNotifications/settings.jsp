@@ -3,7 +3,8 @@
 <cti:standardPage module="smartNotifications" page="settings">
 
     <div class="action-area">
-        <cti:button icon="icon-add" nameKey="create" data-popup="#create-popup"/>
+<%--         <cti:button icon="icon-add" nameKey="create" data-popup="#create-popup"/> --%>
+        <cti:button icon="icon-email-add" nameKey="subscribe" data-popup="#create-popup"/>
     </div>
 
     <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>

@@ -61,11 +61,7 @@ yukon.smart.notifications = (function () {
             /** 'Save' button clicked on the notifications popup. */
             $(document).on('yukon:notifications:save', function (ev) {
                 var popup = $(ev.target),
-                    form = popup.find('#notification-details'),
-                    //post combine daily with true/false values
-                    combineDailyField = popup.find('#combineDailyField'),
-                    combineDailySwitch = popup.find('.js-combine-daily');
-                combineDailyField.attr('value', combineDailySwitch.prop('checked'));
+                    form = popup.find('#notification-details');
                 form.ajaxSubmit({
                     success: function (data, status, xhr, $form) {
                         popup.dialog('close');
@@ -82,7 +78,6 @@ yukon.smart.notifications = (function () {
                     form = $(this).closest('#notification-details'),
                     dailySelected = freq == 'DAILY_DIGEST';
                 form.find('.js-daily').toggleClass('dn', !dailySelected);
-                form.find('#combineDailyField').prop("disabled", !dailySelected);
                 form.find('#notifications-send-time').prop("disabled", !dailySelected);
             });
             
