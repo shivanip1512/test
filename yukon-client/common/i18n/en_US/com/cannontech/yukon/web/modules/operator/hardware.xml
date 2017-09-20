@@ -325,7 +325,7 @@
     
     <!-- shedRestoreLoadPopup.jsp -->
     <entry key="yukon.web.modules.operator.hardware.shedRestoreLoadPopup.title">Shed/Restore Load Configuration</entry>
-    
+    <entry key="yukon.web.modules.operator.hardware.shedLoadPopup.title">Shed Load Configuration</entry>
     <!-- shedRestoreLoad.jsp -->
     <entry key="yukon.web.modules.operator.hardware.shedRestoreLoad.duration">Duration</entry>
     <entry key="yukon.web.modules.operator.hardware.shedRestoreLoad.relayNo">Relay</entry>
