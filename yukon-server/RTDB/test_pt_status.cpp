@@ -133,4 +133,14 @@ BOOST_AUTO_TEST_CASE(test_adjustStaticTags)
     BOOST_CHECK_EQUAL_RANGES(pa_results, pa_expected);
 }
 
+BOOST_AUTO_TEST_CASE(test_makeStaticTags)
+{
+    const bool X = true, _ = false;
+
+    BOOST_CHECK_EQUAL(CtiPointStatus::makeStaticTags(_, _), 0x00000000);
+    BOOST_CHECK_EQUAL(CtiPointStatus::makeStaticTags(_, X), 0x00000004);
+    BOOST_CHECK_EQUAL(CtiPointStatus::makeStaticTags(X, _), 0x10000000);
+    BOOST_CHECK_EQUAL(CtiPointStatus::makeStaticTags(X, X), 0x10000004);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -173,4 +173,18 @@ BOOST_AUTO_TEST_CASE(test_adjustStaticTags)
     BOOST_CHECK_EQUAL_RANGES(pa_results, pa_expected);
 }
 
+BOOST_AUTO_TEST_CASE(test_makeStaticTags)
+{
+    const bool X = true, _ = false;
+
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(_, _, _), 0x00000000);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(_, _, X), 0x00000002);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(_, X, _), 0x00000001);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(_, X, X), 0x00000003);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(X, _, _), 0x20000000);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(X, _, X), 0x20000002);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(X, X, _), 0x20000001);
+    BOOST_CHECK_EQUAL(CtiPointBase::makeStaticTags(X, X, X), 0x20000003);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

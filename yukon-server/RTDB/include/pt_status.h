@@ -23,7 +23,10 @@ public:
    static std::string getSQLCoreStatement();
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-   virtual UINT adjustStaticTags(UINT &tag) const;
+
+   static unsigned makeStaticTags(bool isControlAvailable, bool isControlInhibited);
+   virtual unsigned adjustStaticTags(unsigned& tag) const;
+
    virtual double getDefaultValue( ) const;
 };
 

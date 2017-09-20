@@ -60,6 +60,4 @@ public:
    INT  getPointOffset() const;
 
    BOOL isPseudoPoint() const;
-
-   UINT adjustStaticTags(UINT &tags) const;
 };

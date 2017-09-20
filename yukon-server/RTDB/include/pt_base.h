@@ -39,12 +39,16 @@ public:
    void            setType(CtiPointType_t type);
    CtiPointType_t  getType() const;
 
-   virtual UINT adjustStaticTags(UINT &tag) const;
+   static unsigned makeStaticTags(bool isPseudoPoint, bool isOutOfService, bool isAlarmDisabled);
+   virtual unsigned adjustStaticTags(unsigned& tag) const;
 
    virtual double getDefaultValue( ) const;
 
    bool isNumeric() const;
    bool isStatus() const;
+
+   static bool isNumeric(CtiPointType_t type);
+   static bool isStatus (CtiPointType_t type);
 };
 
 typedef boost::shared_ptr< CtiPointBase > CtiPointSPtr;

@@ -32,8 +32,6 @@ public:
    virtual DOUBLE      getMultiplier() const;
    virtual DOUBLE      getDataOffset() const;
 
-   virtual UINT adjustStaticTags(UINT &tag) const;
-
    virtual DOUBLE computeValueForUOM(DOUBLE Value) const;
 
 };

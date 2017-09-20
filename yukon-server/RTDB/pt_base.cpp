@@ -8,7 +8,12 @@ using std::string;
 
 bool CtiPointBase::isNumeric() const
 {
-    switch(getType())
+    return isNumeric(getType());
+}
+
+bool CtiPointBase::isNumeric(const CtiPointType_t type)
+{
+    switch(type)
     {
         case AnalogPointType:
         case PulseAccumulatorPointType:
@@ -25,7 +30,12 @@ bool CtiPointBase::isNumeric() const
 
 bool CtiPointBase::isStatus() const
 {
-    switch(getType())
+    return isStatus(getType());
+}
+
+bool CtiPointBase::isStatus(const CtiPointType_t type)
+{
+    switch(type)
     {
         case StatusPointType:
         case StatusOutputPointType:
@@ -80,9 +90,21 @@ void CtiPointBase::setType(CtiPointType_t type)
     _pointBase.setType(type);
 }
 
-UINT CtiPointBase::adjustStaticTags(UINT &tag) const
+unsigned CtiPointBase::makeStaticTags(const bool isPseudoPoint, const bool isOutOfService, const bool isAlarmDisabled)
 {
-    return _pointBase.adjustStaticTags(tag);
+    return
+        TAG_ATTRIB_PSEUDO * isPseudoPoint
+        | TAG_DISABLE_POINT_BY_POINT * isOutOfService
+        | TAG_DISABLE_ALARM_BY_POINT * isAlarmDisabled;
+}
+
+unsigned CtiPointBase::adjustStaticTags(unsigned& tag) const
+{
+    tag &= ~(TAG_ATTRIB_PSEUDO | TAG_DISABLE_POINT_BY_POINT | TAG_DISABLE_ALARM_BY_POINT);
+
+    tag |= makeStaticTags(isPseudoPoint(), isOutOfService(), isAlarmDisabled());
+
+    return tag;
 }
 
 double CtiPointBase::getDefaultValue( ) const

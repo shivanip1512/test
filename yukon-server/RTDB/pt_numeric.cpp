@@ -44,12 +44,7 @@ DOUBLE      CtiPointNumeric::getDataOffset() const
    return 0.0;
 }    // Some nice defaults.
 
-UINT CtiPointNumeric::adjustStaticTags(UINT &tag) const
-{
-    return Inherited::adjustStaticTags(tag);
-}
-
-DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
+double CtiPointNumeric::computeValueForUOM(double Value) const
 {
     int calcType = getPointUnits().getUnitMeasure().getCalcType();
     int digits   = _pointUnits.getDecimalDigits();

@@ -64,25 +64,19 @@ public:
         }
     }
 
-    UINT adjustStaticTags(UINT &tag) const
+    static unsigned makeStaticTags(const bool isControlAvailable, const bool isControlInhibited)
     {
-        if( _pointControl || getType() == AnalogOutputPointType )
-        {
-            tag |= TAG_ATTRIB_CONTROL_AVAILABLE;
-        }
-        else
-        {
-            tag &= ~TAG_ATTRIB_CONTROL_AVAILABLE;
-        }
+        return (TAG_ATTRIB_CONTROL_AVAILABLE * isControlAvailable) |
+               (TAG_DISABLE_CONTROL_BY_POINT * isControlInhibited);
+    }
 
-        if( _pointControl && _pointControl->isControlInhibited() )
-        {
-            tag |= TAG_DISABLE_CONTROL_BY_POINT;
-        }
-        else
-        {
-            tag &= ~TAG_DISABLE_CONTROL_BY_POINT;
-        }
+    unsigned adjustStaticTags(unsigned& tag) const
+    {
+        tag &= ~(TAG_ATTRIB_CONTROL_AVAILABLE | TAG_DISABLE_CONTROL_BY_POINT);
+
+        tag |= makeStaticTags(
+                    _pointControl || getType() == AnalogOutputPointType,
+                    _pointControl && _pointControl->isControlInhibited());
 
         return Inherited::adjustStaticTags(tag);
     }
