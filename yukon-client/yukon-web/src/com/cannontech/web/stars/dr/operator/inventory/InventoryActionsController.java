@@ -42,7 +42,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
-import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
@@ -55,10 +54,10 @@ import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareShedLoadServiceImpl;
+import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareShedRestoreLoadServiceImpl;
 import com.cannontech.web.stars.dr.operator.inventory.model.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditTask;
-import com.cannontech.web.stars.dr.operator.inventory.model.ShedLoad;
+import com.cannontech.web.stars.dr.operator.inventory.model.ShedRestoreLoad;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper.ChangeDeviceStatusTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper.ChangeServiceCompanyTask;
@@ -86,9 +85,8 @@ public class InventoryActionsController {
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private HardwareConfigService hardwareConfigService;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
-    @Autowired private HardwareShedLoadServiceImpl hardwareServiceImpl;
+    @Autowired private HardwareShedRestoreLoadServiceImpl hardwareService;
     
     private static final int maxInventory = 1000;
     private static final String idListKey = "yukon.common.device.bulk.bulkAction.collection.idList";
@@ -290,18 +288,18 @@ public class InventoryActionsController {
         return view + "selectedInventoryPopup.jsp";
     }
     
-    @RequestMapping(value = "/shedLoad", method = RequestMethod.POST)
+    @RequestMapping(value = "/shedRestoreLoad", method = RequestMethod.POST)
     @ResponseBody
-    public void shedLoad(@ModelAttribute("shedLoad") ShedLoad shedLoad,
+    public void shedRestoreLoad(@ModelAttribute("shedRestoreLoad") ShedRestoreLoad shedRestoreLoad,
             YukonUserContext userContext, FlashScope flash) {
 
         Map<String, Object> resultMap = new HashMap<>();
-        int duration = shedLoad.getDuration();
-        
-        resultMap = hardwareServiceImpl.shedLoad(shedLoad.getInventoryId(),
-                                                 shedLoad.getRelayNo(),
-                                                 duration,
-                                                 userContext);
+        int duration = shedRestoreLoad.getDuration();
+        if (duration != 0) {
+            resultMap = hardwareService.shedLoad(shedRestoreLoad.getInventoryId(), shedRestoreLoad.getRelayNo(), duration, userContext);
+        } else {
+            resultMap = hardwareService.restoreLoad(shedRestoreLoad.getInventoryId(), shedRestoreLoad.getRelayNo(), userContext);
+        }
 
         MessageSourceResolvable responseMsg = YukonMessageSourceResolvable.createDefaultWithoutCode((String) resultMap.get("message"));
         if ((boolean) resultMap.get("success")) {
@@ -311,13 +309,13 @@ public class InventoryActionsController {
         }
     }
 
-    @RequestMapping("/shedLoadPopup/{inventoryId}")
-    public String shedLoadPopup(@PathVariable int inventoryId, ModelMap model,  YukonUserContext userContext) {
+    @RequestMapping("/shedRestoreLoadPopup/{inventoryId}")
+    public String shedRestoreLoadPopup(@PathVariable int inventoryId, ModelMap model,  YukonUserContext userContext) {
 
         boolean isAllowDRControl =
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DR_CONTROL, userContext.getYukonUser());
         if (isAllowDRControl) {
-            model.addAttribute("duration", TimeIntervals.getShedTimeOptions());
+            model.addAttribute("duration", TimeIntervals.getShedRestoreTimeOptions());
         } else {
             model.addAttribute("interval", TimeIntervals.MINUTES_5);
         }
@@ -325,11 +323,11 @@ public class InventoryActionsController {
         List<Integer> relayNo = new ArrayList<>(Stream.of(1, 2, 3, 4, 5).collect(Collectors.toList()));
 
         model.addAttribute("relayNo", relayNo);
-        ShedLoad shedLoad = new ShedLoad(inventoryId);
-        model.addAttribute("shedLoad", shedLoad);
+        ShedRestoreLoad shedRestoreLoad = new ShedRestoreLoad(inventoryId);
+        model.addAttribute("shedRestoreLoad", shedRestoreLoad);
         model.addAttribute("isAllowDRControl", isAllowDRControl);
         
-        return "operator/inventory/shedLoad.jsp";
+        return "operator/inventory/shedRestoreLoad.jsp";
     }
 
 }

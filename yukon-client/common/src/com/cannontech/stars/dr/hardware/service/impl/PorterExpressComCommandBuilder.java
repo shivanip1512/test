@@ -217,7 +217,34 @@ public class PorterExpressComCommandBuilder {
 
         return Lists.newArrayList(commandString.toString());
     }
-    
+
+    public List<String> getRestoreCommand(LiteLmHardwareBase lmhb, Integer relayNo) {
+
+        String serialNo = lmhb.getManufacturerSerialNumber();
+
+        if (StringUtils.isBlank(serialNo)) {
+            throw new IllegalArgumentException("Cannot send restore command. " + "The serial # of inventory with id: "
+                + lmhb.getInventoryID() + " is empty.");
+        }
+
+        // Build the command
+        StringBuilder commandString = new StringBuilder();
+        HardwareConfigType configType = getConfigType(lmhb);
+        if (configType == HardwareConfigType.VERSACOM) {
+            commandString.append("control vcom restore ");
+        } else if (configType == HardwareConfigType.EXPRESSCOM) {
+            commandString.append("control xcom restore ");
+        } else {
+            commandString.append("control restore ");
+        }
+        commandString.append("relay ");
+        commandString.append(relayNo);
+        commandString.append(" serial ");
+        commandString.append(serialNo);
+
+        return Lists.newArrayList(commandString.toString());
+    }
+
     public List<String> getCancelOptOutCommands(LiteLmHardwareBase lmhb, boolean useHardwareAddressing) {
         
         String sn = lmhb.getManufacturerSerialNumber();

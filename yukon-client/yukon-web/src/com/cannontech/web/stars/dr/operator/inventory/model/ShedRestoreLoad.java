@@ -1,15 +1,17 @@
 package com.cannontech.web.stars.dr.operator.inventory.model;
 
-public class ShedLoad {
+import org.joda.time.Minutes;
+
+public class ShedRestoreLoad {
 
     private int inventoryId;
     private int relayNo;
-    private int duration;
-   
-    public ShedLoad() {
+    private int duration = Minutes.minutes(5).toStandardSeconds().getSeconds();
+    
+    public ShedRestoreLoad() {
     }
     
-    public ShedLoad(int inventoryId) {
+    public ShedRestoreLoad(int inventoryId) {
         this.inventoryId = inventoryId;
     }
 

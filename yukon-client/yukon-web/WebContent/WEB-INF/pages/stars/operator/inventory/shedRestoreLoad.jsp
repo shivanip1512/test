@@ -3,16 +3,16 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
-<cti:msgScope paths="modules.operator.hardware.shedLoad">
+<cti:msgScope paths="modules.operator.hardware.shedRestoreLoad">
 
-<form:form id="shed-load-form" method="post" commandName="shedLoad" onsubmit="return false;">
+<form:form id="shed-restore-load-form" method="post" commandName="shedRestoreLoad" onsubmit="return false;">
   <cti:csrfToken/>
   <form:hidden path="inventoryId" value="${inventoryId}"/>
   <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="true">
     <tags:nameValue2 nameKey=".duration">
         <c:choose>
             <c:when test="${isAllowDRControl}">
-                <tags:intervalDropdown path="duration" intervals="${duration}" id="duration" /> 
+                <tags:intervalDropdown path="duration" intervals="${duration}" id="duration" noneKey=".restore"/> 
             </c:when>
             <c:otherwise>
                 <form:hidden path="duration" value="${interval.seconds}"/>

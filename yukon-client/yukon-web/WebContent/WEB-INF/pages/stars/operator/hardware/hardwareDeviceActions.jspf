@@ -22,10 +22,10 @@
     <c:if test="${canSendShed}">
       <c:choose>
           <c:when test="${isAllowDRControl}">
-              <cti:button nameKey="timedShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShed"/>
+              <cti:button nameKey="timedShedRestore" data-popup="#device-shed-restore-load-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShedRestore"/>
           </c:when>
          <c:otherwise>
-             <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShed"/>
+             <cti:button nameKey="testShed" data-popup="#device-shed-restore-load-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShedRestore"/>
          </c:otherwise>
       </c:choose>
     </c:if>    

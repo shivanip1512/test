@@ -140,6 +140,19 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                     outputBuffer.put((byte) shedDuration.getStandardHours());
                 }
                 break;
+            case RESTORE:
+                
+                /* Control Flags [RxxDLLLL]
+                Bit 7: R = bit set then Random Start Time is included in the payload.  If not set then random minutes field is omitted.
+                Bits 6: Restore Immediatly
+                Bits 5: Unused.
+                Bit 4: D = Delay Time is included in payload
+                Bits 0-3: LLLL = Load Number to control (supports 1 to 15 loads with 0 targeting all loads).
+                */
+                outputBuffer.put((byte) 0x09);
+                byte ctrlFlags = command.findParam(LmHardwareCommandParam.RELAY, Integer.class).byteValue();
+                outputBuffer.put(ctrlFlags);
+                break;
             default:
                 throw new IllegalArgumentException("Command Type: " + type + " not implemented");
         }

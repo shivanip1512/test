@@ -27,9 +27,9 @@ import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.hardware.service.HardwareShedLoadService;
+import com.cannontech.web.stars.dr.operator.hardware.service.HardwareShedRestoreLoadService;
 
-public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
+public class HardwareShedRestoreLoadServiceImpl implements HardwareShedRestoreLoadService {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
@@ -38,7 +38,7 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private EnergyCompanyDao ecDao;
     
-    private static final Logger log = YukonLogManager.getLogger(HardwareShedLoadServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(HardwareShedRestoreLoadServiceImpl.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
 
     @Override
@@ -46,36 +46,14 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
             YukonUserContext userContext) {
         Map<String, Object> resultMap = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-
-        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
-        HardwareType type = inventory.getHardwareType();
         int deviceId = inventoryDao.getDeviceId(inventoryId);
         LiteLmHardwareBase lmhb = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
 
-        int routeId = 0;
-        if (!type.isRf()) {
-            if (type.isTwoWay()) {
-                LiteYukonPAObject twoWayDevice = dbCache.getAllPaosMap().get(deviceId);
-                routeId = twoWayDevice.getRouteID();
-            } else {
-                // For one way LCRs if this route is 0, the Porter executor uses the EC route
-                routeId = lmhb.getRouteID();
-                if (routeId == 0) {
-                    EnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-                    routeId = defaultRouteService.getDefaultRouteId(ec);
-                }
-            }
-        }
-
-        LmHardwareCommand command = new LmHardwareCommand();
-        command.setDevice(lmhb);
-        command.setUser(userContext.getYukonUser());
+        int routeId = getRouteId(inventoryId, deviceId, lmhb, userContext);
+        LmHardwareCommand command = getCommonLmHardwareCommand(lmhb, userContext, routeId, relay);
         command.setType(LmHardwareCommandType.SHED);
-        command.getParams().put(LmHardwareCommandParam.RELAY, relay);
         command.getParams().put(LmHardwareCommandParam.DURATION,
             Duration.standardMinutes(TimeUnit.SECONDS.toMinutes(duration)));
-        command.getParams().put(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, routeId);
-        command.getParams().put(LmHardwareCommandParam.WAITABLE, true);
 
         try {
             lmHardwareCommandService.sendShedLoadCommand(command);
@@ -91,4 +69,67 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
 
         return resultMap;
     }
+    
+    @Override
+    public Map<String, Object> restoreLoad(int inventoryId, int relay,
+            YukonUserContext userContext) {
+        Map<String, Object> resultMap = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        int deviceId = inventoryDao.getDeviceId(inventoryId);
+        LiteLmHardwareBase lmhb = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
+
+        int routeId = getRouteId(inventoryId, deviceId, lmhb, userContext);
+
+        LmHardwareCommand command = getCommonLmHardwareCommand(lmhb, userContext, routeId, relay);
+        command.setType(LmHardwareCommandType.RESTORE);
+
+        try {
+            lmHardwareCommandService.sendRestoreCommand(command);
+        } catch (CommandCompletionException e) {
+            log.error("Restore failed for " + deviceId);
+            resultMap.put("success", false);
+            resultMap.put("message", accessor.getMessage(keyBase + "error.retoreFailed",e.getMessage()));
+            return resultMap;
+        }
+        log.debug("Restore initiated for " + deviceId);
+        resultMap.put("success", true);
+        resultMap.put("message", accessor.getMessage(keyBase + "restoreSuccess"));
+
+        return resultMap;
+    }
+
+    private int getRouteId(int inventoryId, int deviceId, LiteLmHardwareBase lmhb, YukonUserContext userContext) {
+        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
+        HardwareType type = inventory.getHardwareType();
+
+        int routeId = 0;
+        if (!type.isRf()) {
+            if (type.isTwoWay()) {
+                LiteYukonPAObject twoWayDevice = dbCache.getAllPaosMap().get(deviceId);
+                routeId = twoWayDevice.getRouteID();
+            } else {
+                // For one way LCRs if this route is 0, the Porter executor uses the EC route
+                routeId = lmhb.getRouteID();
+                if (routeId == 0) {
+                    EnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+                    routeId = defaultRouteService.getDefaultRouteId(ec);
+                }
+            }
+        }
+        return routeId;
+    }
+
+    private LmHardwareCommand getCommonLmHardwareCommand(LiteLmHardwareBase lmhb, YukonUserContext userContext,
+            int routeId, int relay) {
+
+        LmHardwareCommand command = new LmHardwareCommand();
+        command.setDevice(lmhb);
+        command.setUser(userContext.getYukonUser());
+        command.getParams().put(LmHardwareCommandParam.RELAY, relay);
+        command.getParams().put(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, routeId);
+        command.getParams().put(LmHardwareCommandParam.WAITABLE, true);
+        return command;
+    }
+
 }

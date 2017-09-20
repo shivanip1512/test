@@ -16,7 +16,7 @@
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
- <%@ include file="../inventory/shedLoadPopup.jsp" %>   
+ <%@ include file="../inventory/shedRestoreLoadPopup.jsp" %>   
  <c:if test="${not empty hardware}">
     <div class="column-12-12">
         <div class="column one">

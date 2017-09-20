@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableSet;
 
 public enum TimeIntervals {
     NONE(Duration.ZERO),
+    RESTORE(Duration.ZERO),
     SECONDS_1(Duration.standardSeconds(1)),
     SECONDS_2(Duration.standardSeconds(2)),
     SECONDS_5(Duration.standardSeconds(5)),
@@ -215,7 +216,8 @@ public enum TimeIntervals {
         return capControlIntervals;
     }
     
-    private static final Set<TimeIntervals> shedTimeOptions = ImmutableSet.of(
+    private static final Set<TimeIntervals> shedRestoreTimeOptions = ImmutableSet.of(
+        MINUTES_1,
         MINUTES_5,
         MINUTES_7,
         MINUTES_10,
@@ -228,12 +230,13 @@ public enum TimeIntervals {
         HOURS_3,
         HOURS_4,
         HOURS_6,
-        HOURS_8);
+        HOURS_8,
+        RESTORE);
 
     /**
-     * Used for Timed Shed options
+     * Used for Timed Shed or Restore options
      */
-    public static Set<TimeIntervals> getShedTimeOptions() {
-        return shedTimeOptions;
+    public static Set<TimeIntervals> getShedRestoreTimeOptions() {
+        return shedRestoreTimeOptions;
     }
 }

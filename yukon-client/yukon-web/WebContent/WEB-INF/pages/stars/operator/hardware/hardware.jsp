@@ -10,7 +10,7 @@
 <tags:setFormEditMode mode="${mode}"/>
 <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
 
-<%@ include file="../inventory/shedLoadPopup.jsp" %>
+<%@ include file="../inventory/shedRestoreLoadPopup.jsp" %>
 
 <script type="text/javascript">
 $(function(){

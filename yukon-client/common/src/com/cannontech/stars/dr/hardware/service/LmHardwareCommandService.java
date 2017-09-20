@@ -77,4 +77,10 @@ public interface LmHardwareCommandService {
      */
     public void sendShedLoadCommand(LmHardwareCommand command) throws CommandCompletionException;
     
+    /**
+     * Will attempt to send an restore load command to the dr device
+     * @throws {@link CommandCompletionException}
+     */
+    void sendRestoreCommand(LmHardwareCommand command) throws CommandCompletionException;
+    
 }

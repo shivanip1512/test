@@ -9,4 +9,5 @@ public enum LmHardwareCommandType {
     READ_NOW,
     PERFORMANCE_VERIFICATION,
     SHED,
+    RESTORE,
 }

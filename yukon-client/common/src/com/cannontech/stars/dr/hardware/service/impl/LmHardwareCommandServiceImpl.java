@@ -255,6 +255,13 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         sendCommand(command);
     }
     
+    @Override
+    public void sendRestoreCommand(LmHardwareCommand command) throws CommandCompletionException {
+
+        verifyCanSendShed(command);
+        sendCommand(command);
+    }
+    
     /*
      * Throws CommandCompletionException if shed command is not allowed for a device type.
      */

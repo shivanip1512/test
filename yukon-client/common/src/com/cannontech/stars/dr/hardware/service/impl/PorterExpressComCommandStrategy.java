@@ -19,7 +19,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
@@ -54,7 +53,6 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Autowired private CustomerEventDao customerEventDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
-    @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
     @Autowired private DefaultRouteService defaultRouteService;
 
     @Override
@@ -180,6 +178,10 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             
             commands = xcomCommandBuilder.getShedLoadCommand(device, 
                                               (Duration) parameters.getParams().get(LmHardwareCommandParam.DURATION),
+                                              (Integer) parameters.getParams().get(LmHardwareCommandParam.RELAY));
+        } else if (parameters.getType() == LmHardwareCommandType.RESTORE) {
+
+            commands = xcomCommandBuilder.getRestoreCommand(device,
                                               (Integer) parameters.getParams().get(LmHardwareCommandParam.RELAY));
         }
         
