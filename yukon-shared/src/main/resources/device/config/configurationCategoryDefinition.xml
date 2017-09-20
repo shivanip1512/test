@@ -280,15 +280,15 @@
             <entry field="time4"/>
             <entry field="time5"/>
         </map>
-        <enum field="defaultRate" type="Rate"/>
-        <enum field="holiday" type="Schedule"/>
-        <enum field="monday" type="Schedule"/>
-        <enum field="tuesday" type="Schedule"/>
-        <enum field="wednesday" type="Schedule"/>
-        <enum field="thursday" type="Schedule"/>
-        <enum field="friday" type="Schedule"/>
-        <enum field="saturday" type="Schedule"/>
-        <enum field="sunday" type="Schedule"/>
+        <enum field="defaultRate" type="Rate" default="A"/>
+        <enum field="holiday" type="Schedule" default="SCHEDULE_1"/>
+        <enum field="monday" type="Schedule" default="SCHEDULE_1"/>
+        <enum field="tuesday" type="Schedule" default="SCHEDULE_1"/>
+        <enum field="wednesday" type="Schedule" default="SCHEDULE_1"/>
+        <enum field="thursday" type="Schedule" default="SCHEDULE_1"/>
+        <enum field="friday" type="Schedule" default="SCHEDULE_1"/>
+        <enum field="saturday" type="Schedule" default="SCHEDULE_1"/>
+        <enum field="sunday" type="Schedule" default="SCHEDULE_1"/>
     </category>
 
     <category type="mct430ProfileChannels">
