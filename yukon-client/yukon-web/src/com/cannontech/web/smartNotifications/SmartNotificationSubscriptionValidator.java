@@ -5,6 +5,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.validator.SimpleValidator;
@@ -31,6 +32,13 @@ public class SmartNotificationSubscriptionValidator extends SimpleValidator<Smar
                 if (!emailValidator.isValid(email)) {
                     errors.rejectValue("recipient", "yukon.web.modules.smartNotifications.email.invalid");
                 }
+            }
+        }
+        
+        //device data monitors
+        if (subscription.getType().equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
+            if (subscription.getParameters().get("monitorId") == null) {
+                errors.rejectValue("parameters['monitorId']", "yukon.web.error.isBlank");
             }
         }
     }
