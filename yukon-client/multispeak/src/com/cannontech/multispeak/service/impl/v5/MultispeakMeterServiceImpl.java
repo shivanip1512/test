@@ -1601,7 +1601,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         endDeviceState.setDeviceReference(objectRef);
         endDeviceState.setDeviceState(deviceStateType);
-
+        endDeviceState.setEventDescription(resultString);
         return endDeviceState;
     }
 
