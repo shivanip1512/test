@@ -28,7 +28,7 @@
 
     </div>
 
-    <tags:sectionContainer title="Events">
+    <tags:sectionContainer title="Events" helpText="Click on the Create Real Events button to generate real events.  Click on the Create Test Events button to generate fake events using random devices from cache.">
 
 
         <tags:nameValueContainer tableClass="natural-width">
@@ -43,7 +43,8 @@
 
     <div class="page-action-area">
 
-        <cti:button label="Create Events" type="button" classes="js-create-events" />
+        <cti:button label="Create Real Events" type="button" href="createRealEvents" />
+        <cti:button label="Create Test Events" type="button" classes="js-create-events" />
         <cti:button label="Clear All Events" type="button" href="clearAllEvents" />
 
     </div>

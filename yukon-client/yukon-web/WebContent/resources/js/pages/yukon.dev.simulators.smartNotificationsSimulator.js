@@ -26,6 +26,7 @@ yukon.dev.smartNotificationsSimulator = (function() {
                     data: form.serialize()
                 }).done( function(data) {
                     popup.dialog('close');
+                    yukon.ui.alertSuccess("Subscription has been saved successfully.")
                 });
             });
             
