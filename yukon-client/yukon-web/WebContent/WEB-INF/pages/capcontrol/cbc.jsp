@@ -173,9 +173,12 @@
                         <%@ include file="pointsTable.jsp" %>
                     </div>
                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                        <div class="action-area">
-                            <tags:pointCreation paoId="${cbc.id}" />
-                        </div>
+                        <c:if test="${!cbc.paoType.isLogicalCBC()}">
+                            <div class="action-area">
+                                <tags:pointCreation paoId="${cbc.id}" />
+                            </div>
+                        </c:if>
+
                     </cti:checkRolesAndProperties>
                 </tags:sectionContainer2>
 

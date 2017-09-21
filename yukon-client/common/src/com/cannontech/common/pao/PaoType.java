@@ -854,6 +854,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return routableTypes.contains(this);
     }
     
+    public boolean isLogicalCBC() {
+        return CBC_DNP_LOGICAL == this;
+    }
+    
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;
         this.dbString = dbString;
