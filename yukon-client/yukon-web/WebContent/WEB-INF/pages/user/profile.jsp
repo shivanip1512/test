@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 
 <cti:standardPage module="user" page="profile.${mode}">
@@ -29,7 +30,7 @@ $(document).ready(function(){
 
 <d:confirm on="#restore-to-defaults" nameKey="preferences.confirmResetAll"/>
 
-<div class="column-12-12">
+<div class="column-12-12 clearfix">
     <div class="column one">
     
         <%-- LEFT SIDE COLUMN --%>
@@ -46,6 +47,10 @@ $(document).ready(function(){
                         <tags:nameValue2 rowId="password-changed-row" valueClass='${passwordWarning ? "warning" : ""}' 
                                 nameKey=".profile.changePassword.lastChanged">
                             <cti:formatDate value="${passwordLastChangeTimestamp}" type="DATE"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".userGroup">
+                            <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
+                            <a href="${url}">${fn:escapeXml(userGroupName)}</a>
                         </tags:nameValue2>
                     </cti:displayForPageEditModes>
                 </tags:nameValueContainer2>
@@ -116,7 +121,10 @@ $(document).ready(function(){
                 </div>
             </cti:displayForPageEditModes>
         </form:form>
-        
+    </div>
+    
+    <%-- RIGHT SIDE COLUMN --%>
+    <div class="column two nogutter" id="column_two">
         <cti:displayForPageEditModes modes="VIEW">
             
             <%-- PREFERENCES SECTION --%>
@@ -191,37 +199,8 @@ $(document).ready(function(){
             </tags:sectionContainer2>
         </cti:displayForPageEditModes>
     </div>
-    
-    <%-- RIGHT SIDE COLUMN --%>
-    <div class="column two nogutter" id="column_two">
-    <cti:displayForPageEditModes modes="VIEW">
-    
-    <tags:sectionContainer2 nameKey="groups" arguments="${userGroupName}">
-        <c:choose>
-            <c:when test="${empty categoryRoleMap}">
-                <i:inline key="yukon.common.na"/>
-            </c:when>
-            <c:otherwise>
-                <div class="wsnw">
-                    <c:forEach var="category" items="${categoryRoleMap}">
-                        <ul class="grouped-list">
-                            <li><span class="group"><cti:formatObject value="${category.key}"/></span>
-                                <ul class="groupedItem">
-                                    <c:forEach var="roleAndGroup" items="${category.value}">
-                                        <li><cti:formatObject value="${roleAndGroup.role}"/></li>
-                                    </c:forEach>
-                                </ul>
-                            </li>
-                        </ul>
-                    </c:forEach>
-                </div>
-            </c:otherwise>
-        </c:choose>
-    </tags:sectionContainer2>
-    
-    </cti:displayForPageEditModes>
-    </div>
 </div>
+
 
 <cti:displayForPageEditModes modes="EDIT">
 <table class="dn">
@@ -244,6 +223,65 @@ $(document).ready(function(){
 </table>
 </cti:displayForPageEditModes>
 
-<cti:includeScript link="/resources/js/pages/yukon.user.profile.js"/>
+<%-- NOTIFICATIONS SECTION --%>
+<cti:msgScope paths="modules.smartNotifications">
 
+<div id="notifications-section" class="column-24" style="margin-top:50px;">
+    <cti:button icon="icon-email-add" nameKey="subscribe" data-popup="#create-popup" classes="fr"/>
+    <tags:sectionContainer2 nameKey="notifications">
+        <table class="compact-results-table has-actions row-highlighting">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Frequency</th>
+                    <th>Media</th>
+                    <th>Recipient</th>
+                    <th>Message Detail</th>
+                    <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
+                </tr>
+            </thead>
+            <c:forEach var="subscription" items="${subscriptions}">
+                <tr>
+                    <td><i:inline key="${subscription.type.formatKey}"/></td>
+                    <td><i:inline key="${subscription.frequency.formatKey}"/></td>
+                    <td><i:inline key="${subscription.media.formatKey}"/></td>
+                    <td>${subscription.recipient}</td>    
+                    <td><i:inline key="${subscription.verbosity.formatKey}"/></td>
+                    <td>
+                        <cm:dropdown icon="icon-cog">
+                            <cti:url var="editUrl" value="/notifications/subscription/${subscription.id}/edit" />
+                            <div id="edit-popup-${subscription.id}" data-dialog
+                                    class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
+                                    data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
+                                    data-url="${editUrl}" 
+                                    data-load-event="yukon:notifications:load"
+                                    data-width="600"></div>
+                            <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" data-popup="#edit-popup-${subscription.id}" />
+                            <cti:url var="detailsUrl" value="/notifications/${subscription.id}" />
+                            <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
+                            <cm:dropdownOption id="unsubscribe-${subscription.id}" key=".unsubscribe" icon="icon-email-delete" 
+                                data-subscription-id="${subscription.id}" data-ok-event="yukon:notifications:remove"/>
+                            <d:confirm on="#unsubscribe-${subscription.id}" nameKey="confirmDelete" argument="${subscription.type}"/>
+                        </cm:dropdown>
+                    </td>       
+                </tr>
+            </c:forEach>
+        </table>
+    </tags:sectionContainer2>
+</div>
+
+</cti:msgScope>
+
+    <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>
+    <div id="create-popup" data-dialog
+            class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
+            data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
+            data-url="${smartNotificationsUrl}" 
+            data-load-event="yukon:notifications:load"
+            data-width="600"></div>
+            
+<cti:includeScript link="/resources/js/pages/yukon.user.profile.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
+<cti:includeScript link="YUKON_TIME_FORMATTER"/>
+    
 </cti:standardPage>

@@ -29,10 +29,12 @@ import com.cannontech.common.smartNotification.service.SmartNotificationSubscrip
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 
 @Controller
@@ -49,12 +51,6 @@ public class SmartNotificationsController {
     @Autowired private DeviceDataMonitorSubscriptionHelper ddmHelper;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
-
-    @RequestMapping(value="settings", method=RequestMethod.GET)
-    public String settings(ModelMap model, YukonUserContext userContext) {
-        //TODO: Get Users Subscriptions - this may move to user profile page
-        return "settings.jsp";
-    }
     
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String eventDetail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -65,7 +61,7 @@ public class SmartNotificationsController {
     @RequestMapping(value="subscription/popup/{type}", method=RequestMethod.GET)
     public String subscriptionPopup(ModelMap model, YukonUserContext userContext, @PathVariable SmartNotificationEventType type,
                                     HttpServletRequest request) {
-        model.addAttribute("mode", PageEditMode.CREATE);
+        model.addAttribute("mode", PageEditMode.EDIT);
         SmartNotificationSubscription subscription = new SmartNotificationSubscription();
         subscription.setType(type);
         setDefaultEmail(userContext, subscription);
@@ -80,6 +76,28 @@ public class SmartNotificationsController {
         setupPopupModel(model);
         model.addAttribute("subscription", subscription);
         return "subscriptionPopup.jsp";
+    }
+    
+    @RequestMapping(value="subscription/{id}/edit", method=RequestMethod.GET)
+    public String editSubscription(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        //TODO: check that user created the subscription
+        SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
+        model.addAttribute("subscription", subscription);
+        if (subscription.getType().equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
+            ddmHelper.retrieveMonitor(model, subscription);
+        }
+        setupPopupModel(model);
+        return "subscriptionPopup.jsp";
+    }
+    
+    @RequestMapping(value="subscription/{id}/unsubscribe", method=RequestMethod.POST)
+    public void removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp, FlashScope flash) {
+        //TODO: check that user created the subscription
+        SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
+        subscriptionService.deleteSubscription(id);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", subscription.getType().toString()));
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
     @RequestMapping(value="subscription/create", method=RequestMethod.GET)

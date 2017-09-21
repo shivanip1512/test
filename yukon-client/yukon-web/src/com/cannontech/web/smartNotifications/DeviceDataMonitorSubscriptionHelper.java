@@ -32,4 +32,9 @@ public class DeviceDataMonitorSubscriptionHelper {
         }
         return subscription;
     }
+    
+    public void retrieveMonitor(ModelMap model, SmartNotificationSubscription subscription) {
+        int monitorId = Integer.parseInt((String)subscription.getParameters().get("monitorId"));
+        model.addAttribute("monitorName", monitorCacheService.getDeviceMonitor(monitorId).getName());
+    }
 }

@@ -4,11 +4,13 @@
     
     <entry key="yukon.web.modules.smartNotifications.moduleName">Notifications</entry>
     
-    <!-- Settings page -->
-    <entry key="yukon.web.modules.smartNotifications.settings.pageHeading">Notifications</entry>
-    <entry key="yukon.web.modules.smartNotifications.settings.crumbTitle">Notifications</entry>
-    <entry key="yukon.web.modules.smartNotifications.settings.pageTitle">Notifications</entry>    
-    <entry key="yukon.web.modules.smartNotifications.settings.subscribe.label">Subscribe</entry>    
+    <!-- User Profile Notifications Section -->
+    <entry key="yukon.web.modules.smartNotifications.notifications.title">Notifications</entry>   
+    <entry key="yukon.web.modules.smartNotifications.subscribe.label">Subscribe</entry>    
+    <entry key="yukon.web.modules.smartNotifications.notificationDetail">Recent Notification Details</entry>    
+    <entry key="yukon.web.modules.smartNotifications.unsubscribe">Unsubscribe</entry>    
+    <entry key="yukon.web.modules.smartNotifications.unsubscribeConfirmation">Are you sure you want to unsubscribe from notification: {0}?</entry>    
+    <entry key="yukon.web.modules.smartNotifications.unsubscribeSuccess">You have been successfully unsubscribed from notification: {0}</entry>    
     
     <!-- Event Detail page -->
     <entry key="yukon.web.modules.smartNotifications.detail.pageHeading">Notification Event Detail</entry>
@@ -28,7 +30,7 @@
     <entry key="yukon.web.modules.smartNotifications.detail">Message Detail</entry>
     <entry key="yukon.web.modules.smartNotifications.saveSuccessful">Notification was successfully saved.</entry>
     <entry key="yukon.web.modules.smartNotifications.email.invalid">Not a valid email address.</entry>
-    <entry key="yukon.web.modules.smartNotifications.helpText">
+    <entry key="yukon.web.modules.smartNotifications.popup.helpText">
         <![CDATA[<div style="font-size:85%;">
             <b>Type:</b> The event to trigger notifications.<br/>
             <b>Frequency:</b> 

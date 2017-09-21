@@ -24,6 +24,10 @@
     <entry key="yukon.web.modules.user.profile.changePassword.error.newpassword.badformat">New Password is wrong format, requires: 1 Capital letter, 1 lower-case letter, 1 digit, 1 symbol, at least 8 long</entry>
     <entry key="yukon.web.modules.user.profile.changePassword.error.confirmpassword.required">Confirm Password is required</entry>
     <entry key="yukon.web.modules.user.profile.changePassword.error.confirmpassword.nomatch">Confirm Password does not match New Password</entry>
+    <entry key="yukon.web.modules.user.userGroup">User Group</entry>
+    
+    <!-- Smart Notifications Section -->
+    <entry key="yukon.web.modules.user.profile.notifications.title">Notifications</entry>
 
 
     <!-- /user/preferences.jsp -->

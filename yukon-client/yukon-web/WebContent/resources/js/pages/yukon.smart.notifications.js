@@ -66,10 +66,22 @@ yukon.smart.notifications = (function () {
                     success: function (data, status, xhr, $form) {
                         popup.dialog('close');
                         yukon.ui.alertSuccess(data.successMsg);
+                        window.location.reload();
                     },
                     error: function (xhr, status, error, $form) {
                         form.html(xhr.responseText);
                     }
+                });
+            });
+            
+            $(document).on('yukon:notifications:remove', function (ev) {
+                var container = $(ev.target),
+                    subscriptionId = container.data('subscriptionId');
+                $.ajax({
+                    url: yukon.url('/notifications/subscription/' + subscriptionId + '/unsubscribe'),
+                    type: 'post'
+                }).done(function () {
+                    window.location.reload();
                 });
             });
             

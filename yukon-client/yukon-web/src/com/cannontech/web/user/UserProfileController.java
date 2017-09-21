@@ -92,8 +92,8 @@ public class UserProfileController {
         model.addAttribute("mode", PageEditMode.VIEW);
         profileHelper.setupUserAndNotifications(model, user, context);
         prefHelper.setupUserPreferences(model, user);
-        profileHelper.setupRoleGroups(model, user.getUserGroupId());
         profileHelper.setupPasswordData(model, user);
+        profileHelper.setupSmartNotificationsData(model,  user);
 
         return "profile.jsp";
     }
