@@ -7,12 +7,19 @@ import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface SmartNotificationEventLogService {
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "smart.notifications")
-    public void subscribe(@Arg(ArgEnum.username) LiteYukonUser user);
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "system.notifications")
+    public void subscribe(@Arg(ArgEnum.username) LiteYukonUser user,
+                          String frequency,
+                          String media,
+                          String eventType);
     
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "smart.notifications")
-    public void update(@Arg(ArgEnum.username) LiteYukonUser user);
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "system.notifications")
+    public void update(@Arg(ArgEnum.username) LiteYukonUser user,
+                       String frequency,
+                       String media,
+                       String eventType);
     
-    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "smart.notifications")
-    public void unsubscribe(@Arg(ArgEnum.username) LiteYukonUser user);
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "system.notifications")
+    public void unsubscribe(@Arg(ArgEnum.username) LiteYukonUser user,
+                            String eventType);
 }

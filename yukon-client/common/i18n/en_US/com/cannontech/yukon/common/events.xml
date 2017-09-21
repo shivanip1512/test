@@ -757,9 +757,9 @@
     <entry key="yukon.common.events.system.tools.dashboard.descriptionChanged">Dashboard {4} description changed from "{2}" to "{3}" by {1}.</entry>
     
     <!-- Smart Notifications -->
-    <entry key="yukon.common.events.smart.notifications.subscribe">{1} has subscribed to a notification.</entry>
-    <entry key="yukon.common.events.smart.notifications.update">{1} has updated a notification subscription.</entry>
-    <entry key="yukon.common.events.smart.notifications.unsubscribe">{1} has unsubscribed from a notification</entry>
+    <entry key="yukon.common.events.system.notifications.subscribe">{1} subscribed to {2} {3} notifications for {4}.</entry>
+    <entry key="yukon.common.events.system.notifications.update">{1} updated notification to {2} {3} notifications for {4}.</entry>
+    <entry key="yukon.common.events.system.notifications.unsubscribe">{1} unsubscribed from notifications for {2}.</entry>
     
 </properties>
 
