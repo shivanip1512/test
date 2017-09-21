@@ -117,7 +117,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                     GatewayDataResponse gatewayDataMessage = (GatewayDataResponse) message;
                     handleDataMessage(gatewayDataMessage);
                     if (StringUtils.isEmpty(gatewayDataMessage.getUpdateServerUrl())) {
-                        updateServerConfigHelper.sendNMConfiguration();
+                        updateServerConfigHelper.sendNMConfiguration(rfnDevice.getPaoIdentifier().getPaoId());
                     }
                 }
             } catch (Exception e) {
