@@ -32,7 +32,6 @@ public:
     static const Attribute  Unknown;
     static const Attribute  BlinkCount;
     static const Attribute  CommunicationStatus;
-    static const Attribute  ControlPoint;
     static const Attribute  ControlStatus;
     static const Attribute  CurrentNeutral;
     static const Attribute  Current;
@@ -450,6 +449,7 @@ public:
     static const Attribute  BadRelay;
     static const Attribute  CloseOperationCount;
     static const Attribute  ControlMode;
+    static const Attribute  ControlPoint;
     static const Attribute  DailyMaxOperations;
     static const Attribute  DeltaVoltage;
     static const Attribute  DSTActive;

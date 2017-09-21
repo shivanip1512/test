@@ -85,7 +85,6 @@
           Therefore, changing these values will break those references. -->
     <entry key="yukon.common.attribute.builtInAttribute.BLINK_COUNT">Blink Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COMM_STATUS">Communication Status</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POINT">Control Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT">Current (Neutral)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT">Current</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_PHASE_A">Current (Phase A)</entry>
@@ -502,6 +501,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.BAD_RELAY">Bad Relay</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CLOSE_OPERATION_COUNT">Close Operation Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_MODE">Control Mode</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POINT">Control Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DAILY_MAX_OPERATION">Daily Max Operation</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELTA_VOLTAGE">Delta Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DST_ACTIVE">DST Active</entry>

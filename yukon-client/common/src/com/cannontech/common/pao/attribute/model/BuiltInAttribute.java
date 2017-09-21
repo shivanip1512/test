@@ -37,7 +37,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
        */
     BLINK_COUNT("Blink Count", AttributeGroup.BLINK_AND_OUTAGE),
     COMM_STATUS("Communication Status", AttributeGroup.STATUS, false),   // updated directly by port activity only
-    CONTROL_POINT("Control Point", AttributeGroup.STATUS),
     CONTROL_STATUS("Control Status", AttributeGroup.STATUS),
     NEUTRAL_CURRENT("Current (Neutral)", AttributeGroup.CURRENT),
     CURRENT("Current", AttributeGroup.CURRENT, false),   //440 types only
@@ -464,6 +463,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     BAD_RELAY("Bad Relay", AttributeGroup.CAPCONTROL, false),
     CLOSE_OPERATION_COUNT("Close Operation Count", AttributeGroup.CAPCONTROL, false),
     CONTROL_MODE("Control Mode", AttributeGroup.CAPCONTROL, false),
+    CONTROL_POINT("Control Point", AttributeGroup.CAPCONTROL, false),
     DAILY_MAX_OPERATION("Daily Max Operation", AttributeGroup.CAPCONTROL, false),
     DELTA_VOLTAGE("Delta Voltage", AttributeGroup.CAPCONTROL, false),
     DST_ACTIVE("DST Active", AttributeGroup.CAPCONTROL, false),

@@ -18,10 +18,10 @@ struct TestCbc8020Device : Cti::Devices::Cbc8020Device
     using CtiTblPAOLite::_name;
     using DnpDevice::_dnp;
 
-    using Cbc8020Device::PointOffset_FirmwareRevisionMajor;
-    using Cbc8020Device::PointOffset_FirmwareRevisionMinor;
-    using Cbc8020Device::PointOffset_FirmwareRevision;
-    
+    static const long PointOffset_FirmwareRevisionMajor = static_cast<long>(PointOffsets::FirmwareRevisionMajor);
+    static const long PointOffset_FirmwareRevisionMinor = static_cast<long>(PointOffsets::FirmwareRevisionMinor);
+    static const long PointOffset_FirmwareRevision      = static_cast<long>(PointOffsets::FirmwareRevision);
+
     static void combineFirmwarePoints(pointlist_t &points)
     {
         Cbc8020Device::combineFirmwarePoints(points, {3, 4});

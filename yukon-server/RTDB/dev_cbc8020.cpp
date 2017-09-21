@@ -101,7 +101,7 @@ void Cbc8020Device::combineFirmwarePoints( Protocols::Interface::pointlist_t &po
                 encodedValue |= ( ( buffer[i] - ' ' ) & 0x03f );
             }
 
-            CtiPointDataMsg *pt_msg = new CtiPointDataMsg(PointOffset_FirmwareRevision,
+            CtiPointDataMsg *pt_msg = new CtiPointDataMsg(static_cast<long>( PointOffsets::FirmwareRevision ),
                                                           static_cast<double>( encodedValue ),
                                                           NormalQuality,
                                                           AnalogPointType);
@@ -114,6 +114,9 @@ void Cbc8020Device::combineFirmwarePoints( Protocols::Interface::pointlist_t &po
 
 void Cbc8020Device::refreshAttributeOverrides()
 {
+    _controlOffsetOverrides.clear();
+    _pointOffsetOverrides.clear();
+
     if( auto deviceConfig = ConfigManager::getConfigForIdAndType(getID(), getDeviceType()) )
     {
         if( deviceConfig->getInstanceId() != _lastConfigId )
@@ -127,17 +130,24 @@ void Cbc8020Device::refreshAttributeOverrides()
             {
                 for( const auto & entry : std::vector<AAPN> { indexed->begin(), indexed->end() } )
                 {
-                    static const std::map<std::string, std::string Cbc8020Device::*> pointNames {
-                        { Attribute::FirmwareVersionMajor.getName(),     &Cbc8020Device::_pointNameFirmwareMajor            },
-                        { Attribute::FirmwareVersionMinor.getName(),     &Cbc8020Device::_pointNameFirmwareMinor            },
-                        { Attribute::EnableOvuvControl.getName(),        &Cbc8020Device::_pointNameEnableControlOvuv        },
-                        { Attribute::EnableTemperatureControl.getName(), &Cbc8020Device::_pointNameEnableControlTemperature },
-                        { Attribute::EnableTimeControl.getName(),        &Cbc8020Device::_pointNameEnableControlTime        },
-                        { Attribute::EnableVarControl.getName(),         &Cbc8020Device::_pointNameEnableControlVar         }};
+                    static const std::map<std::string, ControlOffsets> controlAttributeOffsets {
+                        { Attribute::ControlPoint.getName(),             ControlOffsets::ControlPoint             },
+                        { Attribute::EnableOvuvControl.getName(),        ControlOffsets::EnableControlOvuv        },
+                        { Attribute::EnableTemperatureControl.getName(), ControlOffsets::EnableControlTemperature },
+                        { Attribute::EnableTimeControl.getName(),        ControlOffsets::EnableControlTime        },
+                        { Attribute::EnableVarControl.getName(),         ControlOffsets::EnableControlVar         }};
 
-                    if( auto inputVar = mapFind(pointNames, entry.attributeName) )
+                    static const std::map<std::string, PointOffsets> attributeOffsets {
+                        { Attribute::FirmwareVersionMajor.getName(), PointOffsets::FirmwareRevisionMajor },
+                        { Attribute::FirmwareVersionMinor.getName(), PointOffsets::FirmwareRevisionMinor }};
+
+                    if( auto offset = mapFind(controlAttributeOffsets, entry.attributeName) )
                     {
-                        this->*(*inputVar) = entry.pointName;
+                        _controlOffsetOverrides.emplace(*offset, entry.pointName);
+                    }
+                    else if( auto offset = mapFind(attributeOffsets, entry.attributeName) )
+                    {
+                        _pointOffsetOverrides.emplace(*offset, entry.pointName);
                     }
                 }
             }
@@ -145,10 +155,12 @@ void Cbc8020Device::refreshAttributeOverrides()
     }
 }
 
-long Cbc8020Device::getPointOffset(const std::string& overridePointName, long defaultOffset)
+long Cbc8020Device::getPointOffset(const PointOffsets defaultOffset)
 {
-    if( ! overridePointName.empty() )
+    if( auto optName = mapFindRef(_pointOffsetOverrides, defaultOffset) )
     {
+        const auto& overridePointName = *optName;
+
         if( auto pt = getDevicePointByName(overridePointName) )
         {
             if( ! pt->isNumeric() )
@@ -157,7 +169,8 @@ long Cbc8020Device::getPointOffset(const std::string& overridePointName, long de
                     FormattedList::of(
                         "Override point name", overridePointName,
                         "Override point ID", pt->getPointID(),
-                        "Override point type", desolvePointType(pt->getType())));
+                        "Override point type", desolvePointType(pt->getType()),
+                        "Default offset", static_cast<long>(defaultOffset)));
             }
 
             if( pt->getPointOffset() > 0 )
@@ -170,26 +183,28 @@ long Cbc8020Device::getPointOffset(const std::string& overridePointName, long de
                     FormattedList::of(
                         "Override point name",   overridePointName,
                         "Override point ID",     pt->getPointID(),
-                        "Override point offset", pt->getPointOffset()));
+                        "Override point offset", pt->getPointOffset(),
+                        "Default offset", static_cast<long>(defaultOffset)));
             }
         }
         else
         {
             CTILOG_ERROR(dout, "Override point not found" <<
                 FormattedList::of(
-                    "Override point name", overridePointName));
+                    "Override point name", overridePointName,
+                    "Default offset", static_cast<long>(defaultOffset)));
         }
     }
 
-    return defaultOffset;
+    return static_cast<long>(defaultOffset);
 }
 
 void Cbc8020Device::processPoints( Protocols::Interface::pointlist_t &points )
 {
     refreshAttributeOverrides();
 
-    const long pointOffsetFirmwareMajor = getPointOffset(_pointNameFirmwareMajor, PointOffset_FirmwareRevisionMajor);
-    const long pointOffsetFirmwareMinor = getPointOffset(_pointNameFirmwareMinor, PointOffset_FirmwareRevisionMinor);
+    const long pointOffsetFirmwareMajor = getPointOffset(PointOffsets::FirmwareRevisionMajor);
+    const long pointOffsetFirmwareMinor = getPointOffset(PointOffsets::FirmwareRevisionMinor);
 
     combineFirmwarePoints(points, { pointOffsetFirmwareMajor, pointOffsetFirmwareMinor });
 
@@ -197,10 +212,12 @@ void Cbc8020Device::processPoints( Protocols::Interface::pointlist_t &points )
     DnpDevice::processPoints(points);
 }
 
-long Cbc8020Device::getControlOffset(const std::string& overridePointName, long defaultControlOffset)
+long Cbc8020Device::getControlOffset(const ControlOffsets defaultControlOffset)
 {
-    if( ! overridePointName.empty() )
+    if( auto optName = mapFindRef(_controlOffsetOverrides, defaultControlOffset) )
     {
+        const auto& overridePointName = *optName;
+
         if( const auto pt = getDevicePointByName(overridePointName) )
         {
             if( pt->isStatus() )
@@ -219,7 +236,8 @@ long Cbc8020Device::getControlOffset(const std::string& overridePointName, long 
                             FormattedList::of(
                                 "Override point name", overridePointName,
                                 "Override point ID", pt->getPointID(),
-                                "Override control offset", control->getControlOffset()));
+                                "Override control offset", control->getControlOffset(),
+                                "Default control offset", static_cast<long>(defaultControlOffset)));
                     }
                 }
                 else
@@ -227,7 +245,8 @@ long Cbc8020Device::getControlOffset(const std::string& overridePointName, long 
                     CTILOG_ERROR(dout, "Control offset override point does not have control parameters" <<
                         FormattedList::of(
                             "Override point name", overridePointName,
-                            "Override point ID", pt->getPointID()));
+                            "Override point ID", pt->getPointID(),
+                            "Default control offset", static_cast<long>(defaultControlOffset)));
                 }
             }
             else
@@ -236,18 +255,20 @@ long Cbc8020Device::getControlOffset(const std::string& overridePointName, long 
                     FormattedList::of(
                         "Override point name", overridePointName,
                         "Override point ID", pt->getPointID(),
-                        "Override point type", desolvePointType(pt->getType())));
+                        "Override point type", desolvePointType(pt->getType()),
+                        "Default control offset", static_cast<long>(defaultControlOffset)));
             }
         }
         else
         {
             CTILOG_ERROR(dout, "Override point not found" <<
                 FormattedList::of(
-                    "Override point name", overridePointName));
+                    "Override point name", overridePointName,
+                    "Default control offset", static_cast<long>(defaultControlOffset)));
         }
     }
 
-    return defaultControlOffset;
+    return static_cast<long>(defaultControlOffset);
 }
 
 
@@ -259,28 +280,20 @@ YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
         {
             refreshAttributeOverrides();
 
-            struct ControlOffsetInfo 
+            static const std::map<std::string, ControlOffsets> _offsetLookup
             {
-                long defaultControlOffset;
-                std::string Cbc8020Device::*overridePointName;
-            };
-
-            static const std::map<std::string, ControlOffsetInfo> _offsetLookup
-            {
-                { "ovuv",   { ControlOffset_EnableControlOvuv,          &Cbc8020Device::_pointNameEnableControlOvuv        } },
-                { "temp",   { ControlOffset_EnableControlTemperature,   &Cbc8020Device::_pointNameEnableControlTemperature } },
-                { "time",   { ControlOffset_EnableControlTime,          &Cbc8020Device::_pointNameEnableControlTime        } },
-                { "var",    { ControlOffset_EnableControlVar,           &Cbc8020Device::_pointNameEnableControlVar         } },
+                { "ovuv", ControlOffsets::EnableControlOvuv        },
+                { "temp", ControlOffsets::EnableControlTemperature },
+                { "time", ControlOffsets::EnableControlTime        },
+                { "var",  ControlOffsets::EnableControlVar         },
             };
 
             const std::string controlType   = parse.getsValue("local_control_type");
             const std::string controlAction = parse.getsValue("local_control_state") == "enable" ? "close" : "open";
 
-            if ( auto offsetInfo = Cti::mapFind( _offsetLookup, controlType ) )
+            if ( auto defaultOffset = Cti::mapFind( _offsetLookup, controlType ) )
             {
-                const std::string& overridePointName = this->*(offsetInfo->overridePointName);
-
-                const long controlOffset = getControlOffset(overridePointName, offsetInfo->defaultControlOffset);
+                const long controlOffset = getControlOffset(*defaultOffset);
 
                 const std::string command = "control " + controlAction + " offset " + std::to_string( controlOffset );
 
@@ -318,6 +331,21 @@ YukonError_t Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
                     }
                 }
             }
+        }
+        else if( !(parse.getFlags() & CMD_FLAG_OFFSET) && (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
+        {
+            const auto controlOffset = getControlOffset(ControlOffsets::ControlPoint);
+            
+            if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
+            {
+                pReq->setCommandString("control open offset " + std::to_string(controlOffset));
+            }
+            else // if( parse.getFlags() & CMD_FLAG_CTL_CLOSE ) - implied because of the above if condition
+            {
+                pReq->setCommandString("control close offset " + std::to_string(controlOffset));
+            }
+
+            parse = CtiCommandParser { pReq->CommandString() };
         }
     }
 

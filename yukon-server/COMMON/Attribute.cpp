@@ -45,7 +45,6 @@ bool Attribute::operator<( const Attribute & rhs ) const
 INIT_ATTRIBUTE( Unknown,                                            "UNKNOWN" );
 INIT_ATTRIBUTE( BlinkCount,                                         "BLINK_COUNT" );
 INIT_ATTRIBUTE( CommunicationStatus,                                "COMM_STATUS" );
-INIT_ATTRIBUTE( ControlPoint,                                       "CONTROL_POINT" );
 INIT_ATTRIBUTE( ControlStatus,                                      "CONTROL_STATUS" );
 INIT_ATTRIBUTE( CurrentNeutral,                                     "NEUTRAL_CURRENT" );
 INIT_ATTRIBUTE( Current,                                            "CURRENT" );
@@ -463,6 +462,7 @@ INIT_ATTRIBUTE( AutoVoltageControl,                                 "AUTO_VOLTAG
 INIT_ATTRIBUTE( BadRelay,                                           "BAD_RELAY" );
 INIT_ATTRIBUTE( CloseOperationCount,                                "CLOSE_OPERATION_COUNT" );
 INIT_ATTRIBUTE( ControlMode,                                        "CONTROL_MODE" );
+INIT_ATTRIBUTE( ControlPoint,                                       "CONTROL_POINT" );
 INIT_ATTRIBUTE( DailyMaxOperations,                                 "DAILY_MAX_OPERATION" );
 INIT_ATTRIBUTE( DeltaVoltage,                                       "DELTA_VOLTAGE" );
 INIT_ATTRIBUTE( DSTActive,                                          "DST_ACTIVE" );
