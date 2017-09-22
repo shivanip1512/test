@@ -190,7 +190,7 @@ public:
 
     virtual void getDevicePoints(std::vector<CtiPointSPtr> &points) const;
     virtual CtiPointSPtr getDevicePointByID(INT id);
-    virtual CtiPointSPtr getDevicePointByName(std::string pname);
+    virtual CtiPointSPtr getDevicePointByName(const std::string& pname);
     virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type);
     virtual CtiPointSPtr getDeviceControlPointOffsetEqual(INT offset);
     virtual boost::optional<long> getPointIdForOffsetAndType(int offset, CtiPointType_t type);

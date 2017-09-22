@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
 
 #include "dev_rfnMeter.h"
 #include "ctidate.h"
@@ -355,30 +354,30 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
 void config_a_meter(Cti::Test::test_DeviceConfig &cfg)
 {
     /* Configuration settings */
-    const std::map<std::string, std::string> configItems = boost::assign::map_list_of
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "5" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "RECEIVED_KWH" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "SUM_KWH" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "NET_KWH" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_DEMAND" )
-        ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
-        + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" )
-        ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
-        ( RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" );
+    const std::map<std::string, std::string> configItems {
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "5" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "RECEIVED_KWH" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "SUM_KWH" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "NET_KWH" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_DEMAND" },
+        { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
+            + RfnStrings::ChannelConfiguration::EnabledChannels::Read, "INTERVAL" },
+        { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+        { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" }};
 
     cfg.addCategory(
         Cti::Config::Category::ConstructCategory(

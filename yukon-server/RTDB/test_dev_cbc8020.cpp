@@ -7,6 +7,8 @@
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
+#include <boost/make_shared.hpp>
+
 typedef Cti::Protocols::Interface::pointlist_t pointlist_t;
 
 BOOST_AUTO_TEST_SUITE( test_dev_cbc8020 )
@@ -17,14 +19,56 @@ struct TestCbc8020Device : Cti::Devices::Cbc8020Device
 {
     using CtiTblPAOLite::_name;
     using DnpDevice::_dnp;
+    Cti::Test::DevicePointHelper pointHelper;
+
+    struct TypeOffset
+    {
+        CtiPointType_t type;
+        long offset;
+    };
+
+    std::map<std::string, TypeOffset> pointNameLookup;
 
     static const long PointOffset_FirmwareRevisionMajor = static_cast<long>(PointOffsets::FirmwareRevisionMajor);
     static const long PointOffset_FirmwareRevisionMinor = static_cast<long>(PointOffsets::FirmwareRevisionMinor);
     static const long PointOffset_FirmwareRevision      = static_cast<long>(PointOffsets::FirmwareRevision);
 
+    using Cbc8020Device::processPoints;
+
     static void combineFirmwarePoints(pointlist_t &points)
     {
         Cbc8020Device::combineFirmwarePoints(points, {3, 4});
+    }
+
+    long setPointName(const std::string& name, int offset, CtiPointType_t type)
+    {
+        pointNameLookup[name] = { type, offset };
+
+        return pointHelper.getCachedPoint(offset, type)->getPointID();
+    }
+
+    CtiPointSPtr getDevicePointByName(const std::string& name) override
+    {
+        if( auto typeOffset = Cti::mapFind(pointNameLookup, name) )
+        {
+            return pointHelper.getCachedPoint(typeOffset->offset, typeOffset->type);
+        }
+        return {};
+    }
+
+    CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type) override
+    {
+        return pointHelper.getCachedPoint(offset, type);
+    }
+
+    CtiPointSPtr getDeviceControlPointOffsetEqual(int offset) override
+    {
+        return pointHelper.getCachedStatusPointByControlOffset(offset);
+    }
+
+    void initControlPointOffset(int offset, CtiControlType_t controlType)
+    {
+        pointHelper.getCachedStatusPointByControlOffset(offset, controlType);
     }
 };
 
@@ -55,15 +99,15 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_both_present)
     points.push_back(msg2);
 
     /*
-        Resulting firmware version should be '0.4.1'
+    Resulting firmware version should be '0.4.1'
 
-        chars                   ==  '0',    '.',    '4',    '.',    '1'
-        hex                     ==  30,     2e,     34,     2e,     31
-        encoded (hex - 0x20)    ==  10,     0e,     14,     0e,     11
-        6-bit binary            ==  010000, 001110, 010100, 001110, 010001
-        4-bit regroup (rhs)     ==   01 0000 0011 1001 0100 0011 1001 0001
-        as hex #                ==  10394391
-        as decimal #            ==  272188305
+    chars                   ==  '0',    '.',    '4',    '.',    '1'
+    hex                     ==  30,     2e,     34,     2e,     31
+    encoded (hex - 0x20)    ==  10,     0e,     14,     0e,     11
+    6-bit binary            ==  010000, 001110, 010100, 001110, 010001
+    4-bit regroup (rhs)     ==   01 0000 0011 1001 0100 0011 1001 0001
+    as hex #                ==  10394391
+    as decimal #            ==  272188305
     */
 
     TestCbc8020Device::combineFirmwarePoints(points);
@@ -81,6 +125,71 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_both_present)
     BOOST_REQUIRE_EQUAL(points[2]->getValue(), 272188305);
     BOOST_REQUIRE_EQUAL(points[2]->getType(),  AnalogPointType);
     BOOST_REQUIRE_EQUAL(points[2]->getId(),    TestCbc8020Device::PointOffset_FirmwareRevision);
+
+    delete_container(points);
+}
+
+BOOST_AUTO_TEST_CASE(test_firmware_points_override)
+{
+    CtiPointDataMsg *msg1 = new CtiPointDataMsg(), *msg2 = new CtiPointDataMsg();
+    pointlist_t points;
+
+    constexpr int OverrideFirmwareMajor = 1978;
+    constexpr int OverrideFirmwareMinor = 1979;
+
+    msg1->setValue(4);
+    msg1->setType(AnalogPointType);
+    msg1->setId(OverrideFirmwareMajor);
+
+    msg2->setValue(1);
+    msg2->setType(AnalogPointType);
+    msg2->setId(OverrideFirmwareMinor);
+
+    points.push_back(msg1);
+    points.push_back(msg2);
+
+    auto fixtureConfig = boost::make_shared<Cti::Test::test_DeviceConfig>();
+    Cti::Test::Override_ConfigManager overrideConfigManager { fixtureConfig };
+
+    using Cti::Config::DNPStrings;
+
+    const std::map<std::string, std::string> configItems{
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix, "2" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute, "FIRMWARE_VERSION_MAJOR" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName, "Banana" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".1."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute, "FIRMWARE_VERSION_MINOR" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".1."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName, "Coconut" }};
+
+    fixtureConfig->addCategory(
+        Cti::Config::Category::ConstructCategory(
+            "cbcAttributeMapping",
+            configItems));
+
+    TestCbc8020Device testDevice;
+
+    const auto PointIdFirmwareMajor = testDevice.setPointName("Banana",  OverrideFirmwareMajor, AnalogPointType);
+    const auto PointIdFirmwareMinor = testDevice.setPointName("Coconut", OverrideFirmwareMinor, AnalogPointType);
+    const auto FirmwareRevPoint     = testDevice.getDevicePointOffsetTypeEqual(TestCbc8020Device::PointOffset_FirmwareRevision, AnalogPointType);
+
+    testDevice.processPoints(points);
+
+    BOOST_REQUIRE_EQUAL(points.size(), 3);
+
+    BOOST_CHECK_EQUAL(points[0]->getValue(), 4);
+    BOOST_CHECK_EQUAL(points[0]->getType(), AnalogPointType);
+    BOOST_CHECK_EQUAL(points[0]->getId(), PointIdFirmwareMajor);
+          
+    BOOST_CHECK_EQUAL(points[1]->getValue(), 1);
+    BOOST_CHECK_EQUAL(points[1]->getType(), AnalogPointType);
+    BOOST_CHECK_EQUAL(points[1]->getId(), PointIdFirmwareMinor);
+    
+    BOOST_CHECK_EQUAL(points[2]->getValue(), 272188305);
+    BOOST_CHECK_EQUAL(points[2]->getType(), AnalogPointType);
+    BOOST_CHECK_EQUAL(points[2]->getId(), FirmwareRevPoint->getID());
 
     delete_container(points);
 }
