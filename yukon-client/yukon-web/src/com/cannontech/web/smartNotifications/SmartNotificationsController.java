@@ -153,7 +153,7 @@ public class SmartNotificationsController {
     public void removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp, FlashScope flash) {
         //TODO: check that user created the subscription
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
-        subscriptionService.deleteSubscription(id);
+        subscriptionService.deleteSubscription(id, userContext);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", subscription.getType().toString()));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
@@ -196,7 +196,7 @@ public class SmartNotificationsController {
             setupPopupModel(model);
             return "subscriptionPopup.jsp";
         }
-        subscriptionService.saveSubscription(subscription);
+        subscriptionService.saveSubscription(subscription, userContext);
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
         json.put("successMsg", messageSourceAccessor.getMessage(baseKey + "saveSuccessful"));
