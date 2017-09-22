@@ -11,8 +11,6 @@ import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
-import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.PasswordPolicy;
@@ -41,7 +39,6 @@ public class UserProfileHelper {
     @Autowired private PasswordResetService passwordResetService;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
 
     private static final int passwordExpireDaysToWarn = 30;
 
@@ -99,11 +96,6 @@ public class UserProfileHelper {
         model.addAttribute("notificationTypes", ContactNotificationType.values());
         
         return user;
-    }
-    
-    public void setupSmartNotificationsData(ModelMap model, LiteYukonUser user) {
-        List<SmartNotificationSubscription> subscriptions = subscriptionDao.getSubscriptions(user.getUserID());
-        model.addAttribute("subscriptions", subscriptions);
     }
 
 }

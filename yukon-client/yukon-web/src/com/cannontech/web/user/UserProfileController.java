@@ -93,7 +93,6 @@ public class UserProfileController {
         profileHelper.setupUserAndNotifications(model, user, context);
         prefHelper.setupUserPreferences(model, user);
         profileHelper.setupPasswordData(model, user);
-        profileHelper.setupSmartNotificationsData(model,  user);
 
         return "profile.jsp";
     }

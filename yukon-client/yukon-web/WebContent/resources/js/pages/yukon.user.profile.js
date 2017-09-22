@@ -147,6 +147,15 @@ yukon.userProfile = (function () {
         });
     },
     
+    _initializeSmartNotificationsTable = function (ev) {
+        var tableContainer = $('#smart-notifications-container'),
+            reloadUrl = tableContainer.attr('data-url'),
+            params = {};
+            yukon.ui.getSortingPagingParameters(params);
+            reloadUrl = reloadUrl + "?" + $.param(params);
+        tableContainer.load(reloadUrl, function () {});
+    },
+    
     mod = {
             
         init: function () {
@@ -163,6 +172,8 @@ yukon.userProfile = (function () {
             $(document).on('yukon:user:profile:password:save', _submitChangePassword);
             $(document).on('change', '#commandPriority', _validateAndSetCommanderPriority);
             $(document).on('click', '#resetCommandPriorityBtn', _resetCommandPriority);
+            
+            _initializeSmartNotificationsTable();
             
             _initialized = true;
         }

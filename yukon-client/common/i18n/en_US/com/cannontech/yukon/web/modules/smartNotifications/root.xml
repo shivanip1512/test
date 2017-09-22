@@ -6,6 +6,7 @@
     
     <!-- User Profile Notifications Section -->
     <entry key="yukon.web.modules.smartNotifications.notifications.title">Notifications</entry>   
+    <entry key="yukon.web.modules.smartNotifications.singleNotification">Single Notification for all Daily Digests</entry>   
     <entry key="yukon.web.modules.smartNotifications.subscribe.label">Subscribe</entry>    
     <entry key="yukon.web.modules.smartNotifications.notificationDetail">Recent Notification Details</entry>    
     <entry key="yukon.web.modules.smartNotifications.unsubscribe">Unsubscribe</entry>    
@@ -27,6 +28,7 @@
     <entry key="yukon.web.modules.smartNotifications.sendTime">Send Time</entry>
     <entry key="yukon.web.modules.smartNotifications.media">Media</entry>
     <entry key="yukon.web.modules.smartNotifications.email">Email</entry>
+    <entry key="yukon.web.modules.smartNotifications.recipient">Recipient</entry>
     <entry key="yukon.web.modules.smartNotifications.detail">Message Detail</entry>
     <entry key="yukon.web.modules.smartNotifications.saveSuccessful">Notification was successfully saved.</entry>
     <entry key="yukon.web.modules.smartNotifications.email.invalid">Not a valid email address.</entry>

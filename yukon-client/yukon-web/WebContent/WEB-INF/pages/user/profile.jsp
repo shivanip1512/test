@@ -224,64 +224,11 @@ $(document).ready(function(){
 </cti:displayForPageEditModes>
 
 <%-- NOTIFICATIONS SECTION --%>
-<cti:msgScope paths="modules.smartNotifications">
-
-<div id="notifications-section" class="column-24" style="margin-top:50px;">
-    <cti:button icon="icon-email-add" nameKey="subscribe" data-popup="#create-popup" classes="fr"/>
-    <tags:sectionContainer2 nameKey="notifications">
-        <table class="compact-results-table has-actions row-highlighting">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Frequency</th>
-                    <th>Media</th>
-                    <th>Recipient</th>
-                    <th>Message Detail</th>
-                    <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-                </tr>
-            </thead>
-            <c:forEach var="subscription" items="${subscriptions}">
-                <tr>
-                    <td><i:inline key="${subscription.type.formatKey}"/></td>
-                    <td><i:inline key="${subscription.frequency.formatKey}"/></td>
-                    <td><i:inline key="${subscription.media.formatKey}"/></td>
-                    <td>${subscription.recipient}</td>    
-                    <td><i:inline key="${subscription.verbosity.formatKey}"/></td>
-                    <td>
-                        <cm:dropdown icon="icon-cog">
-                            <cti:url var="editUrl" value="/notifications/subscription/${subscription.id}/edit" />
-                            <div id="edit-popup-${subscription.id}" data-dialog
-                                    class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
-                                    data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
-                                    data-url="${editUrl}" 
-                                    data-load-event="yukon:notifications:load"
-                                    data-width="600"></div>
-                            <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" data-popup="#edit-popup-${subscription.id}" />
-                            <cti:url var="detailsUrl" value="/notifications/${subscription.id}" />
-                            <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
-                            <cm:dropdownOption id="unsubscribe-${subscription.id}" key=".unsubscribe" icon="icon-email-delete" 
-                                data-subscription-id="${subscription.id}" data-ok-event="yukon:notifications:remove"/>
-                            <d:confirm on="#unsubscribe-${subscription.id}" nameKey="confirmDelete" argument="${subscription.type}"/>
-                        </cm:dropdown>
-                    </td>       
-                </tr>
-            </c:forEach>
-        </table>
-    </tags:sectionContainer2>
+<cti:url var="dataUrl" value="/notifications/subscriptions"/>
+<div id="smart-notifications-container" data-url="${dataUrl}">
+    <%@ include file="../smartNotifications/subscriptions.jsp" %>
 </div>
-
-</cti:msgScope>
-
-    <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>
-    <div id="create-popup" data-dialog
-            class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
-            data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
-            data-url="${smartNotificationsUrl}" 
-            data-load-event="yukon:notifications:load"
-            data-width="600"></div>
-            
+         
 <cti:includeScript link="/resources/js/pages/yukon.user.profile.js"/>
-<cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
-<cti:includeScript link="YUKON_TIME_FORMATTER"/>
     
 </cti:standardPage>

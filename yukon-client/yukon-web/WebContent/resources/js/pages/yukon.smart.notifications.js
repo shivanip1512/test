@@ -96,6 +96,47 @@ yukon.smart.notifications = (function () {
             $(document).on('change', '.js-type', function (ev) {
                 updateTypeFields($(this.closest('#notification-details')));
             });
+            
+            $(document).on('yukon:smartNotifications:subscriptions:load', function (ev) {
+                var tableContainer = $('#smart-notifications-container'),
+                    reloadUrl = tableContainer.attr('data-url'),
+                    params = {};
+                    yukon.ui.getSortingPagingParameters(params);
+                    reloadUrl = reloadUrl + "?" + $.param(params);
+                tableContainer.load(reloadUrl, function () {
+                    //setTimeout(_autoUpdatePageContent, 5000);
+                });
+            });
+            
+            $(document).on('click', '.js-single-notification', function (ev) {
+                var popup = $('#send-time'),
+                sendTimeField = popup.find('#notifications-send-time'),
+                timeLabel = popup.find('.js-time-label'),
+                timeSlider = popup.find('.js-time-slider'),
+                currentValue = sendTimeField.val(),
+                defaultValue = currentValue ? currentValue : 10 * 60;
+                popup.removeClass('dn');                
+            //initialize time slider
+            timeSlider.slider({
+                max: 24 * 60 - 60,
+                min: 0,
+                value: defaultValue,
+                step: 60,
+                slide: function (ev, ui) {
+                    timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+                    timeSlider.val(ui.value);
+                    sendTimeField.val(ui.value);
+                },
+                change: function (ev, ui) {
+                    timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+                    timeSlider.val(ui.value);
+                    sendTimeField.val(ui.value);
+                }
+            });
+            sendTimeField.val(defaultValue);
+            timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
+            timeSlider.val(defaultValue);
+            });
                         
             _initialized = true;
         },

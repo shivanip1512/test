@@ -1,5 +1,8 @@
 package com.cannontech.web.smartNotifications;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.monitors.MonitorCacheService;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
@@ -35,7 +44,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
+import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/*")
@@ -56,6 +67,53 @@ public class SmartNotificationsController {
     public String eventDetail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         //TODO: Get Subscription details
         return "eventDetail.jsp";
+    }
+    
+    @RequestMapping(value="subscriptions", method=RequestMethod.GET)
+    public String subscriptions(@DefaultSort(dir=Direction.asc, sort="type") SortingParameters sorting, PagingParameters paging, 
+                                ModelMap model, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        List<SmartNotificationSubscription> subscriptions = subscriptionDao.getSubscriptions(userContext.getYukonUser().getUserID());
+        
+        SearchResults<SmartNotificationSubscription> searchResult = new SearchResults<>();
+        int startIndex = paging.getStartIndex();
+        int itemsPerPage = paging.getItemsPerPage();
+        int endIndex = Math.min(startIndex + itemsPerPage, subscriptions.size());
+
+        SubscriptionSortBy sortBy = SubscriptionSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+
+        List<SmartNotificationSubscription> itemList = Lists.newArrayList(subscriptions);
+        
+        Comparator<SmartNotificationSubscription> comparator = (o1, o2) -> o1.getType().compareTo(o2.getType());
+        if (sortBy == SubscriptionSortBy.frequency) {
+            comparator = (o1, o2) -> o1.getFrequency().compareTo(o2.getFrequency());
+        } else if (sortBy == SubscriptionSortBy.media) {
+            comparator = (o1, o2) -> o1.getMedia().compareTo(o2.getMedia());
+        } else if (sortBy == SubscriptionSortBy.recipient) {
+            comparator = (o1, o2) -> o1.getRecipient().compareTo(o2.getRecipient());
+        } else if (sortBy == SubscriptionSortBy.detail) {
+            comparator = (o1, o2) -> o1.getVerbosity().compareTo(o2.getVerbosity());
+        }
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        Collections.sort(itemList, comparator);
+
+        List<SortableColumn> columns = new ArrayList<>();
+        for (SubscriptionSortBy column : SubscriptionSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            columns.add(col);
+            model.addAttribute(column.name(), col);
+        }
+
+        itemList = itemList.subList(startIndex, endIndex);
+        searchResult.setBounds(startIndex, itemsPerPage, subscriptions.size());
+        searchResult.setResultList(itemList);
+        
+        model.addAttribute("subscriptions", searchResult);
+        return "subscriptions.jsp";
     }
     
     @RequestMapping(value="subscription/popup/{type}", method=RequestMethod.GET)
@@ -145,6 +203,20 @@ public class SmartNotificationsController {
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
         return null;
+    }
+    
+    public enum SubscriptionSortBy implements DisplayableEnum {
+
+        type,
+        frequency,
+        media,
+        recipient,
+        detail;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.smartNotifications." + name();
+        }
     }
 
 }
