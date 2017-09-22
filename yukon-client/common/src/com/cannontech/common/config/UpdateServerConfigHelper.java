@@ -3,8 +3,7 @@ package com.cannontech.common.config;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,13 +32,16 @@ public class UpdateServerConfigHelper {
     public void init() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
 
-            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING)
-                && (event.getPrimaryKey() == globalSettingDao.getSetting(
-                    GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER).getId()
-                    || event.getPrimaryKey() == globalSettingDao.getSetting(
-                        GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER).getId()
-                    || event.getPrimaryKey() == globalSettingDao.getSetting(
-                        GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD).getId())) {
+            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && ((globalSettingDao.getSetting(
+                GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER).getId() != null
+                && event.getPrimaryKey() == globalSettingDao.getSetting(
+                    GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER).getId())
+                || (globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER).getId() != null
+                    && event.getPrimaryKey() == globalSettingDao.getSetting(
+                        GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER).getId())
+                || (globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD).getId() != null
+                    && event.getPrimaryKey() == globalSettingDao.getSetting(
+                        GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD).getId()))) {
                 sendNMConfiguration();
             }
         });
@@ -50,36 +52,9 @@ public class UpdateServerConfigHelper {
      * Settings
      */
     public void sendNMConfiguration() {
-        String defaultServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
-        Authentication defaultAuth = new Authentication();
-        defaultAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
-        defaultAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
-        List<GatewayUpdateModel> updateServerInfos = Collections.emptyList();
         try {
-            updateServerInfos = rfnGatewayService.getAllGatewaysWithUpdateServer().stream().map(gateway -> {
-                GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
-                String updateServerUrl = updateServer.getUpdateServerUrl();
-                boolean isDefault = StringUtils.isEmpty(updateServerUrl) || defaultServer.equals(updateServerUrl);
-                updateServer.setUseDefault(isDefault);
-
-                return updateServer;
-            }).collect(Collectors.toList());
-
-            List<RfnGateway> gateways = new ArrayList<>();
-
-            for (GatewayUpdateModel updateServerInfo : updateServerInfos) {
-                if (updateServerInfo.isUseDefault()) {
-                    updateServerInfo.setUpdateServerUrl(defaultServer);
-                    updateServerInfo.setUpdateServerLogin(defaultAuth);
-                    RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(updateServerInfo.getId());
-                    gateway = gateway.withUpdateServer(updateServerInfo);
-                    gateways.add(gateway);
-                }
-            }
-            log.debug("Sending update server request.");
-            if (gateways.size() > 0) {
-                rfnGatewayService.updateGateways(gateways, YukonUserContext.system.getYukonUser());
-            }
+            Set<RfnGateway> gatewaysToUpdate = rfnGatewayService.getAllGatewaysWithUpdateServer();
+            doUpdateGateways(gatewaysToUpdate);
         } catch (NmCommunicationException e) {
             log.error("Failed communication with NM", e);
         }
@@ -89,25 +64,43 @@ public class UpdateServerConfigHelper {
      * Helper method to send NM configuration when the NM Gateways being synced do not have any url set
      */
     public void sendNMConfiguration(int paoId) {
+        try {
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(paoId);
+            Set<RfnGateway> rfnGateways = Collections.singleton(gateway);
+            doUpdateGateways(rfnGateways);
+        } catch (NmCommunicationException e) {
+            log.error("Failed communication with NM", e);
+        }
+    }
+
+    /**
+     * Helper method to send gateway update for a list of gateways.
+     */
+    private void doUpdateGateways(Set<RfnGateway> gateways) {
+
         String defaultServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
         Authentication defaultAuth = new Authentication();
         defaultAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
         defaultAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
+        List<RfnGateway> gatewaysToUpdate = new ArrayList<>();
+
         try {
-            List<RfnGateway> gateways = new ArrayList<>();
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(paoId);
-            GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
-            String updateServerUrl = updateServer.getUpdateServerUrl();
-            boolean isDefault = StringUtils.isEmpty(updateServerUrl) || defaultServer.equals(updateServerUrl);
-            if (isDefault) {
-                updateServer.setUseDefault(isDefault);
-                updateServer.setUpdateServerUrl(defaultServer);
-                updateServer.setUpdateServerLogin(defaultAuth);
-                gateway = gateway.withUpdateServer(updateServer);
-                gateways.add(gateway);
+            for (RfnGateway gateway : gateways) {
+                GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
+                String updateServerUrl = updateServer.getUpdateServerUrl();
+                boolean isDefault = StringUtils.isEmpty(updateServerUrl) || defaultServer.equals(updateServerUrl);
+                if (isDefault) {
+                    updateServer.setUseDefault(isDefault);
+                    updateServer.setUpdateServerUrl(defaultServer);
+                    updateServer.setUpdateServerLogin(defaultAuth);
+                    gateway = gateway.withUpdateServer(updateServer);
+                    gatewaysToUpdate.add(gateway);
+                }
+                log.debug("Sending update server request.");
             }
-            log.debug("Sending update server request.");
-            rfnGatewayService.updateGateways(gateways, YukonUserContext.system.getYukonUser());
+            if (gatewaysToUpdate.size() > 0) {
+                rfnGatewayService.updateGateways(gatewaysToUpdate, YukonUserContext.system.getYukonUser());
+            }
         } catch (NmCommunicationException e) {
             log.error("Failed communication with NM", e);
         }
