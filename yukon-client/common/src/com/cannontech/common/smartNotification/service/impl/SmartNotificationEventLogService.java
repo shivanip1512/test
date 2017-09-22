@@ -9,17 +9,17 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface SmartNotificationEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "system.notifications")
     public void subscribe(@Arg(ArgEnum.username) LiteYukonUser user,
-                          String frequency,
-                          String media,
-                          String eventType);
+                          @Arg(ArgEnum.frequency) String frequency,
+                          @Arg(ArgEnum.media) String media,
+                          @Arg(ArgEnum.eventType) String eventType);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "system.notifications")
     public void update(@Arg(ArgEnum.username) LiteYukonUser user,
-                       String frequency,
-                       String media,
-                       String eventType);
+                       @Arg(ArgEnum.frequency) String frequency,
+                       @Arg(ArgEnum.media) String media,
+                       @Arg(ArgEnum.eventType) String eventType);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "system.notifications")
     public void unsubscribe(@Arg(ArgEnum.username) LiteYukonUser user,
-                            String eventType);
+                            @Arg(ArgEnum.eventType) String eventType);
 }

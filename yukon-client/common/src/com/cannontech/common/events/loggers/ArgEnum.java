@@ -80,5 +80,8 @@ public enum ArgEnum {
     warehouseName,
     widgetType,
     workOrderNumber,
+    frequency,
+    media,
+    eventType,
     ;
 }

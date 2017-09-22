@@ -7,31 +7,29 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class SmartNotificationSubscriptionServiceImpl implements SmartNotificationSubscriptionService {
 
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
-    @Autowired private YukonUserDao yukonUserDao;
     @Autowired private SmartNotificationEventLogService smartNotificationEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @Transactional
     @Override
-    public int saveSubscription(SmartNotificationSubscription subscription) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+    public int saveSubscription(SmartNotificationSubscription subscription, YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         if (subscription.getId() == 0) {
 
-            smartNotificationEventLogService.subscribe(yukonUserDao.getLiteYukonUser(subscription.getUserId()),
+            smartNotificationEventLogService.subscribe(userContext.getYukonUser(),
                                                        messageSourceAccessor.getMessage(subscription.getFrequency().getFormatKey()),
                                                        messageSourceAccessor.getMessage(subscription.getMedia().getFormatKey()),
                                                        messageSourceAccessor.getMessage(subscription.getType().getFormatKey())
                                                        );
         }
         else {
-            smartNotificationEventLogService.update(yukonUserDao.getLiteYukonUser(subscription.getUserId()),
+            smartNotificationEventLogService.update(userContext.getYukonUser(),
                                                     messageSourceAccessor.getMessage(subscription.getFrequency().getFormatKey()),
                                                     messageSourceAccessor.getMessage(subscription.getMedia().getFormatKey()),
                                                     messageSourceAccessor.getMessage(subscription.getType().getFormatKey())
@@ -42,10 +40,10 @@ public class SmartNotificationSubscriptionServiceImpl implements SmartNotificati
 
     @Transactional
     @Override
-    public void deleteSubscription(int id) {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+    public void deleteSubscription(int id, YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
-        smartNotificationEventLogService.unsubscribe(yukonUserDao.getLiteYukonUser(subscription.getUserId()),
+        smartNotificationEventLogService.unsubscribe(userContext.getYukonUser(),
                                                      messageSourceAccessor.getMessage(subscription.getType().getFormatKey()));
         subscriptionDao.deleteSubscription(id);
     }
