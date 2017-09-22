@@ -32,8 +32,9 @@ yukon.dev.smartNotificationsSimulator = (function() {
             
             $(document).on('click', '.js-create-events', function () {
                 var waitTime = $('#waitTime').val(),
-                    eventsPerMessage = $('#eventsPerMessage').val();
-                window.location.href = yukon.url('/dev/createEvents?waitTime=' + waitTime + "&eventsPerMessage=" + eventsPerMessage);
+                    eventsPerMessage = $('#eventsPerMessage').val(),
+                    numberOfMessages = $('#numberOfMessages').val();
+                window.location.href = yukon.url('/dev/createEvents?waitTime=' + waitTime + "&eventsPerMessage=" + eventsPerMessage + "&numberOfMessages=" + numberOfMessages);
             });
             
             _initialized = true;

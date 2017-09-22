@@ -38,6 +38,9 @@
             <tags:nameValue name="Number of events per message">
                 <input id="eventsPerMessage" value="2" />
             </tags:nameValue>
+            <tags:nameValue name="Total number of messages per event type">
+                <input id="numberOfMessages" value="6" />
+            </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
 

@@ -41,7 +41,7 @@ public class SmartNotificationsTestingController {
     }
     
     @RequestMapping("createEvents")
-    public String createEvents(@RequestParam int waitTime, @RequestParam int eventsPerMessage, FlashScope flash) {
+    public String createEvents(@RequestParam int waitTime, @RequestParam int eventsPerMessage, @RequestParam int numberOfMessages, FlashScope flash) {
         //TODO: Create Events for subscriptions
         flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Test events have been created."));
         return "redirect:smartNotificationsSimulator";
