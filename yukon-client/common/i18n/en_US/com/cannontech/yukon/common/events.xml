@@ -37,8 +37,10 @@
     <entry key="yukon.common.events.energyCompanySettingType">Energy Company Setting</entry>
     <entry key="yukon.common.events.energyCompanySettingValue">Energy Company Setting Value</entry>
     <entry key="yukon.common.events.eventSource">Event Source</entry>
+    <entry key="yukon.common.events.eventType">Event Type</entry>
     <entry key="yukon.common.events.failureCount">Failures</entry>
     <entry key="yukon.common.events.fileName">File Name</entry>
+    <entry key="yukon.common.events.frequency">Frequency</entry>
     <entry key="yukon.common.events.gatewayName">Gateway Name</entry>
     <entry key="yukon.common.events.gearName">Gear Name</entry>
     <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
@@ -49,6 +51,7 @@
     <entry key="yukon.common.events.jobId">Job Id</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
+    <entry key="yukon.common.events.media">Media</entry>
     <entry key="yukon.common.events.message">Message</entry>
     <entry key="yukon.common.events.meterDescription">Meter Description</entry>
     <entry key="yukon.common.events.meterName">Meter Name</entry>
@@ -90,9 +93,6 @@
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.widgetType">Widget Type</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
-    <entry key="yukon.common.events.frequency">Frequency</entry>
-    <entry key="yukon.common.events.media">Media</entry>
-    <entry key="yukon.common.events.eventType">Event Type</entry>
 <!-- Event log message text and column names -->
 
     <entry key="yukon.common.events.commander.executeOnPao">Command ''{2}'' executed on device {3} by {1}.</entry>

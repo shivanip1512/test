@@ -27,8 +27,10 @@ public enum ArgEnum {
     energyCompanySettingType,
     energyCompanySettingValue,
     eventSource,
+    eventType,
     failureCount,
     fileName, 
+    frequency,
     gatewayName, //Zigbee gateway, not RF gateway
     gearName,
     globalSettingType,
@@ -39,6 +41,7 @@ public enum ArgEnum {
     jobId,
     loadGroupIds,
     loadGroupName,
+    media,
     message,
     meterDescription,
     meterName,
@@ -80,8 +83,5 @@ public enum ArgEnum {
     warehouseName,
     widgetType,
     workOrderNumber,
-    frequency,
-    media,
-    eventType,
     ;
 }
