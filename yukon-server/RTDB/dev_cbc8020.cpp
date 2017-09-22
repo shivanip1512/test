@@ -114,42 +114,49 @@ void Cbc8020Device::combineFirmwarePoints( Protocols::Interface::pointlist_t &po
 
 void Cbc8020Device::refreshAttributeOverrides()
 {
+    auto deviceConfig = ConfigManager::getConfigForIdAndType(getID(), getDeviceType());
+
+    if( deviceConfig && deviceConfig->getInstanceId() == _lastConfigId )
+    {
+        return;
+    }
+
     _controlOffsetOverrides.clear();
     _pointOffsetOverrides.clear();
 
-    if( auto deviceConfig = ConfigManager::getConfigForIdAndType(getID(), getDeviceType()) )
+    if( ! deviceConfig )
     {
-        if( deviceConfig->getInstanceId() != _lastConfigId )
+        _lastConfigId = 0;
+        return;
+    }
+
+    _lastConfigId = deviceConfig->getInstanceId();
+
+    using AMC  = Cti::Config::DNPStrings::AttributeMappingConfiguration;
+    using AAPN = Cti::Devices::AttributeAndPointName;
+
+    if( const auto indexed = deviceConfig->getIndexedItem(AMC::AttributeMappings_Prefix) )
+    {
+        for( const auto & entry : std::vector<AAPN> { indexed->begin(), indexed->end() } )
         {
-            _lastConfigId = deviceConfig->getInstanceId();
+            static const std::map<std::string, ControlOffsets> controlAttributeOffsets {
+                { Attribute::ControlPoint.getName(),             ControlOffsets::ControlPoint             },
+                { Attribute::EnableOvuvControl.getName(),        ControlOffsets::EnableControlOvuv        },
+                { Attribute::EnableTemperatureControl.getName(), ControlOffsets::EnableControlTemperature },
+                { Attribute::EnableTimeControl.getName(),        ControlOffsets::EnableControlTime        },
+                { Attribute::EnableVarControl.getName(),         ControlOffsets::EnableControlVar         }};
 
-            using AMC  = Cti::Config::DNPStrings::AttributeMappingConfiguration;
-            using AAPN = Cti::Devices::AttributeAndPointName;
+            static const std::map<std::string, PointOffsets> attributeOffsets {
+                { Attribute::FirmwareVersionMajor.getName(), PointOffsets::FirmwareRevisionMajor },
+                { Attribute::FirmwareVersionMinor.getName(), PointOffsets::FirmwareRevisionMinor }};
 
-            if( const auto indexed = deviceConfig->getIndexedItem(AMC::AttributeMappings_Prefix) )
+            if( auto offset = mapFind(controlAttributeOffsets, entry.attributeName) )
             {
-                for( const auto & entry : std::vector<AAPN> { indexed->begin(), indexed->end() } )
-                {
-                    static const std::map<std::string, ControlOffsets> controlAttributeOffsets {
-                        { Attribute::ControlPoint.getName(),             ControlOffsets::ControlPoint             },
-                        { Attribute::EnableOvuvControl.getName(),        ControlOffsets::EnableControlOvuv        },
-                        { Attribute::EnableTemperatureControl.getName(), ControlOffsets::EnableControlTemperature },
-                        { Attribute::EnableTimeControl.getName(),        ControlOffsets::EnableControlTime        },
-                        { Attribute::EnableVarControl.getName(),         ControlOffsets::EnableControlVar         }};
-
-                    static const std::map<std::string, PointOffsets> attributeOffsets {
-                        { Attribute::FirmwareVersionMajor.getName(), PointOffsets::FirmwareRevisionMajor },
-                        { Attribute::FirmwareVersionMinor.getName(), PointOffsets::FirmwareRevisionMinor }};
-
-                    if( auto offset = mapFind(controlAttributeOffsets, entry.attributeName) )
-                    {
-                        _controlOffsetOverrides.emplace(*offset, entry.pointName);
-                    }
-                    else if( auto offset = mapFind(attributeOffsets, entry.attributeName) )
-                    {
-                        _pointOffsetOverrides.emplace(*offset, entry.pointName);
-                    }
-                }
+                _controlOffsetOverrides.emplace(*offset, entry.pointName);
+            }
+            else if( auto offset = mapFind(attributeOffsets, entry.attributeName) )
+            {
+                _pointOffsetOverrides.emplace(*offset, entry.pointName);
             }
         }
     }
