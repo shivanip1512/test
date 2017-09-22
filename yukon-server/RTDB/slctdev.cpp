@@ -297,14 +297,14 @@ const DeviceLookup deviceFactory {
     { TYPE_LMGROUP_SA205,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA205>) },
     { TYPE_LMGROUP_SA305,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA305>) },
     //  Capacitor bank controllers
-    { TYPECBCDNP,        MakeDeviceFunc(makeDevice<DnpDevice>) },
-    { TYPECBCDNPLOGICAL, MakeDeviceFunc(makeDevice<DnpDevice>) },
-    { TYPECBC7020,       MakeDeviceFunc(makeDevice<Cbc7020Device>) },
-    { TYPECBC8020,       MakeDeviceFunc(makeDevice<Cbc8020Device>) },
-    { TYPECBC7010,       MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
-    { TYPEFISHERPCBC,    MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
-    { TYPEVERSACOMCBC,   MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
-    { TYPEEXPRESSCOMCBC, MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
+    { TYPE_CBCDNP,        MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPE_CBCDNPLOGICAL, MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPE_CBC7020,       MakeDeviceFunc(makeDevice<Cbc7020Device>) },
+    { TYPE_CBC8020,       MakeDeviceFunc(makeDevice<Cbc8020Device>) },
+    { TYPE_CBC7010,       MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
+    { TYPE_FISHERPCBC,    MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
+    { TYPE_VERSACOMCBC,   MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
+    { TYPE_EXPRESSCOMCBC, MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
     //  Smart sensors
     { TYPE_FCI,              MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>) },
     { TYPE_NEUTRAL_MONITOR,  MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>) },
@@ -413,10 +413,10 @@ const std::set<int> carrierLpDeviceTypes = {
 
 const std::set<int> dnpDeviceTypes = {
         TYPE_DNPRTU,
-        TYPECBC7020,
-        TYPECBC8020,
-        TYPECBCDNP,
-        TYPECBCDNPLOGICAL };
+        TYPE_CBC7020,
+        TYPE_CBC8020,
+        TYPE_CBCDNP,
+        TYPE_CBCDNPLOGICAL };
 }
 
 DLLEXPORT bool isCarrierLPDeviceType(const int type)

@@ -89,18 +89,18 @@ YukonError_t CtiDeviceCBC::ExecuteRequest(CtiRequestMsg     *pReq,
 
     switch(getType())
     {
-    case TYPEVERSACOMCBC:
+    case TYPE_VERSACOMCBC:
         {
             nRet = executeVersacomCBC(pReq, parse, OutMessage, vgList, retList, outList);
             break;
         }
-    case TYPECBC7010:
-    case TYPEEXPRESSCOMCBC:
+    case TYPE_CBC7010:
+    case TYPE_EXPRESSCOMCBC:
         {
             nRet = executeExpresscomCBC(pReq, parse, OutMessage, vgList, retList, outList);
             break;
         }
-    case TYPEFISHERPCBC:
+    case TYPE_FISHERPCBC:
         {
             nRet = executeFisherPierceCBC(pReq, parse, OutMessage, vgList, retList, outList);
             break;

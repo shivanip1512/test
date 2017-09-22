@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dev_base.h"
-#include "tbl_dv_cbc.h"       // TYPEVERSACOMCBC, TYPEFISHERPCBC
+#include "tbl_dv_cbc.h"       // TYPE_VERSACOMCBC, TYPE_FISHERPCBC
 
 class IM_EX_DEVDB CtiDeviceCBC : public CtiDeviceBase
 {

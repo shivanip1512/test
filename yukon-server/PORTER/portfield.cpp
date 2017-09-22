@@ -1209,10 +1209,10 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:
-                    case TYPECBC7020:
-                    case TYPECBC8020:
-                    case TYPECBCDNP:
-                    case TYPECBCDNPLOGICAL:
+                    case TYPE_CBC7020:
+                    case TYPE_CBC8020:
+                    case TYPE_CBCDNP:
+                    case TYPE_CBCDNPLOGICAL:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
                     case TYPE_SERIESVRTU:
@@ -1987,10 +1987,10 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
                             break;
                         }
-                    case TYPECBC7020:
-                    case TYPECBC8020:
-                    case TYPECBCDNP:
-                    case TYPECBCDNPLOGICAL:
+                    case TYPE_CBC7020:
+                    case TYPE_CBC8020:
+                    case TYPE_CBCDNP:
+                    case TYPE_CBCDNPLOGICAL:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
                     case TYPE_SERIESVRTU:
@@ -2060,10 +2060,10 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPE_ION8300:
                     case TYPE_SNPP:
                     case TYPE_RDS:
-                    case TYPECBC7020:
-                    case TYPECBC8020:
-                    case TYPECBCDNP:
-                    case TYPECBCDNPLOGICAL:
+                    case TYPE_CBC7020:
+                    case TYPE_CBC8020:
+                    case TYPE_CBCDNP:
+                    case TYPE_CBCDNPLOGICAL:
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
@@ -2121,10 +2121,10 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPE_CCU700:
                     case TYPE_CCU710:
                     case TYPE_DAVIS:
-                    case TYPECBC7020:
-                    case TYPECBC8020:
-                    case TYPECBCDNP:
-                    case TYPECBCDNPLOGICAL:
+                    case TYPE_CBC7020:
+                    case TYPE_CBC8020:
+                    case TYPE_CBCDNP:
+                    case TYPE_CBCDNPLOGICAL:
                         {
                             CTILOG_WARN(dout, "Function Incomplete");
 

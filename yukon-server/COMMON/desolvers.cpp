@@ -219,16 +219,16 @@ string desolveDeviceType( int aType )
         case TYPE_LMGROUP_SA305:          Ret = "sa-305 group";         break;
         case TYPE_MACRO:                  Ret = "macro group";          break;
 
-        case TYPEVERSACOMCBC:             Ret = "cbc versacom";         break;
-        case TYPEEXPRESSCOMCBC:           Ret = "cbc expresscom";       break;
-        case TYPEFISHERPCBC:              Ret = "cbc fp-2800";          break;
+        case TYPE_VERSACOMCBC:            Ret = "cbc versacom";         break;
+        case TYPE_EXPRESSCOMCBC:          Ret = "cbc expresscom";       break;
+        case TYPE_FISHERPCBC:             Ret = "cbc fp-2800";          break;
 
-        case TYPECAPBANK:                 Ret = "cap bank";             break;
-        case TYPECBC7010:                 Ret = "cbc 7010";             break;
-        case TYPECBC7020:                 Ret = "cbc 7020";             break;
-        case TYPECBC8020:                 Ret = "cbc 8020";             break;
-        case TYPECBCDNP:                  Ret = "cbc dnp";              break;
-        case TYPECBCDNPLOGICAL:           Ret = "cbc dnp logical";      break;
+        case TYPE_CAPBANK:                Ret = "cap bank";             break;
+        case TYPE_CBC7010:                Ret = "cbc 7010";             break;
+        case TYPE_CBC7020:                Ret = "cbc 7020";             break;
+        case TYPE_CBC8020:                Ret = "cbc 8020";             break;
+        case TYPE_CBCDNP:                 Ret = "cbc dnp";              break;
+        case TYPE_CBCDNPLOGICAL:          Ret = "cbc dnp logical";      break;
         
         case TYPE_TAPTERM:                Ret = "tap terminal";         break;
         case TYPE_SNPP:                   Ret = "snpp terminal";        break;

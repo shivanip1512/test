@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(test_AttributeLookup)
                         != attributes.end() );
     }
     {
-        auto attributes = Cti::DeviceAttributeLookup::AttributeLookup( DeviceTypes::TYPECBC8020, AnalogPointType, 1234 );
+        auto attributes = Cti::DeviceAttributeLookup::AttributeLookup( DeviceTypes::TYPE_CBC8020, AnalogPointType, 1234 );
 
         BOOST_CHECK_EQUAL( attributes.size(),   0 );
     }

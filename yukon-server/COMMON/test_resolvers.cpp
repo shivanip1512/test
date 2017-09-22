@@ -117,22 +117,22 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("faulted circuit indicator"),       TYPE_FCI);
 
     //  --- Capacitor Control ---
-    BOOST_CHECK_EQUAL(resolveDeviceType("cap bank"),        TYPECAPBANK);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7010"),        TYPECBC7010);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7011"),        TYPECBC7010);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7012"),        TYPECBC7010);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7020"),        TYPECBC7020);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7022"),        TYPECBC7020);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7023"),        TYPECBC7020);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7024"),        TYPECBC7020);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7030"),        TYPECBC7020);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 8020"),        TYPECBC8020);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 8024"),        TYPECBC8020);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc dnp"),         TYPECBCDNP);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc dnp logical"), TYPECBCDNPLOGICAL);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc expresscom"),  TYPEEXPRESSCOMCBC);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc fp-2800"),     TYPEFISHERPCBC);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc versacom"),    TYPEVERSACOMCBC);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cap bank"),        TYPE_CAPBANK);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7010"),        TYPE_CBC7010);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7011"),        TYPE_CBC7010);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7012"),        TYPE_CBC7010);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7020"),        TYPE_CBC7020);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7022"),        TYPE_CBC7020);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7023"),        TYPE_CBC7020);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7024"),        TYPE_CBC7020);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7030"),        TYPE_CBC7020);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 8020"),        TYPE_CBC8020);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 8024"),        TYPE_CBC8020);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc dnp"),         TYPE_CBCDNP);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc dnp logical"), TYPE_CBCDNPLOGICAL);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc expresscom"),  TYPE_EXPRESSCOMCBC);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc fp-2800"),     TYPE_FISHERPCBC);
+    BOOST_CHECK_EQUAL(resolveDeviceType("cbc versacom"),    TYPE_VERSACOMCBC);
 
     //  --- Voltage Regulators ---
     BOOST_CHECK_EQUAL(resolveDeviceType("ltc"),             TYPE_LOAD_TAP_CHANGER);
