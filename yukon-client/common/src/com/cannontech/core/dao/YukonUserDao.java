@@ -180,8 +180,8 @@ public interface YukonUserDao {
     List<Integer> getUserIdsForUserGroup(int userGroupId);
     
     /** Get count of active non residential users assigned to user group */
-    int getActiveNonResidentialUserCount();
-    
-    /** Get userId of active non residential users assigned to user group */
-    List<Integer> getActiveNonResidentialUsers();
+    int getNonResidentialUserCount();
+
+    /** Get user group for non residential users */
+    List<String> getNonResidentialUserGroups();
 }

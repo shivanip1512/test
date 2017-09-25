@@ -97,7 +97,7 @@ public class DashboardDaoImpl implements DashboardDao {
     }
     
     private void loadYukonNonResidentialUser() {
-        int yukonUserCount = userDao.getActiveNonResidentialUserCount();
+        int yukonUserCount = userDao.getNonResidentialUserCount();
         nonResidentialActiveUsersCount.put(YukonRole.RESIDENTIAL_CUSTOMER, yukonUserCount);
     }
     
@@ -106,28 +106,43 @@ public class DashboardDaoImpl implements DashboardDao {
         int yukonUserCount = nonResidentialActiveUsersCount.getIfPresent(YukonRole.RESIDENTIAL_CUSTOMER);
         defaultDashboardUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(), yukonUserCount);
         defaultDashboardUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(), yukonUserCount);
-        
+       
         SqlStatementBuilder pageAssignmentSql = new SqlStatementBuilder();
-        pageAssignmentSql.append("SELECT PageAssignment, COUNT(UserId) AS UserCount ");
+        pageAssignmentSql.append("SELECT PageAssignment, COUNT(UserId) AS UserCount, DashboardId");
         pageAssignmentSql.append("FROM UserDashboard");
-        pageAssignmentSql.append("WHERE DashboardId IN ");
-        pageAssignmentSql.append("  (SELECT DashboardId");
-        pageAssignmentSql.append("   FROM Dashboard ");
-        pageAssignmentSql.append("   WHERE Visibility").neq(Visibility.SYSTEM);
-        pageAssignmentSql.append("  )");
-        pageAssignmentSql.append("GROUP BY PageAssignment");
-
-        
+        pageAssignmentSql.append(" GROUP BY PageAssignment, DashboardId");
+               
         jdbcTemplate.query(pageAssignmentSql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 DashboardPageType type = rs.getEnum("PageAssignment", DashboardPageType.class);
-                if (type == DashboardPageType.AMI) {
-                    defaultDashboardUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(),
-                        yukonUserCount - rs.getInt("UserCount"));
-                } else if (type == DashboardPageType.MAIN) {
-                    defaultDashboardUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(),
-                        yukonUserCount - rs.getInt("UserCount"));
+                Integer dashboardId = rs.getInt("DashboardId");
+                if (type == DashboardPageType.AMI && dashboardId != DashboardPageType.AMI.getDefaultDashboardId()) {
+
+                    Integer amiDashboardCount =
+                        defaultDashboardUserCount.getIfPresent(DashboardPageType.AMI.getDefaultDashboardId());
+
+                    if (amiDashboardCount == null) {
+                        defaultDashboardUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(),
+                            yukonUserCount - rs.getInt("UserCount"));
+                    } else {
+                        defaultDashboardUserCount.put(DashboardPageType.AMI.getDefaultDashboardId(),
+                            amiDashboardCount - rs.getInt("UserCount"));
+                    }
+
+                } else if (type == DashboardPageType.MAIN
+                    && dashboardId != DashboardPageType.MAIN.getDefaultDashboardId()) {
+                    Integer mainDashboardCount =
+                        defaultDashboardUserCount.getIfPresent(DashboardPageType.MAIN.getDefaultDashboardId());
+
+                    if (mainDashboardCount == null) {
+                        defaultDashboardUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(),
+                            yukonUserCount - rs.getInt("UserCount"));
+                    } else {
+                        defaultDashboardUserCount.put(DashboardPageType.MAIN.getDefaultDashboardId(),
+                            mainDashboardCount - rs.getInt("UserCount"));
+                    }
+
                 }
             }
         });
@@ -277,30 +292,12 @@ public class DashboardDaoImpl implements DashboardDao {
     @Override
     public List<Integer> getAllUsersForDashboard(int dashboardId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        List<Integer> userIdList = new ArrayList<>();
+        sql.append("SELECT distinct UserId");
+        sql.append("FROM UserDashboard");
+        sql.append("WHERE DashboardId").eq(dashboardId);
         
-        DashboardPageType dashboardType = DashboardPageType.getDashboardTypeById(dashboardId);
-        if (dashboardType == DashboardPageType.AMI || dashboardType == DashboardPageType.MAIN) {
-            userIdList = userDao.getActiveNonResidentialUsers();
-            
-            SqlStatementBuilder dashboardUserSql = new SqlStatementBuilder();
-            dashboardUserSql.append("SELECT DISTINCT UserId");
-            dashboardUserSql.append("FROM UserDashboard");
-            dashboardUserSql.append("WHERE PageAssignment").eq(dashboardType);
-            dashboardUserSql.append("AND DashboardId NOT IN ("); 
-            dashboardUserSql.append(DashboardPageType.AMI.getDefaultDashboardId(), DashboardPageType.MAIN.getDefaultDashboardId());
-            dashboardUserSql.append(")");
-            List<Integer> dashboardUserId = jdbcTemplate.query(dashboardUserSql, TypeRowMapper.INTEGER);
-            
-            userIdList.removeAll(dashboardUserId);
-            
-        } else {
-            sql.append("SELECT DISTINCT UserId");
-            sql.append("FROM UserDashboard");
-            sql.append("WHERE DashboardId").eq(dashboardId);
-            userIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
-        }
-       return userIdList;
+        List<Integer> userIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+        return userIdList;
     }
     
     @Override

@@ -28,7 +28,7 @@
     <br/>
     
      <div id="users-tab">  
-         <tags:pickerDialog type="dashboardUsersPicker" id="dashboardUsersPicker_${pickerId}" container="users-tab" extraArgs="${dashboardId}" multiSelectMode="true"/>
+         <tags:pickerDialog type="nonResidentailUserPicker" id="dashboardUsersPicker_${pickerId}" container="users-tab" multiSelectMode="true"/>
      </div>
 
 <script>

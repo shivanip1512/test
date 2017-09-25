@@ -44,7 +44,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -64,7 +63,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
     @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private DatabaseVendorResolver dbVendorResolver;
     
     public static final int numberOfRandomChars = 5;
     
@@ -539,47 +537,39 @@ public class YukonUserDaoImpl implements YukonUserDao {
     }
     
     @Override
-    public int getActiveNonResidentialUserCount() {
-        
+    public int getNonResidentialUserCount() {
+        SqlStatementBuilder userGroupsWithResidentialRole = new SqlStatementBuilder();
+        userGroupsWithResidentialRole.append("SELECT DISTINCT UserGroupId");
+        userGroupsWithResidentialRole.append("FROM UserGroupToYukonGroupMapping map");
+        userGroupsWithResidentialRole.append("JOIN YukonGroupRole ygr ON map.GroupId = ygr.GroupId");
+        userGroupsWithResidentialRole.append("WHERE RoleId").eq(YukonRole.RESIDENTIAL_CUSTOMER);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT (");
-        sql.append("  (SELECT COUNT(UserID) ");
-        sql.append("   FROM YukonUser");
-        sql.append("   WHERE UserGroupId IS NOT NULL AND Status").eq(LoginStatusEnum.ENABLED);
-        sql.append("   )");
-        sql.append("-");
-        sql.append("  (SELECT COUNT(UserID)");
-        sql.append("   FROM YukonUser yu ");
-        sql.append("   WHERE Status").eq(LoginStatusEnum.ENABLED);
-        sql.append("     AND UserGroupId IS NOT NULL");
-        sql.append("     AND UserGroupId IN (SELECT UserGroupId FROM UserGroupToYukonGroupMapping WHERE GroupId IN (");
-        sql.append("       SELECT DISTINCT GroupId FROM YukonGroupRole WHERE RoleID").eq(YukonRole.RESIDENTIAL_CUSTOMER);
-        sql.append("))))");
-        if (dbVendorResolver.getDatabaseVendor().isOracle()) {
-            sql.append("FROM Dual");
-        }
-        sql.append(" UserCount");
-        
+        sql.append("SELECT COUNT(DISTINCT UserId)");
+        sql.append("FROM YukonUser yu");
+        sql.append("JOIN UserGroup ug ON yu.UserGroupId = ug.UserGroupId");
+        sql.append("AND ug.UserGroupId").notIn(userGroupsWithResidentialRole);
+
         int count = jdbcTemplate.queryForInt(sql);
         return count;
     }
-    
+
     @Override
-    public List<Integer> getActiveNonResidentialUsers() {
-        
+    public List<String> getNonResidentialUserGroups() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserID ");
-        sql.append("FROM YukonUser");
-        sql.append("WHERE Status").eq(LoginStatusEnum.ENABLED);
-        sql.append("  AND UserGroupId IS NOT NULL");
-        sql.append("  AND UserGroupId NOT IN ");
-        sql.append("  (SELECT UserGroupId FROM UserGroupToYukonGroupMapping WHERE GroupId IN (");
-        sql.append("   SELECT DISTINCT GroupId FROM YukonGroupRole WHERE RoleID").eq(YukonRole.RESIDENTIAL_CUSTOMER);
-        sql.append("  ))");
-        
-        List<Integer> userIds = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
-        return userIds;
-        
-        
+        sql.append("SELECT Name");
+        sql.append("FROM UserGroup yg");
+
+        SqlStatementBuilder userGroupsWithResidentialRole = new SqlStatementBuilder();
+        userGroupsWithResidentialRole.append("SELECT DISTINCT UserGroupId");
+        userGroupsWithResidentialRole.append("FROM UserGroupToYukonGroupMapping map");
+        userGroupsWithResidentialRole.append("JOIN YukonGroupRole ygr ON map.GroupId = ygr.GroupId");
+        userGroupsWithResidentialRole.append("WHERE RoleId").eq(YukonRole.RESIDENTIAL_CUSTOMER);
+
+        sql.append("WHERE yg.UserGroupId").notIn(userGroupsWithResidentialRole);
+
+        List<String> userGroupNameList = jdbcTemplate.query(sql, TypeRowMapper.STRING);
+        return userGroupNameList;
+
     }
 }
