@@ -2,7 +2,12 @@
 /**** SQL Server DBupdates             ****/
 /******************************************/
 
-/* No Updates */
+/* Start YUK-17248 */
+CREATE INDEX Indx_YukonUser_UserGroupId ON YukonUser (
+UserGroupId ASC
+);
+GO
+/* End YUK-17248 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

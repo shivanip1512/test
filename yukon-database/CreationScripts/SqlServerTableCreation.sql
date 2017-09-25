@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/14/2017 4:07:15 PM                         */
+/* Created on:     9/22/2017 12:38:01 AM                        */
 /*==============================================================*/
 
 
@@ -10853,6 +10853,14 @@ INSERT INTO YukonUser VALUES (-1, 'admin', '4zMkmR0POZE5ZF7v1B3gVL7XWGs/cG5dQJvD
 /*==============================================================*/
 create unique index Indx_YukonUser_Username on YukonUser (
 UserName ASC
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_YukonUser_UserGroupId                            */
+/*==============================================================*/
+create index Indx_YukonUser_UserGroupId on YukonUser (
+UserGroupId ASC
 )
 go
 

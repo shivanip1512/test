@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/14/2017 4:05:52 PM                         */
+/* Created on:     9/22/2017 12:36:44 AM                        */
 /*==============================================================*/
 
 
@@ -10270,6 +10270,13 @@ INSERT INTO YukonUser VALUES (-1, 'admin', '4zMkmR0POZE5ZF7v1B3gVL7XWGs/cG5dQJvD
 /*==============================================================*/
 create unique index Indx_YukonUser_Username on YukonUser (
    UserName ASC
+);
+
+/*==============================================================*/
+/* Index: Indx_YukonUser_UserGroupId                            */
+/*==============================================================*/
+create index Indx_YukonUser_UserGroupId on YukonUser (
+   UserGroupId ASC
 );
 
 /*==============================================================*/
