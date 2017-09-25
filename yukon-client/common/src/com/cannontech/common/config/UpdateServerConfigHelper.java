@@ -31,17 +31,13 @@ public class UpdateServerConfigHelper {
     @PostConstruct
     public void init() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
-
-            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && ((globalSettingDao.getSetting(
-                GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER).getId() != null
-                && event.getPrimaryKey() == globalSettingDao.getSetting(
-                    GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER).getId())
-                || (globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER).getId() != null
-                    && event.getPrimaryKey() == globalSettingDao.getSetting(
-                        GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER).getId())
-                || (globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD).getId() != null
-                    && event.getPrimaryKey() == globalSettingDao.getSetting(
-                        GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD).getId()))) {
+            Integer primaryKeyId = Integer.valueOf(event.getPrimaryKey());
+            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && (primaryKeyId.equals(
+                globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER).getId())
+                || primaryKeyId.equals(
+                    globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER).getId())
+                || primaryKeyId.equals(
+                    globalSettingDao.getSetting(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD).getId()))) {
                 sendNMConfiguration();
             }
         });
