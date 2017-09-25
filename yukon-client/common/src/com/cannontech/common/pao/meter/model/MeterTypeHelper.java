@@ -76,13 +76,14 @@ public class MeterTypeHelper {
                   .filter(type -> creatable.contains(type))
                   .sorted(byDbString).collect(Collectors.toList()));
         allGroupedBuilder.put(MeterGroup.RF_MESH, rfMetersBuilder.build());
-        
-        ImmutableSet.Builder<PaoType> electronicMetersBuilder = ImmutableSet.builder();
+
+        // YUK-17216 asked for these to not be included, at least for now.
+        /*ImmutableSet.Builder<PaoType> electronicMetersBuilder = ImmutableSet.builder();
         List<PaoType> iedTypes = PaoType.getIedTypes().stream()
                 .filter(type -> !type.isIon() && !type.isIpc() && creatable.contains(type)) 
                 .sorted(byDbString).collect(Collectors.toList());
         electronicMetersBuilder.addAll(iedTypes);
-        allGroupedBuilder.put(MeterGroup.ELECTRONIC, electronicMetersBuilder.build());
+        allGroupedBuilder.put(MeterGroup.ELECTRONIC, electronicMetersBuilder.build());*/
 
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
