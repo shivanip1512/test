@@ -223,11 +223,15 @@ $(document).ready(function(){
 </table>
 </cti:displayForPageEditModes>
 
-<%-- NOTIFICATIONS SECTION --%>
-<cti:url var="dataUrl" value="/notifications/subscriptions"/>
-<div id="smart-notifications-container" data-url="${dataUrl}">
-    <%@ include file="../smartNotifications/subscriptions.jsp" %>
-</div>
+<cti:displayForPageEditModes modes="VIEW">
+
+    <!--NOTIFICATIONS SECTION-->
+    <cti:url var="dataUrl" value="/notifications/subscriptions"/>
+    <div id="smart-notifications-container" data-url="${dataUrl}">
+        <%@ include file="../smartNotifications/subscriptions.jsp" %>
+    </div>
+    
+</cti:displayForPageEditModes>
          
 <cti:includeScript link="/resources/js/pages/yukon.user.profile.js"/>
     

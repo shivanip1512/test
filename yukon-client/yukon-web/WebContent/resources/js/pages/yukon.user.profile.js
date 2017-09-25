@@ -149,10 +149,7 @@ yukon.userProfile = (function () {
     
     _initializeSmartNotificationsTable = function (ev) {
         var tableContainer = $('#smart-notifications-container'),
-            reloadUrl = tableContainer.attr('data-url'),
-            params = {};
-            yukon.ui.getSortingPagingParameters(params);
-            reloadUrl = reloadUrl + "?" + $.param(params);
+            reloadUrl = tableContainer.attr('data-url');
         tableContainer.load(reloadUrl, function () {});
     },
     

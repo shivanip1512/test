@@ -97,45 +97,54 @@ yukon.smart.notifications = (function () {
                 updateTypeFields($(this.closest('#notification-details')));
             });
             
-            $(document).on('yukon:smartNotifications:subscriptions:load', function (ev) {
-                var tableContainer = $('#smart-notifications-container'),
-                    reloadUrl = tableContainer.attr('data-url'),
-                    params = {};
-                    yukon.ui.getSortingPagingParameters(params);
-                    reloadUrl = reloadUrl + "?" + $.param(params);
-                tableContainer.load(reloadUrl, function () {
-                    //setTimeout(_autoUpdatePageContent, 5000);
-                });
-            });
-            
             $(document).on('click', '.js-single-notification', function (ev) {
                 var popup = $('#send-time'),
-                sendTimeField = popup.find('#notifications-send-time'),
-                timeLabel = popup.find('.js-time-label'),
-                timeSlider = popup.find('.js-time-slider'),
-                currentValue = sendTimeField.val(),
-                defaultValue = currentValue ? currentValue : 10 * 60;
-                popup.removeClass('dn');                
-            //initialize time slider
-            timeSlider.slider({
-                max: 24 * 60 - 60,
-                min: 0,
-                value: defaultValue,
-                step: 60,
-                slide: function (ev, ui) {
-                    timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                    timeSlider.val(ui.value);
-                    sendTimeField.val(ui.value);
-                },
-                change: function (ev, ui) {
-                    timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                    timeSlider.val(ui.value);
-                    sendTimeField.val(ui.value);
-                }
+                    sendTimeField = popup.find('#notifications-send-time'),
+                    timeLabel = popup.find('.js-time-label'),
+                    timeSlider = popup.find('.js-time-slider'),
+                    currentValue = sendTimeField.val(),
+                    defaultValue = currentValue ? currentValue : 10 * 60;
+                    popup.removeClass('dn');                
+                //initialize time slider
+                timeSlider.slider({
+                    max: 24 * 60 - 60,
+                    min: 0,
+                    value: defaultValue,
+                    step: 60,
+                    slide: function (ev, ui) {
+                        timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+                        timeSlider.val(ui.value);
+                        sendTimeField.val(ui.value);
+                    },
+                    change: function (ev, ui) {
+                        timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+                        timeSlider.val(ui.value);
+                        sendTimeField.val(ui.value);
+                    }
+                });
+                sendTimeField.val(defaultValue);
+                timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
+                timeSlider.val(defaultValue);
             });
-            sendTimeField.val(defaultValue);
-            timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
-            timeSlider.val(defaultValue);
+            
+            $(document).on('click', '.js-show-all', function (ev) {
+                var tableContainer = $('#smart-notifications-container'),
+                    url = yukon.url("/notifications/subscriptions");
+                $('.js-filter-popup').dialog('destroy');
+                tableContainer.load(url, function () {});
+                tableContainer.data('url', url);
+            });
+            
+            $(document).on('click', '.js-filter', function (ev) {
+                var tableContainer = $('#smart-notifications-container'),
+                    form = $('#filter-form');
+                form.ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        $('.js-filter-popup').dialog('destroy');
+                        tableContainer.html(data);
+                        tableContainer.data('url', yukon.url('/notifications/subscriptions?' + form.serialize()));
+                    }
+                });
             });
                         
             _initialized = true;

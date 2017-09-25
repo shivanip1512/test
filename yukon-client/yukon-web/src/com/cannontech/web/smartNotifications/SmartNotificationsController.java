@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -70,10 +71,16 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="subscriptions", method=RequestMethod.GET)
-    public String subscriptions(@DefaultSort(dir=Direction.asc, sort="type") SortingParameters sorting, PagingParameters paging, 
-                                ModelMap model, YukonUserContext userContext) {
+    public String subscriptions(@ModelAttribute("filter") SmartNotificationFilter filter, BindingResult bindingResult,
+                                @DefaultSort(dir=Direction.asc, sort="type") SortingParameters sorting, 
+                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        List<SmartNotificationSubscription> subscriptions = subscriptionDao.getSubscriptions(userContext.getYukonUser().getUserID());
+        List<SmartNotificationSubscription> subscriptions = new ArrayList<>();
+        if (filter.getEventType() != null && !filter.getEventType().isEmpty()) {
+            subscriptions = subscriptionDao.getSubscriptions(userContext.getYukonUser().getUserID(), SmartNotificationEventType.valueOf(filter.getEventType()));
+        } else {
+            subscriptions = subscriptionDao.getSubscriptions(userContext.getYukonUser().getUserID());
+        }
         
         SearchResults<SmartNotificationSubscription> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
@@ -113,6 +120,8 @@ public class SmartNotificationsController {
         searchResult.setResultList(itemList);
         
         model.addAttribute("subscriptions", searchResult);
+        model.addAttribute("eventTypes", SmartNotificationEventType.values());
+        model.addAttribute("filter", filter);
         return "subscriptions.jsp";
     }
     
@@ -154,7 +163,7 @@ public class SmartNotificationsController {
         //TODO: check that user created the subscription
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
         subscriptionService.deleteSubscription(id, userContext);
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", subscription.getType().toString()));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", subscription.getType().name()));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     

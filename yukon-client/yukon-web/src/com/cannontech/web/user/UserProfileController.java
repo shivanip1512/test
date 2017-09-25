@@ -48,6 +48,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.login.PasswordController;
+import com.cannontech.web.smartNotifications.SmartNotificationFilter;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.user.model.ChangePassword;
 import com.cannontech.web.user.model.UserProfile;
@@ -93,6 +94,7 @@ public class UserProfileController {
         profileHelper.setupUserAndNotifications(model, user, context);
         prefHelper.setupUserPreferences(model, user);
         profileHelper.setupPasswordData(model, user);
+        model.addAttribute("filter", new SmartNotificationFilter());
 
         return "profile.jsp";
     }
