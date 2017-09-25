@@ -1,6 +1,6 @@
-package com.cannontech.web.exceptions;
+package com.cannontech.common.exception;
 
-public class NoImportFileException extends Exception {
+public class NoImportFileException extends FileImportException {
     public NoImportFileException() {
     }
 

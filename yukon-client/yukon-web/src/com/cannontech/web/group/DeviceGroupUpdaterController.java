@@ -38,11 +38,17 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVReader;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.common.exception.FileImportException;
+
 
 @Controller
 @RequestMapping("/updater/*")
@@ -54,6 +60,7 @@ public class DeviceGroupUpdaterController {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private TransactionOperations transactionTemplate;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private Logger log = YukonLogManager.getLogger(DeviceGroupUpdaterController.class);
 
@@ -74,7 +81,7 @@ public class DeviceGroupUpdaterController {
     }
     
     @RequestMapping("parseUpload")
-    public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException, IOException {
+    public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model, YukonUserContext userContext) throws ServletException, IOException {
 
         boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);
         boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidHeaders", false);
@@ -84,16 +91,15 @@ public class DeviceGroupUpdaterController {
         
         MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
         MultipartFile dataFile = mRequest.getFile("dataFile");
-        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // get file from request
-        if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-            errors.add("No file selected.");
-        } else {
+        try {
+            FileUploadUtils.validateDataUploadFileType(dataFile);
+        } catch (FileImportException e) {
+            errors.add(accessor.getMessage(e.getMessage()));
+        }
+        if (errors.size() == 0) {
             InputStream inputStream = dataFile.getInputStream();
-            
-            if (inputStream.available() <= 0) {
-                errors.add("File is empty.");
-            } else {
                 BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
                         ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
                 InputStreamReader inputStreamReader = new InputStreamReader(bomInputStream);
@@ -187,7 +193,6 @@ public class DeviceGroupUpdaterController {
                         log.error(error, e);
                     } 
                 }
-            }
         }
         
         model.addAttribute("error", StringUtils.join(errors, "<br/>"));

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.model.CertificateUpdate;
@@ -28,6 +29,7 @@ import com.cannontech.common.rfn.model.GatewayCertificateException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -90,8 +92,9 @@ public class GatewayCertificateController {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
-        if (!file.isEmpty()) {
+        
             try {
+                FileUploadUtils.validateCertUploadFileType(file);
                 Set<RfnGateway> rfnGateways = rfnGatewayService.getGatewaysByPaoIds(Lists.newArrayList(gateways));
                 String certificateId = certificateUpdateService.sendUpdate(rfnGateways, file);
                 
@@ -135,21 +138,19 @@ public class GatewayCertificateController {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 
                 return "gateways/cert.update.jsp";
+            } catch (FileImportException e) {
+                List<RfnGateway> gatewayList = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                Collections.sort(gatewayList);
+                Map<Integer, String> gatewaySelectedMap = getGatewaySelectedMap(gateways);
+                
+                model.addAttribute("gateways", gatewayList);
+                model.addAttribute("checkedGateways", gatewaySelectedMap);
+                model.addAttribute("selectAll", gatewaySelectedMap.size() == gatewayList.size() ? "checked" : null);
+                model.addAttribute("errorMsg", accessor.getMessage(e.getMessage()));
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                
+                return "gateways/cert.update.jsp";
             }
-        } else {
-            
-            List<RfnGateway> gatewayList = Lists.newArrayList(rfnGatewayService.getAllGateways());
-            Collections.sort(gatewayList);
-            Map<Integer, String> gatewaySelectedMap = getGatewaySelectedMap(gateways);
-            
-            model.addAttribute("gateways", gatewayList);
-            model.addAttribute("checkedGateways", gatewaySelectedMap);
-            model.addAttribute("selectAll", gatewaySelectedMap.size() == gatewayList.size() ? "checked" : null);
-            model.addAttribute("errorMsg", accessor.getMessage(baseKey + "cert.update.file.empty"));
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            
-            return "gateways/cert.update.jsp";
-        }
     }
     
     private Map<Integer, String> getGatewaySelectedMap(Integer[] selectedGateways) {

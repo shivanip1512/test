@@ -4,6 +4,7 @@
     
     <!-- Import Errors -->
     <entry key="yukon.web.import.error.noImportFile">No import file was selected.</entry>
+    <entry key="yukon.web.import.error.emptyFile">Empty file.</entry>
     <entry key="yukon.web.import.error.errorProcessingFile">Importer encountered errors processing the file.</entry>
     <entry key="yukon.web.import.error.duplicateColumns">File contains duplicate columns: {0}</entry>
     <entry key="yukon.web.import.error.invalidColumns">File contains invalid columns: {0}</entry>
@@ -35,5 +36,8 @@
     <entry key="yukon.web.import.display.groupedColumnsIntro">Grouped columns are linked together. Each group is optional, but if included, must include all columns. Each row must provide a value for all columns in the group, or omit all values.</entry>
     <entry key="yukon.web.import.display.valueDependentColumnsIntro">Value-dependent columns depend on another column. They are only required if the depended-upon column contains one of the specified values.</entry>
     
-    
+    <entry key="yukon.common.validDataFileRequired.error">File must be text or csv.</entry>
+    <entry key="yukon.common.validImageFileRequired.error">Only image files are valid.</entry>
+    <entry key="yukon.common.validKeyFileRequired.error">File selected should be a valid key file.</entry>
+    <entry key="yukon.common.validCertFileRequired.error">Not a valid certificate file.</entry>
 </properties>

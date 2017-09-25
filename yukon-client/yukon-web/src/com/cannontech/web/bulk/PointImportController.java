@@ -32,7 +32,10 @@ import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportFileValidator;
 import com.cannontech.common.csvImport.ImportParser;
 import com.cannontech.common.exception.DuplicateColumnNameException;
+import com.cannontech.common.exception.EmptyImportFileException;
+import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.InvalidColumnNameException;
+import com.cannontech.common.exception.NoImportFileException;
 import com.cannontech.common.exception.RequiredColumnMissingException;
 import com.cannontech.common.point.PointCalculation;
 import com.cannontech.common.util.CtiUtilities;
@@ -43,8 +46,6 @@ import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.exceptions.EmptyImportFileException;
-import com.cannontech.web.exceptions.NoImportFileException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.web.util.WebFileUtils.CSVDataWriter;
@@ -99,6 +100,10 @@ public class PointImportController {
             } catch(EmptyImportFileException e) {
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.pointImport.error.errorProcessingCalcFile"));
                 return "redirect:upload";
+            } catch (FileImportException e) {
+                flashScope.setError(new YukonMessageSourceResolvable(
+                    "yukon.web.modules.tools.bulk.pointImport.error.errorProcessingCalcFile"));
+                return "redirect:upload";
             }
             
             List<String> results = Lists.newArrayList();
@@ -123,11 +128,8 @@ public class PointImportController {
         CSVReader csvReader = null;
         try {
             csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
-        } catch(NoImportFileException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.import.error.noImportFile"));
-            return "redirect:upload";
-        } catch(EmptyImportFileException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.import.error.errorProcessingFile"));
+        } catch (FileImportException e) {
+            flashScope.setError(new YukonMessageSourceResolvable(e.getMessage()));
             return "redirect:upload";
         }
         

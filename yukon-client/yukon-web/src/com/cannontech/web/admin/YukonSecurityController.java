@@ -46,6 +46,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.exception.FileImportException;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -66,7 +68,6 @@ import com.cannontech.system.DREncryption;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Maps;
 
@@ -77,7 +78,6 @@ public class YukonSecurityController {
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private RSAKeyfileService rsaKeyfileService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private HoneywellSecurityService honeywellSecurityService;
     @Autowired private ConfigurationSource configurationSource;
@@ -152,11 +152,16 @@ public class YukonSecurityController {
         }
     };
 
-    private Validator importFileValidator =
-        new SimpleValidator<FileImportBindingBean>(FileImportBindingBean.class) {
+    private Validator importFileValidator = new SimpleValidator<FileImportBindingBean>(FileImportBindingBean.class) {
         @Override
         public void doValidation(FileImportBindingBean fileImportBindingBean, Errors errors) {
-
+            try {
+                FileUploadUtils.validateKeyUploadFileType(fileImportBindingBean.getFile());
+            } catch (FileImportException e) {
+                errors.rejectValue("file", e.getMessage());
+            } catch (IOException e) {
+                errors.rejectValue("file", baseKey + ".fileUploadError.noFile");
+            }
             if (fileImportBindingBean.getName().length() > KEYNAME_MAX_LENGTH) {
                 Object[] args = { KEYNAME_MAX_LENGTH };
                 errors.rejectValue("name", baseKey + ".errorMsg.nameLength", args, "");
@@ -171,16 +176,6 @@ public class YukonSecurityController {
                 }
             }
 
-            try {
-                if (fileImportBindingBean.getFile() == null
-                    || StringUtils.isBlank(fileImportBindingBean.getFile().getOriginalFilename())) {
-                    errors.rejectValue("file", baseKey + ".fileUploadError.noFile");
-                } else if (fileImportBindingBean.getFile().getInputStream().available() <= 0) {
-                    errors.rejectValue("file", baseKey + ".fileUploadError.emptyFile");
-                }
-            } catch (IOException e) {
-                errors.rejectValue("file", baseKey + ".fileUploadError.noFile");
-            }
         }
     };
 
@@ -500,6 +495,18 @@ public class YukonSecurityController {
 
         MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
         MultipartFile dataFile = mRequest.getFile(StringUtils.defaultIfEmpty(null, "keyFile"));
+        try {
+            FileUploadUtils.validateKeyUploadFileType(dataFile);
+        } catch (FileImportException e) {
+            log.info("Import for Honeywell Key file failed.");
+            systemEventLogService.keyFileImportFailed(userContext.getYukonUser(), DREncryption.HONEYWELL);
+            flashScope.setError(new YukonMessageSourceResolvable(e.getMessage()));
+            return "redirect:view";
+        } catch (IOException e) {
+            log.info("Import for Honeywell Key file failed.", e);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+            return "redirect:view";
+        }
         honeywellFileImportBindingBean.setFile(dataFile);
         boolean success = handleHoneywellUploadedFile(honeywellFileImportBindingBean, flashScope);
         if (!success) {

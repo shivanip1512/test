@@ -26,9 +26,11 @@ import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.CloseableIteratorWrapper;
 import com.cannontech.common.bulk.iterator.CsvReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -68,9 +70,7 @@ public class FileUploadCollectionProducer implements CollectionProducer<Inventor
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) req;
             
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
-            if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                throw new CollectionCreationException("noFile");
-            }
+            FileUploadUtils.validateDataUploadFileType(dataFile);
             String ecIdParam = getSupportedType().getParameterName("energyCompanyId");
             int ecId = ServletRequestUtils.getRequiredIntParameter(req, ecIdParam);
             
@@ -84,6 +84,8 @@ public class FileUploadCollectionProducer implements CollectionProducer<Inventor
             
         } catch (IOException | ServletRequestBindingException e) {
             throw new CollectionCreationException("Unable to create collection.", e);
+        } catch (FileImportException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
         
     }

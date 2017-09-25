@@ -42,15 +42,16 @@ import com.cannontech.common.csvImport.ImportFileValidator;
 import com.cannontech.common.csvImport.ImportParser;
 import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.exception.DuplicateColumnNameException;
+import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.InvalidColumnNameException;
 import com.cannontech.common.exception.RequiredColumnMissingException;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.tools.csv.CSVReader;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.exceptions.EmptyImportFileException;
-import com.cannontech.web.exceptions.NoImportFileException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
@@ -107,32 +108,31 @@ public class CapControlImportController {
         MultipartFile dataFile = mRequest.getFile("dataFile");
         InputStream inputStream = dataFile.getInputStream();
         
-        if (inputStream.available() <= 0) {
-            log.error("Cap Control CBC Import File is empty.");
-            flash.setError(new YukonMessageSourceResolvable(key + "cbcFileEmpty"));
+        try {
+            FileUploadUtils.validateDataUploadFileType(dataFile);
+            List<CbcImportData> cbcImportData = fileImporterDao.getCbcImportData(inputStream, results);
+
+            processCbcImport(cbcImportData, results);
+        } catch (FileImportException e) {
+            log.error(new YukonMessageSourceResolvable(e.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
             return "redirect:view";
-        } else {
-            try {
-                List<CbcImportData> cbcImportData = fileImporterDao.getCbcImportData(inputStream, results);
-                
-                processCbcImport(cbcImportData, results);
-            } catch (CapControlCbcFileImportException e) {
-                log.error(e.getMessage());
-                Iterable<String> colNames = Iterables.transform(e.getColumns(), colNameOfField);
-                String columnString = StringUtils.join(colNames.iterator(), ", ");
-                flash.setError(new YukonMessageSourceResolvable(key + "missingRequiredColumn", columnString));
-                return "redirect:view";
-            } catch (IllegalArgumentException e) {
-                log.error("Invalid column name found in import file: " + e.getMessage());
-                flash.setError(new YukonMessageSourceResolvable(key + "invalidColumns", e.getMessage()));
-                return "redirect:view";
-            } catch (RuntimeException e) { 
-                flash.setError(new YukonMessageSourceResolvable(key + "errorProcessingFile", e.getMessage()));
-                log.error(e.getMessage());
-                return "redirect:view";
-            } finally {
-                inputStream.close();
-            }
+        } catch (CapControlCbcFileImportException e) {
+            log.error(e.getMessage());
+            Iterable<String> colNames = Iterables.transform(e.getColumns(), colNameOfField);
+            String columnString = StringUtils.join(colNames.iterator(), ", ");
+            flash.setError(new YukonMessageSourceResolvable(key + "missingRequiredColumn", columnString));
+            return "redirect:view";
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid column name found in import file: " + e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(key + "invalidColumns", e.getMessage()));
+            return "redirect:view";
+        } catch (RuntimeException e) {
+            flash.setError(new YukonMessageSourceResolvable(key + "errorProcessingFile", e.getMessage()));
+            log.error(e.getMessage());
+            return "redirect:view";
+        } finally {
+            inputStream.close();
         }
         
         List<ImportResult> cbcResults = getCbcResultResolvables(results);
@@ -155,7 +155,8 @@ public class CapControlImportController {
     }
     
     @RequestMapping(value="regulatorFile", method=RequestMethod.POST)
-    public String regulatorFile(ModelMap model, HttpServletRequest req, FlashScope flash) throws IOException {
+    public String regulatorFile(ModelMap model, HttpServletRequest req, FlashScope flash, YukonUserContext userContext)
+            throws IOException {
         //Procure the import file
         if (!ServletFileUpload.isMultipartContent(req)) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.import.error.noImportFile"));
@@ -168,10 +169,10 @@ public class CapControlImportController {
         CSVReader csvReader = null;
         try {
             csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
-        } catch(NoImportFileException e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.import.error.noImportFile"));
+        } catch (FileImportException e) {
+            flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
             return "redirect:view";
-        } catch(EmptyImportFileException e) {
+        } catch (IOException e) {
             flash.setError(new YukonMessageSourceResolvable(key + "errorProcessingFile"));
             return "redirect:view";
         }
@@ -218,10 +219,10 @@ public class CapControlImportController {
         CSVReader csvReader = null;
         try {
             csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
-        } catch(NoImportFileException e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.import.error.noImportFile"));
+        } catch (FileImportException e) {
+            flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
             return "redirect:view";
-        } catch(EmptyImportFileException e) {
+        } catch (IOException e) {
             flash.setError(new YukonMessageSourceResolvable(key + "errorProcessingFile"));
             return "redirect:view";
         }
@@ -263,26 +264,26 @@ public class CapControlImportController {
         MultipartFile dataFile = mRequest.getFile("dataFile");
         InputStream inputStream = dataFile.getInputStream();
         
-        if (inputStream.available() <= 0) {
-            log.error("Cap Control Hierarchy Import File is empty.");
-            flash.setError(new YukonMessageSourceResolvable(key + "hierarchyFileEmpty"));
+        try {
+            FileUploadUtils.validateDataUploadFileType(dataFile);
+            List<HierarchyImportData> hierarchyImportData =
+                fileImporterDao.getHierarchyImportData(inputStream, results);
+
+            processHierarchyImport(hierarchyImportData, results);
+        } catch (FileImportException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
             return "redirect:view";
-        } else {
-            try {
-                List<HierarchyImportData> hierarchyImportData = fileImporterDao.getHierarchyImportData(inputStream, results);
-            
-                processHierarchyImport(hierarchyImportData, results);
-            } catch (CapControlHierarchyFileImporterException e) {
-                log.error(e.getMessage());
-                flash.setError(new YukonMessageSourceResolvable(key + "missingRequiredColumn", e.getColumns()));
-                return "redirect:view";
-            } catch (IllegalArgumentException e) {
-                log.error("Invalid column name found in import file: " + e.getMessage());
-                flash.setError(new YukonMessageSourceResolvable(key + "invalidColumns", e.getMessage()));
-                return "redirect:view";
-            } finally {
-                inputStream.close();
-            }
+        } catch (CapControlHierarchyFileImporterException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(key + "missingRequiredColumn", e.getColumns()));
+            return "redirect:view";
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid column name found in import file: " + e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(key + "invalidColumns", e.getMessage()));
+            return "redirect:view";
+        } finally {
+            inputStream.close();
         }
         
         List<ImportResult> resolvables = getHierarchyResultResolvables(results);

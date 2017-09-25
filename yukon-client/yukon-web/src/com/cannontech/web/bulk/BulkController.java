@@ -153,7 +153,7 @@ public class BulkController {
             model.addAttribute("errorMsg", e.getMessage());
         } catch (IllegalArgumentException exception) {
             view = "redirect:/bulk/deviceSelection";
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".unsupportedFileFormat"));
+            flashScope.setError(new YukonMessageSourceResolvable(exception.getMessage()));
         }
         
         return view;

@@ -1,6 +1,6 @@
-package com.cannontech.web.exceptions;
+package com.cannontech.common.exception;
 
-public class EmptyImportFileException extends Exception {
+public class EmptyImportFileException extends FileImportException {
     public EmptyImportFileException() {
     }
 

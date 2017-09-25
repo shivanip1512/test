@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,17 +23,25 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.bulk.importdata.dao.BulkImportDataDao;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.importer.ImportData;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.importer.DBFuncs;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.util.StarsUtils;
+
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.common.exception.EmptyImportFileException;
+import com.cannontech.common.exception.ImportFileFormatException;
+import com.cannontech.common.exception.NoImportFileException;
 
 @CheckRoleProperty(YukonRoleProperty.IMPORTER_ENABLED)
 public class BulkImporterUploadController extends MultiActionController  {
-    
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private BulkImportDataDao bulkImportDataDao = null;
     
     /**
@@ -46,7 +54,7 @@ public class BulkImporterUploadController extends MultiActionController  {
      * @throws Exception
      */
     public ModelAndView importFile(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContextUtils.getYukonUserContext(request));
         // mav
         ModelAndView mav = new ModelAndView("redirect:/amr/bulkimporter/home");
         
@@ -63,9 +71,12 @@ public class BulkImporterUploadController extends MultiActionController  {
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
             dataFile = mRequest.getFile("dataFile");
 
-            if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                badMsgs.add("No file provided.");
-            } else {
+            try {
+                FileUploadUtils.validateDataUploadFileType(dataFile);
+            } catch (NoImportFileException | EmptyImportFileException | ImportFileFormatException e) {
+                badMsgs.add(dataFile.getOriginalFilename() + " " + accessor.getMessage(e.getMessage()));
+            }
+            if (badMsgs.size() == 0) {
                 msgs = saveFileData(dataFile);
                 goodMsgs = msgs.get("good");
                 badMsgs = msgs.get("bad");
@@ -163,25 +174,15 @@ public class BulkImporterUploadController extends MultiActionController  {
         List<ImportData> goodEntries = new ArrayList<ImportData>();
         boolean errorOccurred = false;
         
-        if (!dataFile.getOriginalFilename().toLowerCase().endsWith("csv")) {
-            badMsgs.add(dataFile.getOriginalFilename()+" is not a correct csv format, fix and try again. No Meters Added.");
-            errorOccurred = true;
-        } else {
-            
         try {
             
             int lineNo = 0;
 
-            InputStream is = dataFile.getInputStream();
             InputStreamReader isr = new InputStreamReader(dataFile.getInputStream());
             BufferedReader reader = new BufferedReader(isr);
             String line = null;
             
 			// Checks to see if the file contains any bits
-            if(is.available() <= 0){
-                badMsgs.add(dataFile.getOriginalFilename()+" does not exist.  No Meters Added.");
-                errorOccurred = true;
-            }
 
             while ((line = reader.readLine()) != null) {
                 
@@ -230,7 +231,6 @@ public class BulkImporterUploadController extends MultiActionController  {
             CTILogger.error(e);
             badMsgs.add("Unable to read file.");
             errorOccurred = true;
-        }
         }
         
         // IF THERE WAS AN ERROR, BACKOUT ALL METERS THAT WERE ADDED

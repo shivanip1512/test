@@ -34,6 +34,7 @@ import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
 import com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper;
 import com.cannontech.common.bulk.service.FdrTranslationManagerService;
+import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
@@ -47,8 +48,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.exceptions.EmptyImportFileException;
-import com.cannontech.web.exceptions.NoImportFileException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.web.util.WebFileUtils.CSVDataWriter;
@@ -128,11 +127,8 @@ public class FdrTranslationManagerController {
         CSVReader csvReader;
         try {
             csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
-        } catch(NoImportFileException e) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.noImportFile");
-            return prepareErrorReturn(userContext, errorMsg);
-        } catch(EmptyImportFileException e) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.fdrTranslationManagement.error.emptyImportFile");
+        } catch (FileImportException e) {
+            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable(e.getMessage());
             return prepareErrorReturn(userContext, errorMsg);
         }
         

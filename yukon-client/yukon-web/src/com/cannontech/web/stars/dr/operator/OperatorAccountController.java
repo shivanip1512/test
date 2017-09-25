@@ -43,7 +43,6 @@ import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -84,7 +83,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.login.model.Login;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService;
@@ -115,7 +113,6 @@ public class OperatorAccountController {
     @Autowired private AccountImportService accountImportService;
     @Autowired private AccountService accountService;
     @Autowired private AuthenticationService authenticationService;
-    @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private EnergyCompanyDao ecDao;
@@ -123,7 +120,6 @@ public class OperatorAccountController {
     @Autowired private LoginValidatorFactory loginValidatorFactory;
     @Autowired private OperatorAccountService operatorAccountService;
     @Autowired private OperatorGeneralSearchService operatorGeneralSearchService;
-    @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private ResidentialLoginService residentialLoginService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
@@ -166,8 +162,10 @@ public class OperatorAccountController {
             FlashScope flashScope) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         
-        BulkFileUpload accountFileUpload = BulkFileUploadUtils.getBulkFileUpload(request, "accountImportFile");
-        BulkFileUpload hardwareFileUpload = BulkFileUploadUtils.getBulkFileUpload(request, "hardwareImportFile");
+        BulkFileUpload accountFileUpload =
+            BulkFileUploadUtils.getBulkFileUpload(request, "accountImportFile");
+        BulkFileUpload hardwareFileUpload =
+            BulkFileUploadUtils.getBulkFileUpload(request, "hardwareImportFile");
         accountImportData.setAccountFile(accountFileUpload);
         accountImportData.setHardwareFile(hardwareFileUpload);
         
@@ -175,7 +173,7 @@ public class OperatorAccountController {
         
         /* Check if the files are there and the email is valid */
         if (accountFileUpload.hasErrors() && hardwareFileUpload.hasErrors()) {
-            errorMessages.add(new YukonMessageSourceResolvable(baseKey + "accountImport.error.noFiles"));
+            errorMessages.add(new YukonMessageSourceResolvable(accountFileUpload.getErrors().get(0)));
         }
         
         /* Validate Email Address */

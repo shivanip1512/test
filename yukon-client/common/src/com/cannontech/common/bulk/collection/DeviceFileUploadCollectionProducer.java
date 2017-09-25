@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -31,10 +29,12 @@ import com.cannontech.common.bulk.collection.device.persistable.DeviceCollection
 import com.cannontech.common.bulk.iterator.CsvColumnReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory.FileMapperEnum;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.tools.csv.CSVReader;
@@ -64,15 +64,11 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
 
             MultipartFile dataFile = mRequest.getFile(getSupportedType().getParameterName("dataFile"));
-            String ext = FilenameUtils.getExtension(dataFile.getOriginalFilename());
-            if (!(ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("text") || ext.equalsIgnoreCase("dat")
-                || ext.equalsIgnoreCase("csv"))) {
-                throw new IllegalArgumentException("Incorrect file format.");
+            try {
+                FileUploadUtils.validateDataUploadFileType(dataFile);
+            } catch (FileImportException e) {
+                throw new IllegalArgumentException(e.getMessage());
             }
-            if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                throw new UnsupportedOperationException("Data file is not found.");
-            }
-
             final String uploadTypeStr =
                 ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("uploadType"));
             FileMapperEnum uploadType = FileMapperEnum.valueOf(uploadTypeStr);
@@ -87,7 +83,7 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
 
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        } 
 
     }
     

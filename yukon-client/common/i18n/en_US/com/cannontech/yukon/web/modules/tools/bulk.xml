@@ -996,8 +996,6 @@
     <entry key="yukon.common.device.bulk.columnHeader.error.invalidColumnName">Invalid column header: {0}</entry>
     <entry key="yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName">Column cannot be used to update device: {0}</entry>
     
-    <entry key="yukon.common.device.bulk.fileUpload.error.noFile">No file provided.</entry>
-    <entry key="yukon.common.device.bulk.fileUpload.error.emptyFile">Empty file.</entry>
     <entry key="yukon.common.device.bulk.fileUpload.error.duplicateColumn">File contains multiple {0} columns.</entry>
     
     <!-- GENERAL -->

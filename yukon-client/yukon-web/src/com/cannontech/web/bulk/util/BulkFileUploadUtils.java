@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.common.exception.FileImportException;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.web.util.WebFileUtils;
 
 public class BulkFileUploadUtils {
@@ -23,18 +25,14 @@ public class BulkFileUploadUtils {
             MultipartFile dataFile = mRequest.getFile(StringUtils.defaultIfEmpty(fileInputName, "dataFile"));
 
             try {
-
-                if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                    bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.noFile");
-                } else if(dataFile.getInputStream().available() <= 0){
-                    bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.emptyFile");
-                } else {
-                    File file = WebFileUtils.convertToTempFile(dataFile, "bulkImport", "");
-                    bulkFileUpload.setName(dataFile.getOriginalFilename());
-                    bulkFileUpload.setFile(file);
-                }
+                FileUploadUtils.validateDataUploadFileType(dataFile);
+                File file = WebFileUtils.convertToTempFile(dataFile, "bulkImport", "");
+                bulkFileUpload.setName(dataFile.getOriginalFilename());
+                bulkFileUpload.setFile(file);
             } catch (IOException e) {
                 bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.noFile");
+            } catch (FileImportException e) {
+                bulkFileUpload.addError(e.getMessage());
             }
         } else {
             bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.noFile");

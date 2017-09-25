@@ -18,14 +18,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cannontech.common.exception.EmptyImportFileException;
+import com.cannontech.common.exception.FileImportException;
+import com.cannontech.common.exception.ImportFileFormatException;
+import com.cannontech.common.exception.NoImportFileException;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.exceptions.EmptyImportFileException;
-import com.cannontech.web.exceptions.NoImportFileException;
 
 public class WebFileUtils {
 
@@ -46,21 +50,19 @@ public class WebFileUtils {
      * @throws NoImportFileException if the import file doesn't exist
      * @throws EmptyImportFileException if the import file contains 0 bytes of data
      * @throws IOException if reader instantiation fails
+     * @throws ImportFileFormatException 
      */
     public static CSVReader getTempBackedCsvReaderFromMultipartFile(MultipartFile dataFile)
-            throws NoImportFileException, EmptyImportFileException, IOException {
+            throws FileImportException, IOException {
 
         File tempFile = new File("");
         try {
-            if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                throw new NoImportFileException();
-            } else if (dataFile.getInputStream().available() <= 0) {
-                throw new EmptyImportFileException();
-            } else {
-                tempFile = convertToTempFile(dataFile, "bulkImport", "");
-            }
+            FileUploadUtils.validateDataUploadFileType(dataFile);
+            tempFile = convertToTempFile(dataFile, "bulkImport", "");
+        } catch (FileImportException e) {
+            throw new FileImportException(e.getMessage());
         } catch (IOException e) {
-            throw new NoImportFileException(e);
+            throw new IOException(e);
         }
 
         FileSystemResource fileResource = new FileSystemResource(tempFile);

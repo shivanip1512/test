@@ -1,6 +1,6 @@
 package com.cannontech.common.exception;
 
-public class ImportFileFormatException extends Exception {
+public class ImportFileFormatException extends FileImportException {
     String headerName;
     String interfaceName;
     

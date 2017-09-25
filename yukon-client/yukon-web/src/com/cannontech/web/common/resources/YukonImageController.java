@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.ResourceLoader;
@@ -34,7 +33,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.common.exception.FileImportException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.core.image.model.YukonImage;
@@ -225,10 +226,9 @@ public class YukonImageController {
     public void upload(HttpServletResponse resp, HttpServletRequest req, YukonUserContext userContext, @RequestParam(defaultValue="logos") String category) throws IOException {
         
         Map<String, Object> json = new HashMap<>();
-        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_SUPER_USER, userContext.getYukonUser());
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             
             boolean isMultipart = ServletFileUpload.isMultipartContent(req);
             if (!isMultipart) {
@@ -237,13 +237,8 @@ public class YukonImageController {
             
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) req;
             MultipartFile file = mRequest.getFile("file");
-            if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
-                throw new IllegalArgumentException(accessor.getMessage(keyBase + "error.blankFile"));
-            }
-            
-            if(!file.getContentType().startsWith("image")) {
-                throw new IllegalArgumentException(accessor.getMessage(keyBase + "error.invalidFileType"));
-            }
+            FileUploadUtils.validateImageUploadFileType(file,
+                accessor.getMessage("yukon.common.validImageFileRequired.error"));
             InputStream inputStream = file.getInputStream();
             LiteYukonImage image = imageDao.add(category, file.getOriginalFilename(), new InputStreamResource(inputStream));
             Map<String, Object> imageStats = new HashMap<>(); 
@@ -256,6 +251,9 @@ public class YukonImageController {
             json.put("image", imageStats);
             
             json.put("status", "success");
+        } catch (FileImportException e) {
+            json.put("status", "error");
+            json.put("message",  accessor.getMessage(e.getMessage()));
         } catch (Exception e) {
             json.put("status", "error");
             json.put("message", e.getMessage());

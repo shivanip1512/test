@@ -75,6 +75,10 @@ public class AssetDashboardController {
         try {
             InventoryCollection collection = collectionFactory.createCollection(req);
             model.addAllAttributes(collection.getCollectionParameters());
+        } catch (IllegalArgumentException e) {
+            flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
+            setupModel(model, userContext);
+            return "operator/inventory/home.jsp";
         } catch (CollectionCreationException e) {
             
             flash.setError(new YukonMessageSourceResolvable(key + e.getMessage()));

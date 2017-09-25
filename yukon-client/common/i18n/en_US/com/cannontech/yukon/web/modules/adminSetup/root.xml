@@ -97,7 +97,6 @@
     <entry key="yukon.common.imagePicker.delete.inuse">Image is used by another theme.</entry>
     <entry key="yukon.common.imagePicker.error.blankFile">The file is blank.</entry>
     <entry key="yukon.common.imagePicker.error.notMultipartRequest">No image selected for upload.</entry>
-    <entry key="yukon.common.imagePicker.error.invalidFileType">Only image files are valid.</entry>
 
     <entry key="yukon.web.modules.adminSetup.config.weather.pageName">Weather</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.createWeatherLocation.label">New Weather Location</entry>

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.exception.FileImportException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
@@ -32,10 +36,13 @@ import com.google.common.collect.Lists;
 public class GroupValidatorController {
 
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value="device-group", method=RequestMethod.POST)
-    public void deviceGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void deviceGroup(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext)
+            throws ServletException, IOException {
         Map<String, Object> collectionAttributes = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         try {
             if (!ServletFileUpload.isMultipartContent(request)) {
@@ -43,12 +50,7 @@ public class GroupValidatorController {
             }
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
             MultipartFile file = mRequest.getFile("fileUpload.dataFile");
-            if (file == null || StringUtils.isBlank(file.getOriginalFilename())) {
-                throw new IllegalArgumentException("Blank file.");
-            }
-            if (!file.getContentType().startsWith("text") && !file.getContentType().endsWith("excel")) {
-                throw new IllegalArgumentException("File must be text or csv");
-            }
+            FileUploadUtils.validateDataUploadFileType(file);
             DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
             collectionAttributes.putAll(deviceCollection.getCollectionParameters());
             collectionAttributes.put("deviceCount", Long.toString(deviceCollection.getDeviceCount(), 10));
@@ -56,8 +58,8 @@ public class GroupValidatorController {
             collectionAttributes.put("deviceErrors", deviceCollection.getErrorDevices());
         } catch (DeviceCollectionCreationException e) {
             collectionAttributes.put("error", e.getMessage());
-        } catch (IllegalArgumentException e) {
-            collectionAttributes.put("error", e.getMessage());
+        } catch (IllegalArgumentException | FileImportException e) {
+            collectionAttributes.put("error", accessor.getMessage(e.getMessage()));
         }
         
         //Neccessary for IE9
