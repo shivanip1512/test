@@ -43,7 +43,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.totalCost">Total Cost</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.hopCount">Hop Count</entry>
     
-    <entry key="yukon.web.modules.operator.mapNetwork.status.UNKNOWN">Unkown</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.status.UNKNOWN">Unknown</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.status.READY">Ready</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.status.NOT_READY">Not Ready</entry>
     
