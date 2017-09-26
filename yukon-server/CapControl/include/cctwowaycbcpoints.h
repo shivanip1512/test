@@ -120,7 +120,7 @@ protected:
     std::string _paotype;
 
     std::map<long, LitePoint>   _points;
-    std::map<Attribute, long>   _attributes;
+    std::map<Attribute, long>   _attributeIds;
 
     PointValueHolder  _pointValues;
 

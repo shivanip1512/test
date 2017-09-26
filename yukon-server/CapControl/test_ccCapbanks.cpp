@@ -669,5 +669,175 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
 */
 }
 
+BOOST_FIXTURE_TEST_CASE( test_capbank_point_loading_and_initialization_with_cbc_dnp_logical, cbc_heartbeat_fixture_pulsed )
+{
+    std::unique_ptr<CtiCCCapBank>   bank;
+
+    {
+        using CcCapBankRow      = Cti::Test::StringRow<41>;
+        using CcCapBankReader   = Cti::Test::TestReader<CcCapBankRow>;
+
+        CcCapBankRow columnNames =
+        {
+            "PAObjectID",
+            "Category",
+            "PAOClass",
+            "PAOName",
+            "Type",
+            "Description",
+            "DisableFlag",
+            "OPERATIONALSTATE",
+            "ControllerType",
+            "CONTROLDEVICEID",
+            "CONTROLPOINTID",
+            "BANKSIZE",
+            "TypeOfSwitch",
+            "SwitchManufacture",
+            "MapLocationID",
+            "RecloseDelay",
+            "MaxDailyOps",
+            "MaxOpDisable",
+            "ALARMINHIBIT",
+            "CONTROLINHIBIT",
+            "CbcType",
+            "ControlStatus",
+            "TotalOperations",
+            "LastStatusChangeTime",
+            "TagsControlStatus",
+            "AssumedStartVerificationStatus",
+            "PrevVerificationControlStatus",
+            "VerificationControlIndex",
+            "AdditionalFlags",
+            "CurrentDailyOperations",
+            "TwoWayCBCState",
+            "TwoWayCBCStateTime",
+            "beforeVar",
+            "afterVar",
+            "changeVar",
+            "twoWayCBCLastControl",
+            "PartialPhaseInfo",
+            "OriginalParentId",
+            "OriginalSwitchingOrder",
+            "OriginalCloseOrder",
+            "OriginalTripOrder"
+        };
+
+        std::vector< CcCapBankRow > columnValues
+        {
+            {
+                "185",
+                "DEVICE",
+                "CAPCONTROL",
+                "Bank 8",
+                "CAP BANK",
+                "----",
+                "N",
+                "Switched",
+                "",
+                "184",
+                "333",
+                "600",
+                "",
+                "",
+                "0",
+                "0",
+                "10",
+                "Y",
+                "N",
+                "N",
+                "CBC Logical",
+                "0",
+                "16",
+                "2017-08-01 14:17:44.000",
+                "0",
+                "0",
+                "0",
+                "-1",
+                "NNNNNYNNNNNNNNNNNNNN",
+                "4",
+                "1",
+                "1990-01-01 00:00:00.000",
+                "-500.00",
+                "100.00",
+                "100.00",
+                "0",
+                "(none)",
+                "0",
+                "0",
+                "0",
+                "0"
+            }
+        };
+
+        CcCapBankReader reader( columnNames, columnValues );
+
+        reader();
+
+        bank.reset( new CtiCCCapBank( reader ) );
+    }
+
+    BOOST_REQUIRE( bank );
+
+    BOOST_CHECK_EQUAL( bank->getControlDeviceType(),            "CBC Logical" );
+
+    {
+        std::vector<LitePoint>  pointCache
+        {
+            LitePoint( 4631,  AnalogPointType, "*Logical<Some Logical CBC> Banana Pancakes",     1773, 1, "", "", 1.0, 0 ),
+            LitePoint( 4634,  AnalogPointType, "*Logical<Some Logical CBC> Blueberry Pancakes",  1773, 4, "", "", 1.0, 0 ),
+            LitePoint( 4635,  AnalogPointType, "*Logical<Some Logical CBC> Maple Syrup",         1773, 5, "", "", 1.0, 0 )
+        };
+
+        std::map<Attribute, std::string>    pointOverloads
+        {
+            { Attribute::Voltage,       "Maple Syrup" },
+            { Attribute::HighVoltage,   "Banana Pancakes" },
+            { Attribute::LowVoltage,    "Blueberry Pancakes" }
+        };
+
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( pointCache, pointOverloads );
+    }
+
+    // check our three points
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::Voltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      4635 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        1773 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  5 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    AnalogPointType );
+    }
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::HighVoltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      4631 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        1773 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  1 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    AnalogPointType );
+    }
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::LowVoltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      4634 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        1773 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  4 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    AnalogPointType );
+    }
+
+    // check a non-existent point
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::DeltaVoltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      0 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        0 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  0 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    InvalidPointType );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

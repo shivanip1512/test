@@ -25,43 +25,41 @@ namespace Transport
 
 TwoWayDynamicDataTransport::TwoWayDynamicDataTransport( Cti::RowReader & rdr )
 {
-    rdr[ "DeviceID" ]               >> DeviceID;
-    rdr[ "LastControl" ]            >> LastControl;
-    rdr[ "Condition" ]              >> Condition;
-    rdr[ "AnalogInputOne" ]         >> AnalogInputOne;
-    rdr[ "RSSI" ]                   >> RSSI;
-    rdr[ "IgnoredReason" ]          >> IgnoredReason;
-    rdr[ "TotalOpCount" ]           >> TotalOpCount;
-    rdr[ "UvOpCount" ]              >> UvOpCount;
-    rdr[ "OvOpCount" ]              >> OvOpCount;
-    rdr[ "OvUvTrackTime" ]          >> OvUvTrackTime;
-    rdr[ "NeutralCurrentSensor" ]   >> NeutralCurrentSensor;
-    rdr[ "IPAddress" ]              >> IPAddress;
-    rdr[ "UDPPort" ]                >> UDPPort;
+    rdr[ "DeviceID" ]             >> DeviceID;
+    rdr[ "LastControl" ]          >> LastControl;
+    rdr[ "Condition" ]            >> Condition;
+    rdr[ "AnalogInputOne" ]       >> AnalogInputOne;
+    rdr[ "RSSI" ]                 >> RSSI;
+    rdr[ "IgnoredReason" ]        >> IgnoredReason;
+    rdr[ "TotalOpCount" ]         >> TotalOpCount;
+    rdr[ "UvOpCount" ]            >> UvOpCount;
+    rdr[ "OvOpCount" ]            >> OvOpCount;
+    rdr[ "OvUvTrackTime" ]        >> OvUvTrackTime;
+    rdr[ "NeutralCurrentSensor" ] >> NeutralCurrentSensor;
+    rdr[ "IPAddress" ]            >> IPAddress;
+    rdr[ "UDPPort" ]              >> UDPPort;
 
-    rdr[ "Voltage" ]                        >> Voltage;
-    rdr[ "HighVoltage" ]                    >> HighVoltage;
-    rdr[ "LowVoltage" ]                     >> LowVoltage;
-    rdr[ "DeltaVoltage" ]                   >> DeltaVoltage;
-    rdr[ "Temp" ]                           >> Temp;
-    rdr[ "UvSetPoint" ]                     >> UvSetPoint;
-    rdr[ "OvSetPoint" ]                     >> OvSetPoint;
-    rdr[ "NeutralCurrentAlarmSetPoint" ]    >> NeutralCurrentAlarmSetPoint;
+    rdr[ "Voltage" ]                     >> Voltage;
+    rdr[ "HighVoltage" ]                 >> HighVoltage;
+    rdr[ "LowVoltage" ]                  >> LowVoltage;
+    rdr[ "DeltaVoltage" ]                >> DeltaVoltage;
+    rdr[ "Temp" ]                        >> Temp;
+    rdr[ "UvSetPoint" ]                  >> UvSetPoint;
+    rdr[ "OvSetPoint" ]                  >> OvSetPoint;
+    rdr[ "NeutralCurrentAlarmSetPoint" ] >> NeutralCurrentAlarmSetPoint;
 
-    std::string flag;
-
-    rdr[ "RecloseBlocked" ]         >> flag;    RecloseBlocked          = deserializeFlag( flag );
-    rdr[ "ControlMode" ]            >> flag;    ControlMode             = deserializeFlag( flag );
-    rdr[ "AutoVoltControl" ]        >> flag;    AutoVoltControl         = deserializeFlag( flag );
-    rdr[ "OpFailedNeutralCurrent" ] >> flag;    OpFailedNeutralCurrent  = deserializeFlag( flag );
-    rdr[ "NeutralCurrentFault" ]    >> flag;    NeutralCurrentFault     = deserializeFlag( flag );
-    rdr[ "BadRelay" ]               >> flag;    BadRelay                = deserializeFlag( flag );
-    rdr[ "DailyMaxOps" ]            >> flag;    DailyMaxOps             = deserializeFlag( flag );
-    rdr[ "VoltageDeltaAbnormal" ]   >> flag;    VoltageDeltaAbnormal    = deserializeFlag( flag );
-    rdr[ "TempAlarm" ]              >> flag;    TempAlarm               = deserializeFlag( flag );
-    rdr[ "DSTActive" ]              >> flag;    DSTActive               = deserializeFlag( flag );
-    rdr[ "NeutralLockout" ]         >> flag;    NeutralLockout          = deserializeFlag( flag );
-    rdr[ "IgnoredIndicator" ]       >> flag;    IgnoredIndicator        = deserializeFlag( flag );
+    RecloseBlocked         = deserializeFlag( rdr[ "RecloseBlocked" ].as<std::string>()         );
+    ControlMode            = deserializeFlag( rdr[ "ControlMode" ].as<std::string>()            );
+    AutoVoltControl        = deserializeFlag( rdr[ "AutoVoltControl" ].as<std::string>()        );
+    OpFailedNeutralCurrent = deserializeFlag( rdr[ "OpFailedNeutralCurrent" ].as<std::string>() );
+    NeutralCurrentFault    = deserializeFlag( rdr[ "NeutralCurrentFault" ].as<std::string>()    );
+    BadRelay               = deserializeFlag( rdr[ "BadRelay" ].as<std::string>()               );
+    DailyMaxOps            = deserializeFlag( rdr[ "DailyMaxOps" ].as<std::string>()            );
+    VoltageDeltaAbnormal   = deserializeFlag( rdr[ "VoltageDeltaAbnormal" ].as<std::string>()   );
+    TempAlarm              = deserializeFlag( rdr[ "TempAlarm" ].as<std::string>()              );
+    DSTActive              = deserializeFlag( rdr[ "DSTActive" ].as<std::string>()              );
+    NeutralLockout         = deserializeFlag( rdr[ "NeutralLockout" ].as<std::string>()         );
+    IgnoredIndicator       = deserializeFlag( rdr[ "IgnoredIndicator" ].as<std::string>()       );
 
     rdr[ "OvUvCountResetDate" ] >> OvUvCountResetDate;
     rdr[ "LastOvUvDateTime" ]   >> LastOvUvDateTime;
@@ -101,7 +99,7 @@ void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LiteP
                                                            point.getPointOffset() );
         for ( auto attribute : attributes )
         {
-            _attributes[ attribute ] = point.getPointId();
+            _attributeIds[ attribute ] = point.getPointId();
         }
     }
 
@@ -118,7 +116,7 @@ void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LiteP
 
             if ( pointLookup != points.end() )
             {
-                _attributes[ entry.first ] = pointLookup->getPointId();
+                _attributeIds[ entry.first ] = pointLookup->getPointId();
             }
         }
     }
@@ -299,7 +297,7 @@ LitePoint CtiCCTwoWayPoints::getPointByAttribute( const Attribute & attribute ) 
 
 long CtiCCTwoWayPoints::getPointIdByAttribute( const Attribute & attribute ) const
 {
-    return  Cti::mapFindOrDefault( _attributes, attribute, 0 );
+    return  Cti::mapFindOrDefault( _attributeIds, attribute, 0 );
 }
 
 double CtiCCTwoWayPoints::getPointValueByAttribute( const Attribute & attribute, const double sentinel ) const
@@ -351,7 +349,7 @@ bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue( const long pointID,
 
 void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg( std::set<long> & pointList ) const
 {
-    boost::copy( _attributes
+    boost::copy( _attributeIds
                     | boost::adaptors::map_values
                     | boost::adaptors::filtered( []( const long ID ){ return ID > 0; } ),
                  std::inserter( pointList, pointList.begin() ) );
@@ -510,7 +508,7 @@ void CtiCCTwoWayPointsCbcDnpLogical::assignTwoWayPointsAndAttributes( const std:
                     if ( pieces_match.size() == 2 
                             && pieces_match[ 1 ].str() == entry.second )
                     {
-                        _attributes[ entry.first ] = point.getPointId();
+                        _attributeIds[ entry.first ] = point.getPointId();
                     }
                 }
             }
@@ -523,37 +521,42 @@ void CtiCCTwoWayPointsCbcDnpLogical::assignTwoWayPointsAndAttributes( const std:
 
 CtiCCTwoWayPoints * CtiCCTwoWayPointsFactory::Create( const long paoID, const std::string & paoType )
 {
-    if ( stringContainsIgnoreCase( paoType, "CBC 702" ) )
+    switch ( resolveDeviceType( paoType ) )
     {
-        return new CtiCCTwoWayPointsCbc702x( paoID, paoType,
-                                             std::make_unique<LastControlReasonCbc702x>(),
-                                             std::make_unique<IgnoredControlReasonCbc702x>() );
+        case TYPE_CBC7020:
+        {
+            return new CtiCCTwoWayPointsCbc702x( paoID, paoType,
+                                                 std::make_unique<LastControlReasonCbc702x>(),
+                                                 std::make_unique<IgnoredControlReasonCbc702x>() );
+        }
+        case TYPE_CBC8020:
+        {
+            return new CtiCCTwoWayPointsCbc802x( paoID, paoType,
+                                                 std::make_unique<LastControlReasonCbc802x>(),
+                                                 std::make_unique<IgnoredControlReasonCbc802x>() );
+        }
+        case TYPE_CBCDNP:
+        {
+            return new CtiCCTwoWayPointsCbcDnp( paoID, paoType,
+                                                std::make_unique<LastControlReasonCbcDnp>(),
+                                                std::make_unique<IgnoredControlReasonCbcDnp>() );
+        }
+        case TYPE_CBCLOGICAL:
+        {
+            return new CtiCCTwoWayPointsCbcDnpLogical( paoID, paoType,
+                                                       std::make_unique<LastControlReasonCbcDnp>(),
+                                                       std::make_unique<IgnoredControlReasonCbcDnp>() );
+        }
+        // Apparently 1-way devices need one of these guys even though they don't use it for anything,
+        // returning a NULL here gives null pointer exceptions in 1-way code. Original behavior gave a set
+        //  of CBC8000 points to 1-way devices, so maintain that behavior.
+        // return 0;
+        default:
+        {
+            return new CtiCCTwoWayPointsCbc802x( paoID, paoType,
+                                                 std::make_unique<LastControlReasonCbc802x>(),
+                                                 std::make_unique<IgnoredControlReasonCbc802x>() );
+        }
     }
-    if ( stringContainsIgnoreCase( paoType, "CBC 802" ) )
-    {
-        return new CtiCCTwoWayPointsCbc802x( paoID, paoType,
-                                             std::make_unique<LastControlReasonCbc802x>(),
-                                             std::make_unique<IgnoredControlReasonCbc802x>() );
-    }
-    if ( ciStringEqual( paoType, "CBC DNP" ) )
-    {
-        return new CtiCCTwoWayPointsCbcDnp( paoID, paoType,
-                                            std::make_unique<LastControlReasonCbcDnp>(),
-                                            std::make_unique<IgnoredControlReasonCbcDnp>() );
-    }
-    if ( ciStringEqual( paoType, "CBC DNP Logical" ) )
-    {
-        return new CtiCCTwoWayPointsCbcDnpLogical( paoID, paoType,
-                                                   std::make_unique<LastControlReasonCbcDnp>(),
-                                                   std::make_unique<IgnoredControlReasonCbcDnp>() );
-    }
-
-    // Apparently 1-way devices need one of these guys even though they don't use it for anything,
-    // returning a NULL here gives null pointer exceptions in 1-way code. Original behavior gave a set
-    //  of CBC8000 points to 1-way devices, so maintain that behavior.
-    // return 0;
-    return new CtiCCTwoWayPointsCbc802x( paoID, paoType,
-                                         std::make_unique<LastControlReasonCbc802x>(),
-                                         std::make_unique<IgnoredControlReasonCbc802x>() );
 }
 
