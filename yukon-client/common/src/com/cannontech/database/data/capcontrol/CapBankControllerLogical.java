@@ -11,8 +11,8 @@ import com.cannontech.database.db.capcontrol.DeviceCBC;
 public class CapBankControllerLogical extends DNPBase implements DBCopiable, ICapBankController {
     private DeviceCBC deviceCBC = null;
     
-    public CapBankControllerDNPLogical() {
-        super(PaoType.CBC_DNP_LOGICAL);
+    public CapBankControllerLogical() {
+        super(PaoType.CBC_LOGICAL);
     }
     
     public Integer getSerialNumber() {
