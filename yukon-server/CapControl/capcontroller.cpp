@@ -1804,7 +1804,7 @@ bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
         INT DeviceType = resolveDeviceType(dbChange->getObjectType());
         return( DeviceType == TYPE_VERSACOMCBC || DeviceType == TYPE_EXPRESSCOMCBC ||
                 DeviceType == TYPE_CBC7010 || DeviceType == TYPE_CBC7020 ||
-                DeviceType == TYPE_CBC8020 || DeviceType == TYPE_CBCDNP || DeviceType == TYPE_CBCDNPLOGICAL ||
+                DeviceType == TYPE_CBC8020 || DeviceType == TYPE_CBCDNP || DeviceType == TYPE_CBCLOGICAL ||
                 DeviceType == TYPE_FISHERPCBC );
     }
 }

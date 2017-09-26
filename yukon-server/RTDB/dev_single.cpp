@@ -2135,19 +2135,6 @@ string CtiDeviceSingle::valueReport( const string &pointname, const point_info &
     return report;
 }
 
-void CtiDeviceSingle::insertReturnMsg( int retval, OUTMESS *&om, CtiMessageList &retList, const string &error ) const
-{
-    retList.push_back(
-        new CtiReturnMsg(
-        getID(),
-        om->Request,
-        getName() + " / " + error,
-        retval ) );
-
-    delete om;
-    om = NULL;
-}
-
 /**
 * Report a configuration error to the client.
 *

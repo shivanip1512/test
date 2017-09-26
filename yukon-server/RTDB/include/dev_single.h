@@ -113,9 +113,6 @@ protected:
 
     virtual YukonError_t SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
-    // Places error onto the retlist, DELETES OUTMESSAGE
-    void insertReturnMsg( int retval, OUTMESS *&om, CtiMessageList &retList, const std::string &error ) const;
-
     YukonError_t reportConfigErrorDetails( 
         const YukonError_t errcode,
         std::string msg, 

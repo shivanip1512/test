@@ -697,7 +697,6 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
             DeviceManager.getDevicesByType(TYPE_DNPRTU,   devices);
             DeviceManager.getDevicesByType(TYPE_DARTRTU,  devices);
             DeviceManager.getDevicesByType(TYPE_CBCDNP,   devices);
-            DeviceManager.getDevicesByType(TYPE_CBCDNPLOGICAL, devices);
             DeviceManager.getDevicesByType(TYPE_CBC7020,  devices);
             DeviceManager.getDevicesByType(TYPE_CBC8020,  devices);
             for_each(devices.begin(), devices.end(), timeSyncDNPDevices(PortRecord->getPortID()));

@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  10
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  20
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  30
-        (_)(_)(_)(_)(_) (_)(X)(X)(X)(X)  //  40
+        (_)(_)(_)(_)(_) (_)(X)(X)(_)(X)  //  40
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  50
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceCBC")
         ("class Cti::Devices::Cbc7020Device")
         ("class Cti::Devices::DnpDevice")
-        ("class Cti::Devices::DnpDevice")
+        ("class Cti::Devices::CbcLogicalDevice")
         ("class Cti::Devices::Cbc8020Device")
         //  50
         ("class Cti::Devices::RfnMeterDevice")

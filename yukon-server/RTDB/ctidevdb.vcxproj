@@ -428,6 +428,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="dev_cbc8020.cpp">
     </ClCompile>
+    <ClCompile Include="dev_cbclogical.cpp" />
     <ClCompile Include="dev_ccu.cpp">
     </ClCompile>
     <ClCompile Include="dev_ccu721.cpp">
@@ -670,6 +671,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_cbc.h" />
     <ClInclude Include="include\dev_cbc7020.h" />
     <ClInclude Include="include\dev_cbc8020.h" />
+    <ClInclude Include="include\dev_cbclogical.h" />
     <ClInclude Include="include\dev_ccu.h" />
     <ClInclude Include="include\dev_ccu721.h" />
     <ClInclude Include="include\dev_ccu_queue_interface.h" />

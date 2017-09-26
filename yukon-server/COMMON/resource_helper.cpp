@@ -93,7 +93,7 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         { "CBC_8020",                    TYPE_CBC8020 },
         { "CBC_8024",                    TYPE_CBC8020 },
         { "CBC_DNP",                     TYPE_CBCDNP },
-        { "CBC_DNP_LOGICAL",             TYPE_CBCDNPLOGICAL },
+        { "CBC_LOGICAL",                 TYPE_CBCLOGICAL },
         { "CBC_EXPRESSCOM",              TYPE_EXPRESSCOMCBC },
         { "CBC_FP_2800",                 TYPE_FISHERPCBC },
 //      { "cbc versacom",                TYPE_VERSACOMCBC },

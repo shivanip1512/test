@@ -93,6 +93,9 @@ protected:
 
     void populateOutMessage( OUTMESS &om );
 
+    // Places error onto the retlist, DELETES OUTMESSAGE
+    void insertReturnMsg(int retval, OUTMESS *&om, CtiMessageList &retList, const std::string &error) const;
+
 public:
 
     void purgeDynamicPaoInfo();

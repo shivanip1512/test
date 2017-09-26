@@ -6,6 +6,7 @@
 #include "dev_cbc.h"
 #include "dev_cbc7020.h"
 #include "dev_cbc8020.h"
+#include "dev_cbclogical.h"
 #include "dev_ccu.h"
 #include "dev_ccu721.h"
 #include "dev_welco.h"
@@ -298,7 +299,7 @@ const DeviceLookup deviceFactory {
     { TYPE_LMGROUP_SA305,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA305>) },
     //  Capacitor bank controllers
     { TYPE_CBCDNP,        MakeDeviceFunc(makeDevice<DnpDevice>) },
-    { TYPE_CBCDNPLOGICAL, MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPE_CBCLOGICAL,    MakeDeviceFunc(makeDevice<CbcLogicalDevice>) },
     { TYPE_CBC7020,       MakeDeviceFunc(makeDevice<Cbc7020Device>) },
     { TYPE_CBC8020,       MakeDeviceFunc(makeDevice<Cbc8020Device>) },
     { TYPE_CBC7010,       MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
@@ -415,8 +416,7 @@ const std::set<int> dnpDeviceTypes = {
         TYPE_DNPRTU,
         TYPE_CBC7020,
         TYPE_CBC8020,
-        TYPE_CBCDNP,
-        TYPE_CBCDNPLOGICAL };
+        TYPE_CBCDNP };
 }
 
 DLLEXPORT bool isCarrierLPDeviceType(const int type)

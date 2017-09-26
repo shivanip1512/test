@@ -435,6 +435,19 @@ void CtiDeviceBase::populateOutMessage(OUTMESS &OutMessage)
     OutMessage.TimeOut   = 2;
 }
 
+void CtiDeviceBase::insertReturnMsg(int retval, OUTMESS *&om, CtiMessageList &retList, const string &error) const
+{
+    retList.push_back(
+        new CtiReturnMsg(
+            getID(),
+            om->Request,
+            getName() + " / " + error,
+            retval));
+
+    delete om;
+    om = NULL;
+}
+
 void CtiDeviceBase::purgeStaticPaoInfo()
 {
     // We dont own this data, but we can clear our internal stores.

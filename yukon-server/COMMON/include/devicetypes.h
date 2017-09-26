@@ -57,7 +57,7 @@ enum DeviceTypes {
     TYPE_CBC7010,
     TYPE_CBC7020,
     TYPE_CBCDNP,
-    TYPE_CBCDNPLOGICAL,
+    TYPE_CBCLOGICAL,
     TYPE_CBC8020,
 
     //  RFN Focus
