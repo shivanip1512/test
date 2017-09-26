@@ -1,6 +1,7 @@
 package com.cannontech.database.data.capcontrol;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.db.capcontrol.DeviceCBC;
 
 public abstract class CapBankController extends CapControlDeviceBase implements ICapBankController {
     private com.cannontech.database.db.capcontrol.DeviceCBC deviceCBC = null;
@@ -47,9 +48,9 @@ public abstract class CapBankController extends CapControlDeviceBase implements 
         super.delete();
     }
 
-    public com.cannontech.database.db.capcontrol.DeviceCBC getDeviceCBC() {
+    public DeviceCBC getDeviceCBC() {
         if (deviceCBC == null) {
-            deviceCBC = new com.cannontech.database.db.capcontrol.DeviceCBC();
+            deviceCBC = new DeviceCBC();
         }
 
         return deviceCBC;
@@ -67,8 +68,7 @@ public abstract class CapBankController extends CapControlDeviceBase implements 
         getDeviceCBC().setDbConnection(conn);
     }
 
-    public void setDeviceCBC(
-            com.cannontech.database.db.capcontrol.DeviceCBC newValue) {
+    public void setDeviceCBC(DeviceCBC newValue) {
         this.deviceCBC = newValue;
     }
 
