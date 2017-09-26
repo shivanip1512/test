@@ -10,7 +10,7 @@
 $(document).on('change', '.js-checkbox', function() {
     var checkbox = $(this);
         checkboxValue = checkbox.prev();
-        checkboxValue.val($(".js-checkbox").is(":checked"));
+        checkboxValue.val($(this).is(":checked"));
 });
 
 </script>
