@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -38,6 +39,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -47,6 +49,7 @@ import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -61,6 +64,7 @@ public class SmartNotificationsController {
     @Autowired private SmartNotificationSubscriptionValidator subscriptionValidator;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceDataMonitorSubscriptionHelper ddmHelper;
+    @Autowired private UserPreferenceService userPreferenceService;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
     
@@ -122,7 +126,21 @@ public class SmartNotificationsController {
         model.addAttribute("subscriptions", searchResult);
         model.addAttribute("eventTypes", SmartNotificationEventType.values());
         model.addAttribute("filter", filter);
+        model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
         return "subscriptions.jsp";
+    }
+    
+    @RequestMapping(value="singleNotification", method=RequestMethod.POST)
+    public String singleNotificationSettings(@RequestParam(value="singleNotification", required=false) Boolean singleNotification, 
+                                             @RequestParam(value="sendTime", required=false) String sendTime,  
+                                             YukonUserContext userContext, FlashScope flash) throws Exception {
+        if (singleNotification) {
+            userPreferenceService.savePreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME, sendTime);
+        } else {
+            userPreferenceService.savePreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME, "");
+        }
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "singleNotificationSuccess"));
+        return "redirect:/user/profile";
     }
     
     @RequestMapping(value="subscription/popup/{type}", method=RequestMethod.GET)

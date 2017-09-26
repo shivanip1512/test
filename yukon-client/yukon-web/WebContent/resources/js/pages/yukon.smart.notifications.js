@@ -18,7 +18,45 @@ yukon.smart.notifications = (function () {
             deviceDataMonitor = type == 'DEVICE_DATA_MONITOR';
         popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
         popup.find('#device-data-monitor').prop("disabled", !deviceDataMonitor);
-   };
+   },
+   
+   initializeTimeSlider = function (container) {
+       var sendTimeField = container.find('#notifications-send-time'),
+           timeLabel = container.find('.js-time-label'),
+           timeSlider = container.find('.js-time-slider'),
+           currentValue = sendTimeField.val(),
+           defaultValue = currentValue ? currentValue : 10 * 60;
+       //initialize time slider
+       timeSlider.slider({
+           max: 24 * 60 - 60,
+           min: 0,
+           value: defaultValue,
+           step: 60,
+           slide: function (ev, ui) {
+               timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+               timeSlider.val(ui.value);
+               sendTimeField.val(ui.value);
+           },
+           change: function (ev, ui) {
+               timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+               timeSlider.val(ui.value);
+               sendTimeField.val(ui.value);
+           }
+       });
+       sendTimeField.val(defaultValue);
+       timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
+       timeSlider.val(defaultValue);
+    },
+    
+    initializeSmartNotificationsTable = function () {
+        var tableContainer = $('#smart-notifications-container');
+        if (tableContainer.is(':visible')) {
+            var reloadUrl = tableContainer.attr('data-url');
+            tableContainer.load(reloadUrl, function () {
+                initializeTimeSlider($('#send-time'));
+            });
+        }
+    },
     
     mod = {
         
@@ -29,32 +67,8 @@ yukon.smart.notifications = (function () {
             
             /** Load the notifications popup. */
             $(document).on('yukon:notifications:load', function (ev) {
-                var popup = $(ev.target),
-                    sendTimeField = popup.find('#notifications-send-time'),
-                    timeLabel = popup.find('.js-time-label'),
-                    timeSlider = popup.find('.js-time-slider'),
-                    currentValue = sendTimeField.val(),
-                    defaultValue = currentValue ? currentValue : 10 * 60;
-                //initialize time slider
-                timeSlider.slider({
-                    max: 24 * 60 - 60,
-                    min: 0,
-                    value: defaultValue,
-                    step: 60,
-                    slide: function (ev, ui) {
-                        timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                        timeSlider.val(ui.value);
-                        sendTimeField.val(ui.value);
-                    },
-                    change: function (ev, ui) {
-                        timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                        timeSlider.val(ui.value);
-                        sendTimeField.val(ui.value);
-                    }
-                });
-                sendTimeField.val(defaultValue);
-                timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
-                timeSlider.val(defaultValue);
+                var popup = $(ev.target);
+                initializeTimeSlider(popup);
                 updateTypeFields(popup);
             });
             
@@ -98,33 +112,10 @@ yukon.smart.notifications = (function () {
             });
             
             $(document).on('click', '.js-single-notification', function (ev) {
-                var popup = $('#send-time'),
-                    sendTimeField = popup.find('#notifications-send-time'),
-                    timeLabel = popup.find('.js-time-label'),
-                    timeSlider = popup.find('.js-time-slider'),
-                    currentValue = sendTimeField.val(),
-                    defaultValue = currentValue ? currentValue : 10 * 60;
-                    popup.removeClass('dn');                
-                //initialize time slider
-                timeSlider.slider({
-                    max: 24 * 60 - 60,
-                    min: 0,
-                    value: defaultValue,
-                    step: 60,
-                    slide: function (ev, ui) {
-                        timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                        timeSlider.val(ui.value);
-                        sendTimeField.val(ui.value);
-                    },
-                    change: function (ev, ui) {
-                        timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                        timeSlider.val(ui.value);
-                        sendTimeField.val(ui.value);
-                    }
-                });
-                sendTimeField.val(defaultValue);
-                timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
-                timeSlider.val(defaultValue);
+                var singleNotification = $('#singleNotificationValue').is(':checked');
+                $('#send-time').toggleClass('dn', singleNotification);
+                var container = $('#send-time');
+                initializeTimeSlider(container);
             });
             
             $(document).on('click', '.js-show-all', function (ev) {
@@ -146,7 +137,9 @@ yukon.smart.notifications = (function () {
                     }
                 });
             });
-                        
+            
+            initializeSmartNotificationsTable();
+      
             _initialized = true;
         },
         

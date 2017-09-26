@@ -11,19 +11,27 @@
 <div id="notifications-section" style="margin-top:50px;">
     <cti:button icon="icon-email-add" nameKey="subscribe" data-popup="#create-popup" classes="fr"/>
     <tags:sectionContainer2 nameKey="notifications">
+    <cti:url var="singleNotificationUrl" value="/notifications/singleNotification"/>
+    <form action="${singleNotificationUrl}" method="POST">
+    <cti:csrfToken/>
     <span><i:inline key=".singleNotification"/>:
-        <div class="button-group button-group-toggle"><cti:button nameKey="yes" classes="yes js-single-notification"/><cti:button nameKey="no" classes="no"/></div>
-        <div id="send-time" class="dib column-6-18 clearfix dn">
+        <div class="button-group">
+            <tags:radio id="singleNotificationValue" key=".yes" classes="yes js-single-notification" value="true" name="singleNotification" checked="${!empty sendTime}"></tags:radio>
+            <tags:radio key=".no" classes="no js-single-notification" value="false" name="singleNotification" checked="${empty sendTime}"></tags:radio>
+        </div>
+        <c:set var="sendTimeClass" value="${empty sendTime ? 'dn' : ''}"/>
+        <div id="send-time" class="dib column-6-18 clearfix ${sendTimeClass}">
             <div class="column one">
                 <div class="js-time-label fwb" style="width:70px;">10:00 AM</div>
-                <input type="hidden" id="notifications-send-time" name="sendTime"/>
+                <input type="hidden" id="notifications-send-time" name="sendTime" value="${sendTime}"/>
             </div>
             <div class="column two nogutter">
                 <div class="js-time-slider" style="margin-top: 5px;width:250px;"></div>
             </div>
         </div>
-        <cti:button nameKey="save" classes="fn" style="margin-left:20px;"/>
+        <cti:button nameKey="save" type="submit" classes="fn" style="margin-left:20px;"/>
     </span>
+    </form>
     <span class="fr">
         <a href="javascript:void(0);" data-popup="#filter-popup">
             <cti:icon icon="icon-filter"/>&nbsp;
@@ -113,6 +121,5 @@
 
 </cti:msgScope>
 
-            
 <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
 <cti:includeScript link="YUKON_TIME_FORMATTER"/>
