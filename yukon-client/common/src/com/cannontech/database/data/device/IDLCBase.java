@@ -1,22 +1,19 @@
 package com.cannontech.database.data.device;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.db.DBCopiable;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 
-public abstract class IDLCBase extends RemoteBase implements DBCopiable {
+public abstract class IDLCBase extends RemoteBase {
     private DeviceIDLCRemote deviceIDLCRemote = null;
 
     public IDLCBase(PaoType paoType) {
         super(paoType);
     }
 
-    @Override
     public Integer getAddress() {
         return getDeviceIDLCRemote().getAddress();
     }
 
-    @Override
     public void setAddress(Integer newAddress) {
         getDeviceIDLCRemote().setAddress(newAddress);
     }

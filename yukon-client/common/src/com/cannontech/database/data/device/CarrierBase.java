@@ -1,11 +1,10 @@
 package com.cannontech.database.data.device;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.db.DBCopiable;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceRoutes;
 
-public abstract class CarrierBase extends TwoWayDevice implements DBCopiable {
+public abstract class CarrierBase extends TwoWayDevice {
 
     private DeviceRoutes deviceRoutes = null;
 
@@ -15,12 +14,10 @@ public abstract class CarrierBase extends TwoWayDevice implements DBCopiable {
         super(paoType);
     }
 
-    @Override
     public Integer getAddress() {
         return getDeviceCarrierSettings().getAddress();
     }
 
-    @Override
     public void setAddress(Integer newAddress) {
         getDeviceCarrierSettings().setAddress(newAddress);
     }

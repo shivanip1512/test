@@ -9,13 +9,12 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.database.db.DBCopiable;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
-public abstract class DNPBase extends AddressBase implements DBCopiable {
+public abstract class DNPBase extends AddressBase {
     private DNPConfiguration dnpConfiguration = null;
 
     public DNPBase(PaoType paoType) {

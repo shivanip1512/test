@@ -2,8 +2,7 @@ package com.cannontech.database.data.capcontrol;
 
 import com.cannontech.common.pao.PaoType;
 
-public abstract class CapBankController extends CapControlDeviceBase implements
-        com.cannontech.database.db.DBCopiable, ICapBankController {
+public abstract class CapBankController extends CapControlDeviceBase implements ICapBankController {
     private com.cannontech.database.db.capcontrol.DeviceCBC deviceCBC = null;
 
     public CapBankController(PaoType paoType) {
