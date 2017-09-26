@@ -347,7 +347,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             if (!dlcAddressRangeService.isValidEnforcedAddress(newDefinition.getType(), info.getAddress())) {
                 throw new ProcessingException("Invalid address: " + info.getAddress() + ".", "invalidAddress", info.getAddress());
             }
-            ((MCTBase) newDevice).setAddress(info.getAddress());
+            ((MCTBase) newDevice).getDeviceCarrierSettings().setAddress(info.getAddress());
             ((MCTBase) newDevice).getDeviceRoutes().setRouteID(info.getRouteId());
         }
 

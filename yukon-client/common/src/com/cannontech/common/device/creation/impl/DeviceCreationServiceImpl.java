@@ -146,7 +146,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         CarrierBase newDevice = (CarrierBase) DeviceFactory.createDevice(paoType);
         newDevice.setDeviceID(newDeviceId);
         newDevice.setPAOName(name);
-        newDevice.setAddress(address);
+        newDevice.getDeviceCarrierSettings().setAddress(address);
         newDevice.getDeviceRoutes().setRouteID(routeId);
         
         SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, paoType);

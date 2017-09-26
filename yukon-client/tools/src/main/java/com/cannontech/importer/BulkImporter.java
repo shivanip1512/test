@@ -506,7 +506,7 @@ public void runImport(List<ImportData> imps) {
 			MCTBase current400Series = (MCTBase)DeviceFactory.createDevice(templateMeter.getPaoType());
 			current400Series.setPAOName(name);
 			current400Series.setDeviceID(deviceID);
-			current400Series.setAddress(new Integer(address));
+			current400Series.getDeviceCarrierSettings().setAddress(new Integer(address));
 			current400Series.getDeviceMeterGroup().setMeterNumber(meterNumber);
 			
             ImportPendingComm pc = new ImportPendingComm(deviceID, address, name, routeName, 
