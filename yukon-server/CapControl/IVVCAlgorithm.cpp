@@ -2920,6 +2920,14 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
                                                                  CtiCCSubstationBusPtr subbus,
                                                                  IVVCStrategy* strategy )
 {
+    /* 
+        Use this guy:
+     
+            strategy->getReportCommStatisticsByPhase()
+     
+        when we implement the 'By Phase' reporting of the comm statistics (YUK-17245)
+    */
+
     bool dataIsValid = true;
 
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();

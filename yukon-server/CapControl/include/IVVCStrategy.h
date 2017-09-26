@@ -61,6 +61,7 @@ public:
     const double getRegulatorCommReportingPercentage() const;
     const double getCapbankCommReportingPercentage() const;
     const double getVoltageMonitorCommReportingPercentage() const;
+    const bool   getReportCommStatisticsByPhase() const;
 
     const unsigned getMaxConsecutiveCapBankOps(const bool isPeak) const;
 
@@ -118,6 +119,7 @@ private:
     double _regulatorCommReportingPercentage;
     double _capbankCommReportingPercentage;
     double _voltageMonitorCommReportingPercentage;
+    bool   _reportCommStatisticsByPhase;
 
     std::string _controlMethod;
 

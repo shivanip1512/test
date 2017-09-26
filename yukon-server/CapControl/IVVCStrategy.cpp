@@ -43,10 +43,10 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _regulatorCommReportingPercentage(100.0),
     _capbankCommReportingPercentage(100.0),
     _voltageMonitorCommReportingPercentage(100.0),
+    _reportCommStatisticsByPhase(true),
     _controlMethod(SubstationBusControlMethod)
 {
 }
-
 
 IVVCStrategy::~IVVCStrategy()
 {
@@ -240,19 +240,28 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
         {
             _voltageMonitorCommReportingPercentage = newValue;
         }
-        else
+        else    // type == "CONSIDER_PHASE"
         {
-            // ignore rogue db entry...
+            _reportCommStatisticsByPhase = static_cast<bool>(newValue);
         }
     }
-}
+    else
+    {
+        Cti::FormattedList  error;
 
+        error << "Unknown setting for strategy: " << getStrategyName() << " (" << getStrategyId() << ")";
+        error.add("Name")  << name;
+        error.add("Type")  << type;
+        error.add("Value") << value;
+
+        CTILOG_ERROR( dout, error );
+    }
+}
 
 const unsigned IVVCStrategy::getMaxConsecutiveCapBankOps(const bool isPeak) const
 {
     return isPeak ? _peakMaxConsecutiveCapBankOps : _offpeakMaxConsecutiveCapBankOps;
 }
-
 
 /* 
     Currently only 2 supported options for the control method:
@@ -271,12 +280,10 @@ const ControlStrategy::ControlMethodType IVVCStrategy::getMethodType() const
     return SubstationBus;
 }
 
-
 const std::string IVVCStrategy::getControlMethod() const
 {
     return _controlMethod;
 }
-
 
 void IVVCStrategy::setControlMethod(const std::string & method)
 {
@@ -288,142 +295,124 @@ void IVVCStrategy::setControlMethod(const std::string & method)
     }
 }
 
-
 const ControlStrategy::ControlUnitType IVVCStrategy::getUnitType() const
 {
     return IntegratedVoltVar;
 }
-
 
 const std::string IVVCStrategy::getControlUnits() const
 {
     return IntegratedVoltVarControlUnit;
 }
 
-
 double IVVCStrategy::getUpperVoltLimit( const bool isPeak ) const
 {
     return isPeak ? _peakUpperVoltLimit : _offpeakUpperVoltLimit;
 }
-
 
 double IVVCStrategy::getLowerVoltLimit( const bool isPeak ) const
 {
     return isPeak ? _peakLowerVoltLimit : _offpeakLowerVoltLimit;
 }
 
-
 const double IVVCStrategy::getTargetPF(const bool isPeak) const
 {
     return isPeak ? _peakTargetPF : _offpeakTargetPF;
 }
-
 
 const double IVVCStrategy::getMinBankOpen(const bool isPeak) const
 {
     return isPeak ? _peakMinBankOpen : _offpeakMinBankOpen;
 }
 
-
 const double IVVCStrategy::getMinBankClose(const bool isPeak) const
 {
     return isPeak ? _peakMinBankClose : _offpeakMinBankClose;
 }
-
 
 const double IVVCStrategy::getVoltWeight(const bool isPeak) const
 {
     return isPeak ? _peakVoltWeight : _offpeakVoltWeight;
 }
 
-
 const double IVVCStrategy::getPFWeight(const bool isPeak) const
 {
     return isPeak ? _peakPFWeight : _offpeakPFWeight;
 }
-
 
 const double IVVCStrategy::getDecisionWeight(const bool isPeak) const
 {
     return isPeak ? _peakDecisionWeight : _offpeakDecisionWeight;
 }
 
-
 const double IVVCStrategy::getVoltageRegulationMargin(const bool isPeak) const
 {
     return isPeak ? _peakVoltageRegulationMargin : _offpeakVoltageRegulationMargin;
 }
-
 
 const double IVVCStrategy::getLowVoltageViolationBandwidth() const
 {
     return _lowVoltageViolationBandwidth;
 }
 
-
 const double IVVCStrategy::getHighVoltageViolationBandwidth() const
 {
     return _highVoltageViolationBandwidth;
 }
-
 
 const double IVVCStrategy::getEmergencyLowVoltageViolationCost() const
 {
     return _emergencyLowVoltageViolationCost;
 }
 
-
 const double IVVCStrategy::getLowVoltageViolationCost() const
 {
     return _lowVoltageViolationCost;
 }
-
 
 const double IVVCStrategy::getHighVoltageViolationCost() const
 {
     return _highVoltageViolationCost;
 }
 
-
 const double IVVCStrategy::getEmergencyHighVoltageViolationCost() const
 {
     return _emergencyHighVoltageViolationCost;
 }
-
 
 const double IVVCStrategy::getPowerFactorCorrectionBandwidth() const
 {
     return _powerFactorCorrectionBandwidth;
 }
 
-
 const double IVVCStrategy::getPowerFactorCorrectionCost() const
 {
     return _powerFactorCorrectionCost;
 }
-
 
 const double IVVCStrategy::getPowerFactorCorrectionMaxCost() const
 {
     return _powerFactorCorrectionMaxCost;
 }
 
-
 const double IVVCStrategy::getRegulatorCommReportingPercentage() const
 {
     return _regulatorCommReportingPercentage;
 }
-
 
 const double IVVCStrategy::getCapbankCommReportingPercentage() const
 {
     return _capbankCommReportingPercentage;
 }
 
-
 const double IVVCStrategy::getVoltageMonitorCommReportingPercentage() const
 {
     return _voltageMonitorCommReportingPercentage;
+}
+
+const bool IVVCStrategy::getReportCommStatisticsByPhase() const
+{
+    return _reportCommStatisticsByPhase;
 }
 
 /**
@@ -436,24 +425,20 @@ double IVVCStrategy::getPeakLag() const
     return getLowerVoltLimit(getPeakTimeFlag());
 }
 
-
 double IVVCStrategy::getOffPeakLag() const
 {
     return getMinBankClose(getPeakTimeFlag());
 }
-
 
 double IVVCStrategy::getPeakLead() const
 {
     return getUpperVoltLimit(getPeakTimeFlag());
 }
 
-
 double IVVCStrategy::getOffPeakLead() const
 {
     return getMinBankOpen(getPeakTimeFlag());
 }
-
 
 double IVVCStrategy::getPeakPFSetPoint() const
 {
@@ -477,7 +462,6 @@ void IVVCStrategy::registerControllable(const long paoid)
         _paoStateMap.insert(std::make_pair(paoid, std::make_pair(1, IVVCStatePtr(new IVVCState))));
     }
 }
-
 
 void IVVCStrategy::unregisterControllable(const long paoid)
 {
@@ -530,7 +514,6 @@ void IVVCStrategy::restoreStates(const ControlStrategy * backup)
     }
 }
 
-
 void IVVCStrategy::execute()
 {
     std::list<IVVCStatePtr>     runList;
@@ -578,5 +561,4 @@ void IVVCStrategy::execute()
             //debug
         }
     }
-
 }
