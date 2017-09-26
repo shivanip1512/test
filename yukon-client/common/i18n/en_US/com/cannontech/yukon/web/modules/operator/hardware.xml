@@ -52,7 +52,7 @@
 
     <entry key="yukon.web.modules.operator.hardware.testShed.label">Send Test Shed</entry>
     <entry key="yukon.web.modules.operator.hardware.testShed.hoverText">Send shed command</entry>
-    <entry key="yukon.web.modules.operator.hardware.timedShedRestore.label">Send Timed Shed/Restore</entry>
+    <entry key="yukon.web.modules.operator.hardware.timedShedRestore.label">Send Control</entry>
     
     <!-- General Hardware Terms -->
     <entry key="yukon.web.modules.operator.hardware.deviceInfoSection.title">Device Info</entry>
@@ -324,7 +324,7 @@
     <entry key="yukon.web.modules.operator.meterProfile.error.required.meterNumber">A meter number is required.</entry>
     
     <!-- shedRestoreLoadPopup.jsp -->
-    <entry key="yukon.web.modules.operator.hardware.shedRestoreLoadPopup.title">Shed/Restore Load Configuration</entry>
+    <entry key="yukon.web.modules.operator.hardware.shedRestoreLoadPopup.title">Send Control Configuration</entry>
     <entry key="yukon.web.modules.operator.hardware.shedLoadPopup.title">Shed Load Configuration</entry>
     <!-- shedRestoreLoad.jsp -->
     <entry key="yukon.web.modules.operator.hardware.shedRestoreLoad.duration">Duration</entry>
