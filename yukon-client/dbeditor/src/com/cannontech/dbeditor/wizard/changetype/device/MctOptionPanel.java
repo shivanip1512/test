@@ -171,7 +171,7 @@ public class MctOptionPanel extends DataInputPanel implements CaretListener {
     public void setValue(Object o) {
         if (o instanceof MCTBase) {
             MCTBase mct = (MCTBase)o;
-            getAddressTextField().setText(mct.getAddress().toString());
+            getAddressTextField().setText(mct.getDeviceCarrierSettings().getAddress().toString());
         }
     }
 

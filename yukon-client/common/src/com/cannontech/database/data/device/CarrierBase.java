@@ -14,14 +14,6 @@ public abstract class CarrierBase extends TwoWayDevice {
         super(paoType);
     }
 
-    public Integer getAddress() {
-        return getDeviceCarrierSettings().getAddress();
-    }
-
-    public void setAddress(Integer newAddress) {
-        getDeviceCarrierSettings().setAddress(newAddress);
-    }
-
     @Override
     public void add() throws java.sql.SQLException {
         super.add();

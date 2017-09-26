@@ -10,14 +10,6 @@ public abstract class IDLCBase extends RemoteBase {
         super(paoType);
     }
 
-    public Integer getAddress() {
-        return getDeviceIDLCRemote().getAddress();
-    }
-
-    public void setAddress(Integer newAddress) {
-        getDeviceIDLCRemote().setAddress(newAddress);
-    }
-
     @Override
     public void add() throws java.sql.SQLException {
         super.add();
