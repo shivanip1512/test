@@ -18,11 +18,10 @@ public class FileUploadUtils {
         }
     }
 
-    public static void validateImageUploadFileType(MultipartFile file, String message)
-            throws IOException, FileImportException {
+    public static void validateImageUploadFileType(MultipartFile file) throws IOException, FileImportException {
         validateFileUpload(file);
         if (!file.getContentType().startsWith("image") && !file.getContentType().endsWith("image")) {
-            throw new ImportFileFormatException(message);
+            throw new ImportFileFormatException("yukon.common.validImageFileRequired.error");
         }
     }
 

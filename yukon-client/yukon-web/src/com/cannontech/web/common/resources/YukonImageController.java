@@ -237,8 +237,7 @@ public class YukonImageController {
             
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) req;
             MultipartFile file = mRequest.getFile("file");
-            FileUploadUtils.validateImageUploadFileType(file,
-                accessor.getMessage("yukon.common.validImageFileRequired.error"));
+            FileUploadUtils.validateImageUploadFileType(file);
             InputStream inputStream = file.getInputStream();
             LiteYukonImage image = imageDao.add(category, file.getOriginalFilename(), new InputStreamResource(inputStream));
             Map<String, Object> imageStats = new HashMap<>(); 
