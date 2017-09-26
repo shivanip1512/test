@@ -208,8 +208,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     CBC_8020(DeviceTypes.CBC_8020, "CBC 8020", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_8024(DeviceTypes.CBC_8024, "CBC 8024", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_DNP(DeviceTypes.CBC_DNP, "CBC DNP", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
-    CBC_DNP_LOGICAL(DeviceTypes.CBC_DNP_LOGICAL, "CBC DNP Logical", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_FP_2800(DeviceTypes.CBC_FP_2800, "CBC FP-2800", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
+    CBC_LOGICAL(DeviceTypes.CBC_LOGICAL, "CBC Logical", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     
     CAP_CONTROL_SUBBUS(CapControlTypes.CAP_CONTROL_SUBBUS, CapControlType.SUBBUS.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_FEEDER(CapControlTypes.CAP_CONTROL_FEEDER, CapControlType.FEEDER.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
@@ -356,7 +356,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             CBC_8020,
             CBC_8024,
             CBC_DNP,
-            CBC_DNP_LOGICAL,
+            CBC_LOGICAL,
             CBC_FP_2800);
         
         regulatorTypes = ImmutableSet.of(
@@ -835,7 +835,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public boolean isTcpPortEligible() {
         return CBC_7020 == this || CBC_7022 == this || CBC_7023 == this || CBC_7024 == this || CBC_8020 == this
-            || CBC_8024 == this || CBC_DNP == this || CBC_DNP_LOGICAL == this || RTU_DNP == this || FAULT_CI == this || NEUTRAL_MONITOR == this;
+            || CBC_8024 == this || CBC_DNP == this || CBC_LOGICAL == this || RTU_DNP == this || FAULT_CI == this || NEUTRAL_MONITOR == this;
     }
 
     public boolean isLoadManagement() {
@@ -855,7 +855,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
     
     public boolean isLogicalCBC() {
-        return CBC_DNP_LOGICAL == this;
+        return CBC_LOGICAL == this;
     }
     
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {

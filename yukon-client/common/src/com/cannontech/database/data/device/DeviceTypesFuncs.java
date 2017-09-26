@@ -235,94 +235,6 @@ public final class DeviceTypesFuncs {
         }
     }
     
-    @Deprecated
-    /** use ChangeDeviceTypeService */
-    public static ICapBankController changeCBCType(PaoType newType, ICapBankController val) {
-        
-        PaoType type = newType;
-
-        DBPersistent oldDevice = null;
-
-        // get a deep copy of val
-        try {
-            oldDevice = (DBPersistent) CtiUtilities.copyObject(val);
-
-            Transaction t = Transaction.createTransaction(Transaction.DELETE_PARTIAL, ((DBPersistent) val));
-
-            val = (ICapBankController)t.execute();
-        } catch (Exception e) {
-            CTILogger.error(e);
-            CTILogger.info("*** An exception occured when trying to change type of " + val + ", action aborted.");
-
-            return val;
-        }
-
-        // create a brand new DeviceBase object
-        val = (ICapBankController)DeviceFactory.createDevice(type);
-
-        // set all the device specific stuff here
-        ((DeviceBase) val).setDevice(((DeviceBase) oldDevice).getDevice());
-
-        ((DeviceBase) val).setPAOName(((DeviceBase) oldDevice).getPAOName());
-
-        ((DeviceBase) val).setDisableFlag(((DeviceBase) oldDevice).getPAODisableFlag());
-
-        ((DeviceBase) val).setPAOStatistics(((DeviceBase) oldDevice).getPAOStatistics());
-
-        // remove then add the new elements for PAOExclusion
-        ((DeviceBase) val).getPAOExclusionVector().removeAllElements();
-        ((DeviceBase) val).getPAOExclusionVector().addAll(((DeviceBase) oldDevice).getPAOExclusionVector());
-
-        if (val instanceof RemoteBase && oldDevice instanceof RemoteBase) {
-            RemoteBase newBase = (RemoteBase) val;
-            RemoteBase oldBase = (RemoteBase) oldDevice;
-
-            newBase.getDeviceDirectCommSettings().setPortID(oldBase.getDeviceDirectCommSettings().getPortID());
-            newBase.setIpAddress(oldBase.getIpAddress());
-            newBase.setPort(oldBase.getPort());
-        }
-
-        if (val instanceof IDeviceMeterGroup && oldDevice instanceof IDeviceMeterGroup) {
-            ((IDeviceMeterGroup) val).setDeviceMeterGroup(((IDeviceMeterGroup) oldDevice).getDeviceMeterGroup());
-        }
-
-        if (val instanceof TwoWayDevice && oldDevice instanceof TwoWayDevice) {
-            ((TwoWayDevice) val).setDeviceScanRateMap(((TwoWayDevice) oldDevice).getDeviceScanRateMap());
-        }
-
-        if (val instanceof CapBankController) {
-            ((CapBankController) val).setDeviceCBC(((CapBankController) oldDevice).getDeviceCBC());
-        }
-
-        // support for the 702x devices - wasn't in the old device change type panel
-        if (val instanceof CapBankController702x) {
-            CapBankController702x device702 = (CapBankController702x) val;
-            DeviceCBC deviceCBC = ((CapBankController702x) oldDevice).getDeviceCBC();
-            DeviceAddress deviceAddress = ((CapBankController702x) oldDevice).getDeviceAddress();
-            device702.setDeviceAddress(deviceAddress);
-            device702.setDeviceCBC(deviceCBC);
-        }
-
-        if (val instanceof CapBankControllerDNP) {
-            CapBankControllerDNP device702 = (CapBankControllerDNP) val;
-            DeviceCBC deviceCBC = ((CapBankControllerDNP) oldDevice).getDeviceCBC();
-            DeviceAddress deviceAddress = ((CapBankControllerDNP) oldDevice).getDeviceAddress();
-            device702.setDeviceAddress(deviceAddress);
-            device702.setDeviceCBC(deviceCBC);
-        }
-
-        try {
-            Transaction t2 = Transaction.createTransaction(Transaction.ADD_PARTIAL, ((DBPersistent) val));
-
-            val = (ICapBankController)t2.execute();
-
-        } catch (TransactionException e) {
-            CTILogger.error(e.getMessage(), e);
-
-        }
-        return val;
-    }
-
     /**
      * Returns true for all Disconnect MCTs and All MCTs(400series) with disconnect collar defined.
      */
@@ -345,7 +257,7 @@ public final class DeviceTypesFuncs {
         case CBC_8020:
         case CBC_8024:
         case CBC_DNP:
-        case CBC_DNP_LOGICAL:
+        case CBC_LOGICAL:
             return true;
 
         default:

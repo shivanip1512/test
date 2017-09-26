@@ -200,7 +200,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                     cbc.setIntervalRate(cbcImportData.getScanInterval());
                 }
             }
-            if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+            if (cbcImportData.getCbcType() != PaoType.CBC_LOGICAL) {
                 cbc.setMasterAddress(cbcImportData.getMasterAddress());
                 cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
                 commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
@@ -221,7 +221,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
-        if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+        if (cbcImportData.getCbcType() != PaoType.CBC_LOGICAL) {
             pao.setSerialNumber(cbcImportData.getCbcSerialNumber());
         }
         pao.setPaoName(cbcImportData.getCbcName());
@@ -298,7 +298,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         } else if (paoDefinitionDao.isTagSupported(templateIdentifier.getPaoType(), PaoTag.TWO_WAY_DEVICE)) {
             template = paoPersistenceService.retreivePao(templateIdentifier, CompleteTwoWayCbc.class);
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)template;
-            if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+            if (cbcImportData.getCbcType() != PaoType.CBC_LOGICAL) {
                 cbc.setMasterAddress(cbcImportData.getMasterAddress());
                 cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
                 YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
@@ -345,7 +345,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
-        if (cbcImportData.getCbcType() != PaoType.CBC_DNP_LOGICAL) {
+        if (cbcImportData.getCbcType() != PaoType.CBC_LOGICAL) {
             template.setSerialNumber(cbcImportData.getCbcSerialNumber());
         }
         template.setPaoName(cbcImportData.getCbcName());

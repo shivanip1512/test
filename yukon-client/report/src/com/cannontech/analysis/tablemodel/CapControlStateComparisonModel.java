@@ -31,7 +31,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     private boolean useMisMatch = false;
     
     private final static Set<PaoType> paoTypes = Sets.newHashSet(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
-                                            PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.CBC_DNP_LOGICAL);
+                                            PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.CBC_LOGICAL);
     
     public CapControlStateComparisonModel() {
     }

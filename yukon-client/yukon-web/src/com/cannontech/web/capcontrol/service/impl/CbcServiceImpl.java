@@ -33,7 +33,7 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
-import com.cannontech.database.data.capcontrol.CapBankControllerDNPLogical;
+import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -138,9 +138,9 @@ public class CbcServiceImpl implements CbcService {
         } else if (dbPersistent instanceof CapBankControllerDNP) {
             CapBankControllerDNP capBankControllerDNP = (CapBankControllerDNP) dbPersistent;
             cbc.setDeviceCBC(capBankControllerDNP.getDeviceCBC());
-        } else if (dbPersistent instanceof CapBankControllerDNPLogical) {
-            CapBankControllerDNPLogical capBankControllerDNPLogical = (CapBankControllerDNPLogical) dbPersistent;
-            cbc.setDeviceCBC(capBankControllerDNPLogical.getDeviceCBC());
+        } else if (dbPersistent instanceof CapBankControllerLogical) {
+            CapBankControllerLogical capBankControllerLogical = (CapBankControllerLogical) dbPersistent;
+            cbc.setDeviceCBC(capBankControllerLogical.getDeviceCBC());
         } 
 
         return cbc;

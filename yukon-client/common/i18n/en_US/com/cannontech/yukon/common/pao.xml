@@ -186,8 +186,8 @@
     <entry key="yukon.common.pao.CBC_8020">CBC 8020</entry>
     <entry key="yukon.common.pao.CBC_8024">CBC 8024</entry>
     <entry key="yukon.common.pao.CBC_DNP">CBC DNP</entry>
-    <entry key="yukon.common.pao.CBC_DNP_LOGICAL">CBC DNP Logical</entry>
     <entry key="yukon.common.pao.CBC_FP_2800">CBC FP-2800</entry>
+    <entry key="yukon.common.pao.CBC_LOGICAL">CBC Logical</entry>
 
     <entry key="yukon.common.pao.CAP_CONTROL_SUBBUS">Substation Bus</entry>
     <entry key="yukon.common.pao.CAP_CONTROL_FEEDER">Feeder</entry>

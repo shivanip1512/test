@@ -8,7 +8,7 @@ import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.db.DBCopiable;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 
-public class CapBankControllerDNPLogical extends DNPBase implements DBCopiable, ICapBankController {
+public class CapBankControllerLogical extends DNPBase implements DBCopiable, ICapBankController {
     private DeviceCBC deviceCBC = null;
     
     public CapBankControllerDNPLogical() {

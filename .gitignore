@@ -154,3 +154,4 @@ yukon-server/test_base/Release
 yukon-server/yukon-server.VC.VC.opendb
 yukon-server/yukon-server.VC.db
 yukon-server/yukon-server.log
+yukon-shared/build/classes

@@ -74,7 +74,7 @@ public class DeviceConfigurationHelper {
     private static final String categoryBaseKey = moduleBaseKey + ".category";
     private static final String channelErrorBaseKey = categoryBaseKey + ".rfnChannelConfiguration.error";
 
-    private static final Set<PaoType> cbcAttributeTypes = ImmutableSet.of(PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.CBC_DNP_LOGICAL);
+    private static final Set<PaoType> cbcAttributeTypes = ImmutableSet.of(PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.CBC_LOGICAL);
 
     private final Map<EnumOption, DeviceConfigurationInputEnumeration> fieldToEnumerationMap;
     private final Map<MapType, DeviceConfigurationInputEnumeration> fieldToMapTypeMap;
