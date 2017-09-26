@@ -835,7 +835,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public boolean isTcpPortEligible() {
         return CBC_7020 == this || CBC_7022 == this || CBC_7023 == this || CBC_7024 == this || CBC_8020 == this
-            || CBC_8024 == this || CBC_DNP == this || CBC_LOGICAL == this || RTU_DNP == this || FAULT_CI == this || NEUTRAL_MONITOR == this;
+            || CBC_8024 == this || CBC_DNP == this || RTU_DNP == this || FAULT_CI == this || NEUTRAL_MONITOR == this;
     }
 
     public boolean isLoadManagement() {

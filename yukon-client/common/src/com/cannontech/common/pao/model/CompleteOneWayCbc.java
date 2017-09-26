@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 
 @YukonPao(tableBacked=false, 
           paoTypes={PaoType.CBC_7010, PaoType.CBC_7011, PaoType.CBC_7012, PaoType.CBC_EXPRESSCOM, 
-                    PaoType.CBC_FP_2800, PaoType.CAPBANKCONTROLLER})
+                    PaoType.CBC_FP_2800, PaoType.CAPBANKCONTROLLER, PaoType.CBC_LOGICAL})
 public class CompleteOneWayCbc extends CompleteCbcBase {
     // This page intentionally left blank.
 

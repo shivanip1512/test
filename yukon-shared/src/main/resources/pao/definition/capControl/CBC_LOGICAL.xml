@@ -3,10 +3,8 @@
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DEVICE_CONFIGURATION"/>
-        <tag name="TWO_WAY_DEVICE"/>
     </tags>
     <configuration>
-        <category type="dnp"/>
         <category type="cbcHeartbeat" />
         <category type="cbcAttributeMapping" />
     </configuration>

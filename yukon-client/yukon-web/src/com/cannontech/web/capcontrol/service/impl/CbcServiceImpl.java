@@ -138,10 +138,7 @@ public class CbcServiceImpl implements CbcService {
         } else if (dbPersistent instanceof CapBankControllerDNP) {
             CapBankControllerDNP capBankControllerDNP = (CapBankControllerDNP) dbPersistent;
             cbc.setDeviceCBC(capBankControllerDNP.getDeviceCBC());
-        } else if (dbPersistent instanceof CapBankControllerLogical) {
-            CapBankControllerLogical capBankControllerLogical = (CapBankControllerLogical) dbPersistent;
-            cbc.setDeviceCBC(capBankControllerLogical.getDeviceCBC());
-        } 
+        }
 
         return cbc;
     }

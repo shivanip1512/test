@@ -257,7 +257,6 @@ public final class DeviceTypesFuncs {
         case CBC_8020:
         case CBC_8024:
         case CBC_DNP:
-        case CBC_LOGICAL:
             return true;
 
         default:
@@ -271,6 +270,7 @@ public final class DeviceTypesFuncs {
         case CBC_7011:
         case CBC_7012:
         case CBC_EXPRESSCOM:
+        case CBC_LOGICAL:
         case CAPBANKCONTROLLER:
             return true;
 
