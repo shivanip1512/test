@@ -163,7 +163,7 @@ public class SmartNotificationsTestingController {
 
     @RequestMapping(value="saveSubscription", method=RequestMethod.POST)
     public String saveSmartNotificationsSubscription(@ModelAttribute("subscription") SmartNotificationSubscription subscription, 
-                                                     @RequestParam int userGroupId, YukonUserContext userContext) throws Exception {
+                                                     @RequestParam int userGroupId, @RequestParam boolean generateTestEmailAddresses, YukonUserContext userContext) throws Exception {
         List<Integer> userIds = yukonUserDao.getUserIdsForUserGroup(userGroupId);
         userIds.forEach(id -> {
             subscription.setId(0);

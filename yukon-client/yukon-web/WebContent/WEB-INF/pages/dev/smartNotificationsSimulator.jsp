@@ -12,19 +12,24 @@
                 <tags:pickerDialog type="userGroupPicker" id="userGroupPicker"
                     selectionProperty="userGroupName" destinationFieldId="userGroupId"
                     linkType="selection" immediateSelectMode="true" />
-
-                <tags:nameValue name="Subscription Setings">
-                    <cti:button label="Settings" data-popup="#create-popup" />
-                </tags:nameValue>
-
+                    
             </tags:nameValue>
+            
+            <tags:nameValue name="">
+                <input type="checkbox" id="generateTestEmailAddresses"/> Generate test email addresses
+            </tags:nameValue>
+            
+            <tags:nameValue name="Subscription Setings">
+                <cti:button label="Settings" data-popup="#create-popup"/>
+            </tags:nameValue>
+
         </tags:nameValueContainer>
 
 
     </tags:sectionContainer>
 
     <div class="page-action-area" style="margin-bottom: 20px;">
-        <cti:button label="Clear All Subscriptions" type="button" href="clearAllSubscriptions" />
+        <cti:button label="Clear All Subscriptions" type="button" href="clearAllSubscriptions" busy="true"/>
 
     </div>
 
@@ -46,9 +51,9 @@
 
     <div class="page-action-area">
 
-        <cti:button label="Create Real Events" type="button" href="createRealEvents" />
-        <cti:button label="Create Test Events" type="button" classes="js-create-events" />
-        <cti:button label="Clear All Events" type="button" href="clearAllEvents" />
+        <cti:button label="Create Real Events" type="button" href="createRealEvents" busy="true"/>
+        <cti:button label="Create Test Events" type="button" classes="js-create-events" busy="true"/>
+        <cti:button label="Clear All Events" type="button" href="clearAllEvents" busy="true"/>
 
     </div>
 

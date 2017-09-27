@@ -19,9 +19,10 @@ yukon.dev.smartNotificationsSimulator = (function() {
                 var popup = $(ev.target),
                 form = popup.find('#notification-details'),
                 userGroupPicker = yukon.pickers['userGroupPicker'],
-                userGroupId = $('#userGroupId').val();
+                userGroupId = $('#userGroupId').val(),
+                generateTestEmail = $('#generateTestEmailAddresses').is(':checked');
                 $.ajax({
-                    url: yukon.url('/dev/saveSubscription?userGroupId=' + userGroupId),
+                    url: yukon.url('/dev/saveSubscription?userGroupId=' + userGroupId + "&generateTestEmailAddresses=" + generateTestEmail),
                     type: 'post',
                     data: form.serialize()
                 }).done( function(data) {
