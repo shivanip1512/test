@@ -37,8 +37,8 @@
 
 
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Total number of events">
-                <input id="numberOfMessages" value="500" />
+            <tags:nameValue name="Total number of events per event type">
+                <input id="numberOfMessages" value="250" />
             </tags:nameValue>
             <tags:nameValue name="Number of events per message">
                 <input id="eventsPerMessage" value="5" />
