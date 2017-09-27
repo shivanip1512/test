@@ -1,6 +1,9 @@
 package com.cannontech.common.smartNotification.service;
 
-import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
+import java.util.List;
+
+import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 
 /**
  * Sends Smart Notification events to be recorded and processed. 
@@ -8,7 +11,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 public interface SmartNotificationEventCreationService {
 
     /**
-     * Send multiple Smart Notification events in a single object.
+     * Send multiple events.
      */
-    void sendEvents(SmartNotificationEventMulti multi);
+    void send(SmartNotificationEventType type, List<SmartNotificationEvent> events);
 }

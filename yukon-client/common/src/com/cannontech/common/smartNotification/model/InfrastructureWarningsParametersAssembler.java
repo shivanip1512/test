@@ -20,7 +20,7 @@ public class InfrastructureWarningsParametersAssembler {
     }
     
     public static int getPaoId(Map<String, Object> parameters){
-        int paoId = (int) parameters.get(PAO_ID);
+        int paoId = Integer.parseInt(parameters.get(PAO_ID).toString());
         return paoId;
     }
 }

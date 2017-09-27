@@ -19,7 +19,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
-import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -136,9 +135,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                    .map(warning -> InfrastructureWarningsParametersAssembler.assemble(now, warning))
                    .collect(Collectors.toList());
         
-        if (!events.isEmpty()) {
-            smartNotificationEventCreationService.sendEvents(new SmartNotificationEventMulti(events, SmartNotificationEventType.INFRASTRUCTURE_WARNING));
-        }
+        smartNotificationEventCreationService.send(SmartNotificationEventType.INFRASTRUCTURE_WARNING, events);
     }
     
     private List<PaoType> getCurrentWarnableTypes() {
