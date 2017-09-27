@@ -121,9 +121,6 @@ public:
 
     virtual std::string getSQLCoreStatement() const;
 
-    virtual void decodeParameters(Cti::RowReader &rdr);
-    virtual void clearParameters();
-
     /*
      *  Virtuals to let my inheritors play ball with me...
      *

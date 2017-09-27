@@ -485,26 +485,6 @@ void CtiDeviceBase::DecodeDatabaseReader(Cti::RowReader &rdr)
     purgeStaticPaoInfo();
 }
 
-/**
- * Process parameters from the database
- *
- * @param rdr
- */
-void CtiDeviceBase::decodeParameters(Cti::RowReader &rdr)
-{
-
-}
-
-/**
- * Any cleanup needed to prepare for new parameters.
- *
- */
-void CtiDeviceBase::clearParameters()
-{
-
-}
-
-
 void CtiDeviceBase::setPaoType(const std::string& category, const std::string& type)
 {
     const auto deviceType = resolveDeviceType(type);

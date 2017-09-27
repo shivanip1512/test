@@ -127,12 +127,6 @@ inline bool isDeviceNotUpdated(CtiDeviceSPtr &pDevice, void* d)
     return !pDevice->getUpdatedFlag();
 }
 
-static void applyDeviceClearParameters(const long unusedkey, CtiDeviceSPtr Device, void* d)
-{
-    Device->clearParameters();
-    return;
-}
-
 static void applyDeviceResetUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
     Device->resetUpdatedFlag();
