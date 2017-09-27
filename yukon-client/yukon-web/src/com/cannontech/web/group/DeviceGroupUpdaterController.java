@@ -4,14 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,6 +28,7 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -38,30 +44,35 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVReader;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.common.exception.FileImportException;
-
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 @Controller
 @RequestMapping("/updater/*")
 @CheckRoleProperty(YukonRoleProperty.BULK_UPDATE_OPERATION)
 public class DeviceGroupUpdaterController {
-    
+
     @Autowired private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory;
     @Autowired private BulkFieldService bulkFieldService;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private TransactionOperations transactionTemplate;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+
+    private static final String baseKey = "yukon.web.modules.tools.deviceGroupUpload.error";
+    private Cache<String, Map<String, List<String[]>>> errorResultCache =
+            CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
     private Logger log = YukonLogManager.getLogger(DeviceGroupUpdaterController.class);
 
     @RequestMapping("upload")
@@ -70,35 +81,55 @@ public class DeviceGroupUpdaterController {
         String error = ServletRequestUtils.getStringParameter(request, "error", null);
         boolean success = ServletRequestUtils.getBooleanParameter(request, "success", false);
         int deviceCount = ServletRequestUtils.getIntParameter(request, "deviceCount", 0);
+        int deviceErrorCount = ServletRequestUtils.getIntParameter(request, "deviceErrorCount", 0);
+        String resultId = ServletRequestUtils.getStringParameter(request, "resultId", null);
         Boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidHeaders", true);
+        String fileName = ServletRequestUtils.getStringParameter(request, "fileName", null);
         model.addAttribute("ignoreInvalidHeaders", ignoreInvalidHeaders);
-        boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", true); 
+        boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", true);
         model.addAttribute("ignoreInvalidIdentifiers", ignoreInvalidIdentifiers);
-        
+  
         model.addAttribute("error", error);
         model.addAttribute("success", success);
         model.addAttribute("deviceCount", deviceCount);
+        model.addAttribute("deviceErrorCount", deviceErrorCount);
+        model.addAttribute("resultId", resultId);
+        model.addAttribute("fileName", fileName);
     }
-    
+
+    @RequestMapping(value = "downloadFileUploadErrors", method = RequestMethod.GET)
+    public void downloadFileUploadErrors(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String resultId = ServletRequestUtils.getStringParameter(request, "resultId", null);
+        String fileName = ServletRequestUtils.getStringParameter(request, "fileName", null);
+        if (resultId != null) {
+            String[] headers = errorResultCache.getIfPresent(resultId).get("header").get(0);
+            List<String[]> failedRows = errorResultCache.getIfPresent(resultId).get("failedRows");
+            WebFileUtils.writeToCSV(response, headers, failedRows,
+                FilenameUtils.removeExtension(fileName) + "_errors.csv");
+        }
+    }
+
     @RequestMapping("parseUpload")
-    public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model, YukonUserContext userContext) throws ServletException, IOException {
+    public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flashScope)
+            throws ServletException, IOException {
 
         boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);
         boolean ignoreInvalidHeaders = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidHeaders", false);
-        boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", false); 
-        Set<String> errors = new HashSet<>();
+        boolean ignoreInvalidIdentifiers = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidIdentifiers", false);
         int deviceCount = 0;
         
-        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
+        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
         MultipartFile dataFile = mRequest.getFile("dataFile");
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        model.addAttribute("fileName", dataFile.getOriginalFilename());
         // get file from request
         try {
             FileUploadUtils.validateDataUploadFileType(dataFile);
         } catch (FileImportException e) {
-            errors.add(accessor.getMessage(e.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable(e.getMessage()));
+            return "redirect:upload";
         }
-        if (errors.size() == 0) {
+
             InputStream inputStream = dataFile.getInputStream();
                 BOMInputStream bomInputStream = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
                         ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE);
@@ -109,7 +140,7 @@ public class DeviceGroupUpdaterController {
                 String[] headerRow = csvReader.readNext();
                 
                 if (headerRow.length < 2) {
-                    errors.add("File header should contain an Identifier column and at least one action column.");
+                    flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".missingRequiredColumns"));
                 } else {
                 
                     BulkField<?, SimpleDevice> identifierBulkField = null;
@@ -163,44 +194,54 @@ public class DeviceGroupUpdaterController {
                             // process rows
                             ProcessingResultInfo processingResultInfo = runProcessing(csvReader, identifierBulkField, 
                                 processors, isInvalidColumnByIndex, ignoreInvalidIdentifiers);
-                            errors.add(processingResultInfo.getError());
-                            deviceCount = processingResultInfo.getDeviceCount();
-                            if(!processingResultInfo.getUnknownDevices().isEmpty()){
-                                String error = processingResultInfo.getUnknownDevices().size() > 1 ? "There were " : "There was ";
-                                error += processingResultInfo.getUnknownDevices().size() +" unknown device(s) found.";
-                                errors.add(error);
-                                log.error("Unable to upload unknown devices: " + StringUtils.join(processingResultInfo.getUnknownDevices(), ','));
+                            if (StringUtils.isNoneBlank(processingResultInfo.getError())) {
+                                flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                                    processingResultInfo.getError()));
+                            } else {
+                                deviceCount = processingResultInfo.getDeviceCount();
+                                model.addAttribute("deviceCount", deviceCount);
+                                if (!processingResultInfo.getUnknownDevices().isEmpty()) {
+                                    log.error("Unable to upload unknown devices: "
+                                        + StringUtils.join(processingResultInfo.getUnknownDevices(), ','));
+                                    String resultId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
+                                    List<String[]> headers = new ArrayList<>();
+                                    headers.add(headerRow);
+                                    Map<String, List<String[]>> invalidImportData =
+                                        new ConcurrentHashMap<String, List<String[]>>();
+                                    invalidImportData.put("header", headers);
+                                    invalidImportData.put("failedRows", processingResultInfo.getFailedRows());
+                                    errorResultCache.put(resultId, invalidImportData);
+                                    model.addAttribute("resultId", resultId);
+                                    model.addAttribute("deviceErrorCount", invalidImportData.get("failedRows").size());
+                                    flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".unknownDevices",
+                                        invalidImportData.get("failedRows").size()));
+                                }
                             }
                         } else {
-                            errors.add("File should contain at least one update column.");
+                            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".missingUpdateColumn"));
                         }
                     } catch (InvalidIndentifierException e) {
                         Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
                         String error = "Error (line 1): Invalid identifier type: " + e.getIdentifier() + ". Valid identifier types are: " + StringUtils.join(identifierFields, " ,");
-                        errors.add(error);
                         log.error(error, e);
+                        flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".invalidIdentifiers"));
                     } catch (IllegalArgumentException e) {
                         String error = "Error (line 1): Invalid header type: " + columnType + ". Valid header types: " + StringUtils.join(DeviceGroupUpdaterColumn.values(), " ,");
-                        errors.add(error);
                         log.error(error, e);
+                        flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".invalidHeaders"));
                     } catch (IndexOutOfBoundsException e) {
                         String error = "Error (line 1): Invalid header syntax.";
-                        errors.add(error);
                         log.error(error, e);
+                        flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".invalidHeaders"));
                     } catch (NotFoundException e) {
                         String error = "Error (line 1): " + e.getMessage() + ". Please check the spelling, or if you would like groups to automatically be created if they do not exist, check the Create Groups option.";
-                        errors.add(error);
                         log.error(error, e);
+                        flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".unknownGroup"));
                     } 
                 }
-        }
-        
-        model.addAttribute("error", StringUtils.join(errors, "<br/>"));
-        model.addAttribute("deviceCount", deviceCount);
-        
-        return "redirect:upload";
+                return "redirect:upload";
     }
-    
+
     private class InvalidIndentifierException extends RuntimeException {
         private String identifier;
         public InvalidIndentifierException(String identifier) {
@@ -223,6 +264,7 @@ public class DeviceGroupUpdaterController {
                 String currentColumnValue = "";
                 int deviceCount = 0;
                 List<String> unknownDevices = new ArrayList<>();
+                List<String[]> failedRows = new ArrayList<>();
                 String [] line = null;
                 try {
                     while ((line = csvReader.readNext()) != null) {
@@ -250,6 +292,7 @@ public class DeviceGroupUpdaterController {
                             deviceCount++;
                         } else {
                             unknownDevices.add(currentIdentifier);
+                            failedRows.add(line);
                         }
                     }
                 } catch (IOException e) {
@@ -278,7 +321,7 @@ public class DeviceGroupUpdaterController {
                     } catch (IOException e){}
                 }
                 
-                return new ProcessingResultInfo(processError, deviceCount, unknownDevices);
+                return new ProcessingResultInfo(processError, deviceCount, unknownDevices, failedRows);
             }
         });
         
@@ -290,11 +333,13 @@ public class DeviceGroupUpdaterController {
         private String error = null;
         private int deviceCount = 0;
         private List<String> unknownDevices = new ArrayList<>();
+        private List<String[]> failedRows = new ArrayList<>();
         
-        ProcessingResultInfo(String error, int deviceCount,  List<String> unknownDevices) {
+        ProcessingResultInfo(String error, int deviceCount,  List<String> unknownDevices, List<String[]> failedRows) {
             this.error = error;
             this.deviceCount = deviceCount;
             this.unknownDevices = unknownDevices;
+            this.failedRows = failedRows;
         }
         
         public String getError() {
@@ -306,6 +351,10 @@ public class DeviceGroupUpdaterController {
 
         public List<String> getUnknownDevices() {
             return unknownDevices;
+        }
+
+        public List<String[]> getFailedRows() {
+            return failedRows;
         }
 
     }

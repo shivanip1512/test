@@ -25,6 +25,14 @@
     <entry key="yukon.web.modules.amr.pointCreation.DEFAULT">Default Points</entry>
     <entry key="yukon.web.modules.amr.pointCreation.COPY">Copy Meter</entry>
     
+    <!-- DeviceGroupUpload Errors -->
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.error.missingRequiredColumns">File header should contain an Identifier column and at least one action column.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.error.unknownDevices">File contains {0} unknown devices.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.error.missingUpdateColumn">No update column present.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.error.invalidIdentifiers">File contains invalid identifiers.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.error.invalidHeaders">File contains invalid headers.</entry>
+    <entry key="yukon.web.modules.tools.deviceGroupUpload.error.unknownGroup">File contains unknown groups.</entry>
+    
     <entry key="yukon.web.modules.tools.deviceGroupUpload.pageName">Device Group</entry>
     <entry key="yukon.web.modules.amr.deviceGroupUpload.tab.title">Upload</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.autoCreate">Auto Create Groups</entry>

@@ -30,8 +30,18 @@
 	<div class="success"><i:inline key=".success" arguments="${deviceCount}"/></div>
 </c:if>
 
-<c:if test="${not empty error}">
-    <div class="error">${error}</div>
+<c:if test="${deviceErrorCount > 0}">
+    <form id="downloadErrors" method="GET" action="downloadFileUploadErrors">
+        <input type="hidden" name="fileName" value="${fileName}" />
+        <input type="hidden" name="resultId" value="${resultId}" />
+        <span class="badge badge-error">${deviceErrorCount}</span>
+        <strong>
+            <cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.errorCount"/>
+        </strong>
+        <a href="javascript:$('#downloadErrors').submit();" class="wsnw">
+            <cti:icon icon="icon-page-excel" classes="cp fn pull-icon-down"/>
+        </a>
+    </form>
 </c:if>
 
 
