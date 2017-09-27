@@ -184,9 +184,11 @@
                 <cti:button nameKey="save" type="submit" classes="primary action js-save-button ${clazz}" busy="true" disabled="${getTemplate}" />
 
                 <cti:displayForPageEditModes modes="EDIT">
-                    <cti:url var="deleteUrl" value="/macsscheduler/schedules/${id}/delete" />
-                    <cti:button id="deleteSchedule" classes="delete" nameKey="delete" href="${deleteUrl}"/>
-                    <d:confirm on="#deleteSchedule" nameKey="confirmDelete" argument="${schedule.scheduleName}"/>
+                    <cti:checkRolesAndProperties value="MACS_SCRIPTS" level="OWNER">
+                        <cti:url var="deleteUrl" value="/macsscheduler/schedules/${id}/delete" />
+                        <cti:button id="deleteSchedule" classes="delete" nameKey="delete" href="${deleteUrl}"/>
+                        <d:confirm on="#deleteSchedule" nameKey="confirmDelete" argument="${schedule.scheduleName}"/>
+                    </cti:checkRolesAndProperties>
                 </cti:displayForPageEditModes>
                 
                 <cti:url var="viewUrl" value="/macsscheduler/schedules/${id}/view" />
