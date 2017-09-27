@@ -35,7 +35,7 @@ struct Test_CtiPointManager : public CtiPointManager
 {
     Test_CtiPointManager()
     {
-        setAllPointsLoaded(true);
+        setAllPointsLoaded(true, test_tag);
     }
 
     using CtiPointManager::addPoint;

@@ -29,8 +29,7 @@
 
 using namespace std;
 
-#define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
-
+using Cti::Logging::Vector::operator<<;
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -60,7 +59,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 }
 
 
-static Cti::RowReader& operator >> (Cti::RowReader& rdr, CtiPointBase& p);
 CtiPointBase* PointFactory(Cti::RowReader &rdr);
 
 
@@ -1012,6 +1010,54 @@ long CtiPointManager::getPAOIdForPointId(long pointid)
 
     return -1;
 }
+
+
+auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) -> ptr_type
+{
+    static const auto sql = 
+        "SELECT"
+            " P.POINTID"
+        " FROM"
+            " POINT P"
+            " JOIN YukonPAObject CBC"
+                " ON P.POINTNAME = CONCAT(CONCAT(CONCAT('*Logical<', CBC.PAOName), '> '), ?)"
+            " JOIN YukonPAObject Y"
+                " ON P.PAObjectID=Y.PAObjectID"
+        " WHERE"
+            " CBC.PAObjectID=?"
+            " Y.Type='RTU-DNP'"s;
+    std::vector<long> results;
+
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseReader rdr { conn, sql };
+
+    rdr << pointname << pao;
+
+    while( rdr() )
+    {
+        results.push_back(rdr[0].as<long>());
+    }
+
+    if( results.empty() )
+    {
+        CTILOG_ERROR(dout, "Point not found"
+            << Cti::FormattedList::of(
+                "PAObjectID", pao,
+                "Point name", pointname));
+    }
+
+    if( results.size() > 1 )
+    {
+        CTILOG_ERROR(dout, "Duplicate point names found"
+            << Cti::FormattedList::of(
+                "PAObjectID", pao,
+                "Point name", pointname,
+                "Point IDs",  results));
+    }
+
+    return getPoint(results.front());
+}
+
 
 
 void CtiPointManager::ClearList(void)

@@ -21,10 +21,6 @@ map< long, CtiTableStateGroup >     _stateGroups;
 CtiMutex                            _stateGroupMux;
 
 
-// Global DLL Object... for C interface...
-
-// DLLEXPORT CtiDeviceManager gPortManager;
-
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
    switch( ul_reason_for_call )

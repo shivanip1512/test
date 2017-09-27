@@ -59,9 +59,8 @@ protected:
     //  returns true if it encounters any reader errors occur during point loading
     bool refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
 
+    void setAllPointsLoaded(bool isLoaded, Cti::Test::use_in_unit_tests_only&) { _all_paoids_loaded = isLoaded; }
 
-    //ONLY used by unit test.
-    void setAllPointsLoaded(bool isLoaded) { _all_paoids_loaded = isLoaded; }
     void addPoint(CtiPointBase *point);
 
     virtual time_t currentTime() { return time(nullptr); };
@@ -91,6 +90,8 @@ public:
     void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
     boost::optional<long> getIdForOffsetAndType(long pao, int offset, CtiPointType_t Type);
+
+    ptr_type getLogicalPoint(long pao, const std::string& pointname);
 
     virtual void expire (long pid);
     virtual void erase  (long pid);
