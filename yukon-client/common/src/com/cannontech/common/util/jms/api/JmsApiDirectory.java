@@ -1,8 +1,26 @@
 package com.cannontech.common.util.jms.api;
 
-import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DATA_STREAMING;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DIGI_ZIGBEE;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.MONITOR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.OTHER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_LCR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_RESPONSE;
 
 import java.io.Serializable;
 
@@ -789,7 +807,6 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
-    
     //TODO: use this in SimulatorsCommunicationService, SimulatorsService
     public static JmsApi<SimulatorRequest,?,SimulatorResponse> SIMULATORS =
             JmsApi.builder(SimulatorRequest.class, SimulatorResponse.class)
@@ -887,45 +904,27 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
-    //TODO: use in SmartNotificationEventCreationServiceImpl
-    //TODO: use in SmartNotificationEventListener
-    public static JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_EVENT =
+    public static JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT =
             JmsApi.builder(SmartNotificationEvent.class)
                   .name("Smart Notification Event")
                   .description("Sent by various services to create smart notification events. These events are "
                           + "by a listener that pasees them to other services to be recorded in the DB and used to "
                           + "decide when to send notification emails.")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event"))
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.infrastructureWarnings"))
                   .requestMessage(SmartNotificationEvent.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
-    //TODO: use in SmartNotificationEventListener
-    //TODO: use in SmartNotificationEventRecorder
-    public static JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_RECORDER = 
-            JmsApi.builder(SmartNotificationEvent.class)
-                  .name("Smart Notification Event Recorder")
-                  .description("Sent by the Smart Notification Event Listener to the Smart Notification Event "
-                          + "recorders, which insert the event into the database.")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.recorder"))
-                  .requestMessage(SmartNotificationEvent.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
-    //TODO: use in SmartNotificationEventListener
-    //TODO: use in InfrastructureWarningsNotificationEventDecider
-    public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_DECIDER = 
+        
+    public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
                   .name("Smart Notifications Infrastructure Warnings Decider")
                   .description("Sent by the Smart Notification Event Listener to the Infrastructure Warnings Smart "
                           + "Notification Decider, which determines when to send a notification, who to send it to, "
                           + "and what format it should take.")
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.decider.infrastructureWarnings"))
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.deviceDataMonitor"))
                   .requestMessage(SmartNotificationEventMulti.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
@@ -1011,9 +1010,8 @@ public final class JmsApiDirectory {
             .put(RF_MISC, RF_EVENT_ARCHIVE)
             .put(RF_MISC, RF_RELAY_ARCHIVE)
             
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_EVENT)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_RECORDER)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_DECIDER)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT)
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_ASSEMBLER)
             
             .put(WIDGET_REFRESH, DATA_COLLECTION)
