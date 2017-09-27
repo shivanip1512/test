@@ -168,6 +168,21 @@ inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long
 }
     
 namespace Vector {
+
+inline std::ostream &operator<<(std::ostream &logger, const std::vector<long> &buf)
+{
+    logger << "[";
+    if( buf.empty() )
+    {
+        logger << "<empty>";
+    }
+    else
+    {
+        boost::range::copy(buf, std::ostream_iterator<long>{ logger, "," });
+    }
+    return logger << "]";
+}
+
 namespace Hex {
 
 inline std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)

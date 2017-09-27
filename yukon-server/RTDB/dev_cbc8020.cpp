@@ -241,6 +241,8 @@ long Cbc8020Device::getControlOffset(const ControlOffsets defaultControlOffset)
                     {
                         CTILOG_ERROR(dout, "Control offset override not valid" <<
                             FormattedList::of(
+                                "Device ID", getID(),
+                                "Device name", getName(),
                                 "Override point name", overridePointName,
                                 "Override point ID", pt->getPointID(),
                                 "Override control offset", control->getControlOffset(),
@@ -251,6 +253,8 @@ long Cbc8020Device::getControlOffset(const ControlOffsets defaultControlOffset)
                 {
                     CTILOG_ERROR(dout, "Control offset override point does not have control parameters" <<
                         FormattedList::of(
+                            "Device ID", getID(),
+                            "Device name", getName(),
                             "Override point name", overridePointName,
                             "Override point ID", pt->getPointID(),
                             "Default control offset", static_cast<long>(defaultControlOffset)));
@@ -260,6 +264,8 @@ long Cbc8020Device::getControlOffset(const ControlOffsets defaultControlOffset)
             {
                 CTILOG_ERROR(dout, "Control offset override point not Status type" <<
                     FormattedList::of(
+                        "Device ID", getID(),
+                        "Device name", getName(),
                         "Override point name", overridePointName,
                         "Override point ID", pt->getPointID(),
                         "Override point type", desolvePointType(pt->getType()),
@@ -270,6 +276,8 @@ long Cbc8020Device::getControlOffset(const ControlOffsets defaultControlOffset)
         {
             CTILOG_ERROR(dout, "Override point not found" <<
                 FormattedList::of(
+                    "Device ID", getID(),
+                    "Device name", getName(),
                     "Override point name", overridePointName,
                     "Default control offset", static_cast<long>(defaultControlOffset)));
         }

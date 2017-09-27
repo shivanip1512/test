@@ -27,10 +27,17 @@ protected:
 
 private:
     
-    std::map<PointOffsets, std::string> _pointOffsetOverrides;
-    std::map<ControlOffsets, std::string> _controlOffsetOverrides;
+    std::map<ControlOffsets, std::string> _controlOffsetNames;
 
-    long getControlOffset(ControlOffsets defaultControlOffset);
+    struct PaoOffset
+    {
+        long paoId;
+        long controlOffset;
+    };
+
+    YukonError_t executeRequestOnParent(const PaoOffset paoOffset, const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList);
+        
+    PaoOffset getControlDeviceOffset(ControlOffsets defaultControlOffset);
 
     size_t _lastConfigId = 0;
 };
