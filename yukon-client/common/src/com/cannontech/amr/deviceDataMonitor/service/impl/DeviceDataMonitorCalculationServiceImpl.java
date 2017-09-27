@@ -52,7 +52,6 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
-import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.core.dao.NotFoundException;
@@ -363,9 +362,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                                                     .flatMap(List::stream)
                                                     .collect(Collectors.toList());
         
-        if (!events.isEmpty()) {
-            smartNotificationEventCreationService.sendEvents(new SmartNotificationEventMulti(events, SmartNotificationEventType.DEVICE_DATA_MONITOR));
-        }
+        smartNotificationEventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
     }
     
     @Autowired

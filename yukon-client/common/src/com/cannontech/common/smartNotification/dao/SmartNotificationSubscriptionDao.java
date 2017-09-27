@@ -3,8 +3,8 @@ package com.cannontech.common.smartNotification.dao;
 import java.util.List;
 
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
-import com.cannontech.common.util.SqlStatementBuilder;
 
 /**
  * Dao for saving and retrieving users' Smart Notification subscriptions.
@@ -24,7 +24,8 @@ public interface SmartNotificationSubscriptionDao {
     /**
      * Returns subscriptions by type.
      */
-    List<SmartNotificationSubscription> getSubscriptions(SmartNotificationEventType type);
+    List<SmartNotificationSubscription> getSubscriptions(SmartNotificationEventType type,
+            SmartNotificationFrequency... frequency);
     
     /**
      * Returns subscriptions by type and user id.
@@ -40,4 +41,24 @@ public interface SmartNotificationSubscriptionDao {
      * Returns subscriptions by user id.
      */
     List<SmartNotificationSubscription> getSubscriptions(int userId);
+
+    /**
+     * Deletes all subscriptions in the database. Used by simulator.
+     */
+    void deleteAllSubcriptions();
+
+    /**
+     * Returns all subscriptions.
+     */
+    List<SmartNotificationSubscription> getAllSubscriptions();
+
+    /**
+     * Returns subscriptions.
+     * 
+     * Examples of names and values
+     *     name: monitorId values:1,2,3,4
+     *     name: paoId values:2,3
+     */
+    List<SmartNotificationSubscription> getSubscriptions(SmartNotificationEventType type, String name,
+            List<Object> values, SmartNotificationFrequency... frequency);
 }

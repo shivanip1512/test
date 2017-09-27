@@ -64,7 +64,7 @@
     <entry key="yukon.web.modules.smartNotifications.eventType.INFRASTRUCTURE_WARNING">Infrastructure Warnings</entry>
     
     <!-- Frequency -->
-    <entry key="yukon.web.modules.smartNotifications.frequency.ALL">Immediate</entry>
+    <entry key="yukon.web.modules.smartNotifications.frequency.IMMEDIATE">Immediate</entry>
     <entry key="yukon.web.modules.smartNotifications.frequency.COALESCING">Aggregate</entry>
     <entry key="yukon.web.modules.smartNotifications.frequency.DAILY_DIGEST">Daily</entry>
     

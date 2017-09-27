@@ -114,4 +114,9 @@
   <bean class="com.cannontech.common.pao.dao.impl.PaoLocationDaoImpl"/>
   
   <bean class="com.cannontech.common.device.data.collection.dao.impl.RecentPointValueDaoImpl"/>
+
+  <bean class="com.cannontech.common.smartNotification.dao.impl.SmartNotificationSubscriptionDaoImpl" />
+  <bean class="com.cannontech.common.smartNotification.service.impl.SmartNotificationSubscriptionServiceImpl" />
+  <bean class="com.cannontech.common.smartNotification.service.impl.SmartNotificationEventCreationServiceImpl"/>
+  <bean class="com.cannontech.common.smartNotification.dao.impl.SmartNotificationEventDaoImpl" />
 </beans>

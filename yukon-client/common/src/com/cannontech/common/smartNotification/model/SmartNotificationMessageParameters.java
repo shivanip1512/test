@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -54,4 +57,15 @@ public class SmartNotificationMessageParameters implements Serializable {
         return events;
     }
     
+    @Override
+    public String toString() {
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("type", type);
+        tsb.append("media", media);
+        tsb.append("verbosity", verbosity);
+        tsb.append("recipients", recipients);
+        tsb.append("events", events);
+        return tsb.toString();
+    }   
 }

@@ -47,6 +47,8 @@ public enum MasterConfigString {
     RFN_METER_DISCONNECT_ARMING,
     RFN_METER_TEMPLATE_PREFIX,
     
+    SMART_NOTIFICATION_INTERVALS,
+    
     SUPPORT_BUNDLE_FTP_UPLOAD_USER,
     SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD,
     SUPPORT_BUNDLE_FTP_UPLOAD_HOST,
@@ -60,7 +62,7 @@ public enum MasterConfigString {
      * If you add to this list, update the MasterConfigCryptoUtilsTest as well.
      */
     static {
-        sensitiveData = new HashSet<MasterConfigString>();
+        sensitiveData = new HashSet<>();
         sensitiveData.add(CAP_CONTROL_AMFM_DB_USERNAME);
         sensitiveData.add(CAP_CONTROL_AMFM_DB_PASSWORD);
         sensitiveData.add(DB_USERNAME);

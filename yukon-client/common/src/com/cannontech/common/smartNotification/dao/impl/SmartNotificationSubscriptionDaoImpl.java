@@ -46,8 +46,8 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     
     SqlStatementBuilder baseSubscriptionSql = new SqlStatementBuilder();
     {
-        baseSubscriptionSql.append("SELECT SubscriptionId, UserId, Type, Media, Frequency, Recipient, Verbosity");
-        baseSubscriptionSql.append("FROM SmartNotificationSub");
+        baseSubscriptionSql.append("SELECT s.SubscriptionId, s.UserId, s.Type, s.Media, s.Frequency, s.Recipient, s.Verbosity");
+        baseSubscriptionSql.append("FROM SmartNotificationSub s");
     }
     
     @Transactional
@@ -98,9 +98,36 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     }
 
     @Override
-    public List<SmartNotificationSubscription> getSubscriptions(SmartNotificationEventType type) {
+    public List<SmartNotificationSubscription> getAllSubscriptions() {
+        SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
+        List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
+        System.out.println(sql.getDebugSql());
+        addParameters(subscriptions);
+        
+        return subscriptions;
+    }
+    
+    @Override
+    public List<SmartNotificationSubscription> getSubscriptions(SmartNotificationEventType type, SmartNotificationFrequency... frequency) {
         SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
         sql.append("WHERE Type").eq_k(type);
+        sql.append("AND Frequency").in(Lists.newArrayList(frequency));
+        List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
+        addParameters(subscriptions);
+        
+        return subscriptions;
+    }
+    
+    @Override
+    public List<SmartNotificationSubscription> getSubscriptions(SmartNotificationEventType type, String name,
+            List<Object> values, SmartNotificationFrequency... frequency) {
+        SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
+        sql.append("JOIN SmartNotificationSubParam p");
+        sql.append("ON s.SubscriptionId = p.SubscriptionId");
+        sql.append("WHERE s.Type").eq_k(type);
+        sql.append("AND s.Frequency").in(Lists.newArrayList(frequency));
+        sql.append("AND p.Name").eq(name);
+        sql.append("AND p.Value").in(values);
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
         addParameters(subscriptions);
         
@@ -176,5 +203,12 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
                 subscription.addParameters(rs.getString("Name"), rs.getObject("Value"));
             }
         });
+    }
+    
+    @Override
+    public void deleteAllSubcriptions() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM SmartNotificationSub");
+        jdbcTemplate.update(sql);
     }
 }

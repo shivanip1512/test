@@ -1,13 +1,12 @@
 package com.cannontech.common.smartNotification.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.Instant;
 
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
-import com.cannontech.common.util.Range;
+import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 
 /**
  * This dao handles saving and loading Smart Notification events.
@@ -18,14 +17,20 @@ public interface SmartNotificationEventDao {
      * Insert events into the database.
      */
     void save(SmartNotificationEventType type, List<SmartNotificationEvent> event);
+    
+    /**
+     * Returns events for type that have not been processed.
+     */
+    List<SmartNotificationEvent> getUnprocessedEvents(SmartNotificationEventType type);
 
     /**
-     * Returns events for type and time ranges.
+     * Deletes all events. Used by simulator.
      */
-    Map<Integer, SmartNotificationEvent> getEvents(SmartNotificationEventType type, Range<Instant> range);
+    void deleteAllEvents();
 
     /**
-     * Updates events with the processed timestamp.
+     * Marks events as processed.
      */
-    void markEventsAsProcessed(List<SmartNotificationEvent> events, Instant processedTime); 
+    void markEventsAsProcessed(List<SmartNotificationEvent> events, Instant processedTime,
+            SmartNotificationFrequency... frequency); 
 }

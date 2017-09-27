@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class DeviceDataMonitorEventAssembler {
     public static final String PAO_ID = "paoId";
-    public static final String MONITOR_ID = "MonitorId";
+    public static final String MONITOR_ID = "monitorId";
     public static final String STATE = "MonitorState";
 
     public static SmartNotificationEvent assemble(Instant now, int monitorId, MonitorState state, int paoId) {
@@ -28,12 +28,12 @@ public class DeviceDataMonitorEventAssembler {
     }
     
     public static int getMonitorId(Map<String, Object> parameters){
-        int monitorId = (int) parameters.get(MONITOR_ID);
+        int monitorId = Integer.parseInt(parameters.get(MONITOR_ID).toString());
         return monitorId;
     }
     
     public static int getPaoId(Map<String, Object> parameters){
-        int paoId = (int) parameters.get(PAO_ID);
+        int paoId = Integer.parseInt(parameters.get(PAO_ID).toString());
         return paoId;
     }
     
