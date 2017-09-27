@@ -115,11 +115,9 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			if (paoType.isCbc()) {
 			    CbcImportData cbcData = new CbcImportData(name, importAction, paoType);
 			    
-			    Integer cbcSerialNumberColumn = headerColumnMap.get(CapControlImporterCbcField.CBC_SERIAL_NUMBER);
-			    if (cbcSerialNumberColumn != null) {
-    				int cbcSerialNumber = Integer.decode(line[cbcSerialNumberColumn]);
-    				cbcData.setCbcSerialNumber(cbcSerialNumber);
-			    }
+				int cbcSerialNumber = Integer.decode(line[headerColumnMap.get(CapControlImporterCbcField.CBC_SERIAL_NUMBER)]);
+				cbcData.setCbcSerialNumber(cbcSerialNumber);
+				
 			    Integer masterAddressColumn = headerColumnMap.get(CapControlImporterCbcField.MASTER_ADDRESS);
 			    if (masterAddressColumn != null) {
                     if (!StringUtils.isBlank(line[masterAddressColumn]))
