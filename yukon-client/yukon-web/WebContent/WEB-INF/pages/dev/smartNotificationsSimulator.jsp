@@ -32,14 +32,14 @@
 
 
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Wait time in seconds">
-                <input id="waitTime" value="2" />
+            <tags:nameValue name="Total number of events">
+                <input id="numberOfMessages" value="500" />
             </tags:nameValue>
             <tags:nameValue name="Number of events per message">
-                <input id="eventsPerMessage" value="2" />
+                <input id="eventsPerMessage" value="5" />
             </tags:nameValue>
-            <tags:nameValue name="Total number of messages per event type">
-                <input id="numberOfMessages" value="6" />
+            <tags:nameValue name="Wait time in seconds">
+                <input id="waitTime" value="3" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
