@@ -13,6 +13,7 @@
     <entry key="yukon.web.modules.smartNotifications.unsubscribeConfirmation">Are you sure you want to unsubscribe from notification: {0}?</entry>    
     <entry key="yukon.web.modules.smartNotifications.unsubscribeSuccess">You have been successfully unsubscribed from notification: {0}</entry>    
     <entry key="yukon.web.modules.smartNotifications.singleNotificationSuccess">Single Notification Settings have been saved successfully.</entry>    
+    <entry key="yukon.web.modules.smartNotifications.singleNotificationWarning">Send Time is disabled when Single Notification has been selected on Settings page.  See link above.</entry>    
     
     <!-- Event Detail page -->
     <entry key="yukon.web.modules.smartNotifications.detail.pageHeading">Notification Event Detail</entry>

@@ -24,28 +24,38 @@ yukon.smart.notifications = (function () {
        var sendTimeField = container.find('#notifications-send-time'),
            timeLabel = container.find('.js-time-label'),
            timeSlider = container.find('.js-time-slider'),
-           currentValue = sendTimeField.val(),
+           sendTimeValue = sendTimeField.val(),
+           userSettingSendTime = container.find('#userSettingSendTime').val(),
+           currentValue = userSettingSendTime ? userSettingSendTime : sendTimeValue,
            defaultValue = currentValue ? currentValue : 10 * 60;
-       //initialize time slider
-       timeSlider.slider({
-           max: 24 * 60 - 60,
-           min: 0,
-           value: defaultValue,
-           step: 60,
-           slide: function (ev, ui) {
-               timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-               timeSlider.val(ui.value);
-               sendTimeField.val(ui.value);
-           },
-           change: function (ev, ui) {
-               timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-               timeSlider.val(ui.value);
-               sendTimeField.val(ui.value);
+       if (timeSlider) {
+           //initialize time slider
+           timeSlider.slider({
+               max: 24 * 60 - 60,
+               min: 0,
+               value: defaultValue,
+               step: 60,
+               disabled: userSettingSendTime,
+               slide: function (ev, ui) {
+                   timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+                   timeSlider.val(ui.value);
+                   sendTimeField.val(ui.value);
+               },
+               change: function (ev, ui) {
+                   timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
+                   timeSlider.val(ui.value);
+                   sendTimeField.val(ui.value);
+               }
+           });
+           sendTimeField.val(defaultValue);
+           timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
+           timeSlider.val(defaultValue);
+           if (userSettingSendTime) {
+               //this made the slider hidden, but we still want it shown just disabled
+               timeSlider.removeClass('ui-state-disabled');
+               $('.js-single-notification-warning').removeClass('dn');
            }
-       });
-       sendTimeField.val(defaultValue);
-       timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
-       timeSlider.val(defaultValue);
+       }
     },
     
     initializeSmartNotificationsTable = function () {
@@ -59,10 +69,23 @@ yukon.smart.notifications = (function () {
     },
     
     mod = {
+            
+        initTimeSlider : function () {
+            initializeTimeSlider($('#send-time'));
+        },
+        
+        initDailyValues: function () {
+            var container = $('#send-time'),
+                userSettingSendTime = container.find('#userPreferenceSendTime').val();
+            $('.js-DAILY_DIGEST').each(function() {
+                var dailyRowTime = $(this).find('.js-daily-row-time').val();
+                $(this).find('.js-daily-time').text(yukon.timeFormatter.formatTime(userSettingSendTime ? userSettingSendTime : dailyRowTime, 0));
+            });
+        },
         
         /** Initialize this module. */
         init : function () {
-            
+                        
             if (_initialized) return;
             
             /** Load the notifications popup. */
@@ -114,8 +137,6 @@ yukon.smart.notifications = (function () {
             $(document).on('click', '.js-single-notification', function (ev) {
                 var singleNotification = $('#singleNotificationValue').is(':checked');
                 $('#send-time').toggleClass('dn', singleNotification);
-                var container = $('#send-time');
-                initializeTimeSlider(container);
             });
             
             $(document).on('click', '.js-show-all', function (ev) {

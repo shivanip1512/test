@@ -2,6 +2,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="modules.smartNotifications">
 
@@ -51,12 +52,14 @@
                     <div class="column one">
                         <span class="js-time-label fwb">10:00 AM</span>
                         <form:hidden path="parameters['sendTime']" id="notifications-send-time" disabled="${disableDaily}"/>
+                        <input type="hidden" id="userSettingSendTime" value="${sendTime}"/>
                     </div>
                     <div class="column two nogutter">
                         <div class="js-time-slider" style="margin-top: 7px;"></div>
                     </div>
+                    <div class="dn warning js-single-notification-warning"><i:inline key=".singleNotificationWarning"/></div>
                 </div>
-            </tags:nameValue2>
+            </tags:nameValue2>            
             <tags:nameValue2 nameKey=".media">
                 <tags:selectWithItems path="media" items="${mediaTypes}"/>
             </tags:nameValue2>

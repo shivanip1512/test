@@ -127,6 +127,9 @@ public class SmartNotificationsController {
         model.addAttribute("eventTypes", SmartNotificationEventType.values());
         model.addAttribute("filter", filter);
         model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
+        Map<String, String> deviceDataMonitors = new HashMap<>();
+        monitorCacheService.getDeviceDataMonitors().forEach(monitor -> deviceDataMonitors.put(monitor.getId().toString(), monitor.getName()));
+        model.addAttribute("deviceDataMonitors", deviceDataMonitors);
         return "subscriptions.jsp";
     }
     
@@ -158,7 +161,7 @@ public class SmartNotificationsController {
         else if (!subscriptions.isEmpty()) {
             subscription = subscriptions.get(0);
         }
-        setupPopupModel(model);
+        setupPopupModel(model, userContext);
         model.addAttribute("subscription", subscription);
         return "subscriptionPopup.jsp";
     }
@@ -172,7 +175,7 @@ public class SmartNotificationsController {
         if (subscription.getType().equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
             ddmHelper.retrieveMonitor(model, subscription);
         }
-        setupPopupModel(model);
+        setupPopupModel(model, userContext);
         return "subscriptionPopup.jsp";
     }
     
@@ -189,7 +192,7 @@ public class SmartNotificationsController {
     public String createSubscription(ModelMap model, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.CREATE);
         SmartNotificationSubscription subscription = new SmartNotificationSubscription();
-        setupPopupModel(model);
+        setupPopupModel(model, userContext);
         setDefaultEmail(userContext, subscription);
         model.addAttribute("subscription", subscription);
         return "subscriptionPopup.jsp";
@@ -204,12 +207,13 @@ public class SmartNotificationsController {
         }
     }
     
-    private void setupPopupModel(ModelMap model) {
+    private void setupPopupModel(ModelMap model, YukonUserContext userContext) {
         model.addAttribute("eventTypes", SmartNotificationEventType.values());
         model.addAttribute("frequencies", SmartNotificationFrequency.values());
         model.addAttribute("mediaTypes", SmartNotificationMedia.values());
         model.addAttribute("detailTypes", SmartNotificationVerbosity.values());
         model.addAttribute("deviceDataMonitors", monitorCacheService.getDeviceDataMonitors());
+        model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
     }
     
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)
@@ -220,7 +224,7 @@ public class SmartNotificationsController {
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
-            setupPopupModel(model);
+            setupPopupModel(model, userContext);
             return "subscriptionPopup.jsp";
         }
         subscriptionService.saveSubscription(subscription, userContext);

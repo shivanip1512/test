@@ -24,6 +24,7 @@
             <div class="column one">
                 <div class="js-time-label fwb" style="width:70px;">10:00 AM</div>
                 <input type="hidden" id="notifications-send-time" name="sendTime" value="${sendTime}"/>
+                <input type="hidden" id="userPreferenceSendTime" value="${sendTime}"/>
             </div>
             <div class="column two nogutter">
                 <div class="js-time-slider" style="margin-top: 5px;width:250px;"></div>
@@ -54,12 +55,17 @@
                             <c:forEach var="subscription" items="${subscriptions.resultList}">
                                 <c:set var="subId" value="${subscription.id}"/>
                                 <cti:msg2 var="subType" key="${subscription.type.formatKey}"/>
-                                <tr>
-                                    <td>${subType}</td>
+                                <tr class="js-${subscription.frequency}">
+                                    <td>${subType}
+                                        <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">
+                                            - <c:out value="${deviceDataMonitors.get(subscription.parameters['monitorId'])}"/>
+                                        </c:if>
+                                    </td>
                                     <td>
                                         <i:inline key="${subscription.frequency.formatKey}"/>
                                         <c:if test="${subscription.frequency == 'DAILY_DIGEST'}">
-                                            <%--  - ${subscription.parameters['sendTime']} --%>
+                                            <input type="hidden" class="js-daily-row-time" value="${subscription.parameters['sendTime']}"/>
+                                            @ <span class="js-daily-time"/> 
                                         </c:if>
                                     </td>
                                     <td><i:inline key="${subscription.media.formatKey}"/></td>
@@ -123,3 +129,8 @@
 
 <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
 <cti:includeScript link="YUKON_TIME_FORMATTER"/>
+
+<script>
+    yukon.smart.notifications.initTimeSlider();
+    yukon.smart.notifications.initDailyValues();
+</script>
