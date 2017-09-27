@@ -185,13 +185,13 @@ public:
 // ------------------------------
 
 
-class CtiCCTwoWayPointsCbcDnpLogical : public CtiCCTwoWayPoints
+class CtiCCTwoWayPointsCbcLogical : public CtiCCTwoWayPoints
 {
 public:
 
-    CtiCCTwoWayPointsCbcDnpLogical( const long paoid, const std::string & paotype,
-                                    std::unique_ptr<LastControlReason>    lastControlReason,
-                                    std::unique_ptr<IgnoredControlReason> ignoredControlReason );
+    CtiCCTwoWayPointsCbcLogical( const long paoid, const std::string & paotype,
+                                 std::unique_ptr<LastControlReason>    lastControlReason,
+                                 std::unique_ptr<IgnoredControlReason> ignoredControlReason );
 
     void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                           const std::map<Attribute, std::string> & overloads ) override;

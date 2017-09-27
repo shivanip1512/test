@@ -473,16 +473,16 @@ CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( const long paoid, const std:
 // ------------------------------
 
 
-CtiCCTwoWayPointsCbcDnpLogical::CtiCCTwoWayPointsCbcDnpLogical( const long paoid, const std::string & paotype,
-                                                                std::unique_ptr<LastControlReason>    lastControlReason,
-                                                                std::unique_ptr<IgnoredControlReason> ignoredControlReason )
+CtiCCTwoWayPointsCbcLogical::CtiCCTwoWayPointsCbcLogical( const long paoid, const std::string & paotype,
+                                                          std::unique_ptr<LastControlReason>    lastControlReason,
+                                                          std::unique_ptr<IgnoredControlReason> ignoredControlReason )
     :   CtiCCTwoWayPoints( paoid, paotype, std::move( lastControlReason ), std::move( ignoredControlReason ) )
 {
     // empty...
 }
 
-void CtiCCTwoWayPointsCbcDnpLogical::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                                                      const std::map<Attribute, std::string> & overloads )
+void CtiCCTwoWayPointsCbcLogical::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
+                                                                   const std::map<Attribute, std::string> & overloads )
 {
     for ( const LitePoint & point : points )
     {
@@ -543,9 +543,9 @@ CtiCCTwoWayPoints * CtiCCTwoWayPointsFactory::Create( const long paoID, const st
         }
         case TYPE_CBCLOGICAL:
         {
-            return new CtiCCTwoWayPointsCbcDnpLogical( paoID, paoType,
-                                                       std::make_unique<LastControlReasonCbcDnp>(),
-                                                       std::make_unique<IgnoredControlReasonCbcDnp>() );
+            return new CtiCCTwoWayPointsCbcLogical( paoID, paoType,
+                                                    std::make_unique<LastControlReasonCbc802x>(),
+                                                    std::make_unique<IgnoredControlReasonCbc802x>() );
         }
         // Apparently 1-way devices need one of these guys even though they don't use it for anything,
         // returning a NULL here gives null pointer exceptions in 1-way code. Original behavior gave a set
