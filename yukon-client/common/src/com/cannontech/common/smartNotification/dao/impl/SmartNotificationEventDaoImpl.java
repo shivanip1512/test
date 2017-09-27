@@ -1,5 +1,6 @@
 package com.cannontech.common.smartNotification.dao.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,22 +11,34 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventData;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -38,13 +51,38 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
+
     private ChunkingSqlTemplate chunkingTemplate;
     
+    private final YukonRowMapper<SmartNotificationEventData> createDeviceDataMonitorEventDetailRowMapper =
+            createRowMapper(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+    private final YukonRowMapper<SmartNotificationEventData> createInfrastructureWarningEventDetailRowMapper =
+            createRowMapper(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+                
+   
     @PostConstruct
     public void init() {
         chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
     }
     
+    private YukonRowMapper<SmartNotificationEventData> createRowMapper(final SmartNotificationEventType smartNotificationEventType) {
+        final YukonRowMapper<SmartNotificationEventData> mapper = new YukonRowMapper<SmartNotificationEventData>() {
+            @Override
+            public SmartNotificationEventData mapRow(YukonResultSet rs) throws SQLException {
+                SmartNotificationEventData row = new SmartNotificationEventData();
+                row.setTimestamp(rs.getInstant("Timestamp"));
+                row.setDeviceId(rs.getInt("Device"));
+                row.setStatus(rs.getString("Status"));
+                if (smartNotificationEventType == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
+                    row.setType(rs.getString("Type"));
+                }
+                return row;
+            }
+        };
+        return mapper;
+    }
+
     private static final YukonRowMapper<SmartNotificationEvent> eventMapper = r -> {
         Integer id = r.getInt("EventId");
         Instant timestamp = r.getInstant("Timestamp");
@@ -171,4 +209,147 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             });
         }  
     }
+    
+        
+        @Override
+        public SearchResults<SmartNotificationEventData> getDeviceDataMonitorEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange, int monitorId) {
+            DateTime from = dateRange.getMin().withZone(timeZone);
+            DateTime to = dateRange.getMax().withZone(timeZone);
+            
+            int start = paging.getStartIndex();
+            int count = paging.getItemsPerPage();
+            
+            if (sortBy == null) {
+                sortBy = SortBy.TIMESTAMP;
+            }
+            if (direction == null) {
+                direction = Direction.desc;
+            }
+            
+            DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+            boolean isOracle = databaseVendor.isOracle();
+            
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT sne.Timestamp As Timestamp, sne.Type, snep.Device As Device, snep.Status As Status, snep.MonitorId");
+            sql.append("FROM dbo.SmartNotificationEvent sne");
+            sql.append("    INNER JOIN ("); 
+            sql.append("        SELECT * FROM (");
+            sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+            sql.append("        ) snep");
+            if (isOracle) {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN ('Device' AS Device, 'Status' AS Status, 'MonitorId' AS MonitorId)) P");
+            } 
+            else {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN (Device, Status, MonitorId)) P");
+            }            sql.append("        ) snep ON sne.EventId = snep.EventId");
+            sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+            sql.append("    AND sne.Timestamp").gte(from);
+            sql.append("    AND sne.Timestamp").lt(to);
+            sql.append("    AND snep.MonitorId").eq_k(monitorId);
+            sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+            
+            PagingResultSetExtractor<SmartNotificationEventData> rse = new PagingResultSetExtractor<>(start, count, createDeviceDataMonitorEventDetailRowMapper);
+            jdbcTemplate.query(sql, rse);
+            SearchResults<SmartNotificationEventData> retVal = new SearchResults<>();
+            retVal.setBounds(start, count, getDeviceDataMonitorEventDetailCount(from, to, monitorId));
+            retVal.setResultList(rse.getResultList());
+            return retVal;
+        }
+        
+        @Override
+        public int getDeviceDataMonitorEventDetailCount(DateTime from, DateTime to, int monitorId) {
+            
+            DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+            boolean isOracle = databaseVendor.isOracle();
+            
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT count(*)");
+            sql.append("FROM dbo.SmartNotificationEvent sne");
+            sql.append("    INNER JOIN ("); 
+            sql.append("        SELECT * FROM (");
+            sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+            sql.append("        ) snep");
+            if (isOracle) {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN ('Device' AS Device, 'Status' AS Status, 'MonitorId' AS MonitorId)) P");
+            } 
+            else {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN (Device, Status, MonitorId)) P");
+            }
+            sql.append("        ) snep ON sne.EventId = snep.EventId");
+            sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+            sql.append("    AND sne.Timestamp").gte(from);
+            sql.append("    AND sne.Timestamp").lt(to);
+            sql.append("    AND snep.MonitorId").eq_k(monitorId);
+            return jdbcTemplate.queryForInt(sql);
+        }
+        
+        @Override
+        public SearchResults<SmartNotificationEventData> getInfrastructureWarningEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange, List<PaoType> typeFilter) {
+            DateTime from = dateRange.getMin().withZone(timeZone);
+            DateTime to = dateRange.getMax().withZone(timeZone);
+            
+            int start = paging.getStartIndex();
+            int count = paging.getItemsPerPage();
+            
+            if (sortBy == null) {
+                sortBy = SortBy.TIMESTAMP;
+            }
+            if (direction == null) {
+                direction = Direction.desc;
+            }
+            
+            DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+            boolean isOracle = databaseVendor.isOracle();
+            
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT sne.Timestamp As Timestamp, sne.Type, snep.Device As Device, snep.Status As Status, snep.DeviceType AS Type");
+            sql.append("FROM dbo.SmartNotificationEvent sne");
+            sql.append("    INNER JOIN ("); 
+            sql.append("        SELECT * FROM (");
+            sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+            sql.append("        ) snep");
+            if (isOracle) {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN ('Device' AS Device, 'Status' AS Status, 'DeviceType' AS DeviceType)) P");
+            } 
+            else {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN (Device, Status, DeviceType)) P");
+            }
+            sql.append("        ) snep ON sne.EventId = snep.EventId");
+            sql.append("WHERE Type").eq_k(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+            sql.append("    AND Timestamp").gte(from);
+            sql.append("    AND Timestamp").lt(to);
+            sql.append("    AND snep.DeviceType").in(typeFilter);
+            sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+            
+            PagingResultSetExtractor<SmartNotificationEventData> rse = new PagingResultSetExtractor<>(start, count, createInfrastructureWarningEventDetailRowMapper);
+            jdbcTemplate.query(sql, rse);
+            SearchResults<SmartNotificationEventData> retVal = new SearchResults<>();
+            retVal.setBounds(start, count, getInfrastructureWarningEventDetailCount(from, to, typeFilter));
+            retVal.setResultList(rse.getResultList());
+            return retVal;
+        }
+        
+        @Override
+        public int getInfrastructureWarningEventDetailCount(DateTime from, DateTime to, List<PaoType> typeFilter) {
+            DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+            boolean isOracle = databaseVendor.isOracle();
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT count(*)");
+            sql.append("FROM dbo.SmartNotificationEvent sne");
+            sql.append("    INNER JOIN ("); 
+            sql.append("        SELECT * FROM (");
+            sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+            sql.append("        ) snep");
+            if (isOracle) {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN ('Device' AS Device, 'Status' AS Status, 'DeviceType' AS DeviceType)) P");
+            } 
+            else {
+                sql.append("        PIVOT ( Max(Value) FOR Name IN (Device, Status, DeviceType)) P");
+            }            sql.append("        ) snep ON sne.EventId = snep.EventId");
+            sql.append("WHERE Type").eq_k(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+            sql.append("    AND Timestamp").gte(from);
+            sql.append("    AND Timestamp").lt(to);
+            sql.append("    AND snep.DeviceType").in(typeFilter);
+            return jdbcTemplate.queryForInt(sql);
+        }
 }
