@@ -514,6 +514,9 @@ INIT_ATTRIBUTE( VoltageControl,                                     "VOLTAGE_CON
 INIT_ATTRIBUTE( VoltageDeltaAbnormal,                               "VOLTAGE_DELTA_ABNORMAL" );
 INIT_ATTRIBUTE( PortQueueCount,                                     "PORT_QUEUE_COUNT" );
 
+INIT_ATTRIBUTE( ReverseBandwidth,                                   "REVERSE_BANDWIDTH" );
+INIT_ATTRIBUTE( ReverseSetPoint,                                    "REVERSE_SET_POINT" );
+INIT_ATTRIBUTE( ReverseFlowIndicator,                               "REVERSE_FLOW_INDICATOR" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {

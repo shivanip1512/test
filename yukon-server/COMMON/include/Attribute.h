@@ -500,6 +500,10 @@ public:
     static const Attribute  VoltageControl;
     static const Attribute  VoltageDeltaAbnormal;
     static const Attribute  PortQueueCount;
+
+    static const Attribute  ReverseBandwidth;
+    static const Attribute  ReverseSetPoint;
+    static const Attribute  ReverseFlowIndicator;
 };
 
 
