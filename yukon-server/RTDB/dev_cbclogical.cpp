@@ -164,12 +164,12 @@ YukonError_t CbcLogicalDevice::executeRequestOnParent(const PaoOffset paoOffset,
 YukonError_t CbcLogicalDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 try
 {
+    refreshAttributeOverrides();
+
     if( parse.getCommand() == PutConfigRequest )
     {
         if ( parse.isKeyValid( "local_control_type" ) && parse.isKeyValid( "local_control_state" ) )
         {
-            refreshAttributeOverrides();
-
             static const std::map<std::string, ControlOffsets> _offsetLookup
             {
                 { "ovuv", ControlOffsets::EnableControlOvuv        },
@@ -198,11 +198,11 @@ try
             const auto paoOffset = getControlDeviceOffset(ControlOffsets::ControlPoint);
             
             const std::string command = 
-                "control "s 
+                "control"s 
                     + (parse.getFlags() & CMD_FLAG_CTL_OPEN 
-                        ? "open"
-                        : "close")
-                    + "offset " + std::to_string(paoOffset.controlOffset);
+                        ? " open"
+                        : " close")
+                    + " offset " + std::to_string(paoOffset.controlOffset);
 
             return executeRequestOnParent(paoOffset, command, *pReq, retList);
         }

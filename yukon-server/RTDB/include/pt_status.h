@@ -24,7 +24,6 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   static unsigned makeStaticTags(bool isControlAvailable, bool isControlInhibited);
    virtual unsigned adjustStaticTags(unsigned& tag) const;
 
    virtual double getDefaultValue( ) const;

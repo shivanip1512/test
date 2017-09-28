@@ -47,6 +47,15 @@ struct TestCbc8020Device : Cti::Devices::Cbc8020Device
         return pointHelper.getCachedPoint(offset, type)->getPointID();
     }
 
+    long setControlOffsetName(const std::string& name, int offset, CtiControlType_t controlType)
+    {
+        auto pt = pointHelper.getCachedStatusPointByControlOffset(offset, controlType);
+
+        pointNameLookup[name] = { pt->getType(), pt->getPointOffset() };
+
+        return pt->getPointID();
+    }
+
     CtiPointSPtr getDevicePointByName(const std::string& name) override
     {
         if( auto typeOffset = Cti::mapFind(pointNameLookup, name) )
@@ -613,6 +622,133 @@ struct beginExecuteRequest_helper
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+
+BOOST_AUTO_TEST_CASE(test_dev_cbc8020_enable_ovuv)
+{
+    TestCbc8020Device dev;
+
+    dev._name = "Test DNP device";
+    dev._dnp.setAddresses(147, 1000);
+    dev._dnp.setName("Test DNP device");
+
+    //  set up the config
+    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    config.insertValue(Cti::Config::DNPStrings::internalRetries, "3");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset, "UTC");
+    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs, "true");
+    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest, "false");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "true");
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("putconfig ovuv enable");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK_EQUAL(vgList.size(), 1);  //  LMControlHistory message
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+        const byte_str expected(
+            "05 64 18 c4 93 00 e8 03 14 7b "
+            "c0 c1 05 0c 01 17 01 0d 41 01 c8 01 00 00 00 00 89 c9 "
+            "00 00 00 ff ff");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_cbc8020_enable_ovuv_override)
+{
+    TestCbc8020Device dev;
+
+    dev._name = "Test DNP device";
+    dev._dnp.setAddresses(147, 1000);
+    dev._dnp.setName("Test DNP device");
+
+    //  set up the config
+    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    config.insertValue(Cti::Config::DNPStrings::internalRetries, "3");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset, "UTC");
+    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs, "true");
+    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest, "false");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "true");
+
+    using Cti::Config::DNPStrings;
+
+    const std::map<std::string, std::string> configItems{
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix, "1" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute, "ENABLE_OVUV_CONTROL" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName, "Banana" } };
+
+    fixtureConfig->addCategory(
+        Cti::Config::Category::ConstructCategory(
+            "cbcAttributeMapping",
+            configItems));
+
+    dev.setControlOffsetName("Banana", 1776, ControlType_Normal);
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("putconfig ovuv enable");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK_EQUAL(vgList.size(), 1);  //  LMControlHistory message
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+            "05 64 1a c4 93 00 e8 03 a3 5d "
+            "c0 c1 05 0c 01 28 01 00 ef 06 41 01 c8 01 00 00 e4 ae "
+            "00 00 00 00 00 ff ff");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+}
 
 BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
 {
