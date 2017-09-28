@@ -22,7 +22,7 @@ import com.cannontech.common.util.Range;
 public interface SmartNotificationEventDao {
         
     public enum SortBy {
-        DEVICE("Device"),
+        DEVICE_NAME("DeviceName"),
         TYPE("Type"),
         STATUS("Status"),
         TIMESTAMP("Timestamp"),
