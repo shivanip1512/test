@@ -514,6 +514,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_CONTROL("Volatge Control", AttributeGroup.CAPCONTROL, false),
     VOLTAGE_DELTA_ABNORMAL("Voltage Delta Abnormal", AttributeGroup.CAPCONTROL, false),
     PORT_QUEUE_COUNT("Port Queue Count", AttributeGroup.OTHER, false),
+    REVERSE_BANDWIDTH("Reverse Bandwidth", AttributeGroup.CAPCONTROL, false),
+    REVERSE_SET_POINT("Reverse Set Point", AttributeGroup.CAPCONTROL, false),
+    REVERSE_FLOW_INDICATOR("Reverse Flow Indicator", AttributeGroup.CAPCONTROL, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";

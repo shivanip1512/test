@@ -552,5 +552,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_CONTROL">Volatge Control</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_DELTA_ABNORMAL">Voltage Delta Abnormal</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PORT_QUEUE_COUNT">Port Queue Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_BANDWIDTH">Reverse Bandwidth</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_SET_POINT">Reverse Set Point</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.REVERSE_FLOW_INDICATOR">Reverse Flow Indicator</entry>
     <!-- BuiltInAttribute see note above about changing values -->
 </properties>
