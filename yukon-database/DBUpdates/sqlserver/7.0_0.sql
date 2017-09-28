@@ -131,12 +131,14 @@ GO
 
 /* Start YUK-17120 */
 CREATE TABLE SmartNotificationEvent (
-    EventId         NUMERIC         NOT NULL,
-    Type            VARCHAR(30)     NOT NULL,
-    Timestamp       DATETIME        NOT NULL,
-    ProcessedTime   DATETIME        NULL,
+    EventId               NUMERIC         NOT NULL,
+    Type                  VARCHAR(30)     NOT NULL,
+    Timestamp             DATETIME        NOT NULL,
+    GroupProcessTime      DATETIME        NULL,
+    ImmediateProcessTime  DATETIME        NULL,
     CONSTRAINT PK_SmartNotificationEvent PRIMARY KEY (EventId)
 );
+GO
 
 CREATE TABLE SmartNotificationEventParam (
     EventId          NUMERIC         NOT NULL,
