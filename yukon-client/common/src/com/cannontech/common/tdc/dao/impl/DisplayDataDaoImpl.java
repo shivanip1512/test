@@ -148,7 +148,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
             Cog cog = new Cog();
             data.setCog(cog);
             // status points are not supported by the flot tag
-            cog.setTrend(data.getPointType() != PointType.Status);
+            cog.setTrend(!data.getPointType().isStatus());
             long tags = pointValue.getTags();
             boolean inService = !TagUtils.isDeviceOutOfService(tags) && !TagUtils.isPointOutOfService(tags);
             boolean isValidTypeForManualEntry = inService &&
