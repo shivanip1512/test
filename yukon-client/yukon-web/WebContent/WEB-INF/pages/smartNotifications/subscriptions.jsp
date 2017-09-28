@@ -78,7 +78,10 @@
                                                 data-event="yukon:notifications:save" data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
                                                 data-url="${editUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
                                             <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" data-popup="#edit-popup-${subId}"/>
-                                            <cti:url var="detailsUrl" value="/notifications/${subId}"/>
+                                            <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}"/>
+                                            <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">
+                                                <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}/${subscription.parameters['monitorId']}"/>
+                                            </c:if>
                                             <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
                                             <cm:dropdownOption id="unsubscribe-${subId}" key=".unsubscribe" icon="icon-email-delete"
                                                 data-subscription-id="${subId}" data-ok-event="yukon:notifications:remove"/>

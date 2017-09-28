@@ -75,12 +75,23 @@ public class SmartNotificationsController {
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
     
-    @RequestMapping(value="{id}", method=RequestMethod.GET)
-    public String eventDetail(@PathVariable int id, @DefaultSort(dir=Direction.asc, sort="TIMESTAMP") SortingParameters sorting, 
+    @RequestMapping(value="events/{type}", method=RequestMethod.GET)
+    public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.asc, sort="TIMESTAMP") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
                                YukonUserContext userContext) {
-        SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
-        model.addAttribute("subscription", subscription);
+        return retrieveEventDetail(type, 0, sorting, paging, userContext, model);
+    }
+    
+    @RequestMapping(value="events/{type}/{id}", method=RequestMethod.GET)
+    public String eventDetailByTypeId(@PathVariable String type, @PathVariable int id, @DefaultSort(dir=Direction.asc, sort="TIMESTAMP") SortingParameters sorting, 
+                               @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
+                               YukonUserContext userContext) {
+        return retrieveEventDetail(type, id, sorting, paging, userContext, model);
+    }
+    
+    private String retrieveEventDetail(String type, int id, SortingParameters sorting, PagingParameters paging, YukonUserContext userContext, ModelMap model) {
+        SmartNotificationEventType eventType = SmartNotificationEventType.retrieveByUrlPath(type);
+        model.addAttribute("eventType", eventType);
         SmartNotificationEventFilter filter = new SmartNotificationEventFilter();
         filter.setStartDate(new DateTime().minusDays(1).withTimeAtStartOfDay());
         filter.setEndDate(new DateTime());
@@ -88,10 +99,10 @@ public class SmartNotificationsController {
         SortBy sortBy = SortBy.valueOf(sorting.getSort());
         Range<DateTime> range = new Range<DateTime>(filter.getStartDate(), true, filter.getEndDate(), true);
         SearchResults<SmartNotificationEventData> eventData = new SearchResults<>();
-        if (subscription.getType().equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
-            eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy, sorting.getDirection(), 
-                                                   range, Integer.parseInt((String) subscription.getParameters().get("monitorId")));
-        } else if (subscription.getType().equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
+        if (eventType.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
+            eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy, sorting.getDirection(), range, id);
+            ddmHelper.retrieveMonitorById(model, id);
+        } else if (eventType.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
             List<PaoType> allTypes = new ArrayList<PaoType>();
             allTypes.addAll(PaoType.getRfGatewayTypes());
             allTypes.addAll(PaoType.getRfRelayTypes());

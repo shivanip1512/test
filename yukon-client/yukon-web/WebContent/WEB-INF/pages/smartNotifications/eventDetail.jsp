@@ -2,6 +2,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <cti:standardPage module="smartNotifications" page="detail">
 
@@ -11,8 +12,13 @@
         
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".type">
-                    <i:inline key="${subscription.type.formatKey}"/>
+                    <i:inline key="${eventType.formatKey}"/>
                 </tags:nameValue2>
+                <c:if test="${!empty monitorName}">
+                    <tags:nameValue2 nameKey=".monitor">
+                        ${monitorName}
+                    </tags:nameValue2>
+                </c:if>
                 <tags:nameValue2 nameKey=".dateRange">
                     <dt:dateTime value="${filter.startDate}"/>
                     <dt:dateTime value="${filter.endDate}"/>
