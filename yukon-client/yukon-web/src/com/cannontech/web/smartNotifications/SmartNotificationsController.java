@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -29,8 +30,12 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
+import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao.SortBy;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventData;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
@@ -38,6 +43,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationSubscripti
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteContact;
@@ -65,12 +71,35 @@ public class SmartNotificationsController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceDataMonitorSubscriptionHelper ddmHelper;
     @Autowired private UserPreferenceService userPreferenceService;
+    @Autowired private SmartNotificationEventDao eventDao;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
     
     @RequestMapping(value="{id}", method=RequestMethod.GET)
-    public String eventDetail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
-        //TODO: Get Subscription details
+    public String eventDetail(@PathVariable int id, @DefaultSort(dir=Direction.asc, sort="TIMESTAMP") SortingParameters sorting, 
+                               @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
+                               YukonUserContext userContext) {
+        SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
+        model.addAttribute("subscription", subscription);
+        SmartNotificationEventFilter filter = new SmartNotificationEventFilter();
+        filter.setStartDate(new DateTime().minusDays(1).withTimeAtStartOfDay());
+        filter.setEndDate(new DateTime());
+        model.addAttribute("filter", filter);
+        SortBy sortBy = SortBy.valueOf(sorting.getSort());
+        Range<DateTime> range = new Range<DateTime>(filter.getStartDate(), true, filter.getEndDate(), true);
+        SearchResults<SmartNotificationEventData> eventData = new SearchResults<>();
+        if (subscription.getType().equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
+            eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy, sorting.getDirection(), 
+                                                   range, Integer.parseInt((String) subscription.getParameters().get("monitorId")));
+        } else if (subscription.getType().equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
+            List<PaoType> allTypes = new ArrayList<PaoType>();
+            allTypes.addAll(PaoType.getRfGatewayTypes());
+            allTypes.addAll(PaoType.getRfRelayTypes());
+            allTypes.addAll(PaoType.getCcuTypes());
+            allTypes.addAll(PaoType.getRepeaterTypes());
+            eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy, sorting.getDirection(), range, allTypes);
+        }
+        model.addAttribute("events", eventData);
         return "eventDetail.jsp";
     }
     

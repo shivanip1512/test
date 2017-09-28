@@ -19,6 +19,7 @@
     <entry key="yukon.web.modules.smartNotifications.detail.pageHeading">Notification Event Detail</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.crumbTitle">Notification Event Detail</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.pageTitle">Notification Event Detail</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.dateRange">Date Range</entry>
     
     <!-- Subscription popup -->
     <entry key="yukon.web.modules.smartNotifications.actionLink">Notifications</entry>
