@@ -67,10 +67,6 @@ public abstract class MspReturnList {
             return ((YukonMeter)lastObject).getMeterNumber();
         } else if (lastObject instanceof com.cannontech.msp.beans.v3.Meter) {
             return ((com.cannontech.msp.beans.v3.Meter)lastObject).getMeterNo();
-        } else if (lastObject instanceof com.cannontech.msp.beans.v5.multispeak.ElectricMeter) {
-            return (((com.cannontech.msp.beans.v5.multispeak.ElectricMeter)lastObject).getPrimaryIdentifier().getValue());
-        } else if (lastObject instanceof com.cannontech.msp.beans.v5.multispeak.WaterMeter) {
-            return (((com.cannontech.msp.beans.v5.multispeak.WaterMeter)lastObject).getPrimaryIdentifier().getValue());
         } else if (lastObject instanceof MspObject) {
             return ((MspObject) lastObject).getObjectID();
         } else if (lastObject instanceof com.cannontech.msp.beans.v5.multispeak.MspObject) {
