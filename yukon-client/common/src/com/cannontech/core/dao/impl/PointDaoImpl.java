@@ -257,7 +257,13 @@ public class PointDaoImpl implements PointDao {
     @Override
     public List<LitePoint> getLitePointsByPaObjectId(int paobjectId) {
         
-        LiteYukonPAObject pao = cache.getAllPaosMap().get(paobjectId);
+        LiteYukonPAObject tempPao = cache.getAllPaosMap().get(paobjectId);
+        
+        if (tempPao == null) { // TEMPORARY HACK for devices that aren't in cache yet (for example, auto created RFN Templates)
+            // create dummy paobject, which we will assume is NOT a logical cbc
+            tempPao = PaoUtils.LITEPAOBJECT_SYSTEM;
+        }
+        final LiteYukonPAObject pao = tempPao;
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
