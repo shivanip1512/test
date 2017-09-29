@@ -27,8 +27,8 @@
     </tags:nameValueContainer2>
     <br/>
     
-     <div id="users-tab">  
-         <tags:pickerDialog type="nonResidentailUserPicker" id="dashboardUsersPicker_${pickerId}" container="users-tab" multiSelectMode="true"/>
+     <div id="users-tab-${id}">  
+         <tags:pickerDialog linkType="none" type="nonResidentailUserPicker" id="dashboardUsersPicker_${pickerId}" container="users-tab-${id}" multiSelectMode="true"/>
      </div>
 
 <script>
