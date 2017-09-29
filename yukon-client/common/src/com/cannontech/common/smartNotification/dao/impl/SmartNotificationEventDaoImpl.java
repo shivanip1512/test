@@ -76,7 +76,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
                 row.setDeviceName(rs.getString("DeviceName"));
                 row.setStatus(rs.getString("Status"));
                 if (smartNotificationEventType == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
-                    row.setType(rs.getString("Type"));
+                    row.setType(rs.getString("DeviceType"));
                 }
                 return row;
             }
