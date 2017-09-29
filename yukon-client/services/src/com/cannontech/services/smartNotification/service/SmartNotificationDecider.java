@@ -1,14 +1,12 @@
 package com.cannontech.services.smartNotification.service;
 
 import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.COALESCING;
-import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.DAILY_DIGEST;
 import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.IMMEDIATE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +28,6 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.services.smartNotification.service.impl.SmartNotificationDeciderServiceImpl.WaitTime;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -43,7 +40,6 @@ public abstract class SmartNotificationDecider implements MessageListener {
     @Autowired private SmartNotificationDeciderService deciderService;
     @Autowired protected SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired protected IDatabaseCache cache;
-    @Autowired private ScheduledExecutor scheduledExecutor;
     
     protected SmartNotificationEventType eventType;
     
@@ -63,7 +59,6 @@ public abstract class SmartNotificationDecider implements MessageListener {
             ProcessorResult result = process(Instant.now(), events);
             deciderService.send(result);
         }
-        scheduleDailyDigest();
     }
     
     /**
@@ -71,28 +66,6 @@ public abstract class SmartNotificationDecider implements MessageListener {
      */
     public void resetWaitTime(){
         waitTime = null;
-    }
-    
-    private void scheduleDailyDigest() {
-        // run every hour
-        logInfo("Scheduling Daily Digest. First run in 5 minutes.");
-        scheduledExecutor.scheduleWithFixedDelay(() -> {
-
-            //figure out if it is time to send digest?
-            
-            // get events for date range
-            List<SmartNotificationEvent> events = new ArrayList<>();
-            
-            log.info(eventType + " Processing DAILY_DIGEST " + events.size() + " Events");
-            List<SmartNotificationEvent> validEvents = validate(events);
-            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> dailyDigest =
-                getSubscriptionsForEvents(validEvents, DAILY_DIGEST);
-
-            ProcessorResult result = new ProcessorResult(this);
-            result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, dailyDigest));
-            deciderService.send(result);
-            
-        }, 5, 5, TimeUnit.MINUTES);
     }
     
     private void logDebug(String text) {
