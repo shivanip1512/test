@@ -21,6 +21,8 @@ import com.cannontech.msp.beans.v5.multispeak.CommunicationsAddress;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.Module;
 import com.cannontech.msp.beans.v5.multispeak.Modules;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.WaterMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
 import com.cannontech.multispeak.data.v5.MspCDDeviceReturnList;
@@ -28,10 +30,10 @@ import com.cannontech.multispeak.data.v5.MspMeterReturnList;
 
 public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
-    private static final YukonRowMapper<ElectricMeter> mspMeterRowMapper = new YukonRowMapper<ElectricMeter>() {
+    private static final YukonRowMapper<MspMeter> mspMeterRowMapper = new YukonRowMapper<MspMeter>() {
         @Override
-        public ElectricMeter mapRow(YukonResultSet rset) throws SQLException {
-            ElectricMeter mspMeter = createMeter(rset);
+        public MspMeter mapRow(YukonResultSet rset) throws SQLException {
+            MspMeter mspMeter = createMeter(rset);
             return mspMeter;
         };
     };
@@ -48,9 +50,9 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
     public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords) {
 
         SqlStatementBuilder sql = buildSqlStatementForAMRSupportedMeters(lastReceived);
-        List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
-        CollectionRowCallbackHandler<ElectricMeter> crcHandler =
-            new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
+        List<MspMeter> mspMeters = new ArrayList<MspMeter>();
+        CollectionRowCallbackHandler<MspMeter> crcHandler =
+            new CollectionRowCallbackHandler<MspMeter>(mspMeterRowMapper, mspMeters);
         jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
         MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
         mspMeterReturnList.setMeters(mspMeters);
@@ -62,9 +64,9 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
     public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords) {
 
         SqlStatementBuilder sql = buildSqlStatementForCDSupportedMeters(lastReceived);
-        List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
-        CollectionRowCallbackHandler<ElectricMeter> crcHandler =
-            new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
+        List<MspMeter> mspMeters = new ArrayList<MspMeter>();
+        CollectionRowCallbackHandler<MspMeter> crcHandler =
+            new CollectionRowCallbackHandler<MspMeter>(mspMeterRowMapper, mspMeters);
         jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
 
         MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
@@ -166,14 +168,14 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
     }
 
     /**
-     * Creates a new (MSP) ElectricMeter object.
+     * Creates a new (MSP) MspMeter object.
      * The information commented out is being used for in-line documentation of available MultiSpeak fields.
      * 
      * @param rset The YukonResultSet to pull data values from. View actual method to see required column
      *        names.
      * @return Meter
      */
-    private static ElectricMeter createMeter(YukonResultSet rset) throws SQLException {
+    private static MspMeter createMeter(YukonResultSet rset) throws SQLException {
         PaoIdentifier paoIdentifier = rset.getPaoIdentifier("paobjectid", "type");
         String paoName = rset.getString("PaoName");
         String meterNumber = rset.getString("meternumber");
@@ -181,8 +183,12 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         String discCollarAddress = rset.getString("disconnectaddress");
         String rfnSerialNumber = rset.getString("serialnumber");
         String rfnManufacturer = rset.getString("manufacturer");
-
-        ElectricMeter meter = new ElectricMeter();
+        MspMeter meter = null;
+        if (paoIdentifier.getPaoType().isWaterMeter()) {
+            meter = new WaterMeter();
+        } else {
+            meter = new ElectricMeter();
+        }
         meter.setComments("Device Name: " + paoName);
         meter.setObjectGUID(meterNumber);
         

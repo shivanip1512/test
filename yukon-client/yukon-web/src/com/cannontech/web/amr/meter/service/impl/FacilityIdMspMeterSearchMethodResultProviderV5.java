@@ -8,7 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.search.model.MspSearchField;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -34,8 +34,8 @@ public class FacilityIdMspMeterSearchMethodResultProviderV5 implements MspMeterS
         Map<String, String> facilityNameValues = new HashMap<>();
         facilityNameValues.put(MultispeakDefines.FACILITY_NAME, filterValue);
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        List<ElectricMeter> meters = mspObjectDao.getMetersByContactInfo(facilityNameValues, mspVendor);
-        for (ElectricMeter meter : meters) {
+        List<MspMeter> meters = mspObjectDao.getMetersByContactInfo(facilityNameValues, mspVendor);
+        for (MspMeter meter : meters) {
             meterNumbers.add(meter.getPrimaryIdentifier().getValue());
         }
 

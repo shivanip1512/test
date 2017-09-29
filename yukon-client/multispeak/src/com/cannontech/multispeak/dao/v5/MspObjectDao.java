@@ -6,7 +6,7 @@ import java.util.Map;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -79,13 +79,13 @@ public interface MspObjectDao {
     /**
      * Returns a list of the MeterNumber(s) for the serviceLocation .
      * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List<ElectricMeter> object is returned.
+     * an empty List<MspMeter> object is returned.
      * 
      * @param serviceLocation The serviceLocation to get the Meter information for.
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<ElectricMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation,
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation,
             MultispeakVendor mspVendor);
 
     /**
@@ -115,14 +115,14 @@ public interface MspObjectDao {
     /**
      * Returns a list of ElectricMeters for the given facilityNameValue(s)
      * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List<ElectricMeter> object is returned.
+     * an empty List<MspMeter> object is returned.
      * 
      * @param facilityNames The list of facilityName to get the Meters information for.
      * @param facilityNameValues The map of facilityName Value to get the Meter information for.
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<ElectricMeter> getMetersByContactInfo(Map<String, String> facilityNameValues, MultispeakVendor mspVendor);
+    public List<MspMeter> getMetersByContactInfo(Map<String, String> facilityNameValues, MultispeakVendor mspVendor);
 
     /**
      * Returns a list of ElectricMeter(s) for given customerId(s).
@@ -133,7 +133,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return list of the ElectricMeter(s)
      */
-    public List<ElectricMeter> getMetersByCustomerIDs(List<String> customerIDs, MultispeakVendor mspVendor);
+    public List<MspMeter> getMetersByCustomerIDs(List<String> customerIDs, MultispeakVendor mspVendor);
 
     /**
      * Returns a list of ElectricMeter(s) for the given list of accountID(s).
@@ -144,7 +144,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return List<ElectricMeter>
      */
-    public List<ElectricMeter> getMetersByAccountIDs(List<String> accoundIDs, MultispeakVendor mspVendor);
+    public List<MspMeter> getMetersByAccountIDs(List<String> accoundIDs, MultispeakVendor mspVendor);
 
     /**
      * Returns a list of ElectricMeter(s) for the given search String .
@@ -155,7 +155,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return List<ElectricMeter>
      */
-    public List<ElectricMeter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor);
+    public List<MspMeter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor);
 
     /**
      * Retrieves msp ServiceLocation objects from the mspVendor.
@@ -186,7 +186,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return List<ElectricMeter>
      */
-    public List<ElectricMeter> getMetersByNetworkModelRef(List<String> locations, MultispeakVendor mspVendor);
+    public List<MspMeter> getMetersByNetworkModelRef(List<String> locations, MultispeakVendor mspVendor);
 
     /**
      * Returns a list of MSP Customer(s) for the meter numbers provided

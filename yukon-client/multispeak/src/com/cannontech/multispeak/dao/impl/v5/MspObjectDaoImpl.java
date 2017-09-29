@@ -62,11 +62,10 @@ import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.Domain;
 import com.cannontech.msp.beans.v5.multispeak.DomainMember;
 import com.cannontech.msp.beans.v5.multispeak.DomainMembers;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeters;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
-import com.cannontech.msp.beans.v5.od_server.ObjectFactory;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.CBClient;
@@ -98,7 +97,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Autowired private SCADAClient scadaClient;
     @Autowired private NOTClient notClient;
     @Autowired private MultispeakFuncs multispeakFuncs;
-    @Autowired private ObjectFactory odObjectFactory;
     private SystemLogHelper _systemLogHelper = null;
 
     private SystemLogHelper getSystemLogHelper() {
@@ -205,10 +203,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<ElectricMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation,
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation,
             MultispeakVendor mspVendor) {
         //
-        List<ElectricMeter> meterDetails = new ArrayList<ElectricMeter>();
+        List<MspMeter> meterDetails = new ArrayList<MspMeter>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             GetMetersByServiceLocationIDs getMetersByServiceLocationIDs = new GetMetersByServiceLocationIDs();
@@ -235,7 +233,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 if (meters != null) {
                     ElectricMeters electricMeters = meters.getElectricMeters();
                     if (electricMeters != null && CollectionUtils.isNotEmpty(electricMeters.getElectricMeter())) {
-                        meterDetails = electricMeters.getElectricMeter();
+                        meterDetails.addAll(electricMeters.getElectricMeter());
+                    }
+                    if (CollectionUtils.isNotEmpty(meters.getWaterMeters().getWaterMeter())) {
+                        meterDetails.addAll(meters.getWaterMeters().getWaterMeter());
                     }
                 }
             }
@@ -332,9 +333,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<ElectricMeter> getMetersByContactInfo(Map<String, String> facilityNameValues, MultispeakVendor mspVendor) {
+    public List<MspMeter> getMetersByContactInfo(Map<String, String> facilityNameValues, MultispeakVendor mspVendor) {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
-        List<ElectricMeter> electricMeterList = new ArrayList<>();
+        List<MspMeter> meterList = new ArrayList<>();
         try {
             GetMetersByContactInfo getMetersByContactInfo = new GetMetersByContactInfo();
             ArrayOfContactInfoReferable arrayOfContactInfoReferable = new ArrayOfContactInfoReferable();
@@ -361,12 +362,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
             GetMetersByContactInfoResponse response =
                 cbClient.getMetersByContactInfo(mspVendor, endpointUrl, getMetersByContactInfo);
-            ElectricMeters electricMeters = new ElectricMeters();
             if (response != null) {
                 if (response.getMeters() != null) {
-                    electricMeters = response.getMeters().getElectricMeters();
-                    if (electricMeters != null) {
-                        electricMeterList = electricMeters.getElectricMeter();
+                    if (response.getMeters().getElectricMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
+                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
+                    }
+                    if (response.getMeters().getWaterMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
+                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
                     }
                 }
             } else {
@@ -377,12 +381,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 + ") ");
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
-        return electricMeterList;
+        return meterList;
     }
 
     @Override
-    public List<ElectricMeter> getMetersByCustomerIDs(List<String> customerIDs, MultispeakVendor mspVendor) {
-        List<ElectricMeter> electricMeterList = new ArrayList<>();
+    public List<MspMeter> getMetersByCustomerIDs(List<String> customerIDs, MultispeakVendor mspVendor) {
+        List<MspMeter> meterList = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             GetMetersByCustomerIDs getMetersByCustomerIDs = new GetMetersByCustomerIDs();
@@ -406,9 +410,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 cbClient.getMetersByCustomerIDs(mspVendor, endpointUrl, getMetersByCustomerIDs);
             if (response != null) {
                 if (response.getMeters() != null) {
-                    ElectricMeters electricMeters = response.getMeters().getElectricMeters();
-                    if (electricMeters != null) {
-                        electricMeterList = electricMeters.getElectricMeter();
+                    if (response.getMeters().getElectricMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
+                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
+                    }
+                    if (response.getMeters().getWaterMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
+                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
                     }
                 }
             }
@@ -418,12 +426,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
 
         }
-        return electricMeterList;
+        return meterList;
     }
 
     @Override
-    public List<ElectricMeter> getMetersByAccountIDs(List<String> accoundIDs, MultispeakVendor mspVendor) {
-        List<ElectricMeter> electricMeterList = new ArrayList<>();
+    public List<MspMeter> getMetersByAccountIDs(List<String> accoundIDs, MultispeakVendor mspVendor) {
+        List<MspMeter> meterList = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             GetMetersByAccountIDs getMetersByAccountIDs = new GetMetersByAccountIDs();
@@ -448,9 +456,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
             if (response != null) {
                 if (response.getMeters() != null) {
-                    ElectricMeters electricMeters = response.getMeters().getElectricMeters();
-                    if (electricMeters != null) {
-                        electricMeterList = electricMeters.getElectricMeter();
+                    if (response.getMeters().getElectricMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
+                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
+                    }
+                    if (response.getMeters().getWaterMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
+                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
                     }
                 }
             }
@@ -460,12 +472,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
 
         }
-        return electricMeterList;
+        return meterList;
     }
 
     @Override
-    public List<ElectricMeter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor) {
-        List<ElectricMeter> electricMeterList = new ArrayList<>();
+    public List<MspMeter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor) {
+        List<MspMeter> meterList = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             long start = System.currentTimeMillis();
@@ -479,9 +491,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 + (System.currentTimeMillis() - start) + " millis)");
             if (response != null) {
                 if (response.getMeters() != null) {
-                    ElectricMeters electricMeters = response.getMeters().getElectricMeters();
-                    if (electricMeters != null) {
-                        electricMeterList = electricMeters.getElectricMeter();
+                    if (response.getMeters().getElectricMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
+                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
+                    }
+                    if (response.getMeters().getWaterMeters() != null
+                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
+                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
                     }
                 }
             }
@@ -490,7 +506,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 + ") for SearchString: " + searchString);
             log.error("RemoteExceptionDetail: " + e.getMessage());
         }
-        return electricMeterList;
+        return meterList;
     }
 
     @Override
@@ -613,8 +629,8 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<ElectricMeter> getMetersByNetworkModelRef(List<String> locations, MultispeakVendor mspVendor) {
-        List<ElectricMeter> electricMeterList = new ArrayList<>();
+    public List<MspMeter> getMetersByNetworkModelRef(List<String> locations, MultispeakVendor mspVendor) {
+        List<MspMeter> meterList = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             GetMetersByNetworkModelRefs getMetersByNetworkModelRefs = new GetMetersByNetworkModelRefs();
@@ -640,9 +656,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (response != null) {
                 Meters meters = response.getMeters();
                 if (meters != null) {
-                    ElectricMeters electricMeters = meters.getElectricMeters();
-                    if (electricMeters != null) {
-                        electricMeterList = electricMeters.getElectricMeter();
+                    if (meters.getElectricMeters() != null
+                        && CollectionUtils.isNotEmpty(meters.getElectricMeters().getElectricMeter())) {
+                        meterList.addAll(meters.getElectricMeters().getElectricMeter());
+                    }
+                    if (meters.getWaterMeters() != null
+                        && CollectionUtils.isNotEmpty(meters.getWaterMeters().getWaterMeter())) {
+                        meterList.addAll(meters.getWaterMeters().getWaterMeter());
                     }
                 }
             }
@@ -651,7 +671,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
 
-        return electricMeterList;
+        return meterList;
     }
 
     @Override

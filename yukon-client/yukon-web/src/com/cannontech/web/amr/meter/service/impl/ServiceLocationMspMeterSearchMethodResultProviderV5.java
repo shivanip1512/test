@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.search.model.MspSearchField;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -32,8 +32,8 @@ public class ServiceLocationMspMeterSearchMethodResultProviderV5 implements MspM
         ServiceLocation mspServiceLocation = new ServiceLocation();
         mspServiceLocation.setObjectGUID(filterValue);
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        List<ElectricMeter> meters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
-        for (ElectricMeter meter : meters) {
+        List<MspMeter> meters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
+        for (MspMeter meter : meters) {
             meterNumbers.add(meter.getPrimaryIdentifier().getValue());
         }
 
