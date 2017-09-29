@@ -229,7 +229,7 @@ yukon.assets.gateway.list = (function () {
             });
             
             /** 'Send' button disabled if none of the gateways are selected on the 'Update Firmware Version' popup. */
-            $(document).on('change', '.js-send-now', function (ev) {
+            $(document).on('change', '.js-send-now, .js-select-all', function (ev) {
             var checkBoxes = $('.js-send-now');
                 $('.js-send-btn').prop('disabled', checkBoxes.filter(':checked').length < 1);
                 $('.js-send-btn').removeClass('ui-button-disabled ui-state-disabled')
