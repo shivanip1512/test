@@ -66,6 +66,12 @@ public abstract class SmartNotificationDecider implements MessageListener {
         scheduleDailyDigest();
     }
     
+    /**
+     * Clears out wait time.
+     */
+    public void resetWaitTime(){
+        waitTime = null;
+    }
     
     private void scheduleDailyDigest() {
         // run every hour
@@ -103,10 +109,10 @@ public abstract class SmartNotificationDecider implements MessageListener {
     private EventsByFrequency validateEvents(List<SmartNotificationEvent> events, Instant now) {
         if (!events.isEmpty()) {
             List<SmartNotificationEvent> validEvents = validate(events);
-            if(validEvents.isEmpty()){
+            if (validEvents.isEmpty()) {
                 eventDao.markEventsAsProcessed(events, now, COALESCING, IMMEDIATE);
                 logDebug(events.size() + " events invalid because monitors or devices do not exist. Marked events as processed.");
-                //no events to process
+                // no events to process
                 return null;
             } else {
                 SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> coalescing =
@@ -118,17 +124,18 @@ public abstract class SmartNotificationDecider implements MessageListener {
                         validEvents.stream().filter(e -> e.getImmediateProcessTime() == null).collect(
                             Collectors.toList()),
                         IMMEDIATE);
-                
+
                 // no subscriptions for received events.
-                List<SmartNotificationEvent> eventsWithoutSubscriptions = new ArrayList<>(events); 
+                List<SmartNotificationEvent> eventsWithoutSubscriptions = new ArrayList<>(events);
                 eventsWithoutSubscriptions.removeAll(coalescing.values());
                 eventsWithoutSubscriptions.removeAll(immediate.values());
-                if(!eventsWithoutSubscriptions.isEmpty()){
+                if (!eventsWithoutSubscriptions.isEmpty()) {
                     eventDao.markEventsAsProcessed(eventsWithoutSubscriptions, now, COALESCING, IMMEDIATE);
-                    logDebug(eventsWithoutSubscriptions.size() + " events that have no subscriptions or already processed.");
+                    logDebug(
+                        eventsWithoutSubscriptions.size() + " events that have no subscriptions or already processed.");
                 }
                 if (coalescing.isEmpty() && immediate.isEmpty()) {
-                    //no events to process
+                    // no events to process
                     return null;
                 } else {
                     EventsByFrequency eventsByFrequency = new EventsByFrequency();
@@ -136,15 +143,15 @@ public abstract class SmartNotificationDecider implements MessageListener {
                     eventsByFrequency.immediate = immediate;
                     return eventsByFrequency;
                 }
-            } 
+            }
         }
         return null;
-     }
-     
-     private final class EventsByFrequency{
-         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> coalescing;
-         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> immediate;
-     }
+    }
+
+    private final class EventsByFrequency {
+        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> coalescing;
+        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> immediate;
+    }
      
     private void processCoalescingEvents(EventsByFrequency eventsByFrequency,
             Instant now, ProcessorResult result) {
@@ -164,9 +171,10 @@ public abstract class SmartNotificationDecider implements MessageListener {
                     result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, coalescing));
                     result.setReschedule(true);
                     
-                    Set<SmartNotificationEvent> immediateEvents = Sets.newHashSet(coalescing.values());
-                    immediateEvents.removeAll(eventsByFrequency.immediate.values());
-                    eventDao.markEventsAsProcessed(Lists.newArrayList(immediateEvents), now, IMMEDIATE);
+                    //set ImmediateProcessTime to now for events that do not have "Immediate" subscriptions
+                    Set<SmartNotificationEvent> eventsWithoutImmediateEvents = Sets.newHashSet(coalescing.values());
+                    eventsWithoutImmediateEvents.removeAll(eventsByFrequency.immediate.values());
+                    eventDao.markEventsAsProcessed(Lists.newArrayList(eventsWithoutImmediateEvents), now, IMMEDIATE);
                 }
             }
         }
@@ -181,13 +189,14 @@ public abstract class SmartNotificationDecider implements MessageListener {
             eventDao.markEventsAsProcessed(Lists.newArrayList(events), now, IMMEDIATE);
             result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, immediate));
             
-            Set<SmartNotificationEvent> coalescingEvents = Sets.newHashSet(immediate.values());
-            coalescingEvents.removeAll(eventsByFrequency.coalescing.values());
-            eventDao.markEventsAsProcessed(Lists.newArrayList(coalescingEvents), now, COALESCING);
+            //set GroupedProcessTime to now for events that do not have "Coalescing" subscriptions
+            Set<SmartNotificationEvent> eventsWithoutCoalescingEvents = Sets.newHashSet(immediate.values());
+            eventsWithoutCoalescingEvents.removeAll(eventsByFrequency.coalescing.values());
+            eventDao.markEventsAsProcessed(Lists.newArrayList(eventsWithoutCoalescingEvents), now, COALESCING);
         }
     }
     /**
-     * Processed events and returns message parameters.
+     * Processes events and returns message parameters.
      */
     public ProcessorResult process(Instant now, List<SmartNotificationEvent> events) {
         ProcessorResult result = new ProcessorResult(this);
@@ -284,16 +293,13 @@ public abstract class SmartNotificationDecider implements MessageListener {
 
         public void setReschedule(boolean reschedule) {
             this.reschedule = reschedule;
-            Instant now = Instant.now();
             if (reschedule) {
+                Instant now = Instant.now();
                 if (waitTime == null) {
-                    if (deciderService.getFirstInterval() == 0) {
-                        nextRun = WaitTime.getFirst(now).getNext(now);
-                    } else {
-                        nextRun = WaitTime.getFirst(now);
-                    }
+                    nextRun = deciderService.getFirstInterval() == 0 ? WaitTime.getFirst(now).getNext(now)
+                        : WaitTime.getFirst(now);
                 } else {
-                    nextRun = decider.getWaitTime().getNext(Instant.now());
+                    nextRun = decider.getWaitTime().getNext(now);
                 }
             }
         }
@@ -302,5 +308,4 @@ public abstract class SmartNotificationDecider implements MessageListener {
             return !messageParameters.isEmpty();
         }
     }
-
 }

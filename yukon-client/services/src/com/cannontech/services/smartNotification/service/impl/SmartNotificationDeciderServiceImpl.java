@@ -71,7 +71,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             log.info("Smart Notification Intervals:" + intervals);
         }
 
-        public Integer getNextIterval(int currentInterval) {
+        public Integer getNextInterval(int currentInterval) {
             Set<Integer> allIntervals = new TreeSet<>(intervals);
             allIntervals.removeIf(interval -> interval <= currentInterval);
             if (allIntervals.isEmpty()) {
@@ -81,7 +81,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             }
         }
         
-        public Integer getFirstIterval() {
+        public Integer getFirstInterval() {
             return intervals.iterator().next();
         }
     }
@@ -107,7 +107,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
          * Returns next run time info.
          */
         public WaitTime getNext(Instant now) {
-            int newInterval = intervals.getNextIterval(interval);
+            int newInterval = intervals.getNextInterval(interval);
             DateTime newRunTime = now.toDateTime().plusMinutes(newInterval);
             return new WaitTime(newInterval, newRunTime);
         }
@@ -116,7 +116,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
          * Returns first run time info.
          */
         public static WaitTime getFirst(Instant now) {
-            int newInterval = intervals.getFirstIterval();
+            int newInterval = intervals.getFirstInterval();
             DateTime newRunTime = now.toDateTime().plusMinutes(newInterval);
             return new WaitTime(newInterval, newRunTime);
         }
@@ -153,7 +153,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     
     @Override
     public int getFirstInterval() {
-       return intervals.getFirstIterval();
+       return intervals.getFirstInterval();
     }
     
     private void schedule(SmartNotificationDecider decider, WaitTime waitTime) {
@@ -207,14 +207,14 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                 logDebug("Running a schedule", decider);
                 ProcessorResult result = decider.process(now, eventsDao.getUnprocessedEvents(decider.getEventType()));
                 if(!result.hasMessages()){
-                    decider.setWaitTime(null);
+                    decider.resetWaitTime();
                     log.debug(decider.getEventType() + " No messages to send. Removing wait time.");
                 } else if (result.isReschedule()){
                     schedule(decider, result.getNextRun());
                     putMessagesOnAssemblerQueue(result);
                 }
             } catch (Exception e) {
-                decider.setWaitTime(null);
+                decider.resetWaitTime();
                 StringWriter stack = new StringWriter();
                 e.printStackTrace(new PrintWriter(stack));
                 log.error(stack.toString());
