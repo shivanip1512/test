@@ -8,10 +8,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -50,7 +50,7 @@ public interface MR_Server {
      * @param lastReceived
      * @return
      */
-    public List<ElectricMeter> getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
+    public List<MspMeter> getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * get Latest Readings

@@ -37,6 +37,7 @@ import com.cannontech.msp.beans.v5.multispeak.ConnectDisconnectEvent;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeters;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
@@ -109,15 +110,19 @@ public class CD_ServerImpl implements CD_Server {
 
         multispeakFuncs.updateResponseHeader(meterList);
 
-        List<ElectricMeter> electricMeterList =  meterList.getMeters();
-        log.info("Returning " + electricMeterList.size() + " CD Enabled Supported Meters. ("
+        List<MspMeter> mspMeterList =  meterList.getMeters();
+        log.info("Returning " + mspMeterList.size() + " CD Enabled Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
-        multispeakEventLogService.returnObjects(electricMeterList.size(), meterList.getObjectsRemaining(), "Meters",
+        multispeakEventLogService.returnObjects(mspMeterList.size(), meterList.getObjectsRemaining(), "Meters",
             meterList.getLastSent(), "GetCDEnabledMeters", vendor.getCompanyName());
         
         Meters meters = new Meters();
         ElectricMeters electricMeters = new ElectricMeters();
-        electricMeters.getElectricMeter().addAll(electricMeterList);
+        for (MspMeter meter : mspMeterList) {
+            if (meter instanceof ElectricMeter) {
+                electricMeters.getElectricMeter().add((ElectricMeter) meter);
+            }
+        }
         meters.setElectricMeters(electricMeters);
         
         return meters;

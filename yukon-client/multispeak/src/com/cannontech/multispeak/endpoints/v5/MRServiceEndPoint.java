@@ -74,7 +74,10 @@ import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
+import com.cannontech.msp.beans.v5.multispeak.WaterMeter;
+import com.cannontech.msp.beans.v5.multispeak.WaterMeters;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -141,17 +144,25 @@ public class MRServiceEndPoint {
     }
 
     @PayloadRoot(localPart = "GetAMRSupportedMeters", namespace = MR_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetAMRSupportedMetersResponse pingURL(
+    public @ResponsePayload GetAMRSupportedMetersResponse getAMRSupportedMeters(
             @RequestPayload GetAMRSupportedMeters getAMRSupportedMeters) throws MultispeakWebServiceException {
         GetAMRSupportedMetersResponse response = objectFactory.createGetAMRSupportedMetersResponse();
 
         String lastReceived = getAMRSupportedMeters.getLastReceived();
-        List<ElectricMeter> meterList = mr_server.getAMRSupportedMeters(lastReceived);
+        List<MspMeter> meterList = mr_server.getAMRSupportedMeters(lastReceived);
 
         Meters meters = new Meters();
         ElectricMeters electricMeters = new ElectricMeters();
-        electricMeters.getElectricMeter().addAll(meterList);
+        WaterMeters waterMeters = new WaterMeters();
+        for (MspMeter meter : meterList) {
+            if (meter instanceof ElectricMeter) {
+                electricMeters.getElectricMeter().add((ElectricMeter) meter);
+            } else if (meter instanceof WaterMeter) {
+                waterMeters.getWaterMeter().add((WaterMeter) meter);
+            }
+        }
         meters.setElectricMeters(electricMeters);
+        meters.setWaterMeters(waterMeters);
         response.setMeters(meters);
         return response;
     }

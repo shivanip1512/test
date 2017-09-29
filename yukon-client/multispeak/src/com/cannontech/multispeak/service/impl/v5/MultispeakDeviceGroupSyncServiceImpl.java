@@ -18,6 +18,7 @@ import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.msp.beans.v5.commontypes.SubstationRef;
 import com.cannontech.msp.beans.v5.multispeak.ElectricLocationFields;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
@@ -92,16 +93,16 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
                 // loop per service location
                 for (ServiceLocation mspServiceLocation : mspServiceLocations) {
 
-                    List<ElectricMeter> mspMeters =
+                    List<MspMeter> mspMeters =
                         mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
 
                     // msp meter map
                     log.debug("Handling msp meter list of size " + mspMeters.size() + " for Service Location: "
                         + mspServiceLocation.getObjectGUID());
-                    ImmutableMap<String, ElectricMeter> mspMeterMap =
-                        Maps.uniqueIndex(mspMeters, new Function<ElectricMeter, String>() {
+                    ImmutableMap<String, MspMeter> mspMeterMap =
+                        Maps.uniqueIndex(mspMeters, new Function<MspMeter, String>() {
                             @Override
-                            public String apply(ElectricMeter device) {
+                            public String apply(MspMeter device) {
                                 return device.getPrimaryIdentifier().getValue();
                             }
                         });
@@ -121,7 +122,7 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
                         + mspServiceLocation.getObjectGUID());
 
                     // loop per msp meter
-                    for (ElectricMeter mspMeter : mspMeterMap.values()) {
+                    for (MspMeter mspMeter : mspMeterMap.values()) {
 
                         // kill before processing another meter if canceled
                         if (progress.isCanceled()) {
@@ -144,8 +145,10 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
 
                             MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
                             String deviceGroupSyncValue = null;
-                            if (processorType.equals(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
-                                ElectricLocationFields electricLocationFields = mspMeter.getElectricLocationFields();
+                            if (processorType.equals(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)
+                                && mspMeter instanceof ElectricMeter) {
+                                ElectricMeter electricMeter = (ElectricMeter) mspMeter;
+                                ElectricLocationFields electricLocationFields = electricMeter.getElectricLocationFields();
                                 if (electricLocationFields != null) {
                                     SubstationRef substationRef = electricLocationFields.getSubstationRef();
                                     if (substationRef != null) {

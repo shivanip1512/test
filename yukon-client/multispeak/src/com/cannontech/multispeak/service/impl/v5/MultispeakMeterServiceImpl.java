@@ -105,6 +105,7 @@ import com.cannontech.msp.beans.v5.multispeak.EndDeviceState;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ObjectDeletion;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.msp.beans.v5.not_server.CDStatesChangedNotification;
@@ -918,12 +919,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             }
                         } else {
                             // Must get meters from MSP CB call to process.
-                            List<ElectricMeter> mspMeters =
+                            List<MspMeter> mspMeters =
                                 mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
 
                             if (!mspMeters.isEmpty()) {
 
-                                for (ElectricMeter mspMeter : mspMeters) {
+                                for (MspMeter mspMeter : mspMeters) {
                                     try {
                                         YukonMeter meter =
                                             getMeterByMeterNumber(mspMeter.getPrimaryIdentifier().getValue());
@@ -936,9 +937,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         String billingCycle = mspMeter.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter,
                                             SERV_LOC_CHANGED_STRING, mspVendor);
-
-                                        verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, mspMeter,
-                                            SERV_LOC_CHANGED_STRING);
+                                        if (mspMeter instanceof ElectricMeter) {
+                                            verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor,
+                                                (ElectricMeter) mspMeter, SERV_LOC_CHANGED_STRING);
+                                        }
                                     } catch (NotFoundException e) {
                                         multispeakEventLogService.meterNotFound(
                                             mspMeter.getPrimaryIdentifier().getValue(), SERV_LOC_CHANGED_STRING,
@@ -1039,7 +1041,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * If no value is provided in the Meter object, then null is returned. NOTE:
      * meterno - this extension will return mspMeter.primaryIdentifier directly.
      */
-    private String getExtensionValue(ElectricMeter mspMeter) {
+    private String getExtensionValue(MspMeter mspMeter) {
 
         boolean usesExtension = multispeakFuncs.usesPaoNameAliasExtension();
 
@@ -1096,7 +1098,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * 
      * @throws InsufficientMultiSpeakDataException - when paoName not found (null)
      */
-    private String getPaoNameFromMspMeter(ElectricMeter mspMeter, MultispeakVendor mspVendor) {
+    private String getPaoNameFromMspMeter(MspMeter mspMeter, MultispeakVendor mspVendor) {
 
         String paoName = null;
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
@@ -1139,11 +1141,15 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             }
         } else if (paoAlias == MspPaoNameAliasEnum.EA_LOCATION) {
-            if (mspMeter.getElectricLocationFields() != null
-                && mspMeter.getElectricLocationFields().getNetworkModelRef() != null
-                && mspMeter.getElectricLocationFields().getNetworkModelRef().getValue() != null
-                && StringUtils.isNotBlank(mspMeter.getElectricLocationFields().getNetworkModelRef().getPrimaryIdentifierValue())) {
-                paoName = mspMeter.getElectricLocationFields().getNetworkModelRef().getPrimaryIdentifierValue();
+            ElectricMeter electricMeter = null;
+            if (mspMeter instanceof ElectricMeter) {
+                electricMeter = (ElectricMeter) mspMeter;
+                if (electricMeter.getElectricLocationFields() != null
+                        && electricMeter.getElectricLocationFields().getNetworkModelRef() != null
+                        && electricMeter.getElectricLocationFields().getNetworkModelRef().getValue() != null
+                        && StringUtils.isNotBlank(electricMeter.getElectricLocationFields().getNetworkModelRef().getPrimaryIdentifierValue())) {
+                        paoName = electricMeter.getElectricLocationFields().getNetworkModelRef().getPrimaryIdentifierValue();
+                }
             }
         } else if (paoAlias == MspPaoNameAliasEnum.GRID_LOCATION) {
             if (mspMeter.getAssetLocation() != null
@@ -1160,9 +1166,13 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // call for pole no
                 // ServiceLocation mspServiceLocation =
                 // mspObjectDao.getMspServiceLocation(mspMeter.getPrimaryIdentifier().getValue(), mspVendor);
-                if (mspMeter.getElectricLocationFields() != null
-                    && StringUtils.isNotBlank(mspMeter.getElectricLocationFields().getPoleNumber())) {
-                    paoName = mspMeter.getElectricLocationFields().getPoleNumber();
+                ElectricMeter electricMeter = null;
+                if (mspMeter instanceof ElectricMeter) {
+                    electricMeter = (ElectricMeter) mspMeter;
+                    if (electricMeter.getElectricLocationFields() != null
+                        && StringUtils.isNotBlank(electricMeter.getElectricLocationFields().getPoleNumber())) {
+                        paoName = electricMeter.getElectricLocationFields().getPoleNumber();
+                    }
                 }
             }
         }

@@ -26,11 +26,11 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterIDs;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
 import com.cannontech.multispeak.block.v5.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -162,7 +162,7 @@ public class MR_ServerImpl implements MR_Server{
     }
     
     @Override
-    public List<ElectricMeter> getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
+    public List<MspMeter> getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetAMRSupportedMeters", vendor.getCompanyName());
