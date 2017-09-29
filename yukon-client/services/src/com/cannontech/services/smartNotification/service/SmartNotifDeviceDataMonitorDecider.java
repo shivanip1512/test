@@ -58,32 +58,6 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
         return subscriptions;
     }
     
-    public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> getEventsForEvents(
-            List<SmartNotificationEvent> allEvents, SmartNotificationFrequency frequency) {
-        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = HashMultimap.create();
-        if(allEvents.isEmpty()){
-            return subscriptions;
-        }
-        List<Object> monitorIds = allEvents.stream().map(e -> DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters())).collect(
-                Collectors.toList());         
-        List<SmartNotificationSubscription> allSubscriptions = subscriptionDao.getSubscriptions(eventType,
-            DeviceDataMonitorEventAssembler.MONITOR_ID, monitorIds, frequency);
-        
-        SetMultimap<Integer, SmartNotificationSubscription> monitorIdToSubscription = HashMultimap.create();
-        allSubscriptions.forEach(s-> {
-            monitorIdToSubscription.put(DeviceDataMonitorEventAssembler.getMonitorId(s.getParameters()), s);
-        });
-        
-        allEvents.forEach(e -> {
-            int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters());
-            if (monitorIdToSubscription.containsKey(monitorId)) {
-                monitorIdToSubscription.get(monitorId).forEach(s -> subscriptions.put(s, e));
-            }
-        });
-        
-        return subscriptions;
-    }
-
     private boolean isValidMonitor(Map<String, Object> parameters) {
         int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(parameters);
         return monitorCacheService.getDeviceMonitor(monitorId) != null;
