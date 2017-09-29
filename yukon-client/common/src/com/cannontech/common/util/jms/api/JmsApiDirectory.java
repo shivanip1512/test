@@ -87,7 +87,7 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
-import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveResponse;
@@ -934,15 +934,15 @@ public final class JmsApiDirectory {
     //TODO: use in InfrastructureWarningsNotificationEventDecider
     //TODO: use in SmartNotificationMessageAssemblerSupervisor
     //TODO: use in SmartNotificationMessageAssembler
-    public static JmsApi<SmartNotificationMessageParameters,?,?> SMART_NOTIFICATION_ASSEMBLER =
-            JmsApi.builder(SmartNotificationMessageParameters.class)
+    public static JmsApi<SmartNotificationMessageParametersMulti, Serializable, Serializable> SMART_NOTIFICATION_ASSEMBLER =
+            JmsApi.builder(SmartNotificationMessageParametersMulti.class)
                   .name("Smart Notifications Assembler")
                   .description("Sent by the Smart Notification deciders when they have determined that a notification "
                           + "message should be sent. Processed by Smart Notification assemblers, which assemble a "
                           + "complete message to be sent out to recipients.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.assembler"))
-                  .requestMessage(SmartNotificationMessageParameters.class)
+                  .requestMessage(SmartNotificationMessageParametersMulti.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();

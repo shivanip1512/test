@@ -243,6 +243,12 @@ public abstract class SmartNotificationDecider implements MessageListener {
             List<SmartNotificationEvent> events, SmartNotificationFrequency frequency);
     
     /**
+     * Returns map of subscriptions to events. 
+     */
+    public abstract SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> mapSubscriptionsToEvents(
+            Set<SmartNotificationSubscription> allSubscriptions, List<SmartNotificationEvent> allEvents);
+    
+    /**
      * Returns time the events will be processed next. Return null if this decider is not scheduled to process events.
      */
     public WaitTime getWaitTime() {

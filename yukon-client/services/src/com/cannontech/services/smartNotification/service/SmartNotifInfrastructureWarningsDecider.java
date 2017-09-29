@@ -1,6 +1,7 @@
 package com.cannontech.services.smartNotification.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
@@ -38,6 +39,17 @@ public class SmartNotifInfrastructureWarningsDecider extends SmartNotificationDe
         allSubscriptions.forEach(s -> {
             subscriptions.putAll(s, allEvents);
         });
+        return subscriptions;
+    }
+    
+    @Override
+    public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> mapSubscriptionsToEvents(
+            Set<SmartNotificationSubscription> allSubscriptions, List<SmartNotificationEvent> allEvents) {
+        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = HashMultimap.create();
+        if(allEvents.isEmpty()){
+            return subscriptions;
+        }
+        //add subscriptions and events to the multimap
         return subscriptions;
     }
 }

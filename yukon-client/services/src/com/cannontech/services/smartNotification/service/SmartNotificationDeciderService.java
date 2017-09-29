@@ -1,5 +1,8 @@
 package com.cannontech.services.smartNotification.service;
 
+import java.util.List;
+
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.services.smartNotification.service.SmartNotificationDecider.ProcessorResult;
 
 public interface SmartNotificationDeciderService {
@@ -18,4 +21,6 @@ public interface SmartNotificationDeciderService {
      * Returns first interval.
      */
     int getFirstInterval();
+
+    void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages, boolean sendAllInOneEmail);
 }

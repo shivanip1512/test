@@ -51,4 +51,6 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="infrastructureWarningsNotifListener" />
     </bean>
+
+    <bean class="com.cannontech.services.smartNotification.service.SmartNotificationDailyDigestService"/>
 </beans>

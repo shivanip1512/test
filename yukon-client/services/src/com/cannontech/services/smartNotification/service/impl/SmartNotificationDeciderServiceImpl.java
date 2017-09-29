@@ -2,6 +2,7 @@ package com.cannontech.services.smartNotification.service.impl;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Executor;
@@ -24,6 +25,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.services.smartNotification.service.SmartNotificationDecider;
@@ -173,7 +175,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             executor.execute(() -> {
                 try {
                     logDebug("Sending message parameters immediately", result.getDecider());
-                    putMessagesOnAssemblerQueue(result);
+                    putMessagesOnAssemblerQueue(result.getMessageParameters(), false);
                 } catch (Exception e) {
                     log.error("e");
                 }
@@ -184,12 +186,14 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
         }
     }
     
-    private void putMessagesOnAssemblerQueue(ProcessorResult result) {
-        if (result.hasMessages()) {
-            for(SmartNotificationMessageParameters message:  result.getMessageParameters()){
-                log.debug(message.getType() + " Sending message=" + message);
-            }
-            jmsTemplate.convertAndSend(queue, result.getMessageParameters());
+    @Override
+    public void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages,
+            boolean sendAllInOneEmail) {
+        if (!messages.isEmpty()) {
+            messages.forEach(m -> {
+                log.debug(m.getType() + " Sending message=" + m);
+            });
+            jmsTemplate.convertAndSend(queue, new SmartNotificationMessageParametersMulti(messages, sendAllInOneEmail));
         }
     }
     
@@ -211,7 +215,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                     log.debug(decider.getEventType() + " No messages to send. Removing wait time.");
                 } else if (result.isReschedule()){
                     schedule(decider, result.getNextRun());
-                    putMessagesOnAssemblerQueue(result);
+                    putMessagesOnAssemblerQueue(result.getMessageParameters(), false);
                 }
             } catch (Exception e) {
                 decider.resetWaitTime();

@@ -2,6 +2,7 @@ package com.cannontech.services.smartNotification.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,32 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
         
         return subscriptions;
     }
+    
+    public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> getEventsForEvents(
+            List<SmartNotificationEvent> allEvents, SmartNotificationFrequency frequency) {
+        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = HashMultimap.create();
+        if(allEvents.isEmpty()){
+            return subscriptions;
+        }
+        List<Object> monitorIds = allEvents.stream().map(e -> DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters())).collect(
+                Collectors.toList());         
+        List<SmartNotificationSubscription> allSubscriptions = subscriptionDao.getSubscriptions(eventType,
+            DeviceDataMonitorEventAssembler.MONITOR_ID, monitorIds, frequency);
+        
+        SetMultimap<Integer, SmartNotificationSubscription> monitorIdToSubscription = HashMultimap.create();
+        allSubscriptions.forEach(s-> {
+            monitorIdToSubscription.put(DeviceDataMonitorEventAssembler.getMonitorId(s.getParameters()), s);
+        });
+        
+        allEvents.forEach(e -> {
+            int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(e.getParameters());
+            if (monitorIdToSubscription.containsKey(monitorId)) {
+                monitorIdToSubscription.get(monitorId).forEach(s -> subscriptions.put(s, e));
+            }
+        });
+        
+        return subscriptions;
+    }
 
     private boolean isValidMonitor(Map<String, Object> parameters) {
         int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(parameters);
@@ -65,5 +92,16 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
     private boolean isValidDevice(Map<String, Object> parameters) {
         int paoId = DeviceDataMonitorEventAssembler.getPaoId(parameters);
         return cache.getAllPaosMap().containsKey(paoId);
+    }
+
+    @Override
+    public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> mapSubscriptionsToEvents(
+            Set<SmartNotificationSubscription> allSubscriptions, List<SmartNotificationEvent> allEvents) {
+        SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = HashMultimap.create();
+        if(allEvents.isEmpty()){
+            return subscriptions;
+        }
+        //add subscriptions and events to the multimap
+        return subscriptions;
     }
 }
