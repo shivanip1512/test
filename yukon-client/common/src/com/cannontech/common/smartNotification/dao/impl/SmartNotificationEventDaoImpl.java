@@ -323,7 +323,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             sql.append("WHERE sne.Type").eq_k(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
             sql.append("    AND Timestamp").gte(from);
             sql.append("    AND Timestamp").lt(to);
-//            sql.append("    AND ypo.Type").in(typeFilter);
+            sql.append("    AND ypo.Type").in(typeFilter);
             sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
             
             PagingResultSetExtractor<SmartNotificationEventData> rse = new PagingResultSetExtractor<>(start, count, createInfrastructureWarningEventDetailRowMapper);
