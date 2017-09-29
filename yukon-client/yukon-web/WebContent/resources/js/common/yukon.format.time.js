@@ -61,6 +61,68 @@ yukon.timeFormatter = (function () {
             return hourStr + ":" + minuteStr + " " + ampmStr;
             
         },
+        
+        // Generates a time in the format HH:mm (12:30) for the input which is 
+        // the number of minutes from midnight
+        format24HourTime: function (minutes, roundTo) {
+            var hour,
+                minute,
+                ampmStr,
+                hourStr,
+                minuteStr;
+
+            minutes = parseInt(minutes, 10);
+
+            // this gets a little complicated: if a non-numerical string or null is passed to parseInt,
+            // parseInt returns NaN, so check for that here
+            // NaN is the only value in JavaScript that is not equal to itself
+            if (minutes !== minutes) {
+                return '00:00';
+            }
+            // Make sure time is not negative and less than the number of minutes in a day
+            if (minutes < 0) {
+                minutes = 0;
+            }
+            if (minutes >= 1440) {
+                minutes = 24 * 60 - 1;
+            }
+            
+            if (typeof roundTo !== 'undefined' && roundTo !== 0) {
+                // Make sure the value is a multiple of 10
+                minutes = Math.floor(minutes / roundTo) * roundTo;
+            }
+            
+            hour = Math.floor(minutes / 60);
+            minute = minutes % 60;
+            
+            // Add a leading zero to hours and minutes if needed
+            hourStr = "" + hour;
+            hourStr = hourStr.substr(hourStr.length-2, 2);
+            minuteStr = "0" + minute;
+            minuteStr = minuteStr.substr(minuteStr.length-2, 2);
+            
+            return hourStr + ":" + minuteStr;
+            
+        },
+        
+        // Generates a time in the format HH:mm (12:30) to hh:mm AM/PM
+        format24HourTo12: function (time) {
+            var time_part_array = time.split(":");
+            var ampm = 'AM';
+
+            if (time_part_array[0] >= 12) {
+                ampm = 'PM';
+            }
+
+            if (time_part_array[0] > 12) {
+                time_part_array[0] = time_part_array[0] - 12;
+            }
+
+            formatted_time = time_part_array[0] + ':' + time_part_array[1] + ':' + time_part_array[2] + ' ' + ampm;
+
+            return formatted_time;
+            
+        },
     
         // Parses time in format - hh:mm AM into the number of minutes from midnight
         parseTime: function (time) {
@@ -95,6 +157,38 @@ yukon.timeFormatter = (function () {
             } else if (!pm && hours === 12) {
                 hours = 0;
             }
+            
+            // Calculate the minutes from midnight
+            returnValue = minutes || 0;
+            returnValue = returnValue + (60 * hours);
+            
+            return returnValue;
+        },
+        
+        // Parses time in format - HH:mm into the number of minutes from midnight
+        parse24HourTime: function (time) {
+    
+            // Make sure the time string is a valid time (ex: 12:30 PM)     
+            var exp = /^([0-1]*[0-9]|[2][0-4])([:][0-5][0-9])$/,
+                timeExp,
+                pmExp,
+                timeArray,
+                pm,
+                hours,
+                minutes,
+                returnValue;
+            
+            if (!exp.test(time)) {
+                return -1;
+            }
+            
+            // Get the hours, minutes and determine if the time is pm
+            timeExp = /\d{1,2}/g;
+            
+            timeArray = time.match(timeExp);
+            
+            hours = parseInt(timeArray[0], 10);
+            minutes = parseInt(timeArray[1], 10);
             
             // Calculate the minutes from midnight
             returnValue = minutes || 0;

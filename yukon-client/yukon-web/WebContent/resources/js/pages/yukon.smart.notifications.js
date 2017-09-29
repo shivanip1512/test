@@ -25,9 +25,10 @@ yukon.smart.notifications = (function () {
            timeLabel = container.find('.js-time-label'),
            timeSlider = container.find('.js-time-slider'),
            sendTimeValue = sendTimeField.val(),
+           sendTimeValue = yukon.timeFormatter.parse24HourTime(sendTimeValue),
            userSettingSendTime = container.find('#userSettingSendTime').val(),
            currentValue = userSettingSendTime ? userSettingSendTime : sendTimeValue,
-           defaultValue = currentValue ? currentValue : 10 * 60;
+           defaultValue = currentValue ? currentValue : 0;
        if (timeSlider) {
            //initialize time slider
            timeSlider.slider({
@@ -39,15 +40,15 @@ yukon.smart.notifications = (function () {
                slide: function (ev, ui) {
                    timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
                    timeSlider.val(ui.value);
-                   sendTimeField.val(ui.value);
+                   sendTimeField.val(yukon.timeFormatter.format24HourTime(ui.value, 0));
                },
                change: function (ev, ui) {
                    timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
                    timeSlider.val(ui.value);
-                   sendTimeField.val(ui.value);
+                   sendTimeField.val(yukon.timeFormatter.format24HourTime(ui.value, 0));
                }
            });
-           sendTimeField.val(defaultValue);
+           sendTimeField.val(yukon.timeFormatter.format24HourTime(defaultValue, 0));
            timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
            timeSlider.val(defaultValue);
            if (userSettingSendTime) {
@@ -72,15 +73,6 @@ yukon.smart.notifications = (function () {
             
         initTimeSlider : function () {
             initializeTimeSlider($('#send-time'));
-        },
-        
-        initDailyValues: function () {
-            var container = $('#send-time'),
-                userSettingSendTime = container.find('#userPreferenceSendTime').val();
-            $('.js-DAILY_DIGEST').each(function() {
-                var dailyRowTime = $(this).find('.js-daily-row-time').val();
-                $(this).find('.js-daily-time').text(yukon.timeFormatter.formatTime(userSettingSendTime ? userSettingSendTime : dailyRowTime, 0));
-            });
         },
         
         /** Initialize this module. */

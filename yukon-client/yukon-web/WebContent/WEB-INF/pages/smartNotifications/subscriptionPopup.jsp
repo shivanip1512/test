@@ -50,7 +50,7 @@
             <tags:nameValue2 nameKey=".sendTime" rowClass="js-daily ${dailyClass}">
                 <div class="column-8-16 clearfix stacked">
                     <div class="column one">
-                        <span class="js-time-label fwb">10:00 AM</span>
+                        <span class="js-time-label fwb"></span>
                         <form:hidden path="parameters['sendTime']" id="notifications-send-time" disabled="${disableDaily}"/>
                         <input type="hidden" id="userSettingSendTime" value="${sendTime}"/>
                     </div>

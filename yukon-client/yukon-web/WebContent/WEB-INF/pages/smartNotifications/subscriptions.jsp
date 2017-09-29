@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:msgScope paths="modules.smartNotifications">
 
@@ -22,7 +23,7 @@
         <c:set var="sendTimeClass" value="${empty sendTime ? 'dn' : ''}"/>
         <div id="send-time" class="dib column-6-18 clearfix ${sendTimeClass}">
             <div class="column one">
-                <div class="js-time-label fwb" style="width:70px;">10:00 AM</div>
+                <div class="js-time-label fwb" style="width:70px;"></div>
                 <input type="hidden" id="notifications-send-time" name="sendTime" value="${sendTime}"/>
                 <input type="hidden" id="userPreferenceSendTime" value="${sendTime}"/>
             </div>
@@ -65,7 +66,8 @@
                                         <i:inline key="${subscription.frequency.formatKey}"/>
                                         <c:if test="${subscription.frequency == 'DAILY_DIGEST'}">
                                             <input type="hidden" class="js-daily-row-time" value="${subscription.parameters['sendTime']}"/>
-                                            @ <span class="js-daily-time"/> 
+                                            <c:set var="dailyTime" value="${!empty sendTime ? sendTime : subscription.parameters['sendTime']}"/>
+                                            @ ${dailyTime}
                                         </c:if>
                                     </td>
                                     <td><i:inline key="${subscription.media.formatKey}"/></td>
@@ -135,5 +137,4 @@
 
 <script>
     yukon.smart.notifications.initTimeSlider();
-    yukon.smart.notifications.initDailyValues();
 </script>

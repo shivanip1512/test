@@ -4,6 +4,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="smartNotifications" page="detail">
 
@@ -13,7 +14,7 @@
     </c:if>
     <form:form action="${detailUrl}" method="GET" commandName="filter">
     <cti:csrfToken/>
-    <div class="column-14-10 clearfix">
+    <div class="column-14-10 clearfix stacked">
         <h3>Filters</h3>
         <div class="column one" style="border:1px solid #ccc;padding:5px;">
             <tags:nameValueContainer2>
@@ -25,11 +26,23 @@
                         ${monitorName}
                     </tags:nameValue2>
                 </c:if>
+                <c:if test="${!empty types}">
+                    <tags:nameValue2 nameKey=".deviceTypes">
+                        <div class="button-group stacked">
+                            <c:forEach var="type" items="${types}">
+                                <c:set var="selected" value="${false}"/>
+                                <c:if test="${fn:contains(filter.categories, type)}">
+                                    <c:set var="selected" value="${true}"/>
+                                </c:if>
+                                <cti:msg2 var="deviceType" key="yukon.web.widgets.infrastructureWarnings.category.${type}"/>
+                                <tags:check name="categories" classes="M0" value="${type}" label="${deviceType}" checked="${selected}"></tags:check>
+                            </c:forEach>
+                        </div>
+                    </tags:nameValue2>
+                </c:if>
                 <tags:nameValue2 nameKey=".dateRange">
                     <dt:dateTime path="startDate" value="${filter.startDate}"/>
                     <dt:dateTime path="endDate" value="${filter.endDate}"/>
-<%--                     <dt:dateTime value="${filter.startDate}"/>
-                    <dt:dateTime value="${filter.endDate}"/> --%>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             <div class="action-area">
@@ -39,6 +52,9 @@
         </div>
     </div>
     </form:form>
+    
+    <span class="fwn"><i:inline key=".filteredResults"/></span>
+    <span class="badge">${events.hitCount}</span>&nbsp;<i:inline key=".devices"/>
     
     <div data-url="${detailUrl}" data-static>
         <table class="compact-results-table has-actions row-highlighting">

@@ -1,6 +1,7 @@
 package com.cannontech.web.smartNotifications;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.ContactDto;
@@ -120,11 +122,25 @@ public class SmartNotificationsController {
             eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, id);
             ddmHelper.retrieveMonitorById(model, id);
         } else if (eventType.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
+            InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
+            if (filter.getCategories().isEmpty()) {
+                filter.setCategories(Arrays.asList(categories));
+            }
+            model.addAttribute("types", categories);
             List<PaoType> allTypes = new ArrayList<PaoType>();
-            allTypes.addAll(PaoType.getRfGatewayTypes());
-            allTypes.addAll(PaoType.getRfRelayTypes());
-            allTypes.addAll(PaoType.getCcuTypes());
-            allTypes.addAll(PaoType.getRepeaterTypes());
+            List<InfrastructureWarningDeviceCategory> cats = filter.getCategories();
+            if (cats.contains(InfrastructureWarningDeviceCategory.GATEWAY)) {
+                allTypes.addAll(PaoType.getRfGatewayTypes());
+            }
+            if (cats.contains(InfrastructureWarningDeviceCategory.RELAY)) {
+                allTypes.addAll(PaoType.getRfRelayTypes());
+            }
+            if (cats.contains(InfrastructureWarningDeviceCategory.CCU)) {
+                allTypes.addAll(PaoType.getCcuTypes());
+            }
+            if (cats.contains(InfrastructureWarningDeviceCategory.REPEATER)) {
+                allTypes.addAll(PaoType.getRepeaterTypes());
+            }
             eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, allTypes);
         }
         model.addAttribute("events", eventData);

@@ -24,6 +24,9 @@
     <entry key="yukon.web.modules.smartNotifications.detail.type">Type</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.status">Status</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.timestamp">Timestamp</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.deviceTypes">Device Types</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.filteredResults">Filtered Results:</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.devices">Devices</entry>
     
     <!-- Subscription popup -->
     <entry key="yukon.web.modules.smartNotifications.actionLink">Notifications</entry>
