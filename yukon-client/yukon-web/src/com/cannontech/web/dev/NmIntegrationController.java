@@ -149,6 +149,7 @@ public class NmIntegrationController {
         } catch (ExecutionException e) {
             log.error("Error communicating with Yukon Simulators Service.", e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:viewBase";
         }
         
         return "rfn/gatewayDataSimulator.jsp";
@@ -444,12 +445,16 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("viewRfnMeterSimulator")
-    public String viewRfnMeterSimulator(ModelMap model) {
+    public String viewRfnMeterSimulator(ModelMap model, FlashScope flash) {
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
         model.addAttribute("rfnMeterReportingIntervals",ReportingInterval.values());
 
         RfnMeterDataSimulatorStatusResponse response = getRfnMeterSimulatorStatusResponse().response;
+        if (response == null) {
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:viewBase";
+        }
         model.addAttribute("currentSettings", response.getSettings());
         model.addAttribute("selectedReportingInterval", response.getSettings().getReportingInterval());
 
@@ -459,8 +464,12 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("viewLcrDataSimulator")
-    public String viewLcrDataSimulator(ModelMap model) {
+    public String viewLcrDataSimulator(ModelMap model, FlashScope flash) {
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;
+        if (response == null) {
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:viewBase";
+        }
         model.addAttribute("currentSettings", response.getSettings());
 
         model.addAttribute("dataSimulatorStatus", buildSimulatorStatusJson(response.getStatusByRange()));
@@ -684,6 +693,7 @@ public class NmIntegrationController {
         } catch (ExecutionException e) {
             log.error("Error communicating with Yukon Simulators Service.", e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:viewBase";
         }
         
         model.addAttribute("deviceErrors", DeviceDataStreamingConfigError.values());
@@ -750,7 +760,11 @@ public class NmIntegrationController {
         model.addAttribute("routeReplys", RfnPrimaryRouteDataReplyType.values());
         
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
-        SimulatorResponseBase response = sendRequest(simRequest, null, flash);  
+        SimulatorResponseBase response = sendRequest(simRequest, null, flash); 
+        if (response == null) {
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:viewBase";
+        }
         
         SimulatedNmMappingSettings settings = ((NmNetworkSimulatorResponse) response).getSettings();
         model.addAttribute("simulatorRunning", ((NmNetworkSimulatorResponse) response).isRunning());
