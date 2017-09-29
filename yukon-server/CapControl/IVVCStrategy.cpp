@@ -1,4 +1,3 @@
-
 #include "precompiled.h"
 
 #include <cmath>
@@ -7,6 +6,7 @@
 #include "IVVCStrategy.h"
 #include "ccutil.h"
 #include "ccsubstationbusstore.h"
+#include "std_helper.h"
 
 IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     : ControlStrategy(),
@@ -60,203 +60,168 @@ void IVVCStrategy::setPointDataRequestFactory(const PointDataRequestFactoryPtr& 
 
 void IVVCStrategy::restoreParameters( const std::string &name, const std::string &type, const std::string &value )
 {
-    double newValue = std::atof( value.c_str() );
+    static const std::map< std::string, std::map< std::string, double IVVCStrategy::* > >   directLookup
+    {
+        {   "Upper Volt Limit",             {
+                { "PEAK",               &IVVCStrategy::_peakUpperVoltLimit                      },
+                { "OFFPEAK",            &IVVCStrategy::_offpeakUpperVoltLimit                   }   }
+        },
+        {   "Lower Volt Limit",             {
+                { "PEAK",               &IVVCStrategy::_peakLowerVoltLimit                      },
+                { "OFFPEAK",            &IVVCStrategy::_offpeakLowerVoltLimit                   }   }
+        },
+        {   "Volt Weight",                  {
+                { "PEAK",               &IVVCStrategy::_peakVoltWeight                          },
+                { "OFFPEAK",            &IVVCStrategy::_offpeakVoltWeight                       }   }
+        },
+        {   "PF Weight",                    {
+                { "PEAK",               &IVVCStrategy::_peakPFWeight                            },
+                { "OFFPEAK",            &IVVCStrategy::_offpeakPFWeight                         }   }
+        },
+        {   "Decision Weight",              {
+                { "PEAK",               &IVVCStrategy::_peakDecisionWeight                      },
+                { "OFFPEAK",            &IVVCStrategy::_offpeakDecisionWeight                   }   }
+        },
+        {   "Voltage Regulation Margin",    {
+                { "PEAK",               &IVVCStrategy::_peakVoltageRegulationMargin             },
+                { "OFFPEAK",            &IVVCStrategy::_offpeakVoltageRegulationMargin          }   }
+        },
+        {   "Low Voltage Violation",        {
+                { "BANDWIDTH",          &IVVCStrategy::_lowVoltageViolationBandwidth            },
+                { "COST",               &IVVCStrategy::_lowVoltageViolationCost                 },
+                { "EMERGENCY_COST",     &IVVCStrategy::_emergencyLowVoltageViolationCost        }   }
+        },
+        {   "High Voltage Violation",       {
+                { "BANDWIDTH",          &IVVCStrategy::_highVoltageViolationBandwidth           },
+                { "COST",               &IVVCStrategy::_highVoltageViolationCost                },
+                { "EMERGENCY_COST",     &IVVCStrategy::_emergencyHighVoltageViolationCost       }   }
+        },
+        {   "Power Factor Correction",      {
+                { "BANDWIDTH",          &IVVCStrategy::_powerFactorCorrectionBandwidth          },
+                { "COST",               &IVVCStrategy::_powerFactorCorrectionCost               },
+                { "MAX_COST",           &IVVCStrategy::_powerFactorCorrectionMaxCost            }   }
+        },
+        {   "Comm Reporting Percentage",    {
+                { "REGULATOR",          &IVVCStrategy::_regulatorCommReportingPercentage        },
+                { "CAPBANK",            &IVVCStrategy::_capbankCommReportingPercentage          },
+                { "VOLTAGE_MONITOR",    &IVVCStrategy::_voltageMonitorCommReportingPercentage   }   }
+        }
+    };
 
-    if (name == "Upper Volt Limit")
+    static const std::map< std::string, std::map< std::string, void (IVVCStrategy::*)( double ) > > setterLookup
     {
-        if (type == "PEAK")
-        {
-            _peakUpperVoltLimit = newValue;
+        {   "Target PF",                    {
+                { "PEAK",               &IVVCStrategy::setPeakTargetPowerFactor                 },
+                { "OFFPEAK",            &IVVCStrategy::setOffpeakTargetPowerFactor              }   }
+        },
+        {   "Min. of Bank Open",            {
+                { "PEAK",               &IVVCStrategy::setPeakMinBankOpen                       },
+                { "OFFPEAK",            &IVVCStrategy::setOffpeakMinBankOpen                    }   }
+        },
+        {   "Min. of Bank Close",           {
+                { "PEAK",               &IVVCStrategy::setPeakMinBankClose                      },
+                { "OFFPEAK",            &IVVCStrategy::setOffpeakMinBankClose                   }   }
+        },
+        {   "Max Consecutive CapBank Ops.", {
+                { "PEAK",               &IVVCStrategy::setPeakMaxConsecutiveCapBankOps          },
+                { "OFFPEAK",            &IVVCStrategy::setOffpeakMaxConsecutiveCapBankOps       }   }
+        },
+        {   "Comm Reporting Percentage",    {
+                { "CONSIDER_PHASE",     &IVVCStrategy::setReportCommStatisticsByPhase           }   }
         }
-        else
-        {
-            _offpeakUpperVoltLimit = newValue;
-        }
-    }
-    else if (name == "Lower Volt Limit")
-    {
-        if (type == "PEAK")
-        {
-            _peakLowerVoltLimit = newValue;
-        }
-        else
-        {
-            _offpeakLowerVoltLimit = newValue;
-        }
-    }
-    else if (name == "Target PF")
-    {
-        if (newValue > 100)
-        {
-            newValue = -(200 - newValue);
-        }
+    };
 
-        if (type == "PEAK")
-        {
-            _peakTargetPF = newValue;
-        }
-        else
-        {
-            _offpeakTargetPF = newValue;
-        }
-    }
-    else if (name == "Min. of Bank Open")
-    {
-        newValue = -std::fabs(newValue);
+    bool    foundDirect = false,
+            foundSetter = false;
 
-        if (type == "PEAK")
-        {
-            _peakMinBankOpen = newValue;
-        }
-        else
-        {
-            _offpeakMinBankOpen = newValue;
-        }
-    }
-    else if (name == "Min. of Bank Close")
-    {
-        newValue = std::fabs(newValue);
+    double  aValue = std::atof( value.c_str() );
 
-        if (type == "PEAK")
-        {
-            _peakMinBankClose = newValue;
-        }
-        else
-        {
-            _offpeakMinBankClose = newValue;
-        }
-    }
-    else if (name == "Volt Weight")
+    if ( const auto nameSearch = Cti::mapFind( directLookup, name ) )
     {
-        if (type == "PEAK")
+        if ( const auto typeSearch = Cti::mapFind( *nameSearch, type ) )
         {
-            _peakVoltWeight = newValue;
-        }
-        else
-        {
-            _offpeakVoltWeight = newValue;
+            this->*(*typeSearch) = aValue;
+
+            foundDirect = true;
         }
     }
-    else if (name == "PF Weight")
+    
+    if ( const auto nameSearch = Cti::mapFind( setterLookup, name ) )
     {
-        if (type == "PEAK")
+        if ( const auto typeSearch = Cti::mapFind( *nameSearch, type ) )
         {
-            _peakPFWeight = newValue;
-        }
-        else
-        {
-            _offpeakPFWeight = newValue;
+            (this->*(*typeSearch))( aValue );
+
+            foundSetter = true;
         }
     }
-    else if (name == "Decision Weight")
-    {
-        if (type == "PEAK")
-        {
-            _peakDecisionWeight = newValue;
-        }
-        else
-        {
-            _offpeakDecisionWeight = newValue;
-        }
-    }
-    else if (name == "Voltage Regulation Margin")
-    {
-        if (type == "PEAK")
-        {
-            _peakVoltageRegulationMargin = newValue;
-        }
-        else
-        {
-            _offpeakVoltageRegulationMargin = newValue;
-        }
-    }
-    else if (name == "Max Consecutive CapBank Ops.")
-    {
-        if (type == "PEAK")
-        {
-            _peakMaxConsecutiveCapBankOps = static_cast<unsigned>(newValue);
-        }
-        else
-        {
-            _offpeakMaxConsecutiveCapBankOps = static_cast<unsigned>(newValue);
-        }
-    }
-    else if (name == "Low Voltage Violation")
-    {
-        if (type == "BANDWIDTH")
-        {
-            _lowVoltageViolationBandwidth = newValue;
-        }
-        else if (type == "COST")
-        {
-            _lowVoltageViolationCost = newValue;
-        }
-        else    // type == "EMERGENCY_COST"
-        {
-            _emergencyLowVoltageViolationCost = newValue;
-        }
-    }
-    else if (name == "High Voltage Violation")
-    {
-        if (type == "BANDWIDTH")
-        {
-            _highVoltageViolationBandwidth = newValue;
-        }
-        else if (type == "COST")
-        {
-            _highVoltageViolationCost = newValue;
-        }
-        else    // type == "EMERGENCY_COST"
-        {
-            _emergencyHighVoltageViolationCost = newValue;
-        }
-    }
-    else if (name == "Power Factor Correction")
-    {
-        if (type == "BANDWIDTH")
-        {
-            _powerFactorCorrectionBandwidth = newValue;
-        }
-        else if (type == "COST")
-        {
-            _powerFactorCorrectionCost = newValue;
-        }
-        else    // type == "MAX_COST"
-        {
-            _powerFactorCorrectionMaxCost = newValue;
-        }
-    }
-    else if (name == "Comm Reporting Percentage")
-    {
-        if (type == "REGULATOR")
-        {
-            _regulatorCommReportingPercentage = newValue;
-        }
-        else if (type == "CAPBANK")
-        {
-            _capbankCommReportingPercentage = newValue;
-        }
-        else if (type == "VOLTAGE_MONITOR")
-        {
-            _voltageMonitorCommReportingPercentage = newValue;
-        }
-        else    // type == "CONSIDER_PHASE"
-        {
-            _reportCommStatisticsByPhase = static_cast<bool>(newValue);
-        }
-    }
-    else
+
+    if ( ! ( foundDirect || foundSetter ) )
     {
         Cti::FormattedList  error;
 
-        error << "Unknown setting for strategy: " << getStrategyName() << " (" << getStrategyId() << ")";
-        error.add("Name")  << name;
-        error.add("Type")  << type;
-        error.add("Value") << value;
+        error << "Unknown setting for strategy: " << getStrategyName();
+        error.add("StrategyId")   << getStrategyId();
+        error.add("SettingName")  << name;
+        error.add("SettingValue") << value;
+        error.add("SettingType")  << type;
 
         CTILOG_ERROR( dout, error );
     }
 }
+
+void IVVCStrategy::setPeakTargetPowerFactor( double value )
+{
+    _peakTargetPF =
+        ( value > 100 )
+            ? value - 200
+            : value;
+}
+
+void IVVCStrategy::setOffpeakTargetPowerFactor( double value )
+{
+    _offpeakTargetPF =
+        ( value > 100 )
+            ? value - 200
+            : value;
+}
+
+void IVVCStrategy::setPeakMinBankOpen( double value )
+{
+    _peakMinBankOpen = -std::fabs( value );
+}
+
+void IVVCStrategy::setOffpeakMinBankOpen( double value )
+{
+    _offpeakMinBankOpen = -std::fabs( value );
+}
+
+void IVVCStrategy::setPeakMinBankClose( double value )
+{
+    _peakMinBankClose = std::fabs( value );
+}
+
+void IVVCStrategy::setOffpeakMinBankClose( double value )
+{
+    _offpeakMinBankClose = std::fabs( value );
+}
+
+void IVVCStrategy::setPeakMaxConsecutiveCapBankOps( double value )
+{
+    _peakMaxConsecutiveCapBankOps = static_cast<unsigned>( value );
+}
+
+void IVVCStrategy::setOffpeakMaxConsecutiveCapBankOps( double value )
+{
+    _offpeakMaxConsecutiveCapBankOps = static_cast<unsigned>( value );
+}
+
+void IVVCStrategy::setReportCommStatisticsByPhase( double value )
+{
+    _reportCommStatisticsByPhase = static_cast<bool>( value );
+}
+
+////
 
 const unsigned IVVCStrategy::getMaxConsecutiveCapBankOps(const bool isPeak) const
 {

@@ -82,6 +82,16 @@ public:
 
 private:
 
+    void setPeakTargetPowerFactor( double value );
+    void setOffpeakTargetPowerFactor( double value );
+    void setPeakMinBankOpen( double value );
+    void setOffpeakMinBankOpen( double value );
+    void setPeakMinBankClose( double value );
+    void setOffpeakMinBankClose( double value );
+    void setPeakMaxConsecutiveCapBankOps( double value );
+    void setOffpeakMaxConsecutiveCapBankOps( double value );
+    void setReportCommStatisticsByPhase( double value );
+
     IVVCAlgorithm _ivvcAlgorithm;
 
     double _peakUpperVoltLimit;
