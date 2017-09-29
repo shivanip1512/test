@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class SmartNotificationsController {
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
     
     @RequestMapping(value="events/{type}", method=RequestMethod.GET)
-    public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, 
+    public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
                                YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult result) {
         return retrieveEventDetail(type, null, sorting, paging, userContext, model, filter);
@@ -97,16 +98,12 @@ public class SmartNotificationsController {
         SmartNotificationEventType eventType = SmartNotificationEventType.retrieveByUrlPath(type);
         model.addAttribute("eventType", eventType);
         model.addAttribute("parameter", parameter);
-        if (filter.getStartDate() != null) {
-            filter.setStartDate(filter.getStartDate().withZone(userContext.getJodaTimeZone()));
-        } else {
+        if (filter.getStartDate() == null) {
             DateTime start = new DateTime().minusDays(1).withTimeAtStartOfDay().withZone(userContext.getJodaTimeZone());
-            filter.setStartDate(start);
+            filter.setStartDate(start.toDate());
         }
-        if (filter.getEndDate() != null) {
-            filter.setEndDate(filter.getEndDate().withZone(userContext.getJodaTimeZone()));
-        } else {
-            filter.setEndDate(new DateTime().withZone(userContext.getJodaTimeZone()));
+        if (filter.getEndDate() == null) {
+            filter.setEndDate(new Date());
         }
         EventSortBy sortBy = EventSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
@@ -115,7 +112,7 @@ public class SmartNotificationsController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
-        Range<DateTime> range = new Range<DateTime>(filter.getStartDate().toDateTime(), true, filter.getEndDate().toDateTime(), true);
+        Range<DateTime> range = new Range<DateTime>(new DateTime(filter.getStartDate()), true, new DateTime(filter.getEndDate()), true);
         SearchResults<SmartNotificationEventData> eventData = new SearchResults<>();
         if (eventType.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
             int id = Integer.parseInt(parameter);

@@ -41,8 +41,8 @@
                     </tags:nameValue2>
                 </c:if>
                 <tags:nameValue2 nameKey=".dateRange">
-                    <dt:dateTime path="startDate" value="${filter.startDate}"/>
-                    <dt:dateTime path="endDate" value="${filter.endDate}"/>
+                    <dt:dateTime name="startDate" value="${filter.startDate}"/>
+                    <dt:dateTime name="endDate" value="${filter.endDate}"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             <div class="action-area">

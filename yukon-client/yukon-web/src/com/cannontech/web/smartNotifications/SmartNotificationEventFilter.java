@@ -1,28 +1,27 @@
 package com.cannontech.web.smartNotifications;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import org.joda.time.DateTime;
 
 import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 
 public class SmartNotificationEventFilter {
     
-    private DateTime startDate;
-    private DateTime endDate;
+    private Date startDate;
+    private Date endDate;
     private List<InfrastructureWarningDeviceCategory> categories = new ArrayList<>();
     
-    public DateTime getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
-    public void setStartDate(DateTime startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
-    public DateTime getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
-    public void setEndDate(DateTime endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
     public List<InfrastructureWarningDeviceCategory> getCategories() {
