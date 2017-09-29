@@ -113,7 +113,7 @@ public interface MspObjectDao {
             throws MultispeakWebServiceClientException;
 
     /**
-     * Returns a list of ElectricMeters for the given facilityNameValue(s)
+     * Returns a list of MspMeter(s) for the given facilityNameValue(s)
      * If the interface/method is not supported by mspVendor, or if no object is found,
      * an empty List<MspMeter> object is returned.
      * 
@@ -125,35 +125,35 @@ public interface MspObjectDao {
     public List<MspMeter> getMetersByContactInfo(Map<String, String> facilityNameValues, MultispeakVendor mspVendor);
 
     /**
-     * Returns a list of ElectricMeter(s) for given customerId(s).
+     * Returns a list of MspMeter(s) for given customerId(s).
      * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List<ElectricMeter> object is returned.
+     * an empty List<MspMeter> object is returned.
      * 
      * @param customerIDs The customerIDs to get the Meter information for.
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
-     * @return list of the ElectricMeter(s)
+     * @return list of the MspMeter(s)
      */
     public List<MspMeter> getMetersByCustomerIDs(List<String> customerIDs, MultispeakVendor mspVendor);
 
     /**
-     * Returns a list of ElectricMeter(s) for the given list of accountID(s).
+     * Returns a list of MspMeter(s) for the given list of accountID(s).
      * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List<ElectricMeter> object is returned.
+     * an empty List<MspMeter> object is returned.
      * 
      * @param accoundIDs The list of account IDs to get the Meter information for.
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
-     * @return List<ElectricMeter>
+     * @return List<MspMeter>
      */
     public List<MspMeter> getMetersByAccountIDs(List<String> accoundIDs, MultispeakVendor mspVendor);
 
     /**
-     * Returns a list of ElectricMeter(s) for the given search String .
+     * Returns a list of MspMeter(s) for the given search String .
      * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List<ElectricMeter> object is returned.
+     * an empty List<MspMeter> object is returned.
      * 
      * @param searchString The searchString to get the Meter information for.
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
-     * @return List<ElectricMeter>
+     * @return List<MspMeter>
      */
     public List<MspMeter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor);
 
@@ -177,14 +177,14 @@ public interface MspObjectDao {
     public List<String> getMspSubstationName(MultispeakVendor mspVendor, List<String> domainNames);
 
     /**
-     * Returns a list of the ElectricMeter(s) for the given location/NertworkModelRef(s).
+     * Returns a list of the MspMeter(s) for the given location/NertworkModelRef(s).
      * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List<ElectricMeter> object is returned.
+     * an empty List<MspMeter> object is returned.
      * 
      * @param List<String> locations : The list of NetworkModelRef(locations) to get the Meter information
      *        for.
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
-     * @return List<ElectricMeter>
+     * @return List<MspMeter>
      */
     public List<MspMeter> getMetersByNetworkModelRef(List<String> locations, MultispeakVendor mspVendor);
 
