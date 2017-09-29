@@ -76,31 +76,48 @@ public class SmartNotificationsController {
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
     
     @RequestMapping(value="events/{type}", method=RequestMethod.GET)
-    public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.asc, sort="TIMESTAMP") SortingParameters sorting, 
+    public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext) {
-        return retrieveEventDetail(type, 0, sorting, paging, userContext, model);
+                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult result) {
+        return retrieveEventDetail(type, null, sorting, paging, userContext, model, filter);
     }
     
-    @RequestMapping(value="events/{type}/{id}", method=RequestMethod.GET)
-    public String eventDetailByTypeId(@PathVariable String type, @PathVariable int id, @DefaultSort(dir=Direction.asc, sort="TIMESTAMP") SortingParameters sorting, 
+    @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
+    public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext) {
-        return retrieveEventDetail(type, id, sorting, paging, userContext, model);
+                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult result) {
+        return retrieveEventDetail(type, parameter, sorting, paging, userContext, model, filter);
     }
     
-    private String retrieveEventDetail(String type, int id, SortingParameters sorting, PagingParameters paging, YukonUserContext userContext, ModelMap model) {
+    private String retrieveEventDetail(String type, String parameter, SortingParameters sorting, PagingParameters paging, 
+                                       YukonUserContext userContext, ModelMap model, SmartNotificationEventFilter filter) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         SmartNotificationEventType eventType = SmartNotificationEventType.retrieveByUrlPath(type);
         model.addAttribute("eventType", eventType);
-        SmartNotificationEventFilter filter = new SmartNotificationEventFilter();
-        filter.setStartDate(new DateTime().minusDays(1).withTimeAtStartOfDay());
-        filter.setEndDate(new DateTime());
-        model.addAttribute("filter", filter);
-        SortBy sortBy = SortBy.valueOf(sorting.getSort());
-        Range<DateTime> range = new Range<DateTime>(filter.getStartDate(), true, filter.getEndDate(), true);
+        model.addAttribute("parameter", parameter);
+        if (filter.getStartDate() != null) {
+            filter.setStartDate(filter.getStartDate().withZone(userContext.getJodaTimeZone()));
+        } else {
+            DateTime start = new DateTime().minusDays(1).withTimeAtStartOfDay().withZone(userContext.getJodaTimeZone());
+            filter.setStartDate(start);
+        }
+        if (filter.getEndDate() != null) {
+            filter.setEndDate(filter.getEndDate().withZone(userContext.getJodaTimeZone()));
+        } else {
+            filter.setEndDate(new DateTime().withZone(userContext.getJodaTimeZone()));
+        }
+        EventSortBy sortBy = EventSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        for (EventSortBy column : EventSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
+        Range<DateTime> range = new Range<DateTime>(filter.getStartDate().toDateTime(), true, filter.getEndDate().toDateTime(), true);
         SearchResults<SmartNotificationEventData> eventData = new SearchResults<>();
         if (eventType.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
-            eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy, sorting.getDirection(), range, id);
+            int id = Integer.parseInt(parameter);
+            eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, id);
             ddmHelper.retrieveMonitorById(model, id);
         } else if (eventType.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
             List<PaoType> allTypes = new ArrayList<PaoType>();
@@ -108,7 +125,7 @@ public class SmartNotificationsController {
             allTypes.addAll(PaoType.getRfRelayTypes());
             allTypes.addAll(PaoType.getCcuTypes());
             allTypes.addAll(PaoType.getRepeaterTypes());
-            eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy, sorting.getDirection(), range, allTypes);
+            eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, allTypes);
         }
         model.addAttribute("events", eventData);
         return "eventDetail.jsp";
@@ -286,7 +303,30 @@ public class SmartNotificationsController {
 
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.smartNotifications." + name();
+            return baseKey + name();
+        }
+    }
+    
+    public enum EventSortBy implements DisplayableEnum {
+
+        deviceName(SortBy.DEVICE_NAME),
+        type(SortBy.TYPE),
+        status(SortBy.STATUS),
+        timestamp(SortBy.TIMESTAMP);
+        
+        private EventSortBy(SortBy value) {
+            this.value = value;
+        }
+
+        private final SortBy value;
+
+        public SortBy getValue() {
+            return value;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + "detail." + name();
         }
     }
 
