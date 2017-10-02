@@ -10,6 +10,7 @@
 <cti:standardPage module="smartNotifications" page="detail">
 
     <cti:toJson id="eventsjson" object="${events.resultList}"/>
+    <c:set var="showTypeColumn" value="${eventType == 'INFRASTRUCTURE_WARNING'}"/>
 
     <cti:url var="detailUrl" value="/notifications/events/${eventType.urlPath}"/>
     <c:if test="${!empty parameter}">
@@ -97,7 +98,9 @@
         <table class="compact-results-table has-actions row-highlighting">
             <tr>
                 <tags:sort column="${deviceName}" />
-                <tags:sort column="${type}" />
+                <c:if test="${showTypeColumn}">
+                    <tags:sort column="${type}" />
+                </c:if>
                 <tags:sort column="${status}" />
                 <tags:sort column="${timestamp}" />        
             </tr>
@@ -109,7 +112,9 @@
                                 ${event.deviceName}
                             </cti:paoDetailUrl>
                         </td>
-                        <td>${event.type}</td>
+                        <c:if test="${showTypeColumn}">
+                            <td>${event.type}</td>
+                        </c:if>
                         <td>${event.status}</td>
                         <td><cti:formatDate value="${event.timestamp}" type="BOTH"/></td>
                     </tr>

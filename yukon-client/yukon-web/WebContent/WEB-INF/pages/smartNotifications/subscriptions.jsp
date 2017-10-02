@@ -6,6 +6,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 
 <cti:msgScope paths="modules.smartNotifications">
 
@@ -67,7 +68,8 @@
                                         <c:if test="${subscription.frequency == 'DAILY_DIGEST'}">
                                             <input type="hidden" class="js-daily-row-time" value="${subscription.parameters['sendTime']}"/>
                                             <c:set var="dailyTime" value="${!empty sendTime ? sendTime : subscription.parameters['sendTime']}"/>
-                                            @ ${dailyTime}
+                                            <fmt:parseDate value="${dailyTime}" type="TIME" pattern="HH:mm" var="parsedTime"/>
+                                            @ <cti:formatDate value="${parsedTime}" type="TIME"/>
                                         </c:if>
                                     </td>
                                     <td><i:inline key="${subscription.media.formatKey}"/></td>
