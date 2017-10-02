@@ -27,7 +27,8 @@ yukon.smart.notifications = (function () {
            sendTimeValue = sendTimeField.val(),
            sendTimeValue = yukon.timeFormatter.parse24HourTime(sendTimeValue),
            userSettingSendTime = container.find('#userSettingSendTime').val(),
-           currentValue = userSettingSendTime ? userSettingSendTime : sendTimeValue,
+           userSettingSendTimeValue = yukon.timeFormatter.parse24HourTime(userSettingSendTime),
+           currentValue = userSettingSendTimeValue > 0 ? userSettingSendTimeValue : sendTimeValue,
            defaultValue = currentValue ? currentValue : 0;
        if (timeSlider) {
            //initialize time slider

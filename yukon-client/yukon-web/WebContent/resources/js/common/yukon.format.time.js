@@ -104,25 +104,6 @@ yukon.timeFormatter = (function () {
             return hourStr + ":" + minuteStr;
             
         },
-        
-        // Generates a time in the format HH:mm (12:30) to hh:mm AM/PM
-        format24HourTo12: function (time) {
-            var time_part_array = time.split(":");
-            var ampm = 'AM';
-
-            if (time_part_array[0] >= 12) {
-                ampm = 'PM';
-            }
-
-            if (time_part_array[0] > 12) {
-                time_part_array[0] = time_part_array[0] - 12;
-            }
-
-            formatted_time = time_part_array[0] + ':' + time_part_array[1] + ':' + time_part_array[2] + ' ' + ampm;
-
-            return formatted_time;
-            
-        },
     
         // Parses time in format - hh:mm AM into the number of minutes from midnight
         parseTime: function (time) {
