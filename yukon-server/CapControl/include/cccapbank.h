@@ -77,7 +77,7 @@ public:
     const std::string& getControllerType() const;
     long getControlDeviceId() const;
     long getControlPointId() const;
-    const std::string& getControlDeviceType() const;
+    std::string getControlDeviceType() const;
     long getBankSize() const;
     const std::string& getTypeOfSwitch() const;
     const std::string& getSwitchManufacture() const;
@@ -149,9 +149,7 @@ public:
     void setOperationalState(const std::string& operational);
     void setOperationalState(int value);
     void setControllerType(const std::string& controllertype);
-    void setControlDeviceId(long controldevice);
     void setControlPointId(long controlpoint);
-    void setControlDeviceType(const std::string& controlDeviceType);
     void setBankSize(long size);
     void setTypeOfSwitch(const std::string& switchtype);
     void setSwitchManufacture(const std::string& manufacture);
@@ -280,6 +278,11 @@ public:
     static constexpr int ClosePending       = STATESEVEN;
 
 //private:
+
+
+    void createCbc( const long ID, const std::string & Type );
+
+
 
     void handlePointData( const CtiPointDataMsg & message );
 

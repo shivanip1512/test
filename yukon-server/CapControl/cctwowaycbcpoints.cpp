@@ -84,6 +84,22 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paot
     // empty...
 }
 
+CtiCCTwoWayPoints::CtiCCTwoWayPoints( const CtiCCTwoWayPoints & twp )
+    :   _paoid( twp._paoid ),
+        _paotype( twp._paotype ),
+        _points( twp._points ),
+        _attributeIds( twp._attributeIds ),
+        _pointValues( twp._pointValues ),
+        _ovuvCountResetDate( twp._ovuvCountResetDate ),
+        _lastOvUvDateTime( twp._lastOvUvDateTime ),
+        _insertDynamicDataFlag( twp._insertDynamicDataFlag ),
+        _dirty( twp._dirty ),
+        _lastControlReason( twp._lastControlReason->clone() ),
+        _ignoredControlReason( twp._ignoredControlReason->clone() )
+{
+    // empty...
+}
+
 void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                                          const std::map<Attribute, std::string> & overloads )
 {
@@ -122,12 +138,12 @@ void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LiteP
     }
 }
 
-long CtiCCTwoWayPoints::getPAOId() const
+long CtiCCTwoWayPoints::getPaoId() const
 {
     return _paoid;
 }
 
-void CtiCCTwoWayPoints::setPAOId(long paoId)
+void CtiCCTwoWayPoints::setPaoId(long paoId)
 {
     _paoid = paoId;
 }
@@ -234,7 +250,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
     }
     else
     {
-        CTILOG_INFO(dout, "Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId());
+        CTILOG_INFO(dout, "Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPaoId());
         static const string insertSql = "insert into dynamiccctwowaycbc values ( "
                                         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "

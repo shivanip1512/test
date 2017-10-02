@@ -35,13 +35,13 @@ DEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCCapBank::CtiCCCapBank() :
+CapControlPao(),
 _parentId(0),
 _alarminhibitflag(false),
 _controlinhibitflag(false),
 _maxdailyops(0),
 _currentdailyoperations(0),
 _maxopsdisableflag(false),
-_controldeviceid(0),
 _controlpointid(0),
 _banksize(0),
 _reclosedelay(0),
@@ -86,9 +86,14 @@ _ignoreReason(0),
 _controlStatusQuality(false),
 _actionId(0),
 _insertDynamicDataFlag(true),
-_dirty(true)
+_dirty(false)
 {
     _ovuvSituationFlag = false;
+
+    createCbc( 0, "" );
+
+    _originalParent.setPAOId(getPaoId());
+
 }
 
 CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
@@ -148,9 +153,14 @@ CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
         _unsolicitedChangeTimeUpdated( gInvalidCtiTime ),
         _actionId( -1 ),
         _insertDynamicDataFlag( true ),
-        _dirty( true )
+        _dirty( false )
 {
     restore(rdr);
+
+    const long controlID = rdr["CONTROLDEVICEID"].as<long>();
+    const std::string cbcType = rdr["CbcType"].as<std::string>();
+
+    createCbc( controlID, cbcType );
 
     _originalParent.setPAOId(getPaoId());
 
@@ -174,13 +184,17 @@ CtiCCCapBank::~CtiCCCapBank()
 {
 }
 
+
+
+void CtiCCCapBank::createCbc( const long ID, const std::string & Type )
+{
+    _twoWayPoints.reset( CtiCCTwoWayPointsFactory::Create( ID, Type ) );
+}
+
+
+
 CtiCCTwoWayPoints & CtiCCCapBank::getTwoWayPoints()
 {
-    if ( ! _twoWayPoints )
-    {
-        _twoWayPoints.reset( CtiCCTwoWayPointsFactory::Create(_controldeviceid, _controlDeviceType) );
-    }
-
     return *_twoWayPoints;
 }
 
@@ -357,7 +371,9 @@ const string& CtiCCCapBank::getControllerType() const
 ---------------------------------------------------------------------------*/
 long CtiCCCapBank::getControlDeviceId() const
 {
-    return _controldeviceid;
+    return ( _twoWayPoints )
+                ? _twoWayPoints->getPaoId()
+                : 0;
 }
 
 /*---------------------------------------------------------------------------
@@ -371,9 +387,11 @@ long CtiCCCapBank::getControlPointId() const
 }
 
 
-const string& CtiCCCapBank::getControlDeviceType() const
+std::string CtiCCCapBank::getControlDeviceType() const
 {
-    return _controlDeviceType;
+    return ( _twoWayPoints )
+                ? _twoWayPoints->getPaoType()
+                : "";
 }
 /*---------------------------------------------------------------------------
     getBankSize
@@ -800,16 +818,6 @@ void CtiCCCapBank::setControllerType(const string& controllertype)
 }
 
 /*---------------------------------------------------------------------------
-    setControlDeviceId
-
-    Sets the control device id of the capbank
----------------------------------------------------------------------------*/
-void CtiCCCapBank::setControlDeviceId(long controldevice)
-{
-    _controldeviceid = controldevice;
-}
-
-/*---------------------------------------------------------------------------
     setControlPointId
 
     Sets the control point id of the capbank
@@ -817,12 +825,6 @@ void CtiCCCapBank::setControlDeviceId(long controldevice)
 void CtiCCCapBank::setControlPointId(long controlpoint)
 {
     _controlpointid = controlpoint;
-}
-
-void CtiCCCapBank::setControlDeviceType(const string& controlDeviceType)
-{
-    _controlDeviceType = controlDeviceType;
-
 }
 /*---------------------------------------------------------------------------
     setBankSize
@@ -1779,9 +1781,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _maxopsdisableflag = rightObj._maxopsdisableflag;
         _operationalstate = rightObj._operationalstate;
         _controllertype = rightObj._controllertype;
-        _controldeviceid = rightObj._controldeviceid;
         _controlpointid = rightObj._controlpointid;
-        _controlDeviceType = rightObj._controlDeviceType;
         _banksize = rightObj._banksize;
         _typeofswitch = rightObj._typeofswitch;
         _switchmanufacture = rightObj._switchmanufacture;
@@ -1840,14 +1840,13 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 
         _originalParent = rightObj._originalParent;
 
-        if ( rightObj._twoWayPoints )
-        {
-            _twoWayPoints.reset( CtiCCTwoWayPointsFactory::Create(rightObj._controldeviceid, rightObj._controlDeviceType) );
-        }
-        else
-        {
-            _twoWayPoints.reset();
-        }
+        _twoWayPoints.reset( rightObj._twoWayPoints
+                                ? new CtiCCTwoWayPoints( *rightObj._twoWayPoints )
+                                : nullptr );
+
+        _verificationControlStatus = rightObj._verificationControlStatus;
+        _retryFlag = rightObj._retryFlag;
+        _actionId = rightObj._actionId;
 
         _insertDynamicDataFlag = rightObj._insertDynamicDataFlag;
         _dirty = rightObj._dirty;
@@ -1867,7 +1866,6 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
 
     rdr["OPERATIONALSTATE"]  >> _operationalstate;
     rdr["ControllerType"]    >> _controllertype;
-    rdr["CONTROLDEVICEID"]   >> _controldeviceid;
     rdr["CONTROLPOINTID"]    >> _controlpointid;
     rdr["BANKSIZE"]          >> _banksize;
     rdr["TypeOfSwitch"]      >> _typeofswitch;
@@ -1875,21 +1873,10 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     rdr["MapLocationID"]     >> _maplocationid;
     rdr["RecloseDelay"]      >> _reclosedelay;
     rdr["MaxDailyOps"]       >> _maxdailyops;
-    rdr["CbcType"]           >> _controlDeviceType;
 
-    std::string flag;
-
-    rdr["MaxOpDisable"] >> flag;
-
-    _maxopsdisableflag = deserializeFlag( flag );
-
-    rdr["ALARMINHIBIT"] >> flag;
-
-    _alarminhibitflag = deserializeFlag( flag );
-
-    rdr["CONTROLINHIBIT"] >> flag;
-
-    _controlinhibitflag = deserializeFlag( flag );
+    _maxopsdisableflag  = deserializeFlag( rdr["MaxOpDisable"].as<std::string>() );
+    _alarminhibitflag   = deserializeFlag( rdr["ALARMINHIBIT"].as<std::string>() );
+    _controlinhibitflag = deserializeFlag( rdr["CONTROLINHIBIT"].as<std::string>() );
 }
 
 bool CtiCCCapBank::getInsertDynamicDataFlag() const

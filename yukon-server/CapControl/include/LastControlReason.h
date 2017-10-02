@@ -15,6 +15,8 @@ public:
 
     virtual long serialize( const CtiCCTwoWayPoints & points ) = 0;
     virtual void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) = 0;
+
+    virtual std::unique_ptr<LastControlReason>  clone() const = 0;
 };
 
 
@@ -29,6 +31,8 @@ public:
 
     long serialize( const CtiCCTwoWayPoints & points ) override;
     void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
+
+    std::unique_ptr<LastControlReason>  clone() const override;
 };
 
 
@@ -43,6 +47,8 @@ public:
 
     long serialize( const CtiCCTwoWayPoints & points ) override;
     void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
+
+    std::unique_ptr<LastControlReason>  clone() const override;
 
 protected:
 
@@ -78,6 +84,8 @@ public:
 
     long serialize( const CtiCCTwoWayPoints & points ) override;
     void deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
+
+    std::unique_ptr<LastControlReason>  clone() const override;
 
 protected:
 

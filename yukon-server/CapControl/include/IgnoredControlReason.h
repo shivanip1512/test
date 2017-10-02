@@ -22,6 +22,8 @@ public:
 
     virtual void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) = 0;
     virtual void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) = 0;
+
+    virtual std::unique_ptr<IgnoredControlReason>  clone() const = 0;
 };
 
 
@@ -43,6 +45,8 @@ public:
 
     void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
     void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
+
+    std::unique_ptr<IgnoredControlReason>  clone() const override;
 };
 
 
@@ -64,6 +68,8 @@ public:
 
     void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
     void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
+
+    std::unique_ptr<IgnoredControlReason>  clone() const override;
 
 protected:
 
@@ -114,6 +120,8 @@ public:
 
     void deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
     void deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp ) override;
+
+    std::unique_ptr<IgnoredControlReason>  clone() const override;
 
 protected:
 

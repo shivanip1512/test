@@ -89,10 +89,9 @@ BOOST_AUTO_TEST_CASE( test_commands )
     bus->setStrategy(100);
     bus->setStrategyManager(strategyManager);
 
-    bank->setControlDeviceId(6);
+    bank->createCbc( 6, "cbc 7010" );
     bank->setControlPointId(7);
     bank->setStatusPointId(8);
-    bank->setControlDeviceType("cbc 7010");
 
     store->addCapBankToCBCMap(bank);
 

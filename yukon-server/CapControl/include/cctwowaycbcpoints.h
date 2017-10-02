@@ -80,7 +80,10 @@ public:
                        std::unique_ptr<LastControlReason>    lastControlReason,
                        std::unique_ptr<IgnoredControlReason> ignoredControlReason );
 
-    long getPAOId() const;
+    CtiCCTwoWayPoints( const CtiCCTwoWayPoints & twp );
+
+    long getPaoId() const;
+    std::string getPaoType() const { return _paotype; }
 
     std::string getLastControlText();
     std::string getIgnoredControlText();
@@ -88,7 +91,7 @@ public:
     bool checkDeltaVoltageRejection();
     bool isControlAccepted();
 
-    void setPAOId(long paoId);
+    void setPaoId(long paoId);
 
     LitePoint getPointByAttribute( const Attribute & attribute ) const;
     long getPointIdByAttribute( const Attribute & attribute ) const;
@@ -134,7 +137,7 @@ protected:
 
 inline bool operator==( const CtiCCTwoWayPoints & lhs, const CtiCCTwoWayPoints & rhs )
 {
-    return lhs.getPAOId() == rhs.getPAOId();
+    return lhs.getPaoId() == rhs.getPaoId();
 }
 
 inline bool operator!=( const CtiCCTwoWayPoints & lhs, const CtiCCTwoWayPoints & rhs )

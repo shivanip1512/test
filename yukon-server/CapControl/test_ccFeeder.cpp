@@ -122,10 +122,9 @@ BOOST_AUTO_TEST_CASE(test_attemptToResendControl)
 
     initialize_capbank(store, bank, feeder, 1);
 
-    bank->setControlDeviceId(6);
+    bank->createCbc( 6, "cbc 7010" );
     bank->setControlPointId(7);
     bank->setStatusPointId(8);
-    bank->setControlDeviceType("cbc 7010");
 
     store->addCapBankToCBCMap(bank);
 
@@ -254,10 +253,9 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
 
     initialize_capbank(store, bank, feeder, 1);
 
-    bank->setControlDeviceId(6);
+    bank->createCbc( 6, "cbc 7010" );
     bank->setControlPointId(7);
     bank->setStatusPointId(8);
-    bank->setControlDeviceType("cbc 7010");
 
     store->addCapBankToCBCMap(bank);
 

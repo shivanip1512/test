@@ -58,9 +58,8 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
     initialize_feeder (store, feeder, bus, 1);
     initialize_capbank(store, bank, feeder, 1);
 
-    bank->setControlDeviceId(6);
+    bank->createCbc( 6, "cbc-3010" );
     bank->setControlPointId(7);
-    bank->setControlDeviceType("cbc-3010");
 
     store->addCapBankToCBCMap(bank);
 
