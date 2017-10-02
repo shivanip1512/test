@@ -1,5 +1,6 @@
 package com.cannontech.web.smartNotifications;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,6 +48,8 @@ import com.cannontech.common.smartNotification.service.SmartNotificationSubscrip
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -59,6 +62,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.user.service.UserPreferenceService;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -75,6 +79,7 @@ public class SmartNotificationsController {
     @Autowired private DeviceDataMonitorSubscriptionHelper ddmHelper;
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private SmartNotificationEventDao eventDao;
+    @Autowired private DateFormattingService dateFormattingService;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
     
@@ -112,8 +117,16 @@ public class SmartNotificationsController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
-        Range<DateTime> range = new Range<DateTime>(new DateTime(filter.getStartDate()), true, new DateTime(filter.getEndDate()), true);
+        SearchResults<SmartNotificationEventData> eventData = retrieveEventData(userContext, paging, eventType, parameter, sorting, filter, model);
+        model.addAttribute("events", eventData);
+        return "eventDetail.jsp";
+    }
+    
+    private SearchResults<SmartNotificationEventData> retrieveEventData(YukonUserContext userContext, PagingParameters paging, SmartNotificationEventType eventType, String parameter,
+                                                                        SortingParameters sorting, SmartNotificationEventFilter filter, ModelMap model) {
         SearchResults<SmartNotificationEventData> eventData = new SearchResults<>();
+        EventSortBy sortBy = EventSortBy.valueOf(sorting.getSort());
+        Range<DateTime> range = new Range<DateTime>(new DateTime(filter.getStartDate()), true, new DateTime(filter.getEndDate()), true);
         if (eventType.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
             int id = Integer.parseInt(parameter);
             eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, id);
@@ -140,8 +153,7 @@ public class SmartNotificationsController {
             }
             eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, allTypes);
         }
-        model.addAttribute("events", eventData);
-        return "eventDetail.jsp";
+        return eventData;
     }
     
     @RequestMapping(value="subscriptions", method=RequestMethod.GET)
@@ -237,10 +249,13 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="subscription/{id}/edit", method=RequestMethod.GET)
-    public String editSubscription(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
+    public String editSubscription(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        //TODO: check that user created the subscription
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
+        if (subscription.getUserId() != userContext.getYukonUser().getUserID()) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "editNotOwner"));
+            return "redirect:/user/profile";
+        }
         model.addAttribute("subscription", subscription);
         if (subscription.getType().equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
             ddmHelper.retrieveMonitor(model, subscription);
@@ -251,8 +266,12 @@ public class SmartNotificationsController {
     
     @RequestMapping(value="subscription/{id}/unsubscribe", method=RequestMethod.POST)
     public void removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp, FlashScope flash) {
-        //TODO: check that user created the subscription
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
+        if (subscription.getUserId() != userContext.getYukonUser().getUserID()) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "deleteNotOwner"));
+            resp.setStatus(HttpStatus.NO_CONTENT.value());
+            return;
+        }
         subscriptionService.deleteSubscription(id, userContext);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", subscription.getType().name()));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
@@ -305,6 +324,36 @@ public class SmartNotificationsController {
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
         return null;
     }
+    
+    @RequestMapping("download")
+    public String download(@ModelAttribute("filter") SmartNotificationEventFilter filter, YukonUserContext userContext, 
+                          @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, ModelMap model,
+                          String eventType, String parameter, HttpServletResponse response) throws IOException {
+        SmartNotificationEventType type = SmartNotificationEventType.valueOf(eventType);
+        SearchResults<SmartNotificationEventData> eventData = retrieveEventData(userContext, PagingParameters.EVERYTHING, type, parameter, sorting, filter, model);
+
+        boolean includeTypeRow = type.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String deviceNameHeader = accessor.getMessage(EventSortBy.deviceName);
+        String typeHeader = accessor.getMessage(EventSortBy.type);
+        String statusHeader = accessor.getMessage(EventSortBy.status);
+        String timestampHeader = accessor.getMessage(EventSortBy.timestamp);
+        String[] headerRow = includeTypeRow ? new String[]{deviceNameHeader, typeHeader, statusHeader, timestampHeader} : new String[]{deviceNameHeader, statusHeader, timestampHeader};
+
+        List<String[]> dataRows = Lists.newArrayList();
+        for (SmartNotificationEventData event : eventData.getResultList()) {
+            String name = event.getDeviceName();
+            String deviceType = event.getType();
+            String status = event.getStatus();
+            String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
+            String[] dataRow = includeTypeRow ? new String[]{name, deviceType, status, timestamp} : new String[]{name, status, timestamp};
+            dataRows.add(dataRow);
+        }
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "notificationEvents_" + eventType + "_" + now + ".csv");
+        return null;
+      }
+
     
     public enum SubscriptionSortBy implements DisplayableEnum {
 

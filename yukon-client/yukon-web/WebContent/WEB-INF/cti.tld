@@ -2313,8 +2313,13 @@
         Generates a url to the detail page for the specified pao
     </description>
     <attribute>
+        <name>paoId</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
         <name>yukonPao</name>
-        <required>true</required>
+        <required>false</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>

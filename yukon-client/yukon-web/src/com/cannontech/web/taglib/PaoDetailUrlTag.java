@@ -5,17 +5,22 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.util.TagUtils;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
+import com.cannontech.yukon.IDatabaseCache;
 
-@Configurable("paoDetailUrlTagPrototype")
+@Configurable(value="paoDetailUrlTagPrototype", autowire=Autowire.BY_NAME)
 public class PaoDetailUrlTag extends YukonTagSupport {
     
     private PaoDetailUrlHelper paoDetailUrlHelper;
+    @Autowired private IDatabaseCache cache;
 
+    private int paoId;
     private YukonPao yukonPao;
     private String var;
     private boolean newTab;
@@ -24,6 +29,9 @@ public class PaoDetailUrlTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         
+        if (yukonPao == null) {
+            yukonPao = cache.getAllPaosMap().get(paoId);
+        }
         String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(yukonPao);
         
         JspWriter out = getJspContext().getOut();
@@ -67,6 +75,10 @@ public class PaoDetailUrlTag extends YukonTagSupport {
     
     public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
         this.paoDetailUrlHelper = paoDetailUrlHelper;
+    }
+
+    public void setPaoId(int paoId) {
+        this.paoId = paoId;
     }
     
 }

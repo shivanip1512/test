@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="smartNotifications" page="detail">
 
@@ -14,18 +15,20 @@
     <c:if test="${!empty parameter}">
         <cti:url var="detailUrl" value="/notifications/events/${eventType.urlPath}/${parameter}"/>
     </c:if>
-    <form:form action="${detailUrl}" method="GET" commandName="filter">
+    <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter">
     <cti:csrfToken/>
     <div class="column-14-10 clearfix stacked">
-        <h3>Filters</h3>
+        <h3><i:inline key="yukon.common.filters"/></h3>
         <div class="column one" style="border:1px solid #ccc;padding:5px;">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".type">
                     <i:inline key="${eventType.formatKey}"/>
+                    <input type="hidden" name="eventType" value="${eventType}"/>
                 </tags:nameValue2>
                 <c:if test="${!empty monitorName}">
                     <tags:nameValue2 nameKey=".monitor">
                         ${monitorName}
+                        <input type="hidden" name="parameter" value="${parameter}"/>
                     </tags:nameValue2>
                 </c:if>
                 <c:if test="${!empty types}">
@@ -60,6 +63,36 @@
     <span class="fwn"><i:inline key=".filteredResults"/></span>
     <span class="badge">${events.hitCount}</span>&nbsp;<i:inline key=".devices"/>
     
+    <c:if test="${events.hitCount > 0}">
+        <span class="js-cog-menu">
+            <cm:dropdown icon="icon-cog">
+<%--                 <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}"/>
+                    </c:forEach>
+                </cti:url>
+                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>  --%>
+                <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
+<%--                 <cti:url var="mapUrl" value="/tools/map">
+                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                </cti:url>
+                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
+                <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}"/>
+                    </c:forEach>                
+                </cti:url>
+                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>          
+                <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}"/>
+                    </c:forEach>                
+                </cti:url>
+                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/> --%>
+            </cm:dropdown>
+        </span>
+    </c:if>
+    
     <div data-url="${detailUrl}" data-static>
         <table class="compact-results-table has-actions row-highlighting">
             <tr>
@@ -72,14 +105,11 @@
                 <c:forEach var="event" items="${events.resultList}">
                     <tr>
                         <td>
-    <%--                         <cti:paoDetailUrl yukonPao="${event}" newTab="true"> --%>
+                            <cti:paoDetailUrl paoId="${event.deviceId}" newTab="true">
                                 ${event.deviceName}
-    <%--                         </cti:paoDetailUrl> --%>
+                            </cti:paoDetailUrl>
                         </td>
-                        <td>
-    <%--                         <tags:paoType yukonPao="${event}"/> --%>
-                            ${event.type}
-                        </td>
+                        <td>${event.type}</td>
                         <td>${event.status}</td>
                         <td><cti:formatDate value="${event.timestamp}" type="BOTH"/></td>
                     </tr>
