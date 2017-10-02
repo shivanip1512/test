@@ -50,7 +50,7 @@ void IgnoredControlReasonCbcDnp::deserializeReason( CtiCCTwoWayPoints & points, 
 
 std::unique_ptr<IgnoredControlReason>  IgnoredControlReasonCbcDnp::clone() const
 {
-    return std::unique_ptr<IgnoredControlReason>( new IgnoredControlReasonCbcDnp( *this ) );
+    return std::make_unique<IgnoredControlReasonCbcDnp>( *this );
 }
 
 
@@ -145,7 +145,7 @@ void IgnoredControlReasonCbc702x::deserializeReason( CtiCCTwoWayPoints & points,
 
 std::unique_ptr<IgnoredControlReason>  IgnoredControlReasonCbc702x::clone() const
 {
-    return std::unique_ptr<IgnoredControlReason>( new IgnoredControlReasonCbc702x( *this ) );
+    return std::make_unique<IgnoredControlReasonCbc702x>( *this );
 }
 
 
@@ -230,6 +230,6 @@ std::string IgnoredControlReasonCbc802x::lookupStateName( const long reason, con
 
 std::unique_ptr<IgnoredControlReason>  IgnoredControlReasonCbc802x::clone() const
 {
-    return std::unique_ptr<IgnoredControlReason>( new IgnoredControlReasonCbc802x( *this ) );
+    return std::make_unique<IgnoredControlReasonCbc802x>( *this );
 }
 

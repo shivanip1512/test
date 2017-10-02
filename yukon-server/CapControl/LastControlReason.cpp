@@ -25,7 +25,7 @@ void LastControlReasonCbcDnp::deserialize( CtiCCTwoWayPoints & points, const int
 
 std::unique_ptr<LastControlReason>  LastControlReasonCbcDnp::clone() const
 {
-    return std::unique_ptr<LastControlReason>( new LastControlReasonCbcDnp( *this ) );
+    return std::make_unique<LastControlReasonCbcDnp>( *this );
 }
 
 
@@ -87,7 +87,7 @@ void LastControlReasonCbc702x::deserialize( CtiCCTwoWayPoints & points, const in
 
 std::unique_ptr<LastControlReason>  LastControlReasonCbc702x::clone() const
 {
-    return std::unique_ptr<LastControlReason>( new LastControlReasonCbc702x( *this ) );
+    return std::make_unique<LastControlReasonCbc702x>( *this );
 }
 
 
@@ -144,6 +144,6 @@ std::string LastControlReasonCbc802x::lookupStateName( const long reason, const 
 
 std::unique_ptr<LastControlReason>  LastControlReasonCbc802x::clone() const
 {
-    return std::unique_ptr<LastControlReason>( new LastControlReasonCbc802x( *this ) );
+    return std::make_unique<LastControlReasonCbc802x>( *this );
 }
 
