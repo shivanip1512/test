@@ -8,6 +8,8 @@
 
 <cti:standardPage module="smartNotifications" page="detail">
 
+    <cti:toJson id="eventsjson" object="${events.resultList}"/>
+
     <cti:url var="detailUrl" value="/notifications/events/${eventType.urlPath}"/>
     <c:if test="${!empty parameter}">
         <cti:url var="detailUrl" value="/notifications/events/${eventType.urlPath}/${parameter}"/>
@@ -41,8 +43,8 @@
                     </tags:nameValue2>
                 </c:if>
                 <tags:nameValue2 nameKey=".dateRange">
-                    <dt:dateTime name="startDate" value="${filter.startDate}"/>
-                    <dt:dateTime name="endDate" value="${filter.endDate}"/>
+                    <dt:dateTime id="startDateFilter" name="startDate" value="${filter.startDate}"/>
+                    <dt:dateTime id="endDateFilter" name="endDate" value="${filter.endDate}"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             <div class="action-area">
@@ -52,6 +54,8 @@
         </div>
     </div>
     </form:form>
+    
+    <div class="js-events-timeline clear" style="margin-top:30px;margin-bottom:30px;"></div>
     
     <span class="fwn"><i:inline key=".filteredResults"/></span>
     <span class="badge">${events.hitCount}</span>&nbsp;<i:inline key=".devices"/>
@@ -84,6 +88,12 @@
         </table>
         <tags:pagingResultsControls result="${events}" adjustPageCount="true" thousands="true"/>
     </div>
+               
+    <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
+    
+    <script>
+        yukon.smart.notifications.initEventsTimeline();
+    </script>
                 
 
 </cti:standardPage>

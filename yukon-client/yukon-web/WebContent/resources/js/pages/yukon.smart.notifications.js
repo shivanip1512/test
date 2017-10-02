@@ -69,10 +69,35 @@ yukon.smart.notifications = (function () {
         }
     },
     
+    initializeEventsTimeline = function () {
+        var timeline = $('.js-events-timeline'),
+            eventData = yukon.fromJson('#eventsjson'),
+            toAdd = [],
+            options = {},
+            startDate = $('#startDateFilter').val(),
+            endDate = $('#endDateFilter').val();
+        options.begin = new Date(startDate).getTime();
+        options.end = new Date(endDate).getTime();
+
+        // Reverse order to add oldest first.
+        eventData.reverse().forEach(function (event) {
+            event.message = "<strong>" + event.deviceName + "</strong> - " + event.status;
+            event.timestamp = event.timestamp.millis;
+            toAdd.push(event);
+        });
+        options.events = toAdd;
+        timeline.timeline(options);
+        timeline.timeline('draw');
+    },
+    
     mod = {
             
         initTimeSlider : function () {
             initializeTimeSlider($('#send-time'));
+        },
+        
+        initEventsTimeline : function () {
+            initializeEventsTimeline();
         },
         
         /** Initialize this module. */
@@ -152,7 +177,7 @@ yukon.smart.notifications = (function () {
             });
             
             initializeSmartNotificationsTable();
-      
+
             _initialized = true;
         },
         
