@@ -33,10 +33,11 @@ public class MessageParametersHelper {
         for (MediaVerbosity mv : split.keySet()) {
             Set<SmartNotificationSubscription> subscriptions = split.get(mv);
             List<String> recipients = subscriptions.stream().map(s -> s.getRecipient()).collect(Collectors.toList());
-            List<SmartNotificationEvent> events = new ArrayList<>();
-            subscriptions.forEach(s -> {
-                events.addAll(subscriptionToEvent.get(s));
-            });
+            
+            List<SmartNotificationEvent> events = subscriptions.stream()
+                    .map(subscriptionToEvent::get)
+                    .flatMap(Set::stream)
+                    .collect(Collectors.toList());
 
             SmartNotificationMessageParameters param = new SmartNotificationMessageParameters(type, mv.media,
                 mv.verbosity, recipients, events.stream().map(e -> e).collect(Collectors.toList()));

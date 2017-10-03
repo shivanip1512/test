@@ -113,7 +113,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         }
     }
     
-    private final class NameValue {
+    private final static class NameValue {
         public NameValue(String name, String value) {
             this.name = name;
             this.value = value;
