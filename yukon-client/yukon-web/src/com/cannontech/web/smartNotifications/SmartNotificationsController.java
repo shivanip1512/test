@@ -26,6 +26,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.monitors.MonitorCacheService;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -48,6 +54,7 @@ import com.cannontech.common.smartNotification.service.SmartNotificationSubscrip
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.UserPreferenceName;
@@ -80,6 +87,10 @@ public class SmartNotificationsController {
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private SmartNotificationEventDao eventDao;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 
     private final static String baseKey = "yukon.web.modules.smartNotifications.";
     
@@ -127,9 +138,11 @@ public class SmartNotificationsController {
         SearchResults<SmartNotificationEventData> eventData = new SearchResults<>();
         EventSortBy sortBy = EventSortBy.valueOf(sorting.getSort());
         Range<DateTime> range = new Range<DateTime>(new DateTime(filter.getStartDate()), true, new DateTime(filter.getEndDate()), true);
+        SearchResults<SmartNotificationEventData> allDetail = new SearchResults<>();
         if (eventType.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
             int id = Integer.parseInt(parameter);
             eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, id);
+            allDetail = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range, id);
             ddmHelper.retrieveMonitorById(model, id);
         } else if (eventType.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
             InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
@@ -152,7 +165,15 @@ public class SmartNotificationsController {
                 allTypes.addAll(PaoType.getRepeaterTypes());
             }
             eventData = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, allTypes);
+            allDetail = eventDao.getInfrastructureWarningEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range, allTypes);
         }
+        List<SimpleDevice> devices = new ArrayList<>();
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        allDetail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getDeviceId())));
+        deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
+        
+        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
+        model.addAttribute("deviceCollection", deviceCollection);
         return eventData;
     }
     

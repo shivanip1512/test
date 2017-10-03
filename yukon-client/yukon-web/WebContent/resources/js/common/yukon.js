@@ -633,8 +633,8 @@ yukon.namespace = function (ns) {
                 var tooltip = tooltipped.find('.js-event-tooltip');
 
                 if (tooltip.find('li').length > 10) {
-                    
-                    tooltip.find('li:gt(10)').remove();
+                                        
+                    tooltip.find('li:gt(9)').remove();
                     
                     var moreCount = tooltipped.data('count') - 10;
                     var moreText = yg.text.more.replace(/\{0\}/g, '<strong>' + moreCount + '</strong>');

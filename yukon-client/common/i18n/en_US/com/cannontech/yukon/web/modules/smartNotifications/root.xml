@@ -26,7 +26,12 @@
     <entry key="yukon.web.modules.smartNotifications.detail.timestamp">Timestamp</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.deviceTypes">Device Types</entry>
     <entry key="yukon.web.modules.smartNotifications.detail.filteredResults">Filtered Results:</entry>
-    <entry key="yukon.web.modules.smartNotifications.detail.devices">Devices</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.events">Events</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.collectionActions">Collection Actions</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.mapDevices">Map Devices</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.download">Download</entry>    
+    <entry key="yukon.web.modules.smartNotifications.detail.readAttribute">Read Attribute</entry>
+    <entry key="yukon.web.modules.smartNotifications.detail.sendCommand">Send Command</entry>
     
     <!-- Subscription popup -->
     <entry key="yukon.web.modules.smartNotifications.actionLink">Notifications</entry>

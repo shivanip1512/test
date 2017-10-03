@@ -62,19 +62,19 @@
     <div class="js-events-timeline clear" style="margin-top:30px;margin-bottom:30px;"></div>
     
     <span class="fwn"><i:inline key=".filteredResults"/></span>
-    <span class="badge">${events.hitCount}</span>&nbsp;<i:inline key=".devices"/>
+    <span class="badge">${events.hitCount}</span>&nbsp;<i:inline key=".events"/>
     
     <c:if test="${events.hitCount > 0}">
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
-<%--                 <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
                     <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                         <cti:param name="${cp.key}" value="${cp.value}"/>
                     </c:forEach>
                 </cti:url>
-                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>  --%>
-                <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
-<%--                 <cti:url var="mapUrl" value="/tools/map">
+                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/> 
+                <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
+                <cti:url var="mapUrl" value="/tools/map">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
                 <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
@@ -89,7 +89,7 @@
                         <cti:param name="${cp.key}" value="${cp.value}"/>
                     </c:forEach>                
                 </cti:url>
-                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/> --%>
+                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
             </cm:dropdown>
         </span>
     </c:if>
