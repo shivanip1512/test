@@ -183,6 +183,12 @@ yukon.smart.notifications = (function () {
                 window.location = yukon.url('/notifications/download?' + data);
             });
             
+            $(document).on('click', '.js-settings-link', function (ev) {
+                var popup = $(this).closest('.js-smart-notifications-popup');
+                popup.dialog('close');
+                window.location = yukon.url('/user/profile?#notifications-section');
+            });
+            
             initializeSmartNotificationsTable();
 
             _initialized = true;

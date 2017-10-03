@@ -11,10 +11,10 @@
         <cti:csrfToken/>
         <form:hidden path="id"/>
         <span class="fr">
-            <cti:link href="/user/profile#notifications-section" key="yukon.web.modules.smartNotifications.settingsLink"/>
-            <cti:button renderMode="image" icon="icon-help" classes="fr" onclick="$('#user-message').removeClass('dn');"/>
+            <a href="#" class="js-settings-link"><i:inline key="yukon.web.modules.smartNotifications.settingsLink"/></a>
+            <cti:button renderMode="image" icon="icon-help" classes="fr" onclick="$('.js-user-message').removeClass('dn');"/>
         </span><br/>
-        <tags:alertBox type="info" key=".popup.helpText" classes="dn" includeCloseButton="true"/>
+        <tags:alertBox type="info" key=".popup.helpText" classes="dn js-user-message" includeCloseButton="true"/>
 
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".type">
