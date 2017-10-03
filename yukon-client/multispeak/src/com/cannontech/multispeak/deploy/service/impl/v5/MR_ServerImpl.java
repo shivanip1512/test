@@ -30,7 +30,7 @@ import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterIDs;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
-import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
 import com.cannontech.multispeak.block.v5.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -55,7 +55,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 
-public class MR_ServerImpl implements MR_Server{
+public class MR_ServerImpl implements MR_Server {
 
     @Autowired private DemandResetService demandResetService;
     @Autowired @Qualifier("mspMeterDaoV5") private MspMeterDao mspMeterDao;
@@ -162,7 +162,7 @@ public class MR_ServerImpl implements MR_Server{
     }
     
     @Override
-    public List<MspMeter> getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
+    public Meters getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetAMRSupportedMeters", vendor.getCompanyName());
@@ -172,9 +172,9 @@ public class MR_ServerImpl implements MR_Server{
 
         multispeakFuncs.updateResponseHeader(meterList);
 
-        log.info("Returning " + meterList.getMeters().size() + " AMR Supported Meters. ("
+        log.info("Returning " + meterList.getSize() + " AMR Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
-        multispeakEventLogService.returnObjects(meterList.getMeters().size(), meterList.getObjectsRemaining(), "Meter",
+        multispeakEventLogService.returnObjects(meterList.getSize(), meterList.getObjectsRemaining(), "Meter",
             meterList.getLastSent(), "GetAMRSupportedMeters", vendor.getCompanyName());
 
         return meterList.getMeters();

@@ -34,10 +34,7 @@ import com.cannontech.msp.beans.v5.multispeak.CDDevice;
 import com.cannontech.msp.beans.v5.multispeak.CDDeviceIdentifier;
 import com.cannontech.msp.beans.v5.multispeak.CDState;
 import com.cannontech.msp.beans.v5.multispeak.ConnectDisconnectEvent;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeters;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
-import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
@@ -92,7 +89,7 @@ public class CD_ServerImpl implements CD_Server {
 
         multispeakFuncs.updateResponseHeader(mspCDDevices);
 
-        List<CDDevice> cdMeters = mspCDDevices.getCDMeters();
+        List<CDDevice> cdMeters = mspCDDevices.getCDDevices();
         log.info("Returning " + cdMeters.size() + " CD Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
         multispeakEventLogService.returnObjects(cdMeters.size(), mspCDDevices.getObjectsRemaining(), "CDDevice",
@@ -110,22 +107,12 @@ public class CD_ServerImpl implements CD_Server {
 
         multispeakFuncs.updateResponseHeader(meterList);
 
-        List<MspMeter> mspMeterList =  meterList.getMeters();
-        log.info("Returning " + mspMeterList.size() + " CD Enabled Supported Meters. ("
+        log.info("Returning " + meterList.getSize() + " CD Enabled Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
-        multispeakEventLogService.returnObjects(mspMeterList.size(), meterList.getObjectsRemaining(), "Meters",
+        multispeakEventLogService.returnObjects(meterList.getSize(), meterList.getObjectsRemaining(), "Meters",
             meterList.getLastSent(), "GetCDEnabledMeters", vendor.getCompanyName());
         
-        Meters meters = new Meters();
-        ElectricMeters electricMeters = new ElectricMeters();
-        for (MspMeter meter : mspMeterList) {
-            if (meter instanceof ElectricMeter) {
-                electricMeters.getElectricMeter().add((ElectricMeter) meter);
-            }
-        }
-        meters.setElectricMeters(electricMeters);
-        
-        return meters;
+        return meterList.getMeters();
     }
     
 

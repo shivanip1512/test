@@ -1,13 +1,16 @@
 package com.cannontech.multispeak.dao.impl.v5;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.YukonResultSet;
@@ -41,8 +44,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
     private static final YukonRowMapper<CDDevice> mspCDDeviceRowMapper = new YukonRowMapper<CDDevice>() {
         @Override
         public CDDevice mapRow(YukonResultSet rset) throws SQLException {
-            CDDevice mspMeter = createMeterID(rset);
-            return mspMeter;
+            CDDevice cdDevice = createMeterID(rset);
+            return cdDevice;
         };
     };
 
@@ -50,29 +53,55 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
     public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords) {
 
         SqlStatementBuilder sql = buildSqlStatementForAMRSupportedMeters(lastReceived);
-        List<MspMeter> mspMeters = new ArrayList<MspMeter>();
-        CollectionRowCallbackHandler<MspMeter> crcHandler =
-            new CollectionRowCallbackHandler<MspMeter>(mspMeterRowMapper, mspMeters);
-        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
-        MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
-        mspMeterReturnList.setMeters(mspMeters);
-        mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
-        return mspMeterReturnList;
+
+        MspMeterReturnList mspMeters = new MspMeterReturnList();
+        List<ElectricMeter> electricMeters = new ArrayList<>();
+        List<WaterMeter> waterMeters = new ArrayList<>();
+        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(new AbstractRowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs, int rowNum) throws SQLException {
+                MspMeter mspMeter = mspMeterRowMapper.mapRow(new YukonResultSet(rs));
+                if (mspMeter instanceof ElectricMeter) {
+                    electricMeters.add((ElectricMeter) mspMeter);
+                } else if (mspMeter instanceof WaterMeter) {
+                    waterMeters.add((WaterMeter) mspMeter);
+                }
+
+                // setting the last object we'll process as we loop through them.
+                mspMeters.setLastProcessed(mspMeter);
+            }
+        }, maxRecords));
+
+        mspMeters.setElectricMeters(electricMeters);
+        mspMeters.setWaterMeters(waterMeters);
+
+        mspMeters.setReturnFields(mspMeters.getLastProcessed(), mspMeters.getSize(), maxRecords);
+        return mspMeters;
     }
 
     @Override
     public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords) {
 
         SqlStatementBuilder sql = buildSqlStatementForCDSupportedMeters(lastReceived);
-        List<MspMeter> mspMeters = new ArrayList<MspMeter>();
-        CollectionRowCallbackHandler<MspMeter> crcHandler =
-            new CollectionRowCallbackHandler<MspMeter>(mspMeterRowMapper, mspMeters);
-        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
 
-        MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
-        mspMeterReturnList.setMeters(mspMeters);
-        mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
-        return mspMeterReturnList;
+        MspMeterReturnList mspMeters = new MspMeterReturnList();
+        List<ElectricMeter> electricMeters = new ArrayList<>();
+
+        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(new AbstractRowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs, int rowNum) throws SQLException {
+                MspMeter mspMeter = mspMeterRowMapper.mapRow(new YukonResultSet(rs));
+                electricMeters.add((ElectricMeter) mspMeter);
+            }
+        }, maxRecords));
+        
+        MspMeter lastProcessedMeter = null;
+        if(CollectionUtils.isNotEmpty(electricMeters)) {
+            lastProcessedMeter = electricMeters.get(electricMeters.size()-1);
+        }
+        mspMeters.setElectricMeters(electricMeters);
+        mspMeters.setReturnFields(lastProcessedMeter, mspMeters.getSize(), maxRecords);
+        return mspMeters;
     }
 
     @Override
@@ -85,7 +114,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
 
         MspCDDeviceReturnList mspCDDeviceReturnList = new MspCDDeviceReturnList();
-        mspCDDeviceReturnList.setCDMeters(mspCDMeters);
+        mspCDDeviceReturnList.setCDDevices(mspCDMeters);
         mspCDDeviceReturnList.setReturnFields(mspCDMeters, maxRecords);
         return mspCDDeviceReturnList;
     }

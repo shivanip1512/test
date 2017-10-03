@@ -11,7 +11,7 @@ import com.cannontech.msp.beans.v5.commontypes.ObjectID;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
-import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -50,7 +50,7 @@ public interface MR_Server {
      * @param lastReceived
      * @return
      */
-    public List<MspMeter> getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
+    public Meters getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
 
     /**
      * get Latest Readings

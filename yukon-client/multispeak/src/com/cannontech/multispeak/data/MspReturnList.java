@@ -43,14 +43,7 @@ public abstract class MspReturnList {
         try {
             // Set the lastSet with the last meternumber in meters; meters is ordered by meterNumber
             Object lastObject = Iterables.getLast(objects);
-        	String lastSentObjectId = getLastSentObjectId(lastObject);
-
-            setLastSent(lastSentObjectId);
-            
-            // Set the objectsRemaining, counting Meters (not elements of the extending class's return List).  
-            int numberRemaining = (objects.size() >= maxRecords ? -1 : 0); 
-            setObjectsRemaining(numberRemaining);
-
+            setReturnFields(lastObject, objects.size(), maxRecords);
         } catch (NoSuchElementException e) {
             // skip...we don't have any lastSent item to report.
             // objectsRemaining will be 0 by default
@@ -58,12 +51,34 @@ public abstract class MspReturnList {
     }
     
     /**
+     * Helper method to populate lastSent and objectsRemaining from a list of objects.
+     * ObjectsRemaining is -1 when size of objects is >= maxRecords (expectMore) but exact number unknown, else 0.
+     * LastSent is the determined by getLastSentObjectId using last in object list.
+     * Note: Expect objects to be an ordered list (by MeterNumber values for example)
+     * @param maxRecords
+     * @param meters
+     */
+    public void setReturnFields(Object lastObject, int size, int maxRecords) {
+
+        // Set the lastSet with the last meternumber in meters; meters is ordered by meterNumber
+        String lastSentObjectId = getLastSentObjectId(lastObject);
+
+        setLastSent(lastSentObjectId);
+        
+        // Set the objectsRemaining, counting Meters (not elements of the extending class's return List).  
+        int numberRemaining = (size >= maxRecords ? -1 : 0); 
+        setObjectsRemaining(numberRemaining);
+    }
+
+    /**
      * Helper method to parse specific instance type of lastObject and return a single string value
      *  representing this object's MultiSpeak identifier. In most cases, this will be meter number or service location.
      * @param lastObject
      */
     private String getLastSentObjectId(Object lastObject) {
-        if (lastObject instanceof YukonMeter) {
+        if (lastObject == null) {
+            return "";
+        } else if (lastObject instanceof YukonMeter) {
             return ((YukonMeter)lastObject).getMeterNumber();
         } else if (lastObject instanceof com.cannontech.msp.beans.v3.Meter) {
             return ((com.cannontech.msp.beans.v3.Meter)lastObject).getMeterNo();
