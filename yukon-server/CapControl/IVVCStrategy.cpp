@@ -58,6 +58,23 @@ void IVVCStrategy::setPointDataRequestFactory(const PointDataRequestFactoryPtr& 
     _ivvcAlgorithm.setPointDataRequestFactory(factory);
 }
 
+namespace
+{
+
+template<typename T>
+boost::optional<T> findAccessor( const std::map< std::string, std::map< std::string, T > > lookup,
+                                 const std::string & name, const std::string & type )
+{
+    if ( const auto nameSearch = Cti::mapFind( lookup, name ) )
+    {
+        return Cti::mapFind( *nameSearch, type );
+    }
+
+    return boost::none;
+}
+
+}
+
 void IVVCStrategy::restoreParameters( const std::string &name, const std::string &type, const std::string &value )
 {
     static const std::map< std::string, std::map< std::string, double IVVCStrategy::* > >   directLookup
@@ -131,32 +148,17 @@ void IVVCStrategy::restoreParameters( const std::string &name, const std::string
         }
     };
 
-    bool    foundDirect = false,
-            foundSetter = false;
-
     double  aValue = std::atof( value.c_str() );
 
-    if ( const auto nameSearch = Cti::mapFind( directLookup, name ) )
+    if ( const auto varptr = findAccessor( directLookup, name, type ) )
     {
-        if ( const auto typeSearch = Cti::mapFind( *nameSearch, type ) )
-        {
-            this->*(*typeSearch) = aValue;
-
-            foundDirect = true;
-        }
+        this->*(*varptr) = aValue;
     }
-    
-    if ( const auto nameSearch = Cti::mapFind( setterLookup, name ) )
+    else if ( const auto setter = findAccessor( setterLookup, name, type ) )
     {
-        if ( const auto typeSearch = Cti::mapFind( *nameSearch, type ) )
-        {
-            (this->*(*typeSearch))( aValue );
-
-            foundSetter = true;
-        }
+        (this->*(*setter))( aValue );
     }
-
-    if ( ! ( foundDirect || foundSetter ) )
+    else
     {
         Cti::FormattedList  error;
 
