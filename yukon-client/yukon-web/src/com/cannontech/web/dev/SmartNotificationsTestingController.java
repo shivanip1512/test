@@ -38,6 +38,7 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -168,9 +169,9 @@ public class SmartNotificationsTestingController {
         userIds.forEach(id -> {
             subscription.setId(0);
             subscription.setUserId(id);
-     //       if (subscription.getRecipient().isEmpty()) {
+            if (generateTestEmailAddresses) {
                 subscription.setRecipient(id + "@eaton.com");
-       //     }
+            }
             subscriptionService.saveSubscription(subscription, userContext);
         });
         return "redirect:smartNotificationsSimulator";
@@ -189,6 +190,9 @@ public class SmartNotificationsTestingController {
             List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
             Collections.shuffle(types);
             params.put(InfrastructureWarningsParametersAssembler.WARNING_TYPE, types.get(0));
+            List<InfrastructureWarningSeverity> severity = Lists.newArrayList(InfrastructureWarningSeverity.values());
+            Collections.shuffle(severity);
+            params.put(InfrastructureWarningsParametersAssembler.WARNING_SEVERITY, severity.get(0));
         }
         return params;
     }
