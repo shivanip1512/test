@@ -1,5 +1,9 @@
 package com.cannontech.capcontrol.service.impl;
 
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -30,5 +34,28 @@ public class CbcHelperServiceImpl implements CbcHelperService {
     
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Override
+    public void trimLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback) {
+        Pattern pattern = Pattern.compile("^\\*Logical<.*>");
+        Matcher matcher = pattern.matcher(pointName);
+        if (matcher.find()) {
+            String prefix = matcher.group(0);
+            pointNameCallback.accept(pointName.replace(prefix, ""));
+            if (deviceNameCallback != null) {
+                deviceNameCallback.accept(prefix.substring(9, prefix.length() - 1));
+            }
+        }
+    }
+    
+    @Override
+    public void updateLogicalPointName(String oldPointName, String newPointName, Consumer<String> pointNameCallback) {
+        Pattern pattern = Pattern.compile("^\\*Logical<.*>");
+        Matcher matcher = pattern.matcher(oldPointName);
+        if (matcher.find()) {
+            String prefix = matcher.group(0);
+            pointNameCallback.accept(prefix+newPointName);
+        }
     }
 }

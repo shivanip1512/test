@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
@@ -124,6 +123,7 @@ public class TdcDisplayController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private TdcCustomDisplayValidator customDisplayValidator;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private CbcHelperService cbcHelperService;
     
     private final static String baseKey = "yukon.web.modules.tools.tdc.";
     private final static int itemsPerPage = 50;
@@ -176,17 +176,14 @@ public class TdcDisplayController {
         model.addAttribute("display", display);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
         for (DisplayData item: displayData) {
-            Pattern pattern = Pattern.compile("^\\*Logical<.*>");
-            Matcher matcher = pattern.matcher(item.getPointName());
-            if (matcher.find()) {
-                String prefix = matcher.group(0);
-                item.setPointName(item.getPointName().replace(prefix, ""));
-                item.setDeviceName(prefix.substring(9, prefix.length() - 1));
-                LiteYukonPAObject lpo = deviceDao.getLiteYukonPAObject(item.getDeviceName(), PaoType.CBC_LOGICAL);
-                if (lpo != null) {
-                    item.setDevice(SimpleDevice.of(lpo.getPaoIdentifier()));
-                }
-            }        
+            cbcHelperService.trimLogicalPointName(item.getPointName(), 
+                                                  item::setPointName, 
+                                                  deviceName -> {
+                                                      item.setDeviceName(deviceName);
+                                                      LiteYukonPAObject lpo = deviceDao.getLiteYukonPAObject(item.getDeviceName(), PaoType.CBC_LOGICAL);
+                                                      if (lpo != null) {
+                                                          item.setDevice(SimpleDevice.of(lpo.getPaoIdentifier()));
+                                                      }                                                  });
         }
         if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
             model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));

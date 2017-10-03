@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.bulk.model.AnalogPointUpdateType;
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -86,7 +85,8 @@ public class PointController {
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonListDao listDao;
-
+    @Autowired private CbcHelperService cbcHelperService;
+    
     private static final String baseKey = "yukon.web.modules.tools.point";
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
@@ -103,14 +103,10 @@ public class PointController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
             return "point/point.jsp";
         }
-        if (pointModel.getPointBase().getPoint().getPointName().matches("^\\*Logical<.*>.*")) {
-            Pattern pattern = Pattern.compile("^\\*Logical<.*>");
-            Matcher matcher = pattern.matcher(pointModel.getPointBase().getPoint().getPointName());
-            if (matcher.find()) {
-                String prefix = matcher.group(0);
-                pointModel.getPointBase().getPoint().setPointName(pointModel.getPointBase().getPoint().getPointName().replace(prefix, ""));
-            }
-        }
+        cbcHelperService.trimLogicalPointName(pointModel.getPointBase().getPoint().getPointName(),
+                                              pointModel.getPointBase().getPoint()::setPointName,
+                                              null);
+
         PointBase base = pointModel.getPointBase();
         if (base instanceof SystemPoint){
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".viewError", base.getPoint().getPointName()));
@@ -352,14 +348,11 @@ public class PointController {
             return bindAndForward(pointModel, result, redirectAttributes);
         }
         PointModel oldPointModel = pointEditorService.getModelForId(pointModel.getId());
-        if (oldPointModel.getPointBase().getPoint().getPointName().matches("^\\*Logical<.*>.*")) {
-            Pattern pattern = Pattern.compile("^\\*Logical<.*>");
-            Matcher matcher = pattern.matcher(oldPointModel.getPointBase().getPoint().getPointName());
-            if (matcher.find()) {
-                String prefix = matcher.group(0);
-                pointModel.getPointBase().getPoint().setPointName(prefix+pointModel.getPointBase().getPoint().getPointName());
-            }
-        }
+        
+        cbcHelperService.updateLogicalPointName(oldPointModel.getPointBase().getPoint().getPointName(),
+                                                pointModel.getPointBase().getPoint().getPointName(),
+                                                pointModel.getPointBase().getPoint()::setPointName);
+        
         int id = pointEditorService.save(pointModel);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saveSuccess"));
         

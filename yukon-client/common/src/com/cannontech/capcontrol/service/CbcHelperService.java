@@ -1,5 +1,7 @@
 package com.cannontech.capcontrol.service;
 
+import java.util.function.Consumer;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface CbcHelperService {
@@ -9,5 +11,9 @@ public interface CbcHelperService {
      * role, the default value of "Fixed" is returned.
      */
     public String getFixedText(LiteYukonUser yukonUser);
+
+    void updateLogicalPointName(String oldPointName, String newPointName, Consumer<String> pointNameCallback);
+
+    void trimLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback);
 
 }
