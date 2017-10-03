@@ -54,6 +54,9 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
         
         if(!errors.hasFieldErrors("name")){
+            if (cbc.getPaoType().isLogicalCBC()&&(cbc.getName().contains("<")||cbc.getName().contains(">"))) {
+                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalCharsForLogicalCbc");
+            }
             if(!PaoUtils.isValidPaoName(cbc.getName())){
                 errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
             }
@@ -63,7 +66,7 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         boolean idSpecified = cbc.getId() != null;
 
         boolean nameAvailable = paoDao.isNameAvailable(cbc.getName(), cbc.getPaoType());
-
+        
         if (!nameAvailable) {
             if (!idSpecified) {
                 //For create, we must have an available name
