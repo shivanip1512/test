@@ -11,11 +11,15 @@ Policy::AttributeList StandardControlPolicy::getSupportedAttributes()
 {
     return
     {
+        Attribute::ControlMode,
         Attribute::TapDown,
         Attribute::TapUp,
         Attribute::TapPosition,
         Attribute::ForwardSetPoint,
-        Attribute::ForwardBandwidth
+        Attribute::ForwardBandwidth,
+        Attribute::ReverseBandwidth,
+        Attribute::ReverseSetPoint,
+        Attribute::ReverseFlowIndicator
     };
 }
 

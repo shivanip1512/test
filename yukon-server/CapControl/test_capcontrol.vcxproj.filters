@@ -362,6 +362,9 @@
     <ClCompile Include="cbcHeartbeatPolicy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ControlPolicy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\capcontrol_test_helpers.h">

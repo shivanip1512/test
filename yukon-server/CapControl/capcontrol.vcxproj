@@ -409,6 +409,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="Conductor.cpp" />
     <ClCompile Include="Controllable.cpp">
     </ClCompile>
+    <ClCompile Include="ControlPolicy.cpp" />
     <ClCompile Include="ControlStrategy.cpp">
     </ClCompile>
     <ClCompile Include="CountdownKeepAlivePolicy.cpp">
