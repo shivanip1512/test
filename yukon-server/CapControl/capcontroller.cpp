@@ -2500,7 +2500,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
 
             while ( capIter != end )
             {
-                capIter->second->heartbeat._policy->updatePointData( message );
+                capIter->second->handlePointData( message );
                 ++capIter;
             }
         }

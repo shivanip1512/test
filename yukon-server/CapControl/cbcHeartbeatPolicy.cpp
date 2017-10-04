@@ -1,15 +1,16 @@
 #include "precompiled.h"
 
+#include "cctwowaycbcpoints.h"
 #include "cbcHeartbeatPolicy.h"
 
 
 namespace Cti           {
 namespace CapControl    {
 
-CbcHeartbeatPolicy::OperatingMode CbcHeartbeatPolicy::getOperatingMode()
+CbcHeartbeatPolicy::OperatingMode CbcHeartbeatPolicy::getOperatingMode( CtiCCTwoWayPoints & twoWayPoints )
 try
 {
-    double value = getValueByAttribute( Attribute::ScadaOverrideMode );
+    double value = twoWayPoints.getPointValueByAttribute( Attribute::ScadaOverrideMode );
 
     return ( value == 1.0 )
                 ? ScadaOverride
@@ -22,25 +23,25 @@ catch ( UninitializedPointValue & failedRead )
     return Normal;
 }
 
-Policy::Actions CbcHeartbeatPolicy::StopHeartbeat()
+Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoints )
 {
     // Check the current reported mode of the CBC, if we are not in ScadaOverride mode, then don't do anything,
     //  if we are, pulse the ScadaOverrideClear point.
 
-    Actions    actions;
+    Actions actions;
 
-    if ( getOperatingMode() == ScadaOverride )
+    if ( getOperatingMode( twoWayPoints ) == ScadaOverride )
     {
-        actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideClear ),
+        actions.emplace_back( makeStandardDigitalControl( twoWayPoints.getPointByAttribute( Attribute::ScadaOverrideClear ),
                                                           "CBC Heartbeat Clear" ) );
     }
 
     return actions;
 }
 
-Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const Attribute & attribute, const long keepAliveValue )
+Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const Attribute & attribute, const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints )
 {
-    LitePoint point = getPointByAttribute( attribute );
+    LitePoint point = twoWayPoints.getPointByAttribute( attribute );
 
     const long pointOffset =
         point.getControlOffset() ?
@@ -63,14 +64,14 @@ Policy::AttributeList NoCbcHeartbeatPolicy::getSupportedAttributes()
     };
 }
 
-Policy::Actions NoCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue )
+Policy::Actions NoCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints )
 {
     return
     {
     };
 }
 
-Policy::Actions NoCbcHeartbeatPolicy::StopHeartbeat()
+Policy::Actions NoCbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoints )
 {
     return
     {
@@ -89,13 +90,13 @@ Policy::AttributeList AnalogCbcHeartbeatPolicy::getSupportedAttributes()
     };
 }
 
-Policy::Actions AnalogCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue )
+Policy::Actions AnalogCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints )
 {
     // Write the current keep alive value to the CBC
 
     Actions    actions;
 
-    actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideHeartbeat, keepAliveValue ) );
+    actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideHeartbeat, keepAliveValue, twoWayPoints ) );
 
     return actions;
 }
@@ -113,28 +114,28 @@ Policy::AttributeList PulsedCbcHeartbeatPolicy::getSupportedAttributes()
     };
 }
 
-Policy::Actions PulsedCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue )
+Policy::Actions PulsedCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints )
 {
     // If the value in the CBC doesn't match the value in the config, update it.  Then pulse the enable point
     //  to put the CBC into ScadaOverride mode.
 
-    Actions    actions;
+    Actions actions;
 
-    if ( readCurrentValue() != keepAliveValue )
+    if ( readCurrentValue( twoWayPoints ) != keepAliveValue )
     {
-        actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideCountdownTimer, keepAliveValue ) );
+        actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideCountdownTimer, keepAliveValue, twoWayPoints ) );
     }
     
-    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideEnable ),
+    actions.emplace_back( makeStandardDigitalControl( twoWayPoints.getPointByAttribute( Attribute::ScadaOverrideEnable ),
                                                       "CBC Heartbeat Pulse" ) );
 
     return actions;
 }
 
-long PulsedCbcHeartbeatPolicy::readCurrentValue()
+long PulsedCbcHeartbeatPolicy::readCurrentValue( CtiCCTwoWayPoints & twoWayPoints )
 try
 {
-    return getValueByAttribute( Attribute::ScadaOverrideCountdownTimer );
+    return twoWayPoints.getPointValueByAttribute( Attribute::ScadaOverrideCountdownTimer );
 }
 catch ( UninitializedPointValue & )
 {

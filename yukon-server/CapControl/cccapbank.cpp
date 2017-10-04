@@ -2187,7 +2187,7 @@ const string CtiCCCapBank::StandAloneState = "StandAlone";
 
 void CtiCCCapBank::handlePointData( const CtiPointDataMsg & message )
 {
-    heartbeat._policy->updatePointData( message );
+    _twoWayPoints->setTwoWayPointValue(message.getId(), message.getValue(), message.getType(), message.getTime());
 }
 
 bool CtiCCCapBank::submitHeartbeatCommands( Cti::CapControl::Policy::Actions & actions )
@@ -2222,7 +2222,7 @@ try
     {
         CTILOG_DEBUG( dout, "Sending CBC Heartbeat for bank: " << getPaoName() );
 
-        submitHeartbeatCommands( heartbeat._policy->SendHeartbeat( heartbeat._value ) );
+        submitHeartbeatCommands( heartbeat._policy->SendHeartbeat( heartbeat._value, *_twoWayPoints ) ); 
     }
 }
 catch ( FailedAttributeLookup & missingAttribute )
@@ -2235,7 +2235,7 @@ catch ( FailedAttributeLookup & missingAttribute )
 void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
 try
 {
-    if ( submitHeartbeatCommands( heartbeat._policy->StopHeartbeat() ) )
+    if ( submitHeartbeatCommands( heartbeat._policy->StopHeartbeat( getTwoWayPoints() ) ) )
     {
         // next time we try to send a heartbeat we want the command to go out right away, not
         //  wait on a timing boundary.
@@ -2256,8 +2256,6 @@ void CtiCCCapBank::loadAttributes( AttributeService * service )
     if ( supportsHeartbeat() )
     {
         heartbeat.initialize(this);
-
-        heartbeat._policy->loadAttributes( *service, getControlDeviceId() );
     }
 }
 

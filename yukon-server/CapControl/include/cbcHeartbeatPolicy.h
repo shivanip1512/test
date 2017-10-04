@@ -16,21 +16,21 @@ struct CbcHeartbeatPolicy : Policy
         ScadaOverride
     };
 
-    OperatingMode getOperatingMode();
+    OperatingMode getOperatingMode( CtiCCTwoWayPoints & twoWayPoints );
 
-    virtual Actions SendHeartbeat( const long keepAliveValue ) = 0;
+    virtual Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) = 0;
 
-    virtual Actions StopHeartbeat();
+    virtual Actions StopHeartbeat( CtiCCTwoWayPoints & twoWayPoints );
 
-    Action WriteAnalogValue( const Attribute & attribute, const long keepAliveValue );
+    Action WriteAnalogValue( const Attribute & attribute, const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints );
 };
 
 
 struct NoCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-    Actions SendHeartbeat( const long keepAliveValue ) override;
+    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) override;
 
-    Actions StopHeartbeat() override;
+    Actions StopHeartbeat( CtiCCTwoWayPoints & twoWayPoints ) override;
 
 protected:
 
@@ -40,7 +40,7 @@ protected:
 
 struct AnalogCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-    Actions SendHeartbeat( const long keepAliveValue ) override;
+    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) override;
 
 protected:
 
@@ -50,13 +50,13 @@ protected:
 
 struct PulsedCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-    Actions SendHeartbeat( const long keepAliveValue ) override;
+    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) override;
 
 protected:
 
     AttributeList getSupportedAttributes() override;
 
-    long readCurrentValue();
+    long readCurrentValue( CtiCCTwoWayPoints & twoWayPoints);
 };
 
 

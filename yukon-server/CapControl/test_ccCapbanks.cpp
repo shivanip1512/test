@@ -81,11 +81,11 @@ struct cbc_heartbeat_fixture_core
             _attr = decltype( _attr )
             {
                 { Attribute::ScadaOverrideEnable,
-                    { 1234,  StatusPointType, "CBC Heartbeat Enable", 1000, 1, "control pulse", "control pulse", 1.0, 0 } },
+                    { 1234,  StatusPointType, "CBC Heartbeat Enable", 1000, -1, "control pulse", "control pulse", 1.0, 0 } },
                 { Attribute::ScadaOverrideClear,
-                    { 5678,  StatusPointType, "CBC Heartbeat Clear", 1000, 2, "control pulse", "control pulse", 1.0, 0 } },
+                    { 5678,  StatusPointType, "CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0 } },
                 { Attribute::ScadaOverrideMode,
-                    { 4567,  StatusPointType, "CBC Heartbeat Type", 1000, 3, "", "", 1.0, 0 } },
+                    { 4567,  StatusPointType, "CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0 } },
 
                 { Attribute::ScadaOverrideCountdownTimer,
                     { 2345,  AnalogPointType, "CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0 } },
@@ -96,7 +96,20 @@ struct cbc_heartbeat_fixture_core
     }
     attributes;
 
-    Cti::Test::use_in_unit_tests_only   test_limiter;
+    std::vector<LitePoint>  twoWayPoints
+    {
+        LitePoint(1234,  StatusPointType, "CBC Heartbeat Enable", 1000, -1, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(5678,  StatusPointType, "CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(4567,  StatusPointType, "CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0),
+        LitePoint(2345,  AnalogPointType, "CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0),
+        LitePoint(3456,  AnalogPointType, "CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0)
+    };
+
+    std::map<Attribute, std::string> twoWayOverloads
+    {
+    };
+
+    //Cti::Test::use_in_unit_tests_only   test_limiter;
 
     boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
 
@@ -115,6 +128,7 @@ struct cbc_heartbeat_fixture_core
         bank->setPaoCategory( "DEVICE" );
         bank->setPaoType( "CAP BANK" );
         bank->createCbc( 2837465823, "CBC 8024" );
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( twoWayPoints, twoWayOverloads );
 
         fixtureConfig->insertValue( "cbcHeartbeatPeriod",   "5" );      // message every 5 minutes
         fixtureConfig->insertValue( "cbcHeartbeatValue",    "15" );     // duration is 15 minutes

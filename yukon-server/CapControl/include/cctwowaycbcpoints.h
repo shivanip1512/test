@@ -110,6 +110,7 @@ public:
 
     virtual void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                                   const std::map<Attribute, std::string> & overloads );
+    bool setTwoWayPointValue(const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp);
 
 protected:
 
@@ -117,7 +118,6 @@ protected:
     std::unique_ptr<IgnoredControlReason>   _ignoredControlReason;
 
     bool isTimestampNew( const long pointID, const CtiTime & timestamp );
-    bool setTwoWayPointValue( const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp );
 
     long _paoid;
     std::string _paotype;
