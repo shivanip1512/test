@@ -14,6 +14,9 @@ public interface CbcHelperService {
 
     void updateLogicalPointName(String oldPointName, String newPointName, Consumer<String> pointNameCallback);
 
-    void trimLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback);
+    /**
+     * @param deviceNameCallback is nullable. Resulting in only trimming the LogicalPointName.
+     */
+    void splitLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback);
 
 }

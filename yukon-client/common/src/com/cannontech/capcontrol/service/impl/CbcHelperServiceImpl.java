@@ -13,7 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class CbcHelperServiceImpl implements CbcHelperService {
     public static final String DEFAULT_FIXED_TEXT = "Fixed";
-    
+    public static Pattern logicalPointPattern = Pattern.compile("^\\*Logical<.*>");
+
     private RolePropertyDao rolePropertyDao;
     
     @Override
@@ -37,9 +38,8 @@ public class CbcHelperServiceImpl implements CbcHelperService {
     }
     
     @Override
-    public void trimLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback) {
-        Pattern pattern = Pattern.compile("^\\*Logical<.*>");
-        Matcher matcher = pattern.matcher(pointName);
+    public void splitLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback) {
+        Matcher matcher = logicalPointPattern.matcher(pointName);
         if (matcher.find()) {
             String prefix = matcher.group(0);
             pointNameCallback.accept(pointName.replace(prefix, ""));
@@ -51,8 +51,7 @@ public class CbcHelperServiceImpl implements CbcHelperService {
     
     @Override
     public void updateLogicalPointName(String oldPointName, String newPointName, Consumer<String> pointNameCallback) {
-        Pattern pattern = Pattern.compile("^\\*Logical<.*>");
-        Matcher matcher = pattern.matcher(oldPointName);
+        Matcher matcher = logicalPointPattern.matcher(oldPointName);
         if (matcher.find()) {
             String prefix = matcher.group(0);
             pointNameCallback.accept(prefix+newPointName);

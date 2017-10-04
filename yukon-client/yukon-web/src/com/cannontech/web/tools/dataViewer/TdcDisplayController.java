@@ -176,7 +176,7 @@ public class TdcDisplayController {
         model.addAttribute("display", display);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
         for (DisplayData item: displayData) {
-            cbcHelperService.trimLogicalPointName(item.getPointName(), 
+            cbcHelperService.splitLogicalPointName(item.getPointName(), 
                                                   item::setPointName, 
                                                   deviceName -> {
                                                       item.setDeviceName(deviceName);

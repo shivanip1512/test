@@ -103,7 +103,7 @@ public class PointController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
             return "point/point.jsp";
         }
-        cbcHelperService.trimLogicalPointName(pointModel.getPointBase().getPoint().getPointName(),
+        cbcHelperService.splitLogicalPointName(pointModel.getPointBase().getPoint().getPointName(),
                                               pointModel.getPointBase().getPoint()::setPointName,
                                               null);
 
