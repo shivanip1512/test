@@ -62436,6 +62436,20 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
+            <string>INDX_SmartNotifiEvt_Timestamp</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>SmartNotificationEvent</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>Timestamp</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>INDX_SmartNotifiEvt_Timestamp</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>PK_SmartNotificationEvent</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
