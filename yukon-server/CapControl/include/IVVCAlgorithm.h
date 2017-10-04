@@ -123,6 +123,9 @@ class IVVCAlgorithm
                                     PointValueMap & voltages, 
                                     std::map<Cti::CapControl::Phase, double> & maxOverages );
 
+        bool handleReverseFlow( CtiCCSubstationBusPtr subbus );
+
+
         PointDataRequestFactoryPtr _requestFactory;
 };
 

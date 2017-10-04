@@ -31,6 +31,8 @@ struct ControlPolicy : Policy
     virtual long getTapPosition() = 0;
 
     ControlModes getControlMode();
+
+    bool inReverseFlow() const;
 };
 
 }

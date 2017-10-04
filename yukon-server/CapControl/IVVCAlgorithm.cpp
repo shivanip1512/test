@@ -242,6 +242,57 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     return false;
 }
 
+
+//  Report if any regulator on a bus is reporting reverse flow while in ManualTap mode.
+bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
+{
+    if (_CC_DEBUG & CC_DEBUG_IVVC)
+    {
+        CTILOG_DEBUG(dout, "IVVC Algorithm: "<< subbus->getPaoName() << " - Scanning for Direct Tap regulators in Reverse Flow.");
+    }
+
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+    ZoneManager & zoneManager       = store->getZoneManager();
+    Zone::IdSet subbusZoneIds       = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    for ( const auto ID : subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for ( const auto & mapping : zone->getRegulatorIds() )
+        {
+            try
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                if ( regulator->getControlMode() == VoltageRegulator::ManualTap
+                     &&  regulator->reverseFlowDetected()   )
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CTILOG_DEBUG( dout, "IVVC Algorithm: "<< regulator->getPaoName() << " is ManualTap regulator in Reverse Flow.");
+                    }
+                    return true;
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+            }
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
     CtiTime timeNow;
@@ -282,6 +333,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     state->showZoneRegulatorConfigMsg = true;
 
+
+    //  We need to handle any reverse flow conditions detected on the bus.  From YUK-17079: If a direct tap
+    //      controlled regulator reports reverse flow - the bus should be disabled.
+    if ( handleReverseFlow( subbus ) )
+    {
+        sendDisableRemoteControl( subbus );
+        CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::DISABLE_SUBSTATION_BUS,
+                                                               subbus->getPaoId() ) )->execute();
+        return;
+    }
+    
     if ( subbus->getRecentlyControlledFlag() )
     {
         state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);

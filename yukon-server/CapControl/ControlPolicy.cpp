@@ -37,6 +37,20 @@ catch ( UninitializedPointValue & )
     return Unknown;
 }
 
+bool ControlPolicy::inReverseFlow() const
+try
+{
+    return getValueByAttribute( Attribute::ReverseFlowIndicator ) > 0.0;
+}
+catch ( UninitializedPointValue & )
+{
+    return false;
+}
+catch ( FailedAttributeLookup & )
+{
+    return false;
+}
+
 
 }
 }
