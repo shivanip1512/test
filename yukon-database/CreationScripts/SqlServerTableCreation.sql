@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/28/2017 12:03:32 AM                        */
+/* Created on:     10/3/2017 11:38:47 PM                        */
 /*==============================================================*/
 
 
@@ -8636,6 +8636,14 @@ create table SmartNotificationEvent (
    GroupProcessTime     datetime             null,
    ImmediateProcessTime datetime             null,
    constraint PK_SmartNotificationEvent primary key (EventId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifiEvt_Timestamp                         */
+/*==============================================================*/
+create index INDX_SmartNotifiEvt_Timestamp on SmartNotificationEvent (
+Timestamp DESC
 )
 go
 

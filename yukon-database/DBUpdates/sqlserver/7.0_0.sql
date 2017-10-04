@@ -175,6 +175,12 @@ END;
 /* @end-block */
 /* End YUK-17209 */
 
+/* Start YUK-17273 */
+CREATE INDEX INDX_SmartNotifiEvt_Timestamp ON SmartNotificationEvent (
+Timestamp DESC
+);
+/* End YUK-17273 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

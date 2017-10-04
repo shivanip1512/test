@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/28/2017 12:04:29 AM                        */
+/* Created on:     10/3/2017 11:39:57 PM                        */
 /*==============================================================*/
 
 
@@ -8128,6 +8128,13 @@ create table SmartNotificationEvent  (
    GroupProcessTime     DATE,
    ImmediateProcessTime DATE,
    constraint PK_SmartNotificationEvent primary key (EventId)
+);
+
+/*==============================================================*/
+/* Index: INDX_SmartNotifiEvt_Timestamp                         */
+/*==============================================================*/
+create index INDX_SmartNotifiEvt_Timestamp on SmartNotificationEvent (
+   Timestamp DESC
 );
 
 /*==============================================================*/
