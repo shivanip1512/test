@@ -109,8 +109,6 @@ struct cbc_heartbeat_fixture_core
     {
     };
 
-    //Cti::Test::use_in_unit_tests_only   test_limiter;
-
     boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
 
     Cti::Test::Override_ConfigManager overrideConfigManager;
