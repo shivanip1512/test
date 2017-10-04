@@ -5,6 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ attribute name="dataJson" required="true" %>
 <%@ attribute name="id" %>
@@ -74,7 +75,7 @@
         if ('${empty pageScope.fieldValue}' === 'true') {
             $('#noGroupSelectedText_${uniqueId}').hide();
         }
-        $('#deviceGroupName_${uniqueId}').html($(document.getElementById("${fieldId}")).val());
+        $('#deviceGroupName_${uniqueId}').text($(document.getElementById("${fieldId}")).val());
 
         if ('${pageScope.showSelectedDevicesIcon}' === 'true') {
             $('#viewDevicesIconSpan_${uniqueId}').show();
@@ -107,7 +108,7 @@
     <%-- LINKED GROUP NAME --%>
     <c:otherwise>
         <a id="deviceGroupName_${uniqueId}" href="javascript:void(0);" 
-            class="deviceGroupLink_${uniqueId} fl${linkCssClass}">${pageScope.fieldValue}&nbsp;</a>
+            class="deviceGroupLink_${uniqueId} fl${linkCssClass}">${fn:escapeXml(pageScope.fieldValue)}&nbsp;</a>
     </c:otherwise>
 </c:choose>
 <%-- EDIT FOLDER --%>
