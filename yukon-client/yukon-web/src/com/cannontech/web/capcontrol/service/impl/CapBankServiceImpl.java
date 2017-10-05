@@ -116,6 +116,7 @@ public class CapBankServiceImpl implements CapBankService {
     @Transactional
     public int save(CapBank capbank) {
         if(capbank.getCapBank().getControlDeviceID() != 0) {
+            //  TODO - find control device ID, check for Logical devices
             LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
             capbank.getCapBank().setControlPointID(point.getPointID());
         }
