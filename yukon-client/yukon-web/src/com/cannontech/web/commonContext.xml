@@ -148,9 +148,7 @@
     <bean name="availableVoltageRegulatorPhasePicker" class="com.cannontech.web.picker.AvailableVoltageRegulatorPhasePicker"/>
     <bean name="regulatorPicker" class="com.cannontech.web.picker.RegulatorPicker"/>
     <bean name="capControlSubstationBusPicker" class="com.cannontech.web.picker.CapControlSubstationBusPicker"/>
-    <bean name="capControlCBCOrphanPicker" class="com.cannontech.web.picker.CapControlCBCOrphanPicker">
-        <constructor-arg index="0" ref="vendorSpecificSqlBuilderFactory"/>
-    </bean>
+    <bean name="capControlCBCOrphanPicker" class="com.cannontech.web.picker.CapControlCBCOrphanPicker"/>
     
     <bean name="userPicker" class="com.cannontech.web.picker.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>

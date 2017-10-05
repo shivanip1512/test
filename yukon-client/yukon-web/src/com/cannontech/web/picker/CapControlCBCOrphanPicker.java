@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -26,6 +28,7 @@ public class CapControlCBCOrphanPicker extends DatabasePicker<Map<String, Object
         outputColumns = Collections.unmodifiableList(columns);
     }
 
+    @Autowired
     public CapControlCBCOrphanPicker(VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
         super(new CapControlCBCOrphanRowMapper(vendorSpecificSqlBuilderFactory), searchColumnNames);
     }
