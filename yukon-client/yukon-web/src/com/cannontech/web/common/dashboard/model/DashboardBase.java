@@ -5,7 +5,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 /**
  * This class provides a basic API for all features shared between dashboard object types.
  */
-public abstract class DashboardBase {
+public abstract class DashboardBase implements Comparable<DashboardBase> {
     
     private int dashboardId;
     private String name;
@@ -63,6 +63,16 @@ public abstract class DashboardBase {
         result = prime * result + ((owner == null) ? 0 : owner.hashCode());
         result = prime * result + ((visibility == null) ? 0 : visibility.hashCode());
         return result;
+    }
+
+    @Override
+    public int compareTo(DashboardBase obj) {
+
+        if (obj == null) {
+            return 0;
+        } else {
+            return getName().compareToIgnoreCase(obj.getName());
+        }
     }
 
     @Override

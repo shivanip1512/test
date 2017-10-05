@@ -83,7 +83,7 @@ public class DashboardsController {
         model.addAttribute("filter", filter);
         
         setupDashboardsTable(dashboards, sorting, paging, model, accessor);
-
+        Collections.sort(visibleDashboards);
         model.addAttribute("dashboardsList", visibleDashboards);
         
         UserDashboardSettings settings = new UserDashboardSettings();
@@ -324,6 +324,7 @@ public class DashboardsController {
             model.addAttribute("widgetJavascript", widgetJavascript);
             model.addAttribute("widgetCss", widgetCss);
             List<LiteDashboard> ownedDashboards = dashboardService.getOwnedDashboards(yukonUser.getUserID());
+            Collections.sort(ownedDashboards);
             model.addAttribute("ownedDashboards", ownedDashboards);
             return "dashboardView.jsp";
         } else {
