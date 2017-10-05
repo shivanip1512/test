@@ -97,14 +97,14 @@ public class SmartNotificationsController {
     @RequestMapping(value="events/{type}", method=RequestMethod.GET)
     public String eventDetailByType(@PathVariable String type, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult result) {
+                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
         return retrieveEventDetail(type, null, sorting, paging, userContext, model, filter);
     }
     
     @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
     public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
-                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter, BindingResult result) {
+                               YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
         return retrieveEventDetail(type, parameter, sorting, paging, userContext, model, filter);
     }
     
@@ -346,7 +346,7 @@ public class SmartNotificationsController {
         return null;
     }
     
-    @RequestMapping("download")
+    @RequestMapping(value="download", method=RequestMethod.GET)
     public String download(@ModelAttribute("filter") SmartNotificationEventFilter filter, YukonUserContext userContext, 
                           @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, ModelMap model,
                           String eventType, String parameter, HttpServletResponse response) throws IOException {
