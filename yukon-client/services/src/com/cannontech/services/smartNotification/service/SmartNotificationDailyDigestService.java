@@ -80,7 +80,7 @@ public class SmartNotificationDailyDigestService{
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
             decider.mapSubscriptionsToEvents(subcriptions, events);
         List<SmartNotificationMessageParameters> messageParameters =
-            MessageParametersHelper.getMessageParameters(decider.getEventType(), subscriptionsToEvents);
+            MessageParametersHelper.getMessageParameters(decider.getEventType(), subscriptionsToEvents, 0);
         return messageParameters;
     }
     

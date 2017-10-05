@@ -20,7 +20,7 @@ public class MessageParametersHelper {
      * Creates smart notification parameters.
      */
     public static List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationEventType type,
-            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionToEvent) {
+            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionToEvent, int eventPeriodMinutes) {
         List<SmartNotificationMessageParameters> params = new ArrayList<>();
         if(subscriptionToEvent.isEmpty()){
             return params;
@@ -40,7 +40,7 @@ public class MessageParametersHelper {
                     .collect(Collectors.toList());
 
             SmartNotificationMessageParameters param = new SmartNotificationMessageParameters(type, mv.media,
-                mv.verbosity, recipients, events.stream().map(e -> e).collect(Collectors.toList()));
+                mv.verbosity, recipients, new ArrayList<>(events), eventPeriodMinutes);
             params.add(param);
         }
         return params;
@@ -51,8 +51,8 @@ public class MessageParametersHelper {
         SmartNotificationVerbosity verbosity;
 
         public MediaVerbosity(SmartNotificationSubscription subscription) {
-            this.media = subscription.getMedia();
-            this.verbosity = subscription.getVerbosity();
+            media = subscription.getMedia();
+            verbosity = subscription.getVerbosity();
         }
 
         @Override

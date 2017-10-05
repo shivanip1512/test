@@ -1,7 +1,6 @@
 package com.cannontech.services.smartNotification.service;
 
-import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.COALESCING;
-import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.IMMEDIATE;
+import static com.cannontech.common.smartNotification.model.SmartNotificationFrequency.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -141,7 +140,8 @@ public abstract class SmartNotificationDecider implements MessageListener {
                 } else {
                     Set<SmartNotificationEvent> events = Sets.newHashSet(coalescing.values());
                     eventDao.markEventsAsProcessed(Lists.newArrayList(events), now, COALESCING);
-                    result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, coalescing));
+                    int waitTimeMinutes = waitTime == null ? 0 : waitTime.getInterval();
+                    result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, coalescing, waitTimeMinutes));
                     result.setReschedule(true);
                     
                     //set ImmediateProcessTime to now for events that do not have "Immediate" subscriptions
@@ -160,7 +160,7 @@ public abstract class SmartNotificationDecider implements MessageListener {
         if (!immediate.isEmpty()) {
             Set<SmartNotificationEvent> events = Sets.newHashSet(immediate.values());
             eventDao.markEventsAsProcessed(Lists.newArrayList(events), now, IMMEDIATE);
-            result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, immediate));
+            result.addMessageParameters(MessageParametersHelper.getMessageParameters(eventType, immediate, 0));
             
             //set GroupedProcessTime to now for events that do not have "Coalescing" subscriptions
             Set<SmartNotificationEvent> eventsWithoutCoalescingEvents = Sets.newHashSet(immediate.values());

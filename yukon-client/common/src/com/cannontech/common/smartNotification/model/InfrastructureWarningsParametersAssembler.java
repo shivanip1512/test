@@ -7,6 +7,7 @@ import org.joda.time.Instant;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class InfrastructureWarningsParametersAssembler {  
     public static final String PAO_ID = "paoId";
@@ -16,13 +17,15 @@ public class InfrastructureWarningsParametersAssembler {
     
     public static SmartNotificationEvent assemble(Instant now, InfrastructureWarning warning) {
         SmartNotificationEvent event = new SmartNotificationEvent(now);
-        event.setParameters(ImmutableMap.of(
-            PAO_ID,  warning.getPaoIdentifier().getPaoId(), 
-            WARNING_TYPE, warning.getWarningType(),
-            WARNING_SEVERITY, warning.getSeverity()));
+        Builder<String, Object> b = new ImmutableMap.Builder<>();
+        b.put(PAO_ID,  warning.getPaoIdentifier().getPaoId())
+        .put(WARNING_TYPE, warning.getWarningType())
+        .put(WARNING_SEVERITY, warning.getSeverity());
+        //TODO: separate into 3 argument parameters
         if (warning.getArguments() != null && warning.getArguments().length > 0) {
-            event.getParameters().put(ARGUMENTS, Joiner.on(",").join(warning.getArguments()));
+            b.put(ARGUMENTS, Joiner.on(",").join(warning.getArguments()));
         }
+        event.setParameters(b.build());
         return event;
     }
     

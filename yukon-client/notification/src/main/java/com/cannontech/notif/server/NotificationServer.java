@@ -8,15 +8,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.messaging.connection.*;
+import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
+import com.cannontech.messaging.connection.ListenerConnection;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.InboundConnectionEventHandler;
 import com.cannontech.messaging.util.ConnectionFactoryService;
 import com.cannontech.messaging.util.ListenerConnectionFactory;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * The server used for accepting and creating notification messages.
@@ -29,7 +29,6 @@ public class NotificationServer {
 
     @Autowired private NotificationMessageHandler messageHandler;
     @Autowired private OutputHandlerHelper outputHelper;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ConnectionFactoryService connFactorySvc;
 
     public static void main(String[] argsv) {

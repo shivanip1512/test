@@ -161,7 +161,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     private void schedule(SmartNotificationDecider decider, WaitTime waitTime) {
         decider.setWaitTime(waitTime);
         DateTime nextRun = waitTime.getRunTime();
-        logDebug("Scheduling new decider to run at", decider);
+        logDebug("Scheduling new decider to run at " + nextRun, decider);
         long delay = nextRun.getMillis() - Instant.now().getMillis();
         scheduledExecutor.schedule(new Decider(decider), delay, TimeUnit.MILLISECONDS);
     }

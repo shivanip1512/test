@@ -3,10 +3,12 @@ package com.cannontech.yukon.conns;
 import java.util.Date;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.log4j.Logger;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.cc.service.EconomicEventAction;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.notif.CurtailmentEventDeleteMsg;
 import com.cannontech.message.notif.CurtailmentEventMsg;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;
@@ -24,10 +26,12 @@ import com.cannontech.message.util.CollectableBoolean;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestHelper;
 import com.cannontech.message.util.ServerRequestImpl;
+import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.yukon.INotifConnection;
 
 public class NotifClientConnection extends ClientConnection implements INotifConnection {
-            
+    private static final Logger log = YukonLogManager.getLogger(NotifClientConnection.class);
+    
     public NotifClientConnection(){
         super("Notification");
     }
@@ -37,11 +41,13 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
      * given token.
      * 
      */
+    @Override
     public synchronized String requestMessage( String token ) throws NotifRequestException {
         
         String retStr = null;
-        if( token == null )
+        if( token == null ) {
             return retStr;
+        }
         
         ServerResponseMsg responseMsg = null;
         VoiceDataRequestMsg vdReqMsg = new VoiceDataRequestMsg();
@@ -73,6 +79,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         return retStr;
     }
     
+    @Override
     public synchronized int requestMessageContactId( String callToken ) throws NotifRequestException {
 
         Validate.notNull(callToken);
@@ -107,6 +114,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
      * @param token the call token
      * @param success true if the person called was likely to have heard the notification
      */
+    @Override
     public void sendCallEvent(String token, NotifCallEvent event) {
         NotifCompletedMsg msg = new NotifCompletedMsg();
         msg.token = token;
@@ -121,6 +129,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
      * @param the id of the event from the CCurtCurtailmentEvent table
      * @param action the action that's affecting the event
      */
+    @Override
     public void sendCurtailmentNotification(Integer curtailmentEventId, CurtailmentEventAction action) {
         CurtailmentEventMsg msg = new CurtailmentEventMsg();
         msg.curtailmentEventId = curtailmentEventId;
@@ -128,6 +137,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         write(msg);
     }
     
+    @Override
     public boolean attemptDeleteCurtailmentNotification(Integer curtailmentEventId, boolean includeStart) {
         CurtailmentEventDeleteMsg deleteMsg = new CurtailmentEventDeleteMsg();
         deleteMsg.curtailmentEventId = curtailmentEventId;
@@ -142,6 +152,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         return wasCancelled.getValue();
     }
     
+    @Override
     public void sendEconomicNotification(Integer economicPricingRevisionId, Integer revision, EconomicEventAction action) {
         EconomicEventMsg msg = new EconomicEventMsg();
         msg.economicEventId = economicPricingRevisionId;
@@ -150,6 +161,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         write(msg);
     }
 
+    @Override
     public boolean attemptDeleteEconomic(Integer eventId, boolean includeStart) {
         EconomicEventDeleteMsg msg = new EconomicEventDeleteMsg();
         msg.economicEventId = eventId;
@@ -164,6 +176,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         return wasCancelled.getValue();
     }
     
+    @Override
     public void sendProgramEventNotification(Integer programId, 
                                              String eventDisplayName, 
                                              String action, 
@@ -182,6 +195,7 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         write(msg);
     }
 
+    @Override
     public void sendNotification(Integer ngId, String subject,String body   ) {
         NotifEmailMsg msg = new NotifEmailMsg();
         msg.setNotifGroupID(ngId);
@@ -189,6 +203,12 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         msg.setBody(body); 
 
         write(msg);         
+    }
+    
+    public void sendEmail(EmailMessage message) {
+        //TODO
+        log.info("Email to send: ");
+        log.info(message);
     }
 
 }
