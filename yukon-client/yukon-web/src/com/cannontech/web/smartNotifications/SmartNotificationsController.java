@@ -327,7 +327,7 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)
-    public String saveDetails(ModelMap model, YukonUserContext userContext, HttpServletResponse resp,
+    public String saveDetails(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, FlashScope flash, 
                               @ModelAttribute("subscription") SmartNotificationSubscription subscription, BindingResult result) throws Exception {
         subscription.setUserId(userContext.getYukonUser().getUserID());
         subscriptionValidator.doValidation(subscription, result);
@@ -339,11 +339,9 @@ public class SmartNotificationsController {
         }
         subscriptionService.saveSubscription(subscription, userContext);
         Map<String, Object> json = new HashMap<>();
-        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
-        json.put("successMsg", messageSourceAccessor.getMessage(baseKey + "saveSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "saveSuccessful"));
         resp.setContentType("application/json");
-        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        return null;
+        return JsonUtils.writeResponse(resp, json);
     }
     
     @RequestMapping(value="download", method=RequestMethod.GET)

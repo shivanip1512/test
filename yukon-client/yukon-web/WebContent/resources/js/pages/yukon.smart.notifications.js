@@ -120,7 +120,6 @@ yukon.smart.notifications = (function () {
                 form.ajaxSubmit({
                     success: function (data, status, xhr, $form) {
                         popup.dialog('close');
-                        yukon.ui.alertSuccess(data.successMsg);
                         window.location.reload();
                     },
                     error: function (xhr, status, error, $form) {
