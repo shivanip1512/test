@@ -47,6 +47,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
@@ -63,6 +64,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     @Autowired private PaoPermissionDao<LiteYukonUser> userPaoPermissionDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private ECMappingDao ecMappingDao;
     
     public static final int numberOfRandomChars = 5;
     
@@ -458,6 +460,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
                 sql.append("WHERE UserId").eq(userId);
                 jdbcTemplate.update(sql);
             }
+        }
+        
+        if (user.getEnergyCompanyId() != null) {
+            ecMappingDao.addEnergyCompanyOperatorLoginListMapping(userId, user.getEnergyCompanyId());
         }
         
         dbChangeManager.processDbChange(userId, DBChangeMsg.CHANGE_YUKON_USER_DB, DBChangeMsg.CAT_YUKON_USER, 

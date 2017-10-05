@@ -45,11 +45,42 @@
                             itemLabel="userGroupName" path="userGroupId"
                             defaultItemLabel="${none}" defaultItemValue=""/>
                     </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        <tags:nameValue2 nameKey="yukon.common.energyCompany">
+                            <tags:selectWithItems path="energyCompanyId" items="${companies}"
+                             itemLabel="name" itemValue="id" defaultItemLabel="${none}" defaultItemValue=""/>
+                        </tags:nameValue2>
+                    </cti:displayForPageEditModes>
+                    
+                    
                     <cti:displayForPageEditModes modes="VIEW">
                         <tags:nameValue2 nameKey=".userGroup">
                             <cti:url var="url" value="/admin/user-groups/${user.userGroupId}"/>
                             <a href="${url}">${fn:escapeXml(userGroupName)}</a>
                         </tags:nameValue2>
+                    </cti:displayForPageEditModes>
+                     <cti:displayForPageEditModes modes="VIEW">
+                        <c:choose>
+                            <c:when test="${user.energyCompanyId != null}">
+                                <c:choose>
+                                    <c:when test="${user.energyCompanyId >= 0}">
+                                        <tags:nameValue2 nameKey="yukon.common.energyCompany">
+                                            <cti:url var="url" value="/admin/energyCompany/general/view?ecId=${user.energyCompanyId}"/>
+                                            <a href="${url}">${fn:escapeXml(energyCompanyName)}</a>
+                                        </tags:nameValue2>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <tags:nameValue2 nameKey="yukon.common.energyCompany">${fn:escapeXml(energyCompanyName)}</tags:nameValue2>
+                                    </c:otherwise>
+                                </c:choose>
+                           </c:when>
+                           <c:otherwise>
+                                <tags:nameValue2 nameKey="yukon.common.energyCompany">
+                                    <i:inline key="yukon.common.none"/>
+                                </tags:nameValue2>
+                            </c:otherwise>
+                        </c:choose> 
+                        
                     </cti:displayForPageEditModes>
                     
                     <c:choose>

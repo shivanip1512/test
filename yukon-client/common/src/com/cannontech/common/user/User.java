@@ -15,6 +15,7 @@ public class User {
     private LoginStatusEnum loginStatus;
     private Integer userGroupId;
     private boolean authenticationChanged;
+    private Integer energyCompanyId;
     
     public User() { }
     
@@ -100,4 +101,11 @@ public class User {
         return loginStatus == LoginStatusEnum.ENABLED;
     }
     
+    public Integer getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+    
+    public void setEnergyCompanyId(Integer energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
 }

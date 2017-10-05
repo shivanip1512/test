@@ -133,6 +133,19 @@ public class ECMappingDaoImpl implements ECMappingDao {
 
     
     @Override
+    public void updateEnergyCompanyOperatorLoginListMapping(int userId, int energyCompanyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE EnergyCompanyOperatorLoginList");
+        sql.append("SET EnergyCompanyId").eq(energyCompanyId);
+        sql.append("WHERE OperatorLoginID").eq(userId);
+        
+        yukonJdbcTemplate.update(sql);
+        
+        dbChangeManager.processDbChange(userId, DBChangeMsg.CHANGE_YUKON_USER_DB, DBChangeMsg.CAT_YUKON_USER, 
+            DBChangeMsg.CAT_YUKON_USER, DbChangeType.UPDATE);
+    }
+    
+    @Override
     @Transactional    
     public void deleteECToAccountMapping(Integer accountId) {
         String sql = "DELETE FROM ECToAccountMapping WHERE AccountId = ?";

@@ -205,4 +205,9 @@ public interface ECMappingDao {
      * Removes the user from operator login list.
      */
     void deleteEnergyCompanyOperatorLoginListMapping(int userId, int energyCompanyId);
+    
+    /**
+     * Update energy company of a user.
+     */
+    void updateEnergyCompanyOperatorLoginListMapping(int userId, int energyCompanyId);
 }

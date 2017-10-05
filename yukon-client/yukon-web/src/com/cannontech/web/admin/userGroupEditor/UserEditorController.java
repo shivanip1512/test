@@ -45,14 +45,15 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.userGroupEditor.model.RoleAndGroup;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -70,9 +71,9 @@ public class UserEditorController {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private PasswordResetService passwordResetService;
-    @Autowired private CsrfTokenService csrfTokenService;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private AuthenticationService authenticationService;
+    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    
     private final static String key = "yukon.web.modules.adminSetup.auth.user.";
     
     /* VIEW PAGE */
@@ -103,6 +104,7 @@ public class UserEditorController {
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
         User user = new User(yukonUserDao.getLiteYukonUser(userId), userAuthenticationInfo);
         setupModelMap(model, user, PageEditMode.EDIT, userContext);
+        model.addAttribute("companies", ecDao.getAllEnergyCompanies());
         
         return "userGroupEditor/user.jsp";
     }
@@ -159,6 +161,23 @@ public class UserEditorController {
         }
         
         yukonUserDao.save(yukonUser);
+        
+        
+        boolean ecMappingExists = ecDao.isEnergyCompanyOperator(yukonUser);
+        if (user.getEnergyCompanyId() != null) {
+            if (ecMappingExists) {
+                ecMappingDao.updateEnergyCompanyOperatorLoginListMapping(user.getUserId(), user.getEnergyCompanyId());
+            } else {
+                ecMappingDao.addEnergyCompanyOperatorLoginListMapping(user.getUserId(), user.getEnergyCompanyId());
+            }
+        } else {
+            if (ecMappingExists) {
+                EnergyCompany existingEC = ecDao.getEnergyCompanyByOperator(yukonUser);
+                ecMappingDao.deleteEnergyCompanyOperatorLoginListMapping(user.getUserId(), existingEC.getId());
+            }
+        }
+        
+        
         if (requiresPasswordChanged) {
             authService.setPassword(yukonUser, user.getAuthCategory(), user.getPassword().getPassword());
         } else if (user.isAuthenticationChanged()) {
@@ -287,6 +306,15 @@ public class UserEditorController {
         Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndGroupsForUser(user.getUserId());
         Multimap<YukonRoleCategory, RoleAndGroup> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());
+
+        boolean ecMappingExists = ecDao.isEnergyCompanyOperator(new LiteYukonUser(user.getUserId()));
+        if (ecMappingExists) {
+            EnergyCompany ec = ecDao.getEnergyCompanyByOperator(new LiteYukonUser(user.getUserId()));
+            user.setEnergyCompanyId(ec.getId());
+            model.addAttribute("energyCompanyName", ec.getName());
+        } else {
+            model.addAttribute("energyCompanyName", "None");
+        }
     }
     
     private class PasswordValidator extends SimpleValidator<Password> {
