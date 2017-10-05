@@ -267,7 +267,7 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
                 if ( regulator->getControlMode() == VoltageRegulator::ManualTap
-                     &&  regulator->reverseFlowDetected()   )
+                     &&  regulator->isReverseFlowDetected()   )
                 {
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {

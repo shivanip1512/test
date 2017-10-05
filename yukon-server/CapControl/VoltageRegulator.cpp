@@ -918,7 +918,7 @@ bool VoltageRegulator::executePeriodicKeepAlive( const std::string & user )
 }
 
 
-bool VoltageRegulator::reverseFlowDetected()
+bool VoltageRegulator::isReverseFlowDetected()
 {
     return _controlPolicy->inReverseFlow();
 }

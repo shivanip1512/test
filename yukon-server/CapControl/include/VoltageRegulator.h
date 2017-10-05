@@ -140,7 +140,7 @@ public:
     OperatingMode getLastOperatingMode()          const { return _lastOperatingMode; }
     OperatingMode getLastCommandedOperatingMode() const { return _lastCommandedOperatingMode; }
 
-    bool reverseFlowDetected();
+    bool isReverseFlowDetected();
 
 protected:
 
