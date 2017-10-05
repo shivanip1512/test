@@ -11,52 +11,52 @@
 
     <cti:toJson id="eventsjson" object="${events.resultList}"/>
     <c:set var="showTypeColumn" value="${eventType == 'INFRASTRUCTURE_WARNING'}"/>
-
-    <cti:url var="detailUrl" value="/notifications/events/${eventType.urlPath}"/>
+    <c:set var="urlPath" value="/notifications/events/${eventType.urlPath}"/>
     <c:if test="${!empty parameter}">
-        <cti:url var="detailUrl" value="/notifications/events/${eventType.urlPath}/${parameter}"/>
+        <c:set var="urlPath" value="${urlPath}/${parameter}"/>
     </c:if>
+    <cti:url var="detailUrl" value="${urlPath}"/>
     <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter">
-    <cti:csrfToken/>
-    <div class="column-14-10 clearfix stacked">
-        <h3><i:inline key="yukon.common.filters"/></h3>
-        <div class="column one" style="border:1px solid #ccc;padding:5px;">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".type">
-                    <i:inline key="${eventType.formatKey}"/>
-                    <input type="hidden" name="eventType" value="${eventType}"/>
-                </tags:nameValue2>
-                <c:if test="${!empty monitorName}">
-                    <tags:nameValue2 nameKey=".monitor">
-                        ${monitorName}
-                        <input type="hidden" name="parameter" value="${parameter}"/>
+        <cti:csrfToken/>
+        <div class="column-14-10 clearfix stacked">
+            <h3><i:inline key="yukon.common.filters"/></h3>
+            <div class="column one" style="border:1px solid #ccc;padding:5px;">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".type">
+                        <i:inline key="${eventType.formatKey}"/>
+                        <input type="hidden" name="eventType" value="${eventType}"/>
                     </tags:nameValue2>
-                </c:if>
-                <c:if test="${!empty types}">
-                    <tags:nameValue2 nameKey=".deviceTypes">
-                        <div class="button-group stacked">
-                            <c:forEach var="type" items="${types}">
-                                <c:set var="selected" value="${false}"/>
-                                <c:if test="${fn:contains(filter.categories, type)}">
-                                    <c:set var="selected" value="${true}"/>
-                                </c:if>
-                                <cti:msg2 var="deviceType" key="yukon.web.widgets.infrastructureWarnings.category.${type}"/>
-                                <tags:check name="categories" classes="M0" value="${type}" label="${deviceType}" checked="${selected}"></tags:check>
-                            </c:forEach>
-                        </div>
+                    <c:if test="${!empty monitorName}">
+                        <tags:nameValue2 nameKey=".monitor">
+                            ${monitorName}
+                            <input type="hidden" name="parameter" value="${parameter}"/>
+                        </tags:nameValue2>
+                    </c:if>
+                    <c:if test="${!empty types}">
+                        <tags:nameValue2 nameKey=".deviceTypes">
+                            <div class="button-group stacked">
+                                <c:forEach var="type" items="${types}">
+                                    <c:set var="selected" value="${false}"/>
+                                    <c:if test="${fn:contains(filter.categories, type)}">
+                                        <c:set var="selected" value="${true}"/>
+                                    </c:if>
+                                    <cti:msg2 var="deviceType" key="yukon.web.widgets.infrastructureWarnings.category.${type}"/>
+                                    <tags:check name="categories" classes="M0" value="${type}" label="${deviceType}" checked="${selected}"></tags:check>
+                                </c:forEach>
+                            </div>
+                        </tags:nameValue2>
+                    </c:if>
+                    <tags:nameValue2 nameKey=".dateRange">
+                        <dt:dateTime id="startDateFilter" name="startDate" value="${filter.startDate}"/>
+                        <dt:dateTime id="endDateFilter" name="endDate" value="${filter.endDate}"/>
                     </tags:nameValue2>
-                </c:if>
-                <tags:nameValue2 nameKey=".dateRange">
-                    <dt:dateTime id="startDateFilter" name="startDate" value="${filter.startDate}"/>
-                    <dt:dateTime id="endDateFilter" name="endDate" value="${filter.endDate}"/>
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-            <div class="action-area">
-                <cti:button classes="primary action" nameKey="filter" type="submit" busy="true"/>
+                </tags:nameValueContainer2>
+                <div class="action-area">
+                    <cti:button classes="primary action" nameKey="filter" type="submit" busy="true"/>
+                </div>
+                
             </div>
-            
         </div>
-    </div>
     </form:form>
     
     <div class="js-events-timeline clear" style="margin-top:30px;margin-bottom:30px;"></div>
@@ -93,8 +93,16 @@
             </cm:dropdown>
         </span>
     </c:if>
+
+    <cti:url var="detailUrl" value="${urlPath}">
+        <cti:param name="startDate" value="${filter.startDate}"/>
+        <cti:param name="endDate" value="${filter.endDate}"/>
+        <c:forEach var="category" items="${filter.categories}">
+            <cti:param name="categories" value="${category}"/>
+        </c:forEach>    
+    </cti:url>
     
-    <div data-url="${detailUrl}" data-static>
+    <div id="events-detail" data-url="${detailUrl}" data-static>
         <table class="compact-results-table has-actions row-highlighting">
             <tr>
                 <tags:sort column="${deviceName}" />

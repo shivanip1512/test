@@ -347,7 +347,7 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="download", method=RequestMethod.GET)
-    public String download(@ModelAttribute("filter") SmartNotificationEventFilter filter, YukonUserContext userContext, 
+    public void download(@ModelAttribute("filter") SmartNotificationEventFilter filter, YukonUserContext userContext, 
                           @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, ModelMap model,
                           String eventType, String parameter, HttpServletResponse response) throws IOException {
         SmartNotificationEventType type = SmartNotificationEventType.valueOf(eventType);
@@ -372,7 +372,6 @@ public class SmartNotificationsController {
         }
         String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "notificationEvents_" + eventType + "_" + now + ".csv");
-        return null;
       }
 
     
