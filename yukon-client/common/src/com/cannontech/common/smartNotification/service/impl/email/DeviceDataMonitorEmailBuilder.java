@@ -14,6 +14,9 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 
+/**
+ * Builds up text Strings for Device Data Monitor notification messages, based on the parameters passed in.
+ */
 public class DeviceDataMonitorEmailBuilder extends SmartNotificationEmailBuilder {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private IDatabaseCache serverDatabaseCache;

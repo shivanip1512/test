@@ -93,9 +93,9 @@
     
     <!-- Email Templates -->
     <!-- Device Data Monitor (multiple events) -->
-    <entry key="yukon.web.modules.smartNotifications.DEVICE_DATA_MONITOR.multi.SUMMARY.text">{0} events have occurred for the {1} monitor in the last {2} minutes. See {3}</entry>
+    <entry key="yukon.web.modules.smartNotifications.DEVICE_DATA_MONITOR.multi.SUMMARY.text"><![CDATA[{0} events have occurred for the {1} monitor{2,choice, 0#| 0< in the last {2} minutes}. See {3}]]></entry>
     <entry key="yukon.web.modules.smartNotifications.DEVICE_DATA_MONITOR.multi.EXPANDED.text">
-        <![CDATA[{0} events have occurred for the {1} monitor in the last {2} minutes. See {3}
+        <![CDATA[{0} events have occurred for the {1} monitor{2,choice, 0#| 0< in the last {2} minutes}. See {3}
         {4}]]>
     </entry>
     <entry key="yukon.web.modules.smartNotifications.DEVICE_DATA_MONITOR.multi.subject">[yukon] "{0}" Data Monitor - {1} Events</entry>
@@ -110,9 +110,9 @@
     <entry key="yukon.web.modules.smartNotifications.DEVICE_DATA_MONITOR.OUT_OF_VIOLATION">out of violation</entry>
     
     <!-- Infrastructure Warnings (multiple events) -->
-    <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.multi.SUMMARY.text">{0} Infrastructure Warnings have occurred in the last {1} minutes. See {2}</entry>
+    <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.multi.SUMMARY.text"><![CDATA[{0} Infrastructure Warnings have occurred{1,choice, 0#| 0< in the last {1} minutes}. See {2}]]></entry>
     <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.multi.EXPANDED.text">
-        <![CDATA[{0} Infrastructure Warnings have occurred in the last {1} minutes. See {2}
+        <![CDATA[{0} Infrastructure Warnings have occurred{1,choice, 0#| 0< in the last {1} minutes}. See {2}
         {3}]]>
     </entry>
     <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.multi.subject">[yukon] Infrastructure Warnings - {0} Events</entry>
