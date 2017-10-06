@@ -99,6 +99,7 @@
     
     <!-- Alternate Enrollment -->
 	<entry key="yukon.web.modules.operator.alternateEnrollment.pageName">Alternate Enrollment</entry>
+	<entry key="yukon.web.modules.operator.alternateEnrollment.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.operator.alternateEnrollment.confirmAlternate.title">Confirm Alternate Enrollment</entry>
 	<entry key="yukon.web.modules.operator.alternateEnrollment.confirmAlternate.message"><![CDATA[
 	    Are you sure you would like to switch to the selected device(s) to their alternate programs?
