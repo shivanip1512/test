@@ -15,6 +15,9 @@ using Cti::Test::byte_str;
 
 struct TestCbcLogicalDevice : Cti::Devices::CbcLogicalDevice
 {
+    using CtiTblPAOLite::setID;
+    using CtiDeviceBase::setName;
+
     CtiPointSPtr logicalPoint;
     std::string requestedPointName;
 
@@ -327,6 +330,165 @@ BOOST_AUTO_TEST_CASE(test_control_success)
 
         BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
         BOOST_CHECK_EQUAL(req->CommandString(), "control open offset 3458");
+    }
+    delete_container(retList);
+    retList.clear();
+}
+
+BOOST_AUTO_TEST_CASE(test_control_fail)
+{
+    using Cti::Config::DNPStrings;
+
+    fixtureConfig->addCategory(
+        Cti::Config::Category::ConstructCategory(
+            "cbcAttributeMapping",
+            std::map<std::string, std::string> {
+                { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix, "1" },
+                { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+                    + DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute, "CONTROL_POINT" },
+                { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+                    + DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName, "Banana" }}));
+
+    TestCbcLogicalDevice dev;
+    
+    dev.setID(1776, test_tag);
+    dev.setName("George Washington", test_tag);
+
+    //  Missing control point mapping
+    {
+        CtiCommandParser parse("putconfig ovuv enable");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(), 
+            "George Washington / No control offset name"
+            "\nLogical CBC ID   : 1776"
+            "\nLogical CBC name : George Washington"
+            "\nControl offset   : 14");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  Not a status point
+    {
+        dev.logicalPoint.reset(Cti::Test::makeAnalogPoint(2, 22, 221));
+
+        CtiCommandParser parse("control open");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(), 
+            "George Washington / Control offset override point not Status type"
+            "\nLogical CBC ID      : 1776"
+            "\nLogical CBC name    : George Washington"
+            "\nOverride point name : Banana"
+            "\nOverride point ID   : 22"
+            "\nOverride device ID  : 2"
+            "\nOverride point type : Analog"
+            "\nControl offset      : 1");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  No control information
+    {
+        dev.logicalPoint.reset(Cti::Test::makeStatusPoint(2, 22, 221));
+
+        CtiCommandParser parse("control open");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(), 
+            "George Washington / Control offset override point does not have control parameters"
+            "\nLogical CBC ID      : 1776"
+            "\nLogical CBC name    : George Washington"
+            "\nOverride point name : Banana"
+            "\nOverride point ID   : 22"
+            "\nOverride device ID  : 2"
+            "\nControl offset      : 1");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  Invalid control offset
+    {
+        dev.logicalPoint.reset(Cti::Test::makeControlPoint(2, 22, 221, -17, ControlType_Normal));
+
+        CtiCommandParser parse("control open");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / Control offset override not valid"
+            "\nLogical CBC ID          : 1776"
+            "\nLogical CBC name        : George Washington"
+            "\nOverride point name     : Banana"
+            "\nOverride point ID       : 22"
+            "\nOverride device ID      : 2"
+            "\nOverride control offset : -17"
+            "\nControl offset          : 1");
     }
     delete_container(retList);
     retList.clear();

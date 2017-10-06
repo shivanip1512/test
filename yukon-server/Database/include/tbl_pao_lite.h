@@ -26,6 +26,8 @@ protected:
 
     virtual void setPaoType(const std::string& category, const std::string& type);
 
+    void setName(const std::string& name, Cti::Test::use_in_unit_tests_only&);
+
 public:
 
     typedef CtiMemDBObject Inherited;

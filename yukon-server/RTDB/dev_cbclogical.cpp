@@ -230,7 +230,9 @@ catch( const YukonErrorException& ex )
 {
     CTILOG_EXCEPTION_ERROR(dout, ex, "ExecuteRequest failed");
 
-    return ex.error_code;
+    insertReturnMsg(ex.error_code, OutMessage, retList, ex.error_description);
+
+    return ClientErrors::None;
 }
 
 }

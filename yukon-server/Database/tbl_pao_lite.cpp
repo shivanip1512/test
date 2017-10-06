@@ -40,6 +40,11 @@ string CtiTblPAOLite::getName() const
     return _name;
 }
 
+void CtiTblPAOLite::setName(const std::string& name, Cti::Test::use_in_unit_tests_only&)
+{
+    _name = name;
+}
+
 int CtiTblPAOLite::getType() const
 {
     return _type;
