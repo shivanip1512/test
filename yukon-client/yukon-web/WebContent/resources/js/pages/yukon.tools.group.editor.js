@@ -38,6 +38,8 @@ yukon.tools.group.editor = (function () {
                     var paths = selectedGroup.split('/');
                     var selectedKey = paths[paths.length-1];
                     $("#selectGroupTree").dynatree("getTree").selectKey(selectedKey);
+                    $("#selectGroupTree").dynatree("getTree").getNodeByKey(selectedKey).activateSilently();
+                    $("#selectGroupTree").dynatree("getTree").getNodeByKey(selectedKey).focus();
                     window.history.pushState({path:redirectUrl},'',redirectUrl);
                 });
             },
