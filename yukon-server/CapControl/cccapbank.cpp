@@ -2158,9 +2158,18 @@ const string& CtiCCCapBank::convertOperationalState( int num )
 
 bool CtiCCCapBank::isControlDeviceTwoWay()
 {
-    return ( stringContainsIgnoreCase( getControlDeviceType(),"CBC 702") ||
-             stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") ||
-             stringContainsIgnoreCase( getControlDeviceType(),"CBC 802") );
+    switch ( resolveDeviceType( getControlDeviceType() ) )
+    {
+        case TYPE_CBC7020:
+        case TYPE_CBC8020:
+        case TYPE_CBCDNP:
+        case TYPE_CBCLOGICAL:
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 long CtiCCCapBank::getPointIdByAttribute( const Attribute & attribute )
@@ -2175,8 +2184,18 @@ void CtiCCCapBank::setDirty(const bool flag)
 
 bool CtiCCCapBank::supportsHeartbeat() const
 {
-    return ( stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") ||
-             stringContainsIgnoreCase( getControlDeviceType(),"CBC 802") );
+    switch ( resolveDeviceType( getControlDeviceType() ) )
+    {
+//        case TYPE_CBC7020:    // not yet anyway...
+        case TYPE_CBC8020:
+        case TYPE_CBCDNP:
+        case TYPE_CBCLOGICAL:
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /* Public Static members */

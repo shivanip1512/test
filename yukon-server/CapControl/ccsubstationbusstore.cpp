@@ -6133,7 +6133,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 dynamicDataCache.emplace( rdr[ "DeviceID" ].as<long>(), rdr );
             }
         }
-        // load points for all 2 way CBCs except 'CBC DNP Logical' type CBCs - they will be done after this
+        // load points for all 2 way CBCs except 'CBC Logical' type CBCs - they will be done after this
         {
             static const std::string sql =
                 "SELECT "
@@ -6166,7 +6166,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             "ON P.POINTID = PA.POINTID "
                 "WHERE "
                     "C.CONTROLDEVICEID <> 0 "
-                        "AND Y.Type <> 'CBC DNP Logical'";
+                        "AND Y.Type <> 'CBC Logical'";
 
             static const std::string sqlID = sql +
                 " AND C.DEVICEID = ?";
@@ -6301,7 +6301,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             } 
             while ( validRow );
         }
-        // load points for 'CBC DNP Logical' type CBCs
+        // load points for 'CBC Logical' type CBCs
         {
             static const std::string sql =
                 "WITH X AS ( "
@@ -6322,7 +6322,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             ") AS T "
                                 "ON Z.PAObjectID = T.CbcID "
                     "WHERE "
-                        "Z.Type = 'CBC DNP Logical' "
+                        "Z.Type = 'CBC Logical' "
                 ") "
                 "SELECT "
                     "CapbankID, "
