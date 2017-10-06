@@ -1044,6 +1044,8 @@ auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) ->
             << Cti::FormattedList::of(
                 "PAObjectID", pao,
                 "Point name", pointname));
+
+        return {};
     }
 
     if( results.size() > 1 )
@@ -1053,6 +1055,8 @@ auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) ->
                 "PAObjectID", pao,
                 "Point name", pointname,
                 "Point IDs",  results));
+
+        return {};
     }
 
     return getPoint(results.front());

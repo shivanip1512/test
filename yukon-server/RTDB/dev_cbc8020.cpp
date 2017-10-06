@@ -174,6 +174,8 @@ long Cbc8020Device::getPointOffset(const PointOffsets defaultOffset)
             {
                 CTILOG_WARN(dout, "Override point not Numeric type" <<
                     FormattedList::of(
+                        "Device ID", getID(),
+                        "Device name", getName(),
                         "Override point name", overridePointName,
                         "Override point ID", pt->getPointID(),
                         "Override point type", desolvePointType(pt->getType()),
@@ -188,6 +190,8 @@ long Cbc8020Device::getPointOffset(const PointOffsets defaultOffset)
             {
                 CTILOG_ERROR(dout, "Override point offset not valid" <<
                     FormattedList::of(
+                        "Device ID", getID(),
+                        "Device name", getName(),
                         "Override point name",   overridePointName,
                         "Override point ID",     pt->getPointID(),
                         "Override point offset", pt->getPointOffset(),
@@ -198,6 +202,8 @@ long Cbc8020Device::getPointOffset(const PointOffsets defaultOffset)
         {
             CTILOG_ERROR(dout, "Override point not found" <<
                 FormattedList::of(
+                    "Device ID", getID(),
+                    "Device name", getName(),
                     "Override point name", overridePointName,
                     "Default offset", static_cast<long>(defaultOffset)));
         }

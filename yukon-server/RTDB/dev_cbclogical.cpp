@@ -63,6 +63,22 @@ void CbcLogicalDevice::refreshAttributeOverrides()
     }
 }
 
+CtiPointSPtr CbcLogicalDevice::getLogicalPoint(const std::string& pointName)
+{
+    if( !_pointMgr )
+    {
+        throw YukonErrorException {
+            ClientErrors::NoConfigData,
+            "No point manager"
+            + FormattedList::of(
+                "Logical CBC ID", getID(),
+                "Logical CBC name", getName(),
+                "Override point name", pointName) };
+    }
+
+    return _pointMgr->getLogicalPoint(getID(), pointName);
+}
+
 auto CbcLogicalDevice::getControlDeviceOffset(const ControlOffsets controlOffset) -> PaoOffset
 {
     auto optName = mapFindRef(_controlOffsetNames, controlOffset);
@@ -73,22 +89,14 @@ auto CbcLogicalDevice::getControlDeviceOffset(const ControlOffsets controlOffset
                 ClientErrors::NoConfigData, 
                 "No control offset name" 
                 + FormattedList::of(
+                    "Logical CBC ID", getID(),
+                    "Logical CBC name", getName(),
                     "Control offset", static_cast<long>(controlOffset)) };
     }
 
     const auto& overridePointName = *optName;
 
-    if( ! _pointMgr )
-    {
-        throw YukonErrorException{ 
-                ClientErrors::NoConfigData, 
-                "No point manager" 
-                + FormattedList::of(
-                    "Override point name", overridePointName,
-                    "Control offset", static_cast<long>(controlOffset)) };
-    }
-
-    const auto pt = _pointMgr->getLogicalPoint(getID(), overridePointName);
+    const auto pt = getLogicalPoint(overridePointName);
 
     if( ! pt )
     {
@@ -96,6 +104,8 @@ auto CbcLogicalDevice::getControlDeviceOffset(const ControlOffsets controlOffset
                 ClientErrors::NoConfigData, 
                 "Override point not found" 
                 + FormattedList::of(
+                    "Logical CBC ID", getID(),
+                    "Logical CBC name", getName(),
                     "Override point name", overridePointName,
                     "Control offset", static_cast<long>(controlOffset)) };
     }
@@ -106,6 +116,8 @@ auto CbcLogicalDevice::getControlDeviceOffset(const ControlOffsets controlOffset
             ClientErrors::NoConfigData,
             "Control offset override point not Status type"
             + FormattedList::of(
+                "Logical CBC ID", getID(),
+                "Logical CBC name", getName(),
                 "Override point name", overridePointName,
                 "Override point ID", pt->getPointID(),
                 "Override device ID", pt->getDeviceID(),
@@ -123,6 +135,8 @@ auto CbcLogicalDevice::getControlDeviceOffset(const ControlOffsets controlOffset
             ClientErrors::NoConfigData,
             "Control offset override point does not have control parameters"
             + FormattedList::of(
+                "Logical CBC ID", getID(),
+                "Logical CBC name", getName(),
                 "Override point name", overridePointName,
                 "Override point ID", pt->getPointID(),
                 "Override device ID", pt->getDeviceID(),
@@ -135,6 +149,8 @@ auto CbcLogicalDevice::getControlDeviceOffset(const ControlOffsets controlOffset
             ClientErrors::NoConfigData,
             "Control offset override not valid"
             + FormattedList::of(
+                "Logical CBC ID", getID(),
+                "Logical CBC name", getName(),
                 "Override point name", overridePointName,
                 "Override point ID", pt->getPointID(),
                 "Override device ID", pt->getDeviceID(),

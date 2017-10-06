@@ -25,6 +25,8 @@ protected:
 
     void refreshAttributeOverrides();
 
+    virtual CtiPointSPtr getLogicalPoint(const std::string& pointName);
+
 private:
     
     std::map<ControlOffsets, std::string> _controlOffsetNames;
