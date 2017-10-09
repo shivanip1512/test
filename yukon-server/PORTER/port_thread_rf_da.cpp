@@ -28,6 +28,7 @@ using namespace std;
 
 using Cti::Timing::MillisecondTimer;
 using Cti::Logging::Vector::Hex::operator<<;
+using Cti::Logging::Range::Hex::operator<<;
 
 extern CtiDeviceManager DeviceManager;
 
@@ -209,7 +210,7 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
     {
         if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
         {
-            CTILOG_DEBUG(dout, "new inbound for \""<< ind.rfnIdentifier <<"\"");
+            CTILOG_DEBUG(dout, "new inbound for "<< ind.rfnIdentifier << endl << ind.payload);
         }
 
         rf_packet *p = new rf_packet;
@@ -219,7 +220,9 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
         p->used = 0;
         p->data = new unsigned char[p->len];
 
-        std::copy(ind.payload.begin(), ind.payload.end(), p->data);
+        auto output_itr = stdext::make_checked_array_iterator(p->data, p->len);
+
+        std::copy(ind.payload.begin(), ind.payload.end(), output_itr);
 
         addInboundWork(*dr, p);
     }
