@@ -747,6 +747,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_CBC7010,
         TYPE_EXPRESSCOMCBC,
         TYPE_FISHERPCBC,
+        TYPE_CBCLOGICAL,
         TYPE_LMGROUP_EMETCON,
         TYPE_LMGROUP_POINT,
         TYPE_LMGROUP_RIPPLE,

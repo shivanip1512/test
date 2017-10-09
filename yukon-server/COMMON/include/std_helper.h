@@ -167,6 +167,29 @@ inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long
 
 }
     
+namespace Map {
+
+    template <typename Key, typename Value>
+    inline std::ostream &operator<<(std::ostream &logger, const std::map<Key, Value> &map)
+    {
+        logger << "{";
+        if( map.empty() )
+        {
+            logger << "<empty>";
+        }
+        else
+        {
+            bool first = true;
+            for( const auto& val : map )
+            {
+                logger << (first ? "{" : ",{") << val.first << ":" << val.second << "}";
+                first = false;
+            }
+        }
+        return logger << "}";
+    }
+}
+
 namespace Vector {
 
 inline std::ostream &operator<<(std::ostream &logger, const std::vector<long> &buf)

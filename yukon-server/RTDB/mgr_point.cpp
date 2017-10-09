@@ -29,7 +29,7 @@
 
 using namespace std;
 
-using Cti::Logging::Vector::operator<<;
+using Cti::Logging::Map::operator<<;
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -1016,7 +1016,7 @@ auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) ->
 {
     static const auto sql = 
         "SELECT"
-            " P.POINTID"
+            " P.POINTID, P.PAOBJECTID"
         " FROM"
             " POINT P"
             " JOIN YukonPAObject CBC"
@@ -1025,17 +1025,20 @@ auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) ->
                 " ON P.PAObjectID=Y.PAObjectID"
         " WHERE"
             " CBC.PAObjectID=?"
-            " Y.Type='RTU-DNP'"s;
-    std::vector<long> results;
+            " AND Y.Type='RTU-DNP'"s;
+    
+    std::map<long, long> results;
 
     Cti::Database::DatabaseConnection conn;
     Cti::Database::DatabaseReader rdr { conn, sql };
 
     rdr << pointname << pao;
 
+    rdr.execute();
+
     while( rdr() )
     {
-        results.push_back(rdr[0].as<long>());
+        results.emplace(rdr[0].as<long>(), rdr[1].as<long>());
     }
 
     if( results.empty() )
@@ -1059,7 +1062,9 @@ auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) ->
         return {};
     }
 
-    return getPoint(results.front());
+    auto pointPao = results.begin();
+
+    return getPoint(pointPao->first, pointPao->second);
 }
 
 

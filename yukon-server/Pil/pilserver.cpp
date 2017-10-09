@@ -2089,21 +2089,22 @@ int PilServer::reportClientRequests(const CtiDeviceBase &Dev, const CtiCommandPa
             CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, ++soe, text, addl, PILLogType, SignalEvent, requestingUser );
             vgList.push_back(pSig);
 
-            std::list< CtiMessage* >::const_iterator itr;
-
-            for(itr = retList.begin(); itr != retList.end(); itr++)
+            for( auto msg : retList )
             {
-                const CtiReturnMsg *&pcRet = (const CtiReturnMsg*&)*itr;
+                if( msg->isA() == MSG_PCRETURN )
+                {
+                    auto pcRet = static_cast<const CtiReturnMsg*>(msg);
 
-                addl = Dev.getName() + " / (" + CtiNumStr(Dev.getID()) + "): " + pcRet->CommandString();
-                if(pcRet->Status() == ClientErrors::None)
-                    text = string("Success: ");
-                else
-                    text = string("Failed (Err ") + CtiNumStr(pcRet->Status()) + "): ";
+                    addl = Dev.getName() + " / (" + CtiNumStr(Dev.getID()) + "): " + pcRet->CommandString();
+                    if(pcRet->Status() == ClientErrors::None)
+                        text = string("Success: ");
+                    else
+                        text = string("Failed (Err ") + CtiNumStr(pcRet->Status()) + "): ";
 
-                text += pcRet->ResultString();
-                CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, soe, text, addl, PILLogType, SignalEvent, requestingUser );
-                vgList.push_back(pSig);
+                    text += pcRet->ResultString();
+                    CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(pid, soe, text, addl, PILLogType, SignalEvent, requestingUser );
+                    vgList.push_back(pSig);
+                }
             }
         }
     }

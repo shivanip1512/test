@@ -10,6 +10,7 @@
 #include "database_util.h"
 #include "dev_macro.h"
 #include "dev_cbc.h"
+#include "dev_cbclogical.h"
 #include "dev_dnp.h"
 #include "dev_ion.h"
 #include "dev_remote.h"
@@ -689,6 +690,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
                 rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
 
                 rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
+                rowFound |= loadDeviceType(paoid_subset, "Logical CBC devices",    Devices::CbcLogicalDevice(),  "CBC Logical");
                 rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
                 rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());

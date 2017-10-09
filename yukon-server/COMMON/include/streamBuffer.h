@@ -122,6 +122,14 @@ public:
         return static_cast<StreamBufferT&>(*this);
     }
 
+    template<class KeyT, class ValueT>
+    StreamBufferT& operator<< (const std::map<KeyT, ValueT>& m)
+    {
+        initSStream();
+        *_osstream << m;
+        return static_cast<StreamBufferT&>(*this);
+    }
+
     template<class ValueT>
     StreamBufferT& operator<< (const boost::iterator_range<ValueT>& vec)
     {
