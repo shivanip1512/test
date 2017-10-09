@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.ObjectDeletion;
 import com.cannontech.msp.beans.v5.multispeak.SCADAAnalog;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
@@ -91,47 +91,47 @@ public class NOT_ServerImpl implements NOT_Server {
     
    
     @Override
-    public List<ErrorObject> metersCreatedNotification(List<ElectricMeter> electricCreatedMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> metersCreatedNotification(List<MspMeter> mspMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersCreatedNotification", vendor.getCompanyName());
         List<ErrorObject> errorObjects =
-            multispeakMeterService.metersCreated(vendor, ListUtils.emptyIfNull(electricCreatedMeters));
+            multispeakMeterService.metersCreated(vendor, ListUtils.emptyIfNull(mspMeters));
         return errorObjects;
     }
  
     @Override
-    public List<ErrorObject> metersInstalledNotification(List<ElectricMeter> electricInstalledMeters) throws MultispeakWebServiceException{
+    public List<ErrorObject> metersInstalledNotification(List<MspMeter> mspMeters) throws MultispeakWebServiceException{
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersInstalledNotification", vendor.getCompanyName());
         List<ErrorObject> errorObjects =
-            multispeakMeterService.metersInstalled(vendor, ListUtils.emptyIfNull(electricInstalledMeters));
+            multispeakMeterService.metersInstalled(vendor, ListUtils.emptyIfNull(mspMeters));
         return errorObjects;
     }
     
     @Override
-    public List<ErrorObject> metersUninstalledNotification(List<ElectricMeter> electricUninstalledMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> metersUninstalledNotification(List<MspMeter> mspMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersUninstalledNotification", vendor.getCompanyName());
         List<ErrorObject> errorObjects =
-            multispeakMeterService.metersUninstalled(vendor, ListUtils.emptyIfNull(electricUninstalledMeters));
+            multispeakMeterService.metersUninstalled(vendor, ListUtils.emptyIfNull(mspMeters));
         return errorObjects;
     }
 
     @Override
-    public List<ErrorObject> metersChangedNotification(List<ElectricMeter> electricChangedMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> metersChangedNotification(List<MspMeter> mspChangedMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersChangedNotification", vendor.getCompanyName());
         List<ErrorObject> errorObjects =
-            multispeakMeterService.metersChanged(vendor, ListUtils.emptyIfNull(electricChangedMeters));
+            multispeakMeterService.metersChanged(vendor, ListUtils.emptyIfNull(mspChangedMeters));
         return errorObjects;
     }
 
     @Override
-    public List<ErrorObject> metersExchangedNotification(List<ElectricMeterExchange> exchangeMeters) throws MultispeakWebServiceException {
+    public List<ErrorObject> metersExchangedNotification(List<MspMeterExchange> exchangeMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersExchangedNotification", vendor.getCompanyName());
@@ -141,13 +141,13 @@ public class NOT_ServerImpl implements NOT_Server {
     }
 
     @Override
-    public List<ErrorObject> metersDeletedNotification(List<ObjectDeletion> electricMeters)
+    public List<ErrorObject> metersDeletedNotification(List<ObjectDeletion> meters)
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersDeletedNotification", vendor.getCompanyName());
         List<ErrorObject> errorObjects =
-            multispeakMeterService.metersDeleted(vendor, ListUtils.emptyIfNull(electricMeters));
+            multispeakMeterService.metersDeleted(vendor, ListUtils.emptyIfNull(meters));
         return errorObjects;
     }
 

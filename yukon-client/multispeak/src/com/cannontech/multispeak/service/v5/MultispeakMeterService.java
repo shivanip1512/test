@@ -9,9 +9,9 @@ import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.enumerations.EndDeviceStateKind;
 import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
 import com.cannontech.msp.beans.v5.multispeak.ConnectDisconnectEvent;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.ObjectDeletion;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.block.v5.Block;
@@ -50,18 +50,18 @@ public interface MultispeakMeterService {
     /**
      * Delete a list of meters in Yukon.
      */
-    public List<ErrorObject> metersDeleted(MultispeakVendor vendor, List<ObjectDeletion> electricMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersDeleted(MultispeakVendor vendor, List<ObjectDeletion> meters) throws MultispeakWebServiceException;
     
     /**
      * Changes the meter information.  Meter is looked up by the Physical Address (TransponderId). 
      * @throws MultispeakWebServiceException
      */
-    public List<ErrorObject> metersChanged(MultispeakVendor vendor, List<ElectricMeter> electricChangedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersChanged(MultispeakVendor vendor, List<MspMeter> mspChangedMeters) throws MultispeakWebServiceException;
     
     /**
      * Disable a list of meters in Yukon.
      */
-    public List<ErrorObject> metersUninstalled(MultispeakVendor vendor, List<ElectricMeter> electricUninstalledMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersUninstalled(MultispeakVendor vendor, List<MspMeter> uninstalledMeters) throws MultispeakWebServiceException;
 
     /**
      * Create new meter if not present in database but
@@ -72,7 +72,7 @@ public interface MultispeakMeterService {
      *  then a new Meter object will be added to Yukon.
      * @throws MultispeakWebServiceException
      */
-    public List<ErrorObject> metersInstalled(MultispeakVendor vendor, List<ElectricMeter> electricInstalledMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersInstalled(MultispeakVendor vendor, List<MspMeter> installedMeters) throws MultispeakWebServiceException;
     
     /**
      * Create new meters in Yukon database.
@@ -81,12 +81,12 @@ public interface MultispeakMeterService {
      *  then a new Meter object will be added to Yukon.
      * @throws MultispeakWebServiceException
      */
-    public List<ErrorObject> metersCreated(MultispeakVendor vendor, List<ElectricMeter> electricCreatedMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersCreated(MultispeakVendor vendor, List<MspMeter> createdMeters) throws MultispeakWebServiceException;
 
     /**
      * Disable a existing meter that exists in yukon and create a new meter (replacement of existing meter)
      */
-    public List<ErrorObject> metersExchanged(MultispeakVendor vendor, List<ElectricMeterExchange> exchangeMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersExchanged(MultispeakVendor vendor, List<MspMeterExchange> exchangeMeters) throws MultispeakWebServiceException;
     
     /**
 	 * Send a ping command to pil connection for each meter in meterNumbers.

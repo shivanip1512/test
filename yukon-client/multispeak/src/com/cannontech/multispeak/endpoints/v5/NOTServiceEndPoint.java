@@ -1,7 +1,9 @@
 package com.cannontech.multispeak.endpoints.v5;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -12,9 +14,13 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.ObjectDeletion;
 import com.cannontech.msp.beans.v5.multispeak.SCADAAnalog;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
+import com.cannontech.msp.beans.v5.multispeak.WaterMeter;
+import com.cannontech.msp.beans.v5.multispeak.WaterMeterExchange;
 import com.cannontech.msp.beans.v5.not_server.GetMethods;
 import com.cannontech.msp.beans.v5.not_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.not_server.MetersChangedNotification;
@@ -92,15 +98,25 @@ public class NOTServiceEndPoint {
     @PayloadRoot(localPart = "MetersChangedNotification", namespace = NOT_V5_ENDPOINT_NAMESPACE)
     public @ResponsePayload MetersChangedNotificationResponse metersChangedNotification(
             @RequestPayload MetersChangedNotification metersChangedNotification) throws MultispeakWebServiceException {
-
+        List<MspMeter> mspMeters = new ArrayList<>();
         MetersChangedNotificationResponse response = notObjectFactory.createMetersChangedNotificationResponse();
 
         if (null != metersChangedNotification.getMeters()) {
 
-            List<ElectricMeter> electricMeters =
-                (null != metersChangedNotification.getMeters().getElectricMeters())
-                    ? metersChangedNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersChangedNotification(electricMeters));
+            List<ElectricMeter> electricMeters = (null != metersChangedNotification.getMeters().getElectricMeters())
+                ? metersChangedNotification.getMeters().getElectricMeters().getElectricMeter() : null;
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
+                mspMeters.addAll(electricMeters);
+            }
+
+            List<WaterMeter> waterMeters = (null != metersChangedNotification.getMeters().getWaterMeters())
+                ? metersChangedNotification.getMeters().getWaterMeters().getWaterMeter() : null;
+            if (CollectionUtils.isNotEmpty(waterMeters)) {
+                mspMeters.addAll(waterMeters);
+            }
+
+            mspMeters.addAll(electricMeters);
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersChangedNotification(mspMeters));
         }
         return response;
     }
@@ -108,6 +124,8 @@ public class NOTServiceEndPoint {
     @PayloadRoot(localPart = "MetersCreatedNotification", namespace = NOT_V5_ENDPOINT_NAMESPACE)
     public @ResponsePayload MetersCreatedNotificationResponse metersCreatedNotification(
             @RequestPayload MetersCreatedNotification metersCreatedNotification) throws MultispeakWebServiceException {
+        
+        List<MspMeter> mspMeters = new ArrayList<>();
         MetersCreatedNotificationResponse response = notObjectFactory.createMetersCreatedNotificationResponse();
 
         if (null != metersCreatedNotification.getMeters()) {
@@ -115,7 +133,16 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersCreatedNotification.getMeters().getElectricMeters())
                     ? metersCreatedNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersCreatedNotification(electricMeters));
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
+                mspMeters.addAll(electricMeters);
+            }
+            List<WaterMeter> waterMeters = (null != metersCreatedNotification.getMeters().getWaterMeters())
+                ? metersCreatedNotification.getMeters().getWaterMeters().getWaterMeter() : null;
+
+            if (CollectionUtils.isNotEmpty(waterMeters)) {
+                mspMeters.addAll(waterMeters);
+            }
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersCreatedNotification(mspMeters));
             
         }
         return response;
@@ -138,15 +165,28 @@ public class NOTServiceEndPoint {
     public @ResponsePayload MetersExchangedNotificationResponse metersExchangedNotification(
             @RequestPayload MetersExchangedNotification metersExchangedNotification)
             throws MultispeakWebServiceException {
-
+        List<MspMeterExchange> exchangeMeters = new ArrayList<>();
         MetersExchangedNotificationResponse response = notObjectFactory.createMetersExchangedNotificationResponse();
 
         if (null != metersExchangedNotification.getMeterExchanges()) {
 
-            List<ElectricMeterExchange> exchangeMeters =
-                (null == metersExchangedNotification.getMeterExchanges())
-                    ? null: (null != metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges())
-                        ? metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges().getElectricMeterExchange() : null;
+            List<ElectricMeterExchange> electricMeterExchanges =
+                (null == metersExchangedNotification.getMeterExchanges()) ? null
+                    : (null != metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges())
+                        ? metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges().getElectricMeterExchange()
+                        : null;
+            if (CollectionUtils.isNotEmpty(electricMeterExchanges)) {
+                exchangeMeters.addAll(electricMeterExchanges);
+            }
+            List<WaterMeterExchange> waterMeterExchanges = (null == metersExchangedNotification.getMeterExchanges())
+                ? null
+                : (null != metersExchangedNotification.getMeterExchanges().getWaterMeterExchanges())
+                    ? metersExchangedNotification.getMeterExchanges().getWaterMeterExchanges().getWaterMeterExchange()
+                    : null;
+
+            if (CollectionUtils.isNotEmpty(waterMeterExchanges)) {
+                exchangeMeters.addAll(waterMeterExchanges);
+            }               
             multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersExchangedNotification(exchangeMeters));
         }
         return response;
@@ -156,15 +196,23 @@ public class NOTServiceEndPoint {
     public @ResponsePayload MetersInstalledNotificationResponse metersInstalledNotification(
             @RequestPayload MetersInstalledNotification metersInstalledNotification)
             throws MultispeakWebServiceException {
+        List<MspMeter> mspMeters = new ArrayList<>();
         MetersInstalledNotificationResponse response = notObjectFactory.createMetersInstalledNotificationResponse();
 
         if (null != metersInstalledNotification.getMeters()) {
 
-            List<ElectricMeter> electricMeters =
-                (null != metersInstalledNotification.getMeters().getElectricMeters())
-                    ? metersInstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-                    
-            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersInstalledNotification(electricMeters));
+            List<ElectricMeter> electricMeters = (null != metersInstalledNotification.getMeters().getElectricMeters())
+                ? metersInstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
+                mspMeters.addAll(electricMeters);
+            }
+            List<WaterMeter> waterMeters = (null != metersInstalledNotification.getMeters().getWaterMeters())
+                ? metersInstalledNotification.getMeters().getWaterMeters().getWaterMeter() : null;
+
+            if (CollectionUtils.isNotEmpty(waterMeters)) {
+                mspMeters.addAll(waterMeters);
+            }
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersInstalledNotification(mspMeters));
         }
         return response;
     }
@@ -173,15 +221,24 @@ public class NOTServiceEndPoint {
     public @ResponsePayload MetersUninstalledNotificationResponse metersUninstalledNotification(
             @RequestPayload MetersUninstalledNotification metersUninstalledNotification)
             throws MultispeakWebServiceException {
+        List<MspMeter> mspMeters = new ArrayList<>();
         MetersUninstalledNotificationResponse response = notObjectFactory.createMetersUninstalledNotificationResponse();
 
         if (null != metersUninstalledNotification.getMeters()) {
 
-            List<ElectricMeter> electricMeters =
-                (null != metersUninstalledNotification.getMeters().getElectricMeters())
-                    ? metersUninstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
+            List<ElectricMeter> electricMeters = (null != metersUninstalledNotification.getMeters().getElectricMeters())
+                ? metersUninstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
+                mspMeters.addAll(electricMeters);
+            }
 
-            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersUninstalledNotification(electricMeters));
+            List<WaterMeter> waterMeters = (null != metersUninstalledNotification.getMeters().getWaterMeters())
+                ? metersUninstalledNotification.getMeters().getWaterMeters().getWaterMeter() : null;
+
+            if (CollectionUtils.isNotEmpty(waterMeters)) {
+                mspMeters.addAll(waterMeters);
+            }
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersUninstalledNotification(mspMeters));
         }
         return response;
     }

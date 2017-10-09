@@ -3,8 +3,8 @@ package com.cannontech.multispeak.service.v5;
 import java.util.List;
 
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.MspMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.ObjectDeletion;
 import com.cannontech.msp.beans.v5.multispeak.SCADAAnalog;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
@@ -39,12 +39,12 @@ public interface NOT_Server {
     /**
      * Meters Changed Notification.
      * 
-     * @param ElectricMeter
+     * @param MspMeter
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     
-    List<ErrorObject> metersChangedNotification(List<ElectricMeter> electricMeters)
+    List<ErrorObject> metersChangedNotification(List<MspMeter> mspMeters)
             throws MultispeakWebServiceException;
     
     /**
@@ -59,47 +59,47 @@ public interface NOT_Server {
     /**
      * Meters Creation Notification.
      * 
-     * @param ElectricMeter
+     * @param MspMeter
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    List<ErrorObject> metersCreatedNotification(List<ElectricMeter> addedMeters) throws MultispeakWebServiceException;
+    List<ErrorObject> metersCreatedNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException;
 
     /**
      * Meters Uninstall Notification.
      * 
-     * @param ElectricMeter
+     * @param MspMeter
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> metersUninstalledNotification(List<ElectricMeter> electricMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersUninstalledNotification(List<MspMeter> mspMeters) throws MultispeakWebServiceException;
 
     /**
      * Meters Install Notification.
      * 
-     * @param ElectricMeter
+     * @param MspMeter
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> metersInstalledNotification(List<ElectricMeter> electricMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersInstalledNotification(List<MspMeter> mspMeters) throws MultispeakWebServiceException;
 
     /**
      * Meters Exchange Notification.
      * 
-     * @param ElectricMeter
+     * @param MspMeterExchange
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> metersExchangedNotification(List<ElectricMeterExchange> exchangeMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersExchangedNotification(List<MspMeterExchange> exchangeMeters) throws MultispeakWebServiceException;
 
     /**
      * Meters Delete Notification.
      * 
-     * @param ElectricMeter
+     * @param ObjectDeletion
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> metersDeletedNotification(List<ObjectDeletion> electricMeters) throws MultispeakWebServiceException;
+    public List<ErrorObject> metersDeletedNotification(List<ObjectDeletion> meters) throws MultispeakWebServiceException;
 
 
 }
