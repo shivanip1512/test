@@ -66,6 +66,7 @@ private:
     void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const std::vector<unsigned char>&);
 
     std::vector<unsigned char> buildRfnResponse(const std::vector<unsigned char>& request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId);
+    std::vector<unsigned char> buildDnp3Response(const std::vector<unsigned char>& request);
 };
 
 }

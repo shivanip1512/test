@@ -20,6 +20,8 @@
 
 #include "CParms.h"
 
+#include "prot_dnpSlave.h"
+
 extern "C" {
 #include "coap/pdu.h"
 #include "coap/block.h"
@@ -152,18 +154,38 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                         return;
                     }
 
-                    if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
+                    if( isAsid_E2eDt(requestMsg->applicationServiceId) )
                     {
-                        e2edt_packet replyPacket;
+                        if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
+                        {
+                            e2edt_packet replyPacket;
 
-                        replyPacket.id      = e2edtRequest->id;
-                        replyPacket.token   = e2edtRequest->token;
-                        replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
-                        replyPacket.status  = COAP_RESPONSE_205_CONTENT;
+                            replyPacket.id      = e2edtRequest->id;
+                            replyPacket.token   = e2edtRequest->token;
+                            replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
+                            replyPacket.status  = COAP_RESPONSE_205_CONTENT;
 
-                        auto e2edtReply = buildE2eDtReplyPayload(replyPacket);
+                            auto e2edtReply = buildE2eDtReplyPayload(replyPacket);
 
-                        sendE2eDataIndication(*requestMsg, e2edtReply);
+                            sendE2eDataIndication(*requestMsg, e2edtReply);
+                        }
+                        else
+                        {
+                            CTILOG_INFO(dout, "Could not parse E2EDT request for " << requestMsg->rfnIdentifier);
+                        }
+                    }
+                    else if( isAsid_Dnp3(requestMsg->applicationServiceId) )
+                    {
+                        auto dnp3Response = buildDnp3Response(requestMsg->payload);
+
+                        if( ! dnp3Response.empty() )
+                        {
+                            sendE2eDataIndication(*requestMsg, dnp3Response);
+                        }
+                        else
+                        {
+                            CTILOG_INFO(dout, "Not sending DNP3 response for " << requestMsg->rfnIdentifier);
+                        }
                     }
                 }, delay, std::move(requestMsg));
         }
@@ -310,6 +332,74 @@ std::vector<unsigned char> E2eSimulator::buildRfnResponse(const std::vector<unsi
         }
     }
     return {};
+}
+
+std::vector<unsigned char> E2eSimulator::buildDnp3Response(const std::vector<unsigned char>& request)
+{
+    Protocols::DnpSlaveProtocol prot;
+
+    const std::vector<char> requestAsChar { request.begin(), request.end() };
+
+    auto requestId = prot.identifyRequest(requestAsChar.data(), requestAsChar.size());
+
+    std::vector<unsigned char> response;
+
+    if( requestId.first == Protocols::DnpSlaveProtocol::Commands::Class1230Read )
+    {
+        std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> points;
+
+        {
+            auto analog_point = std::make_unique<Protocols::DnpSlave::output_analog>();
+            analog_point->offset = 17;
+            analog_point->online = true;
+            analog_point->value = 331;
+
+            points.push_back(std::move(analog_point));
+        }
+        {
+            auto status_point = std::make_unique<Protocols::DnpSlave::output_digital>();
+            status_point->offset = 170;
+            status_point->online = true;
+            status_point->status = true;
+
+            points.push_back(std::move(status_point));
+        }
+        {
+            auto accumulator_point = std::make_unique<Protocols::DnpSlave::output_accumulator>();
+            accumulator_point->offset = 1700;
+            accumulator_point->online = true;
+            accumulator_point->value  = 3310;
+
+            points.push_back(std::move(accumulator_point));
+        }
+
+        prot.setScanCommand(std::move(points));
+
+        CtiXfer xfer;
+
+        while( ! prot.isTransactionComplete() )
+        {
+            if( prot.generate(xfer) == ClientErrors::None )
+            {
+                if( xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0 )
+                {
+                    auto packet = arrayToRange(xfer.getOutBuffer(), xfer.getOutCount());
+
+                    CTILOG_INFO(dout, "Generated DNP3 packet:" << packet);
+
+                    response.insert(response.end(), packet.begin(), packet.end());
+                }
+
+                prot.decode(xfer);
+            }
+            else 
+            {
+                CTILOG_WARN(dout, "Was not able to generate scan response.");
+            }
+        }
+    }
+
+    return response;
 }
 
 }

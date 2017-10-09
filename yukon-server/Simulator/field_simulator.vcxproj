@@ -152,7 +152,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoapd.lib;advapi32.lib;Dnsapi.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\service.lib;..\lib-debug\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoapd.lib;advapi32.lib;Dnsapi.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiprtdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\service.lib;..\lib-debug\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -201,7 +201,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoap.lib;advapi32.lib;Dnsapi.lib;..\lib\ctibase.lib;..\lib\ctiprtdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctidevdb.lib;..\lib\ctidbsrc.lib;..\lib\service.lib;..\lib\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;$(LIBCOAP)\$(CONFIGURATION)\lib\libcoap.lib;advapi32.lib;Dnsapi.lib;..\lib\ctibase.lib;..\lib\ctiprtdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctidevdb.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\service.lib;..\lib\rfn-e2e.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

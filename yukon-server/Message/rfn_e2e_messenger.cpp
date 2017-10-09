@@ -170,34 +170,6 @@ void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnId
 }
 
 
-namespace {
-
-using ASIDs = ApplicationServiceIdentifiers;
-
-bool isE2eDt(const unsigned char &asid)
-{
-    static const std::set<unsigned char> e2eDtAsids {
-        static_cast<unsigned char>(ASIDs::ChannelManager),
-        static_cast<unsigned char>(ASIDs::E2EDT),
-        static_cast<unsigned char>(ASIDs::EventManager),
-        static_cast<unsigned char>(ASIDs::HubMeterCommandSet),
-    };
-
-    return e2eDtAsids.count(asid);
-}
-
-bool isDnp3(const unsigned char &asid)
-{
-    return asid == static_cast<unsigned char>(ASIDs::E2EAP_DNP3);
-}
-
-bool isDataStreaming(const unsigned char &asid)
-{
-    return asid == static_cast<unsigned char>(ASIDs::E2EAP_DataStreaming);
-}
-
-}
-
 void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 {
     using Serialization::MessagePtr;
@@ -217,7 +189,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
             const unsigned asid = indicationMsg->applicationServiceId;
 
-            if( isE2eDt(asid) )
+            if( isAsid_E2eDt(asid) )
             {
                 if( ! _e2edtCallback )
                 {
@@ -233,7 +205,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
                 return (*_e2edtCallback)(ind);
             }
 
-            if( isDnp3(asid) )
+            if( isAsid_Dnp3(asid) )
             {
                 boost::optional<Indication::Callback> dnp3Callback = mapFind(_dnp3Callbacks, indicationMsg->rfnIdentifier);
 
@@ -251,7 +223,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
                 return (*dnp3Callback)(ind);
             }
 
-            if( isDataStreaming(asid) )
+            if( isAsid_DataStreaming(asid) )
             {
                 if( ! _dataStreamingCallback )
                 {

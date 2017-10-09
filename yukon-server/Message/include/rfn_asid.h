@@ -23,6 +23,34 @@ enum class IM_EX_MSG ApplicationServiceIdentifiers : unsigned char
     E2EAP_DataStreaming = 12,
 };
 
+namespace {
+
+    using ASIDs = ApplicationServiceIdentifiers;
+
+    bool isAsid_E2eDt(const unsigned char &asid)
+    {
+        static const std::set<unsigned char> e2eDtAsids{
+            static_cast<unsigned char>(ASIDs::ChannelManager),
+            static_cast<unsigned char>(ASIDs::E2EDT),
+            static_cast<unsigned char>(ASIDs::EventManager),
+            static_cast<unsigned char>(ASIDs::HubMeterCommandSet),
+        };
+
+        return e2eDtAsids.count(asid);
+    }
+
+    bool isAsid_Dnp3(const unsigned char &asid)
+    {
+        return asid == static_cast<unsigned char>(ASIDs::E2EAP_DNP3);
+    }
+
+    bool isAsid_DataStreaming(const unsigned char &asid)
+    {
+        return asid == static_cast<unsigned char>(ASIDs::E2EAP_DataStreaming);
+    }
+
+}
+
 }
 }
 }
