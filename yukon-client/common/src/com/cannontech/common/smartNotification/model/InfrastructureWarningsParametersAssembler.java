@@ -1,5 +1,8 @@
 package com.cannontech.common.smartNotification.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Instant;
@@ -7,30 +10,27 @@ import org.joda.time.Instant;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-
 public class InfrastructureWarningsParametersAssembler {  
     public static final String PAO_ID = "paoId";
     public static final String WARNING_TYPE = "WarningType";
     public static final String WARNING_SEVERITY = "WarningSeverity";
-    public static final String ARGUMENTS = "Arguments";
+    public static final String ARGUMENT_1 = "Argument1";
+    public static final String ARGUMENT_2 = "Argument2";
+    public static final String ARGUMENT_3 = "Argument3";
     
     public static SmartNotificationEvent assemble(Instant now, InfrastructureWarning warning) {
         SmartNotificationEvent event = new SmartNotificationEvent(now);
-        Builder<String, Object> b = new ImmutableMap.Builder<>();
-        b.put(PAO_ID,  warning.getPaoIdentifier().getPaoId())
-        .put(WARNING_TYPE, warning.getWarningType().name())
-        .put(WARNING_SEVERITY, warning.getSeverity().name());
-        //TODO: separate into 3 argument parameters?
-        if (warning.getArguments() != null && warning.getArguments().length > 0) {
-            b.put(ARGUMENTS, Joiner.on(",").join(warning.getArguments()));
-        }
-        event.setParameters(b.build());
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put(PAO_ID, warning.getPaoIdentifier().getPaoId());
+        parameters.put(WARNING_TYPE , warning.getWarningType());
+        parameters.put(WARNING_SEVERITY, warning.getSeverity());
+        addArgument(parameters, warning, ARGUMENT_1, 0);
+        addArgument(parameters, warning, ARGUMENT_2, 1);
+        addArgument(parameters, warning, ARGUMENT_3, 2);
+        event.setParameters(parameters);
         return event;
     }
-    
+
     public static int getPaoId(Map<String, Object> parameters){
         int paoId = Integer.parseInt(parameters.get(PAO_ID).toString());
         return paoId;
@@ -45,11 +45,25 @@ public class InfrastructureWarningsParametersAssembler {
     }
     
     public static Object[] getWarningArguments(Map<String, Object> parameters) {
-        //TODO improve this once we know exactly how we're storing arguments
-        if (parameters.get(ARGUMENTS) == null) {
-            return new Object[0];
+       List<Object> args = new ArrayList<>();
+       addArgument(args, parameters, ARGUMENT_1);
+       addArgument(args, parameters, ARGUMENT_2);
+       addArgument(args, parameters, ARGUMENT_3);
+       return args.toArray();
+    }
+    
+    private static void addArgument(List<Object> args, Map<String, Object> parameters, String argument) {
+        if (parameters.get(argument) != null) {
+            args.add(parameters.get(argument));
         }
-        String joinedArgs = parameters.get(ARGUMENTS).toString();
-        return joinedArgs.split(",");
+    }
+
+    private static void addArgument(Map<String, Object> parameters, InfrastructureWarning warning, String argument,
+            int index) {
+        try {
+            parameters.put(argument, warning.getArguments()[index]);
+        } catch (Exception e) {
+
+        }
     }
 }

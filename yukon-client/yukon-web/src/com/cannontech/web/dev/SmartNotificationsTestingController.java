@@ -3,7 +3,6 @@ package com.cannontech.web.dev;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +37,11 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
+import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.dev.service.InfrastructureWarningsGeneratorService;
 import com.cannontech.web.infrastructure.service.InfrastructureWarningsRefreshService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -58,7 +58,7 @@ public class SmartNotificationsTestingController {
     @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
     @Autowired private DeviceDataMonitorServiceImpl monitorService;
-
+    @Autowired private InfrastructureWarningsGeneratorService infrastructureWarningsGeneratorService;
 
     private Executor executor = Executors.newCachedThreadPool();
     
@@ -129,12 +129,22 @@ public class SmartNotificationsTestingController {
                     int i = 0;
                     int nextIndex = -1;
                     while (i++ < numberOfMessages) {
-                        SmartNotificationEvent event = new SmartNotificationEvent(Instant.now());
                         int index = random.nextInt(deviceIds.size());
                         nextIndex = getNextSubscriptionIndex(subscriptions, nextIndex);
-                        event.setParameters(getEventParameters(type, subscriptions.get(nextIndex).getParameters(),
-                            deviceIds.get(index)));
-                        events.add(event);
+                        
+                        if(type == SmartNotificationEventType.INFRASTRUCTURE_WARNING){
+                            List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
+                            Collections.shuffle(types);
+                            InfrastructureWarning warning = infrastructureWarningsGeneratorService.genarate(types.get(0));
+                            events.add(InfrastructureWarningsParametersAssembler.assemble(Instant.now(), warning));
+                        } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
+                            int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(
+                                subscriptions.get(nextIndex).getParameters());
+                            String monitorName = monitorCacheService.getDeviceDataMonitors().stream().filter(
+                                m -> m.getId() == monitorId).findFirst().get().getName();
+                            events.add(DeviceDataMonitorEventAssembler.assemble(Instant.now(), monitorId, monitorName,
+                                MonitorState.IN_VIOLATION, deviceIds.get(index)));
+                        }
                     }
 
                     log.info("Created events " + events.size() + " " + type);
@@ -175,25 +185,5 @@ public class SmartNotificationsTestingController {
             subscriptionService.saveSubscription(subscription, userContext);
         });
         return "redirect:smartNotificationsSimulator";
-    }
-
-    private Map<String, Object> getEventParameters(SmartNotificationEventType type, Map<String, Object> subParameters,
-            int violatingDeviceId) {
-        Map<String, Object> params = new HashMap<>();
-        if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
-            params.put(DeviceDataMonitorEventAssembler.PAO_ID, violatingDeviceId);
-            params.put(DeviceDataMonitorEventAssembler.MONITOR_ID,
-                DeviceDataMonitorEventAssembler.getMonitorId(subParameters));
-            params.put(DeviceDataMonitorEventAssembler.STATE, MonitorState.IN_VIOLATION);
-        } else if (type == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
-            params.put(InfrastructureWarningsParametersAssembler.PAO_ID, violatingDeviceId);
-            List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
-            Collections.shuffle(types);
-            params.put(InfrastructureWarningsParametersAssembler.WARNING_TYPE, types.get(0));
-            List<InfrastructureWarningSeverity> severity = Lists.newArrayList(InfrastructureWarningSeverity.values());
-            Collections.shuffle(severity);
-            params.put(InfrastructureWarningsParametersAssembler.WARNING_SEVERITY, severity.get(0));
-        }
-        return params;
     }
 }
