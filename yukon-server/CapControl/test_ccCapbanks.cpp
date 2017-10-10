@@ -238,6 +238,14 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_stop_heartbeat_scada_override_mo
 
     BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideClear' LitePoint
     BOOST_CHECK_EQUAL( "control pulse select pointid 5678", requestMsg->CommandString() );
+
+
+    // Executing it again shouldn't cause another message to be sent, since we only send stop commands once
+
+    BOOST_CHECK_NO_THROW( bank->executeStopHeartbeat( "cap control" ) );
+
+    BOOST_CHECK_EQUAL( 1, capController.signalMessages.size() );
+    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_heartbeat_fixture_pulsed )
@@ -420,6 +428,14 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_stop_heartbeat_scada_override_mo
 
     BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideClear' LitePoint
     BOOST_CHECK_EQUAL( "control pulse select pointid 5678", requestMsg->CommandString() );
+
+
+    // Executing it again shouldn't cause another message to be sent, since we only send stop commands once
+
+    BOOST_CHECK_NO_THROW( bank->executeStopHeartbeat( "cap control" ) );
+
+    BOOST_CHECK_EQUAL( 1, capController.signalMessages.size() );
+    BOOST_CHECK_EQUAL( 1, capController.requestMessages.size() );
 }
 
 BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
