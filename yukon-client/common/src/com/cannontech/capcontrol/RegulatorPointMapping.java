@@ -21,6 +21,10 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     KEEP_ALIVE("Keep Alive", PointType.Analog, PointType.CalcAnalog),
     FORWARD_SET_POINT("Forward Set Point", PointType.Analog, PointType.CalcAnalog),
     FORWARD_BANDWIDTH("Forward Bandwidth", PointType.Analog, PointType.CalcAnalog),
+    REVERSE_BANDWIDTH("Reverse Bandwidth", PointType.Analog, PointType.CalcAnalog),
+    REVERSE_SET_POINT("Reverse Set Point", PointType.Analog, PointType.CalcAnalog),
+    REVERSE_FLOW_INDICATOR("Reverse Flow Indicator", PointType.Status, PointType.CalcStatus),
+    CONTROL_MODE("Control Mode", PointType.Analog, PointType.CalcAnalog),
     ;
     
     private final static ImmutableSet<RegulatorPointMapping> phaseAndGangRegulatorMappings;
@@ -37,6 +41,10 @@ public enum RegulatorPointMapping implements DisplayableEnum {
         b.add(VOLTAGE);
         b.add(FORWARD_SET_POINT);
         b.add(FORWARD_BANDWIDTH);
+        b.add(REVERSE_BANDWIDTH);
+        b.add(REVERSE_SET_POINT);
+        b.add(REVERSE_FLOW_INDICATOR);
+        b.add(CONTROL_MODE);
         ltcRegulatorMappings = b.build();
         
         b.add(AUTO_BLOCK_ENABLE);
