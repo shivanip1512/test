@@ -33,7 +33,7 @@ public class RfDaCreationServiceImpl implements RfDaCreationService {
             rfnIdentifier, true);
         RfnDevice device = new RfnDevice(deviceName, newDevice.getPaoIdentifier(), rfnIdentifier);
         
-        rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getRfnIdentifier(), "N/A", device.getPaoIdentifier());
+        rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getRfnIdentifier(), "N/A", deviceName);
 
         dbChangeManager.processPaoDbChange(newDevice, DbChangeType.ADD);
 

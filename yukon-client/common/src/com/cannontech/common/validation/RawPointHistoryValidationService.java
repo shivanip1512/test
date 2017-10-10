@@ -250,11 +250,15 @@ public class RawPointHistoryValidationService {
                     @Override
                     public void run() {
                         try {
-                            if (!attributeService.isPointAttribute(paoPointIdentifier, BuiltInAttribute.USAGE)) return;
+                            if (!attributeService.isPointAttribute(paoPointIdentifier, BuiltInAttribute.USAGE)) {
+                                return;
+                            }
                             
                             ImmutableSet<ValidationMonitor> descriptions = findValidationMonitors(deviceGroupCache,
                                                                                                   paoPointIdentifier);
-                            if (descriptions.isEmpty()) return;
+                            if (descriptions.isEmpty()) {
+                                return;
+                            }
                             
                             processWorkUnit(workUnit, descriptions);
                         } catch (Exception e) {
@@ -523,7 +527,7 @@ public class RawPointHistoryValidationService {
                     PointIdentifier pointIdentifier = workUnit.paoPointIdentifier.getPointIdentifier();
                     DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
                     
-                    validationEventLogService.unreasonableValueCausedReRead(paoIdentifier.getPaoId(), displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
+                    validationEventLogService.unreasonableValueCausedReRead(displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
                 }
             }
         }
@@ -535,7 +539,7 @@ public class RawPointHistoryValidationService {
             PaoIdentifier paoIdentifier = workUnit.paoPointIdentifier.getPaoIdentifier();
             PointIdentifier pointIdentifier = workUnit.paoPointIdentifier.getPointIdentifier();
             DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
-            validationEventLogService.changedQualityOnPeakedValue(changeId, paoIdentifier.getPaoId(), displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
+            validationEventLogService.changedQualityOnPeakedValue(changeId, displayablePao.getName(), paoIdentifier.getPaoType(), workUnit.pointId, pointIdentifier.getPointType(), pointIdentifier.getOffset());
         }
     }
 

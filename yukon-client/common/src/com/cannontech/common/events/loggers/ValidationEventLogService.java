@@ -14,8 +14,7 @@ import com.cannontech.database.data.point.PointType;
 public interface ValidationEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rphValidation.validator")
-    public void unreasonableValueCausedReRead(@Arg(ArgEnum.paoId) int paoId, 
-                                              @Arg(ArgEnum.paoName) String paoName, 
+    public void unreasonableValueCausedReRead(@Arg(ArgEnum.paoName) String paoName, 
                                               @Arg(ArgEnum.paoType) PaoType paoType, 
                                               @Arg(ArgEnum.pointId) int pointId, 
                                               @Arg(ArgEnum.pointType) PointType pointType, 
@@ -27,7 +26,6 @@ public interface ValidationEventLogService {
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rphValidation.validator")
     public void changedQualityOnPeakedValue(@Arg(ArgEnum.changeId) long changeId, 
-                                            @Arg(ArgEnum.paoId) int paoId, 
                                             @Arg(ArgEnum.paoName) String paoName, 
                                             @Arg(ArgEnum.paoType) PaoType paoType, 
                                             @Arg(ArgEnum.pointId) int pointId, 

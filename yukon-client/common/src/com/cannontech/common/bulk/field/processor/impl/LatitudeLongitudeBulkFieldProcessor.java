@@ -12,11 +12,13 @@ import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private EndpointEventLogService endpointEventLogService;
+    @Autowired private IDatabaseCache cache;
     
     @Override
     public void updateField(SimpleDevice device, YukonDeviceDto value) throws ProcessingException {
@@ -48,8 +50,8 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 new PaoLocation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude(),
                     Origin.BULK_IMPORT, new Instant());
             paoLocationDao.save(location);
-            endpointEventLogService.locationUpdated(device.getPaoIdentifier(), location,
-                YukonUserContext.system.getYukonUser());
+            endpointEventLogService.locationUpdated(cache.getAllPaosMap().get(device.getDeviceId()).getPaoName(),
+                Double.toString(location.getLatitude()), Double.toString(location.getLongitude()), YukonUserContext.system.getYukonUser());
         } catch (DataAccessException e) {
             throw new ProcessingException("Could not set location of device with paoId " + device.getPaoIdentifier()
                 + ": " + e.getMessage(), "setLocation", e, device.getPaoIdentifier());

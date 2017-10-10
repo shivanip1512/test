@@ -9,8 +9,7 @@ public interface CommanderEventLogService {
     @YukonEventLog(category="commander")
     public void executeOnPao(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.commandRequestString) String command,
-            @Arg(ArgEnum.paoName) String paoName,
-            @Arg(ArgEnum.paoId) int paoId);
+            @Arg(ArgEnum.paoName) String paoName);
     
     @YukonEventLog(category="commander")
     public void executeOnSerial(@Arg(ArgEnum.username) LiteYukonUser user,
@@ -24,7 +23,6 @@ public interface CommanderEventLogService {
             @Arg(ArgEnum.paoName) String paoName,
             @Arg(ArgEnum.routeName) String oldRouteName,
             @Arg(ArgEnum.routeName) String newRouteName,
-            @Arg(ArgEnum.paoId) int paoId,
             @Arg(ArgEnum.routeId) int oldRouteId,
             @Arg(ArgEnum.routeId) int newRouteId);
     

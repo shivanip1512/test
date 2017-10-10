@@ -154,7 +154,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                         createStarsDevice(hardwareTypes.get(0), newDevice, rfnIdentifier, hardware, user);
                     }
                     
-                    rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getRfnIdentifier(), templateName, device.getPaoIdentifier());
+                    rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getRfnIdentifier(), templateName, device.getName());
                     return device;
                 } catch (BadTemplateDeviceCreationException e) {
                     recentlyUncreatableTemplates.put(templateName, Boolean.TRUE);
