@@ -173,6 +173,31 @@ CREATE INDEX INDX_SmartNotifiEvt_Timestamp ON SmartNotificationEvent (
 );
 /* End YUK-17273 */
 
+/* Start YUK-17233 */
+/* @start-block */
+DECLARE
+    v_existingStrategyId       NUMBER;
+    
+CURSOR ccStrategy_cursor IS (
+    SELECT DISTINCT StrategyID
+    FROM CapControlStrategy ccs
+);
+
+BEGIN
+    OPEN ccStrategy_cursor;
+    LOOP
+    FETCH ccStrategy_cursor INTO v_existingStrategyId;
+    EXIT WHEN ccStrategy_cursor%NOTFOUND;
+            
+    INSERT INTO CCStrategyTargetSettings VALUES (v_existingStrategyId, 'Comm Reporting Percentage','1', 'CONSIDER_PHASE');
+
+    END LOOP;
+    CLOSE ccStrategy_cursor;
+END;
+/
+/* @end-block */
+/* End YUK-17233 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
