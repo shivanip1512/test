@@ -49,10 +49,9 @@ public class SmartNotifInfrastructureWarningsDecider extends SmartNotificationDe
         if (allEvents.isEmpty()) {
             return subscriptions;
         }
-        List<SmartNotificationEvent> infrastructureEvents = allEvents.stream().filter(event -> event.getParameters().containsKey("WarningType")).collect(Collectors.toList());
-        for (SmartNotificationSubscription sub : allSubscriptions) {
-            subscriptions.putAll(sub, infrastructureEvents);
-        }
+        allSubscriptions.forEach(sub -> {
+            subscriptions.putAll(sub, allEvents);
+        });
         return subscriptions;
     }
 }

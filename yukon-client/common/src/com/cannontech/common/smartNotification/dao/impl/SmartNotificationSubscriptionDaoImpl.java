@@ -221,19 +221,14 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM SmartNotificationSub sns");
         sql.append("JOIN UserPreference up ON sns.UserId = up.UserId");
-        sql.append("    AND up.Name").eq(UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME);
+        sql.append("    AND up.Name").eq_k(UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME);
         sql.append("    AND up.Value").eq(runTimeInMinutes);
-        sql.append("    AND sns.Frequency").eq(SmartNotificationFrequency.DAILY_DIGEST);
+        sql.append("    AND sns.Frequency").eq_k(SmartNotificationFrequency.DAILY_DIGEST);
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
         
-        for (SmartNotificationSubscription subscription: subscriptions) {
-            if (retValue.containsKey(subscription.getType())) {
-                retValue.get(subscription.getType()).add(subscription);
-            }
-            else {
-                retValue.put(subscription.getType(), subscription);
-            }
-        }
+        subscriptions.forEach(s -> {
+            retValue.put(s.getType(), s);
+        });
         
         return retValue;
     }
@@ -249,7 +244,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         sql.append("    AND sns.Frequency = 'DAILY_DIGEST'");
         sql.append("JOIN SmartNotificationSubParam snsp ON sns.SubscriptionId = snsp.SubscriptionId");
         sql.append("    AND snsp.Name = 'sendTime'");
-        sql.append("    AND snsp.Value = '12:00'");
+        sql.append("    AND snsp.Value").eq(runTimeInMinutes);
 
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
         
