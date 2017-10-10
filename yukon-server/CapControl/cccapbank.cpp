@@ -2254,6 +2254,12 @@ catch ( FailedAttributeLookup & missingAttribute )
 void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
 try
 {
+    //  Did we already send the heartbeat stop command?
+    if ( heartbeat._sendTime.is_neg_infinity() )
+    {
+        return;
+    }
+
     if ( submitHeartbeatCommands( heartbeat._policy->StopHeartbeat( getTwoWayPoints() ) ) )
     {
         // next time we try to send a heartbeat we want the command to go out right away, not
