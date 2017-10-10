@@ -258,7 +258,7 @@ public class CommanderController {
                 + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
             
             eventLogger.changeRoute(user, pao.getPaoName(), oldRoute.getPaoName(), newRoute.getPaoName(), 
-                    pao.getLiteID(), oldRoute.getLiteID(), newRoute.getLiteID());
+                     oldRoute.getLiteID(), newRoute.getLiteID());
         } catch (RuntimeException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
         }
@@ -356,8 +356,7 @@ public class CommanderController {
                     LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
                     eventLogger.executeOnPao(userContext.getYukonUser(),
                                              params.getCommand(),
-                                             pao.getPaoName(),
-                                             pao.getLiteID());
+                                             pao.getPaoName());
                 } else {
                     LiteYukonPAObject route = cache.getAllPaosMap().get(params.getRouteId());
                     eventLogger.executeOnSerial(userContext.getYukonUser(),

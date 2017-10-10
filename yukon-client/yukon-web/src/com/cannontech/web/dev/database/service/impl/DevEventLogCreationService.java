@@ -265,8 +265,8 @@ public class DevEventLogCreationService {
                 String command = "putvalue xyz";
                 String resultKey = "12345!@#$%";
                 
-                commandEventLogService.changeRoute(user, paoName, oldRouteName, newRouteName, paoId, oldRouteId, newRouteId);
-                commandEventLogService.executeOnPao(user, command, paoName, paoId);
+                commandEventLogService.changeRoute(user, paoName, oldRouteName, newRouteName, oldRouteId, newRouteId);
+                commandEventLogService.executeOnPao(user, command, paoName);
                 commandEventLogService.executeOnSerial(user, command, serialNumber, oldRouteName, oldRouteId);
 
                 commandEventLogService.groupCommandInitiated(20, command, resultKey, user);
@@ -456,7 +456,8 @@ public class DevEventLogCreationService {
                 String deviceName = "45645-Name";
                 
                 endPointEventLogService.locationRemoved(deviceName, yukonUser);
-                endPointEventLogService.locationUpdated(paoIdentifier, location, yukonUser);
+                endPointEventLogService.locationUpdated(deviceName,  Double.toString(location.getLatitude()),  Double.toString(location.getLongitude()),
+                    yukonUser);
             }
         });
         executables.put(LogType.HARDWARE, new DevEventLogExecutable() {
@@ -644,7 +645,7 @@ public class DevEventLogCreationService {
                 String sensorSerialNumber = "45666545";
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(sensorSerialNumber, sensorManufacturer, sensorModel);
                 
-                rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName, paoId);
+                rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName, templateName);
                 rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
             }
@@ -800,9 +801,9 @@ public class DevEventLogCreationService {
                 String paoName = devEventLog.getIndicatorString() + "PaoName";
                 String tagSet = devEventLog.getIndicatorString() + "TagSet";
 
-                validationEventLogService.unreasonableValueCausedReRead(paoId, paoName, paoType, pointId, pointType, pointOffset);
+                validationEventLogService.unreasonableValueCausedReRead(paoName, paoType, pointId, pointType, pointOffset);
                 validationEventLogService.validationEngineStartup(lastChangeIdProcessed, tagsCleared);
-                validationEventLogService.changedQualityOnPeakedValue(changeId, paoId, paoName, paoType, pointId, pointType, pointOffset);
+                validationEventLogService.changedQualityOnPeakedValue(changeId, paoName, paoType, pointId, pointType, pointOffset);
                 validationEventLogService.validationEngineReset(user);
                 validationEventLogService.validationEnginePartialReset(validationResetDate, user);
                 validationEventLogService.deletedAllTaggedRows(tagSet, user);
