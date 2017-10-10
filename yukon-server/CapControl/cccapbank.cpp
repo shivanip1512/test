@@ -2300,8 +2300,7 @@ CtiCCCapBank::Heartbeat::Heartbeat()
     :   _period( 0.0 ),
         _value( 0 ),
         _mode( "DISABLED" ),
-        _policy( std::make_unique<NoCbcHeartbeatPolicy>() ),
-        _sendTime( CtiTime::neg_infin )
+        _policy( std::make_unique<NoCbcHeartbeatPolicy>() )
 {
 
 }
