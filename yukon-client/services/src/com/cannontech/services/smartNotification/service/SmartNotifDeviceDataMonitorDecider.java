@@ -72,10 +72,22 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
     public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> mapSubscriptionsToEvents(
             Set<SmartNotificationSubscription> allSubscriptions, List<SmartNotificationEvent> allEvents) {
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = HashMultimap.create();
-        if(allEvents.isEmpty()){
+        if (allEvents.isEmpty()) {
             return subscriptions;
         }
-        //add subscriptions and events to the multimap
+        SetMultimap<Integer, SmartNotificationEvent> deviceDataMonitorMap = HashMultimap.create();
+        for (SmartNotificationEvent event : allEvents) {
+            Integer monitorId = (Integer) event.getParameters().get("monitorId");
+            if (deviceDataMonitorMap.containsKey(monitorId)) {
+                deviceDataMonitorMap.get(monitorId).add(event);
+            }
+            else {
+                deviceDataMonitorMap.put(monitorId, event);
+            }
+        }
+        for (SmartNotificationSubscription sub : allSubscriptions) {
+            subscriptions.putAll(sub, deviceDataMonitorMap.get((Integer)sub.getParameters().get("monitorId")));
+        }
         return subscriptions;
     }
 }

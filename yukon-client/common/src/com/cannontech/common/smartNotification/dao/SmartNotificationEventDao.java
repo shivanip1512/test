@@ -74,5 +74,7 @@ public interface SmartNotificationEventDao {
     int getDeviceDataMonitorEventDetailCount(DateTime from, DateTime to, int monitorId);
 
     SearchResults<SmartNotificationEventData> getDeviceDataMonitorEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange,
-                                                                            int monitorId); 
+                                                                            int monitorId);
+
+    List<SmartNotificationEvent> getEventsByTypeAndDate(SmartNotificationEventType eventType, Range<Instant> range); 
 }

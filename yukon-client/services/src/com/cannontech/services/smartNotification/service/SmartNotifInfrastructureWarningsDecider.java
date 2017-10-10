@@ -32,7 +32,7 @@ public class SmartNotifInfrastructureWarningsDecider extends SmartNotificationDe
     public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> getSubscriptionsForEvents(
             List<SmartNotificationEvent> allEvents, SmartNotificationFrequency frequency) {
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = HashMultimap.create();
-        if(allEvents.isEmpty()){
+        if (allEvents.isEmpty()) {
             return subscriptions;
         }
         List<SmartNotificationSubscription> allSubscriptions = subscriptionDao.getSubscriptions(eventType, frequency);
@@ -46,10 +46,13 @@ public class SmartNotifInfrastructureWarningsDecider extends SmartNotificationDe
     public SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> mapSubscriptionsToEvents(
             Set<SmartNotificationSubscription> allSubscriptions, List<SmartNotificationEvent> allEvents) {
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptions = HashMultimap.create();
-        if(allEvents.isEmpty()){
+        if (allEvents.isEmpty()) {
             return subscriptions;
         }
-        //add subscriptions and events to the multimap
+        List<SmartNotificationEvent> infrastructureEvents = allEvents.stream().filter(event -> event.getParameters().containsKey("WarningType")).collect(Collectors.toList());
+        for (SmartNotificationSubscription sub : allSubscriptions) {
+            subscriptions.putAll(sub, infrastructureEvents);
+        }
         return subscriptions;
     }
 }

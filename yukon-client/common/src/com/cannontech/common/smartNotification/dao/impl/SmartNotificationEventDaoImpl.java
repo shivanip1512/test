@@ -358,4 +358,19 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         sql.append("    AND ypo.Type").in(typeFilter);
         return jdbcTemplate.queryForInt(sql);
     }
+    
+    @Override
+    public List<SmartNotificationEvent> getEventsByTypeAndDate(SmartNotificationEventType eventType, Range<Instant> range) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
+        sql.append("FROM  SmartNotificationEvent sne");
+        sql.append("WHERE Type").eq_k(eventType);
+        sql.append("AND Timestamp").gte(range.getMin());
+        sql.append("AND Timestamp").lt(range.getMax());
+        List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);
+        if (!events.isEmpty()) {
+            addParameters(events);
+        }
+        return events;
+    }
 }

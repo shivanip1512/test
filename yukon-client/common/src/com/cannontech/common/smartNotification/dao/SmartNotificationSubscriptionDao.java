@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
+import com.google.common.collect.SetMultimap;
 
 /**
  * Dao for saving and retrieving users' Smart Notification subscriptions.
@@ -61,4 +62,8 @@ public interface SmartNotificationSubscriptionDao {
      */
     List<SmartNotificationSubscription> getSubscriptions(SmartNotificationEventType type, String name,
             List<Object> values, SmartNotificationFrequency... frequency);
+
+    SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> getDailyDigestGrouped(String runTimeInMinutes);
+
+    SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> getDailyDigestUngrouped(String runTimeInMinutes);
 }

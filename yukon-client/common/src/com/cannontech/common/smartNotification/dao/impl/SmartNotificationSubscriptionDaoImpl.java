@@ -21,11 +21,14 @@ import com.cannontech.common.smartNotification.model.SmartNotificationSubscripti
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.SetMultimap;
 
 public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSubscriptionDao {
 
@@ -210,5 +213,55 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM SmartNotificationSub");
         jdbcTemplate.update(sql);
+    }
+
+    @Override
+    public SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> getDailyDigestGrouped(String runTimeInMinutes) {
+        SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> retValue = HashMultimap.create();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * FROM SmartNotificationSub sns");
+        sql.append("JOIN UserPreference up ON sns.UserId = up.UserId");
+        sql.append("    AND up.Name").eq(UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME);
+        sql.append("    AND up.Value").eq(runTimeInMinutes);
+        sql.append("    AND sns.Frequency").eq(SmartNotificationFrequency.DAILY_DIGEST);
+        List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
+        
+        for (SmartNotificationSubscription subscription: subscriptions) {
+            if (retValue.containsKey(subscription.getType())) {
+                retValue.get(subscription.getType()).add(subscription);
+            }
+            else {
+                retValue.put(subscription.getType(), subscription);
+            }
+        }
+        
+        return retValue;
+    }
+
+    @Override
+    public SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> getDailyDigestUngrouped(String runTimeInMinutes) {
+        SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> retValue = HashMultimap.create();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * FROM SmartNotificationSub sns");
+        sql.append("JOIN UserPreference up ON sns.UserId = up.UserId");
+        sql.append("    AND ((up.Name != 'SMART_NOTIFICATIONS_DAILY_TIME')");
+        sql.append("        OR (up.Name = 'SMART_NOTIFICATIONS_DAILY_TIME' AND up.Value = ''))");
+        sql.append("    AND sns.Frequency = 'DAILY_DIGEST'");
+        sql.append("JOIN SmartNotificationSubParam snsp ON sns.SubscriptionId = snsp.SubscriptionId");
+        sql.append("    AND snsp.Name = 'sendTime'");
+        sql.append("    AND snsp.Value = '12:00'");
+
+        List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
+        
+        for (SmartNotificationSubscription subscription: subscriptions) {
+            if (retValue.containsKey(subscription.getType())) {
+                retValue.get(subscription.getType()).add(subscription);
+            }
+            else {
+                retValue.put(subscription.getType(), subscription);
+            }
+        }
+        
+        return retValue;
     }
 }
