@@ -633,17 +633,17 @@ void applyPortWorkReport( const long portId, CtiPortSPtr ptPort, void *passedPtr
         if( queueCounts )
         {
             queueCounts->totalWorkCount += queEntCnt;
+
             auto deviceType = static_cast<DeviceTypes>( ptPort->getType() );
-            auto typeAndOffset = Cti::DeviceAttributeLookup::Lookup( deviceType, Attribute::PortQueueCount );
 
-            if( typeAndOffset )
+            if( const auto typeAndOffset = Cti::DeviceAttributeLookup::Lookup( deviceType, Attribute::PortQueueCount ) )
             {
-                auto pointId = GetPIDFromDeviceAndOffset( portId, typeAndOffset->offset );
-                auto pointData = std::make_unique<CtiPointDataMsg>( pointId, queEntCnt, NormalQuality, AnalogPointType );
-
-                if ( pointData )
+                if( const auto pointId = GetPIDFromDeviceAndOffset( portId, typeAndOffset->offset ) )
                 {
-                    queueCounts->portQueueCountMsgs->insert( pointData.release() );
+                    if( auto pointData = std::make_unique<CtiPointDataMsg>(pointId, queEntCnt, NormalQuality, AnalogPointType) )
+                    {
+                        queueCounts->portQueueCountMsgs->insert( pointData.release() );
+                    }
                 }
             }
         }
