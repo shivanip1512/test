@@ -412,6 +412,7 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "rfw-meter",
         "lcr-6200 rfn",
         "lcr-6600 rfn",
+        "lcr-6700 rfn",
         "weather location",
         "ecobee3",
         "ecobee3 lite",
