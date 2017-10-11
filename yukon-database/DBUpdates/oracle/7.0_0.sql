@@ -184,6 +184,11 @@ INSERT INTO CCStrategyTargetSettings
     WHERE C.ControlUnits = 'INTEGRATED_VOLT_VAR';
 /* End YUK-17233 */
 
+/* Start YUK-17234 */
+ALTER TABLE PointToZoneMapping
+    ADD Ignore VARCHAR(1) DEFAULT '0' NOT NULL;
+/* End YUK-17234 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

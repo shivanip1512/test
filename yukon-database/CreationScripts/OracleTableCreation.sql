@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/3/2017 11:39:57 PM                        */
+/* Created on:     10/11/2017 12:05:47 AM                       */
 /*==============================================================*/
 
 
@@ -7602,6 +7602,7 @@ create table PointToZoneMapping  (
    ZoneId               NUMBER                          not null,
    GraphPositionOffset  FLOAT,
    Distance             FLOAT,
+   Ignore               VARCHAR2(1)                    default '0' not null,
    constraint PK_PointZoneMap primary key (PointId)
 );
 

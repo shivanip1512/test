@@ -179,6 +179,7 @@ END;
 CREATE INDEX INDX_SmartNotifiEvt_Timestamp ON SmartNotificationEvent (
 Timestamp DESC
 );
+GO
 /* End YUK-17273 */
 
 /* Start YUK-17233 */
@@ -190,7 +191,14 @@ INSERT INTO CCStrategyTargetSettings
         'CONSIDER_PHASE' AS SettingType
     FROM CapControlStrategy C
     WHERE C.ControlUnits = 'INTEGRATED_VOLT_VAR';
+GO
 /* End YUK-17233 */
+
+/* Start YUK-17234 */
+ALTER TABLE PointToZoneMapping
+    ADD Ignore VARCHAR(1) DEFAULT '0' NOT NULL;
+GO
+/* End YUK-17234 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
