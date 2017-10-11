@@ -239,9 +239,12 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM SmartNotificationSub sns");
         sql.append("JOIN UserPreference up ON sns.UserId = up.UserId");
-        sql.append("    AND ((up.Name != 'SMART_NOTIFICATIONS_DAILY_TIME')");
-        sql.append("        OR (up.Name = 'SMART_NOTIFICATIONS_DAILY_TIME' AND up.Value = ''))");
-        sql.append("    AND sns.Frequency = 'DAILY_DIGEST'");
+        sql.append("    AND ((up.Name").neq_k(UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME);
+        sql.append("    )");
+        sql.append("        OR (up.Name").eq_k(UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME);
+        sql.append("         AND up.Value = ''");
+        sql.append("         ))");
+        sql.append("    AND sns.Frequency").eq_k(SmartNotificationFrequency.DAILY_DIGEST);
         sql.append("JOIN SmartNotificationSubParam snsp ON sns.SubscriptionId = snsp.SubscriptionId");
         sql.append("    AND snsp.Name = 'sendTime'");
         sql.append("    AND snsp.Value").eq(runTimeInMinutes);
