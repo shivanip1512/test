@@ -182,26 +182,14 @@ Timestamp DESC
 /* End YUK-17273 */
 
 /* Start YUK-17233 */
-/* @start-block */
-DECLARE
-    @existingStrategyId       NUMERIC;
-    
-DECLARE ccStrategy_cursor CURSOR STATIC FOR (
-    SELECT DISTINCT StrategyID
-    FROM CapControlStrategy ccs
-);
-BEGIN
-    OPEN ccStrategy_cursor;
-    FETCH NEXT FROM ccStrategy_cursor INTO @existingStrategyId
-    WHILE @@FETCH_STATUS = 0
-    BEGIN
-    INSERT INTO CCStrategyTargetSettings VALUES (@existingStrategyId, 'Comm Reporting Percentage','1', 'CONSIDER_PHASE');
-    FETCH NEXT FROM ccStrategy_cursor INTO @existingStrategyId
-    END
-    CLOSE ccStrategy_cursor;
-    DEALLOCATE ccStrategy_cursor;
-END;
-/* @end-block */
+INSERT INTO CCStrategyTargetSettings  
+    SELECT
+        C.StrategyID, 
+        'Comm Reporting Percentage' AS SettingName, 
+        '1' AS SettingValue, 
+        'CONSIDER_PHASE' AS SettingType
+    FROM CapControlStrategy C
+    WHERE C.ControlUnits = 'INTEGRATED_VOLT_VAR';
 /* End YUK-17233 */
 
 /**************************************************************/
