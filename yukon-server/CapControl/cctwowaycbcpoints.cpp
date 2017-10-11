@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "cctwowaycbcpoints.h"
+#include "cccapbank.h"
 #include "ccid.h"
 #include "database_util.h"
 #include "ccutil.h"
@@ -101,7 +102,9 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const CtiCCTwoWayPoints & twp )
 }
 
 void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                                         const std::map<Attribute, std::string> & overloads )
+                                                         const std::map<Attribute, std::string> & overloads,
+                                                         const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
+                                                         const CtiCCCapBank * bank )
 {
     const DeviceTypes   deviceType = resolveDeviceType( _paotype );
 
@@ -135,6 +138,13 @@ void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LiteP
                 _attributeIds[ entry.first ] = pointLookup->getPointId();
             }
         }
+    }
+
+    if ( dynamicData )
+    {
+        setDynamicData( *dynamicData,
+                        (*bank).getReportedCBCState(),
+                        (*bank).getReportedCBCStateTime() );
     }
 }
 
@@ -304,11 +314,27 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
     }
 }
 
-LitePoint CtiCCTwoWayPoints::getPointByAttribute( const Attribute & attribute ) const
-{
-    static const LitePoint  invalidPoint;   // <-- return this guy if lookup fails - pointID == 0
+// For use in the next two functions
+static const LitePoint & invalidPoint = LitePoint();
 
-    return Cti::mapFindOrDefault( _points, getPointIdByAttribute( attribute ), invalidPoint );
+const LitePoint & CtiCCTwoWayPoints::getPointByAttribute( const Attribute & attribute ) const
+{
+    if ( auto point = Cti::mapFindRef( _points, getPointIdByAttribute(attribute) ) )
+    {
+        return *point;
+    };
+
+    return invalidPoint;
+}
+
+const LitePoint & CtiCCTwoWayPoints::getPointById( long pointId ) const
+{
+    if ( auto point = Cti::mapFindRef( _points, pointId) )
+    {
+        return *point;
+    };
+
+    return invalidPoint;
 }
 
 long CtiCCTwoWayPoints::getPointIdByAttribute( const Attribute & attribute ) const
@@ -396,7 +422,7 @@ bool CtiCCTwoWayPoints::isControlAccepted()
     return _ignoredControlReason->checkControlAccepted( *this );
 }
 
-void CtiCCTwoWayPoints::setDynamicData( Transport::TwoWayDynamicDataTransport & transport,
+void CtiCCTwoWayPoints::setDynamicData( const Transport::TwoWayDynamicDataTransport & transport,
                                         const long cbcState,
                                         const CtiTime & timestamp )
 {

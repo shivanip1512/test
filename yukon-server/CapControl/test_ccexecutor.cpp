@@ -12,465 +12,545 @@
 using namespace Cti::Test::CapControl;
 using namespace Cti::CapControl;
 
+namespace 
+{
+
 struct overrideGlobals
 {
     boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
 
     Cti::Test::Override_ConfigManager overrideConfigManager;
 
+    struct test_CtiCapController : CtiCapController
+    {
+        using CtiCapController::porterReturnMsg;
+
+        boost::ptr_vector<CtiRequestMsg> requests;
+        boost::ptr_vector<CtiMultiMsg> points;
+        boost::ptr_vector<CtiMultiMsg> pilMultiMsgs;
+
+        virtual void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg)
+        {
+            if (pilMultiMsg)
+            {
+                pilMultiMsgs.push_back(pilMultiMsg);
+            }
+            if (multiMsg)
+            {
+                points.push_back(multiMsg);
+            }
+        }
+
+        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg)
+        {
+            if (pilRequest)
+            {
+                requests.push_back(pilRequest);
+            }
+            if (multiMsg)
+            {
+                points.push_back(multiMsg);
+            }
+        }
+    };
+
     overrideGlobals() :
         fixtureConfig(new Cti::Test::test_DeviceConfig),
         overrideConfigManager(fixtureConfig)
     {
+        Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+
+        CtiCCSubstationBusStore::setInstance(store);
+
+        std::unique_ptr<StrategyManager> manager = std::make_unique<StrategyManager>(std::make_unique<StrategyUnitTestLoader>());
+        StrategyManager *strategyManager = manager.get();
+
+        manager->reloadAll();
+
+        store->setStrategyManager(std::move(manager));
+
+        area = create_object<CtiCCArea>(1, "test area");
+        substation = create_object<CtiCCSubstation>(2, "test substation");
+        bus = create_object<CtiCCSubstationBus>(3, "test bus");
+        feeder = create_object<CtiCCFeeder>(4, "test feeder");
+        bank = create_object<CtiCCCapBank>(5, "test cap bank");
+
+        initialize_area(store, area);
+        initialize_station(store, CtiCCSubstationUnqPtr{ substation }, area, Cti::Test::use_in_unit_tests_only{});
+        initialize_bus(store, bus, substation);
+        initialize_feeder(store, feeder, bus, 1);
+        initialize_capbank(store, bank, feeder, 1);
+
+        bus->setStrategy(100);
+        bus->setStrategyManager(strategyManager);
+
+        bank->createCbc(6, "cbc 7010");
+        bank->setControlPointId(7);
+        bank->setStatusPointId(8);
+
+        store->addCapBankToCBCMap(bank);
+
+        cc = new test_CtiCapController;
+
+        CtiCapController::setInstance(cc);
     }
+
+    ~overrideGlobals()
+    {
+        delete area;
+    };
+
+    CtiCCAreaPtr         area;
+    CtiCCSubstationPtr   substation;
+    CtiCCSubstationBus  *bus;
+    CtiCCFeeder         *feeder;
+    CtiCCCapBank        *bank;
+
+    test_CtiCapController *cc;
 };
+
+}
 
 BOOST_FIXTURE_TEST_SUITE( test_ccexecutor, overrideGlobals )
 
-struct test_CtiCapController : CtiCapController
+BOOST_AUTO_TEST_CASE(test_default_flip)
 {
-    using CtiCapController::porterReturnMsg;
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-    boost::ptr_vector<CtiRequestMsg> requests;
-    boost::ptr_vector<CtiMultiMsg> points;
-    boost::ptr_vector<CtiMultiMsg> pilMultiMsgs;
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::FLIP_7010_CAPBANK, 5);
 
-    virtual void confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg )
-    {
-        if( pilMultiMsg )
-        {
-            pilMultiMsgs.push_back(pilMultiMsg);
-        }
-        if( multiMsg )
-        {
-            points.push_back(multiMsg);
-        }
-    }
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-    virtual void manualCapBankControl( CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg )
-    {
-        if( pilRequest )
-        {
-            requests.push_back(pilRequest);
-        }
-        if( multiMsg )
-        {
-            points.push_back(multiMsg);
-        }
-    }
-};
+    test_executor->execute();
 
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-BOOST_AUTO_TEST_CASE( test_commands )
+    CtiRequestMsg &request = cc->requests[0];
+
+    BOOST_CHECK_EQUAL(request.CommandString(), "control flip");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
+
+BOOST_AUTO_TEST_CASE(test_default_send_open)
 {
-    Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-    CtiCCSubstationBusStore::setInstance(store);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_OPEN_CAPBANK, 5);
 
-    std::unique_ptr<StrategyManager> manager = std::make_unique<StrategyManager>(std::make_unique<StrategyUnitTestLoader>());
-    StrategyManager *strategyManager = manager.get();
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-    manager->reloadAll();
+    test_executor->execute();
 
-    store->setStrategyManager(std::move(manager));
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    CtiCCAreaPtr         area       = create_object<CtiCCArea>           (1, "test area");
-    CtiCCSubstationPtr   substation = create_object<CtiCCSubstation>     (2, "test substation");
-    CtiCCSubstationBus  *bus        = create_object<CtiCCSubstationBus>  (3, "test bus");
-    CtiCCFeeder         *feeder     = create_object<CtiCCFeeder>         (4, "test feeder");
-    CtiCCCapBank        *bank       = create_object<CtiCCCapBank>        (5, "test cap bank");
+    CtiRequestMsg &request = cc->requests[0];
 
-    initialize_area   (store, area);
-    initialize_station(store, CtiCCSubstationUnqPtr{substation}, area, Cti::Test::use_in_unit_tests_only{});
-    initialize_bus    (store, bus, substation);
-    initialize_feeder (store, feeder, bus, 1);
-    initialize_capbank(store, bank, feeder, 1);
+    BOOST_CHECK_EQUAL(request.CommandString(), "control open");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-    bus->setStrategy(100);
-    bus->setStrategyManager(strategyManager);
+BOOST_AUTO_TEST_CASE(test_default_send_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-    bank->createCbc( 6, "cbc 7010" );
-    bank->setControlPointId(7);
-    bank->setStatusPointId(8);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_CLOSE_CAPBANK, 5);
 
-    store->addCapBankToCBCMap(bank);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-    std::auto_ptr<test_AttributeService> attributeService(new test_AttributeService);
+    test_executor->execute();
 
-    test_AttributeService &attributeBackdoor = *attributeService;
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-    store->setAttributeService(std::auto_ptr<AttributeService>(attributeService.release()));
+    CtiRequestMsg &request = cc->requests[0];
 
-    LitePoint p;
+    BOOST_CHECK_EQUAL(request.CommandString(), "control close");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-    p.setPaoId(6);
-    p.setPointId(7);
+BOOST_AUTO_TEST_CASE(test_default_confirm_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-    attributeBackdoor.points[p.getPointId()] = p;
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_CLOSE, 5);
 
-    test_CtiCapController *cc = new test_CtiCapController;
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-    CtiCapController::setInstance(cc);
+    test_executor->execute();
 
-    //  Test default control strings
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::FLIP_7010_CAPBANK, 5);
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    CtiRequestMsg &request = cc->requests[0];
 
-        test_executor->execute();
+    BOOST_CHECK_EQUAL(request.CommandString(), "control close");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+BOOST_AUTO_TEST_CASE(test_default_confirm_open)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-        CtiRequestMsg &request = cc->requests[0];
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_OPEN, 5);
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "control flip");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_OPEN_CAPBANK, 5);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    test_executor->execute();
 
-        test_executor->execute();
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    CtiRequestMsg &request = cc->requests[0];
 
-        CtiRequestMsg &request = cc->requests[0];
+    BOOST_CHECK_EQUAL(request.CommandString(), "control open");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "control open");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_CLOSE_CAPBANK, 5);
+BOOST_AUTO_TEST_CASE(test_default_feeder_control_open)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    bank->setControlStatus(CtiCCCapBank::OpenPending);
 
-        test_executor->execute();
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        CtiRequestMsg &request = cc->requests[0];
+    test_executor->execute();
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "control close");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_CLOSE, 5);
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
 
-        test_executor->execute();
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-        CtiRequestMsg &request = cc->requests[0];
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "control close");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_OPEN, 5);
+    BOOST_REQUIRE(pilRequest);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+}
 
-        test_executor->execute();
+BOOST_AUTO_TEST_CASE(test_default_feeder_control_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    bank->setControlStatus(CtiCCCapBank::ClosePending);
 
-        CtiRequestMsg &request = cc->requests[0];
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "control open");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::OpenPending);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
+    test_executor->execute();
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-        test_executor->execute();
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+    BOOST_REQUIRE(pilRequest);
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+}
 
-        BOOST_REQUIRE(pilRequest);
+BOOST_AUTO_TEST_CASE(test_default_subbus_control_open)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::ClosePending);
+    bank->setControlStatus(CtiCCCapBank::OpenPending);
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        test_executor->execute();
+    test_executor->execute();
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
-        BOOST_REQUIRE(pilRequest);
+    BOOST_REQUIRE(pilRequest);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::OpenPending);
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+}
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
+BOOST_AUTO_TEST_CASE(test_default_subbus_control_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+        {}, boost::none, bank);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    bank->setControlStatus(CtiCCCapBank::ClosePending);
 
-        test_executor->execute();
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+    test_executor->execute();
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
-        BOOST_REQUIRE(pilRequest);
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::ClosePending);
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
+    BOOST_REQUIRE(pilRequest);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+}
 
-        test_executor->execute();
+BOOST_AUTO_TEST_CASE(test_custom_flip)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+        {}, boost::none, bank);
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::FLIP_7010_CAPBANK, 5);
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    test_executor->execute();
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    CtiRequestMsg &request = cc->requests[0];
 
-        BOOST_REQUIRE(pilRequest);
+    BOOST_CHECK_EQUAL(request.CommandString(), "control flip");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
+BOOST_AUTO_TEST_CASE(test_custom_send_open)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+        {}, boost::none, bank);
 
-    p.setStateZeroControl("hippopotamus giraffe");
-    p.setStateOneControl("elephant monkey");
-    attributeBackdoor.points[p.getPointId()] = p;
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_OPEN_CAPBANK, 5);
 
-    //  Test custom control strings
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::FLIP_7010_CAPBANK, 5);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    test_executor->execute();
 
-        test_executor->execute();
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    CtiRequestMsg &request = cc->requests[0];
 
-        CtiRequestMsg &request = cc->requests[0];
+    BOOST_CHECK_EQUAL(request.CommandString(), "hippopotamus giraffe");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "control flip");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_OPEN_CAPBANK, 5);
+BOOST_AUTO_TEST_CASE(test_custom_send_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+        {}, boost::none, bank);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_CLOSE_CAPBANK, 5);
 
-        test_executor->execute();
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    test_executor->execute();
 
-        CtiRequestMsg &request = cc->requests[0];
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "hippopotamus giraffe");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::SEND_CLOSE_CAPBANK, 5);
+    CtiRequestMsg &request = cc->requests[0];
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    BOOST_CHECK_EQUAL(request.CommandString(), "elephant monkey");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-        test_executor->execute();
+BOOST_AUTO_TEST_CASE(test_custom_confirm_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+        {}, boost::none, bank);
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_CLOSE, 5);
 
-        CtiRequestMsg &request = cc->requests[0];
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "elephant monkey");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_CLOSE, 5);
+    test_executor->execute();
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-        test_executor->execute();
+    CtiRequestMsg &request = cc->requests[0];
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    BOOST_CHECK_EQUAL(request.CommandString(), "elephant monkey");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-        CtiRequestMsg &request = cc->requests[0];
+BOOST_AUTO_TEST_CASE(test_custom_confirm_open)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+        {}, boost::none, bank);
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "elephant monkey");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_OPEN, 5);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_OPEN, 5);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        test_executor->execute();
+    test_executor->execute();
 
-        BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
+    BOOST_REQUIRE_EQUAL(cc->requests.size(), 1);
 
-        CtiRequestMsg &request = cc->requests[0];
+    CtiRequestMsg &request = cc->requests[0];
 
-        BOOST_CHECK_EQUAL(request.CommandString(), "hippopotamus giraffe");
-        BOOST_CHECK_EQUAL(request.DeviceId(), 6);
-    }
-    cc->requests.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::OpenPending);
+    BOOST_CHECK_EQUAL(request.CommandString(), "hippopotamus giraffe");
+    BOOST_CHECK_EQUAL(request.DeviceId(), 6);
+}
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
+BOOST_AUTO_TEST_CASE(test_custom_feeder_control_open)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+        {}, boost::none, bank);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    bank->setControlStatus(CtiCCCapBank::OpenPending);
 
-        test_executor->execute();
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+    test_executor->execute();
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
-        BOOST_REQUIRE(pilRequest);
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "hippopotamus giraffe");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::ClosePending);
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
+    BOOST_REQUIRE(pilRequest);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "hippopotamus giraffe");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+}
 
-        test_executor->execute();
+BOOST_AUTO_TEST_CASE(test_custom_feeder_control_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+        {}, boost::none, bank);
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    bank->setControlStatus(CtiCCCapBank::ClosePending);
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_FEEDER, 4);
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+    test_executor->execute();
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-        BOOST_REQUIRE(pilRequest);
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "elephant monkey");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::OpenPending);
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
-        test_executor->execute();
+    BOOST_REQUIRE(pilRequest);
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "elephant monkey");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+}
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+BOOST_AUTO_TEST_CASE(test_custom_subbus_control_open)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+    { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+    {}, boost::none, bank);
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    bank->setControlStatus(CtiCCCapBank::OpenPending);
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-        BOOST_REQUIRE(pilRequest);
+    test_executor->execute();
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "hippopotamus giraffe");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
-    {
-        bank->setControlStatus(CtiCCCapBank::ClosePending);
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
 
-        ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
 
-        std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
 
-        test_executor->execute();
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
 
-        BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
 
-        CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+    BOOST_REQUIRE(pilRequest);
 
-        CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "hippopotamus giraffe");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+}
 
-        BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+BOOST_AUTO_TEST_CASE(test_custom_subbus_control_close)
+{
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+    { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus giraffe", "elephant monkey", 1.0, 0) },
+    {}, boost::none, bank);
 
-        CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+    bank->setControlStatus(CtiCCCapBank::ClosePending);
 
-        BOOST_REQUIRE(pilRequest);
+    ItemCommand *test_command = new ItemCommand(CapControlCommand::CONFIRM_SUBSTATIONBUS, 3);
 
-        BOOST_CHECK_EQUAL(pilRequest->CommandString(), "elephant monkey");
-        BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-    }
-    cc->pilMultiMsgs.clear();
+    std::auto_ptr<CtiCCExecutor> test_executor = CtiCCExecutorFactory::createExecutor(test_command);
 
-    delete area;
+    test_executor->execute();
+
+    BOOST_REQUIRE_EQUAL(cc->pilMultiMsgs.size(), 1);
+
+    CtiMultiMsg &pilMulti = cc->pilMultiMsgs[0];
+
+    CtiMultiMsg_vec &pilRequests = pilMulti.getData();
+
+    BOOST_REQUIRE_EQUAL(pilRequests.size(), 1);
+
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMulti.getData()[0]);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "elephant monkey");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

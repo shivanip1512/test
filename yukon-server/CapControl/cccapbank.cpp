@@ -198,6 +198,11 @@ CtiCCTwoWayPoints & CtiCCCapBank::getTwoWayPoints()
     return *_twoWayPoints;
 }
 
+const CtiCCTwoWayPoints & CtiCCCapBank::getTwoWayPoints() const
+{
+    return *_twoWayPoints;
+}
+
 CtiCCOriginalParent& CtiCCCapBank::getOriginalParent()
 {
     return _originalParent;
@@ -383,7 +388,38 @@ long CtiCCCapBank::getControlDeviceId() const
 ---------------------------------------------------------------------------*/
 long CtiCCCapBank::getControlPointId() const
 {
-    return _controlpointid;
+    try
+    {
+        auto twoWayPoints = getTwoWayPoints();
+
+        switch (heartbeat._policy->getOperatingMode( twoWayPoints ) )
+        {
+        case CbcHeartbeatPolicy::Normal:
+            return twoWayPoints.getPointIdByAttribute( Attribute::ControlPoint );
+            break;
+        case CbcHeartbeatPolicy::ScadaOverride:
+            return twoWayPoints.getPointIdByAttribute( Attribute::ScadaOverrideEnable );
+            break;
+        default:
+            return _controlpointid;
+        }
+    }
+    catch ( FailedAttributeLookup & missingAttribute )
+    {
+        return _controlpointid;
+    }
+}
+
+LitePoint CtiCCCapBank::getControlPoint()
+{
+    auto twoWayPoints = getTwoWayPoints();
+
+    if (heartbeat._policy->getOperatingMode(twoWayPoints) == CbcHeartbeatPolicy::ScadaOverride)
+    {
+        return twoWayPoints.getPointByAttribute(Attribute::ScadaOverrideEnable);
+    }
+    // Else return normal control pointl
+    return twoWayPoints.getPointByAttribute(Attribute::ControlPoint);
 }
 
 

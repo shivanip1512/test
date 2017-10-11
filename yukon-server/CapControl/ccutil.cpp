@@ -63,11 +63,9 @@ std::string getCommandStringForOperation(const LitePoint &p, const CommandInfo &
 }
 
 
-BankOperationType resolveOperationTypeForPointId(const std::string &commandString, const int pointId)
+BankOperationType resolveOperationTypeForPointId( const std::string &commandString, const int pointId, const CtiCCTwoWayPoints & twoWayPoints )
 {
-    AttributeService &pointLookup = CtiCCSubstationBusStore::getAttributeService();
-
-    const LitePoint p = pointLookup.getLitePointById(pointId);
+    const LitePoint p = twoWayPoints.getPointByAttribute( Attribute::ControlPoint );
 
     if( ! commandString.empty() )
     {
@@ -87,11 +85,9 @@ BankOperationType resolveOperationTypeForPointId(const std::string &commandStrin
 }
 
 
-std::string getBankOperationCommand(BankOperationType bankOperation, const CtiCCCapBank &capBank)
+std::string getBankOperationCommand( const BankOperationType bankOperation, const CtiCCCapBank & capBank, const CtiCCTwoWayPoints & twoWayPoints )
 {
-    AttributeService &pointLookup = CtiCCSubstationBusStore::getAttributeService();
-
-    const LitePoint p = pointLookup.getLitePointById(capBank.getControlPointId());
+    const LitePoint p = twoWayPoints.getPointById( capBank.getControlPointId() );
 
     BankOperationCommands::const_iterator itr = availableOperations.find(bankOperation);
 
@@ -103,12 +99,12 @@ std::string getBankOperationCommand(BankOperationType bankOperation, const CtiCC
     return getCommandStringForOperation(p, itr->second);
 }
 
-std::auto_ptr<CtiRequestMsg> createBankOperationRequest(const CtiCCCapBank &capBank, const BankOperationType bankOperation)
+std::auto_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
 {
     return std::auto_ptr<CtiRequestMsg>(
        createPorterRequestMsg(
           capBank.getControlDeviceId(),
-          getBankOperationCommand(bankOperation, capBank)));
+          getBankOperationCommand( bankOperation, capBank, capBank.getTwoWayPoints() )));
 }
 
 std::auto_ptr<CtiRequestMsg> createBankOpenRequest(const CtiCCCapBank &capBank)

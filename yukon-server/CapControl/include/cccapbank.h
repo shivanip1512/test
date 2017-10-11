@@ -77,6 +77,7 @@ public:
     const std::string& getControllerType() const;
     long getControlDeviceId() const;
     long getControlPointId() const;
+    LitePoint CtiCCCapBank::getControlPoint();
     std::string getControlDeviceType() const;
     long getBankSize() const;
     const std::string& getTypeOfSwitch() const;
@@ -236,6 +237,7 @@ public:
     virtual int compareTo(const CtiCCCapBank* right) const;
 
     CtiCCTwoWayPoints & getTwoWayPoints();
+    const CtiCCTwoWayPoints & getTwoWayPoints() const;
 
     bool isDirty() const;
     void setDirty(const bool flag);

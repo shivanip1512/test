@@ -7,6 +7,8 @@
 #include "LastControlReason.h"
 #include "IgnoredControlReason.h"
 
+#include <boost/optional.hpp>
+
 namespace Cti {
     class RowReader;
 
@@ -16,7 +18,7 @@ namespace Database {
 }
 
 class CtiCCTwoWayPoints;
-
+class CtiCCCapBank;
 
 namespace Transport
 {
@@ -93,7 +95,8 @@ public:
 
     void setPaoId(long paoId);
 
-    LitePoint getPointByAttribute( const Attribute & attribute ) const;
+    const LitePoint & getPointByAttribute( const Attribute & attribute ) const;
+    const LitePoint & getPointById( long pointId ) const;
     long getPointIdByAttribute( const Attribute & attribute ) const;
     double getPointValueByAttribute( const Attribute & attribute, const double sentinel = 0 ) const;
 
@@ -104,12 +107,15 @@ public:
     void addAllCBCPointsToRegMsg( std::set<long> & pointList ) const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    void setDynamicData( Transport::TwoWayDynamicDataTransport & transport,
+    void setDynamicData( const Transport::TwoWayDynamicDataTransport & transport,
                          const long cbcState,
                          const CtiTime & timestamp );
 
     virtual void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                                  const std::map<Attribute, std::string> & overloads );
+                                                  const std::map<Attribute, std::string> & overloads, 
+                                                  const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
+                                                  const CtiCCCapBank * bank );
+
     bool setTwoWayPointValue(const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp);
 
 protected:
@@ -197,7 +203,7 @@ public:
                                  std::unique_ptr<IgnoredControlReason> ignoredControlReason );
 
     void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                          const std::map<Attribute, std::string> & overloads ) override;
+                                          const std::map<Attribute, std::string> & overloads );
 };
 
 

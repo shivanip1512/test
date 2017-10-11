@@ -3548,7 +3548,9 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
         {
             using namespace Cti::CapControl;
 
-            const BankOperationType operationType = resolveOperationTypeForPointId(commandString, currentCapBank->getControlPointId());
+            const BankOperationType operationType = resolveOperationTypeForPointId( commandString, 
+                                                                                    currentCapBank->getControlPointId(), 
+                                                                                    currentCapBank->getTwoWayPoints() );
 
             if( status == ClientErrors::None )
             {

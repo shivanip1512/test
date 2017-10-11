@@ -1,7 +1,9 @@
 #include <boost/test/unit_test.hpp>
+#include <boost/optional.hpp>
 
 #include "boost_test_helpers.h"
 
+#include "cccapbank.h"
 #include "cctwowaycbcpoints.h"
 #include "ctidate.h"
 #include "std_helper.h"
@@ -91,6 +93,8 @@ BOOST_AUTO_TEST_SUITE( test_TwoWayCBCPoints )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 {
+    CtiCCCapBankPtr emptyBank = CtiCCCapBankPtr();
+
     std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 575, "CBC DNP" ) );
 
     std::vector<LitePoint>  databaseInput =
@@ -98,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
         LitePoint( 761, StatusPointType, "foobar", 0, 1, "", "", 1.0, 0 )
     };
 
-    points->assignTwoWayPointsAndAttributes( databaseInput, {} );
+    points->assignTwoWayPointsAndAttributes( databaseInput, {}, boost::none, emptyBank );
 
     std::set<long>
         registrationPoints,
@@ -121,6 +125,8 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 {
+    CtiCCCapBankPtr emptyBank = CtiCCCapBankPtr();
+
     std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 7022" ) );
 
     std::vector<LitePoint>  databaseInput =
@@ -199,7 +205,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
         LitePoint( 740, StatusPointType,            "", 0,  2001, "", "", 1.0, 0 )
     };
 
-    points->assignTwoWayPointsAndAttributes( databaseInput, {} );
+    points->assignTwoWayPointsAndAttributes( databaseInput, {}, boost::none, emptyBank );
 
     std::set<long>
         registrationPoints,
@@ -545,6 +551,8 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 {
+    CtiCCCapBankPtr emptyBank = CtiCCCapBankPtr();
+
     struct test_CtiCCTwoWayPointsCbc802x: public CtiCCTwoWayPointsCbc802x
     {
         test_CtiCCTwoWayPointsCbc802x( const long paoid, const std::string & paotype,
@@ -620,7 +628,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         LitePoint( 346, StatusPointType,            "", 0,  2001, "", "", 1.0, -17 )
     };
 
-    points.assignTwoWayPointsAndAttributes( databaseInput, {} );
+    points.assignTwoWayPointsAndAttributes( databaseInput, {}, boost::none, emptyBank );
 
     std::set<long>
         registrationPoints,

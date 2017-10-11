@@ -6269,16 +6269,10 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
                                     // add points and the attribute mappings to the bank
 
-                                    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, pointOverloads );
-
-                                    // dynamic data if present in the cache
-
-                                    if ( auto dynDataLookup = Cti::mapFind( dynamicDataCache, bank->getControlDeviceId() ) )
-                                    {
-                                        bank->getTwoWayPoints().setDynamicData( *dynDataLookup,
-                                                                                bank->getReportedCBCState(),
-                                                                                bank->getReportedCBCStateTime() );
-                                    }
+                                    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, 
+                                                                                             pointOverloads, 
+                                                                                             Cti::mapFind( dynamicDataCache, bank->getControlDeviceId() ),
+                                                                                             bank );
 
                                     for ( const LitePoint & point : cache )
                                     {
@@ -6455,16 +6449,10 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
                                     // add points and the attribute mappings to the bank
 
-                                    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, pointOverloads );
-
-                                    // dynamic data if present in the cache
-
-                                    if ( auto dynDataLookup = Cti::mapFind( dynamicDataCache, bank->getControlDeviceId() ) )
-                                    {
-                                        bank->getTwoWayPoints().setDynamicData( *dynDataLookup,
-                                                                                bank->getReportedCBCState(),
-                                                                                bank->getReportedCBCStateTime() );
-                                    }
+                                    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, 
+                                                                                             pointOverloads, 
+                                                                                             Cti::mapFind( dynamicDataCache, bank->getControlDeviceId() ), 
+                                                                                             bank );
 
                                     for ( const LitePoint & point : cache )
                                     {

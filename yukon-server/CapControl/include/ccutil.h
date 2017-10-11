@@ -6,6 +6,7 @@
 #include "mgr_paosched.h"
 #include "amq_connection.h"
 #include "CapControlOperationMessage.h"
+#include "cctwowaycbcpoints.h"
 
 class CtiCCCapBank;
 
@@ -67,7 +68,7 @@ enum Phase
 Phase       resolvePhase( const std::string & p );
 std::string desolvePhase( const Phase & p );
 
-BankOperationType resolveOperationTypeForPointId(const std::string &commandString, const int pointId);
+BankOperationType resolveOperationTypeForPointId(const std::string &commandString, const int pointId, const CtiCCTwoWayPoints & twoWayPoints);
 
 std::auto_ptr<CtiRequestMsg> createBankOpenRequest (const CtiCCCapBank &capBank);
 std::auto_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank);

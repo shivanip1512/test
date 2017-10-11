@@ -22,6 +22,13 @@ catch ( UninitializedPointValue & failedRead )
 
     return Normal;
 }
+catch (FailedAttributeLookup & missingAttribute)
+{
+    // This shouldn't happen, but might still be valid.  Give warning, but continue assuming Normal mode operation.
+    CTILOG_WARN(dout, "Warning FIX THIS");
+
+    return Normal;
+}
 
 Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoints )
 {
