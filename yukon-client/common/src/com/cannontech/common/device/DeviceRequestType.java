@@ -1,6 +1,5 @@
 package com.cannontech.common.device;
 
-
 public enum DeviceRequestType {
     
     METER_INFORMATION_PING_COMMAND("Ping Command", "A 'ping' command sent to device.", false),
@@ -55,9 +54,8 @@ public enum DeviceRequestType {
     private String shortName;
     private String description;
     private boolean scheduled; // not sure about this guy
-    
+ 
     DeviceRequestType(String shortName, String description, boolean scheduled) {
-        
         this.shortName = shortName;
         this.description = description;
         this.scheduled = scheduled;
@@ -71,5 +69,16 @@ public enum DeviceRequestType {
     }
     public boolean isScheduled() {
         return scheduled;
+    }
+    
+    /**
+     * Returns true if entry in "CommandRequestExecRequest" is needed.
+     */
+    public boolean isPersistedRequestRequired() {
+        if (this == GROUP_DEVICE_CONFIG_VERIFY || this == GROUP_DEVICE_CONFIG_SEND
+            || this == GROUP_DEVICE_CONFIG_READ) {
+            return true;
+        }
+        return false;
     }
 }

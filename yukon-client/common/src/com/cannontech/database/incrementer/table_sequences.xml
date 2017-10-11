@@ -211,6 +211,9 @@
         <table name="CommandRequestExec" identitycolumn="CommandRequestExecId"/>
         <table name="CommandRequestExecResult" identitycolumn="CommandRequestExecResultId"/>
       </sequence>
+      <sequence name="CommandRequestExecRequest">
+        <table name="CommandRequestExecRequest" identitycolumn="CommandRequestExecRequestId" initsequence="true"/>
+      </sequence>
       <sequence name="PAOSchedule">
         <table name="PAOSchedule" identitycolumn="ScheduleId" initsequence="true"/>
       </sequence>

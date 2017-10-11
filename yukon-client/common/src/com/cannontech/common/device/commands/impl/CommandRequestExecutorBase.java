@@ -407,6 +407,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                 boolean nothingWritten = true;
                 boolean completeAndRemoveListener = false;
                 RequestHolder currentRequestHolder = null;
+                //ids of devices that were send to porter
+                List<Integer> deviceIdsProcessed = new ArrayList<>();
                 try {
                     // write requests
                     log.debug("Starting commandRequests loop. groupMessageId = " + groupMessageId);
@@ -418,6 +420,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 
                             porterConnection.write(requestHolder.request);
                             nothingWritten = false;
+                            if (execution.getCommandRequestExecutionType().isPersistedRequestRequired()) {
+                                deviceIdsProcessed.add(requestHolder.request.getDeviceID());
+                            }
 
                             if (commandRequiresLogging(requestHolder.request)) {
                                 logCommand(requestHolder.request, user);
@@ -450,6 +455,10 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
 
                 } finally {
+                    if(execution.getCommandRequestExecutionType().isPersistedRequestRequired()){
+                        //commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIdsProcessed);
+                    }
+                    
                     if (nothingWritten && !messageListener.isCanceled()) {
                         completeAndRemoveListener = true;
                         log.debug("Removing porter message listener because nothing was written: " + messageListener);

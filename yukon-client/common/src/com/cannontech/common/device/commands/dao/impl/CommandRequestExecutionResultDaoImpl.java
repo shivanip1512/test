@@ -3,6 +3,7 @@ package com.cannontech.common.device.commands.dao.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -22,10 +23,11 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.RowAndFieldMapper;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Lists;
 
 public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecutionResultDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -194,6 +196,20 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         result.setDeviceId(deviceId);
         result.setErrorCode(errorCode);
         saveOrUpdate(result);
+    }
+    
+    @Transactional
+    @Override
+    public void saveExecutionRequest(int executionId, List<Integer> deviceIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        List<List<Object>> values = deviceIds.stream().map(deviceId -> {
+            List<Object> row =
+                Lists.newArrayList(nextValueHelper.getNextValue("CommandRequestExecRequest"), executionId, deviceId);
+            return row;
+        }).collect(Collectors.toList());
+
+        sql.batchInsertInto("CommandRequestExecRequest").columns("CommandRequestExecRequestId", "CommandRequestExecId", "DeviceId").values(values);
+        jdbcTemplate.yukonBatchUpdate(sql);
     }
     
     @Override

@@ -45,4 +45,6 @@ public interface CommandRequestExecutionResultDao {
     void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode);
 
     void saveCommandRequestExecutionResult(int executionId, int deviceId, int errorCode, String command);
+
+    void saveExecutionRequest(int executionId, List<Integer> deviceIds);
 }

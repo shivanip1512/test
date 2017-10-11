@@ -1301,4 +1301,5 @@
      <bean class="com.cannontech.web.smartNotifications.DeviceDataMonitorSubscriptionHelper"/>
  
      <bean class="com.cannontech.web.common.widgets.service.impl.PorterQueueCountsWidgetServiceImpl"/>
+     <bean class="com.cannontech.web.tools.device.config.dao.impl.DeviceConfigSummaryDaoImpl"/>
 </beans>
