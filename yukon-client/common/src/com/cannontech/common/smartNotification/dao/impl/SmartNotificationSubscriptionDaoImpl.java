@@ -248,14 +248,9 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
 
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
         
-        for (SmartNotificationSubscription subscription: subscriptions) {
-            if (retValue.containsKey(subscription.getType())) {
-                retValue.get(subscription.getType()).add(subscription);
-            }
-            else {
-                retValue.put(subscription.getType(), subscription);
-            }
-        }
+        subscriptions.forEach(s -> {
+            retValue.put(s.getType(), s);
+        });
         
         return retValue;
     }
