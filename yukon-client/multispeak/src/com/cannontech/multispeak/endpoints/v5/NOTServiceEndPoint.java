@@ -115,7 +115,6 @@ public class NOTServiceEndPoint {
                 mspMeters.addAll(waterMeters);
             }
 
-            mspMeters.addAll(electricMeters);
             multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersChangedNotification(mspMeters));
         }
         return response;
