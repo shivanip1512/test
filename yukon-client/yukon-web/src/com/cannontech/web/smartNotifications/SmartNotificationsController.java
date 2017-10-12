@@ -287,6 +287,7 @@ public class SmartNotificationsController {
     
     @RequestMapping(value="subscription/{id}/unsubscribe", method=RequestMethod.POST)
     public void removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp, FlashScope flash) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
         if (subscription.getUserId() != userContext.getYukonUser().getUserID()) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "deleteNotOwner"));
@@ -294,7 +295,8 @@ public class SmartNotificationsController {
             return;
         }
         subscriptionService.deleteSubscription(id, userContext);
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", subscription.getType().name()));
+        String event = accessor.getMessage(subscription.getType().getFormatKey());
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", event));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
