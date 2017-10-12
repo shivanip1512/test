@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -321,11 +323,17 @@ public class SmartNotificationsController {
     }
     
     private void setupPopupModel(ModelMap model, YukonUserContext userContext) {
-        model.addAttribute("eventTypes", SmartNotificationEventType.values());
+        SmartNotificationEventType[] events = SmartNotificationEventType.values();
         model.addAttribute("frequencies", SmartNotificationFrequency.values());
         model.addAttribute("mediaTypes", SmartNotificationMedia.values());
         model.addAttribute("detailTypes", SmartNotificationVerbosity.values());
-        model.addAttribute("deviceDataMonitors", monitorCacheService.getDeviceDataMonitors());
+        List<DeviceDataMonitor> ddms = monitorCacheService.getDeviceDataMonitors();
+        if (ddms.size() == 0) {
+            //user should not be able to select Device Data Monitor if they do not have any
+            events = ArrayUtils.removeElement(events, SmartNotificationEventType.DEVICE_DATA_MONITOR);
+        }
+        model.addAttribute("eventTypes", events);
+        model.addAttribute("deviceDataMonitors", ddms);
         model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
     }
     
