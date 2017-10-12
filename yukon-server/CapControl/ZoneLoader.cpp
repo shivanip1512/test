@@ -1,7 +1,4 @@
-
 #include "precompiled.h"
-
-#include <string>
 
 #include "ccid.h"
 #include "logger.h"
@@ -9,8 +6,6 @@
 #include "database_reader.h"
 #include "ZoneLoader.h"
 #include "ccsubstationbusstore.h"
-
-using std::endl;
 
 extern unsigned long _CC_DEBUG;
 
@@ -134,17 +129,27 @@ void ZoneDBLoader::loadBankParameters(const long Id, ZoneManager::ZoneMap &zones
 
 void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zones)
 {
-    static const std::string sql =   "SELECT PZM.PointId, PZM.ZoneId, MBL.Phase"
-                                     " FROM PointToZoneMapping PZM LEFT OUTER JOIN ccmonitorbanklist MBL"
-                                     " ON PZM.PointId = MBL.PointId";
-    static const std::string where = " WHERE PZM.ZoneId = ?";
+    static const std::string sql =
+        "SELECT "
+            "P.PointId, "
+            "P.ZoneId, "
+            "P.Ignore, "
+            "M.Phase "
+        "FROM "
+            "PointToZoneMapping P "
+                "LEFT OUTER JOIN CCMonitorBankList M "
+                    "ON P.PointId = M.PointId";
+
+    static const std::string sqlID = sql +
+        " WHERE "
+            "P.ZoneId = ?";
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseReader       rdr(connection);
 
     if( Id >= 0 )
     {
-        rdr.setCommandText(sql + where);
+        rdr.setCommandText(sqlID);
         rdr << Id;
     }
     else
@@ -193,7 +198,13 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
                      << " assigned with phase: " << ( phase == Phase_Unknown ? "(?) unknown" : "(*) polyphase" ));
             }
 
-            if ( rdr.isValid() )                    // reader is ~still~ valid
+            /*
+                Unsure as of yet if we need to keep track of the ignored voltage points at all, or if it is
+                    enough to just not load them.  For now we'll just not load them.
+            */
+            const bool isIgnored = deserializeFlag( rdr["Ignore"].as<std::string>() );
+
+            if ( ! isIgnored )
             {
                 zone->second->addPointId( phase, Id );
             }
