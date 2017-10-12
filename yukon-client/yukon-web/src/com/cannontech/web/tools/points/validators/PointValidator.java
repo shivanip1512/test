@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -41,10 +42,14 @@ public class PointValidator extends SimpleValidator<PointModel> {
 
         private final FdrInterfaceType fdrInterfaceType;
         private final String direction;
+        private final String translation;
+        private final Integer pointId;
         
-        public FdrUniquenessKey(FdrInterfaceType fdrInterfaceType, String direction) {
+        public FdrUniquenessKey(FdrInterfaceType fdrInterfaceType, String direction, String translation, Integer pointId) {
             this.fdrInterfaceType = fdrInterfaceType;
             this.direction = direction;
+            this.translation = translation;
+            this.pointId = pointId;
         }
 
         @Override
@@ -53,6 +58,8 @@ public class PointValidator extends SimpleValidator<PointModel> {
             int result = 1;
             result = prime * result + ((direction == null) ? 0 : direction.hashCode());
             result = prime * result + ((fdrInterfaceType == null) ? 0 : fdrInterfaceType.hashCode());
+            result = prime * result + ((translation == null) ? 0 : translation.hashCode());
+            result = prime * result + ((pointId == null) ? 0 : pointId.hashCode());
             return result;
         }
 
@@ -71,6 +78,13 @@ public class PointValidator extends SimpleValidator<PointModel> {
             } else if (!direction.equals(other.direction))
                 return false;
             if (fdrInterfaceType != other.fdrInterfaceType)
+                return false;
+            if (!StringUtils.equals(translation, this.translation))
+                return false;
+            if (pointId == null) {
+                if (other.pointId != null)
+                    return false;
+            } else if (!pointId.equals(other.pointId))
                 return false;
             return true;
         }
@@ -119,8 +133,8 @@ public class PointValidator extends SimpleValidator<PointModel> {
         int index = 0;
         for (FDRTranslation translation : base.getPointFDRList()) {
 
-            FdrUniquenessKey key = new FdrUniquenessKey(
-                translation.getInterfaceEnum(), translation.getDirectionType());
+            FdrUniquenessKey key = new FdrUniquenessKey(translation.getInterfaceEnum(), translation.getDirectionType(),
+                translation.getTranslation(), pointModel.getPointBase().getPoint().getPointID());
 
             if (usedTypes.contains(key)) {
                 errors.rejectValue("pointBase.pointFDRList[" +index + "].interfaceType", baseKey + ".fdr.unique");

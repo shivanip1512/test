@@ -183,6 +183,7 @@ yukon.tools.point = (function () {
             data.translations.forEach(function (field) {
 
                 var optionInput = $('<input>').attr('size', field.value.length);
+                optionInput.attr('type', 'text');
 
                 //Some fields have an option list, rather than a text field.
                 if (field.options !== undefined) {
@@ -216,6 +217,16 @@ yukon.tools.point = (function () {
 
                 translationFields.append(li);
             });
+            
+            if (directionSelect.hasClass('error')) {
+                translationFields.find('select:visible').addClass('error');
+                translationFields.find('input:visible').addClass('error');
+                var errorMessageSpanSelector = "#pointBase\\.pointFDRList" + translationNumber + "\\.interfaceType\\.errors";
+                $(errorMessageSpanSelector).insertAfter(translationFields);
+            } else {
+                translationFields.find('select:visible').removeClass('error');
+                translationFields.find('input:visible').removeClass('error');
+            }
 
             //Setup the true translation field 
             makeTranslation(translationNumber);
