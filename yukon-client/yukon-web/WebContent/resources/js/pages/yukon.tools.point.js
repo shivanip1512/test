@@ -378,6 +378,43 @@ yukon.tools.point = (function () {
         
     };
 
+     /**
+     * Calc Operation was changed
+     */
+    var changeFunctionType = function () {
+        var newValue = $(this).val(),
+            row = $(this).closest('tr');
+        if (newValue == 'Baseline') {
+            row.find('.js-baseline-picker').removeClass('dn');
+            $('.baseline-header').removeClass('dn');
+            $('.js-baseline').removeClass('dn');
+            $('.js-baseline-assigned').val(true);
+        } else {
+            row.find('.js-baseline-picker').addClass('dn');
+            var isBaseLineOptSelected = false;
+            $('.js-function-options' ).each(function() {
+            if ('Baseline' === $( this ).find(":selected").text()) {
+                     isBaseLineOptSelected = true;
+                }
+            });
+            $('.js-baseline-assigned').val(isBaseLineOptSelected);
+            if (!isBaseLineOptSelected) {
+                $('.baseline-header').addClass('dn');
+                $('.js-baseline').addClass('dn');
+            }
+    	}
+    };
+
+    /**
+     * Calc Baseline was changed
+     */
+    var changeBaseLine = function () {
+         var value=$(this).val();
+         $('.js-baseline-assigned' ).each(function() {
+             $('option[value='+value+']').prop('selected', true);
+         });
+    };
+
     var mod = {
 
         /** Initialize this module. */
@@ -421,7 +458,9 @@ yukon.tools.point = (function () {
             $('.js-remove-calc').on('click', removeCalc);
             
             $('.js-component-type').on('change', changeCalcType);
-
+            
+            $('.js-function-options').on('change', changeFunctionType);
+            $('.js-baseline-options').on('change', changeBaseLine)
             $('.js-fdr-interface').on('change', function () {
 
                 var elem = $(this);

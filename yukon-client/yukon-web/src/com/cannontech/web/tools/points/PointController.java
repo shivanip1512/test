@@ -188,7 +188,9 @@ public class PointController {
         model.addAttribute("analogControlTypes", AnalogControlType.values());
         model.addAttribute("staleDataUpdateStyles", StaleData.UpdateStyle.values());
         model.addAttribute("alarmNotificationTypes", AlarmNotificationTypes.values());
-
+        if (calcAnalog) {
+            model.addAttribute("baseLines", dbCache.getAllBaselines());
+        }
         List<LiteNotificationGroup> notificationGroups = new ArrayList<>();
 
         LiteNotificationGroup noneGroup = new LiteNotificationGroup(PointAlarming.NONE_NOTIFICATIONID, noneChoice);

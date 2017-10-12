@@ -591,10 +591,12 @@
                                 <th><i:inline key=".calculation.type"/></th>
                                 <th><i:inline key=".calculation.operand"/></th>
                                 <th><i:inline key=".calculation.operation"/></th>
+                                <th class = "baseline-header <c:if test = "${!pointModel.pointBase.baselineAssigned}">dn</c:if>"><i:inline key = ".point.calculation.baseline"/></th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
+                            <form:hidden path = "pointBase.baselineAssigned" class = "js-baseline-assigned"/>
                             <c:forEach var="calcComponent" items="${pointModel.pointBase.calcComponents}" varStatus="status">
                                 <tr data-point-picker-id="calcPoint${status.index}Picker">
                                     <form:hidden path="pointBase.calcComponents[${status.index}].componentOrder" class="js-component-order"/>
@@ -635,6 +637,12 @@
                                     <td>
                                         <span class="js-function-operations <c:if test="${calcComponent.componentType != 'Function'}"> dn</c:if>"><tags:selectWithItems path="pointBase.calcComponents[${status.index}].functionName" items="${functionOperators.yukonListEntries}" inputClass="js-function-options" defaultItemValue="${functionDefaultValue}" defaultItemLabel="${functionDefaultValue}"/></span>
                                         <span class="js-operations <c:if test="${calcComponent.componentType == 'Function'}"> dn</c:if>"><tags:selectWithItems path="pointBase.calcComponents[${status.index}].operation" items="${operators}" inputClass="js-operation-options" defaultItemValue="${operationDefaultValue}" defaultItemLabel="${operationDefaultValue}"/></span>
+                                    </td>
+                                    <td class = "js-baseline">
+                                        <span class = "js-baseline-picker  <c:if test = "${calcComponent.functionName != 'Baseline'}"> dn</c:if>">
+                                            <form:hidden path = "pointBase.calcBaselinePoint.pointID" id="calBasePointId" />
+                                            <tags:selectWithItems path = "pointBase.calcBaselinePoint.baselineID" items = "${baseLines}" itemValue = "baselineID" inputClass = "js-baseline-options"/>
+                                        </span>
                                     </td>
                                     <td>
                                     <cti:displayForPageEditModes modes="EDIT,CREATE">
