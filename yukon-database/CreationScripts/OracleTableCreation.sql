@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/11/2017 12:05:47 AM                       */
+/* Created on:     10/11/2017 11:53:04 PM                       */
 /*==============================================================*/
 
 
@@ -1740,6 +1740,23 @@ create table CommandRequestExec  (
 /*==============================================================*/
 create index Indx_CmdReqExec_ContId on CommandRequestExec (
    CommandRequestExecContextId ASC
+);
+
+/*==============================================================*/
+/* Table: CommandRequestExecRequest                             */
+/*==============================================================*/
+create table CommandRequestExecRequest  (
+   CommandRequestExecRequestId NUMBER                          not null,
+   CommandRequestExecId NUMBER,
+   DeviceId             NUMBER,
+   constraint PK_CommandRequestExecRequest primary key (CommandRequestExecRequestId)
+);
+
+/*==============================================================*/
+/* Index: INDX_CmdReqExReq_CmdReqExId                           */
+/*==============================================================*/
+create index INDX_CmdReqExReq_CmdReqExId on CommandRequestExecRequest (
+   CommandRequestExecId ASC
 );
 
 /*==============================================================*/

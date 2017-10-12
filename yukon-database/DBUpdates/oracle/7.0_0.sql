@@ -189,6 +189,19 @@ ALTER TABLE PointToZoneMapping
     ADD Ignore VARCHAR(1) DEFAULT '0' NOT NULL;
 /* End YUK-17234 */
 
+/* Start YUK-17309 */
+CREATE TABLE CommandRequestExecRequest  (
+   CommandRequestExecRequestId  NUMBER                          NOT NULL,
+   CommandRequestExecId         NUMBER,
+   DeviceId                     NUMBER,
+   CONSTRAINT PK_CommandRequestExecRequest PRIMARY KEY (CommandRequestExecRequestId)
+);
+
+CREATE INDEX INDX_CmdReqExReq_CmdReqExId ON CommandRequestExecRequest (
+   CommandRequestExecId ASC
+);
+/* End YUK-17309 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

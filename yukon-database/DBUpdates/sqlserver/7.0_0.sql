@@ -200,6 +200,21 @@ ALTER TABLE PointToZoneMapping
 GO
 /* End YUK-17234 */
 
+/* Start YUK-17309 */
+CREATE TABLE CommandRequestExecRequest (
+   CommandRequestExecRequestId  NUMERIC              NOT NULL,
+   CommandRequestExecId         NUMERIC              NULL,
+   DeviceId                     NUMERIC              NULL,
+   CONSTRAINT PK_CommandRequestExecRequest PRIMARY KEY (CommandRequestExecRequestId)
+);
+GO
+
+CREATE INDEX INDX_CmdReqExReq_CmdReqExId ON CommandRequestExecRequest (
+CommandRequestExecId ASC
+);
+GO
+/* End YUK-17309 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
