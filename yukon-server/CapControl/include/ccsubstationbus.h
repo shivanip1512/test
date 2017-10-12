@@ -177,7 +177,6 @@ public:
 
     bool areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
     bool isScanFlagSet();
-    unsigned long getMonitorPointScanTime();
     bool scanAllMonitorPoints();
     bool isBusAnalysisNeeded(const CtiTime& currentDateTime);
     bool isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime);
@@ -249,6 +248,7 @@ public:
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
+    CtiCCCapBankPtr getMonitorPointParentBank( const CtiCCMonitorPoint & point );
 
     CtiCCSubstationBus* replicate() const;
 

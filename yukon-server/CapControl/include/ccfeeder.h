@@ -145,7 +145,6 @@ public:
     void updatePointResponseDeltas();
     bool areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
     bool isScanFlagSet();
-    unsigned long getMonitorPointScanTime();
     bool scanAllMonitorPoints();
     void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, long minConfirmPercent, long failurePercent, long maxConfirmTime, long sendRetries, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPoint);

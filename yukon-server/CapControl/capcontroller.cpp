@@ -612,7 +612,15 @@ void CtiCapController::controlLoop()
 
                                 if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(Now))
                                 {
-                                    if (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder)
+                                    if ( currentSubstationBus->getDisableFlag() )
+                                    {
+                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                                        {
+                                            CTILOG_DEBUG( dout, "MULTIVOLT: Skipping analysis for DISABLED SubBus: "
+                                                                        << currentSubstationBus->getPaoName() );
+                                        }
+                                    }
+                                    else if (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder)
                                     {
                                         currentSubstationBus->analyzeMultiVoltBus1(Now, pointChanges, ccEvents, pilMessages);
                                     }

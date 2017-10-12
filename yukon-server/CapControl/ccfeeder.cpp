@@ -3858,8 +3858,9 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             parentBank = getMonitorPointParentBank(point);
             if (parentBank != NULL)
             {
-                if (parentBank->getControlStatus() == CtiCCCapBank::Open ||
-                    parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
+                if ( ! parentBank->getDisableFlag() &&
+                        ( parentBank->getControlStatus() == CtiCCCapBank::Open ||
+                          parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
                 {
                     try
                     {
@@ -3916,10 +3917,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             {
                 for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    if (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
-                        currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
+                    if ( ! currentCapBank->getDisableFlag() &&
+                            ( currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
+                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
                     {
-
                         if (point.getDeviceId() != currentCapBank->getPaoId())
                         {
                             try
@@ -3977,8 +3978,9 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             CtiCCCapBankPtr parentBank = getMonitorPointParentBank(point);
             if (parentBank != NULL)
             {
-                if (parentBank->getControlStatus() == CtiCCCapBank::Close ||
-                    parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
+                if ( ! parentBank->getDisableFlag() &&
+                        ( parentBank->getControlStatus() == CtiCCCapBank::Close ||
+                          parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                 {
                     try
                     {
@@ -4034,10 +4036,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             {
                 for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    if (currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
-                        currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
+                    if ( ! currentCapBank->getDisableFlag() &&
+                            ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
+                              currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                     {
-
                         if (point.getDeviceId() != currentCapBank->getPaoId())
                         {
                             try
@@ -4153,7 +4155,11 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
 
     for ( const CtiCCMonitorPointPtr otherPoint : _multipleMonitorPoints )
     {
-        if (otherPoint->getPointId() != mPointID)
+        CtiCCCapBankPtr otherBank = getMonitorPointParentBank( *otherPoint );
+
+        if ( otherBank &&
+                ! otherBank->getDisableFlag() &&
+                  ( otherPoint->getPointId() != mPointID ) )
         {
             for ( const PointResponse & pResponse : potentialCap->getPointResponses() )
             {
@@ -4252,53 +4258,58 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
 
         for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
         {
-            double upperBound = upperLimit;
-            double lowerBound = lowerLimit;
+            CtiCCCapBankPtr bank = getMonitorPointParentBank( *point );
 
-            if ( point->getOverrideStrategy() )
+            if ( bank && ! bank->getDisableFlag() )
             {
-                upperBound = point->getUpperBandwidth();
-                lowerBound = point->getLowerBandwidth();
-            }
+                double upperBound = upperLimit;
+                double lowerBound = lowerLimit;
 
-            const double pointValue = point->getValue();
-
-            if ( lowerBound <= pointValue && pointValue <= upperBound )
-            {
-                if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                if ( point->getOverrideStrategy() )
                 {
-                    CTILOG_DEBUG( dout,
-                                  "MULTIVOLT: Monitor Point: " << point->getPointId() << " on CapBank: "
-                                    << point->getDeviceId() << " is inside limits.  Current value: "
-                                    << pointValue
+                    upperBound = point->getUpperBandwidth();
+                    lowerBound = point->getLowerBandwidth();
+                }
+
+                const double pointValue = point->getValue();
+
+                if ( lowerBound <= pointValue && pointValue <= upperBound )
+                {
+                    if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                    {
+                        CTILOG_DEBUG( dout,
+                                      "MULTIVOLT: Monitor Point: " << point->getPointId() << " on CapBank: "
+                                        << point->getDeviceId() << " is inside limits.  Current value: "
+                                        << pointValue
+                                        << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
+                    }
+                }
+                else if ( pointValue < lowerBound )
+                {
+                    CTILOG_WARN( dout,
+                                 "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
+                                    << " is BELOW limit.  Current value: " << pointValue
                                     << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
-                }
-            }
-            else if ( pointValue < lowerBound )
-            {
-                CTILOG_WARN( dout,
-                             "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
-                                << " is BELOW limit.  Current value: " << pointValue
-                                << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
 
-                // Record the first BELOW limit point we've found, but don't return until we've determined that
-                //  there are no ABOVE limit points.
-                if ( ! oorPoint )
+                    // Record the first BELOW limit point we've found, but don't return until we've determined that
+                    //  there are no ABOVE limit points.
+                    if ( ! oorPoint )
+                    {
+                        oorPoint = point;
+                    }
+                }
+                else    // pointValue > upperBound
                 {
-                    oorPoint = point;
-                }
-            }
-            else    // pointValue > upperBound
-            {
-                CTILOG_WARN( dout,
-                             "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
-                                << " is ABOVE limit.  Current value: " << pointValue
-                                << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
+                    CTILOG_WARN( dout,
+                                 "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
+                                    << " is ABOVE limit.  Current value: " << pointValue
+                                    << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
 
-                // Return the first point that we find that is ABOVE the lower limit immediately, regardless
-                //  if we've found a BELOW the limit point.
-                oorPoint = point;
-                break;
+                    // Return the first point that we find that is ABOVE the lower limit immediately, regardless
+                    //  if we've found a BELOW the limit point.
+                    oorPoint = point;
+                    break;
+                }
             }
         }
     }
@@ -4389,16 +4400,21 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
         {
             for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
             {
-                if ( point->getTimeStamp() > ( getLastOperationTime() - 30 )
-                        && point->getTimeStamp() >= ( currentDateTime - ( 60 * _POINT_AGE ) ) )
+                CtiCCCapBankPtr bank = getMonitorPointParentBank( *point );
+
+                if ( bank && ! bank->getDisableFlag() )
                 {
-                    retVal = true;
-                    point->setScanInProgress( false );
-                }
-                else
-                {
-                    retVal = false;
-                    break;
+                    if ( point->getTimeStamp() > ( getLastOperationTime() - 30 )
+                            && point->getTimeStamp() >= ( currentDateTime - ( 60 * _POINT_AGE ) ) )
+                    {
+                        retVal = true;
+                        point->setScanInProgress( false );
+                    }
+                    else
+                    {
+                        retVal = false;
+                        break;
+                    }
                 }
             }
         }
@@ -4413,13 +4429,6 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return retVal;
-}
-
-unsigned long CtiCCFeeder::getMonitorPointScanTime()
-{
-
-    return CtiTime().seconds();
-
 }
 
 bool CtiCCFeeder::isScanFlagSet()
