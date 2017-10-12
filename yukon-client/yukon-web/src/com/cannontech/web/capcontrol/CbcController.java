@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -70,6 +72,8 @@ public class CbcController {
     @Autowired private CapControlCache ccCache;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
+    @Autowired private CbcHelperService cbcHelperService;
+
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
     
     private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
@@ -232,10 +236,14 @@ public class CbcController {
                 }
 
             }
-            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
+
+            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId(), cbc.getPaoType().isLogicalCBC());
             //check for special formats
             for(List<PointInfo> pointList : points.values()){
                 for(PointInfo point : pointList){
+                    if (cbc.getPaoType().isLogicalCBC()) {
+                        cbcHelperService.splitLogicalPointName(point.getName(), point::setName, null);
+                    }
                     LitePoint litePoint = pointDao.getLitePoint(point.getPointId());
                     PointIdentifier pid = new PointIdentifier(point.getType(), litePoint.getPointOffset());
                     PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(cbc.getPaoType(), pid);
@@ -259,6 +267,10 @@ public class CbcController {
         if (cbc.isTwoWay()) {
             DNPConfiguration dnpConfig = cbcService.getDnpConfigForDevice(cbc);
             model.addAttribute("dnpConfig", dnpConfig);
+        }
+        if (cbc.isHeartBeat()) {
+            HeartbeatConfiguration heartbeat = cbcService.getCBCHeartbeatConfigForDevice(cbc);
+            model.addAttribute("heartbeatConfig", heartbeat);
         }
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
 

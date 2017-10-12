@@ -162,7 +162,7 @@
                             <cm:dropdownOption key=".capBank.info" icon="icon-magnifier" classes="js-bank-info"
                                 href="javascript:void(0);" />
                         </cti:checkRolesAndProperties>
-                        <c:if test="${viewableCapBank.twoWayCbc}">
+                        <c:if test="${viewableCapBank.twoWayCbc || viewableCapBank.logicalCBC}">
                                 <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.cbcName}" javaScriptEscape="true"/>
                                 <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
                         </c:if>

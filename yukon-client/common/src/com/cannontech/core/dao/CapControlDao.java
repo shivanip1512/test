@@ -16,7 +16,7 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public interface CapControlDao {
 
-    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps(Integer cbcID);
+    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps(Integer cbcID, boolean logicalCBC);
 
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user);
 

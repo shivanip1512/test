@@ -64,25 +64,45 @@ yukon.da.cbc = (function () {
 
             $('#dnp-config').on('change', function () {
                 var configId = $(this).val();
-                var url = yukon.url('/deviceConfiguration/' + configId);
+                if (configId) {
+                    var url = yukon.url('/deviceConfiguration/' + configId);
 
-                var dnpFields = $('.js-dnp-fields');
-                yukon.ui.block(dnpFields, 200);
-                $.get(url)
-                .done(function (data) {
-                    if(data.deviceConfiguration.dnpCategory != null) {
-                        data.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
-                            var fieldName = field.fieldName;
-                            var value = field.value;
-                            if(fieldName == 'timeOffset'){
-                            	value = data.timeOffsetValue;
-                            }
-                            dnpFields.find('.js-dnp-' + fieldName).text(value);
-                        });
-                    }
-                }).always(function () {
-                    yukon.ui.unblock(dnpFields);
-                });
+                    var dnpFields = $('.js-dnp-fields');
+                    var heartbeatFields = $('.js-heartbeat-fields');
+                    yukon.ui.block(dnpFields, 200);
+                    yukon.ui.block(heartbeatFields, 200);
+                    $.get(url)
+                    .done(function (data) {
+                        if(data.deviceConfiguration.dnpCategory != null) {
+                            data.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
+                                var fieldName = field.fieldName;
+                                var value = field.value;
+                                if(fieldName == 'timeOffset') {
+                                    value = data.timeOffsetValue;
+                                }
+                                dnpFields.find('.js-dnp-' + fieldName).text(value);
+                            });
+                        }
+                        if(data.deviceConfiguration.heartbeatCategory != null) {
+                            $('.js-heartbeat-field').removeClass('dn');
+                            data.deviceConfiguration.heartbeatCategory.deviceConfigurationItems.forEach(function (field) {
+                                var fieldName = field.fieldName;
+                                var value = field.value;
+                                if (fieldName == 'cbcHeartbeatMode') {
+                                    value = data.heartbeatModeValue;
+                                    $('.js-heartbeatMode-field').toggleClass('dn', field.value == 'DISABLED');
+                                }
+                                heartbeatFields.find('.js-heartbeat-' + fieldName).text(value);
+                            });
+                        }
+                    }).always(function () {
+                        yukon.ui.unblock(dnpFields);
+                        yukon.ui.unblock(heartbeatFields);
+                    });
+                } else {
+                    $('.js-heartbeat-field').addClass('dn');
+                }
+
             });
         }
     };

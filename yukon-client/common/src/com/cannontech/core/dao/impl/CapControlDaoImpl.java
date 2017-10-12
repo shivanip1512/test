@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.capcontrol.OrphanCBC;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -41,11 +42,12 @@ public class CapControlDaoImpl implements CapControlDao {
     @Autowired private PaoDao paoDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private CbcHelperService cbcHelperService;
 
     @Override
-    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps(Integer cbcId) {
+    public Map<CBCPointGroup, List<LitePoint>> getSortedCBCPointTimeStamps(Integer cbcId, boolean logicalCBC) {
 
-        List<LitePoint> allPoints = new ArrayList<>(pointDao.getLitePointsByPaObjectId(cbcId));
+        List<LitePoint> allPoints = new ArrayList<>(pointDao.getLitePointsByPaObjectId(cbcId, logicalCBC));
         
         Collections.sort(allPoints, new Comparator<LitePoint>() {
 
@@ -63,6 +65,7 @@ public class CapControlDaoImpl implements CapControlDao {
         List<LitePoint> miscList = new ArrayList<>();
 
         for (LitePoint point : allPoints) {
+            cbcHelperService.splitLogicalPointName(point.getPointName(), point::setPointName, null);
             
             switch (point.getPointTypeEnum()) {
             case Analog:

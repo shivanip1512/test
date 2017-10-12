@@ -13,6 +13,7 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -33,7 +34,6 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
-import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -156,6 +156,12 @@ public class CbcServiceImpl implements CbcService {
         if (dbPersistent instanceof TwoWayDevice) {
             setDnpFields(dbPersistent, cbc);
             assignDNPConfig(cbc);
+        } else if (cbc.isHeartBeat()) {
+            if (cbc.getDnpConfigId() != null) {
+                assignDNPConfig(cbc);
+            } else {
+                unassignConfig(cbc);
+            }
         }
         if (dbPersistent instanceof DeviceBase) {
             setDeviceFields(dbPersistent, cbc);
@@ -225,6 +231,33 @@ public class CbcServiceImpl implements CbcService {
 
         DNPConfiguration dnpConfig = configurationDao.getDnpConfiguration(configuration);
         return dnpConfig;
+    }
+    
+    @Override
+    public HeartbeatConfiguration getCBCHeartbeatConfigForDevice(CapControlCBC cbc) {
+        HeartbeatConfiguration heartbeatConfig = new HeartbeatConfiguration(null, null, null);
+        if (cbc.getDnpConfigId() == null) {
+            YukonDevice device = new SimpleDevice(cbc.getId(), cbc.getPaoType());
+
+            LightDeviceConfiguration liteConfig = configurationDao.findConfigurationForDevice(device);
+            int configId;
+            if (liteConfig != null) {
+                configId = liteConfig.getConfigurationId();
+                cbc.setDnpConfigId(configId);
+            }
+        }
+        
+        DeviceConfiguration configuration = null;
+        if (cbc.getDnpConfigId() != null) {
+            try {
+                configuration = configurationDao.getDeviceConfiguration(cbc.getDnpConfigId());
+                heartbeatConfig = configurationDao.getHeartbeatConfiguration(configuration);
+            } catch (EmptyResultDataAccessException e) {
+                //let it remain null and get the default
+            }
+        }
+        
+        return heartbeatConfig;
     }
 
     private void setDnpFields(DBPersistent dbPersistent, CapControlCBC cbc) {
@@ -297,6 +330,23 @@ public class CbcServiceImpl implements CbcService {
              * Log it and move on.
              */
             log.error("An error occurred attempting to assign a DNP configuration to CBC " +
+                      "'" + cbc.getName() + "'. Please assign this device a configuration manually.", e);
+        }
+    }
+    
+    private void unassignConfig(CapControlCBC cbc) {
+        SimpleDevice device = SimpleDevice.of(cbc.getPaoIdentifier());
+
+        try {
+            deviceConfigService.unassignConfig(device, YukonUserContext.system.getYukonUser(),
+                cbc.getName());
+        } catch (InvalidDeviceTypeException e) {
+            /*
+             * This should have already been validated. 
+             * Even if not, the old (valid) device config will still be in use.
+             * Log it and move on.
+             */
+            log.error("An error occurred attempting to unassign a configuration to CBC " +
                       "'" + cbc.getName() + "'. Please assign this device a configuration manually.", e);
         }
     }

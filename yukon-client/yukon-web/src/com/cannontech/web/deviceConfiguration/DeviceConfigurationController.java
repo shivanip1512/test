@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -32,6 +33,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.deviceConfiguration.enumeration.CBCHeartbeatModeInput.CBCHeartbeatMode;
 import com.cannontech.web.deviceConfiguration.enumeration.DnpTimeOffset.Offsets;
 import com.cannontech.web.deviceConfiguration.model.DisplayableConfigurationData;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -181,25 +183,33 @@ public class DeviceConfigurationController {
         DeviceDnpConfiguration deviceDnpConfiguration = new DeviceDnpConfiguration();
         DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(id);
         deviceDnpConfiguration.setDeviceConfiguration(deviceConfig);
-
-        String timeOffsetKey = null;
-        List<DeviceConfigCategoryItem> items = null;
+        
         if (deviceConfig.getDnpCategory() != null) {
-            items = deviceConfig.getDnpCategory().getDeviceConfigurationItems();
-        }
-        if (items != null) {
-            for (DeviceConfigCategoryItem deviceConfigCategoryItem : items) {
-                if (deviceConfigCategoryItem.getFieldName().equals("timeOffset")) {
-                    timeOffsetKey = deviceConfigCategoryItem.getValue();
-                }
+            Optional<DeviceConfigCategoryItem> optional = deviceConfig.getDnpCategory().getDeviceConfigurationItems()
+                    .stream().filter(item -> item.getFieldName().equals("timeOffset")).findFirst();
+            if (optional.isPresent()) {
+                DeviceConfigCategoryItem timeOffset = (DeviceConfigCategoryItem) optional.get();
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String timeOffsetValue = accessor.getMessage("yukon.web.modules.tools.configs.enum.dnpTimeOffset." + timeOffset.getValue());
+                deviceDnpConfiguration.setTimeOffsetValue(timeOffsetValue);
+            } else {
+                deviceDnpConfiguration.setTimeOffsetValue(Offsets.UTC.toString());
             }
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String timeOffsetValue =
-                accessor.getMessage("yukon.web.modules.tools.configs.enum.dnpTimeOffset." + timeOffsetKey);
-            deviceDnpConfiguration.setTimeOffsetValue(timeOffsetValue);
-        } else {
-            deviceDnpConfiguration.setTimeOffsetValue(Offsets.UTC.toString());
         }
+        
+        if (deviceConfig.getHeartbeatCategory() != null) {
+            Optional<DeviceConfigCategoryItem> optional = deviceConfig.getHeartbeatCategory().getDeviceConfigurationItems()
+                    .stream().filter(item -> item.getFieldName().equals("cbcHeartbeatMode")).findFirst();
+            if (optional.isPresent()) {
+                DeviceConfigCategoryItem heartbeatMode = (DeviceConfigCategoryItem) optional.get();
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String heartbeatModeValue = accessor.getMessage("yukon.web.modules.tools.configs.enum.cbcHeartbeatMode." + heartbeatMode.getValue());
+                deviceDnpConfiguration.setHeartbeatModeValue(heartbeatModeValue);
+            } else {
+                deviceDnpConfiguration.setHeartbeatModeValue(CBCHeartbeatMode.DISABLED.toString());
+            }
+        }
+        
         return deviceDnpConfiguration;
     }
 

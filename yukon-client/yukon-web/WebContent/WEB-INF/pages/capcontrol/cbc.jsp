@@ -231,6 +231,39 @@
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </c:if>
+            <c:if test="${not empty heartbeatConfig}">
+                <tags:sectionContainer2 nameKey="heartbeatConfiguration" styleClass="stacked-lg">
+                    <tags:nameValueContainer2 tableClass="natural-width js-heartbeat-fields">
+                        <c:if test="${empty dnpConfig}">
+                            <tags:nameValue2 nameKey=".heartbeatConfig">
+                                <cti:displayForPageEditModes modes="VIEW,EDIT">
+                                    <tags:selectWithItems id="dnp-config"
+                                        items="${configs}"
+                                        path="dnpConfigId"
+                                        itemLabel="name"
+                                        itemValue="configurationId" defaultItemLabel="(none)"/>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
+                        </c:if>
+                        <c:set var="heartbeatClass" value="${cbc.dnpConfigId == null ? 'dn' : ''}"/>
+                        <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode"
+                            valueClass="js-heartbeat-cbcHeartbeatMode" rowClass="js-heartbeat-field ${heartbeatClass}">
+                            <c:if test="${heartbeatConfig.mode != null}">
+                                <i:inline key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.${heartbeatConfig.mode}"/>
+                            </c:if>
+                        </tags:nameValue2>
+                        <c:set var="heartbeatModeClass" value="${heartbeatConfig.mode == null || heartbeatConfig.mode == 'DISABLED' ? 'dn' : ''}"/>
+                        <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod"
+                            valueClass="js-heartbeat-cbcHeartbeatPeriod" rowClass="js-heartbeat-field js-heartbeatMode-field ${heartbeatModeClass}">
+                            ${heartbeatConfig.period}
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue"
+                            valueClass="js-heartbeat-cbcHeartbeatValue" rowClass="js-heartbeat-field js-heartbeatMode-field ${heartbeatModeClass}">
+                            ${heartbeatConfig.value}
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
+            </c:if>
 
             </div>
             </cti:displayForPageEditModes>

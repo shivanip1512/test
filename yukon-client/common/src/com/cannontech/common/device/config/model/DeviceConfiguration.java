@@ -43,6 +43,20 @@ public final class DeviceConfiguration extends LightDeviceConfiguration {
         
         return null;
     }
+    
+    /**
+     * Get the CBC Heartbeat category of a configuration.
+     * @return a CBC Hearbeat category object if the configuration contains one, null otherwise.
+     */
+    public DeviceConfigCategory getHeartbeatCategory() {
+        for (DeviceConfigCategory category : categories) {
+            if (CategoryType.CBC_HEARTBEAT.value().equals(category.getCategoryType())) {
+                return category;
+            }
+        }
+        
+        return null;
+    }
 
     @Override
     public String toString() {

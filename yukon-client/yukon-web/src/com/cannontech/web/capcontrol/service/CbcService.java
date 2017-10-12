@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol.service;
 
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.web.editor.CapControlCBC;
 
 public interface CbcService {
@@ -42,4 +43,11 @@ public interface CbcService {
     DNPConfiguration getDnpConfigForDevice(CapControlCBC cbc);
 
     int create(CapControlCBC cbc);
+
+    /**
+     * Looks up the Heartbeat Configuration used by the device.
+     * @param cbc
+     * @return The full {@link HeartbeatConfiguration} for the device. If none is assigned, the default is returned.
+     */
+    HeartbeatConfiguration getCBCHeartbeatConfigForDevice(CapControlCBC cbc);
 }

@@ -46,7 +46,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
@@ -57,7 +56,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.ArrayListMultimap;
@@ -75,7 +73,6 @@ public class PointDaoImpl implements PointDao {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private IDatabaseCache cache;
 
     private ChunkingSqlTemplate chunkingTemplate;
     private ChunkingMappedSqlTemplate chunkingMappedSqlTemplate;
@@ -253,32 +250,24 @@ public class PointDaoImpl implements PointDao {
         List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
         return points;
     }
-
+    
     @Override
     public List<LitePoint> getLitePointsByPaObjectId(int paobjectId) {
-        
-        LiteYukonPAObject tempPao = cache.getAllPaosMap().get(paobjectId);
-        
-        if (tempPao == null) { // TEMPORARY HACK for devices that aren't in cache yet (for example, auto created RFN Templates)
-            // create dummy paobject, which we will assume is NOT a logical cbc
-            tempPao = PaoUtils.LITEPAOBJECT_SYSTEM;
-        }
-        final LiteYukonPAObject pao = tempPao;
+        return getLitePointsByPaObjectId(paobjectId, false);
+    }
 
+    @Override
+    public List<LitePoint> getLitePointsByPaObjectId(int paobjectId, boolean logicalCBC) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
-        if (pao.getPaoType().isLogicalCBC()) {
+        if (logicalCBC) {
             sql.append(logicalCBCPoints);
             sql.append(" AND CBC.PAObjectID").eq(paobjectId);
         } else {
             sql.append("where PAObjectId").eq(paobjectId);
         }
+        
         List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
-        if (pao.getPaoType().isLogicalCBC()) {
-            points.forEach(point -> {
-                point.setPointName(point.getPointName().replace("*Logical<" + pao.getPaoName() + ">", ""));
-            });
-        }
 
         return points;
     }
@@ -299,15 +288,18 @@ public class PointDaoImpl implements PointDao {
     
     @Override
     public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
-        LiteYukonPAObject pao = cache.getAllPaosMap().get(paobjectId);
-
+        return getAllPointNamesAndTypesForPAObject(paobjectId, false);
+    }
+    
+    @Override
+    public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId, boolean logicalCBC) {
         RowMapper<PointInfo> rowMapper = new PointInfoMapper();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT POINTID,POINTTYPE,POINTNAME,P.PAObjectID");
         sql.append(" FROM Point P");
-        if (pao.getPaoType().isLogicalCBC()) {
+        if (logicalCBC) {
             sql.append(logicalCBCPoints);
             sql.append(" AND CBC.PAObjectID").eq(paobjectId);
         } else {
@@ -319,9 +311,6 @@ public class PointDaoImpl implements PointDao {
 
         Map<PointType, List<PointInfo>> pointNameAndTypes = new HashMap<>();
         for (PointInfo point : points) {
-            if (pao.getPaoType().isLogicalCBC()) {
-                point.setName(point.getName().replace("*Logical<" + pao.getPaoName() + ">", ""));
-            }
             PointType pointType = point.getPointIdentifier().getPointType();
 
             if (!pointNameAndTypes.containsKey(pointType)) {

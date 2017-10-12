@@ -14,6 +14,7 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
     private boolean twoWayCbc;
     private boolean bankMoved;
     private boolean userPerPhaseData;
+    private boolean logicalCBC;
 
     public void setBankInfo(CapBankDevice bank) {
         ccId = bank.getCcId();
@@ -26,6 +27,7 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
         cbcId = cbc.getLiteID();
         cbcName = cbc.getPaoName();
         twoWayCbc = DeviceTypesFuncs.isCBCTwoWay(cbc.getPaoType());
+        logicalCBC = cbc.getPaoType().isLogicalCBC();
     }
 
     public final int getCcId() {
@@ -79,5 +81,13 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
 
     public void setUserPerPhaseData(boolean userPerPhaseData) {
         this.userPerPhaseData = userPerPhaseData;
+    }
+
+    public boolean isLogicalCBC() {
+        return logicalCBC;
+    }
+
+    public void setLogicalCBC(boolean logicalCBC) {
+        this.logicalCBC = logicalCBC;
     }
 }

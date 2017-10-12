@@ -197,11 +197,10 @@ public class CapBankDetailsController {
     
     @RequestMapping("cbcPoints")
     public String cbcPoints(ModelMap model, int cbcId) {
-
-        Map<CBCPointGroup, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
-        model.addAttribute("pointMap", pointTimestamps);
-
         PaoType paoType = paoDao.getLiteYukonPAO(cbcId).getPaoType();
+
+        Map<CBCPointGroup, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId, paoType.isLogicalCBC());
+        model.addAttribute("pointMap", pointTimestamps);
 
         List<LitePoint> analogPoints = pointTimestamps.get(CBCPointGroup.ANALOG);
         Map<LitePoint, String> formatForAnalogPoints = getFormatMappings(paoType, analogPoints);

@@ -47,6 +47,7 @@ import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.DisplayableConfigurationCategory;
+import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
@@ -1077,6 +1078,30 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         }
         
         return dnpConfiguration;
+    }
+        
+    @Override
+    public HeartbeatConfiguration getHeartbeatConfiguration(DeviceConfiguration config) {
+        HeartbeatConfiguration heartbeatConfiguration =
+                new HeartbeatConfiguration(config.getConfigurationId(), config.getName(), config.getDescription());
+        
+        DeviceConfigCategory heartbeatCategory = config.getHeartbeatCategory();
+        for (DeviceConfigCategoryItem item : heartbeatCategory.getDeviceConfigurationItems()) {
+            switch (item.getFieldName()) {
+            case "cbcHeartbeatMode":
+                heartbeatConfiguration.setMode(item.getValue());
+                break;
+            case "cbcHeartbeatPeriod":
+                heartbeatConfiguration.setPeriod(Integer.valueOf(item.getValue()));
+                break;
+            case "cbcHeartbeatValue":
+                heartbeatConfiguration.setValue(Integer.valueOf(item.getValue()));
+                break;
+            }
+                
+        }
+            
+        return heartbeatConfiguration;
     }
     
     @Override

@@ -7,6 +7,7 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.DisplayableConfigurationCategory;
+import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
@@ -296,4 +297,11 @@ public interface DeviceConfigurationDao {
     List<LightDeviceConfiguration> getAllAssignableConfigurationsByType(PaoType paoType, List<String> requiredCategories);
 
     void removeCategoryAssignment(int deviceConfigurationId, CategoryType categoryType);
+    /**
+     * Get the Heartbeat configuration data out of a device configuration if the data is present.
+     * 
+     * @param configuration the configuration the data is coming out of
+     * @return a HeartbeatsConfiguration model object containing the Heartbeat category data of the configuration
+     */
+    HeartbeatConfiguration getHeartbeatConfiguration(DeviceConfiguration config);
 }
