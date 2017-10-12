@@ -31,6 +31,12 @@
             <span class="js-function-operations dn"><tags:selectWithItems path="pointModel.pointBase.calcComponents[${nextIndex}].functionName" items="${functionOperators.yukonListEntries}" inputClass="js-function-options" defaultItemValue="(none)" defaultItemLabel="(none)"/></span>
             <span class="js-operations"><tags:selectWithItems path="pointModel.pointBase.calcComponents[${nextIndex}].operation" items="${operators}" inputClass="js-operation-options" /></span>
         </td>
+        <td class = "js-baseline <c:if test=${pointModel.pointBase.baselineAssigned}>dn</c:if>">
+            <span class = "js-baseline-picker dn">
+                <form:hidden path = "pointModel.pointBase.calcBaselinePoint.pointID" id="calBasePointId" />
+                <tags:selectWithItems path = "pointModel.pointBase.calcBaselinePoint.baselineID" items = "${baseLines}" itemValue = "baselineID" inputClass = "js-baseline-options"/>
+            </span>
+        </td>
         <td>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <div class="button-group fr wsnw oh">

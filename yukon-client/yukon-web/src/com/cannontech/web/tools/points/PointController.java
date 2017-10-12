@@ -231,7 +231,7 @@ public class PointController {
 
     @RequestMapping("/calculationRow/add")
     public String addCalculationRow(@RequestParam("nextIndex") int nextIndex, @RequestParam("pointId") int pointId, ModelMap model) {
-        
+        model.addAttribute("baseLines", dbCache.getAllBaselines());
         model.addAttribute("operators", CalcComponentTypes.CALC_OPERATIONS);
         model.addAttribute("types", CalcComponentTypes.CALC_TYPES);
         model.addAttribute("functionOperators", listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID));

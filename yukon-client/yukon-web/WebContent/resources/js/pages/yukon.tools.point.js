@@ -310,6 +310,8 @@ yukon.tools.point = (function () {
             newRow.find('.js-remove-calc').on('click', removeCalc);
             newRow.find('.js-component-type').val("Operation");
             newRow.find('.js-component-type').trigger("change");
+            newRow.find('.js-function-options').on('change', changeFunctionType);
+            newRow.find('.js-baseline-options').on('change', changeBaseLine)
             var pointPickerId = newRow.data("pointPickerId");
             yukon.pickers[pointPickerId].removeEvent();
             newRow.removeClass('js-add-calc-row');
@@ -334,12 +336,18 @@ yukon.tools.point = (function () {
     var removeCalc = function () {
         var row = $(this).closest('tr'),
         calcTable = row.closest('table');
-        
         var pointPickerId = row.data("pointPickerId");
         yukon.pickers[pointPickerId].removeEvent();
         row.remove();
         yukon.ui.reindexInputs(calcTable);
         updateComponentOrders();
+        var isBaseLineOptSelected = false;
+        $('.js-function-options' ).each(function() {
+            if ('Baseline' === $( this ).find(":selected").text()) {
+                     isBaseLineOptSelected = true;
+                }
+            });
+        $('.js-baseline-assigned').val(isBaseLineOptSelected);
     };
     
     /**
