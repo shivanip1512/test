@@ -367,6 +367,11 @@ public class SmartNotificationsController {
             String name = event.getDeviceName();
             String deviceType = event.getType();
             String status = event.getStatus();
+            if (type.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
+                Object[] arguments = new String[]{event.getArgument1(), event.getArgument2(), event.getArgument3()};
+                status = accessor.getMessage("yukon.web.widgets.infrastructureWarnings.warningType." + status + "." + event.getSeverity(), arguments);
+            }
+
             String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);
             String[] dataRow = includeTypeRow ? new String[]{name, deviceType, status, timestamp} : new String[]{name, status, timestamp};
             dataRows.add(dataRow);
