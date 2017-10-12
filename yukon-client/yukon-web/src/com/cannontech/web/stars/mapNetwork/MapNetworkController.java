@@ -21,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -38,6 +39,7 @@ import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -71,8 +73,8 @@ public class MapNetworkController {
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private LocationValidator locationValidator;
     
-    @RequestMapping("home")
-    public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
+    @RequestMapping(value = "home", method = RequestMethod.GET)
+    public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope) throws ServletException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         FeatureCollection geojson = paoLocationService.getLocationsAsGeoJson(Arrays.asList(device));
         Location coordinates = new Location();
@@ -125,6 +127,9 @@ public class MapNetworkController {
         } catch (NmCommunicationException e) {
             // ignore, status will be set to "UNKNOWN"
             log.error("Failed to get meta-data for " + deviceId, e);
+        } catch (NotFoundException e) {
+            log.error(e);
+            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(e.getMessage()));
         }
 
         return "mapNetwork/home.jsp";
