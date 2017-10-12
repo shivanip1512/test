@@ -6,7 +6,8 @@ public enum AttributeField implements DisplayableEnum {
     TIMESTAMP,
     VALUE,
     UNIT_OF_MEASURE,
-    QUALITY;
+    QUALITY,
+    POINT_STATE;
     
     private final static String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     

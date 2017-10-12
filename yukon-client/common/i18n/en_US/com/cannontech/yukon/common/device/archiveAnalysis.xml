@@ -343,6 +343,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attributeField.VALUE">Value</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attributeField.UNIT_OF_MEASURE">Unit of Measure</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attributeField.QUALITY">Quality</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attributeField.POINT_STATE">State</entry>
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.padSide.LEFT">Left</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.padSide.RIGHT">Right</entry>

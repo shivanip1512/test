@@ -461,6 +461,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 return getTimestamp(exportField, pointValueQualityHolder, userContext, tzFormat);
             case QUALITY:
                 return getQuality(exportField, pointValueQualityHolder);
+            case POINT_STATE:
+                return getPointState(userContext, pao, pointValueQualityHolder);
             }
         default:
             throw new IllegalArgumentException(exportField.getField().getType() +" is not currently supported in the export report process");
