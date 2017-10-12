@@ -123,7 +123,21 @@
                         <c:if test="${showTypeColumn}">
                             <td>${event.type}</td>
                         </c:if>
-                        <td>${event.status}</td>
+                        <td class="js-status-${event.eventId}">
+                            <c:choose>
+                                <c:when test="${eventType == 'INFRASTRUCTURE_WARNING'}">
+                                    <c:set var="warningColor" value="warning"/>
+                                    <c:if test="${event.severity == 'HIGH'}">
+                                        <c:set var="warningColor" value="error"/>
+                                    </c:if>
+                                    <c:set var="arguments" value="${[event.argument1, event.argument2, event.argument3]}"/>
+                                    <span class="${warningColor}"><cti:msg2 key="yukon.web.widgets.infrastructureWarnings.warningType.${event.status}.${event.severity}" arguments="${arguments}"/></td>
+                                </c:when>
+                                <c:otherwise>
+                                    ${event.status}
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                         <td><cti:formatDate value="${event.timestamp}" type="BOTH"/></td>
                     </tr>
                 </c:forEach>

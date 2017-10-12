@@ -71,11 +71,16 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
             @Override
             public SmartNotificationEventData mapRow(YukonResultSet rs) throws SQLException {
                 SmartNotificationEventData row = new SmartNotificationEventData();
+                row.setEventId(rs.getInt("EventId"));
                 row.setTimestamp(rs.getInstant("Timestamp"));
                 row.setDeviceId(rs.getInt("DeviceId"));
                 row.setDeviceName(rs.getString("DeviceName"));
                 row.setStatus(rs.getString("Status"));
                 if (smartNotificationEventType == SmartNotificationEventType.INFRASTRUCTURE_WARNING) {
+                    row.setSeverity(rs.getString("Severity"));
+                    row.setArgument1(rs.getString("Argument1"));
+                    row.setArgument2(rs.getString("Argument2"));
+                    row.setArgument3(rs.getString("Argument3"));
                     row.setType(rs.getString("DeviceType"));
                 }
                 return row;
@@ -230,7 +235,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         boolean isOracle = databaseVendor.isOracle();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT sne.Timestamp As Timestamp, sne.Type, snep.paoId As DeviceId, snep.MonitorState As Status, snep.MonitorId, ypo.PAOName As DeviceName ");
+        sql.append("SELECT sne.Timestamp As Timestamp, sne.EventId, sne.Type, snep.paoId As DeviceId, snep.MonitorState As Status, snep.MonitorId, ypo.PAOName As DeviceName ");
         sql.append("FROM dbo.SmartNotificationEvent sne");
         sql.append("    INNER JOIN ("); 
         sql.append("        SELECT * FROM (");
@@ -305,17 +310,19 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         boolean isOracle = databaseVendor.isOracle();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT sne.Timestamp As Timestamp, sne.Type, snep.paoId As DeviceId, snep.WarningType As Status, ypo.Type AS DeviceType, ypo.PAOName As DeviceName");
+        sql.append("SELECT sne.Timestamp As Timestamp, sne.EventId, sne.Type, snep.paoId As DeviceId, snep.WarningType As Status, snep.WarningSeverity As Severity, "
+                + "snep.Argument1 As Argument1, snep.Argument2 As Argument2, snep.Argument3 As Argument3, ypo.Type AS DeviceType, ypo.PAOName As DeviceName");
         sql.append("FROM dbo.SmartNotificationEvent sne");
         sql.append("    INNER JOIN ("); 
         sql.append("        SELECT * FROM (");
         sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
         sql.append("        ) snep");
         if (isOracle) {
-            sql.append("        PIVOT ( Max(Value) FOR Name IN ('paoId' AS paoId, 'WarningType' AS WarningType)) P");
+            sql.append("        PIVOT ( Max(Value) FOR Name IN ('paoId' AS paoId, 'WarningType' AS WarningType, 'WarningSeverity' As WarningSeverity, "
+                    + "'Argument1' As Argument1, 'Argument2' As Argument2, 'Argument3' As Argument3)) P");
         } 
         else {
-            sql.append("        PIVOT ( Max(Value) FOR Name IN (paoId, WarningType)) P");
+            sql.append("        PIVOT ( Max(Value) FOR Name IN (paoId, WarningType, WarningSeverity, Argument1, Argument2, Argument3)) P");
         }
         sql.append("        ) snep ON sne.EventId = snep.EventId");
         sql.append("JOIN YukonPAObject ypo ON snep.paoId = ypo.PAObjectID");

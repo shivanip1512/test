@@ -119,7 +119,8 @@ public class SmartNotificationsController {
             filter.setStartDate(start.toDate());
         }
         if (filter.getEndDate() == null) {
-            filter.setEndDate(new Date());
+            DateTime end = new DateTime().plusMinutes(1).withZone(userContext.getJodaTimeZone());
+            filter.setEndDate(end.toDate());
         }
         EventSortBy sortBy = EventSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
