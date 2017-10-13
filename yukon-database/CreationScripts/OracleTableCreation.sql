@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/11/2017 11:53:04 PM                       */
+/* Created on:     10/13/2017 2:21:52 AM                        */
 /*==============================================================*/
 
 
@@ -9654,14 +9654,14 @@ insert into YukonListEntry values (1931,1071,0, 'Industrial', 0);
 insert into YukonListEntry values (1932,1071,0, 'Manufacturing', 0);
 insert into YukonListEntry values (1933,1071,0, 'Municipal', 0);
 
-INSERT INTO YukonListEntry VALUES (2000, 1005, 0, 'LCR-6200(RFN)', 1324);
-INSERT INTO YukonListEntry VALUES (2001, 1005, 0, 'LCR-6600(RFN)', 1325);
-INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700(RFN)', 1337);
-INSERT INTO YukonListEntry VALUES (2002, 1005, 0, 'LCR-6200(ZIGBEE)', 1320); 
-INSERT INTO YukonListEntry VALUES (2003, 1005, 0, 'LCR-6200(EXPRESSCOM)', 1321); 
-INSERT INTO YukonListEntry VALUES (2004, 1005, 0, 'LCR-6600(ZIGBEE)', 1322); 
-INSERT INTO YukonListEntry VALUES (2005, 1005, 0, 'LCR-6600(EXPRESSCOM)', 1323);
-INSERT INTO YukonListEntry VALUES (2006, 1005, 0, 'LCR-5000(EXPRESSCOM)', 1302);
+INSERT INTO YukonListEntry VALUES (2000, 1005, 0, 'LCR-6200 (RFN)', 1324);
+INSERT INTO YukonListEntry VALUES (2001, 1005, 0, 'LCR-6600 (RFN)', 1325);
+INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
+INSERT INTO YukonListEntry VALUES (2002, 1005, 0, 'LCR-6200 (ZigBee)', 1320); 
+INSERT INTO YukonListEntry VALUES (2003, 1005, 0, 'LCR-6200 (ExpressCom)', 1321); 
+INSERT INTO YukonListEntry VALUES (2004, 1005, 0, 'LCR-6600 (ZigBee)', 1322); 
+INSERT INTO YukonListEntry VALUES (2005, 1005, 0, 'LCR-6600 (ExpressCom)', 1323);
+INSERT INTO YukonListEntry VALUES (2006, 1005, 0, 'LCR-5000 (ExpressCom)', 1302);
 INSERT INTO YukonListEntry VALUES (2007, 1005, 0, 'LCR-4000', 1305);
 INSERT INTO YukonListEntry VALUES (2008, 1005, 0, 'LCR-4600', 1327);
 INSERT INTO YukonListEntry VALUES (2009, 1005, 0, 'LCR-4700', 1328);
@@ -9673,7 +9673,7 @@ INSERT INTO YukonListEntry VALUES (2014, 1005, 0, 'ExpressStat', 1301);
 
 INSERT INTO YukonListEntry VALUES (2015, 1005, 0, 'Meter', 1303);
 INSERT INTO YukonListEntry VALUES (2016, 1005, 0, 'Commercial ExpressStat', 1304);
-INSERT INTO YukonListEntry VALUES (2017, 1005, 0, 'LCR-5000(VERSACOM)', 1311);
+INSERT INTO YukonListEntry VALUES (2017, 1005, 0, 'LCR-5000 (VERSACOM)', 1311);
 INSERT INTO YukonListEntry VALUES (2018, 1005, 0, 'ExpressStat Heat Pump', 1313);
 INSERT INTO YukonListEntry VALUES (2019, 1005, 0, 'UtilityPRO', 1314);
 INSERT INTO YukonListEntry VALUES (2020, 1005, 0, 'LCR-3102', 1315);
