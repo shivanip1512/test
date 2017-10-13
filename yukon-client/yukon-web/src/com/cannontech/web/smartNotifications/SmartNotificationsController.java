@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -378,6 +379,8 @@ public class SmartNotificationsController {
             if (type.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
                 Object[] arguments = new String[]{event.getArgument1(), event.getArgument2(), event.getArgument3()};
                 status = accessor.getMessage("yukon.web.widgets.infrastructureWarnings.warningType." + status + "." + event.getSeverity(), arguments);
+            } else {
+                status = WordUtils.capitalizeFully(accessor.getMessage(baseKey + eventType + "." + status));
             }
 
             String timestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, userContext);

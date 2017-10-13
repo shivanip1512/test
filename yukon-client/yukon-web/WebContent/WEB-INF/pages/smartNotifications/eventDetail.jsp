@@ -131,10 +131,10 @@
                                         <c:set var="warningColor" value="error"/>
                                     </c:if>
                                     <c:set var="arguments" value="${[event.argument1, event.argument2, event.argument3]}"/>
-                                    <span class="${warningColor}"><cti:msg2 key="yukon.web.widgets.infrastructureWarnings.warningType.${event.status}.${event.severity}" arguments="${arguments}"/></td>
+                                    <span class="${warningColor}"><cti:msg2 key="yukon.web.widgets.infrastructureWarnings.warningType.${event.status}.${event.severity}" arguments="${arguments}"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                    ${event.status}
+                                    <span style="text-transform:capitalize"><cti:msg2 key=".${eventType}.${event.status}"/></span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
