@@ -7,15 +7,18 @@ public class CommReportingPercentageSetting {
         CommReportingPercentageSettingType.REGULATOR.getDefaultValue();
     private double voltageMonitorReportingRatio =
         CommReportingPercentageSettingType.VOLTAGE_MONITOR.getDefaultValue();
+    private boolean considerPhase = true;
 
     public CommReportingPercentageSetting() {}
 
     public CommReportingPercentageSetting(double banksReportingRatio,
                                               double regulatorReportingRatio,
-                                              double voltageMonitorReportingRatio) {
+                                              double voltageMonitorReportingRatio,
+                                              boolean considerPhase) {
         this.banksReportingRatio = banksReportingRatio;
         this.regulatorReportingRatio = regulatorReportingRatio;
         this.voltageMonitorReportingRatio = voltageMonitorReportingRatio;
+        this.considerPhase = considerPhase;
     }
 
     public double getBanksReportingRatio() {
@@ -40,6 +43,14 @@ public class CommReportingPercentageSetting {
 
     public void setVoltageMonitorReportingRatio(double voltageMonitorReportingRatio) {
         this.voltageMonitorReportingRatio = voltageMonitorReportingRatio;
+    }
+
+    public boolean isConsiderPhase() {
+        return considerPhase;
+    }
+
+    public void setConsiderPhase(boolean considerPhase) {
+        this.considerPhase = considerPhase;
     }
 
 }

@@ -243,6 +243,11 @@
                             <i:inline key="yukon.common.units.PERCENT"/>
                         </tags:nameValue2>
                         
+                        <tags:nameValue2 nameKey=".considerPhase">
+                            <tags:switchButton path="minCommunicationPercentageSetting.considerPhase" offClasses="M0"
+                                    color="${not viewMode}"/>
+                        </tags:nameValue2>
+                        
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
                     

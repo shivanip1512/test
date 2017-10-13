@@ -4,6 +4,7 @@ public enum CommReportingPercentageSettingType {
     CAPBANK(100.0),
     REGULATOR(100.0),
     VOLTAGE_MONITOR(100.0),
+    CONSIDER_PHASE(1)
     ;
 
     private final double defaultValue;

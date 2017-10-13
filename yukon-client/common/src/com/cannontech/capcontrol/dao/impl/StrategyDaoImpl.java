@@ -560,6 +560,15 @@ public class StrategyDaoImpl implements StrategyDao {
                 setting.getVoltageMonitorReportingRatio(),
                 CommReportingPercentageSettingType.VOLTAGE_MONITOR);
         jdbcTemplate.update(sql);
+        
+        /* Consider Phase*/
+        sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO CCStrategyTargetSettings");
+        sql.values(strategyId,
+                CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE,
+                setting.isConsiderPhase(),
+                CommReportingPercentageSettingType.CONSIDER_PHASE);
+        jdbcTemplate.update(sql);
     }
 
     private Map<TargetSettingType, PeakTargetSetting> getPeakSettings(CapControlStrategy strategy) {
@@ -616,17 +625,19 @@ public class StrategyDaoImpl implements StrategyDao {
 
     private CommReportingPercentageSetting getMinCommunicationPercentageSetting(CapControlStrategy strategy) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT banks.SettingValue banksValue, regulator.SettingValue regulatorValue, voltageMonitor.SettingValue voltageMonitorValue");
-        sql.append("FROM CCStrategyTargetSettings banks, CCStrategyTargetSettings regulator, CCStrategyTargetSettings voltageMonitor");
+        sql.append("SELECT banks.SettingValue banksValue, regulator.SettingValue regulatorValue, voltageMonitor.SettingValue voltageMonitorValue, considerPhase.SettingValue considerPhaseValue");
+        sql.append("FROM CCStrategyTargetSettings banks, CCStrategyTargetSettings regulator, CCStrategyTargetSettings voltageMonitor, CCStrategyTargetSettings considerPhase");
         sql.append("WHERE banks.SettingName = regulator.SettingName");
         sql.append("  AND banks.SettingName = voltageMonitor.SettingName");
         sql.append("  AND banks.SettingName").eq_k(CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE);
         sql.append("  AND banks.strategyid = regulator.strategyid");
         sql.append("  AND banks.strategyid = voltageMonitor.strategyid");
+        sql.append("  AND banks.strategyid = considerPhase.strategyid");
         sql.append("  AND banks.strategyid").eq(strategy.getId());
         sql.append("  AND banks.SettingType").eq_k(CommReportingPercentageSettingType.CAPBANK);
         sql.append("  AND regulator.SettingType").eq_k(CommReportingPercentageSettingType.REGULATOR);
         sql.append("  AND voltageMonitor.SettingType").eq_k(CommReportingPercentageSettingType.VOLTAGE_MONITOR);
+        sql.append("  AND considerPhase.SettingType").eq_k(CommReportingPercentageSettingType.CONSIDER_PHASE);
 
         try {
             return jdbcTemplate.queryForObject(sql, minCommunicationPercentageSettingMapper);
@@ -739,7 +750,8 @@ public class StrategyDaoImpl implements StrategyDao {
         public CommReportingPercentageSetting mapRow(YukonResultSet rs) throws SQLException {
             return new CommReportingPercentageSetting(rs.getDouble("banksValue"),
                     rs.getDouble("regulatorValue"),
-                    rs.getDouble("voltageMonitorValue"));
+                    rs.getDouble("voltageMonitorValue"),
+                    rs.getBoolean("considerPhaseValue"));
         }
     };
 
