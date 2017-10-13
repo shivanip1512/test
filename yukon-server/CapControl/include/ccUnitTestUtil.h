@@ -200,8 +200,6 @@ void initialize_capbank(Test_CtiCCSubstationBusStore* store, CtiCCCapBank* cap, 
     cap->setPerformingVerificationFlag(false);
     cap->setVerificationDoneFlag(false);
     cap->setBankSize(600);
-
-    cap->setControlPointId(1);
 }
 
 }

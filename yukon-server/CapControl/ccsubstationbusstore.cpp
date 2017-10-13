@@ -6272,7 +6272,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                     bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, 
                                                                                              pointOverloads, 
                                                                                              Cti::mapFind( dynamicDataCache, bank->getControlDeviceId() ),
-                                                                                             bank );
+                                                                                             *bank );
 
                                     for ( const LitePoint & point : cache )
                                     {
@@ -6452,7 +6452,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                                     bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, 
                                                                                              pointOverloads, 
                                                                                              Cti::mapFind( dynamicDataCache, bank->getControlDeviceId() ), 
-                                                                                             bank );
+                                                                                             *bank );
 
                                     for ( const LitePoint & point : cache )
                                     {

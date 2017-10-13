@@ -77,7 +77,7 @@ public:
     const std::string& getControllerType() const;
     long getControlDeviceId() const;
     long getControlPointId() const;
-    LitePoint CtiCCCapBank::getControlPoint();
+    LitePoint getControlPoint() const;
     std::string getControlDeviceType() const;
     long getBankSize() const;
     const std::string& getTypeOfSwitch() const;
@@ -150,7 +150,6 @@ public:
     void setOperationalState(const std::string& operational);
     void setOperationalState(int value);
     void setControllerType(const std::string& controllertype);
-    void setControlPointId(long controlpoint);
     void setBankSize(long size);
     void setTypeOfSwitch(const std::string& switchtype);
     void setSwitchManufacture(const std::string& manufacture);
@@ -331,7 +330,6 @@ private:
     std::string _operationalstate;
     std::string _controllertype;
     long _controldeviceid;
-    long _controlpointid;
     std::string _controlDeviceType;
     long _banksize;
     std::string _typeofswitch;

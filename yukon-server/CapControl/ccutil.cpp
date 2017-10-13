@@ -63,9 +63,9 @@ std::string getCommandStringForOperation(const LitePoint &p, const CommandInfo &
 }
 
 
-BankOperationType resolveOperationTypeForPointId( const std::string &commandString, const int pointId, const CtiCCTwoWayPoints & twoWayPoints )
+BankOperationType resolveOperationTypeForPointId( const std::string &commandString, CtiCCCapBank & capBank )
 {
-    const LitePoint p = twoWayPoints.getPointByAttribute( Attribute::ControlPoint );
+    const LitePoint p = capBank.getControlPoint();
 
     if( ! commandString.empty() )
     {
@@ -85,9 +85,9 @@ BankOperationType resolveOperationTypeForPointId( const std::string &commandStri
 }
 
 
-std::string getBankOperationCommand( const BankOperationType bankOperation, const CtiCCCapBank & capBank, const CtiCCTwoWayPoints & twoWayPoints )
+std::string getBankOperationCommand( const BankOperationType bankOperation, const CtiCCCapBank & capBank )
 {
-    const LitePoint p = twoWayPoints.getPointById( capBank.getControlPointId() );
+    const LitePoint & p = capBank.getControlPoint();
 
     BankOperationCommands::const_iterator itr = availableOperations.find(bankOperation);
 
@@ -104,7 +104,7 @@ std::auto_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &cap
     return std::auto_ptr<CtiRequestMsg>(
        createPorterRequestMsg(
           capBank.getControlDeviceId(),
-          getBankOperationCommand( bankOperation, capBank, capBank.getTwoWayPoints() )));
+          getBankOperationCommand( bankOperation, capBank )));
 }
 
 std::auto_ptr<CtiRequestMsg> createBankOpenRequest(const CtiCCCapBank &capBank)

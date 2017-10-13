@@ -104,7 +104,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const CtiCCTwoWayPoints & twp )
 void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                                          const std::map<Attribute, std::string> & overloads,
                                                          const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
-                                                         const CtiCCCapBank * bank )
+                                                         const boost::optional<CtiCCCapBank> & bank )
 {
     const DeviceTypes   deviceType = resolveDeviceType( _paotype );
 
@@ -140,11 +140,11 @@ void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LiteP
         }
     }
 
-    if ( dynamicData )
+    if ( dynamicData && bank )
     {
         setDynamicData( *dynamicData,
-                        (*bank).getReportedCBCState(),
-                        (*bank).getReportedCBCStateTime() );
+                        bank->getReportedCBCState(),
+                        bank->getReportedCBCStateTime() );
     }
 }
 
@@ -524,7 +524,9 @@ CtiCCTwoWayPointsCbcLogical::CtiCCTwoWayPointsCbcLogical( const long paoid, cons
 }
 
 void CtiCCTwoWayPointsCbcLogical::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                                                   const std::map<Attribute, std::string> & overloads )
+                                                                   const std::map<Attribute, std::string> & overloads,
+                                                                   const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
+                                                                   const boost::optional<CtiCCCapBank> & bank )
 {
     for ( const LitePoint & point : points )
     {
@@ -555,6 +557,13 @@ void CtiCCTwoWayPointsCbcLogical::assignTwoWayPointsAndAttributes( const std::ve
                 }
             }
         }
+    }
+
+    if ( dynamicData && bank )
+    {
+        setDynamicData( *dynamicData,
+                        bank->getReportedCBCState(),
+                        bank->getReportedCBCStateTime() );
     }
 }
 

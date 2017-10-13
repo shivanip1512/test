@@ -68,7 +68,7 @@ enum Phase
 Phase       resolvePhase( const std::string & p );
 std::string desolvePhase( const Phase & p );
 
-BankOperationType resolveOperationTypeForPointId(const std::string &commandString, const int pointId, const CtiCCTwoWayPoints & twoWayPoints);
+BankOperationType resolveOperationTypeForPointId(const std::string &commandString, CtiCCCapBank & bank);
 
 std::auto_ptr<CtiRequestMsg> createBankOpenRequest (const CtiCCCapBank &capBank);
 std::auto_ptr<CtiRequestMsg> createBankCloseRequest(const CtiCCCapBank &capBank);

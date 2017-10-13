@@ -45,7 +45,6 @@ struct overrideGlobals
         initialize_capbank(store, bank, feeder, 1);
 
         bank->createCbc(6, "cbc 7010");
-        bank->setControlPointId(7);
         bank->setStatusPointId(8);
 
         store->addCapBankToCBCMap(bank);
@@ -56,403 +55,33 @@ struct overrideGlobals
         delete feeder;
     };
 
+    const CtiTime currentTime = CtiTime(CtiDate(1, 1, 2010));
+
     CtiCCFeeder         *feeder;
     CtiCCCapBank        *bank;
 };
 
-}
-
-BOOST_FIXTURE_TEST_SUITE(test_ccFeeder_fixtures, overrideGlobals)
-
-BOOST_AUTO_TEST_CASE(test_default_resend_control_open)
+struct defaultGlobals : overrideGlobals
 {
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
+    defaultGlobals() : overrideGlobals()
+    {
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+            {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+            {}, boost::none, boost::none);
+    }
+};
 
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges, pilMessages;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    feeder->setLastCapBankControlledDeviceId(5);
-    bank->setControlStatus(CtiCCCapBank::OpenPending);
-    bank->setLastStatusChangeTime(currentTime - 1);
-
-    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
-
-    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
-
-    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete_container(pointChanges);
-    delete_container(pilMessages);
-}
-
-BOOST_AUTO_TEST_CASE(test_default_resend_control_close)
+struct customGlobals : overrideGlobals
 {
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
+    customGlobals() : overrideGlobals()
+    {
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+            {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
+            {}, boost::none, boost::none);   
+    }
+};
 
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges, pilMessages;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    feeder->setLastCapBankControlledDeviceId(5);
-    bank->setControlStatus(CtiCCCapBank::ClosePending);
-    bank->setLastStatusChangeTime(currentTime - 1);
-
-    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
-
-    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
-
-    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete_container(pointChanges);
-    delete_container(pilMessages);
 }
-
-BOOST_AUTO_TEST_CASE(test_custom_resend_control_open)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges, pilMessages;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    feeder->setLastCapBankControlledDeviceId(5);
-    bank->setControlStatus(CtiCCCapBank::OpenPending);
-    bank->setLastStatusChangeTime(currentTime - 1);
-
-    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
-
-    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
-
-    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete_container(pointChanges);
-    delete_container(pilMessages);
-}
-
-BOOST_AUTO_TEST_CASE(test_custom_resend_control_close)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges, pilMessages;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    feeder->setLastCapBankControlledDeviceId(5);
-    bank->setControlStatus(CtiCCCapBank::ClosePending);
-    bank->setLastStatusChangeTime(currentTime - 1);
-
-    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
-
-    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
-
-    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete_container(pointChanges);
-    delete_container(pilMessages);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_decrease_var_request_close)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    _MAX_KVAR = 20000;
-
-    CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_decrease_var_verification_request_close)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_forced_var_request_close)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_forced_var_request_open)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_increase_var_request_open)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_increase_var_verification_request_open)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_decrease_var_request_custom_close)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_decrease_var_verification_request_custom_close)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_forced_var_request_custom_close)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_forced_var_request_custom_open)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_increase_var_request_custom_open)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_CASE(test_create_increase_var_verification_request_custom_open)
-{
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "apple jacks", "banana loops", 1.0, 0)}, 
-        {}, boost::none, bank);
-
-    const CtiTime currentTime(CtiDate(1, 1, 2010));
-
-    CtiMultiMsg_vec pointChanges;
-    Cti::CapControl::EventLogEntries ccEvents;
-
-    CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
-
-    BOOST_REQUIRE(pilRequest);
-
-    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
-    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
-
-    delete pilRequest;
-    delete_container(pointChanges);
-}
-
-BOOST_AUTO_TEST_SUITE_END();
-
-
 
 BOOST_AUTO_TEST_SUITE(test_ccFeeder)
 
@@ -544,6 +173,302 @@ private:
         }
     }
 };
+
+BOOST_AUTO_TEST_SUITE(test_ccFeeder_fixtures)
+
+BOOST_FIXTURE_TEST_CASE(test_default_resend_control_open, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges, pilMessages;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    feeder->setLastCapBankControlledDeviceId(5);
+    bank->setControlStatus(CtiCCCapBank::OpenPending);
+    bank->setLastStatusChangeTime(currentTime - 1);
+
+    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete_container(pointChanges);
+    delete_container(pilMessages);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_default_resend_control_close, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges, pilMessages;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    feeder->setLastCapBankControlledDeviceId(5);
+    bank->setControlStatus(CtiCCCapBank::ClosePending);
+    bank->setLastStatusChangeTime(currentTime - 1);
+
+    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete_container(pointChanges);
+    delete_container(pilMessages);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_custom_resend_control_open, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges, pilMessages;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    feeder->setLastCapBankControlledDeviceId(5);
+    bank->setControlStatus(CtiCCCapBank::OpenPending);
+    bank->setLastStatusChangeTime(currentTime - 1);
+
+    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete_container(pointChanges);
+    delete_container(pilMessages);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_custom_resend_control_close, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges, pilMessages;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    feeder->setLastCapBankControlledDeviceId(5);
+    bank->setControlStatus(CtiCCCapBank::ClosePending);
+    bank->setLastStatusChangeTime(currentTime - 1);
+
+    feeder->attemptToResendControl(currentTime, pointChanges, ccEvents, pilMessages, 10);
+
+    BOOST_REQUIRE_EQUAL(pilMessages.size(), 1);
+
+    CtiRequestMsg *pilRequest = dynamic_cast<CtiRequestMsg *>(pilMessages[0]);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete_container(pointChanges);
+    delete_container(pilMessages);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_decrease_var_request_close, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    _MAX_KVAR = 20000;
+
+    CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_decrease_var_verification_request_close, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_forced_var_request_close, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control close");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_forced_var_request_open, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_increase_var_request_open, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_increase_var_verification_request_open, defaultGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "control open");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_decrease_var_request_custom_close, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_decrease_var_verification_request_custom_close, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_forced_var_request_custom_close, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Close, "n/a");
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "banana loops");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_forced_var_request_custom_open, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createForcedVarRequest(bank, pointChanges, ccEvents, CtiCCCapBank::Open, "n/a");
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_increase_var_request_custom_open, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_create_increase_var_verification_request_custom_open, customGlobals)
+{
+    CtiMultiMsg_vec pointChanges;
+    Cti::CapControl::EventLogEntries ccEvents;
+
+    CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
+
+    BOOST_REQUIRE(pilRequest);
+
+    BOOST_CHECK_EQUAL(pilRequest->CommandString(), "apple jacks");
+    BOOST_CHECK_EQUAL(pilRequest->DeviceId(), 6);
+
+    delete pilRequest;
+    delete_container(pointChanges);
+}
+
+BOOST_AUTO_TEST_SUITE_END();
+
+
 
 BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
 {

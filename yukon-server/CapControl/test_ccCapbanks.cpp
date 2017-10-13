@@ -86,7 +86,7 @@ struct cbc_heartbeat_fixture_core
         LitePoint(5678,  StatusPointType, "CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0),
         LitePoint(4567,  StatusPointType, "CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0),
         LitePoint(2345,  AnalogPointType, "CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0),
-        LitePoint(3456,  AnalogPointType, "CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0),
+        LitePoint(3456,  AnalogPointType, "CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0)
     };
 
     boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
@@ -106,7 +106,7 @@ struct cbc_heartbeat_fixture_core
         bank->setPaoCategory( "DEVICE" );
         bank->setPaoType( "CAP BANK" );
         bank->createCbc( 2837465823, "CBC 8024" );
-        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( twoWayPoints, {}, boost::none, bank.get() );
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( twoWayPoints, {}, boost::none, boost::none);
 
         fixtureConfig->insertValue( "cbcHeartbeatPeriod",   "5" );      // message every 5 minutes
         fixtureConfig->insertValue( "cbcHeartbeatValue",    "15" );     // duration is 15 minutes
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
         { Attribute::ControlPoint, "CBC 8024 Control" }
     };
 
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( controlPoints, pointOverloads, boost::none, bank.get() );
+    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( controlPoints, pointOverloads, boost::none, boost::none);
 
     BOOST_REQUIRE( bank );
 
@@ -838,8 +838,49 @@ BOOST_FIXTURE_TEST_CASE( test_capbank_point_loading_and_initialization_with_cbc_
             { Attribute::LowVoltage,    "Blueberry Pancakes" }
         };
 
-        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( pointCache, pointOverloads, boost::none, bank.get() );
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( pointCache, pointOverloads, boost::none, boost::none);
     }
+
+    // check our three points
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::Voltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      4635 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        1773 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  5 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    AnalogPointType );
+    }
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::HighVoltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      4631 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        1773 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  1 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    AnalogPointType );
+    }
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::LowVoltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      4634 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        1773 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  4 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    AnalogPointType );
+    }
+
+    // check a non-existent point
+
+    {
+        LitePoint point = bank->getTwoWayPoints().getPointByAttribute( Attribute::DeltaVoltage );
+
+        BOOST_CHECK_EQUAL( point.getPointId(),      0 );
+        BOOST_CHECK_EQUAL( point.getPaoId(),        0 );
+        BOOST_CHECK_EQUAL( point.getPointOffset(),  0 );
+        BOOST_CHECK_EQUAL( point.getPointType(),    InvalidPointType );
+    }
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

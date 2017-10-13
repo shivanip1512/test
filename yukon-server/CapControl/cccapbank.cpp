@@ -42,7 +42,6 @@ _controlinhibitflag(false),
 _maxdailyops(0),
 _currentdailyoperations(0),
 _maxopsdisableflag(false),
-_controlpointid(0),
 _banksize(0),
 _reclosedelay(0),
 _controlorder(0),
@@ -388,29 +387,10 @@ long CtiCCCapBank::getControlDeviceId() const
 ---------------------------------------------------------------------------*/
 long CtiCCCapBank::getControlPointId() const
 {
-    try
-    {
-        auto twoWayPoints = getTwoWayPoints();
-
-        switch (heartbeat._policy->getOperatingMode( twoWayPoints ) )
-        {
-        case CbcHeartbeatPolicy::Normal:
-            return twoWayPoints.getPointIdByAttribute( Attribute::ControlPoint );
-            break;
-        case CbcHeartbeatPolicy::ScadaOverride:
-            return twoWayPoints.getPointIdByAttribute( Attribute::ScadaOverrideEnable );
-            break;
-        default:
-            return _controlpointid;
-        }
-    }
-    catch ( FailedAttributeLookup & missingAttribute )
-    {
-        return _controlpointid;
-    }
+    return getControlPoint().getPointId();
 }
 
-LitePoint CtiCCCapBank::getControlPoint()
+LitePoint CtiCCCapBank::getControlPoint() const
 {
     auto twoWayPoints = getTwoWayPoints();
 
@@ -851,16 +831,6 @@ void CtiCCCapBank::setOperationalState(int value)
 void CtiCCCapBank::setControllerType(const string& controllertype)
 {
     _controllertype = controllertype;
-}
-
-/*---------------------------------------------------------------------------
-    setControlPointId
-
-    Sets the control point id of the capbank
----------------------------------------------------------------------------*/
-void CtiCCCapBank::setControlPointId(long controlpoint)
-{
-    _controlpointid = controlpoint;
 }
 /*---------------------------------------------------------------------------
     setBankSize
@@ -1817,7 +1787,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _maxopsdisableflag = rightObj._maxopsdisableflag;
         _operationalstate = rightObj._operationalstate;
         _controllertype = rightObj._controllertype;
-        _controlpointid = rightObj._controlpointid;
         _banksize = rightObj._banksize;
         _typeofswitch = rightObj._typeofswitch;
         _switchmanufacture = rightObj._switchmanufacture;
@@ -1902,7 +1871,6 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
 
     rdr["OPERATIONALSTATE"]  >> _operationalstate;
     rdr["ControllerType"]    >> _controllertype;
-    rdr["CONTROLPOINTID"]    >> _controlpointid;
     rdr["BANKSIZE"]          >> _banksize;
     rdr["TypeOfSwitch"]      >> _typeofswitch;
     rdr["SwitchManufacture"] >> _switchmanufacture;

@@ -10,15 +10,15 @@
 using namespace Cti::Test::CapControl;
 using namespace Cti::CapControl;
 
+struct test_CtiCapController : CtiCapController
+{
+    using CtiCapController::porterReturnMsg;
+};
+
 namespace {
 
 struct overrideGlobals
 {
-    struct test_CtiCapController : CtiCapController
-    {
-        using CtiCapController::porterReturnMsg;
-    };
-
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
 
@@ -43,7 +43,6 @@ struct overrideGlobals
         initialize_capbank(store, bank, feeder, 1);
 
         bank->createCbc(6, "cbc-3010");
-        bank->setControlPointId(7);
 
         store->addCapBankToCBCMap(bank);
     }
@@ -58,24 +57,39 @@ struct overrideGlobals
     CtiCCSubstationBus  *bus;
     CtiCCFeeder         *feeder;
     CtiCCCapBank        *bank;
-    CtiCCCapBank        *zooBank;
 
     test_CtiCapController cc;
 };
 
+struct defaultGlobals : overrideGlobals
+{
+    defaultGlobals() : overrideGlobals()
+    {
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+            {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
+            {}, boost::none, boost::none);
+    }
+};
+
+struct customGlobals : overrideGlobals
+{
+    customGlobals() : overrideGlobals()
+    {
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
+            { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus alligator", "giraffe baboon", 1.0, 0) },
+            {}, boost::none, boost::none);
+    }
+};
+
 }
 
-BOOST_FIXTURE_TEST_SUITE(test_capcontroller, overrideGlobals)
+BOOST_AUTO_TEST_SUITE(test_capcontroller)
 
-BOOST_AUTO_TEST_CASE(test_default_control_open)
+BOOST_FIXTURE_TEST_CASE(test_default_control_open, defaultGlobals)
 {
     const CtiReturnMsg controlOpen_noError          (6, "control open", "n/a", 0);
     const CtiReturnMsg controlOpen_error            (6, "control open", "n/a", 1);
     const CtiReturnMsg hippopotamusAlligator_noError(6, "hippopotamus alligator", "n/a", 0);
-
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
 
     bank->setControlStatus(-1);
 
@@ -96,16 +110,12 @@ BOOST_AUTO_TEST_CASE(test_default_control_open)
 }
 
 
-BOOST_AUTO_TEST_CASE( test_default_control_close )
+BOOST_FIXTURE_TEST_CASE(test_default_control_close, defaultGlobals)
 {
 
     const CtiReturnMsg controlClose_noError (6, "control close", "n/a", 0);
     const CtiReturnMsg controlClose_error   (6, "control close", "n/a", 1);
     const CtiReturnMsg giraffeBaboon_noError(6, "giraffe baboon", "n/a", 0);
-
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
 
     bank->setControlStatus(-1);
 
@@ -125,14 +135,10 @@ BOOST_AUTO_TEST_CASE( test_default_control_close )
     BOOST_CHECK_EQUAL(bank->getControlStatus(), CtiCCCapBank::CloseQuestionable);
 }
 
-BOOST_AUTO_TEST_CASE(test_control_flip)
+BOOST_FIXTURE_TEST_CASE(test_control_flip, defaultGlobals)
 {
     const CtiReturnMsg controlFlip_noError  (6, "control flip", "n/a", 0);
     const CtiReturnMsg controlFlip_error    (6, "control flip", "n/a", 1);
-
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
 
     bank->setControlStatus(CtiCCCapBank::ClosePending);
     
@@ -159,15 +165,11 @@ BOOST_AUTO_TEST_CASE(test_control_flip)
     BOOST_CHECK_EQUAL(bank->getControlStatus(), CtiCCCapBank::OpenFail);
 }
 
-BOOST_AUTO_TEST_CASE(test_explicit_control_open)
+BOOST_FIXTURE_TEST_CASE(test_explicit_control_open, defaultGlobals)
 {
     const CtiReturnMsg controlOpen_noError          (6, "control open", "n/a", 0);
     const CtiReturnMsg controlOpen_error            (6, "control open", "n/a", 1);
     const CtiReturnMsg hippopotamusAlligator_noError(6, "hippopotamus alligator", "n/a", 0);
-
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
 
     bank->setControlStatus(-1);
 
@@ -187,15 +189,11 @@ BOOST_AUTO_TEST_CASE(test_explicit_control_open)
     BOOST_CHECK_EQUAL(bank->getControlStatus(), CtiCCCapBank::OpenQuestionable);
 }
 
-BOOST_AUTO_TEST_CASE( test_explicit_control_close )
+BOOST_FIXTURE_TEST_CASE(test_explicit_control_close, defaultGlobals)
 {
     const CtiReturnMsg controlClose_noError (6, "control close", "n/a", 0);
     const CtiReturnMsg controlClose_error   (6, "control close", "n/a", 1);
     const CtiReturnMsg giraffeBaboon_noError(6, "giraffe baboon", "n/a", 0);
-
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        {LitePoint (7,  StatusPointType, "CBC Control Point", 6, 1, "control open", "control close", 1.0, 0)}, 
-        {}, boost::none, bank);
 
     bank->setControlStatus(-1);
 
@@ -215,15 +213,11 @@ BOOST_AUTO_TEST_CASE( test_explicit_control_close )
     BOOST_CHECK_EQUAL(bank->getControlStatus(), CtiCCCapBank::CloseQuestionable);
 }
 
-BOOST_AUTO_TEST_CASE(test_custom_control_open)
+BOOST_FIXTURE_TEST_CASE(test_custom_control_open, customGlobals)
 {
     const CtiReturnMsg controlOpen_noError          (6, "control open", "n/a", 0);
     const CtiReturnMsg hippopotamusAlligator_noError(6, "hippopotamus alligator", "n/a", 0);
     const CtiReturnMsg hippopotamusAlligator_error  (6, "hippopotamus alligator", "n/a", 1);
-
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus alligator", "giraffe baboon", 1.0, 0) },
-        {}, boost::none, bank);
 
     bank->setControlStatus(-1);
 
@@ -243,15 +237,11 @@ BOOST_AUTO_TEST_CASE(test_custom_control_open)
     BOOST_CHECK_EQUAL(bank->getControlStatus(), CtiCCCapBank::OpenQuestionable);
 }
 
-BOOST_AUTO_TEST_CASE( test_custom_control_close )
+BOOST_FIXTURE_TEST_CASE(test_custom_control_close, customGlobals)
 {
     const CtiReturnMsg controlClose_noError (6, "control close", "n/a", 0);
     const CtiReturnMsg giraffeBaboon_noError(6, "giraffe baboon", "n/a", 0);
     const CtiReturnMsg giraffeBaboon_error  (6, "giraffe baboon", "n/a", 1);
-
-    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(
-        { LitePoint(7,  StatusPointType, "CBC Control Point", 6, 1, "hippopotamus alligator", "giraffe baboon", 1.0, 0) },
-        {}, boost::none, bank);
 
     bank->setControlStatus(-1);
 
