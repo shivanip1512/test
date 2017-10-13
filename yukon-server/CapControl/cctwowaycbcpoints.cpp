@@ -104,7 +104,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const CtiCCTwoWayPoints & twp )
 void CtiCCTwoWayPoints::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                                          const std::map<Attribute, std::string> & overloads,
                                                          const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
-                                                         const boost::optional<CtiCCCapBank> & bank )
+                                                         const boost::optional<const CtiCCCapBank &> & bank )
 {
     const DeviceTypes   deviceType = resolveDeviceType( _paotype );
 
@@ -526,7 +526,7 @@ CtiCCTwoWayPointsCbcLogical::CtiCCTwoWayPointsCbcLogical( const long paoid, cons
 void CtiCCTwoWayPointsCbcLogical::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                                                    const std::map<Attribute, std::string> & overloads,
                                                                    const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
-                                                                   const boost::optional<CtiCCCapBank> & bank )
+                                                                   const boost::optional<const CtiCCCapBank &> & bank )
 {
     for ( const LitePoint & point : points )
     {

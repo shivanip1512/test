@@ -114,7 +114,7 @@ public:
     virtual void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                                   const std::map<Attribute, std::string> & overloads, 
                                                   const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
-                                                  const boost::optional<CtiCCCapBank> & bank );
+                                                  const boost::optional<const CtiCCCapBank &> & bank );
 
     bool setTwoWayPointValue(const long pointID, const double value, const CtiPointType_t type, const CtiTime & timestamp);
 
@@ -205,7 +205,7 @@ public:
     void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
                                           const std::map<Attribute, std::string> & overloads,
                                           const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
-                                          const boost::optional<CtiCCCapBank> & bank ) override;
+                                          const boost::optional<const CtiCCCapBank &> & bank ) override;
 };
 
 

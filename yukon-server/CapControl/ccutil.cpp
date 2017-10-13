@@ -69,7 +69,7 @@ BankOperationType resolveOperationTypeForPointId( const std::string &commandStri
 
     if( ! commandString.empty() )
     {
-        for each( BankOperationCommands::value_type command in availableOperations )
+        for( const auto command : availableOperations )
         {
             BankOperationType operation = command.first;
             CommandInfo info = command.second;

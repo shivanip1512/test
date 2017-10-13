@@ -4,6 +4,7 @@
 #include "cctwowaycbcpoints.h"
 #include "cbcHeartbeatPolicy.h"
 
+extern unsigned long _CC_DEBUG;
 
 namespace Cti           {
 namespace CapControl    {
@@ -26,9 +27,9 @@ catch ( UninitializedPointValue & failedRead )
 catch (FailedAttributeLookup & missingAttribute)
 {
     // This shouldn't happen, but might still be valid.  Give information, but continue assuming Normal mode operation.
-    if( CC_DEBUG_ATTRIBUTE_LOOKUP ) 
+    if( _CC_DEBUG & CC_DEBUG_ATTRIBUTE_LOOKUP ) 
     {
-        CTILOG_INFO(dout, "Warning: Scada Override Mode attribute not found, assuming normal control.");
+        CTILOG_INFO(dout, "Scada Override Mode attribute not found, assuming normal control.");
     }
 
     return Normal;
