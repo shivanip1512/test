@@ -102,7 +102,7 @@
                         </c:otherwise>
                     </c:choose>
             </table>
-            <tags:pagingResultsControls result="${subscriptions}" adjustPageCount="true" thousands="true"/>
+            <tags:pagingResultsControls result="${subscriptions}" adjustPageCount="true"/>
     </tags:sectionContainer2>
 </div>
 

@@ -184,7 +184,7 @@ public class SmartNotificationsController {
     @RequestMapping(value="subscriptions", method=RequestMethod.GET)
     public String subscriptions(@ModelAttribute("filter") SmartNotificationFilter filter, BindingResult bindingResult,
                                 @DefaultSort(dir=Direction.asc, sort="type") SortingParameters sorting, 
-                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+                                PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         List<SmartNotificationSubscription> subscriptions = new ArrayList<>();
         if (filter.getEventType() != null && !filter.getEventType().isEmpty()) {
