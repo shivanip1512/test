@@ -100,4 +100,7 @@ public class ExportAttribute {
                         daysPrevious);
     }
     
+    public boolean isStatusType() {
+        return attribute.isStatusType();
+    }
 }

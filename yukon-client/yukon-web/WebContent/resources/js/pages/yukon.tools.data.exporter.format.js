@@ -390,8 +390,17 @@ yukon.tools.dataExporterFormat = (function () {
                 
                 // show hide reading/timestamp patterns
                 if (type === 'ATTRIBUTE' || type === 'POINT_TIMESTAMP' || type === 'POINT_VALUE') {
-                    
-                    if (type === 'ATTRIBUTE') attributeSelect.show();
+                    if (type === 'ATTRIBUTE') {
+                        attributeSelect.show();
+                        attributeSelect.find("option:selected").removeAttr('selected');
+                        if (field.attribute.statusType === false) {
+                            attributeSelect.find("option[value='POINT_STATE']").addClass('dn');
+                            attributeSelect.find("option[value='QUALITY']").attr('selected','selected');
+                        } else {
+                            attributeSelect.find("option[value='POINT_STATE']").removeClass('dn');
+                            attributeSelect.find("option[value='POINT_STATE']").attr('selected','selected');
+                        }
+                    }
                     otherOptions.show();
                     
                     if ((type === 'ATTRIBUTE' && attrVal === 'TIMESTAMP') || type === 'POINT_TIMESTAMP') {
