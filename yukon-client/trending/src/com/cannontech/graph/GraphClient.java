@@ -67,6 +67,7 @@ import com.cannontech.common.gui.util.JEditorPanePrintable;
 import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -105,8 +106,6 @@ import com.cannontech.util.ServletUtil;
 
 public class GraphClient extends JPanel implements DBChangeListener, GraphDefines, ActionListener, WindowListener,
         ChangeListener, TreeSelectionListener {
-
-    private static final String applicationName = "Trending";
 
     public static final URL GRAPH_IMG_16 = GraphClient.class.getResource("/GraphTrending16.png");
     public static final URL GRAPH_IMG_24 = GraphClient.class.getResource("/GraphTrending24.png");
@@ -1708,7 +1707,7 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
     public static void main(String[] args) {
         try {
             ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-            clientStartupHelper.setAppName(applicationName);
+            clientStartupHelper.setAppName(ApplicationName.TRENDING);
             clientStartupHelper.setRequiredRole(YukonRole.TRENDING.getRoleId());
             clientStartupHelper.setSplashUrl(CtiUtilities.TRENDING_SPLASH);
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
@@ -20,7 +21,7 @@ public class BrokerService {
      * Gets this broker service as a Spring bean and starts it.
      */
     public static void main(String[] args) {
-        BootstrapUtils.setApplicationName("MessageBroker");
+        BootstrapUtils.setApplicationName(ApplicationName.MESSAGE_BROKER);
         YukonSpringHook.setDefaultContext(YukonSpringHook.BROKER_BEAN_FACTORY_KEY);
         Logger log = YukonLogManager.getLogger(BrokerService.class);
         try {

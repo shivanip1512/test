@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
@@ -22,7 +23,6 @@ import com.google.common.collect.Lists;
 public class DeleteInventory {
 
 	private Logger log = YukonLogManager.getLogger(DeleteInventory.class);
-	private final static String appName = "DeleteInventory";
 	private InventoryBaseDao inventoryBaseDao;
 	private HardwareService hardwareService;
 
@@ -39,14 +39,14 @@ public class DeleteInventory {
 	}
 
 	public void init() {
-        BootstrapUtils.setApplicationName(appName);
+        BootstrapUtils.setApplicationName(ApplicationName.DELETE_INVENTORY);
 
         YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
 		inventoryBaseDao = YukonSpringHook.getBean( "inventoryBaseDao", InventoryBaseDao.class);
 		hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
 
 		CtiUtilities.setRunningAsClient();
-		CTILogger.info(appName + " starting...");
+		CTILogger.info(ApplicationName.DELETE_INVENTORY + " starting...");
 	}
 
 	/**

@@ -34,6 +34,7 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.tdc.model.IDisplay;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -79,7 +80,6 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
     TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener,
     java.awt.event.ItemListener, java.util.Observer, MessageListener {
     
-    private static final String applicationName = "TDC";
 	private Clock ticker = null;
 	private transient javax.swing.JDialog textSearchDialog = null;
 	protected transient TDCMainFrameSpawnListener spawnTDCEventMulticaster = null;
@@ -4088,7 +4088,7 @@ public static void main(final java.lang.String[] args)
     try
     {
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-        clientStartupHelper.setAppName(applicationName);
+        clientStartupHelper.setAppName(ApplicationName.TABULAR_DISPLAY_CONSOLE);
         clientStartupHelper.setRequiredRole(YukonRole.TABULAR_DISPLAY_CONSOLE.getRoleId());
         clientStartupHelper.setSplashUrl(CtiUtilities.TDC_SPLASH);
 

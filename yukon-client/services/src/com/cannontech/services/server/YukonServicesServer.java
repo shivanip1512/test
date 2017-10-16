@@ -3,13 +3,14 @@ package com.cannontech.services.server;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.services.YukonServiceManager;
 import com.cannontech.spring.YukonSpringHook;
 
 public class YukonServicesServer {
     public static void main(String[] args) {
-        BootstrapUtils.setApplicationName("ServiceManager");
+        BootstrapUtils.setApplicationName(ApplicationName.SERVICE_MANAGER);
         YukonSpringHook.setDefaultContext(YukonSpringHook.SERVICES_BEAN_FACTORY_KEY);
         Logger log = YukonLogManager.getLogger(YukonServicesServer.class);
         try {

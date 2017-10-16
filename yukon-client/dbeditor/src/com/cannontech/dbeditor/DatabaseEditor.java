@@ -68,6 +68,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
@@ -171,7 +172,6 @@ import com.cannontech.yukon.conns.ConnPool;
 
 public class DatabaseEditor implements PropertyPanelListener, WizardPanelListener, ActionListener, WindowListener,
         Observer, PopUpEventListener, PopupMenuListener, DBChangeLiteListener {
-    private static final String applicationName = "DBEditor";
 
     // all editor frame sizes
     public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 600);
@@ -1567,7 +1567,7 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
 
         try {
             ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-            clientStartupHelper.setAppName(applicationName);
+            clientStartupHelper.setAppName(ApplicationName.DATABASE_EDITOR);
             clientStartupHelper.setRequiredRole(YukonRole.DATABASE_EDITOR.getRoleId());
             clientStartupHelper.setContext("com.cannontech.context.dbeditor");
             clientStartupHelper.setSplashUrl(CtiUtilities.DBEDITOR_SPLASH);
