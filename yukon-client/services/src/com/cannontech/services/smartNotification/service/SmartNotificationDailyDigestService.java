@@ -48,13 +48,13 @@ public class SmartNotificationDailyDigestService{
                     getMessageParameters(getDecider(type), combinedSubscriptions.get(type));
                 allMessages.addAll(messageParameters);
             }
-            deciderService.putMessagesOnAssemblerQueue(allMessages, true);
+            deciderService.putMessagesOnAssemblerQueue(allMessages, 0, true);
             
             SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> subscriptionsPerEventType = subscriptionDao.getDailyDigestUngrouped(runTimeInMinutes);
             for (SmartNotificationEventType type : subscriptionsPerEventType.keySet()) {
                 List<SmartNotificationMessageParameters> messageParameters =
                     getMessageParameters(getDecider(type), subscriptionsPerEventType.get(type));
-                deciderService.putMessagesOnAssemblerQueue(messageParameters, false);
+                deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, true);
             }
             
             
@@ -63,7 +63,7 @@ public class SmartNotificationDailyDigestService{
     
     private List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationDecider decider,
             Set<SmartNotificationSubscription> subcriptions) {
-        List<SmartNotificationEvent> events = getEvents(decider, new Range<Instant>(Instant.now().minus(TimeUnit.DAYS.toMillis(1)), false, Instant.now(), true));
+        List<SmartNotificationEvent> events = getEvents(decider, new Range<>(Instant.now().minus(TimeUnit.DAYS.toMillis(1)), false, Instant.now(), true));
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
             decider.mapSubscriptionsToEvents(subcriptions, events);
         List<SmartNotificationMessageParameters> messageParameters =

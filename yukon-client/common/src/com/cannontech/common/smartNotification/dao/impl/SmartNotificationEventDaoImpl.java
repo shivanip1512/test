@@ -55,9 +55,9 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
 
     private ChunkingSqlTemplate chunkingTemplate;
     
-    private final YukonRowMapper<SmartNotificationEventData> createDeviceDataMonitorEventDetailRowMapper =
+    private static final YukonRowMapper<SmartNotificationEventData> createDeviceDataMonitorEventDetailRowMapper =
             createRowMapper(SmartNotificationEventType.DEVICE_DATA_MONITOR);
-    private final YukonRowMapper<SmartNotificationEventData> createInfrastructureWarningEventDetailRowMapper =
+    private static final YukonRowMapper<SmartNotificationEventData> createInfrastructureWarningEventDetailRowMapper =
             createRowMapper(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
                 
    
@@ -66,7 +66,7 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         chunkingTemplate = new ChunkingSqlTemplate(jdbcTemplate);
     }
     
-    private YukonRowMapper<SmartNotificationEventData> createRowMapper(final SmartNotificationEventType smartNotificationEventType) {
+    private static YukonRowMapper<SmartNotificationEventData> createRowMapper(final SmartNotificationEventType smartNotificationEventType) {
         final YukonRowMapper<SmartNotificationEventData> mapper = new YukonRowMapper<SmartNotificationEventData>() {
             @Override
             public SmartNotificationEventData mapRow(YukonResultSet rs) throws SQLException {

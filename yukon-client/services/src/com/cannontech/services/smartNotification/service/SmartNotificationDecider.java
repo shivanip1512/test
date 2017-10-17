@@ -180,7 +180,6 @@ public abstract class SmartNotificationDecider implements MessageListener {
             processImmediateEvents(eventsByFrequency, now, result);
         }
         return result;
-
     }
         
     @Override

@@ -39,6 +39,7 @@
     <bean id="smartNotificationMessageAssembler" class="com.cannontech.common.smartNotification.service.impl.SmartNotificationMessageAssembler"/>
     <bean class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDeciderServiceImpl"/>
     <bean class="com.cannontech.services.smartNotification.service.SmartNotificationDailyDigestService"/>
+    <bean class="com.cannontech.common.smartNotification.service.impl.email.SmartNotificationEmailMessageParametersHandler"/>
 
     <!-- Smart Notification Message Builders -->
     <bean class="com.cannontech.common.smartNotification.service.impl.email.DeviceDataMonitorEmailBuilder"/>

@@ -19,7 +19,6 @@ public class SmartNotificationMessageParameters implements Serializable {
     private final SmartNotificationVerbosity verbosity;
     private final List<String> recipients;
     private final List<SmartNotificationEvent> events;
-    private final int eventPeriodMinutes;
     
     public SmartNotificationMessageParameters(SmartNotificationEventType type, SmartNotificationMedia media, 
                                               SmartNotificationVerbosity verbosity, Collection<String> recipients, 
@@ -29,7 +28,6 @@ public class SmartNotificationMessageParameters implements Serializable {
         this.verbosity = verbosity;
         this.recipients = ImmutableList.copyOf(recipients);
         this.events = ImmutableList.copyOf(events);
-        this.eventPeriodMinutes = eventPeriodMinutes;
     }
 
     public SmartNotificationEventType getType() {
@@ -57,13 +55,6 @@ public class SmartNotificationMessageParameters implements Serializable {
      */
     public List<SmartNotificationEvent> getEvents() {
         return events;
-    }
-    
-    /**
-     * The number of minutes this collection of events was coalesced from.
-     */
-    public int getEventPeriodMinutes() {
-        return eventPeriodMinutes;
     }
     
     @Override

@@ -51,7 +51,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     private static Intervals intervals;
     
     /**
-     * This class is responsible for loading and managing intervals
+     * This class is responsible for loading and managing intervals.
      */
     private final class Intervals {
         private Set<Integer> intervals = new TreeSet<>();
@@ -175,7 +175,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             executor.execute(() -> {
                 try {
                     logDebug("Sending message parameters immediately", result.getDecider());
-                    putMessagesOnAssemblerQueue(result.getMessageParameters(), false);
+                    putMessagesOnAssemblerQueue(result.getMessageParameters(), result.getDecider().getWaitTime().interval, false);
                 } catch (Exception e) {
                     log.error("e");
                 }
@@ -187,13 +187,13 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     }
     
     @Override
-    public void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages,
+    public void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages, int interval,
             boolean sendAllInOneEmail) {
         if (!messages.isEmpty()) {
             messages.forEach(m -> {
                 log.debug(m.getType() + " Sending message=" + m);
             });
-            jmsTemplate.convertAndSend(queue, new SmartNotificationMessageParametersMulti(messages, sendAllInOneEmail));
+            jmsTemplate.convertAndSend(queue, new SmartNotificationMessageParametersMulti(messages, interval, sendAllInOneEmail));
         }
     }
     
@@ -215,7 +215,8 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                     log.debug(decider.getEventType() + " No messages to send. Removing wait time.");
                 } else if (result.isReschedule()){
                     schedule(decider, result.getNextRun());
-                    putMessagesOnAssemblerQueue(result.getMessageParameters(), false);
+                    putMessagesOnAssemblerQueue(result.getMessageParameters(), 
+                            result.getDecider().getWaitTime().interval, false);
                 }
             } catch (Exception e) {
                 decider.resetWaitTime();

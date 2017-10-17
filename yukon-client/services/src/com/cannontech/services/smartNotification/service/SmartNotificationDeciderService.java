@@ -22,5 +22,6 @@ public interface SmartNotificationDeciderService {
      */
     int getFirstInterval();
 
-    void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages, boolean sendAllInOneEmail);
+    void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages, int interval, 
+                                     boolean sendAllInOneEmail);
 }

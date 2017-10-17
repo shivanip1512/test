@@ -121,4 +121,7 @@
     <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.SUMMARY.text">An Infrastructure Warning has occurred: {1} {2}. See {3}</entry>
     <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.EXPANDED.text">An Infrastructure Warning has occurred: {1} {2}. See {3}</entry>
     <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.subject">[yukon] Infrastructure Warnings - {0} {1}</entry> <!-- Infrastructure Warnings - GWY-800-12 Communication Status -->
+    
+    <!-- Combined Digest -->
+    <entry key="yukon.web.modules.smartNotifications.combinedDigest.subject">[yukon] Notification Digest - {0} Events</entry>
 </properties>

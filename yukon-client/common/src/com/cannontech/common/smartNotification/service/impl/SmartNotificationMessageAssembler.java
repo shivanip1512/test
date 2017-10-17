@@ -3,7 +3,6 @@ package com.cannontech.common.smartNotification.service.impl;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -14,52 +13,31 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
-import com.cannontech.common.smartNotification.service.impl.email.SmartNotificationEmailBuilder;
-import com.cannontech.tools.email.EmailMessage;
-import com.cannontech.yukon.conns.NotifClientConnection;
-import com.google.common.collect.ImmutableMap;
+import com.cannontech.common.smartNotification.service.SmartNotificationMessageParametersHandler;
+import com.cannontech.common.stream.StreamUtils;
 
 public class SmartNotificationMessageAssembler implements MessageListener {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationMessageAssembler.class);
-    
-    private NotifClientConnection notifClientConnection;
-    private Map<SmartNotificationMedia, Consumer<SmartNotificationMessageParameters>> mediaBuilderFunctions;
-    private Map<SmartNotificationEventType, SmartNotificationEmailBuilder> emailBuilders;
+    private Map<SmartNotificationMedia, SmartNotificationMessageParametersHandler> mediaHandlers;
     
     @Autowired
-    public SmartNotificationMessageAssembler(List<SmartNotificationEmailBuilder> emailBuilderList, 
-                                             NotifClientConnection notifClientConnection) {
-        
-        this.notifClientConnection = notifClientConnection;
-        
+    public SmartNotificationMessageAssembler(List<SmartNotificationMessageParametersHandler> messageParametersHandlers) {
         // Map of media to their handler methods
-        mediaBuilderFunctions = ImmutableMap.of(
-            SmartNotificationMedia.EMAIL, params -> handleEmail(params)
-        );
-        
-        // Map of notification types to their email builders
-        ImmutableMap.Builder<SmartNotificationEventType, SmartNotificationEmailBuilder> mapBuilder = ImmutableMap.builder();
-        for (SmartNotificationEmailBuilder emailBuilder : emailBuilderList) {
-            mapBuilder.put(emailBuilder.getSupportedType(), emailBuilder);
-        }
-        emailBuilders = mapBuilder.build();
+        mediaHandlers = messageParametersHandlers.stream()
+                                                 .collect(StreamUtils.mapToSelf(handler -> handler.getSupportedMedia()));
     }
     
     @Override
     public void onMessage(Message message) {
         ObjectMessage objMessage = (ObjectMessage) message;
-        Serializable object;
         try {
             if (message instanceof ObjectMessage) {
-                object = objMessage.getObject();
+                Serializable object = objMessage.getObject();
                 if (object instanceof SmartNotificationMessageParametersMulti) {
-                    SmartNotificationMessageParametersMulti multi = (SmartNotificationMessageParametersMulti) object;
-                    log.debug("Processing message: " + multi);
-                    handle(multi);
+                    handle((SmartNotificationMessageParametersMulti) object);
                 }
             }
         } catch (JMSException e) {
@@ -73,38 +51,26 @@ public class SmartNotificationMessageAssembler implements MessageListener {
      * Receives a message parameters object and passes it to the appropriate handler method for processing.
      */
     public void handle(SmartNotificationMessageParametersMulti parametersMulti) {
+        log.debug("Processing message: " + parametersMulti);
         if (parametersMulti.isSendAllInOneEmail()) {
             // Build all these parameter objects into a single super-digest
-            //TODO
-            //Build all the body texts, maybe use subject text as the section header?
-            //Build a special digest subject line
-            //Get all recipients
-            //Compile everything into an email
-            //Send the email: notifClientConnection.sendEmail(message)
+            SmartNotificationMessageParametersHandler builder = mediaHandlers.get(parametersMulti.getMedia());
+            if (builder == null) {
+                log.error("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
+                log.debug(parametersMulti);
+            }
+            builder.buildMultiAndSend(parametersMulti);
         } else {
             // Process each parameters object individually
+            int intervalMinutes = parametersMulti.getIntervalMinutes();
             for(SmartNotificationMessageParameters parameters : parametersMulti.getMessageParameters()) {
-                Consumer<SmartNotificationMessageParameters> builderFunction = mediaBuilderFunctions.get(parameters.getMedia());
-                if (builderFunction == null) {
+                SmartNotificationMessageParametersHandler builder = mediaHandlers.get(parameters.getMedia());
+                if (builder == null) {
                     log.error("Unable to send notification - unsupported media type: " + parameters.getMedia());
                     log.debug(parameters);
                 }
-                builderFunction.accept(parameters);
+                builder.buildAndSend(parameters, intervalMinutes);
             }
-        }
-    }
-    
-    /**
-     * Handler method for emails. Builds an email and sends it via the notification service.
-     */
-    private void handleEmail(SmartNotificationMessageParameters parameters) {
-        try {
-            EmailMessage message = emailBuilders.get(parameters.getType())
-                                                .buildEmail(parameters);
-            notifClientConnection.sendEmail(message);
-        } catch (Exception e) {
-            log.debug(parameters);
-            log.error("Unable to send Smart Notification email.", e);
         }
     }
 }
