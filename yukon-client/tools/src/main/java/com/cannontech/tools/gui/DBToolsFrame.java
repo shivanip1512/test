@@ -38,6 +38,8 @@ import javax.swing.filechooser.FileFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.common.gui.util.TitleBorder;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.dbconverter.converter.DBConverter;
 import com.cannontech.dbtools.DBCompare.DBCompare;
@@ -847,7 +849,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
      */
     public static void main(String[] args) {
         try {
-            System.setProperty("cti.app.name", "DBToolsFrame");
+            CtiUtilities.setCtiAppName(ApplicationName.DB_TOOLS_FRAME);
 
             DBToolsFrame aConverterFrame;
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

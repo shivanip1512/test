@@ -7,14 +7,14 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.BootstrapUtils;
+import com.cannontech.common.util.CtiUtilities;
+
 public class SensusGpuffMain {
     
     public static void main(String[] args) {
-        // see if a log name was passed in
-        String logName = System.getProperty("cti.app.name");
-        if (logName == null) {
-            System.setProperty("cti.app.name", "SensusGpuffDecode");
-        }
+        BootstrapUtils.setApplicationName(ApplicationName.SENSUS_GPUFF_DECODE);
 
         final Logger log = Logger.getLogger(SensusServer.class);
 

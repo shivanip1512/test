@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -25,8 +27,8 @@ public class CSV2PointDataMain {
             System.out.println("\n args[1] Specify time multiplier to speed time by X (OPTIONAL)");
             System.exit(0);
         }
-        String appName = "CSV2PointDataTool";
-        System.setProperty("cti.app.name", appName);
+        ApplicationName appName = ApplicationName.CSV_TO_POINT_DATA;
+        CtiUtilities.setCtiAppName(appName);
         CTILogger.info(appName + " starting...");
         YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
         CSV2PointData cpd = YukonSpringHook.getBean("csv2PointData", CSV2PointData.class);

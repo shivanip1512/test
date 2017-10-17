@@ -14,6 +14,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -193,7 +195,7 @@ public class GraphBean extends Graph {
      * @param args java.lang.String[]
      */
     public static void main(String[] args) {
-        System.setProperty("cti.app.name", "Trending");
+        CtiUtilities.setCtiAppName(ApplicationName.TRENDING);
         GraphBean gb = new GraphBean();
     }
 

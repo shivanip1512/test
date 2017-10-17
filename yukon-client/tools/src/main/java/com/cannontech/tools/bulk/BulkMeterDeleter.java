@@ -12,6 +12,8 @@ import java.util.Map;
 
 import com.cannontech.common.bulk.BulkDataContainer;
 import com.cannontech.common.bulk.service.BulkMeterDeleterService;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -180,7 +182,7 @@ public class BulkMeterDeleter {
         
     public static void main(String[] args) {
 
-        System.setProperty("cti.app.name", "BulkMeterDeleter");
+        CtiUtilities.setCtiAppName(ApplicationName.BULK_METER_DELETER);
         
         // get an instance of BMD
         // call some "main" method, pass args

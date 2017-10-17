@@ -63,6 +63,8 @@ public final class CtiUtilities {
     public static final String COPYRIGHT = "Copyright (C)1999-" + new DateTime().getYear()
         + " Eaton.";
 
+    public static final String CTI_APP_NAME_PROPERTY = "cti.app.name";
+
     public static final String USER_DIR = System.getProperty("user.home")
                                           + System.getProperty("file.separator");
     public static final String CURRENT_DIR = System.getProperty("user.dir")
@@ -142,16 +144,6 @@ public final class CtiUtilities {
 
     public static String[] timeZones = null;
     private static boolean runningAsClient = false;
-
-    private static final class CTIPrintStackTraceExc extends Exception {
-        public java.io.ByteArrayOutputStream byteStream = new java.io.ByteArrayOutputStream();
-        public java.io.PrintStream printStream = new java.io.PrintStream(byteStream);
-
-        public CTIPrintStackTraceExc() {
-            super();
-        }
-
-    }
 
     /**
      * Creates a random UUID and returns its String representation sans hyphen.
@@ -779,6 +771,14 @@ public final class CtiUtilities {
 
     public static void setRunningAsClient() {
         runningAsClient = true;
+    }
+    
+    public static String getCtiAppName() {
+        return System.getProperty(CTI_APP_NAME_PROPERTY);
+    }
+    
+    public static void setCtiAppName(ApplicationName appName) {
+        System.setProperty(CTI_APP_NAME_PROPERTY, appName.getApplicationName());
     }
 
     public final static Function<Instant, Date> DATE_FROM_INSTANT = new Function<Instant, Date>() {

@@ -62,6 +62,8 @@ import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.gui.util.DateComboBox;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -914,7 +916,7 @@ public class BillingFileFormatPanel extends JPanel implements ActionListener, Fo
      */
     public static void main(String[] args) {
         try {
-            System.setProperty("cti.app.name", "Billing");
+            CtiUtilities.setCtiAppName(ApplicationName.BILLING);
             CTILogger.info("Billing starting...");
             YukonSpringHook.setDefaultContext("com.cannontech.context.billing");
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

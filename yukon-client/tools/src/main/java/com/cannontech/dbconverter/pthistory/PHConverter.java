@@ -3,6 +3,7 @@ package com.cannontech.dbconverter.pthistory;
 import java.io.File;
 
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.DispatchClientConnection;
@@ -255,7 +256,7 @@ public static void main(String[] args) throws Exception {
 		System.exit(1);
 	}
 
-	System.setProperty("cti.app.name", "PHConverter");
+	CtiUtilities.setCtiAppName(ApplicationName.POINT_HISTORY_CONVERTER);
 	PHConverter p = new PHConverter();
 	p.convert(args[0]);
 	

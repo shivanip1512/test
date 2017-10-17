@@ -1,18 +1,46 @@
 package com.cannontech.common.util;
 
 public enum ApplicationName {
-
+    
+    //  Main applications
     COMMANDER("Commander"),
     DATABASE_EDITOR("DBEditor"),
-    DELETE_INVENTORY("DeleteInventory"),
-    DEV_DATABASE_POPULATION("DevDatabasePopulationService"),
     MESSAGE_BROKER("MessageBroker"),
+    NOTIFICATION("NotificationServer"),
     SERVICE_MANAGER("ServiceManager"),
     TABULAR_DISPLAY_CONSOLE("TDC"),
     TRENDING("Trending"), 
-    UNKNOWN("UnknownApplication"), 
     WEBSERVER("Webserver"),
-    YUKON_SYSTRAY("Yukon Systray")
+    YUKON_SYSTRAY("Yukon Systray"), 
+
+    //  Database/upgrade tools
+    DB_TOOLS_FRAME("DBToolsFrame"),
+    DB_COMPARE("DBCompare"),
+    DB_UPDATER("DBUpdater"),
+    
+    //  Placeholder
+    UNKNOWN("UnknownApplication"), 
+    
+    //  Dev tools
+    DEV_DATABASE_POPULATION("DevDatabasePopulationService"),
+    SIMULATORS_SERVICE("SimulatorsService"),
+
+    //  Misc utilities
+    BILLING("Billing"),
+    BILLING_FILE("BillingFile"),
+    DELETE_INVENTORY("DeleteInventory"),
+    BULK_METER_DELETER("BulkMeterDeleter"),
+    CSV_TO_POINT_DATA("CSV2PointDataTool"),
+    CUSTOM("Custom"),
+    EXPORT("Export"),
+    LOG_RAT("Rat"),
+    MISSED_LIST_CONVERTER("MissListConverter"),
+    POINT_HISTORY_CONVERTER("PHConverter"),
+    POINT_IMPORT_UTILITY("PointImportUtility"),
+    POINT_IMPORT_UTILITY_TOOL("PointImportUtilityTool"),
+    SENSUS_FAULT("SensusFault"),
+    SENSUS_GPUFF_DECODE("SensusGpuffDecode"),
+    WEB_GRAPH("WebGraph")
     ;
 
     private final String applicationName;

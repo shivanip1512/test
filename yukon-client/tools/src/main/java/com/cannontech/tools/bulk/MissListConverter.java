@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import javax.naming.InvalidNameException;
 
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.tools.bulk.service.MissListConverterService;
 import com.cannontech.tools.bulk.service.impl.MissListConverterServiceImpl;
 
@@ -21,7 +23,7 @@ public class MissListConverter {
 		if (session == null)
 			System.exit(-1);
 
-		System.setProperty("cti.app.name", "MissListConverter");
+		CtiUtilities.setCtiAppName(ApplicationName.MISSED_LIST_CONVERTER);
 
 		if (args.length >= 2 && args.length <= 4) {
 			MissListConverterService missListConverterService = new MissListConverterServiceImpl();

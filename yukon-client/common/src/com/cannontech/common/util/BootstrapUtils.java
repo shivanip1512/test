@@ -156,9 +156,9 @@ public class BootstrapUtils {
      * (i.e. before any calls to {@link YukonSpringHook}).
      */
     public final static void setApplicationName(ApplicationName defaultName) {
-        String existingName = System.getProperty("cti.app.name");
+        String existingName = CtiUtilities.getCtiAppName();
         if (existingName == null) {
-            System.setProperty("cti.app.name", defaultName.getApplicationName());
+            CtiUtilities.setCtiAppName(defaultName);
         }
     }
 
@@ -180,15 +180,19 @@ public class BootstrapUtils {
      * </ul>
      */
     public final static String getApplicationName() {
-        if (System.getProperty("cti.app.name") == null) {
-            if (CtiUtilities.isRunningAsWebApplication()) {
-                System.setProperty("cti.app.name", ApplicationName.WEBSERVER.getApplicationName());
-            } else {
-                System.setProperty("cti.app.name", ApplicationName.UNKNOWN.getApplicationName());
-            }
+        String appName = CtiUtilities.getCtiAppName();
+        if (appName != null) {
+            return appName;
         }
-        String appName = System.getProperty("cti.app.name");
-        return appName;
+        
+        ApplicationName defaultAppName = 
+            CtiUtilities.isRunningAsWebApplication()
+                ? ApplicationName.WEBSERVER
+                : ApplicationName.UNKNOWN;
+        
+        CtiUtilities.setCtiAppName(defaultAppName);            
+
+        return defaultAppName.getApplicationName();
     }
 
     public static boolean isWebStartClient() {

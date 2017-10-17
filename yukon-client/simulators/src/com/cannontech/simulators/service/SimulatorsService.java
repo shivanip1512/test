@@ -17,6 +17,8 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.cannontech.simulators.AutoStartableSimulator;
@@ -57,7 +59,7 @@ public class SimulatorsService {
      */
     public static void main(String[] args) {
         try {
-            System.setProperty("cti.app.name", "SimulatorsService");
+            CtiUtilities.setCtiAppName(ApplicationName.SIMULATORS_SERVICE);
             log.info("Starting simulators service from main method");
             YukonSpringHook.setDefaultContext(YukonSpringHook.SIMULATORS_BEAN_FACTORY_KEY);
 

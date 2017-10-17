@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.ApplicationName;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.message.dispatch.DispatchClientConnection;
@@ -113,7 +114,7 @@ public class WPSCMain implements Runnable {
     }
 
     public static void main(String[] args) {
-        System.setProperty("cti.app.name", "Custom");
+        CtiUtilities.setCtiAppName(ApplicationName.CUSTOM);
 
         String cfDataDir;
         String cfDataFileExt;

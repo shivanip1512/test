@@ -22,6 +22,7 @@ import javax.servlet.ServletContextListener;
 
 import org.springframework.web.context.ContextLoader;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -50,8 +51,8 @@ public class CannonContextLoaderListener implements ServletContextListener {
      */
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        String appName = event.getServletContext().getInitParameter("cti.app.name");
-        System.setProperty("cti.app.name", appName);
+        String appName = event.getServletContext().getInitParameter(CtiUtilities.CTI_APP_NAME_PROPERTY);
+        System.setProperty(CtiUtilities.CTI_APP_NAME_PROPERTY, appName);
         
         try {
             String contextName = event.getServletContext().getInitParameter("parentContextKey");

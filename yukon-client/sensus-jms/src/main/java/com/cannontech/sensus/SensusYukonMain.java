@@ -7,16 +7,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.BootstrapUtils;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
 
 public class SensusYukonMain {
     
     public static void main(String[] args) {
-        // see if a log name was passed in
-        String logName = System.getProperty("cti.app.name");
-        if (logName == null) {
-            System.setProperty("cti.app.name", "SensusFault");
-        }
+        BootstrapUtils.setApplicationName(ApplicationName.SENSUS_FAULT);
         
         final Logger log = YukonLogManager.getLogger(SensusServer.class);
         log.info("Sensus starting...");      
