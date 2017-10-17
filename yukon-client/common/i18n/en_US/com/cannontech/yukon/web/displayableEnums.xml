@@ -414,6 +414,8 @@
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD.description">The number of connected nodes a gateway must have to generate a critical warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD">Infrastructure Warnings: Gateway ready nodes threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD.description">The maximum number of ready nodes a gateway must have to generate a warning.</entry>
+    <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS">Porter Queue Counts: Historical data display</entry>
+    <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS.description">The number of months to display historical data for the Porter Queue Counts Widget.</entry>
     
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>
