@@ -143,6 +143,7 @@ public class ZoneDtoHelper {
         row.setGraphPositionOffset(pointToZone.getGraphPositionOffset());
         row.setDistance(pointToZone.getDistance());
         row.setPhase(pointToZone.getPhase());
+        row.setIgnore(pointToZone.isIgnore());
         
         return row;
     }

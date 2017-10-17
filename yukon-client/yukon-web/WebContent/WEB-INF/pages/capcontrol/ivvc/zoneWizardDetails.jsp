@@ -204,6 +204,7 @@
                                 <th><i:inline key=".table.phase"/></th>
                                 <th><i:inline key=".table.position"/></th>
                                 <th><i:inline key=".table.distance"/></th>
+                                <th><i:inline key=".table.ignore"/></th>
                                 <th class="removeColumn"><i:inline key=".table.remove"/></th>
                             </tr>
                         </thead>
@@ -242,6 +243,9 @@
                                     </td>
                                     <td>
                                         <tags:input path="pointAssignments[${status.index}].distance" size="4"/>
+                                    </td>
+                                    <td>
+                                        <tags:checkbox path="pointAssignments[${status.index}].ignore"/>
                                     </td>
                                     <tags:dynamicTableActionsCell tableId="pointTable"
                                         isFirst="${status.first}" isLast="${status.last}" skipMoveButtons="true"/>

@@ -145,6 +145,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.bank.device">CBC Name</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.position">Position</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.distance">Distance</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.ignore">Ignore</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.phase">Phase</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Name</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>    
@@ -208,6 +209,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.upperLimit">Upper Limit</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.upperLimitTitle">Upper Voltage Limit</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.overrideStrategy">Override Strategy</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.ignore">Ignore</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.capBanks.noCbc">No CBC</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateSuccess">Update Successful</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateFailure">Update Failure</entry>

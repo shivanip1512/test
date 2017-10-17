@@ -18,18 +18,19 @@
             <table class="compact-results-table no-stripes js-voltage-points">
                 <thead>
                     <tr>
-                        <th><i:inline key=".table.header.deviceName"/></th>
-                        <th><i:inline key=".table.header.pointName"/></th>
-                        <th><i:inline key=".table.header.phase"/></th>
-                        <th><i:inline key=".table.header.lowerLimit"/></th>
-                        <th><i:inline key=".table.header.currentVoltage"/></th>
-                        <th><i:inline key=".table.header.upperLimit"/></th>
+                        <th class="vab"><i:inline key=".table.header.deviceName"/></th>
+                        <th class="vab"><i:inline key=".table.header.pointName"/></th>
+                        <th class="vab"><i:inline key=".table.header.phase"/></th>
+                        <th class="vab"><i:inline key=".table.header.lowerLimit"/></th>
+                        <th class="vab"><i:inline key=".table.header.currentVoltage"/></th>
+                        <th class="vab"><i:inline key=".table.header.upperLimit"/></th>
                         <th>
-                            <span class="fl"><i:inline key=".table.header.overrideStrategy"/>&nbsp;</span>
+                            <span class="fl"><i:inline key=".table.header.overrideStrategy"/>&nbsp;</span><br/>
                             <cti:msg2 var="titleText" key=".editStrategy"/>
                             <cti:url var="strategyUrl" value="/capcontrol/strategies/${strategy.id}" />
                             <span class="sub">(<a href="${strategyUrl}" title="${titleText}">${strategy.name}</a>)</span>
                         </th>
+                        <th class="vab"><i:inline key=".table.header.ignore"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -87,6 +88,7 @@
                                         disabled="${disabledInput}" inputClass="upperLimit" />
                             </td>
                             <td><form:checkbox path="points[${status.index}].overrideStrategy" disabled="${!hasEditingRole}"/></td>
+                            <td><form:checkbox path="points[${status.index}].ignore" disabled="${!hasEditingRole}"/></td>
                         </tr>
                     </c:forEach>
                 </tbody>

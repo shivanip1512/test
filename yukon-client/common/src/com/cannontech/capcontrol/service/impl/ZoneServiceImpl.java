@@ -113,6 +113,7 @@ public class ZoneServiceImpl implements ZoneService {
                log.error("couldn't find device in VoltageLimitedDeviceInfo list");
             } else {
                 mapping.setPhase(deviceInfo.getPhase());
+                mapping.setIgnore(deviceInfo.isIgnore());
             }
         }
 
@@ -150,7 +151,8 @@ public class ZoneServiceImpl implements ZoneService {
         	double position = pointRow.getGraphPositionOffset();
         	double dist = pointRow.getDistance();
         	Phase phase = pointRow.getPhase();
-        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist, phase);
+        	boolean ignore = pointRow.isIgnore();
+        	PointToZoneMapping point = new PointToZoneMapping(pointId, zoneId, position, dist, phase, ignore);
         	points.add(point);
         }
         return points;

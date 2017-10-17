@@ -8,17 +8,19 @@ public class PointToZoneMapping {
 	private double graphPositionOffset;
 	private double distance;
 	private Phase phase;
+	private boolean ignore;
 	
 	public PointToZoneMapping() {
 		
 	}
 	
-	public PointToZoneMapping(int pointId, int zoneId, double graphPositionOffset, double distance, Phase phase) {
+	public PointToZoneMapping(int pointId, int zoneId, double graphPositionOffset, double distance, Phase phase, boolean ignore) {
 		this.pointId = pointId;
 		this.zoneId = zoneId;
 		this.graphPositionOffset = graphPositionOffset;
 		this.distance = distance;
 		this.phase = phase;
+		this.ignore = ignore;
 	}
 	
 	public int getPointId() {
@@ -59,5 +61,13 @@ public class PointToZoneMapping {
 
     public void setPhase(Phase phase) {
         this.phase = phase;
+    }
+
+    public boolean isIgnore() {
+        return ignore;
+    }
+
+    public void setIgnore(boolean ignore) {
+        this.ignore = ignore;
     }
 }

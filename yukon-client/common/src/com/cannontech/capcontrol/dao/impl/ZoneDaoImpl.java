@@ -130,6 +130,7 @@ public class ZoneDaoImpl implements ZoneDao {
             pointToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
             pointToZone.setDistance(rs.getDouble("Distance"));
             pointToZone.setPhase(rs.getEnum("Phase", Phase.class));
+            pointToZone.setIgnore(rs.getBoolean("Ignore"));
             return pointToZone;
         }
     };
@@ -220,7 +221,7 @@ public class ZoneDaoImpl implements ZoneDao {
     public List<PointToZoneMapping> getPointToZoneMappingByZoneId(int zoneId) {
         
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT ptz.PointId, ptz.ZoneId, ptz.GraphPositionOffset, ptz.Distance, cc.Phase");
+        sqlBuilder.append("SELECT ptz.PointId, ptz.ZoneId, ptz.GraphPositionOffset, ptz.Distance, cc.Phase, ptz.Ignore");
         sqlBuilder.append("FROM PointToZoneMapping ptz");
         sqlBuilder.append("JOIN CcMonitorBankList cc ON ptz.PointId = cc.PointId");
         sqlBuilder.append("WHERE ptz.ZoneId").eq(zoneId);
@@ -388,8 +389,8 @@ public class ZoneDaoImpl implements ZoneDao {
         
         for (PointToZoneMapping pointToZone : pointsToZone) {
             SqlStatementBuilder sqlBuilderInsert = new SqlStatementBuilder();
-            sqlBuilderInsert.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, GraphPositionOffset, Distance)");
-            sqlBuilderInsert.values(pointToZone.getPointId(), abstractZone.getZoneId(), pointToZone.getGraphPositionOffset(), pointToZone.getDistance());
+            sqlBuilderInsert.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, GraphPositionOffset, Distance, Ignore)");
+            sqlBuilderInsert.values(pointToZone.getPointId(), abstractZone.getZoneId(), pointToZone.getGraphPositionOffset(), pointToZone.getDistance(), pointToZone.isIgnore());
             
             yukonJdbcTemplate.update(sqlBuilderInsert);
             

@@ -33,8 +33,9 @@
             </c:otherwise>
         </c:choose>
     </td>
-	<td><input name="pointAssignments[${itemIndex}].graphPositionOffset" size="1" value="${itemIndex+1}.0"/></td>
-	<td><input name="pointAssignments[${itemIndex}].distance" size="3" value="0.0"/></td>
+	<td><input type="text" name="pointAssignments[${itemIndex}].graphPositionOffset" size="3" value="${itemIndex+1}.0"/></td>
+	<td><input type="text" name="pointAssignments[${itemIndex}].distance" size="4" value="0.0"/></td>
+    <td><input type="checkbox" name="pointAssignments[${itemIndex}].ignore"/></td>
     <tags:dynamicTableActionsCell tableId="pointTable" isFirst="true" isLast="true" skipMoveButtons="true"/>
 </tr>
 <tags:dynamicTableUndoRow columnSpan="6" nameKey="undoRow"/>

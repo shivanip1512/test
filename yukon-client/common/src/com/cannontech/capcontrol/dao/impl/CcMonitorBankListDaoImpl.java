@@ -62,6 +62,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             double lowerLimit = rs.getDouble("LowerBandwidth");
             double upperLimit = rs.getDouble("UpperBandwidth");
             boolean overrideStrategy = rs.getBoolean("OverrideStrategy");
+            boolean ignore = rs.getBoolean("Ignore");
             
             VoltageLimitedDeviceInfo deviceInfo = new VoltageLimitedDeviceInfo();
             deviceInfo.setParentPaoIdentifier(paoIdentifier);
@@ -72,6 +73,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             deviceInfo.setLowerLimit(lowerLimit);
             deviceInfo.setUpperLimit(upperLimit);
             deviceInfo.setOverrideStrategy(overrideStrategy);
+            deviceInfo.setIgnore(ignore);
             
             PaoType paoType = deviceInfo.getParentPaoIdentifier().getPaoType();
             if (paoDefinitionDao.isTagSupported(paoType, PaoTag.VOLTAGE_REGULATOR)) {
@@ -85,10 +87,11 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Override
     public List<VoltageLimitedDeviceInfo> getDeviceInfoByZoneId(int zoneId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PaObjectId, ypo.PaoName, ypo.Type, p.PointId, p.PointName, cc.Phase, cc.LowerBandwidth, cc.UpperBandwidth, cc.OverrideStrategy");
+        sql.append("SELECT ypo.PaObjectId, ypo.PaoName, ypo.Type, p.PointId, p.PointName, cc.Phase, cc.LowerBandwidth, cc.UpperBandwidth, cc.OverrideStrategy, ptz.Ignore");
         sql.append("FROM CcMonitorBankList cc");
         sql.append("JOIN YukonPaObject ypo ON cc.DeviceId = ypo.PaObjectId");
         sql.append("JOIN Point p ON cc.PointId = p.PointId");
+        sql.append("JOIN PointToZoneMapping ptz ON cc.PointId = ptz.PointId");
         sql.append("WHERE cc.DeviceId IN (");
         sql.append(  "SELECT DeviceId");
         sql.append(  "FROM CapBankToZoneMapping");

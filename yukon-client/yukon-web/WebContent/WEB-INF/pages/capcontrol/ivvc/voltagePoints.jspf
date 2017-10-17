@@ -30,6 +30,7 @@
 			<th title="<cti:msg2 key=".table.header.upperLimitTitle"/>">
 				<i:inline key=".table.header.upperLimitSmall"/>
 			</th>
+            <th><i:inline key=".table.header.ignore"/></th>
 		</tr>
         </thead>
         <tfoot></tfoot>
@@ -71,6 +72,8 @@
 				<td title="<cti:msg2 key=".table.header.upperLimitTitle"/>" class="${overrideStrategyClass}">
 					${upperLimit}
 				</td>
+                <c:set var="ignore" value="${voltagePoint.ignore ? 'checked' : ''}"/>
+                <td><input type="checkbox" ${ignore} disabled/></td>
 			</tr>
 		</c:forEach>
         </tbody>
