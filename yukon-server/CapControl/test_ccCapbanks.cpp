@@ -11,6 +11,21 @@
 // Exceptions
 using Cti::CapControl::MissingAttribute;
 
+struct cbc_device_config_base
+{
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    cbc_device_config_base() :
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
+    {
+        fixtureConfig->insertValue("cbcHeartbeatPeriod", "5");      // message every 5 minutes
+        fixtureConfig->insertValue("cbcHeartbeatValue", "15");      // duration is 15 minutes
+    }
+};
+
 struct cbc_heartbeat_fixture_core
 {
     struct TestCtiCapController : public CtiCapController
@@ -80,56 +95,88 @@ struct cbc_heartbeat_fixture_core
     }
     attributes;
 
-    std::vector<LitePoint>  twoWayPoints
-    {
-        LitePoint(1234,  StatusPointType, "CBC Heartbeat Enable", 1000, -1, "control pulse", "control pulse", 1.0, 0), // RE-TEST -1 offset
-        LitePoint(5678,  StatusPointType, "CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0),
-        LitePoint(4567,  StatusPointType, "CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0),
-        LitePoint(2345,  AnalogPointType, "CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0),
-        LitePoint(3456,  AnalogPointType, "CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0)
-    };
-
-    boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
-
-    Cti::Test::Override_ConfigManager overrideConfigManager;
-
     std::unique_ptr<CtiCCCapBank>   bank;
 
     cbc_heartbeat_fixture_core()
-        :   bank( new CtiCCCapBank ),
-            fixtureConfig( new Cti::Test::test_DeviceConfig ),
-            overrideConfigManager( fixtureConfig )
+        :   bank( new CtiCCCapBank )
     {
         bank->setPaoId( 8675309 );
         bank->setPaoName( "Test Capbank" );
         bank->setPaoClass( "CAPCONTROL" );
         bank->setPaoCategory( "DEVICE" );
         bank->setPaoType( "CAP BANK" );
-        bank->createCbc( 2837465823, "CBC 8024" );
-        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( twoWayPoints, {}, boost::none, boost::none);
-
-        fixtureConfig->insertValue( "cbcHeartbeatPeriod",   "5" );      // message every 5 minutes
-        fixtureConfig->insertValue( "cbcHeartbeatValue",    "15" );     // duration is 15 minutes
     }
 };
 
-struct cbc_heartbeat_fixture_analog : cbc_heartbeat_fixture_core
+struct cbc_device_config_analog : cbc_device_config_base
 {
-    cbc_heartbeat_fixture_analog()
-        :   cbc_heartbeat_fixture_core()
+    cbc_device_config_analog()
     {
-        fixtureConfig->insertValue( "cbcHeartbeatMode",     "ANALOG" ); // analog countdown timer only
+        fixtureConfig->insertValue("cbcHeartbeatMode", "ANALOG"); // analog countdown timer only
     }
 };
 
-struct cbc_heartbeat_fixture_pulsed : cbc_heartbeat_fixture_core
+struct cbc_device_config_pulsed : cbc_device_config_base
 {
-    cbc_heartbeat_fixture_pulsed()
-        :   cbc_heartbeat_fixture_core()
+    cbc_device_config_pulsed()
     {
-        fixtureConfig->insertValue( "cbcHeartbeatMode",     "PULSED" ); // status point pulse control
+        fixtureConfig->insertValue("cbcHeartbeatMode", "PULSED"); // status point pulse control
     }
 };
+
+struct cbc_device_8024 : cbc_heartbeat_fixture_core
+{
+    std::vector<LitePoint>  twoWayPoints
+    {
+        LitePoint(1234,  StatusPointType, "CBC Heartbeat Enable", 1000, -1, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(5678,  StatusPointType, "CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(4567,  StatusPointType, "CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0),
+        LitePoint(2345,  AnalogPointType, "CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0),
+        LitePoint(3456,  AnalogPointType, "CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0)
+    };
+
+    cbc_device_8024()
+    {
+        bank->createCbc(2837465823, "CBC 8024");
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(twoWayPoints, {}, boost::none, boost::none);
+    }
+};
+
+struct cbc_device_logical : cbc_heartbeat_fixture_core
+{
+    std::vector<LitePoint>  twoWayPoints
+    {
+        LitePoint(1234,  StatusPointType, "*Logical<Some Logical CBC> CBC Heartbeat Enable", 1000, -1, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(5678,  StatusPointType, "*Logical<Some Logical CBC> CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(4567,  StatusPointType, "*Logical<Some Logical CBC> CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0),
+        LitePoint(2345,  AnalogPointType, "*Logical<Some Logical CBC> CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0),
+        LitePoint(3456,  AnalogPointType, "*Logical<Some Logical CBC> CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0)
+    };
+
+    std::map<Attribute, std::string>    pointOverloads
+    {
+        { Attribute::ScadaOverrideEnable,           "CBC Heartbeat Enable" },
+        { Attribute::ScadaOverrideClear,            "CBC Heartbeat Clear" },
+        { Attribute::ScadaOverrideMode,             "CBC Heartbeat Type" },
+        { Attribute::ScadaOverrideCountdownTimer,   "CBC Heartbeat Countdown Timer" },
+        { Attribute::ScadaOverrideHeartbeat,        "CBC Heartbeat Analog Timer" }
+    };
+
+    cbc_device_logical()
+    {
+        bank->createCbc(2837465823, "CBC Logical");
+        bank->getTwoWayPoints().assignTwoWayPointsAndAttributes(twoWayPoints, pointOverloads, boost::none, boost::none);
+    }
+};
+
+struct cbc_heartbeat_fixture_analog : cbc_device_8024, cbc_device_config_analog {};
+
+struct cbc_heartbeat_fixture_pulsed : cbc_device_8024, cbc_device_config_pulsed {};
+
+struct cbc_logical_heartbeat_fixture_analog : cbc_device_logical, cbc_device_config_analog {};
+
+struct cbc_logical_heartbeat_fixture_pulsed : cbc_device_logical, cbc_device_config_pulsed {};
+
 
 BOOST_AUTO_TEST_SUITE( test_ccCapbanks )
 
@@ -885,3 +932,291 @@ BOOST_FIXTURE_TEST_CASE( test_capbank_point_loading_and_initialization_with_cbc_
 
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_AUTO_TEST_SUITE(test_ccLogicalCapbanks)
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_no_attributes, cbc_logical_heartbeat_fixture_analog)
+{
+    BOOST_CHECK_NO_THROW(bank->executeSendHeartbeat("cap control"));
+
+    BOOST_CHECK_EQUAL(0, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(0, capController.requestMessages.size());
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_send_heartbeat, cbc_logical_heartbeat_fixture_analog)
+{
+    bank->loadAttributes(&attributes);
+
+    // In analog mode, we always send the configuration value to the heartbeat point.
+
+    BOOST_CHECK_NO_THROW(bank->executeSendHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(1, capController.signalMessages.size());
+
+    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.front());
+
+    BOOST_REQUIRE(signalMsg);
+
+    BOOST_CHECK_EQUAL(10467, signalMsg->getId());     // Offset of the 'ScadaOverrideHeartbeat' LitePoint
+    BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
+    BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+
+    BOOST_CHECK_EQUAL(1, capController.requestMessages.size());
+
+    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+
+    BOOST_REQUIRE(requestMsg);
+
+    BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideHeartbeat' LitePoint
+    BOOST_CHECK_EQUAL("putvalue analog 467 15", requestMsg->CommandString());
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_stop_heartbeat_normal_mode, cbc_logical_heartbeat_fixture_analog)
+{
+    bank->loadAttributes(&attributes);
+
+    CtiPointDataMsg normal(4567, 0.0, NormalQuality, StatusPointType);
+
+    bank->handlePointData(normal);
+
+    // Since the CBC is already in local mode, the following shouldn't create any messages to send.
+
+    BOOST_CHECK_NO_THROW(bank->executeStopHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(0, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(0, capController.requestMessages.size());
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_stop_heartbeat_scada_override_mode, cbc_logical_heartbeat_fixture_analog)
+{
+    bank->loadAttributes(&attributes);
+
+    CtiPointDataMsg scadaOverride(4567, 1.0, NormalQuality, StatusPointType);
+
+    bank->handlePointData(scadaOverride);
+
+    // Since the CBC is still in override mode, the following should create a pulse to the SCADA Override Clear point.
+
+    BOOST_CHECK_NO_THROW(bank->executeStopHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(1, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(1, capController.requestMessages.size());
+
+    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.front());
+
+    BOOST_REQUIRE(signalMsg);
+
+    BOOST_CHECK_EQUAL(5678, signalMsg->getId());      // PointID of the 'ScadaOverrideClear' LitePoint
+    BOOST_CHECK_EQUAL("CBC Heartbeat Clear", signalMsg->getText());
+    BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+
+    BOOST_REQUIRE(requestMsg);
+
+    BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideClear' LitePoint
+    BOOST_CHECK_EQUAL("control pulse select pointid 5678", requestMsg->CommandString());
+
+
+    // Executing it again shouldn't cause another message to be sent, since we only send stop commands once
+
+    BOOST_CHECK_NO_THROW(bank->executeStopHeartbeat("cap control"));
+
+    BOOST_CHECK_EQUAL(1, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(1, capController.requestMessages.size());
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_zero_value, cbc_logical_heartbeat_fixture_pulsed)
+{
+    bank->loadAttributes(&attributes);
+
+    // Since the CBC doesn't have a value for the heartbeat, first we initialize it, then pulse the enable point.
+
+    BOOST_CHECK_NO_THROW(bank->executeSendHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(2, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(2, capController.requestMessages.size());
+
+    {
+        CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.front());
+
+        BOOST_REQUIRE(signalMsg);
+
+        BOOST_CHECK_EQUAL(10466, signalMsg->getId());     // Offset of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
+        BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+        CtiRequestMsg * requestMsg = capController.requestMessages.front();
+
+        BOOST_REQUIRE(requestMsg);
+
+        BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL("putvalue analog 466 15", requestMsg->CommandString());
+    }
+
+    {
+        CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.back());
+
+        BOOST_REQUIRE(signalMsg);
+
+        BOOST_CHECK_EQUAL(1234, signalMsg->getId());      // PointID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL("CBC Heartbeat Pulse", signalMsg->getText());
+        BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+        CtiRequestMsg * requestMsg = capController.requestMessages.back();
+
+        BOOST_REQUIRE(requestMsg);
+
+        BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL("control pulse select pointid 1234", requestMsg->CommandString());
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_differing_value, cbc_logical_heartbeat_fixture_pulsed)
+{
+    bank->loadAttributes(&attributes);
+
+    CtiPointDataMsg scada(2345, 10.0, NormalQuality, AnalogPointType);
+
+    bank->handlePointData(scada);
+
+    // Here we have a heartbeat value, but it doesn't match the config - re-initialize it to the proper value
+    //  and pulse the enable point.
+
+    BOOST_CHECK_NO_THROW(bank->executeSendHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(2, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(2, capController.requestMessages.size());
+
+    {
+        CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.front());
+
+        BOOST_REQUIRE(signalMsg);
+
+        BOOST_CHECK_EQUAL(10466, signalMsg->getId());     // Offset of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
+        BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+        CtiRequestMsg * requestMsg = capController.requestMessages.front();
+
+        BOOST_REQUIRE(requestMsg);
+
+        BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL("putvalue analog 466 15", requestMsg->CommandString());
+    }
+
+    {
+        CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.back());
+
+        BOOST_REQUIRE(signalMsg);
+
+        BOOST_CHECK_EQUAL(1234, signalMsg->getId());      // PointID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL("CBC Heartbeat Pulse", signalMsg->getText());
+        BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+        CtiRequestMsg * requestMsg = capController.requestMessages.back();
+
+        BOOST_REQUIRE(requestMsg);
+
+        BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL("control pulse select pointid 1234", requestMsg->CommandString());
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_correct_value, cbc_logical_heartbeat_fixture_pulsed)
+{
+    bank->loadAttributes(&attributes);
+
+    CtiPointDataMsg scada(2345, 15.0, NormalQuality, AnalogPointType);
+
+    bank->handlePointData(scada);
+
+    // Here we have the proper value already in the CBC so we just need to pulse the enable point.
+
+    BOOST_CHECK_NO_THROW(bank->executeSendHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(1, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(1, capController.requestMessages.size());
+
+    {
+        CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.front());
+
+        BOOST_REQUIRE(signalMsg);
+
+        BOOST_CHECK_EQUAL(1234, signalMsg->getId());      // PointID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL("CBC Heartbeat Pulse", signalMsg->getText());
+        BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+        CtiRequestMsg * requestMsg = capController.requestMessages.front();
+
+        BOOST_REQUIRE(requestMsg);
+
+        BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL("control pulse select pointid 1234", requestMsg->CommandString());
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_stop_heartbeat_normal_mode, cbc_logical_heartbeat_fixture_pulsed)
+{
+    bank->loadAttributes(&attributes);
+
+    CtiPointDataMsg normal(4567, 0.0, NormalQuality, StatusPointType);
+
+    bank->handlePointData(normal);
+
+    // Since the CBC is already in local mode, the following shouldn't create any messages to send.
+
+    BOOST_CHECK_NO_THROW(bank->executeStopHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(0, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(0, capController.requestMessages.size());
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_stop_heartbeat_scada_override_mode, cbc_logical_heartbeat_fixture_pulsed)
+{
+    bank->loadAttributes(&attributes);
+
+    CtiPointDataMsg scadaOverride(4567, 1.0, NormalQuality, StatusPointType);
+
+    bank->handlePointData(scadaOverride);
+
+    // Since the CBC is still in override mode, the following should create a pulse to the SCADA Override Clear point.
+
+    BOOST_CHECK_NO_THROW(bank->executeStopHeartbeat("cap control"));
+
+
+    BOOST_CHECK_EQUAL(1, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(1, capController.requestMessages.size());
+
+    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.front());
+
+    BOOST_REQUIRE(signalMsg);
+
+    BOOST_CHECK_EQUAL(5678, signalMsg->getId());      // PointID of the 'ScadaOverrideClear' LitePoint
+    BOOST_CHECK_EQUAL("CBC Heartbeat Clear", signalMsg->getText());
+    BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
+
+    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+
+    BOOST_REQUIRE(requestMsg);
+
+    BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideClear' LitePoint
+    BOOST_CHECK_EQUAL("control pulse select pointid 5678", requestMsg->CommandString());
+
+
+    // Executing it again shouldn't cause another message to be sent, since we only send stop commands once
+
+    BOOST_CHECK_NO_THROW(bank->executeStopHeartbeat("cap control"));
+
+    BOOST_CHECK_EQUAL(1, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(1, capController.requestMessages.size());
+}
+
+BOOST_AUTO_TEST_SUITE_END();
