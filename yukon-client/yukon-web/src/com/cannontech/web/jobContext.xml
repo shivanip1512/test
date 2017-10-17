@@ -504,6 +504,21 @@
         </property>
     </bean>
     
+   <bean id="deviceConfigVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="deviceConfigVerification"/>
+        <property name="taskName">
+            <idref bean="deviceConfigVerificationTask"/>
+        </property>
+        <property name="title" value="Device Configuration Verification Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
     <!-- Scheduled Export History Cleanup Task -->
     <bean id="repeatingExportHistoryDeletionTask" class="com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask" 
         scope="prototype">
@@ -572,5 +587,7 @@
         scope="prototype"/>
         
     <bean id="ecobeePointUpdateTask" class="com.cannontech.web.dr.ecobee.EcobeePointUpdateTask" scope="prototype"/>
+    
+    <bean id="deviceConfigVerificationTask" class="com.cannontech.web.tools.device.config.DeviceConfigVerificationTask" scope="prototype"/>
 </beans>
 

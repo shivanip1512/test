@@ -1,5 +1,8 @@
 package com.cannontech.web.tools.device.config.dao;
 
+import java.util.List;
+
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
@@ -21,4 +24,9 @@ public interface DeviceConfigSummaryDao {
      */
     DeviceConfigActionHistory getDeviceConfigActionHistory(int deviceId);
 
+    /**
+     * Returns the list of device that need to be verified. Devices that have completed READ or SEND but not
+     * VERIFY.
+     */
+    List<SimpleDevice> getDevicesToVerify();
 }
