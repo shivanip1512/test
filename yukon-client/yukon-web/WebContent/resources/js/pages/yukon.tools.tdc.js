@@ -341,10 +341,10 @@ yukon.tools.tdc = (function () {
             });
             
             $(document).on('click', '.js-add-points', function (ev) {
-                var selectedPoints = yukon.pickers['displayPointPicker'].selectedItems,
+                var picker = yukon.pickers['displayPointPicker'],
                     selectedContainer = $('#assigned');
                 
-                selectedPoints.forEach(function (point) {
+                picker.selectedItems.forEach(function (point) {
                     var templateRow = $('.template-row').clone();
                     templateRow.attr('data-id', point.pointId);
                     var children = templateRow.children();
@@ -354,6 +354,7 @@ yukon.tools.tdc = (function () {
                 });
                 selectedContainer.closest('.select-box')
                 .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                picker.clearEntireSelection();
             });
             
             /** User clicked on Remove Point button */
