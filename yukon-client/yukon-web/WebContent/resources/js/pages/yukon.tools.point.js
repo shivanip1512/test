@@ -311,7 +311,8 @@ yukon.tools.point = (function () {
             newRow.find('.js-component-type').val("Operation");
             newRow.find('.js-component-type').trigger("change");
             newRow.find('.js-function-options').on('change', changeFunctionType);
-            newRow.find('.js-baseline-options').on('change', changeBaseLine)
+            newRow.find('.js-baseline-options').on('change', changeBaseLine);
+            checkIfBaselineExists();
             var pointPickerId = newRow.data("pointPickerId");
             yukon.pickers[pointPickerId].removeEvent();
             newRow.removeClass('js-add-calc-row');
@@ -341,13 +342,7 @@ yukon.tools.point = (function () {
         row.remove();
         yukon.ui.reindexInputs(calcTable);
         updateComponentOrders();
-        var isBaseLineOptSelected = false;
-        $('.js-function-options' ).each(function() {
-            if ('Baseline' === $( this ).find(":selected").text()) {
-                     isBaseLineOptSelected = true;
-                }
-            });
-        $('.js-baseline-assigned').val(isBaseLineOptSelected);
+        checkIfBaselineExists();
     };
     
     /**
@@ -391,27 +386,25 @@ yukon.tools.point = (function () {
      */
     var changeFunctionType = function () {
         var newValue = $(this).val(),
-            row = $(this).closest('tr');
-        if (newValue == 'Baseline') {
-            row.find('.js-baseline-picker').removeClass('dn');
-            $('.baseline-header').removeClass('dn');
-            $('.js-baseline').removeClass('dn');
-            $('.js-baseline-assigned').val(true);
-        } else {
-            row.find('.js-baseline-picker').addClass('dn');
-            var isBaseLineOptSelected = false;
-            $('.js-function-options' ).each(function() {
-            if ('Baseline' === $( this ).find(":selected").text()) {
-                     isBaseLineOptSelected = true;
-                }
-            });
-            $('.js-baseline-assigned').val(isBaseLineOptSelected);
-            if (!isBaseLineOptSelected) {
-                $('.baseline-header').addClass('dn');
-                $('.js-baseline').addClass('dn');
-            }
-    	}
+            row = $(this).closest('tr'),
+            isBaseline = newValue == 'Baseline';
+            checkIfBaselineExists();
+            row.find('.js-baseline-picker').toggleClass('dn', !isBaseline);
     };
+
+    /**
+     * Check if BaseLine is selected
+     */
+    var checkIfBaselineExists = function () {
+        var isBaseLineOptSelected = false;
+        $('.js-function-options' ).each(function() {
+            if ('Baseline' === $( this ).find(":selected").text()) {
+                isBaseLineOptSelected = true;
+            }
+        });
+        $('.js-baseline').toggleClass('dn', !isBaseLineOptSelected);
+        $('.js-baseline-assigned').val(isBaseLineOptSelected);
+    }
 
     /**
      * Calc Baseline was changed

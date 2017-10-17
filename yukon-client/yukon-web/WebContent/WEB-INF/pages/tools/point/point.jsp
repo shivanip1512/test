@@ -638,10 +638,10 @@
                                         <span class="js-function-operations <c:if test="${calcComponent.componentType != 'Function'}"> dn</c:if>"><tags:selectWithItems path="pointBase.calcComponents[${status.index}].functionName" items="${functionOperators.yukonListEntries}" inputClass="js-function-options" defaultItemValue="${functionDefaultValue}" defaultItemLabel="${functionDefaultValue}"/></span>
                                         <span class="js-operations <c:if test="${calcComponent.componentType == 'Function'}"> dn</c:if>"><tags:selectWithItems path="pointBase.calcComponents[${status.index}].operation" items="${operators}" inputClass="js-operation-options" defaultItemValue="${operationDefaultValue}" defaultItemLabel="${operationDefaultValue}"/></span>
                                     </td>
-                                    <td class = "js-baseline <c:if test = "${!pointModel.pointBase.baselineAssigned}">dn</c:if>">
-                                        <span class = "js-baseline-picker  <c:if test = "${calcComponent.functionName != 'Baseline'}"> dn</c:if>">
-                                            <form:hidden path = "pointBase.calcBaselinePoint.pointID" id="calBasePointId" />
-                                            <tags:selectWithItems path = "pointBase.calcBaselinePoint.baselineID" items = "${baseLines}" itemValue = "baselineID" inputClass = "js-baseline-options"/>
+                                    <td class="js-baseline <c:if test="${!pointModel.pointBase.baselineAssigned}">dn</c:if>">
+                                        <span class="js-baseline-picker <c:if test="${calcComponent.functionName != 'Baseline'}"> dn</c:if>">
+                                            <form:hidden path="pointBase.calcBaselinePoint.pointID" id="calBasePointId" />
+                                            <tags:selectWithItems path="pointBase.calcBaselinePoint.baselineID" items="${baseLines}" itemValue="baselineID" inputClass="js-baseline-options"/>
                                         </span>
                                     </td>
                                     <td>
