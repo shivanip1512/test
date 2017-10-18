@@ -79,6 +79,7 @@
     <entry key="yukon.web.modules.operator.gateways.detail.nodesWithSNs">Nodes with Serial Numbers</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithInfo">Nodes with Info: {0}; Nodes Without Info: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithSNs">Nodes with Serial Numbers: {0}; Total Nodes: {1}</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.infraStructureWarnings.title">Infrastructure Warnings</entry>
 
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>

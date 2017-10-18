@@ -90,6 +90,14 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
     }
 
     @Override
+    public synchronized List<InfrastructureWarning> getWarnings(int deviceId) {
+        SqlStatementBuilder sql = selectAllInfrastructureWarnings();
+        sql.append(" WHERE ypo.PAObjectID").eq(deviceId);
+        List<InfrastructureWarning> warnings = jdbcTemplate.query(sql, infrastructureWarningRowMapper);
+        return warnings;
+    }
+
+    @Override
     public synchronized InfrastructureWarningSummary getWarningsSummary() {
         if (cachedSummary == null || cachedSummaryUpdateTime.isBefore(getLastRun())) {
             log.debug("Summary cache is outdated, updating.");

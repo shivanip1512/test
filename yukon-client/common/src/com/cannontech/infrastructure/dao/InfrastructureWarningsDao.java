@@ -37,4 +37,9 @@ public interface InfrastructureWarningsDao {
      * Get a summary of the current warnings and devices, by device categories.
      */
     public InfrastructureWarningSummary getWarningsSummary();
+
+    /**
+     * Retrieve the current infrastructure warnings by deviceId.
+     */
+    List<InfrastructureWarning> getWarnings(int deviceId);
 }

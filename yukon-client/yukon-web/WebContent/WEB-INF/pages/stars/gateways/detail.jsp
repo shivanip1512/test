@@ -79,6 +79,8 @@
                 </div>
             </div>
         </tags:sectionContainer2>
+        <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
+        <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section" deviceId="${gateway.paoIdentifier.paoId}"/>
     </div>
     
 </div>
