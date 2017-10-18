@@ -87,7 +87,7 @@
                                 <tags:input path="points[${status.index}].upperLimit" size="4"
                                         disabled="${disabledInput}" inputClass="upperLimit" />
                             </td>
-                            <td><form:checkbox path="points[${status.index}].overrideStrategy" disabled="${!hasEditingRole}"/></td>
+                            <td><form:checkbox cssClass="js-override-strategy" path="points[${status.index}].overrideStrategy" disabled="${!hasEditingRole}"/></td>
                             <td><form:checkbox path="points[${status.index}].ignore" disabled="${!hasEditingRole}"/></td>
                         </tr>
                     </c:forEach>

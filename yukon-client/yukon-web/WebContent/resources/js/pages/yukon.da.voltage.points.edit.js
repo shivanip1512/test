@@ -12,7 +12,7 @@ yukon.da.voltagePointsEdit = (function () {
     var mod = {
 
             init : function () {
-                $(".js-voltage-points input:checkbox").change(function() {
+                $(".js-override-strategy").change(function() {
                     $(this).closest("tr").find("input:text").toggleDisabled();
                 });
 
@@ -24,7 +24,7 @@ yukon.da.voltagePointsEdit = (function () {
                  */
                 $("input.lowerLimit.error, input.upperLimit.error").each(function() {
                     this.disabled = false;
-                    $(this).closest("tr").find("input:checkbox").attr("checked", true);
+                    $(this).closest("tr").find(".js-override-strategy").attr("checked", true);
                 });
             }
         };
