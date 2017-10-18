@@ -11,7 +11,7 @@ import com.google.common.base.Joiner;
 
 public class DeviceConfigSummaryFilter {
     public enum LastAction {
-        READ, SEND, VERIFY, UNKNOWN
+        READ, SEND, VERIFY, ASSIGNED, UNASSIGNED
     }
 
     public enum InSync {
