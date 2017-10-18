@@ -591,7 +591,7 @@
                                 <th><i:inline key=".calculation.type"/></th>
                                 <th><i:inline key=".calculation.operand"/></th>
                                 <th><i:inline key=".calculation.operation"/></th>
-                                <th class = "baseline-header <c:if test = "${!pointModel.pointBase.baselineAssigned}">dn</c:if>"><i:inline key = ".point.calculation.baseline"/></th>
+                                <th class="js-baseline <c:if test="${!pointModel.pointBase.baselineAssigned}">dn</c:if>"><i:inline key=".point.calculation.baseline"/></th>
                                 <th></th>
                             </tr>
                         </thead>
