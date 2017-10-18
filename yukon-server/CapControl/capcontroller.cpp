@@ -612,11 +612,27 @@ void CtiCapController::controlLoop()
 
                                 if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(Now))
                                 {
-                                    if ( currentSubstationBus->getDisableFlag() )
+                                    if ( currentArea->getDisableFlag() )
                                     {
                                         if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                                         {
-                                            CTILOG_DEBUG( dout, "MULTIVOLT: Skipping analysis for DISABLED SubBus: "
+                                            CTILOG_INFO( dout, "MULTIVOLT: Skipping analysis for DISABLED Area: "
+                                                                        << currentArea->getPaoName() );
+                                        }
+                                    }
+                                    else if ( currentStation->getDisableFlag() )
+                                    {
+                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                                        {
+                                            CTILOG_INFO( dout, "MULTIVOLT: Skipping analysis for DISABLED Substation: "
+                                                                        << currentStation->getPaoName() );
+                                        }
+                                    }
+                                    else if ( currentSubstationBus->getDisableFlag() )
+                                    {
+                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+                                        {
+                                            CTILOG_INFO( dout, "MULTIVOLT: Skipping analysis for DISABLED SubBus: "
                                                                         << currentSubstationBus->getPaoName() );
                                         }
                                     }

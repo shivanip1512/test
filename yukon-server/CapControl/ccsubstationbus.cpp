@@ -5622,6 +5622,26 @@ CtiCCCapBankPtr CtiCCSubstationBus::getMonitorPointParentBank( const CtiCCMonito
     return nullptr;
 }
 
+// Return a pointer to the parent bank iff the bank and its parent feeder are both enabled
+CtiCCCapBankPtr CtiCCSubstationBus::canConsiderPoint( const CtiCCMonitorPoint & point )
+{
+    for ( CtiCCFeederPtr feeder : _ccfeeders )
+    {
+        if ( ! feeder->getDisableFlag() )
+        {
+            if ( CtiCCCapBankPtr bank = feeder->getMonitorPointParentBank( point ) )
+            {
+                if ( ! bank->getDisableFlag() )
+                {
+                    return bank;
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 bool CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 {
     bool retVal = false;
@@ -5638,9 +5658,7 @@ bool CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDate
     {
         for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
         {
-            CtiCCCapBankPtr bank = getMonitorPointParentBank( *point );
-
-            if ( bank && ! bank->getDisableFlag() )
+            if ( CtiCCCapBankPtr bank = canConsiderPoint( *point ) )
             {
                 if ( point->getTimeStamp() > ( getLastOperationTime() - 30 )
                         && point->getTimeStamp() >= ( currentDateTime - ( 60 * _POINT_AGE ) ) )
@@ -5741,7 +5759,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
             {
                 if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                 {
-                    CTILOG_DEBUG( dout, "MULTIVOLT: Skipped analysis on DISABLED feeder: " << currentFeeder->getPaoName() );
+                    CTILOG_INFO( dout, "MULTIVOLT: Skipped analysis on DISABLED feeder: " << currentFeeder->getPaoName() );
                 }
             }
             else if (!currentFeeder->getRecentlyControlledFlag() && !currentFeeder->getPostOperationMonitorPointScanFlag())
@@ -5886,14 +5904,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
 
     if ( getStrategy()->getMethodType() != ControlStrategy::IndividualFeeder )
     {
-        if ( getDisableFlag() )
-        {
-            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-            {
-                CTILOG_DEBUG( dout, "MULTIVOLT: Skipped analysis on DISABLED SubBus: " << getPaoName() );
-            }
-        }
-        else if (!getRecentlyControlledFlag() && !getPostOperationMonitorPointScanFlag())
+        if (!getRecentlyControlledFlag() && !getPostOperationMonitorPointScanFlag())
         {
             if (!areAllMonitorPointsInVoltageRange(outOfRangeMonitorPoint))
             {
@@ -6931,9 +6942,7 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
 
     for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
     {
-        CtiCCCapBankPtr bank = getMonitorPointParentBank( *point );
-
-        if ( bank && ! bank->getDisableFlag() )
+        if ( CtiCCCapBankPtr bank = canConsiderPoint( *point ) )
         {
             double upperBound = upperLimit;
             double lowerBound = lowerLimit;

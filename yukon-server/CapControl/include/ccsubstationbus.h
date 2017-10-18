@@ -252,6 +252,8 @@ public:
 
     CtiCCSubstationBus* replicate() const;
 
+    CtiCCCapBankPtr canConsiderPoint( const CtiCCMonitorPoint & point );
+
     // Added for serialization
     double getAltSubVoltVal() const;
     double getAltSubVarVal() const;
