@@ -36,8 +36,8 @@ public abstract class CentronDisplayItemEnumeration implements DeviceConfigurati
         PEAK_KW,
         PEAK_KW_DATE,
         PEAK_KW_TIME,
-        LAST_INTERVAL_VOLTAGE,
-        // Items #15-20 are not supported on C1SX meters (RFN-410cL).
+        // Items #14-20 are not supported on C1SX meters (RFN-410cL).
+        LAST_INTERVAL_VOLTAGE(DisplayType.CENTRON_420),
         PEAK_VOLTAGE(DisplayType.CENTRON_420),
         PEAK_VOLTAGE_DATE(DisplayType.CENTRON_420),
         PEAK_VOLTAGE_TIME(DisplayType.CENTRON_420),
