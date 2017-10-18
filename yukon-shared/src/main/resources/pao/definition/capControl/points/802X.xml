@@ -381,35 +381,35 @@
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="-5" type="Status">
         <name>Enable Time Control</name>
-        <controlType value="NORMAL"/>
+        <controlType value="LATCH"/>
         <controlOffset value="23"/>
-        <stateZeroControl value="PULSE"/>
-        <stateOneControl value="PULSE"/>
-        <stategroup value="YesNo"/>
+        <stateZeroControl value="OPEN"/>
+        <stateOneControl value="CLOSE"/>
+        <stategroup value="NoYes"/>
     </point>
     <point offset="-4" type="Status">
         <name>Enable Temperature Control</name>
-        <controlType value="NORMAL"/>
+        <controlType value="LATCH"/>
         <controlOffset value="16"/>
-        <stateZeroControl value="PULSE"/>
-        <stateOneControl value="PULSE"/>
-        <stategroup value="YesNo"/>
+        <stateZeroControl value="OPEN"/>
+        <stateOneControl value="CLOSE"/>
+        <stategroup value="NoYes"/>
     </point>
     <point offset="-3" type="Status">
         <name>Enable VAR Control</name>
-        <controlType value="NORMAL"/>
+        <controlType value="LATCH"/>
         <controlOffset value="15"/>
-        <stateZeroControl value="PULSE"/>
-        <stateOneControl value="PULSE"/>
-        <stategroup value="YesNo"/>
+        <stateZeroControl value="OPEN"/>
+        <stateOneControl value="CLOSE"/>
+        <stategroup value="NoYes"/>
     </point>
     <point offset="-2" type="Status">
         <name>Enable OVUV Control</name>
-        <controlType value="NORMAL"/>
+        <controlType value="LATCH"/>
         <controlOffset value="14"/>
-        <stateZeroControl value="PULSE"/>
-        <stateOneControl value="PULSE"/>
-        <stategroup value="YesNo"/>
+        <stateZeroControl value="OPEN"/>
+        <stateOneControl value="CLOSE"/>
+        <stategroup value="NoYes"/>
     </point>
     <point offset="-1" type="Status">
         <name>Enable SCADA Override</name>
