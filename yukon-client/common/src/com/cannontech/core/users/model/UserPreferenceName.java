@@ -25,7 +25,8 @@ public enum UserPreferenceName implements DisplayableEnum {
     COMMANDER_PRIORITY(InputTypeFactory.integerType(), String.valueOf(CommandPriority.maxPriority), 
                                                         PreferenceType.EDITABLE), 
     COMMANDER_QUEUE_COMMAND(InputTypeFactory.booleanType(), Boolean.FALSE.toString(), PreferenceType.EDITABLE),
-
+    SMART_NOTIFICATIONS_DAILY_TIME(InputTypeFactory.stringType(), null, PreferenceType.EDITABLE_SPECIAL),
+    
     // Non-editable/auto-set preferences
     GRAPH_DISPLAY_TIME_DURATION(InputTypeFactory.enumType(PreferenceGraphTimeDurationOption.class),
                PreferenceGraphTimeDurationOption.getDefault().name(), PreferenceType.NONEDITABLE),
@@ -35,7 +36,6 @@ public enum UserPreferenceName implements DisplayableEnum {
                PreferenceTrendZoomOption.getDefault().name(), PreferenceType.NONEDITABLE),
     DISPLAY_EVENT_RANGE(InputTypeFactory.enumType(TimeRange.class), TimeRange.DAY_1.name(), PreferenceType.NONEDITABLE),
     COMMANDER_RECENT_TARGETS(InputTypeFactory.stringType(), null, PreferenceType.NONEDITABLE),
-    SMART_NOTIFICATIONS_DAILY_TIME(InputTypeFactory.stringType(), null, PreferenceType.NONEDITABLE),
 
     // Temporary preferences, cache lived
     COMMANDER_LAST_ROUTE_ID(InputTypeFactory.integerType(), null, PreferenceType.TEMPORARY),

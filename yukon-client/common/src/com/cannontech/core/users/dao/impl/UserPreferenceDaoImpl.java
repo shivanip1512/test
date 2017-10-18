@@ -140,7 +140,7 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     @PostConstruct
     public void init() {
         createDatabaseChangeListener();
-        userGroupTemplate = new SimpleTableAccessTemplate<UserPreference>(yukonJdbcTemplate, nextValueHelper);
+        userGroupTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         userGroupTemplate.setTableName(TABLE_NAME);
         userGroupTemplate.setPrimaryKeyField(FIELD_PRIMARY_KEY);
         userGroupTemplate.setFieldMapper(preferenceFieldMapper);
@@ -334,7 +334,7 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
                 }
                 preference.setUpdated(false); // Not updated to DB
             }
-            if (preferenceName.getPreferenceType() == PreferenceType.EDITABLE) {
+            if (preferenceName.getPreferenceType().isEditable()) {
                 preference.setUpdated(true); // Updated to DB
                 if (preference.getId() != null && isValueChanged) {
                     update(preference);
