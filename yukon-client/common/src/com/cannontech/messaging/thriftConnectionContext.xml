@@ -361,6 +361,12 @@
 		class="com.cannontech.messaging.serialization.thrift.serializer.notif.VoiceDataResponseSerializer">
 		<constructor-arg value="VoiceDataResponse"/>
 	</bean>
+    
+    <bean id="messaging.thrift.notif.GenericEmailSerializer"
+        parent="messaging.thrift.IInheritanceSerializer"
+        class="com.cannontech.messaging.serialization.thrift.serializer.notif.GenericEmailSerializer">
+        <constructor-arg value="GenericEmail"/>
+    </bean>
 
 
 	<!-- porter serializers -->
@@ -508,6 +514,7 @@
 				<ref bean="messaging.thrift.notif.VoiceCompletedSerializer"/>
 				<ref bean="messaging.thrift.notif.VoiceDataRequestSerializer"/>
 				<ref bean="messaging.thrift.notif.VoiceDataResponseSerializer"/>
+                <ref bean="messaging.thrift.notif.GenericEmailSerializer"/>
 			</list>
 		</property>
 	</bean>

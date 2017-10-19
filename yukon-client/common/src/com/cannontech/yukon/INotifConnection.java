@@ -5,6 +5,7 @@ import java.util.Date;
 import com.cannontech.cc.service.CurtailmentEventAction;
 import com.cannontech.cc.service.EconomicEventAction;
 import com.cannontech.message.notif.NotifCallEvent;
+import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.yukon.conns.NotifRequestException;
 
 /**
@@ -34,5 +35,7 @@ public interface INotifConnection
                                              Date notificationTime,
                                              int customerIds[]);
     
-    public void sendNotification(Integer ngId, String subject, String body	);
+    public void sendNotification(Integer ngId, String subject, String body);
+    
+    public void sendEmail(EmailMessage message);
 }

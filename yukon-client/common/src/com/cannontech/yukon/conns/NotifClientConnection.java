@@ -13,6 +13,7 @@ import com.cannontech.message.notif.CurtailmentEventDeleteMsg;
 import com.cannontech.message.notif.CurtailmentEventMsg;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;
 import com.cannontech.message.notif.EconomicEventMsg;
+import com.cannontech.message.notif.EmailMsg;
 import com.cannontech.message.notif.NotifCallEvent;
 import com.cannontech.message.notif.NotifCompletedMsg;
 import com.cannontech.message.notif.NotifEmailMsg;
@@ -206,9 +207,12 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
     }
     
     public void sendEmail(EmailMessage message) {
-        //TODO
-        log.info("Email to send: ");
-        log.info(message);
+        log.debug("Passing email message to notification for : ");
+        log.debug(message);
+        
+        EmailMsg msg = new EmailMsg();
+        msg.setMessage(message);
+        write(msg);
     }
 
 }

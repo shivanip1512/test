@@ -177,7 +177,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                     logDebug("Sending message parameters immediately", result.getDecider());
                     putMessagesOnAssemblerQueue(result.getMessageParameters(), result.getDecider().getWaitTime().interval, false);
                 } catch (Exception e) {
-                    log.error("e");
+                    log.error("Error sending smart notification message parameters", e);
                 }
             });
         } else {
