@@ -496,6 +496,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RADIO_SIGNAL_STRENGTH_INDICATOR("RSSI", AttributeGroup.CAPCONTROL, false),
     RECLOSE_BLOCKED("Reclose Blocked", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_CLEAR("SCADA Override Clear", AttributeGroup.CAPCONTROL, false),
+    SCADA_OVERRIDE_CONTROL_POINT("SCADA Override Control Point", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_COUNTDOWN_TIMER("SCADA Override Countdown Timer", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_ENABLE("SCADA Override Enable", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_HEARTBEAT("SCADA Override Heartbeat", AttributeGroup.CAPCONTROL, false),

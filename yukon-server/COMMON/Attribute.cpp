@@ -495,6 +495,7 @@ INIT_ATTRIBUTE( OverVoltageCount,                                   "OVER_VOLTAG
 INIT_ATTRIBUTE( RadioSignalStrengthIndicator,                       "RADIO_SIGNAL_STRENGTH_INDICATOR" );
 INIT_ATTRIBUTE( RecloseBlocked,                                     "RECLOSE_BLOCKED" );
 INIT_ATTRIBUTE( ScadaOverrideClear,                                 "SCADA_OVERRIDE_CLEAR" );
+INIT_ATTRIBUTE( ScadaOverrideControlPoint,                          "SCADA_OVERRIDE_CONTROL_POINT" );
 INIT_ATTRIBUTE( ScadaOverrideCountdownTimer,                        "SCADA_OVERRIDE_COUNTDOWN_TIMER" );
 INIT_ATTRIBUTE( ScadaOverrideEnable,                                "SCADA_OVERRIDE_ENABLE" );
 INIT_ATTRIBUTE( ScadaOverrideHeartbeat,                             "SCADA_OVERRIDE_HEARTBEAT" );

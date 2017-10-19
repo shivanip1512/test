@@ -396,7 +396,7 @@ LitePoint CtiCCCapBank::getControlPoint() const
 
     if (heartbeat._policy->getOperatingMode(twoWayPoints) == CbcHeartbeatPolicy::ScadaOverride)
     {
-        return twoWayPoints.getPointByAttribute(Attribute::ScadaOverrideEnable);
+        return twoWayPoints.getPointByAttribute(Attribute::ScadaOverrideControlPoint);
     }
     // Else return normal control pointl
     return twoWayPoints.getPointByAttribute(Attribute::ControlPoint);

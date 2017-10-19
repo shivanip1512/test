@@ -101,10 +101,17 @@ std::string getBankOperationCommand( const BankOperationType bankOperation, cons
 
 std::auto_ptr<CtiRequestMsg> createBankOperationRequest( const CtiCCCapBank &capBank, const BankOperationType bankOperation )
 {
+    auto operationCmd = getBankOperationCommand( bankOperation, capBank );
+
+    if( capBank.supportsHeartbeat() )
+    {
+        operationCmd += " select pointid " + std::to_string( capBank.getControlPointId() );
+    }
+
     return std::auto_ptr<CtiRequestMsg>(
        createPorterRequestMsg(
           capBank.getControlDeviceId(),
-          getBankOperationCommand( bankOperation, capBank )));
+          operationCmd ) );
 }
 
 std::auto_ptr<CtiRequestMsg> createBankOpenRequest(const CtiCCCapBank &capBank)

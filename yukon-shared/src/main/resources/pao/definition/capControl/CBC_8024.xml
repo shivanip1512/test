@@ -87,7 +87,7 @@
         <pointInfo name="Reclose Block" init="true" attributes="RECLOSE_BLOCKED"/>
         <pointInfo name="Relay Sense Failed" init="true"/>
         <pointInfo name="Remote Control Mode" init="true"/>
-        <pointInfo name="SCADA Override" init="true" attributes="SCADA_OVERRIDE_MODE"/>
+        <pointInfo name="SCADA Override" init="true" attributes="SCADA_OVERRIDE_MODE,SCADA_OVERRIDE_CONTROL_POINT"/>
         <pointInfo name="SCADA Override Clear" attributes="SCADA_OVERRIDE_CLEAR"/>
         <pointInfo name="SCADA Override Countdown Timer" attributes="SCADA_OVERRIDE_COUNTDOWN_TIMER"/>
         <pointInfo name="SCADA Override Heartbeat" attributes="SCADA_OVERRIDE_HEARTBEAT"/>

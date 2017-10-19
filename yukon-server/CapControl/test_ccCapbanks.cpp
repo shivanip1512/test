@@ -625,12 +625,14 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
         LitePoint(333, StatusPointType, "CBC 8024 Control", 185, 1, "", "", 1.0, 0),
         LitePoint(400, StatusPointType, "CBC 8024 Heartbeat Control", 185, 2, "", "", 1.0, 0),
         LitePoint(401, StatusPointType, "CBC 8024 Heartbeat Control Enable", 185, -1, "", "", 1.0, 0),
-        LitePoint(402, StatusPointType, "CBC 8024 Heartbeat Control Clear", 185, 0, "", "", 1.0, 0)
+        LitePoint(402, StatusPointType, "CBC 8024 Heartbeat Control Clear", 185, 0, "", "", 1.0, 0),
+        LitePoint(403, StatusPointType, "CBC 8024 SCADA Override Control Point", 185, 0, "", "", 1.0, 0)
     };
 
     std::map<Attribute, std::string>    pointOverloads
     {
-        { Attribute::ControlPoint, "CBC 8024 Control" }
+        { Attribute::ControlPoint,              "CBC 8024 Control" },
+        { Attribute::ScadaOverrideControlPoint, "CBC 8024 SCADA Override Control Point" }
     };
 
     bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( controlPoints, pointOverloads, boost::none, boost::none);
@@ -734,7 +736,7 @@ BOOST_AUTO_TEST_CASE( test_capbank_db_loading_and_initialization )
     bank->getTwoWayPoints().setTwoWayStatusPointValue( 400, 1, now );
     bank->getTwoWayPoints().setTwoWayStatusPointValue( 333, 1, now );
 
-    BOOST_CHECK_EQUAL(bank->getControlPointId(), 401);
+    BOOST_CHECK_EQUAL(bank->getControlPointId(), 403);
 
     now += 1;
 

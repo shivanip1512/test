@@ -482,6 +482,7 @@ public:
     static const Attribute  RadioSignalStrengthIndicator;
     static const Attribute  RecloseBlocked;
     static const Attribute  ScadaOverrideClear;
+    static const Attribute  ScadaOverrideControlPoint;
     static const Attribute  ScadaOverrideCountdownTimer;
     static const Attribute  ScadaOverrideEnable;
     static const Attribute  ScadaOverrideHeartbeat;
