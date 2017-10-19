@@ -20,7 +20,7 @@
         <cti:csrfToken/>
         <div class="column-14-10 clearfix stacked">
             <h3><i:inline key="yukon.common.filters"/></h3>
-            <div class="column one" style="border:1px solid #ccc;padding:5px;">
+            <div class="column one filter-container">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".type">
                         <i:inline key="${eventType.formatKey}"/>

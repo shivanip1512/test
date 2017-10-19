@@ -28,7 +28,7 @@
                 </tags:nameValueContainer2>
                 <div style="max-height: 200px;" class="js-pie-chart-summary"></div>
             </div>
-            <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;margin-top:40px;">          
+            <div class="column two nogutter filter-container" style="margin-top:40px;">          
                 <span class="fr cp"><cti:icon icon="icon-help" data-popup="#results-help"/></span>
                 <cti:msg2 var="helpTitle" key=".helpTitle"/>
                 <div id="results-help" class="dn" data-dialog data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div><br/>

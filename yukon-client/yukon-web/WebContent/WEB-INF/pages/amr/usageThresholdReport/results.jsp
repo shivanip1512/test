@@ -9,7 +9,7 @@
 <cti:standardPage module="amr" page="usageThresholdReport.results">
 
     <div class="column-12-12 clearfix">
-        <div class="column one" style="border:1px solid #ccc;padding:5px;min-height:160px;">
+        <div class="column one filter-container" style="min-height:160px;">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".devices">
                      ${criteria.description}
@@ -35,7 +35,7 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
-        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;min-height:160px;">
+        <div class="column two nogutter filter-container" style="min-height:160px;">
             <span class="fr cp"><cti:icon icon="icon-help" data-popup="#results-help"/></span>
             <cti:msg2 var="helpTitle" key=".helpTitle"/>
             <div id="results-help" class="dn" data-dialog data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div>
