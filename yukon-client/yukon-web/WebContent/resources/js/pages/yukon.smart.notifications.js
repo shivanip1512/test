@@ -170,7 +170,6 @@ yukon.smart.notifications = (function () {
                     form = $('#filter-form');
                 form.ajaxSubmit({
                     success: function(data, status, xhr, $form) {
-                        $('.js-filter-popup').dialog('destroy');
                         tableContainer.html(data);
                         tableContainer.data('url', yukon.url('/notifications/subscriptions?' + form.serialize()));
                     }
