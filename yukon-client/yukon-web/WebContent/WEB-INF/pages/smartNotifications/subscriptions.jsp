@@ -34,7 +34,7 @@
                             <div class="js-time-slider" style="margin-top: 5px;width:250px;"></div>
                         </div>
                     </div>
-                    <cti:button nameKey="save" type="submit" classes="fn" style="margin-left:10px;"/>
+                    <cti:button nameKey="save" type="submit" classes="fn" style="margin-left:20px;"/>
                 </span>
             </form>
         </div>
