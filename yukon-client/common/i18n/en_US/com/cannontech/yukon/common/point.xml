@@ -534,6 +534,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">RSSI</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECLOSE_BLOCKED">Reclose Blocked</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_CLEAR">SCADA Override Clear</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_CONTROL_POINT">SCADA Override Control Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_COUNTDOWN_TIMER">SCADA Override Countdown Timer</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_ENABLE">SCADA Override Enable</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_HEARTBEAT">SCADA Override Heartbeat</entry>
