@@ -8,6 +8,23 @@ namespace Cti           {
 namespace CapControl    {
 
 
+std::string resolveControlMode( ControlPolicy::ControlModes mode )
+{
+    static const std::map<ControlPolicy::ControlModes, std::string>   modeLookup
+    {
+        { ControlPolicy::ControlModes::LockedForward,         "LockedForward"         },
+        { ControlPolicy::ControlModes::LockedReverse,         "LockedReverse"         },
+        { ControlPolicy::ControlModes::ReverseIdle,           "ReverseIdle"           },
+        { ControlPolicy::ControlModes::NeutralIdle,           "NeutralIdle"           },
+        { ControlPolicy::ControlModes::Bidirectional,         "Bidirectional"         },
+        { ControlPolicy::ControlModes::Cogeneration,          "Cogeneration"          },
+        { ControlPolicy::ControlModes::ReactiveBidirectional, "ReactiveBidirectional" },
+        { ControlPolicy::ControlModes::BiasBidirectional,     "BiasBidirectional"     }
+    };
+
+    return mapFindOrDefault( modeLookup, mode, "Unknown" );
+}
+
 /*
     This can throw a 'FailedAttributeLookup' exception which needs to be handled
         in application code.
@@ -15,17 +32,16 @@ namespace CapControl    {
 ControlPolicy::ControlModes ControlPolicy::getControlMode()
 try
 {
-    // actual values need to be determined...
     static const std::map<long, ControlModes>   modeLookup
     {
-        {   0, LockedForward            },
-        {   1, LockedReverse            },
-        {   2, ReverseIdle              },
-        {   3, Bidirectional            },
+        {   1, LockedForward            },
+        {   2, LockedReverse            },
+        {   3, ReverseIdle              },
         {   4, NeutralIdle              },
-        {   5, Cogeneration             },
-        {   6, ReactiveBidirectional    },
-        {   7, BiasBidirectional        }
+        {   5, Bidirectional            },
+        {   6, Cogeneration             },
+        {   7, ReactiveBidirectional    },
+        {   8, BiasBidirectional        }
     };
 
     const long key = static_cast<long>( getValueByAttribute( Attribute::ControlMode ) );
@@ -49,6 +65,46 @@ catch ( UninitializedPointValue & )
 catch ( FailedAttributeLookup & )
 {
     return false;
+}
+
+Attribute ControlPolicy::getSetPointAttribute()
+{
+    switch ( getControlMode() )
+    {
+        case LockedReverse:
+        {
+            return Attribute::ReverseSetPoint;
+        }
+        case Cogeneration:
+        {
+            if ( inReverseFlow() )
+            {
+                return Attribute::ReverseSetPoint;
+            }
+        }
+    }
+
+    return Attribute::ForwardSetPoint;
+}
+
+Attribute ControlPolicy::getBandwidthAttribute()
+{
+    switch ( getControlMode() )
+    {
+        case LockedReverse:
+        {
+            return Attribute::ReverseBandwidth;
+        }
+        case Cogeneration:
+        {
+            if ( inReverseFlow() )
+            {
+                return Attribute::ReverseBandwidth;
+            }
+        }
+    }
+
+    return Attribute::ForwardBandwidth;
 }
 
 

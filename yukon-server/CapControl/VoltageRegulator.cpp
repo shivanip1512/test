@@ -552,8 +552,8 @@ try
         }
         else
         {
-            _controlPolicy->getPointByAttribute( Attribute::ForwardSetPoint ); 
-            _controlPolicy->getPointByAttribute( Attribute::ForwardBandwidth ); 
+            _controlPolicy->getPointByAttribute( _controlPolicy->getSetPointAttribute() ); 
+            _controlPolicy->getPointByAttribute( _controlPolicy->getBandwidthAttribute() ); 
         }
     }
 }
@@ -921,6 +921,12 @@ bool VoltageRegulator::executePeriodicKeepAlive( const std::string & user )
 bool VoltageRegulator::isReverseFlowDetected()
 {
     return _controlPolicy->inReverseFlow();
+}
+
+
+ControlPolicy::ControlModes VoltageRegulator::getConfigurationMode()
+{
+    return _controlPolicy->getControlMode();
 }
 
 

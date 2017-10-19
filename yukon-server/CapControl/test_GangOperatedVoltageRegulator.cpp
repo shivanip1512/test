@@ -101,9 +101,17 @@ struct gang_operated_voltage_regulator_fixture_core
                 { Attribute::TapPosition,
                     { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0, 0 } },
                 { Attribute::ForwardSetPoint,
-                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 1.0, 0 } },
+                    { 7000,  AnalogPointType, "Forward SetPoint", 1020, 10007, "", "", 1.0, 0 } },
                 { Attribute::ForwardBandwidth,
-                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0, 0 } }
+                    { 7100,  AnalogPointType, "Forward Bandwidth", 1021, 8, "", "", 1.0, 0 } },
+                { Attribute::ForwardSetPoint,
+                    { 7200,  AnalogPointType, "Reverse SetPoint", 1022, 10017, "", "", 1.0, 0 } },
+                { Attribute::ForwardBandwidth,
+                    { 7300,  AnalogPointType, "Reverse Bandwidth", 1023, 18, "", "", 1.0, 0 } },
+                { Attribute::ReverseFlowIndicator,
+                    { 7400,  StatusPointType, "Reverse Flow Indicator", 1024, 19, "", "", 1.0, 0 } },
+                { Attribute::ControlMode,
+                    { 7450,  AnalogPointType, "Regulator Control Mode", 1026, 21, "", "", 1.0, 0 } }
             };
         }
     }

@@ -242,13 +242,51 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     return false;
 }
 
-
-//  Report if any regulator on a bus is reporting reverse flow while in ManualTap mode.
+/* 
+    According to EASPRO-504 we want to disable the bus under a variety of conditions listed below.
+ 
+    Operating Mode 1 (Locked Forward): A supported operating mode in Direct Tap or Set Point Control modes. If the
+        REVERSE FLOW STATUS is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue
+        Tap Raise/Lower or FORWARD SET POINT control commands. If the REVERSE FLOW STATUS is TRUE then Yukon should disable
+        the associated bus.
+ 
+    Operating Mode 2 (Locked Reverse): A supported operating mode in Set Point Control mode. If the REVERSE FLOW STATUS
+        is TRUE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue REVERSE SET POINT control
+        commands. A Regulator could be installed Backwards accidentally or could be installed on a permanently moved
+        switchable feeder section resulting in a change in flow direction. CRITICALLY, the associated regulator point
+        mapping has to place the right load and source side reg voltages in the correct voltage control zone. If the
+        REVERSE FLOW STATUS is FALSE then Yukon should disable the associated bus.
+ 
+    Operating Mode 3 (Reverse Idle): A supported operating mode in Set Point Control mode. If the REVERSE FLOW STATUS
+        is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue FORWARD SET POINT
+        control commands. If the REVERSE FLOW STATUS is TRUE then Yukon should disable the associated bus.
+ 
+    Operating Mode 4 (Neutral Idle Mode): A supported operating mode in Set Point Control mode. If the REVERSE FLOW STATUS
+        is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue control commands. If
+        the REVERSE FLOW STATUS is TRUE then Yukon should disable the associated bus.
+ 
+    Operating Mode 5 (Bi-Directional): A supported operating mode in Set Point Control mode. The orientation of the
+        regulator is key. IF the regulator is installed Source to Load and the REVERSE FLOW STATUS is FALSE then Yukon
+        should issue heartbeats (if configured), execute IVVC analysis and issue control commands. IF the regulator is
+        installed Load to Source and the REVERSE FLOW STATUS is TRUE then Yukon should issue heartbeats (if configured),
+        execute IVVC analysis and issue control commands. CRITICALLY, the associated regulator point mapping has to place
+        the right load and source side reg voltages in the correct voltage control zone. A Regulator could be installed
+        Backwards accidentally or permanently reconfigured.
+ 
+    Operating Mode 6 (Cogeneration): A supported operating mode in Set Point Control mode. If the REVERSE FLOW
+        STATUS is FALSE then Yukon should issue heartbeats (if configured), execute IVVC analysis and issue FORWARD
+        SET POINT control commands. If the REVERSE FLOW STATUS is TRUE then Yukon should issue heartbeats (if configured),
+        execute IVVC analysis and issue REVERSE SET POINT control commands.
+ 
+    Operating Mode 7 (Reactive Bi-directional): Not supported by Yukon.
+ 
+    Operating Mode 8 (Auto Determination): Not supported by Yukon. 
+*/ 
 bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
 {
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CTILOG_DEBUG(dout, "IVVC Algorithm: "<< subbus->getPaoName() << " - Scanning for Direct Tap regulators in Reverse Flow.");
+        CTILOG_DEBUG(dout, "IVVC Algorithm: "<< subbus->getPaoName() << " - Scanning for invalid regulator configurations.");
     }
 
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
@@ -266,14 +304,101 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                 VoltageRegulatorManager::SharedPtr regulator =
                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                if ( regulator->getControlMode() == VoltageRegulator::ManualTap
-                     &&  regulator->isReverseFlowDetected()   )
+                const Cti::CapControl::ControlPolicy::ControlModes  configMode = regulator->getConfigurationMode();
+
+                if ( regulator->getControlMode() == VoltageRegulator::ManualTap )
                 {
-                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    switch ( configMode )
                     {
-                        CTILOG_DEBUG( dout, "IVVC Algorithm: "<< regulator->getPaoName() << " is ManualTap regulator in Reverse Flow.");
+                        case Cti::CapControl::ControlPolicy::LockedForward:
+                        {
+                            if ( regulator->isReverseFlowDetected() )
+                            {
+                                if ( _CC_DEBUG & CC_DEBUG_IVVC )
+                                {
+                                    CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
+                                                            << regulator->getPaoName()
+                                                            << " configured in "
+                                                            << Cti::CapControl::resolveControlMode( configMode )
+                                                            << " mode is detecting Reverse Flow. Disabling Bus: "
+                                                            << subbus->getPaoName() );
+                                }
+                            }
+                            return true;
+                        }
+                        default:
+                        {
+                            if ( _CC_DEBUG & CC_DEBUG_IVVC )
+                            {
+                                CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
+                                                        << regulator->getPaoName()
+                                                        << " is configured in "
+                                                        << Cti::CapControl::resolveControlMode( configMode )
+                                                        << " mode. The current mode is unsupported by IVVC, Disabling Bus: "
+                                                        << subbus->getPaoName() );
+                            }
+                            return true;
+                        }
                     }
-                    return true;
+                }
+                else    // regulator is in SetPoint mode
+                {
+                    switch ( configMode )
+                    {
+                        case Cti::CapControl::ControlPolicy::LockedForward:
+                        case Cti::CapControl::ControlPolicy::ReverseIdle:
+                        case Cti::CapControl::ControlPolicy::NeutralIdle:
+                        {
+                            if ( regulator->isReverseFlowDetected() )
+                            {
+                                if ( _CC_DEBUG & CC_DEBUG_IVVC )
+                                {
+                                    CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
+                                                            << regulator->getPaoName()
+                                                            << " configured in "
+                                                            << Cti::CapControl::resolveControlMode( configMode )
+                                                            << " mode is detecting Reverse Flow. Disabling Bus: "
+                                                            << subbus->getPaoName() );
+                                }
+                            }
+                            return true;
+                        }
+                        case Cti::CapControl::ControlPolicy::LockedReverse:
+                        {
+                            if ( ! regulator->isReverseFlowDetected() )
+                            {
+                                if ( _CC_DEBUG & CC_DEBUG_IVVC )
+                                {
+                                    CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
+                                                            << regulator->getPaoName()
+                                                            << " configured in "
+                                                            << Cti::CapControl::resolveControlMode( configMode )
+                                                            << " mode is detecting Forward Flow. Disabling Bus: "
+                                                            << subbus->getPaoName() );
+                                }
+                            }
+                            return true;
+                        }
+                        case Cti::CapControl::ControlPolicy::Cogeneration:
+                        {
+                            // this mode is doesn't depend on Reverse Flow
+
+                            break;
+                        }
+                        default:
+                        {
+                            if ( _CC_DEBUG & CC_DEBUG_IVVC )
+                            {
+                                CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
+                                                        << regulator->getPaoName()
+                                                        << " is configured in "
+                                                        << Cti::CapControl::resolveControlMode( configMode )
+                                                        << " mode. The current mode is unsupported by IVVC, Disabling Bus: "
+                                                        << subbus->getPaoName() );
+                            }
+                            return true;
+                        }
+                    }
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -334,8 +459,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     state->showZoneRegulatorConfigMsg = true;
 
 
-    //  We need to handle any reverse flow conditions detected on the bus.  From YUK-17079: If a direct tap
-    //      controlled regulator reports reverse flow - the bus should be disabled.
+    //  We need to handle any reverse flow conditions detected on the bus.
     if ( handleReverseFlow( subbus ) )
     {
         sendDisableRemoteControl( subbus );

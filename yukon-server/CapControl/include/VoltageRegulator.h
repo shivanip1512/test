@@ -142,6 +142,8 @@ public:
 
     bool isReverseFlowDetected();
 
+    ControlPolicy::ControlModes getConfigurationMode();
+
 protected:
 
     bool            _recentTapOperation;

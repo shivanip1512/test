@@ -37,7 +37,7 @@ Policy::Action StandardControlPolicy::TapDown()
 
 Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount )
 {
-    LitePoint point = getPointByAttribute( Attribute::ForwardSetPoint );
+    LitePoint point = getPointByAttribute( getSetPointAttribute() );
 
     const long pointOffset = point.getControlOffset()
                                 ? point.getControlOffset()
@@ -76,12 +76,12 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
 
 double StandardControlPolicy::getSetPointValue()
 {
-    return getValueByAttribute( Attribute::ForwardSetPoint );
+    return getValueByAttribute( getSetPointAttribute() );
 }
 
 double StandardControlPolicy::getSetPointBandwidth()
 {
-    return getValueByAttribute( Attribute::ForwardBandwidth );
+    return getValueByAttribute( getBandwidthAttribute() );
 }
 
 long StandardControlPolicy::getTapPosition()

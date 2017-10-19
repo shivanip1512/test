@@ -11,14 +11,14 @@ struct ControlPolicy : Policy
     enum ControlModes
     {
         Unknown             = -1,
-        LockedForward,
+        LockedForward       =  1,
         LockedReverse,
         ReverseIdle,
-        Bidirectional,
         NeutralIdle,
+        Bidirectional,
         Cogeneration,
         ReactiveBidirectional,
-        BiasBidirectional
+        BiasBidirectional       // AutoDetermination ?? -- info in EASPRO-504 about these modes
     };
 
     virtual Action TapUp() = 0;
@@ -33,7 +33,12 @@ struct ControlPolicy : Policy
     ControlModes getControlMode();
 
     bool inReverseFlow() const;
+
+    Attribute getSetPointAttribute();
+    Attribute getBandwidthAttribute();
 };
+
+std::string resolveControlMode( ControlPolicy::ControlModes mode );
 
 }
 }

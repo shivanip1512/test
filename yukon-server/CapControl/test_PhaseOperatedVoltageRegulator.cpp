@@ -107,9 +107,17 @@ struct phase_operated_voltage_regulator_fixture_core
                 { Attribute::AutoBlockEnable,
                     { 8100,  StatusPointType, "AutoBlock", 1026, 12, "", "control close", 1.0, 0 } },
                 { Attribute::ForwardSetPoint,
-                    { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 0.1, 0 } },
+                    { 7000,  AnalogPointType, "Forward SetPoint", 1020, 10007, "", "", 0.1, 0 } },
                 { Attribute::ForwardBandwidth,
-                    { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0, 0 } }
+                    { 7100,  AnalogPointType, "Forward Bandwidth", 1021, 8, "", "", 0.1, 0 } },
+                { Attribute::ForwardSetPoint,
+                    { 7200,  AnalogPointType, "Reverse SetPoint", 1022, 10017, "", "", 0.1, 0 } },
+                { Attribute::ForwardBandwidth,
+                    { 7300,  AnalogPointType, "Reverse Bandwidth", 1023, 18, "", "", 0.1, 0 } },
+                { Attribute::ReverseFlowIndicator,
+                    { 7400,  StatusPointType, "Reverse Flow Indicator", 1024, 19, "", "", 1.0, 0 } },
+                { Attribute::ControlMode,
+                    { 7450,  AnalogPointType, "Regulator Control Mode", 1026, 21, "", "", 1.0, 0 } }
             };
         }
     }
