@@ -57,12 +57,12 @@
                             <c:forEach var="subscription" items="${subscriptions.resultList}">
                                 <c:set var="subId" value="${subscription.id}"/>
                                 <cti:msg2 var="subType" key="${subscription.type.formatKey}"/>
+                                <c:set var="subDescription" value="${subType}"/>
+                                <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">
+                                    <c:set var="subDescription" value="${subType} - ${deviceDataMonitors.get(subscription.parameters['monitorId'])}"/>
+                                </c:if>
                                 <tr class="js-${subscription.frequency}">
-                                    <td>${subType}
-                                        <c:if test="${subscription.type == 'DEVICE_DATA_MONITOR'}">
-                                            - <c:out value="${deviceDataMonitors.get(subscription.parameters['monitorId'])}"/>
-                                        </c:if>
-                                    </td>
+                                    <td>${subDescription}</td>
                                     <td>
                                         <i:inline key="${subscription.frequency.formatKey}"/>
                                         <c:if test="${subscription.frequency == 'DAILY_DIGEST'}">
@@ -89,7 +89,7 @@
                                             <cm:dropdownOption key=".notificationDetail" icon="icon-email-open" href="${detailsUrl}"/>
                                             <cm:dropdownOption id="unsubscribe-${subId}" key=".unsubscribe" icon="icon-email-delete"
                                                 data-subscription-id="${subId}" data-ok-event="yukon:notifications:remove"/>
-                                            <d:confirm on="#unsubscribe-${subId}" nameKey="confirmDelete" argument="${subType}"/>
+                                            <d:confirm on="#unsubscribe-${subId}" nameKey="unsubscribeConfirmation" argument="${subDescription}"/>
                                         </cm:dropdown>
                                     </td>
                                 </tr>
