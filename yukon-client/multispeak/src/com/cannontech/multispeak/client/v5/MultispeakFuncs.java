@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.client.v5;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,6 +48,10 @@ import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.msp.beans.v5.commontypes.CSUnitsKind;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
+import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
+import com.cannontech.msp.beans.v5.multispeak.Meters;
+import com.cannontech.msp.beans.v5.multispeak.MspMeter;
+import com.cannontech.msp.beans.v5.multispeak.WaterMeter;
 import com.cannontech.msp.beans.v5.ws.response.MultiSpeakResponseMsgHeader;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
@@ -58,14 +63,12 @@ import com.cannontech.multispeak.data.MspReturnList;
 import com.cannontech.multispeak.data.v5.MspRCDStateKind;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 
 public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
 
     @Autowired public AuthenticationService authenticationService;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired public MultispeakDao multispeakDao;
     @Autowired public DeviceGroupService deviceGroupService;
     @Autowired public PointFormattingService pointFormattingService;
@@ -498,5 +501,21 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     @Override
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V5;
+    }
+
+    public List<MspMeter> getMspMeters(Meters meters) {
+        List<MspMeter> mspMeters = new ArrayList<>();
+   
+        List<ElectricMeter> electricMeters = (null != meters.getElectricMeters()) ? meters.getElectricMeters().getElectricMeter() : null;
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
+            mspMeters.addAll(electricMeters);
+        }
+
+        List<WaterMeter> waterMeters = (null != meters.getWaterMeters()) ? meters.getWaterMeters().getWaterMeter() : null;
+        if (CollectionUtils.isNotEmpty(waterMeters)) {
+            mspMeters.addAll(waterMeters);
+        }
+        return mspMeters;
+
     }
 }

@@ -62,7 +62,6 @@ import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.Domain;
 import com.cannontech.msp.beans.v5.multispeak.DomainMember;
 import com.cannontech.msp.beans.v5.multispeak.DomainMembers;
-import com.cannontech.msp.beans.v5.multispeak.ElectricMeters;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
@@ -231,13 +230,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (getMetersByServiceLocationIDsResponse != null) {
                 Meters meters = getMetersByServiceLocationIDsResponse.getMeters();
                 if (meters != null) {
-                    ElectricMeters electricMeters = meters.getElectricMeters();
-                    if (electricMeters != null && CollectionUtils.isNotEmpty(electricMeters.getElectricMeter())) {
-                        meterDetails.addAll(electricMeters.getElectricMeter());
-                    }
-                    if (CollectionUtils.isNotEmpty(meters.getWaterMeters().getWaterMeter())) {
-                        meterDetails.addAll(meters.getWaterMeters().getWaterMeter());
-                    }
+                    meterDetails = multispeakFuncs.getMspMeters(meters);
                 }
             }
         } catch (MultispeakWebServiceClientException e) {
@@ -364,14 +357,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 cbClient.getMetersByContactInfo(mspVendor, endpointUrl, getMetersByContactInfo);
             if (response != null) {
                 if (response.getMeters() != null) {
-                    if (response.getMeters().getElectricMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
-                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
-                    }
-                    if (response.getMeters().getWaterMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
-                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
-                    }
+                    meterList = multispeakFuncs.getMspMeters(response.getMeters());
                 }
             } else {
                 log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
@@ -410,14 +396,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 cbClient.getMetersByCustomerIDs(mspVendor, endpointUrl, getMetersByCustomerIDs);
             if (response != null) {
                 if (response.getMeters() != null) {
-                    if (response.getMeters().getElectricMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
-                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
-                    }
-                    if (response.getMeters().getWaterMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
-                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
-                    }
+                    meterList = multispeakFuncs.getMspMeters(response.getMeters());
                 }
             }
         } catch (MultispeakWebServiceClientException e) {
@@ -456,14 +435,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
             if (response != null) {
                 if (response.getMeters() != null) {
-                    if (response.getMeters().getElectricMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
-                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
-                    }
-                    if (response.getMeters().getWaterMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
-                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
-                    }
+                    meterList = multispeakFuncs.getMspMeters(response.getMeters());
                 }
             }
         } catch (MultispeakWebServiceClientException e) {
@@ -491,14 +463,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 + (System.currentTimeMillis() - start) + " millis)");
             if (response != null) {
                 if (response.getMeters() != null) {
-                    if (response.getMeters().getElectricMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getElectricMeters().getElectricMeter())) {
-                        meterList.addAll(response.getMeters().getElectricMeters().getElectricMeter());
-                    }
-                    if (response.getMeters().getWaterMeters() != null
-                        && CollectionUtils.isNotEmpty(response.getMeters().getWaterMeters().getWaterMeter())) {
-                        meterList.addAll(response.getMeters().getWaterMeters().getWaterMeter());
-                    }
+                    meterList = multispeakFuncs.getMspMeters(response.getMeters());
                 }
             }
         } catch (MultispeakWebServiceClientException e) {
@@ -656,14 +621,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (response != null) {
                 Meters meters = response.getMeters();
                 if (meters != null) {
-                    if (meters.getElectricMeters() != null
-                        && CollectionUtils.isNotEmpty(meters.getElectricMeters().getElectricMeter())) {
-                        meterList.addAll(meters.getElectricMeters().getElectricMeter());
-                    }
-                    if (meters.getWaterMeters() != null
-                        && CollectionUtils.isNotEmpty(meters.getWaterMeters().getWaterMeter())) {
-                        meterList.addAll(meters.getWaterMeters().getWaterMeter());
-                    }
+                    meterList = multispeakFuncs.getMspMeters(meters);
                 }
             }
         } catch (MultispeakWebServiceClientException e) {
