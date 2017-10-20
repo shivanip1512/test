@@ -41,7 +41,7 @@
         <hr/>
         
        <cti:url var="action" value="/notifications/subscriptions"/>
-        <form:form id="filter-form" action="${action}" commandName="filter" method="get" cssClass="di">
+        <form:form id="filter-form" action="${action}" commandName="filter" method="get">
             <i:inline key="yukon.common.filterBy"/>
             <tags:selectWithItems path="eventType" items="${eventTypes}" defaultItemLabel="All Types" />
             <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
