@@ -13,7 +13,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMessagePar
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.smartNotification.service.SmartNotificationMessageParametersHandler;
 import com.cannontech.tools.email.EmailMessage;
-import com.cannontech.yukon.conns.NotifClientConnection;
+import com.cannontech.yukon.INotifConnection;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -22,7 +22,7 @@ import com.google.common.collect.ImmutableMap;
 public class SmartNotificationEmailMessageParametersHandler implements SmartNotificationMessageParametersHandler {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationEmailMessageParametersHandler.class);
     private Map<SmartNotificationEventType, SmartNotificationEmailBuilder> emailBuilders;
-    @Autowired private NotifClientConnection notifClientConnection;
+    @Autowired private INotifConnection notifClientConnection;
     
     @Autowired
     public SmartNotificationEmailMessageParametersHandler(List<SmartNotificationEmailBuilder> emailBuilderList) {

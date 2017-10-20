@@ -32,8 +32,6 @@
         <property name="messageListener" ref="dataCollectionListener"/>
     </bean>
 
-    <bean class="com.cannontech.yukon.conns.NotifClientConnection"/>
-
     <bean id="infrastructureWarningsNotifListener" class="com.cannontech.services.smartNotification.service.SmartNotifInfrastructureWarningsDecider"/>
     <bean id="deviceDataMonitorNotifListener" class="com.cannontech.services.smartNotification.service.SmartNotifDeviceDataMonitorDecider"/>
     <bean id="smartNotificationMessageAssembler" class="com.cannontech.common.smartNotification.service.impl.SmartNotificationMessageAssembler"/>

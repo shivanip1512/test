@@ -22,8 +22,8 @@ public class InfrastructureWarningsParametersAssembler {
         SmartNotificationEvent event = new SmartNotificationEvent(now);
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(PAO_ID, warning.getPaoIdentifier().getPaoId());
-        parameters.put(WARNING_TYPE , warning.getWarningType());
-        parameters.put(WARNING_SEVERITY, warning.getSeverity());
+        parameters.put(WARNING_TYPE , warning.getWarningType().name());
+        parameters.put(WARNING_SEVERITY, warning.getSeverity().name());
         addArgument(parameters, warning, ARGUMENT_1, 0);
         addArgument(parameters, warning, ARGUMENT_2, 1);
         addArgument(parameters, warning, ARGUMENT_3, 2);
