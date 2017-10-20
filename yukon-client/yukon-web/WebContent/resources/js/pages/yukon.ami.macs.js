@@ -13,7 +13,6 @@ yukon.ami.macs = (function () {
 	/** Refreshes the list of scheduled scripts after every 5 seconds. */
     var _autoUpdatePageContent = function () {
         var tableContainer = $('#scripts-container'),
-            form = $('#filter-form');
             reloadUrl = tableContainer.data('url'),
             paramCharacter = reloadUrl.indexOf('?') > 0 ? '&' : '?',
             params = {};
