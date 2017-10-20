@@ -86,7 +86,7 @@ float CtiCCOriginalParent::getOriginalTripOrder() const
 
 void CtiCCOriginalParent::setPAOId(long paoId)
 {
-    _dirty |= setVariableIfDifferent(_paoId, paoId);
+    _paoId = paoId;     // We don't need to trigger a DB write when we set the PaoID.
 }
 
 void CtiCCOriginalParent::setOriginalParentId(long parentId)
@@ -155,7 +155,7 @@ void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& con
         }
         else
         {
-            CTILOG_INFO(dout, "Inserted CC Original Parent Info into DynamicCtiCCOriginalParentInfo: " << getPAOId());
+            CTILOG_INFO(dout, "Inserted CC Original Parent Info into DynamicCcOriginalParent: " << getPAOId());
             static const string inserterSql = "insert into dynamicccoriginalparent values (?, ?, ?, ?, ?)";
             Cti::Database::DatabaseWriter inserter(conn, inserterSql);
 

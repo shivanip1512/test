@@ -163,6 +163,11 @@ CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
 
     _originalParent.setPAOId(getPaoId());
 
+    if ( ! rdr["OriginalParentId"].isNull()  )
+    {
+        _originalParent.restore( rdr );
+    }
+
     //  dynamic data
 
     if ( ! rdr["AdditionalFlags"].isNull()  )
@@ -1942,8 +1947,6 @@ void CtiCCCapBank::setDynamicData(Cti::RowReader& rdr)
     rdr["changeVar"]              >> _sPercentChange;
     rdr["twoWayCBCLastControl"]   >> _reportedCBCLastControlReason;
     rdr["PartialPhaseInfo"]       >> _partialPhaseInfo;
-
-    _originalParent.restore( rdr );
 
     _insertDynamicDataFlag = false;
     _dirty = false;

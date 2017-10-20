@@ -6106,7 +6106,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                     "C.CONTROLDEVICEID != 0";
 
             static const std::string sqlID = sql +
-                " AND D.DeviceID = ?";
+                " AND C.DeviceID = ?";
 
             Cti::Database::DatabaseConnection   connection;
             Cti::Database::DatabaseReader       rdr( connection );
