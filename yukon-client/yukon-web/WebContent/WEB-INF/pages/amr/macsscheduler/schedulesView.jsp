@@ -125,5 +125,5 @@
             </c:forEach>
         </tbody>
     </table>
-    <tags:pagingResultsControls result="${list}" adjustPageCount="true"/>
+    <tags:pagingResultsControls result="${list}" adjustPageCount="true" hundreds="true"/>
 </cti:msgScope>

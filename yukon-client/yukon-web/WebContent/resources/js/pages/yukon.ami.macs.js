@@ -13,10 +13,12 @@ yukon.ami.macs = (function () {
 	/** Refreshes the list of scheduled scripts after every 5 seconds. */
     var _autoUpdatePageContent = function () {
         var tableContainer = $('#scripts-container'),
-            reloadUrl = tableContainer.attr('data-url'),
+            form = $('#filter-form');
+            reloadUrl = tableContainer.data('url'),
+            paramCharacter = reloadUrl.indexOf('?') > 0 ? '&' : '?',
             params = {};
             yukon.ui.getSortingPagingParameters(params);
-            reloadUrl = reloadUrl + "?" + $.param(params);
+            reloadUrl = reloadUrl + paramCharacter + $.param(params);
         tableContainer.load(reloadUrl, function () {
             setTimeout(_autoUpdatePageContent, 5000);
         });
@@ -260,6 +262,17 @@ yukon.ami.macs = (function () {
                         $('.js-category-select').append('<option selected=selected value=' + newCategory + '>' + newCategory + '</option>');
                         $('#category-popup').dialog('close');
                     }
+                });
+                
+                $(document).on('click', '.js-filter', function (ev) {
+                    var tableContainer = $('#scripts-container'),
+                        form = $('#filter-form');
+                    form.ajaxSubmit({
+                        success: function(data, status, xhr, $form) {
+                            tableContainer.html(data);
+                            tableContainer.data('url', yukon.url('/macsscheduler/schedules/innerView?' + form.serialize()));
+                        }
+                    });
                 });
                 
                 _initialized = true;

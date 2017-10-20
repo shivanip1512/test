@@ -14,6 +14,7 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,6 @@ import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -88,16 +88,23 @@ public class MACSScheduleController extends MultiActionController {
     
     @RequestMapping("view")
     public String view(ModelMap model, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
-            @DefaultItemsPerPage(10) PagingParameters paging) {
+            PagingParameters paging, @ModelAttribute("filter") MacsScriptFilter filter) {
+        model.addAttribute("filter", filter);
+        model.addAttribute("categories", service.getCategories());
         return "scheduledscripts.jsp";
     }
    
     @RequestMapping(value="innerView", method = RequestMethod.GET)
     public String innerView(ModelMap model, LiteYukonUser user, @DefaultSort(dir=Direction.asc, sort="scheduleName") SortingParameters sorting, 
-            @DefaultItemsPerPage(10) PagingParameters paging, YukonUserContext userContext) {
+            PagingParameters paging, @ModelAttribute("filter") MacsScriptFilter filter, YukonUserContext userContext) {
  
-        List<MacsSchedule> schedules = service.getAllSchedules();
-        
+        List<MacsSchedule> schedules = new ArrayList<>();
+        if (StringUtils.isNotBlank(filter.getCategory())) {
+            schedules = service.getSchedulesByCategory(filter.getCategory());
+        } else {
+            schedules = service.getAllSchedules();
+        }
+                
         if (rolePropertyDao.checkRole(YukonRole.DEMAND_RESPONSE, user)) {
             schedules = paoAuthorizationService.filterAuthorized(user, schedules, Permission.LM_VISIBLE);
             //Without the DEMAND_RESPONSE, we want them to be able to see all scripts.
@@ -120,9 +127,9 @@ public class MACSScheduleController extends MultiActionController {
         } else if (sortBy == ScriptsSortBy.currentState) {
             comparator = (o1, o2) -> o1.getState().compareTo(o2.getState());
         } else if (sortBy == ScriptsSortBy.stopDateTime) {
-            comparator = (o1, o2) -> o1.getNextStopTime().compareTo(o2.getNextStopTime());
+            comparator = Comparator.comparing(MacsSchedule::getNextStopTime, Comparator.nullsFirst(Date::compareTo));
         } else if (sortBy == ScriptsSortBy.startDateTime) {
-            comparator = (o1, o2) -> o1.getNextRunTime().compareTo(o2.getNextRunTime());
+            comparator = Comparator.comparing(MacsSchedule::getNextRunTime, Comparator.nullsFirst(Date::compareTo));
         }
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
@@ -141,6 +148,8 @@ public class MACSScheduleController extends MultiActionController {
         searchResult.setResultList(itemList);        
         
         model.addAttribute("list", searchResult);
+        model.addAttribute("categories", service.getCategories());
+        model.addAttribute("filter", filter);
 
         return "schedulesView.jsp";
     }
