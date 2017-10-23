@@ -196,7 +196,15 @@ GO
 
 /* Start YUK-17234 */
 ALTER TABLE PointToZoneMapping
-    ADD Ignore VARCHAR(1) DEFAULT '0' NOT NULL;
+    ADD Ignore VARCHAR(1);
+GO
+
+UPDATE PointToZoneMapping
+    SET Ignore = '0';
+GO
+
+ALTER TABLE PointToZoneMapping
+    ALTER COLUMN Ignore VARCHAR(1) NOT NULL;
 GO
 /* End YUK-17234 */
 

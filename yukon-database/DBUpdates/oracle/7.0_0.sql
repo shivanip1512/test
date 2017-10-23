@@ -186,7 +186,13 @@ INSERT INTO CCStrategyTargetSettings
 
 /* Start YUK-17234 */
 ALTER TABLE PointToZoneMapping
-    ADD Ignore VARCHAR(1) DEFAULT '0' NOT NULL;
+    ADD Ignore VARCHAR2(1);
+
+UPDATE PointToZoneMapping
+    SET Ignore = '0';
+
+ALTER TABLE PointToZoneMapping
+    MODIFY Ignore VARCHAR2(1) NOT NULL;
 /* End YUK-17234 */
 
 /* Start YUK-17309 */
