@@ -11,16 +11,17 @@ public class VfPoint {
     private Double x;
     private Double y;
     private Integer seriesId;
+    private boolean ignore;
     
     public VfPoint(Double x, Double y, Integer seriesId) {
-        this(null, null, null, false, x, y, seriesId);
+        this(null, null, null, false, x, y, seriesId, false);
     }
     
-    public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y) {
-        this(description, zoneName, phase, regulator, x, y, null);
+    public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y, boolean ignore) {
+        this(description, zoneName, phase, regulator, x, y, null, ignore);
     }
     
-    public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y, Integer seriesId) {
+    public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y, Integer seriesId, boolean ignore) {
         this.description = description;
         this.zoneName = zoneName;
         this.phase = phase;
@@ -28,6 +29,7 @@ public class VfPoint {
         this.x = x;
         this.y = y;
         this.seriesId = seriesId;
+        this.ignore = ignore;
     }
     
 	public String getDescription() {
@@ -84,6 +86,14 @@ public class VfPoint {
 
     public void setZoneName(String zoneName) {
         this.zoneName = zoneName;
+    }
+
+    public boolean isIgnore() {
+        return ignore;
+    }
+
+    public void setIgnore(boolean ignore) {
+        this.ignore = ignore;
     }
 
 }

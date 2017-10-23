@@ -21,6 +21,9 @@ $(function() {
         type: jsonDataAndOptions.type,
         data: jsonDataAndOptions.datas,
         options: jsonDataAndOptions.options,
+        hooks: {
+            draw: [displayDisabledPoints]
+        },
         methods: {
             getFilteredGraphData: function() {
                 // only show checked phase lines
@@ -47,6 +50,29 @@ $(function() {
         });
         return phases;
     }
+    
+    function displayDisabledPoints(plot, ctx) {
+        var data = plot.getData();
+        var axes = plot.getAxes();
+        var offset = plot.getPlotOffset();
+        for (var i = 0; i < data.length; i++) {
+            var series = data[i];
+            for (var j = 0; j < series.data.length; j++) {
+                var d = (series.data[j]);
+                if (d[2].ignore == true) {
+                    var x = offset.left + axes.xaxis.p2c(d[0]);
+                    var y = offset.top + axes.yaxis.p2c(d[1]);
+                    var r = 4;                
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, r, 0, Math.PI*2, true);
+                    ctx.closePath();            
+                    ctx.fillStyle = '#B0B0B0';
+                    ctx.fill();
+                }
+            }    
+        }
+      };
 
     var phaseMap = {};
     for (var i=0; i < yukon.flot.charts[chartId].data_with_meta.length; i++) {

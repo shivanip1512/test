@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -528,7 +529,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	    int regulatorId = regulatorToZone.getRegulatorId();
 	    Phase phase = regulatorToZone.getPhase();
 	    VfPoint graphPoint = getVfPoint(settings, userContext, regulatorId, 0, 0, phase, null, 
-	                                    zoneName, graphStartPosition, true);
+	                                    zoneName, graphStartPosition, true, false);
         return graphPoint;
 	}
 	
@@ -541,7 +542,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	    double distance = bankToZone.getDistance();
         double xPosition = graphStartPosition + bankToZone.getGraphPositionOffset();
         VfPoint graphPoint = getVfPoint(settings, userContext, paoId, pointId, distance, phase, null,
-                                        zoneName, xPosition, false);
+                                        zoneName, xPosition, false, false);
 	    return graphPoint;
 	}
 
@@ -555,14 +556,15 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 		Phase phase = pointToZone.getPhase();
 		double distance = pointToZone.getDistance();
 		double xPosition = graphStartPosition + pointToZone.getGraphPositionOffset();
+		boolean ignore = pointToZone.isIgnore();
 		VfPoint graphPoint = getVfPoint(settings, userContext, paoId, pointId, distance, phase, 
-		                                pointName, zoneName, xPosition, false);
+		                                pointName, zoneName, xPosition, false, ignore);
 		return graphPoint;
 	}
 
     private VfPoint getVfPoint(VfGraphSettings settings, YukonUserContext userContext,
                                int paoId, int pointId, double distance, Phase phase, String pointName, 
-                               String zoneName, double xPosition, boolean isRegulator) {
+                               String zoneName, double xPosition, boolean isRegulator, boolean ignore) {
         YukonPao regulatorPao = paoDao.getYukonPao(paoId);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(regulatorPao);
         PointValueQualityHolder pointValue;
@@ -582,15 +584,15 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         String distanceString = (distance != 0) ? String.valueOf(distance) : null;
         String phaseString = settings.getPhaseString(phase);
         String description = getBalloonText(settings, userContext, pointValueString, phaseString, 
-                                            pointName, nameString, timestamp, zoneName, distanceString);
+                                            pointName, nameString, timestamp, zoneName, distanceString, BooleanUtils.toStringTrueFalse(ignore));
         VfPoint graphPoint = new VfPoint(description, zoneName, phase, isRegulator, xPosition, 
-                                         pointValue.getValue());
+                                         pointValue.getValue(), ignore);
         return graphPoint;
     }
 
     private String getBalloonText(VfGraphSettings settings, YukonUserContext userContext, String value, 
                                   String phase, String pointName, String paoName, String timeStamp, 
-                                  String zone, String distance) {
+                                  String zone, String distance, String ignore) {
         value = StringUtils.defaultIfEmpty(value, "");
         phase = StringUtils.defaultIfEmpty(phase, "");
         pointName = StringUtils.defaultIfEmpty(pointName, "");
@@ -598,6 +600,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         timeStamp = StringUtils.defaultIfEmpty(timeStamp, "");
         zone = StringUtils.defaultIfEmpty(zone, "");
         distance = StringUtils.defaultIfEmpty(distance, "");
+        ignore = StringUtils.defaultIfEmpty(ignore,  "");
         
         if (!distance.isEmpty()) {
             String balloonDistanceText = settings.getBalloonDistanceText();
@@ -607,7 +610,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String balloonText = messageSourceAccessor.
             getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
-                       value, phase, pointName, paoName, timeStamp, zone, distance);
+                       value, phase, pointName, paoName, timeStamp, zone, distance, ignore);
         return balloonText;
     }
     

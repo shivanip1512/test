@@ -182,6 +182,7 @@ public class FlotChartServiceImpl implements FlotChartService {
                 }
 
                 pointArray.add(Collections.singletonMap("tooltip", point.getDescription()));
+                pointArray.add(Collections.singletonMap("ignore", point.isIgnore()));
                 linesArray.add(pointArray);
             }
             Map<String, Object> dataObj = new HashMap<>();
