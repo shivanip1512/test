@@ -214,15 +214,15 @@ CREATE INDEX INDX_CmdReqExReq_CmdReqExId ON CommandRequestExecRequest (
 /* End YUK-17309 */
 
 /* Start YUK-17237 */
-UPDATE YukonListEntry SET EntryText = 'LCR-6200 (ExpressCom)' WHERE EntryText = 'LCR-6200(EXPRESSCOM)';
-UPDATE YukonListEntry SET EntryText = 'LCR-6200 (RFN)' WHERE EntryText = 'LCR-6200(RFN)';
-UPDATE YukonListEntry SET EntryText = 'LCR-6200 (ZigBee)' WHERE EntryText = 'LCR-6200(ZIGBEE)';
-UPDATE YukonListEntry SET EntryText = 'LCR-6600 (ExpressCom)' WHERE EntryText = 'LCR-6600(EXPRESSCOM)';
-UPDATE YukonListEntry SET EntryText = 'LCR-6600 (ZigBee)' WHERE EntryText = 'LCR-6600(ZIGBEE)';
-UPDATE YukonListEntry SET EntryText = 'LCR-6600 (RFN)' WHERE EntryText = 'LCR-6600(RFN)';
-UPDATE YukonListEntry SET EntryText = 'LCR-6700 (RFN)' WHERE EntryText = 'LCR-6700(RFN)';
-UPDATE YukonListEntry SET EntryText = 'LCR-5000 (VERSACOM)' WHERE EntryText = 'LCR-5000(VERSACOM)';
-UPDATE YukonListEntry SET EntryText = 'LCR-5000 (ExpressCom)' WHERE EntryText = 'LCR-5000(EXPRESSCOM)';
+UPDATE YukonListEntry SET EntryText = 'LCR-6200 (ExpressCom)' WHERE EntryText = 'LCR-6200(EXPRESSCOM)' AND YukonDefinitionID = 1321;
+UPDATE YukonListEntry SET EntryText = 'LCR-6200 (RFN)' WHERE EntryText = 'LCR-6200(RFN)' AND YukonDefinitionID = 1324;
+UPDATE YukonListEntry SET EntryText = 'LCR-6200 (ZigBee)' WHERE EntryText = 'LCR-6200(ZIGBEE)' AND YukonDefinitionID = 1320;
+UPDATE YukonListEntry SET EntryText = 'LCR-6600 (ExpressCom)' WHERE EntryText = 'LCR-6600(EXPRESSCOM)' AND YukonDefinitionID = 1323;
+UPDATE YukonListEntry SET EntryText = 'LCR-6600 (ZigBee)' WHERE EntryText = 'LCR-6600(ZIGBEE)' AND YukonDefinitionID = 1322;
+UPDATE YukonListEntry SET EntryText = 'LCR-6600 (RFN)' WHERE EntryText = 'LCR-6600(RFN)' AND YukonDefinitionID = 1325;
+UPDATE YukonListEntry SET EntryText = 'LCR-6700 (RFN)' WHERE EntryText = 'LCR-6700(RFN)' AND YukonDefinitionID = 1337;
+UPDATE YukonListEntry SET EntryText = 'LCR-5000 (VERSACOM)' WHERE EntryText = 'LCR-5000(VERSACOM)' AND YukonDefinitionID = 1311;
+UPDATE YukonListEntry SET EntryText = 'LCR-5000 (ExpressCom)' WHERE EntryText = 'LCR-5000(EXPRESSCOM)' AND YukonDefinitionID = 1302;
 /* End YUK-17237 */
 
 /**************************************************************/
