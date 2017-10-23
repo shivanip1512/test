@@ -49,6 +49,14 @@ public class DisplayDaoImpl implements DisplayDao {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final Logger log = YukonLogManager.getLogger(DisplayDaoImpl.class);
     private final YukonRowMapper<Display> displayRowMapper = createDisplayRowMapper();
+    
+    /*
+     * unsupported column types
+     * insert into columntype values (14, 'PointImage' );
+     * insert into columntype values (15, 'QualityCount' );
+     */
+   
+    List<Integer> unsupportedColumnTypes = Lists.newArrayList(14, 15);
 
     @Override
     public List<Display> getDisplayByType(DisplayType type) {
@@ -151,6 +159,7 @@ public class DisplayDaoImpl implements DisplayDao {
         sql.append("SELECT DISPLAYNUM, TITLE, TYPENUM, ORDERING, WIDTH");
         sql.append("FROM DISPLAYCOLUMNS");
         sql.append("WHERE DISPLAYNUM").eq(display.getDisplayId());
+        sql.append("AND TYPENUM").notIn(unsupportedColumnTypes);
         sql.append("ORDER BY ORDERING");
         Map<Integer, Display> mappedDisplays =
             Maps.uniqueIndex(Lists.newArrayList(display), new Function<Display, Integer>() {
@@ -181,6 +190,7 @@ public class DisplayDaoImpl implements DisplayDao {
                 sql.append("SELECT DISPLAYNUM, TITLE, TYPENUM, ORDERING, WIDTH");
                 sql.append("FROM DISPLAYCOLUMNS");
                 sql.append("WHERE DISPLAYNUM").in(subList);
+                sql.append("AND TYPENUM").notIn(unsupportedColumnTypes);
                 sql.append("ORDER BY ORDERING");
                 return sql;
             }
