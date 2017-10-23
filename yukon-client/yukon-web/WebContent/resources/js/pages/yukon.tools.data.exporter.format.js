@@ -393,13 +393,7 @@ yukon.tools.dataExporterFormat = (function () {
                     if (type === 'ATTRIBUTE') {
                         attributeSelect.show();
                         attributeSelect.find("option:selected").removeAttr('selected');
-                        if (field.attribute.statusType === false) {
-                            attributeSelect.find("option[value='POINT_STATE']").addClass('dn');
-                            attributeSelect.find("option[value='QUALITY']").attr('selected','selected');
-                        } else {
-                            attributeSelect.find("option[value='POINT_STATE']").removeClass('dn');
-                            attributeSelect.find("option[value='POINT_STATE']").attr('selected','selected');
-                        }
+                        attributeSelect.find("option[value='POINT_STATE']").toggleClass('dn', !field.attribute.statusType);
                     }
                     otherOptions.show();
                     
