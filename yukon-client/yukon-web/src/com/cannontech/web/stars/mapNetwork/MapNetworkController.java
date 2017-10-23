@@ -74,7 +74,7 @@ public class MapNetworkController {
     @Autowired private LocationValidator locationValidator;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
-    public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope) throws ServletException {
+    public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         FeatureCollection geojson = paoLocationService.getLocationsAsGeoJson(Arrays.asList(device));
         Location coordinates = new Location();
@@ -129,7 +129,6 @@ public class MapNetworkController {
             log.error("Failed to get meta-data for " + deviceId, e);
         } catch (NotFoundException e) {
             log.error(e);
-            flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(e.getMessage()));
         }
 
         return "mapNetwork/home.jsp";
