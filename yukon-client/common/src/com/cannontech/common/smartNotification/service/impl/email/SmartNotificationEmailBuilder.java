@@ -1,11 +1,9 @@
 package com.cannontech.common.smartNotification.service.impl.email;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,7 +13,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
-import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
@@ -73,55 +70,8 @@ public abstract class SmartNotificationEmailBuilder {
         String emailSubject = messageSourceAccessor.getMessage("yukon.web.modules.smartNotifications." + type + "." +
                                                                quantity + ".subject", subjectArguments);
         
-        return buildMessage(emailSubject, emailBody, parameters.getRecipients());
-    }
-    
-    /**
-     * Builds a complete combined digest email notification, based on a parameters object for each subscription being
-     * combined.
-     * @throws MessagingException if an error occurs while building the email message.
-     */
-    public EmailMessage buildEmail(SmartNotificationMessageParametersMulti parametersMulti) throws MessagingException {
-
-        int intervalMinutes = parametersMulti.getIntervalMinutes();
-        String body = parametersMulti.getMessageParameters()
-                                     .stream()
-                                     .map(parameters -> {
-                                         try {
-                                             return buildEmail(parameters, intervalMinutes);
-                                         } catch (MessagingException e) {
-                                             return null;
-                                         }
-                                     })
-                                     .filter(Objects::nonNull)
-                                     .map(message -> message.getSubject() + "/n" + message.getBody())
-                                     .reduce("", (s1, s2) -> s1 + s2);
-        
-        int totalEvents = parametersMulti.getTotalEvents();
-        String subject = messageSourceAccessor.getMessage("yukon.web.modules.smartNotifications.combinedDigest.subject", totalEvents);
-        
-        List<String> recipients = parametersMulti.getMessageParameters().get(0).getRecipients();
-        return buildMessage(subject, body, recipients);
-    }
-    
-    /**
-     * Builds a complete email notification message.
-     * @throws MessagingException if an error occurs while building the EmailMessage.
-     */
-    private EmailMessage buildMessage(String emailSubject, String emailBody, List<String> recipientEmailAddresses) 
-                                          throws MessagingException {
-        
-        InternetAddress sender = new InternetAddress();
-        sender.setAddress(globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS));
-        
-        InternetAddress[] recipients = recipientEmailAddresses.stream()
-                                                              .map(recipient -> {
-                                                                  InternetAddress address = new InternetAddress();
-                                                                  address.setAddress(recipient);
-                                                                  return address;
-                                                              })
-                                                              .toArray(InternetAddress[]::new);
-        return new EmailMessage(sender, recipients, emailSubject, emailBody);
+        String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
+        return EmailMessage.newMessage(emailSubject, emailBody, sender, parameters.getRecipients());
     }
     
     /**

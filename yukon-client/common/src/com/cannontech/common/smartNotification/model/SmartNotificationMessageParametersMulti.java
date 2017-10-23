@@ -51,13 +51,6 @@ public class SmartNotificationMessageParametersMulti implements Serializable {
     }
     
     /**
-     * @return The type specified by the first message parameter.
-     */
-    public SmartNotificationEventType getType() {
-        return messageParameters.get(0).getType();
-    }
-    
-    /**
      * 
      */
     public int getTotalEvents() {

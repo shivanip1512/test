@@ -1,5 +1,7 @@
 package com.cannontech.tools.email;
 
+import java.util.List;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -58,6 +60,26 @@ public class EmailMessage {
         this(null, to, null, null, subject, body);
     }
 
+    /**
+     * Builds a complete email notification message.
+     * @throws MessagingException if an error occurs while building the EmailMessage.
+     */
+    public static EmailMessage newMessage(String emailSubject, String emailBody, String sendFromAddress, List<String> recipientEmailAddresses) 
+            throws MessagingException {
+
+        InternetAddress sender = new InternetAddress();
+        sender.setAddress(sendFromAddress);
+        
+        InternetAddress[] recipients = recipientEmailAddresses.stream()
+                                        .map(recipient -> {
+                                            InternetAddress address = new InternetAddress();
+                                            address.setAddress(recipient);
+                                            return address;
+                                        })
+                                        .toArray(InternetAddress[]::new);
+        return new EmailMessage(sender, recipients, emailSubject, emailBody);
+    }
+    
     public InternetAddress getFrom() {
         return from;
     }

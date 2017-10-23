@@ -2,17 +2,25 @@ package com.cannontech.common.smartNotification.service.impl.email;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.smartNotification.service.SmartNotificationMessageParametersHandler;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.INotifConnection;
 import com.google.common.collect.ImmutableMap;
 
@@ -22,16 +30,24 @@ import com.google.common.collect.ImmutableMap;
 public class SmartNotificationEmailMessageParametersHandler implements SmartNotificationMessageParametersHandler {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationEmailMessageParametersHandler.class);
     private Map<SmartNotificationEventType, SmartNotificationEmailBuilder> emailBuilders;
-    @Autowired private INotifConnection notifClientConnection;
+    private INotifConnection notifClientConnection;
+    private MessageSourceAccessor messageSourceAccessor;
+    private GlobalSettingDao globalSettingDao;
     
     @Autowired
-    public SmartNotificationEmailMessageParametersHandler(List<SmartNotificationEmailBuilder> emailBuilderList) {
+    public SmartNotificationEmailMessageParametersHandler(List<SmartNotificationEmailBuilder> emailBuilderList,
+                                                          INotifConnection notifClientConnection,
+                                                          YukonUserContextMessageSourceResolver messageSourceResolver,
+                                                          GlobalSettingDao globalSettingDao) {
         // Map of notification types to their email builders
         ImmutableMap.Builder<SmartNotificationEventType, SmartNotificationEmailBuilder> mapBuilder = ImmutableMap.builder();
         for (SmartNotificationEmailBuilder emailBuilder : emailBuilderList) {
             mapBuilder.put(emailBuilder.getSupportedType(), emailBuilder);
         }
         emailBuilders = mapBuilder.build();
+        
+        messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        this.notifClientConnection = notifClientConnection;
     }
     
     @Override
@@ -54,9 +70,31 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
     @Override
     public void buildMultiAndSend(SmartNotificationMessageParametersMulti parametersMulti) {
         try {
-            EmailMessage message = emailBuilders.get(parametersMulti.getType())
-                                                .buildEmail(parametersMulti);
-        
+            int intervalMinutes = parametersMulti.getIntervalMinutes();
+            String body = parametersMulti.getMessageParameters()
+                                         .stream()
+                                         .map(parameters -> {
+                                             try {
+                                                 return emailBuilders.get(parameters.getType())
+                                                                     .buildEmail(parameters, intervalMinutes);
+                                             } catch (MessagingException e) {
+                                                 log.error("Error building message for notification parameters: " 
+                                                           + parameters, e);
+                                                 return null;
+                                             }
+                                         })
+                                         .filter(Objects::nonNull)
+                                         .map(message -> message.getSubject() + "/n" + message.getBody() + "/n")
+                                         .reduce("", (s1, s2) -> s1 + s2);
+            
+            int totalEvents = parametersMulti.getTotalEvents();
+            String subject = messageSourceAccessor.getMessage("yukon.web.modules.smartNotifications.combinedDigest.subject", totalEvents);
+            
+            List<String> recipients = parametersMulti.getMessageParameters().get(0).getRecipients();
+            
+            String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
+            EmailMessage message = EmailMessage.newMessage(subject, body, sender, recipients);
+            
             notifClientConnection.sendEmail(message);
         } catch (Exception e) {
             log.debug(parametersMulti);
