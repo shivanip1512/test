@@ -203,6 +203,11 @@ CREATE TABLE CommandRequestExecRequest  (
    CONSTRAINT PK_CommandRequestExecRequest PRIMARY KEY (CommandRequestExecRequestId)
 );
 
+ALTER TABLE CommandRequestExecRequest
+   ADD CONSTRAINT FK_ComReqExRequest_ComReqExec FOREIGN KEY (CommandRequestExecId)
+      REFERENCES CommandRequestExec (CommandRequestExecId)
+      ON DELETE CASCADE;
+
 CREATE INDEX INDX_CmdReqExReq_CmdReqExId ON CommandRequestExecRequest (
    CommandRequestExecId ASC
 );

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/23/2017 1:11:44 AM                        */
+/* Created on:     10/23/2017 4:46:53 AM                        */
 /*==============================================================*/
 
 
@@ -12191,6 +12191,12 @@ go
 alter table CommPort
    add constraint FK_COMMPORT_REF_COMPO_YUKONPAO foreign key (PORTID)
       references YukonPAObject (PAObjectID)
+go
+
+alter table CommandRequestExecRequest
+   add constraint FK_ComReqExRequest_ComReqExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+         on delete cascade
 go
 
 alter table CommandRequestExecResult
