@@ -309,7 +309,10 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         Integer[] pointIds = unassigned.stream()
                                        .filter(item -> item.getMonitorPoint().getPointName().equalsIgnoreCase("Average Line Voltage")
                                                || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase B")
-                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C"))
+                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C")
+                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Va Secondary")
+                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vb Secondary")
+                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vc Secondary"))
                                        .map(CCMonitorBankList::getPointId)
                                        .toArray(Integer[]::new);
 
@@ -463,8 +466,14 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             capbankControllerDao.assignController(capBankPao.getPaoId(), cbcPao.getPaoId());
             logCapControlAssignment(cbcName, capBankPao);
             
-            createAnalogPoint("Voltage Phase B", UnitOfMeasure.VOLTS, 230, cbcPao);
-            createAnalogPoint("Voltage Phase C", UnitOfMeasure.VOLTS, 231, cbcPao);
+            if (!paoType.isTwoWayCbc()) {
+                createAnalogPoint("Voltage Phase B", UnitOfMeasure.VOLTS, 230, cbcPao);
+                createAnalogPoint("Voltage Phase C", UnitOfMeasure.VOLTS, 231, cbcPao);
+            } else {
+                createAnalogPoint("Va Secondary", UnitOfMeasure.VOLTS, 39, cbcPao);
+                createAnalogPoint("Vb Secondary", UnitOfMeasure.VOLTS, 40, cbcPao);
+                createAnalogPoint("Vc Secondary", UnitOfMeasure.VOLTS, 41, cbcPao);
+            }
         }
     }
     
