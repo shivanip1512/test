@@ -22,6 +22,9 @@ struct Test_CtiCCSubstationBusStore : CtiCCSubstationBusStore
     bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus *bus) override
         {   return true;  }
 
+    void dumpAllDynamicData() override
+        {   return;  }
+
     using CtiCCSubstationBusStore::addAreaToPaoMap;
     using CtiCCSubstationBusStore::addSubstationToPaoMap;
     using CtiCCSubstationBusStore::addSubBusToPaoMap;

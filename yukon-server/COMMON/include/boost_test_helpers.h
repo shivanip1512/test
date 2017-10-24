@@ -167,9 +167,22 @@ public:
 
 struct PreventDatabaseConnections
 {
+    std::function<SAConnection*(void)> oldDatabaseConnectionFactory;
+
     PreventDatabaseConnections()
+        :   oldDatabaseConnectionFactory { Cti::Database::gDatabaseConnectionFactory }
     {
-        Cti::Database::gDatabaseConnectionFactory = []() -> SAConnection* { throw std::exception("Database access is forbidden in unit tests"); };
+        Cti::Database::gDatabaseConnectionFactory = throwingFactory;
+    }
+
+    static SAConnection* throwingFactory()
+    {
+        throw std::exception("Database access is forbidden in unit tests");
+    }
+
+    ~PreventDatabaseConnections()
+    {
+        Cti::Database::gDatabaseConnectionFactory = oldDatabaseConnectionFactory;
     }
 };
 

@@ -162,7 +162,8 @@ public:
     static void deleteInstance();
     static void setInstance(CtiCCSubstationBusStore* substationBusStore);
 
-    void dumpAllDynamicData();
+    virtual void dumpAllDynamicData();
+
     bool isValid();
     void setValid(bool valid);
     bool getReregisterForPoints();
