@@ -16,7 +16,8 @@
     <hr/>
     <form:form id="filter-form" action="${baseUrl}" commandName="filter" method="get">
         <i:inline key="yukon.common.filterBy"/>
-        <tags:selectWithItems path="category" items="${categories}" defaultItemLabel="All Categories" />
+        <cti:msg2 var="allCategories" key=".allCategories"/>
+        <tags:selectWithItems path="category" items="${categories}" defaultItemLabel="${allCategories}" />
         <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
     </form:form>
     <hr/>

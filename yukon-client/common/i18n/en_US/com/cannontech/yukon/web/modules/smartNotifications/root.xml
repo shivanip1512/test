@@ -6,7 +6,8 @@
     
     <!-- User Profile Notifications Section -->
     <entry key="yukon.web.modules.smartNotifications.notifications.title">Notifications</entry>   
-    <entry key="yukon.web.modules.smartNotifications.singleNotification">Single Notification for all Daily Digests</entry>   
+    <entry key="yukon.web.modules.smartNotifications.singleNotification">Single Notification for all Daily Digests</entry>  
+    <entry key="yukon.web.modules.smartNotifications.allTypes">All Types</entry> 
     <entry key="yukon.web.modules.smartNotifications.subscribe.label">Subscribe</entry>    
     <entry key="yukon.web.modules.smartNotifications.notificationDetail">Recent Notification Details</entry>    
     <entry key="yukon.web.modules.smartNotifications.unsubscribe">Unsubscribe</entry>   
