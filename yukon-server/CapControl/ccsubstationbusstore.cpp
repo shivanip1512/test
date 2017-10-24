@@ -2433,7 +2433,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         if( amFmDbType != "none" && amFmDbName != "none" && amFmDbUser != "none" && amFmDbPassword != "none" )
         {
             CTILOG_INFO(dout, "Obtaining connection to the AMFM database...");
-            setDatabaseParams(amFmDbType,amFmDbName,amFmDbUser,amFmDbPassword);
+            Cti::Database::setDatabaseParams(amFmDbType,amFmDbName,amFmDbUser,amFmDbPassword);
 
             CtiTime currenttime = CtiTime();
             unsigned long tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);

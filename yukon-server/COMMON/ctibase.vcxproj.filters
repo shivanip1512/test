@@ -264,6 +264,12 @@
     <ClCompile Include="Attribute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="db_connection_proxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="db_connection_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">
@@ -639,6 +645,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Attribute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\db_connection_proxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\db_connection_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

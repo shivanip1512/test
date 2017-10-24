@@ -392,6 +392,8 @@
     </ClCompile>
     <ClCompile Include="dbaccess.cpp">
     </ClCompile>
+    <ClCompile Include="db_connection_manager.cpp" />
+    <ClCompile Include="db_connection_proxy.cpp" />
     <ClCompile Include="debug_timer.cpp">
     </ClCompile>
     <ClCompile Include="desolvers.cpp">
@@ -543,6 +545,8 @@
     <ClInclude Include="include\database_util.h" />
     <ClInclude Include="include\database_writer.h" />
     <ClInclude Include="include\date_utility.h" />
+    <ClInclude Include="include\db_connection_manager.h" />
+    <ClInclude Include="include\db_connection_proxy.h" />
     <ClInclude Include="include\db_entry_defines.h" />
     <ClInclude Include="include\dbaccess.h" />
     <ClInclude Include="include\debug_timer.h" />

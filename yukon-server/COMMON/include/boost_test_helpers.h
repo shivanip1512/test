@@ -169,7 +169,7 @@ struct PreventDatabaseConnections
 {
     PreventDatabaseConnections()
     {
-        gDatabaseConnectionFactory = []() -> SAConnection* { throw std::exception("Database access is forbidden in unit tests"); };
+        Cti::Database::gDatabaseConnectionFactory = []() -> SAConnection* { throw std::exception("Database access is forbidden in unit tests"); };
     }
 };
 
