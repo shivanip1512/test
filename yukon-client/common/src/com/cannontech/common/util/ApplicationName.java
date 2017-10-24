@@ -1,5 +1,8 @@
 package com.cannontech.common.util;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+
 public enum ApplicationName {
     
     //  Main applications
@@ -44,6 +47,20 @@ public enum ApplicationName {
     ;
 
     private final String applicationName;
+    private final static ImmutableMap<String, ApplicationName> lookupByName;
+    static {
+        Builder<String, ApplicationName> byNameBuilder =
+            ImmutableMap.builder();
+
+        for (ApplicationName application : values()) {
+            byNameBuilder.put(application.getApplicationName(), application);
+        }
+        lookupByName = byNameBuilder.build();
+    }
+    
+    public static ApplicationName getByName(String name) {
+        return lookupByName.get(name);
+    }
 
     private ApplicationName(String appName) {
         this.applicationName = appName;
