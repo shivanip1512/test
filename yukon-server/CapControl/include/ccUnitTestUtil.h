@@ -9,6 +9,8 @@
 #include "pfactorkwkvarstrategy.h"
 #include "pointdefs.h"
 
+#include "boost_test_helpers.h"
+
 namespace Cti {
 namespace Test {
 namespace CapControl {
@@ -16,14 +18,15 @@ namespace {
 
 struct Test_CtiCCSubstationBusStore : CtiCCSubstationBusStore
 {
+    Test_CtiCCSubstationBusStore() : 
+        CtiCCSubstationBusStore( Cti::Test::use_in_unit_tests_only {} )
+        {   /* empty */  }
+
     bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload) override
         {   pao->setDisableFlag(disableFlag); return true;  }
 
     bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus *bus) override
         {   return true;  }
-
-    void dumpAllDynamicData() override
-        {   return;  }
 
     using CtiCCSubstationBusStore::addAreaToPaoMap;
     using CtiCCSubstationBusStore::addSubstationToPaoMap;
