@@ -11,15 +11,26 @@
 
 #include <SQLAPI.h>
 
-namespace Cti {
-namespace Database {
-
 namespace {
+
+struct DBConnectionHolder
+{
+    SAConnection *connection;
+    bool inUse;
+
+    DBConnectionHolder():
+        connection(NULL),
+        inUse(false)
+    {
+    }
+};
 
 std::string dbType;
 std::string dbServer;
 std::string dbUser;
 std::string dbPassword;
+
+std::vector<DBConnectionHolder> connectionList;
 
 // This lock serializes access to the database,connection
 CtiCriticalSection DbMutex;
@@ -123,22 +134,18 @@ std::string assignSQLPlaceholders(const std::string &sql)
     return result;
 }
 
-namespace {
-
 // Attempts to create a connection to the database, returns NULL if not successful.
 SAConnection* createDBConnection()
 {
-    CtiLockGuard<CtiCriticalSection> guard(DbMutex);
-
     if( dbType == "none" )
     {
-        return nullptr;
+        return NULL;
     }
+
+    SAConnection* connection = new SAConnection();
 
     try
     {
-        auto connection = std::make_unique<SAConnection>();
-
         std::string server = dbServer;
 
         if( boost::starts_with(dbType, "oracle") )
@@ -157,20 +164,87 @@ SAConnection* createDBConnection()
         }
 
         connection->Connect(server.c_str(), dbUser.c_str(), dbPassword.c_str());
-
-        return connection.release();
+        return connection;
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Database connection unsuccessful");
+        delete connection;
     }
 
-    return nullptr;
+    return NULL;
 }
 
+DLLEXPORT
+SAConnection* getNewConnection()
+{
+    return gDatabaseConnectionFactory();
 }
 
-DLLEXPORT std::function<SAConnection*(void)> gDatabaseConnectionFactory = createDBConnection;
+DLLEXPORT std::function<SAConnection*(void)> gDatabaseConnectionFactory = []()
+{
+    CtiLockGuard<CtiCriticalSection> guard( DbMutex);
 
-}
+    for( auto& connHolder : connectionList )
+    {
+        if( ! connHolder.inUse )
+        {
+            // If !inUse, this is ours. This block must return.
+            connHolder.inUse = true;
+            if(connHolder.connection != NULL && connHolder.connection->isAlive())
+            {
+                return connHolder.connection;
+            }
+            else
+            {
+                delete connHolder.connection;
+                connHolder.connection = createDBConnection();
+                return connHolder.connection;
+            }
+        }
+    }
+
+    // We need a new connection, all of them were in use!
+
+    DBConnectionHolder connHolder;
+    connHolder.inUse = true;
+    connHolder.connection = createDBConnection();
+
+    if(connHolder.connection != NULL)
+    {
+        connectionList.push_back(connHolder);
+
+        Cti::FormattedList connectionInfo;
+        
+        const auto clientVersion = connHolder.connection->ClientVersion();
+        const auto serverVersion = connHolder.connection->ServerVersion();
+
+        connectionInfo.add("Client major version") << (clientVersion >> 16);
+        connectionInfo.add("Client minor version") << (clientVersion & 0xffff);
+
+        connectionInfo.add("Server major version") << (serverVersion >> 16);
+        connectionInfo.add("Server minor version") << (serverVersion & 0xffff);
+
+        CTILOG_INFO(dout, "Database connection " << connectionList.size() << " created:" << connectionInfo);
+    }
+
+    return connHolder.connection;
+};
+
+DLLEXPORT
+void releaseDBConnection(SAConnection *connection)
+{
+    CtiLockGuard<CtiCriticalSection> guard( DbMutex);
+
+    for( auto& connHolder : connectionList )
+    {
+        if(connHolder.connection == connection)
+        {
+            connHolder.inUse = false;
+            delete connHolder.connection;
+            connHolder.connection = 0;
+            return;
+        }
+    }
+    CTILOG_ERROR(dout, "Attempted to release a connection that could not be found ");
 }

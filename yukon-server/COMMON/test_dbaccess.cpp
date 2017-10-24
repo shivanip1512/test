@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_assignSQLPlaceholders)
 
     for (int i = 0; i < sizeof(sql_input)/sizeof(*sql_input); i++)
     {
-        BOOST_CHECK_EQUAL( sql_expected_output[i], Cti::Database::assignSQLPlaceholders( sql_input[i] ) );
+        BOOST_CHECK_EQUAL( sql_expected_output[i], assignSQLPlaceholders( sql_input[i] ) );
     }
 }
 

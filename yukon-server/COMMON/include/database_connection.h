@@ -1,7 +1,6 @@
 #pragma once
 
 #include "dbaccess.h"
-#include "db_connection_proxy.h"
 #include "guard.h"
 
 class SAConnection;
@@ -22,7 +21,7 @@ typedef id_set::const_iterator id_set_itr;
 class IM_EX_CTIBASE DatabaseConnection
 {
 private:
-    ConnectionProxy connection;
+    SAConnection *connection;
 
     void*  operator new   (size_t){return NULL;};
     void*  operator new[] (size_t){return NULL;};
@@ -57,6 +56,8 @@ public:
 
     DatabaseConnection();
     DatabaseConnection(QueryTimeout t);
+
+    virtual ~DatabaseConnection();
 
     bool isValid() const;
 

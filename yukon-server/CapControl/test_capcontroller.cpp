@@ -21,7 +21,6 @@ struct overrideGlobals
 {
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
-    Cti::Test::PreventDatabaseConnections preventDatabaseConnections;
 
     overrideGlobals() :
         fixtureConfig(new Cti::Test::test_DeviceConfig),
