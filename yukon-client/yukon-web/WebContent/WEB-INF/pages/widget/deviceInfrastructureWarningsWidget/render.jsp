@@ -14,7 +14,7 @@
                         <c:if test="${warning.severity == 'HIGH'}">
                             <c:set var="warningColor" value="error"/>
                         </c:if>
-                        <span class="${warningColor}"><cti:msg2 key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/>
+                        <span class="${warningColor}"><i:inline key="${warning}"/></span>
                     </td>
                 </tr>
             </c:forEach>
