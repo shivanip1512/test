@@ -436,8 +436,6 @@ protected:
     void addFeederToPaoMap(CtiCCFeederPtr feeder);
     void addCapBankToCBCMap(CtiCCCapBankPtr capbank);
 
-    using DynamicDumpFn = void (CtiCCSubstationBusStore::*)(void);
-
 public:
     CtiCCSubstationBus_vec getSubBusesByAreaId(int areaId);
     CtiCCSubstationBus_vec getSubBusesBySpecialAreaId(int areaId);
@@ -462,6 +460,8 @@ public:
     void stopThreads();
 
 private:
+
+    using DynamicDumpFn = void (CtiCCSubstationBusStore::*)(void);
 
     CtiCCSubstationBusStore::CtiCCSubstationBusStore(DynamicDumpFn);
 
