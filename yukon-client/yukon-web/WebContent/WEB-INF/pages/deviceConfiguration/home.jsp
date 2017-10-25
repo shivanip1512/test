@@ -7,6 +7,11 @@
 
 <cti:standardPage module="tools" page="configs">
 
+    <div id="page-actions" class="dn">        
+        <cti:url var="url" value="/deviceConfiguration/summary/view"/>
+        <cm:dropdownOption key=".summary" href="${url}"/>
+    </div>
+
 <%-- DEVICE CONFIGURATIONS --%>
 <div class="column-12-12">
     <div class="column one">

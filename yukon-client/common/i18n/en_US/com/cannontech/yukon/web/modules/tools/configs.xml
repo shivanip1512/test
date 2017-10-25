@@ -679,4 +679,9 @@
     <entry key="yukon.web.modules.tools.configs.config.rtu.title">RTU</entry>
     <entry key="yukon.web.modules.tools.configs.config.cbc.title">Cap Bank Controller</entry>
     <entry key="yukon.web.modules.tools.configs.config.regulator.title">Regulator</entry>
+    
+    <!-- Summary Page -->
+    <entry key="yukon.web.modules.tools.configs.summary">Device Configuration Summary</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.pageName">Device Configuration Summary</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.pageDescription">Device Configuration Summary</entry>
 </properties>

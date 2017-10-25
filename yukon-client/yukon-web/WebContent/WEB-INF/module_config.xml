@@ -253,6 +253,7 @@
           </page>
           <page name="configs.category.EDIT" type="BASIC" hideFavorite="true"/>
           <page name="configs.setup" type="BASIC"/>
+          <page name="configs.summary" type="BASIC"/>
         </pages>
       </page>
       <page name="bulk.home" type="BASIC">
