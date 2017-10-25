@@ -30,7 +30,7 @@ namespace test_base
     TEST_CLASS(TestBoostWrapper)
     {
         TEST_WRAPPER(calc);
-        TEST_WRAPPER(capcontrol);
+        //TEST_WRAPPER(capcontrol);
         TEST_WRAPPER(common);
         TEST_WRAPPER(database);
         TEST_WRAPPER(deviceConfig);
