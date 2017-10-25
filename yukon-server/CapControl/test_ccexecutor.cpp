@@ -20,6 +20,7 @@ struct overrideGlobals
     boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
 
     Cti::Test::Override_ConfigManager overrideConfigManager;
+    Cti::Test::PreventDatabaseConnections preventDatabaseConnections;
 
     struct test_CtiCapController : CtiCapController
     {
@@ -29,7 +30,7 @@ struct overrideGlobals
         boost::ptr_vector<CtiMultiMsg> points;
         boost::ptr_vector<CtiMultiMsg> pilMultiMsgs;
 
-        virtual void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg)
+        void confirmCapBankControl(CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg) override
         {
             if (pilMultiMsg)
             {
@@ -41,7 +42,7 @@ struct overrideGlobals
             }
         }
 
-        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg)
+        void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg) override
         {
             if (pilRequest)
             {
@@ -52,12 +53,19 @@ struct overrideGlobals
                 points.push_back(multiMsg);
             }
         }
+
+        void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
+        {
+            delete message;
+        }
     };
 
     overrideGlobals() :
         fixtureConfig(new Cti::Test::test_DeviceConfig),
         overrideConfigManager(fixtureConfig)
     {
+        BypassDatabaseForIdGen(test_tag);
+
         Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
 
         CtiCCSubstationBusStore::setInstance(store);

@@ -34,11 +34,13 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
     using MctDevice::value_locator;
     using MctDevice::getDescriptorForRead;
     using MctDevice::ResultDecode;
+    using MctDevice::decodeGetStatusDisconnect;
 
     using Mct4xxDevice::getUsageReportDelay;
 
     using Mct420Device::getDemandData;
     using Mct420Device::executeGetValue;
+    using Mct420Device::executeGetStatus;
 
     using Mct420Device::decodeGetValueDailyRead;
     using Mct420Device::decodeGetValueOutage;
@@ -1986,6 +1988,67 @@ BOOST_FIXTURE_TEST_SUITE(commandExecutions, commandExecution_helper)
                     BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(18,  7, 2012), 14, 01, 29) );
                     BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-420CL / Outage 2 : 07/18/2012 14:01:29 for 00:42:51");
                 }
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct420cd_getstatus_disconnect)
+    {
+        Cti::Test::set_to_central_timezone();
+
+        {
+            CtiCommandParser parse( "getstatus disconnect" );
+
+            BOOST_CHECK_EQUAL( ClientErrors::None , test_Mct420CD().executeGetStatus(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xFE);
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1);
+
+            BOOST_CHECK( outList.empty() );
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+            INMESS im;
+
+            im.Buffer.DSt.Message[0] = 0xFC;
+            im.Buffer.DSt.Length = 1;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            strcpy(im.Return.CommandStr, "getstatus disconnect");
+
+            BOOST_CHECK_EQUAL( ClientErrors::None , test_Mct420CD().decodeGetStatusDisconnect(im, timeNow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            CtiMultiMsg_vec points = retMsg->PointData();
+
+            BOOST_REQUIRE_EQUAL( points.size(), 1 );
+
+            {
+                const CtiPointDataMsg *pdata = dynamic_cast<CtiPointDataMsg *>(points[0]);
+
+                BOOST_REQUIRE( pdata );
+
+                BOOST_CHECK_CLOSE( pdata->getValue(), 1, 0.001 );
+                BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
+                //BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(20, 10, 2011), 13, 37, 22) );
+                BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-420CD / Status1:Connected");
             }
         }
     }

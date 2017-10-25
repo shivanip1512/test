@@ -31,6 +31,12 @@ using OUTMESS = CtiOutMessage;
 class CtiMutex;
 enum CtiPointType_t;
 
+namespace Cti {
+namespace Test {
+struct use_in_unit_tests_only;  //  tag to prevent unit-test-specific code from being run in production code
+}
+}
+
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
 
@@ -45,6 +51,8 @@ IM_EX_CTIBASE INT  CCEventLogIdGen();
 IM_EX_CTIBASE INT  CCEventSeqIdGen();
 IM_EX_CTIBASE INT  PAOIdGen();
 IM_EX_CTIBASE INT  SynchronizedIdGen(std::string name, int values_needed);
+
+IM_EX_CTIBASE void BypassDatabaseForIdGen(Cti::Test::use_in_unit_tests_only&);
 
 IM_EX_CTIBASE void InEchoToOut(const INMESS &In, CtiOutMessage &Out);
 IM_EX_CTIBASE void OutEchoToIN(const CtiOutMessage &Out, INMESS &In);
@@ -152,8 +160,6 @@ IM_EX_CTIBASE std::string explainTags(const unsigned tags);
 IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length);
 
 IM_EX_CTIBASE std::vector<int> getPointIdsOnPao(long paoid);
-IM_EX_CTIBASE std::string getEncodingTypeForPort(long portId);
-IM_EX_CTIBASE std::string getEncodingKeyForPort(long portId);
 
 IM_EX_CTIBASE bool canConnectToDatabase();
 
@@ -347,11 +353,6 @@ namespace Cti
             return find_gcd(x, y % x);
         }
     }
-
-namespace Test
-{
-    struct use_in_unit_tests_only;  //  tag to prevent unit-test-specific code from being run in production code
-}
 }
 
 template <class T>

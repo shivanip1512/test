@@ -71,6 +71,17 @@ CtiTime timeSaver;
     Constructor
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
+    CtiCCSubstationBusStore(&CtiCCSubstationBusStore::dumpAllDynamicDataImpl)
+{
+}
+
+CtiCCSubstationBusStore::CtiCCSubstationBusStore(Cti::Test::use_in_unit_tests_only&) :
+    CtiCCSubstationBusStore(&CtiCCSubstationBusStore::noOp)
+{
+}
+
+CtiCCSubstationBusStore::CtiCCSubstationBusStore(DynamicDumpFn dynamicDumpFn) :
+    _dynamicDumpFn(dynamicDumpFn),
     _isvalid(false),
     _attributeService(new AttributeService),
     _reregisterforpoints(true),
@@ -962,9 +973,28 @@ bool CtiCCSubstationBusStore::handlePointDataByPaoId( const int paoId, const Cti
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
 
-    Writes out the dynamic information for each of the substation buses.
+    Executes the dumpAllDynamicData function assigned at construction.
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::dumpAllDynamicData()
+{
+    (this->*_dynamicDumpFn)();
+}
+
+/*---------------------------------------------------------------------------
+    noOp
+
+    A no-operation dumpAllDynamicData substitute for use in unit tests.
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::noOp()
+{
+}
+
+/*---------------------------------------------------------------------------
+    dumpAllDynamicDataImpl
+
+    Writes out the dynamic information for each of the substation buses.
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::dumpAllDynamicDataImpl()
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
@@ -2433,7 +2463,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         if( amFmDbType != "none" && amFmDbName != "none" && amFmDbUser != "none" && amFmDbPassword != "none" )
         {
             CTILOG_INFO(dout, "Obtaining connection to the AMFM database...");
-            setDatabaseParams(amFmDbType,amFmDbName,amFmDbUser,amFmDbPassword);
+            Cti::Database::setDatabaseParams(amFmDbType,amFmDbName,amFmDbUser,amFmDbPassword);
 
             CtiTime currenttime = CtiTime();
             unsigned long tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);

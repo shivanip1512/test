@@ -28,28 +28,38 @@ using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 using Cti::Database::DatabaseWriter;
 
+static std::atomic_bool bypassDatabase = false;
+
+void BypassDatabaseForIdGen(Cti::Test::use_in_unit_tests_only&)
+{
+    bypassDatabase = true;
+}
+
 LONG GetMaxLMControl(long pao)
 {
     string sql;
     INT id = 0;
 
-    sql = string(("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ")) + CtiNumStr(pao) + string(" AND ACTIVERESTORE != 'N'");
+    if( ! bypassDatabase )
+    {
+        sql = string(("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ")) + CtiNumStr(pao) + string(" AND ACTIVERESTORE != 'N'");
 
-    DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
-    rdr.execute();
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
 
-    if(rdr())
-    {
-        rdr >> id;
-    }
-    else if( ! rdr.isValid() )
-    {
-        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-    }
-    else
-    {
-        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+        if(rdr())
+        {
+            rdr >> id;
+        }
+        else if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else
+        {
+            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+        }
     }
 
     return id;
@@ -79,21 +89,24 @@ LONG LMControlHistoryIdGen(bool force)
 
         if(!init_id || force)
         {
-            DatabaseConnection conn;
-            DatabaseReader rdr(conn, sql);
-            rdr.execute();
+            if( ! bypassDatabase )
+            {
+                DatabaseConnection conn;
+                DatabaseReader rdr(conn, sql);
+                rdr.execute();
 
-            if(rdr())
-            {
-                rdr >> tempid;
-            }
-            else if( ! rdr.isValid() )
-            {
-                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-            }
-            else
-            {
-                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+                if(rdr())
+                {
+                    rdr >> tempid;
+                }
+                else if( ! rdr.isValid() )
+                {
+                    CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+                }
+                else
+                {
+                    CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+                }
             }
 
             if(tempid >= id)
@@ -156,23 +169,26 @@ LONG VerificationSequenceGen(bool force, int force_value)
         //  do we need to do a database select?
         if( !init_id || force )
         {
-            DatabaseConnection conn;
-            DatabaseReader rdr(conn, sql);
-            rdr.execute();
-
             LONG tempid = -1;
 
-            if(rdr())
+            if( ! bypassDatabase )
             {
-                rdr >> tempid;
-            }
-            else if( ! rdr.isValid() )
-            {
-                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-            }
-            else
-            {
-                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+                DatabaseConnection conn;
+                DatabaseReader rdr(conn, sql);
+                rdr.execute();
+
+                if(rdr())
+                {
+                    rdr >> tempid;
+                }
+                else if( ! rdr.isValid() )
+                {
+                    CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+                }
+                else
+                {
+                    CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+                }
             }
 
             if( tempid >= vs_id )
@@ -208,28 +224,35 @@ int DynamicPaoStatisticsIdGen()
 
     if( ! id )
     {
-        static const std::string sql = "SELECT MAX(DynamicPaoStatisticsId) FROM DynamicPaoStatistics";
-
-        DatabaseConnection conn;
-        DatabaseReader rdr(conn, sql);
-        rdr.execute();
-
-        if(rdr())
+        if( bypassDatabase )
         {
-            int temp_id;
-
-            rdr >> temp_id;
-
-            if( temp_id >= *id )
-            {
-                id = temp_id;
-            }
+            id = 0;
         }
         else
         {
-            CTILOG_ERROR(dout, "DB read "<< (rdr.isValid() ? "returned no rows":"failed") <<" for SQL query: "<< rdr.asString());
+            static const std::string sql = "SELECT MAX(DynamicPaoStatisticsId) FROM DynamicPaoStatistics";
 
-            throw std::runtime_error("invalid DB reader in DynamicPaoStatisticsIdGen()");
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
+
+            if(rdr())
+            {
+                int temp_id;
+
+                rdr >> temp_id;
+
+                if( temp_id >= *id )
+                {
+                    id = temp_id;
+                }
+            }
+            else
+            {
+                CTILOG_ERROR(dout, "DB read "<< (rdr.isValid() ? "returned no rows":"failed") <<" for SQL query: "<< rdr.asString());
+
+                throw std::runtime_error("invalid DB reader in DynamicPaoStatisticsIdGen()");
+            }
         }
     }
 
@@ -248,21 +271,24 @@ long long ChangeIdGen(bool force)
 
     if(!init_id || force)
     {
-        DatabaseConnection conn;
-        DatabaseReader rdr(conn, sql);
-        rdr.execute();
+        if( ! bypassDatabase )
+        {
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
 
-        if(rdr())
-        {
-            rdr >> tempid;
-        }
-        else if( ! rdr.isValid() )
-        {
-            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-        }
-        else
-        {
-            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+            if(rdr())
+            {
+                rdr >> tempid;
+            }
+            else if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
+            else
+            {
+                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+            }
         }
 
         if(tempid >= id)
@@ -286,21 +312,24 @@ INT SystemLogIdGen()
 
     if(!init_id)
     {
-        DatabaseConnection conn;
-        DatabaseReader rdr(conn, sql);
-        rdr.execute();
+        if( ! bypassDatabase )
+        {
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
 
-        if(rdr())
-        {
-            rdr >> id;
-        }
-        else if( ! rdr.isValid() )
-        {
-            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-        }
-        else
-        {
-            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+            if(rdr())
+            {
+                rdr >> id;
+            }
+            else if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
+            else
+            {
+                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+            }
         }
 
         init_id = TRUE;
@@ -317,42 +346,13 @@ INT PAOIdGen()
 
 INT CCEventActionIdGen(LONG capBankPointId)
 {
-
     string sql;
     INT id = 0;
 
-    sql = string(("SELECT MAX(ACTIONID) FROM CCEVENTLOG WHERE POINTID  = ")) + CtiNumStr(capBankPointId);
-
-    DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
-    rdr.execute();
-
-    if(rdr())
+    if( ! bypassDatabase )
     {
-        rdr >> id;
-    }
-    else if( ! rdr.isValid() )
-    {
-        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-    }
-    else
-    {
-        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
-    }
+        sql = string(("SELECT MAX(ACTIONID) FROM CCEVENTLOG WHERE POINTID  = ")) + CtiNumStr(capBankPointId);
 
-    return id;
-}
-
-INT CCEventLogIdGen()
-{
-    static BOOL init_id = FALSE;
-    static INT id = 0;
-    static CtiCriticalSection   mux;
-    static const CHAR sql[] = "SELECT MAX(LOGID) FROM CCEVENTLOG";
-
-
-    if(!init_id)
-    {
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
@@ -368,6 +368,39 @@ INT CCEventLogIdGen()
         else
         {
             CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+        }
+    }
+
+    return id;
+}
+
+INT CCEventLogIdGen()
+{
+    static BOOL init_id = FALSE;
+    static INT id = 0;
+    static CtiCriticalSection   mux;
+    static const CHAR sql[] = "SELECT MAX(LOGID) FROM CCEVENTLOG";
+
+    if(!init_id)
+    {
+        if( ! bypassDatabase )
+        {
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
+
+            if(rdr())
+            {
+                rdr >> id;
+            }
+            else if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
+            else
+            {
+                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+            }
         }
 
         init_id = TRUE;
@@ -387,21 +420,24 @@ INT CCEventSeqIdGen()
 
     if(!init_id)
     {
-        DatabaseConnection conn;
-        DatabaseReader rdr(conn, sql);
-        rdr.execute();
+        if( ! bypassDatabase )
+        {
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
 
-        if(rdr())
-        {
-            rdr >> id;
-        }
-        else if( ! rdr.isValid() )
-        {
-            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-        }
-        else
-        {
-            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+            if(rdr())
+            {
+                rdr >> id;
+            }
+            else if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
+            else
+            {
+                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+            }
         }
 
         init_id = TRUE;
@@ -416,6 +452,11 @@ INT SynchronizedIdGen(string name, int values_needed)
 {
     bool status = false;
     INT last = 0;
+
+    if( bypassDatabase )
+    {
+        return last;
+    }
 
     if(values_needed > 0 && name.length() > 1)
     {
@@ -2155,60 +2196,6 @@ vector<unsigned long> GetPseudoPointIDs()
     }
 
     return pointIDs;
-}
-
-string getEncodingTypeForPort(long portId)
-{
-    string sql("SELECT encodingtype FROM portterminalserver WHERE portid = ");
-    sql += CtiNumStr(portId);
-
-    string type = "";
-
-    DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
-    rdr.execute();
-
-    if(rdr())
-    {
-        rdr["encodingtype"] >> type;
-    }
-    else if( ! rdr.isValid() )
-    {
-        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-    }
-    else
-    {
-        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
-    }
-
-    return type;
-}
-
-string getEncodingKeyForPort(long portId)
-{
-    string sql("SELECT encodingkey FROM portterminalserver WHERE portid = ");
-    sql += CtiNumStr(portId);
-
-    string type = "";
-
-    DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
-    rdr.execute();
-
-    if(rdr())
-    {
-        rdr["encodingkey"] >> type;
-    }
-    else if( ! rdr.isValid() )
-    {
-        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-    }
-    else
-    {
-        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
-    }
-
-    return type;
 }
 
 double limitValue(double input, double minValue, double maxValue)

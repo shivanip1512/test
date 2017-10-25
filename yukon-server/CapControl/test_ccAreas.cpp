@@ -2,11 +2,12 @@
 
 #include <boost/ptr_container/ptr_map.hpp>
 
-#include "boost_test_helpers.h"
 #include "test_reader.h"
 #include "ccarea.h"
 #include "ccsparea.h"
 
+#include "ccUnitTestUtil.h"
+#include "boost_test_helpers.h"
 
 struct test_CtiCCArea : CtiCCArea
 {
@@ -1181,6 +1182,10 @@ BOOST_AUTO_TEST_CASE( test_ccSpecialArea_construction )
 
 BOOST_AUTO_TEST_CASE( test_ccArea_point_assignment )
 {
+    auto cc = new Cti::Test::CapControl::Test_CtiCapController;
+
+    CtiCapController::setInstance(cc);
+
     boost::ptr_map< long, CtiCCArea >    areas;
 
     {   // Core area object initialization
@@ -1350,6 +1355,10 @@ BOOST_AUTO_TEST_CASE( test_ccArea_point_assignment )
 
 BOOST_AUTO_TEST_CASE( test_ccSpecialArea_point_assignment )
 {
+    auto cc = new Cti::Test::CapControl::Test_CtiCapController;
+
+    CtiCapController::setInstance(cc);
+
     boost::ptr_map< long, CtiCCSpecial >    areas;
 
     {   // Core area object initialization

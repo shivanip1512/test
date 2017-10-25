@@ -16,7 +16,7 @@ using std::string;
 
 DatabaseConnection::DatabaseConnection()
 {
-    if( connection = getNewConnection() )
+    if( connection )
     {
         connection->setAutoCommit(SA_AutoCommitOn);
     }
@@ -41,14 +41,6 @@ DatabaseConnection::DatabaseConnection(QueryTimeout t)
     }
 }
 
-DatabaseConnection::~DatabaseConnection()
-{
-    if( connection )
-    {
-        releaseDBConnection(connection);
-    }
-}
-
 DatabaseConnection::operator SAConnection*()
 {
     return connection;
@@ -56,7 +48,7 @@ DatabaseConnection::operator SAConnection*()
 
 bool DatabaseConnection::isValid() const
 {
-    return ( connection != NULL ) && connection->isAlive();
+    return connection && connection->isAlive();
 }
 
 auto DatabaseConnection::getClientType() const -> ClientType

@@ -275,7 +275,6 @@ public:
                                                         PaoIdToAreaMap *paobject_area_map,
                                                         PaoIdToSpecialAreaMap *paobject_specialarea_map );
     void reloadAndAssignHolidayStrategysFromDatabase(long strategyId);
-    void reloadStrategyParametersFromDatabase(long strategyId);
     bool loadCapBankMonitorPoint(CtiCCMonitorPointPtr currentMonPoint, std::set< std::pair<long, int> >  &requiredPointResponses,
                                                         PaoIdToCapBankMap *paobject_capbank_map,
                                                         PaoIdToFeederMap *paobject_feeder_map,
@@ -415,7 +414,6 @@ public:
     bool addKVAROperation( long capbankId, long kvar );
     bool removeKVAROperation( long capbankId );
 
-    void resetAllOpStats();
     void createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
                                   CtiCCSubstationPtr station, CtiCCAreaPtr area, CtiCCSpecialPtr spArea);
     void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);
@@ -428,6 +426,8 @@ public:
 
     //For unit tests only
 protected:
+    CtiCCSubstationBusStore(Cti::Test::use_in_unit_tests_only&);
+
     void addAreaToPaoMap(CtiCCAreaPtr area);
     void addSubstationToPaoMap(CtiCCSubstationUnqPtr&& station, Cti::Test::use_in_unit_tests_only&);
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
@@ -459,6 +459,10 @@ public:
     void stopThreads();
 
 private:
+
+    using DynamicDumpFn = void (CtiCCSubstationBusStore::*)(void);
+
+    CtiCCSubstationBusStore::CtiCCSubstationBusStore(DynamicDumpFn);
 
     /* Relating to Max Kvar Cparm */
     long isKVARAvailable( long kvarNeeded );
@@ -514,6 +518,11 @@ private:
     CtiTime _linkDropOutTime;
 
     bool _voltReductionSystemDisabled;
+
+    //  Can't override virtual functions in a destructor, so we have to manually override by function pointer.
+    const DynamicDumpFn _dynamicDumpFn;
+    void noOp();
+    void dumpAllDynamicDataImpl();
 
     CapControlPointDataHandler _pointDataHandler;
     std::auto_ptr<AttributeService> _attributeService;
