@@ -18,6 +18,45 @@ using Cti::CapControl::PhaseOperatedVoltageRegulator;
 // Exceptions
 using Cti::CapControl::MissingAttribute;
 
+namespace
+{
+
+struct regulator_device_config_base
+{
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    regulator_device_config_base()
+        :   fixtureConfig( new Cti::Test::test_DeviceConfig ),
+            overrideConfigManager( fixtureConfig )
+    {
+        fixtureConfig->insertValue( "voltageChangePerTap",      "0.75" );
+
+        fixtureConfig->insertValue( "regulatorHeartbeatMode",   "INCREMENT" );
+        fixtureConfig->insertValue( "regulatorHeartbeatPeriod", "0" );
+        fixtureConfig->insertValue( "regulatorHeartbeatValue",  "0" );
+    }
+};
+
+struct regulator_device_config_direct_tap : regulator_device_config_base
+{
+    regulator_device_config_direct_tap()
+        :   regulator_device_config_base()
+    {
+        fixtureConfig->insertValue( "voltageControlMode",  "DIRECT_TAP" );
+    }
+};
+
+struct regulator_device_config_set_point : regulator_device_config_base
+{
+    regulator_device_config_set_point()
+        :   regulator_device_config_base()
+    {
+        fixtureConfig->insertValue( "voltageControlMode",  "SET_POINT" );
+    }
+};
+
 
 struct phase_operated_voltage_regulator_fixture_core
 {
@@ -28,34 +67,22 @@ struct phase_operated_voltage_regulator_fixture_core
             CtiCapController::setInstance(this);
         }
 
-        ~TestCtiCapController()
-        {
-            for each ( const CtiMessage * p in signalMessages )
-            {
-                delete p;
-            }
-            for each ( CtiRequestMsg *p in requestMessages )
-            {
-                delete p;
-            }
-        }
-
         virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
         {
-            signalMessages.push_back(message);
+            signalMessages.push_back( std::unique_ptr<CtiMessage>{ message } );
         }
         virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL)
         {
-            requestMessages.push_back(pilRequest);
+            requestMessages.push_back( std::unique_ptr<CtiRequestMsg>{ pilRequest } );
         }
         virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
         {
             eventMessages.push_back(event);
         }
 
-        std::vector<CtiMessage*>    signalMessages;
-        std::vector<CtiRequestMsg*> requestMessages;
-        Cti::CapControl::EventLogEntries eventMessages;
+        std::vector< std::unique_ptr<CtiMessage> >      signalMessages;
+        std::vector< std::unique_ptr<CtiRequestMsg> >   requestMessages;
+        Cti::CapControl::EventLogEntries                eventMessages;
     }
     capController;
 
@@ -110,9 +137,9 @@ struct phase_operated_voltage_regulator_fixture_core
                     { 7000,  AnalogPointType, "Forward SetPoint", 1020, 10007, "", "", 0.1, 0 } },
                 { Attribute::ForwardBandwidth,
                     { 7100,  AnalogPointType, "Forward Bandwidth", 1021, 8, "", "", 0.1, 0 } },
-                { Attribute::ForwardSetPoint,
+                { Attribute::ReverseSetPoint,
                     { 7200,  AnalogPointType, "Reverse SetPoint", 1022, 10017, "", "", 0.1, 0 } },
-                { Attribute::ForwardBandwidth,
+                { Attribute::ReverseBandwidth,
                     { 7300,  AnalogPointType, "Reverse Bandwidth", 1023, 18, "", "", 0.1, 0 } },
                 { Attribute::ReverseFlowIndicator,
                     { 7400,  StatusPointType, "Reverse Flow Indicator", 1024, 19, "", "", 1.0, 0 } },
@@ -125,55 +152,38 @@ struct phase_operated_voltage_regulator_fixture_core
 
     Cti::Test::use_in_unit_tests_only   test_limiter;
 
-    boost::shared_ptr<Cti::Test::test_DeviceConfig>    fixtureConfig;
-
-    Cti::Test::Override_ConfigManager overrideConfigManager;
-
     VoltageRegulatorManager::SharedPtr  regulator;
 
     phase_operated_voltage_regulator_fixture_core()
-        :   regulator( new PhaseOperatedVoltageRegulator ),
-            fixtureConfig( new Cti::Test::test_DeviceConfig ),
-            overrideConfigManager( fixtureConfig )
+        :   regulator( new PhaseOperatedVoltageRegulator )
     {
         regulator->setPaoId( 23456 );
         regulator->setPaoName( "Test Regulator #1" );
         regulator->setPaoCategory( "CAPCONTROL" );
         regulator->setPaoType( VoltageRegulator::PhaseOperatedVoltageRegulator );
-
-        fixtureConfig->insertValue( "voltageChangePerTap", "0.75" );
-        fixtureConfig->insertValue( "regulatorHeartbeatPeriod",     "0" );
-        fixtureConfig->insertValue( "regulatorHeartbeatValue",      "0" );
-
-        fixtureConfig->insertValue( "regulatorHeartbeatMode",       "INCREMENT" );
     }
 };
 
 
-struct phase_operated_voltage_regulator_fixture_direct_tap : phase_operated_voltage_regulator_fixture_core
+struct phase_operated_voltage_regulator_fixture_direct_tap
+    :   phase_operated_voltage_regulator_fixture_core,
+        regulator_device_config_direct_tap
 {
-    phase_operated_voltage_regulator_fixture_direct_tap()
-        :   phase_operated_voltage_regulator_fixture_core()
-    {
-        fixtureConfig->insertValue( "voltageControlMode",  "DIRECT_TAP" );
-    }
 };
 
 
-struct phase_operated_voltage_regulator_fixture_setpoint : phase_operated_voltage_regulator_fixture_core
+struct phase_operated_voltage_regulator_fixture_setpoint
+    :   phase_operated_voltage_regulator_fixture_core,
+        regulator_device_config_set_point
 {
-    phase_operated_voltage_regulator_fixture_setpoint()
-        :   phase_operated_voltage_regulator_fixture_core()
-    {
-        fixtureConfig->insertValue( "voltageControlMode",  "SET_POINT" );
-    }
 };
 
+}
 
-BOOST_AUTO_TEST_SUITE( test_PhaseOperatedVoltageRegulator )
 
+BOOST_FIXTURE_TEST_SUITE( test_PhaseOperatedVoltageRegulator_DirectTap, phase_operated_voltage_regulator_fixture_direct_tap )
 
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingAttribute );
 
@@ -189,8 +199,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Fail, p
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -199,7 +208,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -208,7 +217,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back() );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -220,14 +229,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
 
     BOOST_REQUIRE_EQUAL( 2, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'SourceVoltage' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
 
-    requestMsg = capController.requestMessages.back();
+    requestMsg = capController.requestMessages.back().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -244,8 +253,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
@@ -261,8 +269,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Fail, phase_ope
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -272,7 +279,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -284,7 +291,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -311,8 +318,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
@@ -328,8 +334,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Fail, phase_o
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -339,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phas
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -351,7 +356,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phas
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -378,8 +383,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phas
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAlive_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAlive_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeEnableKeepAlive( "cap control" ), MissingAttribute );
 
@@ -395,8 +399,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAlive_Fail,
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRemoteMode_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRemoteMode_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -420,7 +423,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -432,7 +435,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -450,8 +453,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRemoteMode_Success_with_Rollover, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRemoteMode_Success_with_Rollover)
 {
     regulator->loadAttributes( &attributes );
 
@@ -475,7 +477,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -487,7 +489,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -505,8 +507,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromRe
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAutoMode_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAutoMode_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -532,7 +533,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[0] );
+    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[0].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -543,7 +544,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages[0];
+    auto requestMsg = capController.requestMessages[0].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -563,7 +564,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[1] );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[1].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -574,7 +575,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 2, capController.requestMessages.size() );
 
-    requestMsg = capController.requestMessages[1];
+    requestMsg = capController.requestMessages[1].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -601,7 +602,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 4, capController.signalMessages.size() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[2] );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[2].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -610,7 +611,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[3] );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[3].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -621,7 +622,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 4, capController.requestMessages.size() );
 
-    requestMsg = capController.requestMessages[2];
+    requestMsg = capController.requestMessages[2].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -629,7 +630,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     BOOST_CHECK_EQUAL( "putvalue analog 1 103",
                        requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
 
-    requestMsg = capController.requestMessages[3];
+    requestMsg = capController.requestMessages[3].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -646,8 +647,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAutoMode_Success_with_Rollover, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAutoMode_Success_with_Rollover)
 {
     regulator->loadAttributes( &attributes );
 
@@ -673,7 +673,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[0] );
+    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[0].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -684,7 +684,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages[0];
+    auto requestMsg = capController.requestMessages[0].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -704,7 +704,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[1] );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[1].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -715,7 +715,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 2, capController.requestMessages.size() );
 
-    requestMsg = capController.requestMessages[1];
+    requestMsg = capController.requestMessages[1].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -742,7 +742,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 4, capController.signalMessages.size() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[2] );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[2].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -751,7 +751,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[3] );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[3].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -762,7 +762,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
     BOOST_REQUIRE_EQUAL( 4, capController.requestMessages.size() );
 
-    requestMsg = capController.requestMessages[2];
+    requestMsg = capController.requestMessages[2].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -770,7 +770,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     BOOST_CHECK_EQUAL( "putvalue analog 1 1",
                        requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
 
-    requestMsg = capController.requestMessages[3];
+    requestMsg = capController.requestMessages[3].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -787,8 +787,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeDisableKeepAlive( "cap control" ), MissingAttribute );
 
@@ -804,8 +803,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Fail
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -814,7 +812,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -826,7 +824,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -844,8 +842,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControl_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControl_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeEnableRemoteControl( "unit test" ), MissingAttribute );
 
@@ -861,8 +858,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControl_F
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFromRemoteMode_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFromRemoteMode_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -886,7 +882,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -895,7 +891,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back() );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -906,7 +902,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -934,8 +930,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFromAutoMode_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFromAutoMode_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -963,7 +958,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
 //    BOOST_REQUIRE_EQUAL( 4, capController.signalMessages.size() );
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[0] );
+    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[0].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -972,7 +967,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[1] );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages[1].get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -1004,7 +999,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
 //    BOOST_REQUIRE_EQUAL( 3, capController.requestMessages.size() );
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages[0];
+    const auto requestMsg = capController.requestMessages[0].get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -1048,8 +1043,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeDisableRemoteControl( "unit test" ), MissingAttribute );
 
@@ -1065,8 +1059,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -1075,7 +1068,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
 
     BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -1084,7 +1077,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
 
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back() );
+    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -1096,7 +1089,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -1124,14 +1117,12 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus_Fail)
 {
     BOOST_CHECK_THROW( regulator->getOperatingMode(), MissingAttribute );
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus_Success, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -1158,8 +1149,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus
     BOOST_CHECK_EQUAL( VoltageRegulator::RemoteMode, regulator->getOperatingMode() );
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Phase_A_info, phase_operated_voltage_regulator_fixture_direct_tap)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Phase_A_info)
 {
     regulator->loadAttributes( &attributes );
     regulator->setPhase( Cti::CapControl::Phase_A );
@@ -1170,7 +1160,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Ph
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -1182,7 +1172,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Ph
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -1209,8 +1199,12 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Ph
     }
 }
 
+BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Fail, phase_operated_voltage_regulator_fixture_setpoint)
+
+BOOST_FIXTURE_TEST_SUITE( test_PhaseOperatedVoltageRegulator_SetPoint, phase_operated_voltage_regulator_fixture_setpoint )
+
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
@@ -1227,8 +1221,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Fail, p
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success, phase_operated_voltage_regulator_fixture_setpoint)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -1243,7 +1236,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -1255,7 +1248,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -1281,8 +1274,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Fail, phase_operated_voltage_regulator_fixture_setpoint)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
@@ -1299,8 +1291,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Fail, p
     }
 }
 
-
-BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success, phase_operated_voltage_regulator_fixture_setpoint)
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -1319,7 +1310,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
 
     BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    CtiSignalMsg * signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front() );
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
@@ -1331,7 +1322,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    CtiRequestMsg * requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -1354,6 +1345,128 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Success
         BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
         BOOST_CHECK_CLOSE( 119.25,                                           *event.setPointValue,     1e-6 );
         BOOST_CHECK_EQUAL( -3,                                               *event.tapPosition );
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Cogeneration_ForwardFlow_Success)
+{
+    regulator->loadAttributes( &attributes );
+
+    const std::vector<CtiPointDataMsg>    incomingPointData
+    {
+        { 7450,   6.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
+        { 7400,   0.0,  NormalQuality,  AnalogPointType },      // Forward Flow
+        { 7000, 120.0,  NormalQuality,  AnalogPointType },      // Forward SetPoint is 120 volts
+        { 3500,   3.0,  NormalQuality,  AnalogPointType }       // Tap is in position +3
+    };
+
+    for ( auto message : incomingPointData )
+    {
+        regulator->handlePointData( message );
+    }
+    
+
+    BOOST_CHECK_CLOSE( -0.75, regulator->adjustVoltage( -0.75 ),    1e-6 );
+
+
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
+
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
+
+    BOOST_REQUIRE( signalMsg );
+
+    BOOST_CHECK_EQUAL( 7000, signalMsg->getId() );     // ID of the 'SetPoint' LitePoint
+    BOOST_CHECK_EQUAL( "Lower Set Point", signalMsg->getText() );
+    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
+                       signalMsg->getAdditionalInfo() );
+
+
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
+
+    const auto requestMsg = capController.requestMessages.front().get();
+
+    BOOST_REQUIRE( requestMsg );
+
+    BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
+    BOOST_CHECK_EQUAL( "putvalue analog 7 1193",
+                       requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
+
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
+
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
+
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::DecreaseSetPoint, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
+        BOOST_CHECK_CLOSE( 119.25,                                           *event.setPointValue,     1e-6 );
+        BOOST_CHECK_EQUAL( 3,                                                *event.tapPosition );
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Cogeneration_ReverseFlow_Success)
+{
+    regulator->loadAttributes( &attributes );
+
+    const std::vector<CtiPointDataMsg>    incomingPointData
+    {
+        { 7450,   6.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
+        { 7400,   1.0,  NormalQuality,  AnalogPointType },      // Reverse Flow
+        { 7200, 121.5,  NormalQuality,  AnalogPointType },      // Reverse SetPoint is 121.5 volts
+        { 3500,   4.0,  NormalQuality,  AnalogPointType }       // Tap is in position +4
+    };
+
+    for ( auto message : incomingPointData )
+    {
+        regulator->handlePointData( message );
+    }
+    
+
+    BOOST_CHECK_CLOSE( -0.75, regulator->adjustVoltage( -0.75 ),    1e-6 );
+
+
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
+
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
+
+    BOOST_REQUIRE( signalMsg );
+
+    BOOST_CHECK_EQUAL( 7200, signalMsg->getId() );     // ID of the 'SetPoint' LitePoint
+    BOOST_CHECK_EQUAL( "Lower Set Point", signalMsg->getText() );
+    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
+                       signalMsg->getAdditionalInfo() );
+
+
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
+
+    const auto requestMsg = capController.requestMessages.front().get();
+
+    BOOST_REQUIRE( requestMsg );
+
+    BOOST_CHECK_EQUAL( 1022, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
+    BOOST_CHECK_EQUAL( "putvalue analog 17 1208",
+                       requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
+
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
+
+        BOOST_REQUIRE_EQUAL( 1, events.size() );
+
+        Cti::CapControl::RegulatorEvent event = events.front();
+
+        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::DecreaseSetPoint, event.eventType );
+        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
+        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
+        BOOST_CHECK_CLOSE( 120.75,                                           *event.setPointValue,     1e-6 );
+        BOOST_CHECK_EQUAL( 4,                                                *event.tapPosition );
     }
 }
 

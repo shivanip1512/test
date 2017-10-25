@@ -297,6 +297,8 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
+        using namespace Cti::CapControl;
+
         for ( const auto & mapping : zone->getRegulatorIds() )
         {
             try
@@ -304,13 +306,13 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                 VoltageRegulatorManager::SharedPtr regulator =
                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                const Cti::CapControl::ControlPolicy::ControlModes  configMode = regulator->getConfigurationMode();
+                const ControlPolicy::ControlModes  configMode = regulator->getConfigurationMode();
 
                 if ( regulator->getControlMode() == VoltageRegulator::ManualTap )
                 {
                     switch ( configMode )
                     {
-                        case Cti::CapControl::ControlPolicy::LockedForward:
+                        case ControlPolicy::LockedForward:
                         {
                             if ( regulator->isReverseFlowDetected() )
                             {
@@ -319,12 +321,13 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                                     CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
                                                             << regulator->getPaoName()
                                                             << " configured in "
-                                                            << Cti::CapControl::resolveControlMode( configMode )
+                                                            << resolveControlMode( configMode )
                                                             << " mode is detecting Reverse Flow. Disabling Bus: "
                                                             << subbus->getPaoName() );
                                 }
+                                return true;
                             }
-                            return true;
+                            break;
                         }
                         default:
                         {
@@ -333,7 +336,7 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                                 CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
                                                         << regulator->getPaoName()
                                                         << " is configured in "
-                                                        << Cti::CapControl::resolveControlMode( configMode )
+                                                        << resolveControlMode( configMode )
                                                         << " mode. The current mode is unsupported by IVVC, Disabling Bus: "
                                                         << subbus->getPaoName() );
                             }
@@ -345,9 +348,9 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                 {
                     switch ( configMode )
                     {
-                        case Cti::CapControl::ControlPolicy::LockedForward:
-                        case Cti::CapControl::ControlPolicy::ReverseIdle:
-                        case Cti::CapControl::ControlPolicy::NeutralIdle:
+                        case ControlPolicy::LockedForward:
+                        case ControlPolicy::ReverseIdle:
+                        case ControlPolicy::NeutralIdle:
                         {
                             if ( regulator->isReverseFlowDetected() )
                             {
@@ -356,14 +359,15 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                                     CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
                                                             << regulator->getPaoName()
                                                             << " configured in "
-                                                            << Cti::CapControl::resolveControlMode( configMode )
+                                                            << resolveControlMode( configMode )
                                                             << " mode is detecting Reverse Flow. Disabling Bus: "
                                                             << subbus->getPaoName() );
                                 }
+                                return true;
                             }
-                            return true;
+                            break;
                         }
-                        case Cti::CapControl::ControlPolicy::LockedReverse:
+                        case ControlPolicy::LockedReverse:
                         {
                             if ( ! regulator->isReverseFlowDetected() )
                             {
@@ -372,16 +376,17 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                                     CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
                                                             << regulator->getPaoName()
                                                             << " configured in "
-                                                            << Cti::CapControl::resolveControlMode( configMode )
+                                                            << resolveControlMode( configMode )
                                                             << " mode is detecting Forward Flow. Disabling Bus: "
                                                             << subbus->getPaoName() );
                                 }
+                                return true;
                             }
-                            return true;
+                            break;
                         }
-                        case Cti::CapControl::ControlPolicy::Cogeneration:
+                        case ControlPolicy::Cogeneration:
                         {
-                            // this mode is doesn't depend on Reverse Flow
+                            // this mode doesn't depend on Reverse Flow
 
                             break;
                         }
@@ -389,10 +394,10 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         {
                             if ( _CC_DEBUG & CC_DEBUG_IVVC )
                             {
-                                CTILOG_DEBUG( dout, "IVVC Algorithm: ManualTap controlled Regulator: "
+                                CTILOG_DEBUG( dout, "IVVC Algorithm: SetPoint controlled Regulator: "
                                                         << regulator->getPaoName()
                                                         << " is configured in "
-                                                        << Cti::CapControl::resolveControlMode( configMode )
+                                                        << resolveControlMode( configMode )
                                                         << " mode. The current mode is unsupported by IVVC, Disabling Bus: "
                                                         << subbus->getPaoName() );
                             }
@@ -401,11 +406,11 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                     }
                 }
             }
-            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            catch ( const NoVoltageRegulator & noRegulator )
             {
                 CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
-            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+            catch ( const MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
