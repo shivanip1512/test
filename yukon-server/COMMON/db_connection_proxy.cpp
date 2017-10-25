@@ -16,19 +16,20 @@ ConnectionProxy::ConnectionProxy()
     :   descriptor(ConnectionManager::borrowConnection()),
         instance(++instanceCount)
 {
-    CTILOG_DEBUG(dout, "Connection proxy " << instance << " created:" << descriptor->info);
+    CTILOG_DEBUG(dout, "Connection proxy " << instance << " created:" << 
+        (descriptor ? descriptor->info.toString() : "<empty>"));
 }
 
 ConnectionProxy::~ConnectionProxy() = default;
 
 ConnectionProxy::operator bool() const
 {
-    return !! descriptor->connection;
+    return descriptor && descriptor->connection;
 }
 
 ConnectionProxy::operator SAConnection*() const
 {
-    return descriptor->connection.get();
+    return descriptor ? descriptor->connection.get() : nullptr;
 }
 
 SAConnection* ConnectionProxy::operator->() const
