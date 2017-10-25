@@ -14,6 +14,7 @@ public interface PaoLocationService {
         TRANSMITTER,
         RELAY,
         LCR,
+        THERMOSTAT,
         GENERIC_GREY,
         GENERIC_RED,
     }

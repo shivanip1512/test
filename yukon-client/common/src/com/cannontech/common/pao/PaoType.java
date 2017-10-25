@@ -310,6 +310,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> honeywellTypes;
     private final static ImmutableSet<PaoType> rfRelayTypes;
     private final static ImmutableSet<PaoType> waterMeterTypes;
+    private final static ImmutableSet<PaoType> thermostatTypes;
     
     public final static int INVALID = -1;
     
@@ -667,6 +668,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART, ECOBEE_3_LITE);
         honeywellTypes = ImmutableSet.of(HONEYWELL_9000, HONEYWELL_FOCUSPRO, HONEYWELL_VISIONPRO_8000, HONEYWELL_THERMOSTAT);
+        b = ImmutableSet.builder();
+        b.addAll(ecobeeTypes);
+        b.addAll(honeywellTypes);
+        thermostatTypes = b.build();
         
         b = ImmutableSet.builder();
         b.addAll(ccuTypes);
@@ -995,6 +1000,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfRelayTypes;
     }
     
+    public static ImmutableSet<PaoType> getThermostatTypes() {
+        return thermostatTypes;
+    }
+
     /**
      * Maps PaoType String IDs to their corresponding integer device IDs.
      * @param typeString

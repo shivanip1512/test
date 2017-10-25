@@ -7,6 +7,8 @@ public enum PaoTypeIcon {
     GAS_METER("icon-gas-meter"),
     TRANSMITTER("icon-transmitter"),
     RFN_RELAY("icon-rfn-relay"),
+    LCR("icon-house-leaf"),
+    THERMOSTAT("icon-temperature"),
     ;
     
     private String icon;
