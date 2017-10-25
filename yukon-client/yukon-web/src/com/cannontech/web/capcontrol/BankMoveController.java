@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.capcontrol.model.BankMoveBean;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
-import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -36,7 +35,6 @@ import com.google.common.collect.Lists;
 public class BankMoveController {
     
     @Autowired private FilterCacheFactory cacheFactory;
-    @Autowired private UpdaterHelper updaterHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
     
@@ -75,6 +73,7 @@ public class BankMoveController {
         model.addAttribute("bankName", capBank.getCcName());
         model.addAttribute("controlType", CapControlType.CAPBANK);
         model.addAttribute("commandId", CommandType.MOVE_BANK.getCommandId());
+        model.addAttribute("isIVVC", feeder.isIvvcControlled() || subBus.isIvvcControlled());
         
         BankMoveBean bankMoveBean = new BankMoveBean();
         bankMoveBean.setBankId(capBank.getCcId());

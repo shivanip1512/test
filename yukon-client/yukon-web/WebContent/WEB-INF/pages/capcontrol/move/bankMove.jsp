@@ -100,7 +100,9 @@ function getTreeStructure() {
         <div id="controlOrders"></div>
         
         <div class="action-area">
-            <cti:button nameKey="tempMove" type="submit" name="tempMove"/>
+            <c:if test="${!isIVVC}">
+                <cti:button nameKey="tempMove" type="submit" name="tempMove"/>
+            </c:if>
             <cti:button nameKey="move" type="submit" name="move"/>
             <span><i:inline key=".controlOrder"/>&nbsp;<form:input path="displayOrder" size="1" maxlength="3"/></span>
             <span><i:inline key=".closeOrder"/>&nbsp;<form:input path="closeOrder" size="1" maxlength="3"/></span>

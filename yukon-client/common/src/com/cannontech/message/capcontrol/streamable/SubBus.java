@@ -507,6 +507,10 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     public boolean isPowerFactorControlled() {
         return algorithm == ControlAlgorithm.PFACTOR_KW_KVAR;
     }
+    
+    public boolean isIvvcControlled() {
+        return algorithm == ControlAlgorithm.INTEGRATED_VOLT_VAR;
+    }
 
     public boolean getPrimaryBusFlag() {
         return primaryBusFlag;
