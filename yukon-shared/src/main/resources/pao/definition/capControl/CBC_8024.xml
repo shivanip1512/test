@@ -18,6 +18,7 @@
         <pointInfo name="Adaptive kVAr Percent Bank Size"/>
         <pointInfo name="Auto Close Delay Time" init="true"/>
         <pointInfo name="Auto Control Mode" init="true"/>
+        <pointInfo name="Average Line Voltage" init="true" attributes="VOLTAGE"/>
         <pointInfo name="Average Line Voltage Time" init="true"/>
         <pointInfo name="Bad Active Close Relay" init="true"/>
         <pointInfo name="Bad Active Trip Relay" init="true"/>
