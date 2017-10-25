@@ -1,7 +1,7 @@
 package com.cannontech.web.dr;
 
-import static com.cannontech.system.GlobalSettingType.RF_BROADCAST_PERFORMANCE;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static com.cannontech.system.GlobalSettingType.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,7 +18,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -28,13 +27,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.util.TemplateProcessorFactory;
+import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -74,7 +72,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
     @Autowired private EmailService emailService;
     @Autowired private NotificationGroupDao notificationGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private WebserverUrlResolver webserverUrlResolver;
     
     private final Resource emailTemplate;
     
@@ -164,7 +162,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         Instant now = new Instant();
         Instant yesterday = now.minus(Duration.standardDays(1));
         Instant lastWeek = yesterday.minus(Duration.standardDays(7));
-        Range<Instant> reportDates = new Range<Instant>(lastWeek, false, yesterday, true);
+        Range<Instant> reportDates = new Range<>(lastWeek, false, yesterday, true);
 
         List<PerformanceVerificationEventMessageStats> reports = performanceVerificationDao.getReports(reportDates);
 
@@ -211,15 +209,9 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
 
         String formattedDate = dateTimeFormatter.print(now);
 
-        String baseUrl = configurationSource.getString(MasterConfigString.YUKON_EXTERNAL_URL);
-        if (baseUrl == null){
-            baseUrl = "http://localhost:8080";
-            log.error("Expected master.cfg entry for YUKON_EXTERNAL_URL. None was found. Defaulting to " + baseUrl);
-        }
-
         String yesterdayParam = instantToDateUrlParam(yesterday);
         String lastWeekParam = instantToDateUrlParam(lastWeek);
-        String linkUrl = baseUrl + "/dr/rf/details?from=" + lastWeekParam + "&to=" + yesterdayParam;
+        String linkUrl = webserverUrlResolver.getUrl("/dr/rf/details?from=" + lastWeekParam + "&to=" + yesterdayParam);
 
         String subject = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.subject");
         String header = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.header", linkUrl);

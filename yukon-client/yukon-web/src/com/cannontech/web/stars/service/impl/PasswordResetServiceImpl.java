@@ -14,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -45,8 +44,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final Logger log = YukonLogManager.getLogger(PasswordResetServiceImpl.class);
     private final Cache<UUID, LiteYukonUser> userToPasswordSetCache =
             CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
-
-    @Autowired private ConfigurationSource configurationSource;
+    
     @Autowired private ContactDao contactDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
@@ -54,6 +52,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private WebserverUrlResolver webserverUrlResolver;
 
     @Override
     public PasswordResetInfo getPasswordResetInfo(String forgottenPasswordField) {
@@ -111,10 +110,10 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         String passwordResetKey = getPasswordKey(user);
 
         String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);
-        String baseurl = configurationSource.getString(MasterConfigString.YUKON_EXTERNAL_URL,
-            defaultYukonExternalUrl.toString()) + request.getContextPath() + "/login/change-password?k=" + passwordResetKey;
+        String postfix = request.getContextPath() + "/login/change-password?k=" + passwordResetKey;
+        String url = webserverUrlResolver.getUrl(postfix, defaultYukonExternalUrl);
 
-        return baseurl;
+        return url;
     }
 
     @Override

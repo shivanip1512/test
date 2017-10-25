@@ -2,8 +2,10 @@ package com.cannontech.system.dao.impl;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,7 @@ import com.cannontech.system.model.GlobalSetting;
 public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
     private final Logger log = YukonLogManager.getLogger(GlobalSettingDaoImpl.class);
-    private final LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting> cache = new LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting>(10000);
+    private final LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting> cache = new LeastRecentlyUsedCacheMap<>(10000);
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
@@ -63,6 +65,18 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         } else {
             return convertedValue.toString();
         }
+    }
+    
+    @Override
+    public Optional<String> getOptionalString(GlobalSettingType type) {
+        return Optional.ofNullable(getConvertedValue(type, Object.class))
+                       .map(value -> value.toString());
+    }
+    
+    @Override
+    public String getString(GlobalSettingType type, String defaultValue) {
+        String value = getString(type);
+        return StringUtils.isEmpty(value) ? defaultValue : value;
     }
 
     @Override

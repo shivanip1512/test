@@ -1,5 +1,7 @@
 package com.cannontech.common.config;
 
+import java.util.Optional;
+
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.ReadableDuration;
@@ -72,6 +74,13 @@ public interface ConfigurationSource {
      */
     public String getString(MasterConfigString key, String defaultValue);
 
+    /**
+     * Returns an Optional containing the value of the key from the configuration file, if it exists. If it does not
+     * exist, returns an empty Optional.
+     * @return An Optional that contains the value of the key, if present.
+     */
+    public Optional<String> getOptionalString(MasterConfigString key);
+    
     /**
      * Returns value of key from the configuration file. Throws an exception if the key did not
      * exist in the file.

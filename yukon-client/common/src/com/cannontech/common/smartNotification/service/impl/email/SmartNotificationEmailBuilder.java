@@ -8,12 +8,12 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
+import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -25,8 +25,8 @@ import com.cannontech.user.YukonUserContext;
  * specify the arguments to be passed into the i18ned notification message.
  */
 public abstract class SmartNotificationEmailBuilder {
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     protected MessageSourceAccessor messageSourceAccessor;
     
@@ -79,7 +79,6 @@ public abstract class SmartNotificationEmailBuilder {
      * base smart notification events URL.
      */
     protected String getUrl(String postfix) {
-        String base = configurationSource.getString(MasterConfigString.YUKON_EXTERNAL_URL);
-        return base + "/notifications/events/" + postfix;
+        return webserverUrlResolver.getUrl("/notifications/events/" + postfix);
     }
 }

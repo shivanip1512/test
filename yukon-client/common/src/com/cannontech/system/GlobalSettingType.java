@@ -1,9 +1,6 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -120,6 +117,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
+    YUKON_EXTERNAL_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "http://127.0.0.1:8080"),
     
     // Data Export (previously Billing)
     WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),

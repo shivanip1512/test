@@ -1,5 +1,7 @@
 package com.cannontech.system.dao;
 
+import java.util.Optional;
+
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.GlobalSetting;
@@ -22,6 +24,31 @@ public interface GlobalSettingDao {
      * @return value of property
      */
     public String getString(GlobalSettingType setting);
+    
+    /**
+     * Returns the setting value of the specified Yukon setting as a String.
+     * 
+     * Unlike the other methods, this can be called regardless of the type
+     * of the property, it essentially calls a toString on the value and
+     * returns that.
+     * 
+     * @param setting - any GlobalSetting setting
+     * @param defaultValue - the value to use if the setting is missing or empty
+     * @return value of property
+     */
+    public String getString(GlobalSettingType setting, String defaultValue);
+    
+    /**
+     * Returns the setting value of the specified Yukon setting as a String.
+     * 
+     * Unlike the other methods, this can be called regardless of the type
+     * of the property, it essentially calls a toString on the value and
+     * returns that.
+     * 
+     * @param setting - any GlobalSetting setting
+     * @return Optional containing the value of the property, if present
+     */
+    public Optional<String> getOptionalString(GlobalSettingType setting);
     
     /**
      * Returns the setting value of the specified Yukon setting as a Boolean.

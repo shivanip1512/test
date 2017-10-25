@@ -1,5 +1,7 @@
 package com.cannontech.common.config;
 
+import java.util.Optional;
+
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.ReadableDuration;
@@ -89,6 +91,11 @@ public class MockConfigurationSource implements ConfigurationSource {
 
     @Override
     public boolean getRequiredBoolean(MasterConfigBoolean key) throws UnknownKeyException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Optional<String> getOptionalString(MasterConfigString key) {
         throw new UnsupportedOperationException();
     }
 }

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +36,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     public void setConfigSource(File file) {
-        this.masterCfgFile = file;
+        masterCfgFile = file;
     }
 
     public void initialize() throws IOException {
@@ -149,6 +150,11 @@ public class MasterConfigMap implements ConfigurationSource {
     @Override
     public String getString(MasterConfigString key, String defaultValue) {
         return getString(key.name(), defaultValue);
+    }
+    
+    @Override
+    public Optional<String> getOptionalString(MasterConfigString key) {
+        return Optional.ofNullable(getString(key));
     }
 
     @Override

@@ -442,7 +442,8 @@
     <bean id="jacksonHttpMessageConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
     
     <bean id="meterTypeHelper" class="com.cannontech.common.pao.meter.model.MeterTypeHelper"/>
-    <bean class="com.cannontech.common.config.YukonHttpProxyHandler" />
-    <bean class="com.cannontech.common.config.UpdateServerConfigHelper" />
+    <bean class="com.cannontech.common.config.YukonHttpProxyHandler"/>
+    <bean class="com.cannontech.common.config.UpdateServerConfigHelper"/>
+    <bean class="com.cannontech.common.util.WebserverUrlResolver"/>
     
 </beans>

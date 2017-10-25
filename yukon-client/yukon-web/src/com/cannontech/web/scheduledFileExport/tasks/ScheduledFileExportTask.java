@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.exception.FileCreationException;
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -25,7 +23,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
@@ -45,8 +43,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	@Autowired protected FileExportHistoryService fileExportHistoryService;
 	@Autowired protected EmailService emailService;
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-	@Autowired private DateFormattingService dateFormattingService;
-	@Autowired private ConfigurationSource configurationSource;
+	@Autowired private WebserverUrlResolver webserverUrlResolver;
 	
 	protected String defaultYukonExternalUrl;
 	protected String name;
@@ -179,16 +176,14 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 */
     protected File archiveToCsvFile(List<String[]> dataRows) {
         File archiveFile = createArchiveFile(DateTime.now(), ".csv");
-        try (FileWriter writer = new FileWriter(archiveFile);) {
-            CSVWriter csvWriter = new CSVWriter(writer);
+        try (FileWriter writer = new FileWriter(archiveFile);
+             CSVWriter csvWriter = new CSVWriter(writer);) {
             csvWriter.writeAll(dataRows);
         } catch (IOException e) {
             throw new FileCreationException("Unable to generate scheduled export file due to I/O errors: ", e);
         }
         return archiveFile;
     }
-    
-    
     
 	/**
 	 * Checks the validity of the history entry and notificationEmailAddress, then sends email
@@ -317,10 +312,9 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 * related File Export History page.
 	 */
 	private String getNotificationBody(ExportHistoryEntry historyEntry) {
-		String baseUrl = configurationSource.getString(MasterConfigString.YUKON_EXTERNAL_URL, defaultYukonExternalUrl);
-		
 		int historyId = historyEntry == null ? 0 : historyEntry.getId();
-		String historyLink = baseUrl + HISTORY_URL_PART + historyId + "&exportType=" + historyEntry.getType();
+		String historyLinkPostfix = HISTORY_URL_PART + historyId + "&exportType=" + historyEntry.getType();
+		String historyLink = webserverUrlResolver.getUrl(historyLinkPostfix, defaultYukonExternalUrl);
 		String body = getMessage("yukon.web.modules.tools.scheduledFileExport.notification.body", name, historyLink);
 		return body;
 	}
