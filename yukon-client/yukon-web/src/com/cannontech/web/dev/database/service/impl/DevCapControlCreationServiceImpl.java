@@ -258,6 +258,14 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         PointBase keepAlive = createAnalogPoint(regulator.getName() + "-Keep Alive", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
         PointBase forwardSetPoint = createAnalogPoint(regulator.getName() + "-Forward Set Point", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
         PointBase forwardBandwidth = createAnalogPoint(regulator.getName() + "-Forward Bandwidth", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        PointBase reverseBandwidth =
+            createAnalogPoint(regulator.getName() + "-Reverse Bandwidth", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        PointBase reverseFlowIndicator = createStatusPoint(regulator.getName() + "-Reverse Flow Indicator",
+            StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
+        PointBase reverseSetPoint =
+            createAnalogPoint(regulator.getName() + "-Reverse Set Point", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        PointBase controlModePointBase =
+            createAnalogPoint(regulator.getName() + "-Control Mode", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
 
         Map<RegulatorPointMapping, Integer> mappings = new ImmutableMap.Builder<RegulatorPointMapping, Integer>()
         .put(RegulatorPointMapping.AUTO_REMOTE_CONTROL, autoRemoteControl.getPoint().getPointID())
@@ -271,6 +279,10 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         .put(RegulatorPointMapping.KEEP_ALIVE, keepAlive.getPoint().getPointID())
         .put(RegulatorPointMapping.FORWARD_SET_POINT, forwardSetPoint.getPoint().getPointID())
         .put(RegulatorPointMapping.FORWARD_BANDWIDTH, forwardBandwidth.getPoint().getPointID())
+        .put(RegulatorPointMapping.REVERSE_BANDWIDTH, reverseBandwidth.getPoint().getPointID())
+        .put(RegulatorPointMapping.REVERSE_FLOW_INDICATOR, reverseFlowIndicator.getPoint().getPointID())
+        .put(RegulatorPointMapping.REVERSE_SET_POINT, reverseSetPoint.getPoint().getPointID())
+        .put(RegulatorPointMapping.CONTROL_MODE, controlModePointBase.getPoint().getPointID())
         .build();
         
         regulator.setMappings(mappings);
