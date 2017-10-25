@@ -344,8 +344,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             if (latitude != null && longitude != null) {
                 PaoLocation location = new PaoLocation(gatewayIdentifier, latitude, longitude);
                 paoLocationDao.save(location);
-                endpointEventLogService.locationUpdated(gateway.getName(), Double.toString(location.getLatitude()),
-                    Double.toString(location.getLongitude()), user);
+                endpointEventLogService.locationUpdated(gateway.getPaoIdentifier(), location, user);
             }
             
             return gateway;
@@ -463,7 +462,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         if (gateway.getLocation() != null && !gateway.getLocation().equals(existingGateway.getLocation())) {
             paoLocationDao.save(gateway.getLocation());
             PaoLocation location = gateway.getLocation();
-            endpointEventLogService.locationUpdated(gateway.getName(), Double.toString(location.getLatitude()), Double.toString(location.getLongitude()), user);
+            endpointEventLogService.locationUpdated(gateway.getPaoIdentifier(), location, user);
         }
 
         return result;

@@ -658,8 +658,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             PaoLocation newLocation =
                 new PaoLocation(displayablePao.getPaoIdentifier(), location.getLatitude(), location.getLongitude());
             paoLocationDao.save(newLocation);
-            endpointEventLogService.locationUpdated(displayablePao.getName(), Double.toString(location.getLatitude()),
-                Double.toString(location.getLongitude()), user);
+            endpointEventLogService.locationUpdated(displayablePao.getPaoIdentifier(), newLocation, user);
         }
         return inventoryId;
     }
