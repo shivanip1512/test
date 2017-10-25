@@ -94,7 +94,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
             InitSSL();
 
             // Set default database connection params
-            setDatabaseParams(dbType, dbName, dbUser, dbPassword);
+            Cti::Database::setDatabaseParams(dbType, dbName, dbUser, dbPassword);
 
             Cti::parseXmlFiles( getYukonBase() );
             Cti::parseJsonFiles();
