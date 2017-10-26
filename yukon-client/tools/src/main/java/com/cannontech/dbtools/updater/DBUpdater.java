@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.exception.StarsNotCreatedException;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
@@ -159,7 +159,7 @@ public class DBUpdater extends MessageFrameAdaptor {
      * Main entry point
      */
     public static void main(String[] args) {
-        CtiUtilities.setCtiAppName(ApplicationName.DB_UPDATER);
+        CtiUtilities.setCtiAppName(ApplicationId.DB_UPDATER);
         DBUpdater updater = new DBUpdater();
 
         if (args.length < 1) // the user did not enter any params

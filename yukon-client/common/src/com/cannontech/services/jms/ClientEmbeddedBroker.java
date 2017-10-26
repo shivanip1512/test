@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import org.springframework.jms.connection.CachingConnectionFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.ApplicationName;
-import static com.cannontech.common.util.ApplicationName.*;
+import com.cannontech.common.util.ApplicationId;
+import static com.cannontech.common.util.ApplicationId.*;
 
 public class ClientEmbeddedBroker {
 	
@@ -63,9 +63,9 @@ public class ClientEmbeddedBroker {
             //  network manager -> remote proxy -> local proxy -> service manager -> web
             networkConnector.setNetworkTTL(5);
             broker.setUseJmx(true);
-            if (ApplicationName.getByName(name) == SERVICE_MANAGER) {
+            if (ApplicationId.getByName(name) == SERVICE_MANAGER) {
                 broker.getManagementContext().setConnectorPort(1099);
-            } else if (ApplicationName.getByName(name) == SIMULATORS_SERVICE) {
+            } else if (ApplicationId.getByName(name) == SIMULATORS_SERVICE) {
                 broker.getManagementContext().setConnectorPort(1096);
             } else {
                 broker.getManagementContext().setConnectorPort(1098);

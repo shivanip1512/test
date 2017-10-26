@@ -3,7 +3,7 @@ package com.cannontech.importer.point;
 import java.io.IOException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -609,7 +609,7 @@ private void initialize() {
  */
 public static void main(java.lang.String[] args) {
 	try {
-	    ApplicationName appName = ApplicationName.POINT_IMPORT_UTILITY_TOOL;
+	    ApplicationId appName = ApplicationId.POINT_IMPORT_UTILITY_TOOL;
         CtiUtilities.setCtiAppName(appName);
         CTILogger.info(appName + " starting...");
 		PointImportUtilityPanel aPointImportUtilityPanel;

@@ -72,7 +72,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.common.util.SwingUtil;
@@ -1294,7 +1294,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     public static void main(String[] args) {
         try {
             ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-            clientStartupHelper.setAppName(ApplicationName.COMMANDER);
+            clientStartupHelper.setAppName(ApplicationId.COMMANDER);
             clientStartupHelper.setRequiredRole(YukonRole.COMMANDER.getRoleId());
             clientStartupHelper.setSplashUrl(CtiUtilities.COMMANDER_SPLASH);
 

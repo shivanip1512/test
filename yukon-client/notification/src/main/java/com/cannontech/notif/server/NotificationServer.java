@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
@@ -35,7 +35,7 @@ public class NotificationServer {
 
     public static void main(String[] argsv) {
         try {
-            CtiUtilities.setCtiAppName(ApplicationName.NOTIFICATION);
+            CtiUtilities.setCtiAppName(ApplicationId.NOTIFICATION);
             log.info("Starting notification server from main method");
             YukonSpringHook.setDefaultContext(YukonSpringHook.NOTIFICATION_BEAN_FACTORY_KEY);
 

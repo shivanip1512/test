@@ -777,7 +777,7 @@ public final class CtiUtilities {
         return System.getProperty(CTI_APP_NAME_PROPERTY);
     }
     
-    public static void setCtiAppName(ApplicationName appName) {
+    public static void setCtiAppName(ApplicationId appName) {
         System.setProperty(CTI_APP_NAME_PROPERTY, appName.getApplicationName());
     }
 

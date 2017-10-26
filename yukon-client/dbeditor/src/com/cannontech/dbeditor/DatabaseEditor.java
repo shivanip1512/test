@@ -68,7 +68,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
@@ -1567,7 +1567,7 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
 
         try {
             ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-            clientStartupHelper.setAppName(ApplicationName.DATABASE_EDITOR);
+            clientStartupHelper.setAppName(ApplicationId.DATABASE_EDITOR);
             clientStartupHelper.setRequiredRole(YukonRole.DATABASE_EDITOR.getRoleId());
             clientStartupHelper.setContext("com.cannontech.context.dbeditor");
             clientStartupHelper.setSplashUrl(CtiUtilities.DBEDITOR_SPLASH);

@@ -13,7 +13,7 @@ import javax.mail.internet.MimeMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.message.porter.PorterClientConnection;
 import com.cannontech.message.porter.message.Request;
@@ -509,7 +509,7 @@ public boolean isEmailSent() {
  */
 public static void main(String[] args) 
 {
-	CtiUtilities.setCtiAppName(ApplicationName.LOG_RAT);
+	CtiUtilities.setCtiAppName(ApplicationId.LOG_RAT);
 	
 	try
 	{

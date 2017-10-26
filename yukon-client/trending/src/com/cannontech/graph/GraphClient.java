@@ -67,7 +67,7 @@ import com.cannontech.common.gui.util.JEditorPanePrintable;
 import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -1707,7 +1707,7 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
     public static void main(String[] args) {
         try {
             ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-            clientStartupHelper.setAppName(ApplicationName.TRENDING);
+            clientStartupHelper.setAppName(ApplicationId.TRENDING);
             clientStartupHelper.setRequiredRole(YukonRole.TRENDING.getRoleId());
             clientStartupHelper.setSplashUrl(CtiUtilities.TRENDING_SPLASH);
 

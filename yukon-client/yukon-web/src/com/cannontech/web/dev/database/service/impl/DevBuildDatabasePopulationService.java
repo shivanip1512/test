@@ -17,7 +17,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
@@ -49,7 +49,7 @@ public class DevBuildDatabasePopulationService {
     private final static int RFN_NUM_DAYS_BEFORE_NOW_EVENTS_SHOULD_START = 10;
     
     public static void main(String[] args) {
-        BootstrapUtils.setApplicationName(ApplicationName.DEV_DATABASE_POPULATION);
+        BootstrapUtils.setApplicationName(ApplicationId.DEV_DATABASE_POPULATION);
         new DevBuildDatabasePopulationService().run();
     }
 

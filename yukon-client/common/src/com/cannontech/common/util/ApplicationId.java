@@ -3,7 +3,7 @@ package com.cannontech.common.util;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum ApplicationName {
+public enum ApplicationId {
     
     //  Main applications
     COMMANDER("Commander"),
@@ -47,22 +47,22 @@ public enum ApplicationName {
     ;
 
     private final String applicationName;
-    private final static ImmutableMap<String, ApplicationName> lookupByName;
+    private final static ImmutableMap<String, ApplicationId> lookupByName;
     static {
-        Builder<String, ApplicationName> byNameBuilder =
+        Builder<String, ApplicationId> byNameBuilder =
             ImmutableMap.builder();
 
-        for (ApplicationName application : values()) {
+        for (ApplicationId application : values()) {
             byNameBuilder.put(application.getApplicationName(), application);
         }
         lookupByName = byNameBuilder.build();
     }
     
-    public static ApplicationName getByName(String name) {
+    public static ApplicationId getByName(String name) {
         return lookupByName.get(name);
     }
 
-    private ApplicationName(String appName) {
+    private ApplicationId(String appName) {
         this.applicationName = appName;
     }
 

@@ -11,7 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl;
@@ -29,7 +29,7 @@ public class BillingFile extends java.util.Observable implements Runnable {
      */
     public static void main(String[] args) {
         try {
-            CtiUtilities.setCtiAppName(ApplicationName.BILLING_FILE);
+            CtiUtilities.setCtiAppName(ApplicationId.BILLING_FILE);
             CTILogger.info("BillingFile starting...");
             YukonSpringHook.setDefaultContext("com.cannontech.context.billing");
 

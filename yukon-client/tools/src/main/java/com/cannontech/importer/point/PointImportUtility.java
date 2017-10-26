@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.PointDao;
@@ -2076,7 +2076,7 @@ public class PointImportUtility
      * @param args java.lang.String[]
      */
     public static void main(java.lang.String[] args) {
-        ApplicationName appName = ApplicationName.POINT_IMPORT_UTILITY;
+        ApplicationId appName = ApplicationId.POINT_IMPORT_UTILITY;
         CtiUtilities.setCtiAppName(appName);
         CTILogger.info(appName + " starting...");
         if( args.length < 2 ){

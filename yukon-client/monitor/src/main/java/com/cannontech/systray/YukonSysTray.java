@@ -18,7 +18,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.login.ClientStartupHelper;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 
@@ -151,7 +151,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		try
 		{
 	        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-	        clientStartupHelper.setAppName(ApplicationName.YUKON_SYSTRAY);
+	        clientStartupHelper.setAppName(ApplicationId.YUKON_SYSTRAY);
 
 	        clientStartupHelper.doStartup();
 	        clientStartupHelper.hideSplash();

@@ -9,7 +9,7 @@ package com.cannontech.graph;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeListener;
@@ -267,7 +267,7 @@ public class WebGraph implements Runnable {
         CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()
             + " - Yukon Database Version: " + com.cannontech.common.version.VersionTools.getDatabaseVersion());
 
-        CtiUtilities.setCtiAppName(ApplicationName.WEB_GRAPH);
+        CtiUtilities.setCtiAppName(ApplicationId.WEB_GRAPH);
         WebGraph webGraph = new WebGraph();
 
         // start the process

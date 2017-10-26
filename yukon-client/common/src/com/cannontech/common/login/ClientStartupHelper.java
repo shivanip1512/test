@@ -12,13 +12,13 @@ import javax.swing.UIManager;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.SplashWindow;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
 
 public class ClientStartupHelper {
-    private ApplicationName appName;
+    private ApplicationId appName;
     private JFrame parentFrame; // can be null
     private Integer requiredRole; // can be null
     private SplashWindow splash;
@@ -112,7 +112,7 @@ public class ClientStartupHelper {
         }
     }
 
-    public void setAppName(ApplicationName appName) {
+    public void setAppName(ApplicationId appName) {
         this.appName = appName;
         BootstrapUtils.setApplicationName(appName);
         CtiUtilities.setRunningAsClient();

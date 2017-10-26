@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.io.File;
 
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.export.ExportFormatBase;
 import com.cannontech.export.ExportFormatTypes;
@@ -1334,7 +1334,7 @@ private javax.swing.JCheckBox getUninstallServiceCheckBox() {
     {
         try
         {
-            CtiUtilities.setCtiAppName(ApplicationName.EXPORT);
+            CtiUtilities.setCtiAppName(ApplicationId.EXPORT);
             javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());       
             ExportGui aExportGui;
             aExportGui = new ExportGui();

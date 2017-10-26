@@ -155,7 +155,7 @@ public class BootstrapUtils {
      * {@link #getApplicationName()}.  If this is called, it must be called before Spring starts up
      * (i.e. before any calls to {@link YukonSpringHook}).
      */
-    public final static void setApplicationName(ApplicationName defaultName) {
+    public final static void setApplicationName(ApplicationId defaultName) {
         String existingName = CtiUtilities.getCtiAppName();
         if (existingName == null) {
             CtiUtilities.setCtiAppName(defaultName);
@@ -175,7 +175,7 @@ public class BootstrapUtils {
      * <ul>
      * <li>The main web application essentially hard-codes it here as "Webserver".</li>
      * <li>Most Java applications (e.g. the swing clients or Yukon Service Manager call
-     * {@link #setApplicationName(ApplicationName)} to set it on start-up.</li>
+     * {@link #setApplicationName(ApplicationId)} to set it on start-up.</li>
      * <li>In a web application like the EIM server, it should be set in web.xml.</li>
      * </ul>
      */
@@ -185,10 +185,10 @@ public class BootstrapUtils {
             return appName;
         }
         
-        ApplicationName defaultAppName = 
+        ApplicationId defaultAppName = 
             CtiUtilities.isRunningAsWebApplication()
-                ? ApplicationName.WEBSERVER
-                : ApplicationName.UNKNOWN;
+                ? ApplicationId.WEBSERVER
+                : ApplicationId.UNKNOWN;
         
         CtiUtilities.setCtiAppName(defaultAppName);            
 

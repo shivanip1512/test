@@ -34,7 +34,7 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.tdc.model.IDisplay;
-import com.cannontech.common.util.ApplicationName;
+import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -4088,7 +4088,7 @@ public static void main(final java.lang.String[] args)
     try
     {
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-        clientStartupHelper.setAppName(ApplicationName.TABULAR_DISPLAY_CONSOLE);
+        clientStartupHelper.setAppName(ApplicationId.TABULAR_DISPLAY_CONSOLE);
         clientStartupHelper.setRequiredRole(YukonRole.TABULAR_DISPLAY_CONSOLE.getRoleId());
         clientStartupHelper.setSplashUrl(CtiUtilities.TDC_SPLASH);
 
