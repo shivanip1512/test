@@ -7,6 +7,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.StringUtils;
 import com.google.common.base.Objects;
 
 @YukonPao(tableName = "YukonPaObject", idColumnName = "PaObjectId")
@@ -52,7 +53,7 @@ public class CompleteYukonPao implements com.cannontech.common.pao.YukonPao {
     }
 
     public void setPaoName(String paoName) {
-        this.paoName = paoName;
+        this.paoName = StringUtils.trimSpaces(paoName);
     }
 
     @YukonPaoField
