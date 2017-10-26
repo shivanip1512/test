@@ -99,6 +99,7 @@ function useRandom() {
                         <option value="V">V</option>
                         <option value="V degree">V degree</option>
                         <option value="A">A</option>
+                        <option value="VAh">VAh</option>
                         <option value="Var">Var</option>
                         <option value="Varh">Varh</option>
                         <option value="Pulse">Pulse</option>
