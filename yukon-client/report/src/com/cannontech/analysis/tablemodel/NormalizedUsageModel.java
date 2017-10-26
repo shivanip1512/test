@@ -49,12 +49,6 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
     
     public void doLoadData() {
         
-        Date startDateDate = new Date();
-        startDateDate.setTime(startDate);
-        
-        Date stopDateDate = new Date();
-        stopDateDate.setTime(stopDate);
-
         Instant start = new DateTime(startDate).withTimeAtStartOfDay().toInstant();
         Instant end = new DateTime(stopDate).withTimeAtStartOfDay().plusDays(1).toInstant();
 
@@ -91,11 +85,9 @@ public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageMod
 
         info.put("Device Name", device.getPaoName());
         info.put("Point", litePoint.getPointName() +  " (id: " + Integer.toString(getPointId()) + ")");
-        info.put("Start Date",
-            dateFormattingService.format(start.toDate(), DateFormattingService.DateFormatEnum.BOTH, userContext));
-        info.put("Stop Date",
-            dateFormattingService.format(end.toDate(), DateFormattingService.DateFormatEnum.BOTH, userContext));
-       return info;
+        info.put("Start Date", dateFormattingService.format(start.toDate(), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Stop Date", dateFormattingService.format(end.toDate(), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        return info;
     }
 
     @Override
