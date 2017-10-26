@@ -204,6 +204,11 @@ UPDATE YukonListEntry SET EntryText = 'LCR-5000 (VERSACOM)' WHERE EntryText = 'L
 UPDATE YukonListEntry SET EntryText = 'LCR-5000 (ExpressCom)' WHERE EntryText = 'LCR-5000(EXPRESSCOM)' AND YukonDefinitionID = 1302;
 /* End YUK-17237 */
 
+/* Start YUK-17370 */
+INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
+INSERT INTO JobScheduledRepeating VALUES (-4, '0 01 0 ? * *');
+/* End YUK-17370 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
