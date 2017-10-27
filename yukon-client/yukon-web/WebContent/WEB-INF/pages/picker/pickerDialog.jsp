@@ -23,6 +23,7 @@
     </div>
     
     <div id="picker-${id}-nothing-selected" style="display:none;" class="error"><i:inline key=".nothingSelected"/></div>
+    <div id="picker-${id}-too-many-selections" style="display:none;" class="error"><i:inline key=".tooManySelections" arguments="${maxNumSelections}"/></div>
     <div class="js-block-this">
         <div id="picker-${id}-results"></div>
         <div id="picker-${id}-no-results" style="display: none" class="buffered empty-list">

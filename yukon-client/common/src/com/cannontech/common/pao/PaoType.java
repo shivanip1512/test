@@ -994,6 +994,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getThermostatTypes() {
         return thermostatTypes;
     }
+    
+    public static ImmutableSet<PaoType> getPortTypes() {
+        return portTypes;
+    }
 
     /**
      * Maps PaoType String IDs to their corresponding integer device IDs.

@@ -175,6 +175,11 @@
 
 <entry key="yukon.web.widgets.notAuthorized">You are not authorized to access this widget.</entry>
 
-
+<entry key="yukon.web.widgets.porterQueueCountsWidget">Comm Channel Queue Counts</entry>
+<entry key="yukon.web.widgets.porterQueueCountsWidget.helpText"><![CDATA[
+    The Comm Channel Queue Counts widget displays up to 3 months of historical data for up to 5 Comm Channels. The default comm channels are selected when the widget is created. These are the comm
+    channels that will populate the graph in the widget each time the widget is loaded. Use the comm channel picker within the widget to temporarily change the comm channels that are displayed in in the graph. To permanently change
+    the comm channels for the widget, edit the dashboard containing the widget, use the picker to select the desired comm channels, and click save.
+]]></entry>
 
 </properties>

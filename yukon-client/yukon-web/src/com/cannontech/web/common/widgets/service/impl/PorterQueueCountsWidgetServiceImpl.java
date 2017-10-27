@@ -1,5 +1,6 @@
 package com.cannontech.web.common.widgets.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
         Map<Integer, List<PointValueHolder>> pointIdToPointValueHolder = new HashMap<>();
         
         pointIds.forEach(pointId -> {
-            pointIdToPointValueHolder.put(pointId, null);
+            pointIdToPointValueHolder.put(pointId, new ArrayList<PointValueHolder>());
         });
 
         Range<Instant> range = Range.exclusiveInclusive(getEarliestStartDate().toInstant(), Instant.now());
@@ -64,6 +65,10 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     @Override
     public List<Object[]> graphDataProvider(List<PointValueHolder> data) {
         log.debug("graphDataProvider called");
+        if (data == null) {
+            log.debug("no data to provide for graph");
+            return null;
+        }
         List<Object[]> values = data.stream()
                 .map(pvh -> new Object[] {pvh.getPointDataTimeStamp().getTime(), pvh.getValue()})
                 .collect(Collectors.toList());

@@ -8,7 +8,8 @@ public enum WidgetInputType {
     METER_PICKER(Integer.class, "meterPicker"),
     DEVICE_GROUP(String.class, "deviceGroupPicker"),
     CHECKBOX(Boolean.class, "checkbox"),
-    MONITOR_PICKER(String.class, "monitorPicker")
+    MONITOR_PICKER(String.class, "monitorPicker"),
+    PORT_PICKER(String.class, "portPicker")
     ;
     
     private final Class<?> inputClass;

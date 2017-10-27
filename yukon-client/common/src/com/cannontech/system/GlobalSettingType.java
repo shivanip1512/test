@@ -174,6 +174,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
     GATEWAY_READY_NODES_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 25),
     PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
+    PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5)
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;

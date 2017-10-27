@@ -43,7 +43,7 @@
 <%@ attribute name="buttonRenderMode" description="Passes the render mode to the cti:button tag.  Only usable 'linkType' is 'button'.  See cti:button 'renderMode' attribute." %>
 <%@ attribute name="includeRemoveButton" description="Adds a red x next to the picker to clear out the selected item" %>
 <%@ attribute name="removeValue" description="Value to set the item to when cleared.  Default will be blank" %>
-
+<%@ attribute name="maxNumSelections" type="java.lang.Integer" description="An upper limit on the number of selections that the user can make. This can only be set if multiSelectMode is enabled." %>
 
 <cti:default var="linkType" value="normal"/>
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
@@ -250,6 +250,9 @@
             picker.selectionProperty = '${selectionProperty}';
         }
         picker.allowEmptySelection = '${pageScope.allowEmptySelection}' === 'true';
+        if ('${pageScope.maxNumSelections}' !== '') {
+        	picker.maxNumSelections = '${pageScope.maxNumSelections}';
+        }
         picker.useInitialIdsIfEmpty = '${pageScope.useInitialIdsIfEmpty}' === 'true';
         if ('${linkType}' === 'selection') {
             picker.selectedAndMsg = '<cti:msg2 javaScriptEscape="true" key="yukon.web.picker.selectedAnd"/>';

@@ -92,7 +92,9 @@
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.name">Data Collection</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.description">Displays data collection information for a selected device group.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.name">Infrastructure Warnings</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, CCUs and Repeaters.</entry>  
+    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, CCUs and Repeaters.</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.name">Comm Channel Queue Counts</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description">Displays an interactive trend data graph of the queue counts for each of the comm channels that you select.</entry>
     
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Meter</entry>
@@ -105,6 +107,7 @@
     <entry key="yukon.web.modules.dashboard.widgetParameter.showRfGatewayDataRequest">Show Gateway Data Request Queue</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.showRfGatewayData">Show Gateway Data Queue</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.selectMonitors">Select Monitors</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.selectPorts">Select Comm Channels</entry>
     
     <!-- Visibility -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>

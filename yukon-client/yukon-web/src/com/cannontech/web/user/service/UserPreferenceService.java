@@ -6,6 +6,7 @@ import java.util.Map;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
+import com.cannontech.core.users.model.PreferencePorterQueueCountsZoomOption;
 import com.cannontech.core.users.model.PreferenceTrendZoomOption;
 import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreference;
@@ -59,6 +60,25 @@ public interface UserPreferenceService {
      */   
     public PreferenceTrendZoomOption updatePreferenceZoomType(PreferenceTrendZoomOption prefType, LiteYukonUser user)
             throws IllegalArgumentException;
+    
+    /**
+     * If there is no saved preference, the default one which is 1w is returned.
+     * 
+     * @param user LiteYukonUser
+     * @return PreferencePorterQueueCountsZoomOption enum value.
+     */
+    public PreferencePorterQueueCountsZoomOption getPorterDefaultZoomType(LiteYukonUser user);
+
+    /**
+     * If there is no saved preference, the default one which is 1w is returned.
+     * 
+     * @param prefType new PorterQueueCounts trend zoom value to be updated
+     * @param user LiteYukonUser
+     * @return PreferencePorterQueueCountsZoomOption enum value.
+     */   
+    public PreferencePorterQueueCountsZoomOption updatePorterPreferenceZoomType(PreferencePorterQueueCountsZoomOption prefType, LiteYukonUser user)
+            throws IllegalArgumentException;
+
     
     /**
      * Returns the User preference values for a user by Preference type

@@ -16,13 +16,15 @@
         <tags:nextPrevLinks previousUrl="javascript:yukon.pickers['${id}'].previous()"
             nextUrl="javascript:yukon.pickers['${id}'].next()" />
 
-        <div id="picker-${id}-nothing-selected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
+    <div id="picker-${id}-nothing-selected" style="display:none" class="error"><i:inline key=".nothingSelected"/></div>
+    <div id="picker-${id}-too-many-selections" style="display:none;" class="error"><i:inline key=".tooManySelections" arguments="${maxNumSelections}"/></div>
     <div class="js-block-this">
         <div id="picker-${id}-results"></div>
         <div id="picker-${id}-no-results" style="display: none" class="buffered empty-list">
             <i:inline key=".noResults"/>
         </div>
     </div>
+    
     <c:if test="${multiSelectMode}">
         <div class="action-area">
             <input type="checkbox" id="picker-${id}-select-all" onclick="javascript:yukon.pickers['${id}'].selectAll()">

@@ -11,6 +11,7 @@ import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.core.users.dao.UserPreferenceDao;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
+import com.cannontech.core.users.model.PreferencePorterQueueCountsZoomOption;
 import com.cannontech.core.users.model.PreferenceTrendZoomOption;
 import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreference;
@@ -131,5 +132,22 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     @Override
     public void updateUserPreferences(Integer userId, List<UserPreference> preferences) {
         prefDao.updateUserPreferences(userId, preferences);
+    }
+
+    @Override
+    public PreferencePorterQueueCountsZoomOption getPorterDefaultZoomType(LiteYukonUser user) {
+        String graphTypeString = this.getPreference(user, UserPreferenceName.PORTER_QUEUE_COUNTS_ZOOM);
+        PreferencePorterQueueCountsZoomOption prefType = PreferencePorterQueueCountsZoomOption.valueOf(graphTypeString);
+        return prefType;
+    }
+
+    @Override
+    public PreferencePorterQueueCountsZoomOption updatePorterPreferenceZoomType(PreferencePorterQueueCountsZoomOption prefType,
+                                                                                LiteYukonUser user)throws IllegalArgumentException {
+        if (prefType == null) {
+            throw new IllegalArgumentException("Unknown ZoomType [" + prefType + "]");
+        }
+        this.savePreference(user, UserPreferenceName.PORTER_QUEUE_COUNTS_ZOOM, prefType.name());
+        return prefType;
     }
 }

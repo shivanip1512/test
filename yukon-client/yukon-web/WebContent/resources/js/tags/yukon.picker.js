@@ -132,9 +132,13 @@ yukon.protoPicker = function (okText,
     okPressed = function () {
         
         var fieldName, pickerThis, destinationFieldElem, dialogElem;
-        
+
         if (!this.allowEmptySelection && this.selectedItems.length === 0) {
             $(this.nothingSelectedDiv).show();
+            $(this.tooManySelectionsDiv).hide();
+        } else if (this.maxNumSelections !== null && this.maxNumSelections < this.selectedItems.length) {
+            $(this.tooManySelectionsDiv).show();
+            $(this.nothingSelectedDiv).hide();
         } else {
             if (this.destinationFieldId) {
                 fieldName = this.idFieldName;
@@ -183,6 +187,7 @@ yukon.protoPicker = function (okText,
         });
         
         $(this.nothingSelectedDiv).hide();
+        $(this.tooManySelectionsDiv).hide();
         
         if (this.immediateSelectMode) {
             this.selectedItems = [hit];
@@ -542,6 +547,9 @@ yukon.protoPicker = function (okText,
         if (this.nothingSelectedDiv) {
             $(this.nothingSelectedDiv).hide();
         }
+        if (this.tooManySelectionsDiv) {
+            $(this.tooManySelectionsDiv).hide();
+        }
         if ('undefined' !== typeof skipFocus && !skipFocus) {
             this.ssInput.focus();
         }
@@ -574,6 +582,7 @@ yukon.protoPicker = function (okText,
         this.resultsDiv = document.getElementById('picker-' + this.pickerId + '-results');
         this.noResultsDiv = document.getElementById('picker-' + this.pickerId + '-no-results');
         this.nothingSelectedDiv = document.getElementById('picker-' + this.pickerId + '-nothing-selected');
+        this.tooManySelectionsDiv = document.getElementById('picker-' + this.pickerId + '-too-many-selections');
         this.selectAllCheckBox = document.getElementById('picker-' + this.pickerId + '-select-all');
         this.selectAllPagesLink = document.getElementById('picker-' + this.pickerId + '-select-all-pages');
         this.allPagesSelected = document.getElementById('picker-' + this.pickerId + '-all-pages-selected');
@@ -608,7 +617,8 @@ yukon.protoPicker = function (okText,
                 'type' : this.pickerType,
                 'id' : this.pickerId,
                 'multiSelectMode' : this.multiSelectMode,
-                'immediateSelectMode' : this.immediateSelectMode
+                'immediateSelectMode' : this.immediateSelectMode,
+                'maxNumSelections' : this.maxNumSelections
             },
             onCompleteBind;
         
@@ -669,9 +679,20 @@ yukon.protoPicker = function (okText,
     yukon.protoPicker.prototype.show = function (skipFocus) {
        
         if (this.immediateSelectMode && this.multiSelectMode) {
-            alert('immediateSelectMode cannot be used with multiSelectMode; ' + 
+            if (this.maxNumSelections !== null) {
+                alert('immediateSelectMode cannot be used with multiSelectMode or maxNumSelections; ' + 
+                'turning multiSelectMode and maxNumSelections off');
+                this.maxNumSelections = null;
+            } else {            
+                alert('immediateSelectMode cannot be used with multiSelectMode; ' + 
                 'turning multiSelectMode off');
+            }
             this.multiSelectMode = false;
+        }
+        
+        if (!this.multiSelectMode && this.maxNumSelections !== null) {
+            alert('multiSelectMode must be enabled in order to set maxNumSelections; turning maxNumSelections off');
+            this.maxNumSelections = null;
         }
 
         // forget jQuery here. We know selectedItems is an Array, so just
@@ -710,6 +731,7 @@ yukon.protoPicker = function (okText,
             };
             
         $(this.nothingSelectedDiv).hide();
+        $(this.tooManySelectionsDiv).hide();
         // Don't do the search if it hasn't changed.  This can happen if
         // the use the cursor key or alt-tab to another window and back.
         ss = this.ssInput.value;
@@ -958,6 +980,7 @@ yukon.protoPicker = function (okText,
     yukon.protoPicker.prototype.extraArgs = null;
     yukon.protoPicker.prototype.selectionProperty = null;
     yukon.protoPicker.prototype.allowEmptySelection = false;
+    yukon.protoPicker.prototype.maxNumSelections = null;
     yukon.protoPicker.prototype.selectedAndMsg = '';
     yukon.protoPicker.prototype.selectedMoreMsg = '';
     yukon.protoPicker.prototype.useInitialIdsIfEmpty = false;

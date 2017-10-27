@@ -36,6 +36,8 @@ public enum UserPreferenceName implements DisplayableEnum {
                PreferenceTrendZoomOption.getDefault().name(), PreferenceType.NONEDITABLE),
     DISPLAY_EVENT_RANGE(InputTypeFactory.enumType(TimeRange.class), TimeRange.DAY_1.name(), PreferenceType.NONEDITABLE),
     COMMANDER_RECENT_TARGETS(InputTypeFactory.stringType(), null, PreferenceType.NONEDITABLE),
+    PORTER_QUEUE_COUNTS_ZOOM(InputTypeFactory.enumType(PreferencePorterQueueCountsZoomOption.class),
+                             PreferencePorterQueueCountsZoomOption.getDefault().name(), PreferenceType.NONEDITABLE),
 
     // Temporary preferences, cache lived
     COMMANDER_LAST_ROUTE_ID(InputTypeFactory.integerType(), null, PreferenceType.TEMPORARY),

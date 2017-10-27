@@ -24,6 +24,7 @@ public enum WidgetType implements DisplayableEnum {
     INFRASTRUCTURE_WARNINGS(DashboardScope.GENERAL, WidgetCategory.OTHER, "infrastructureWarningsWidget", "image-infrastructure-warnings"),
 
     TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-trends"), 
+    PORTER_QUEUE_COUNTS(DashboardScope.GENERAL, WidgetCategory.AMI, "porterQueueCountsWidget", "image-porter-queue-counts"),
 
     //AMI Dashboard
     MONITORS(DashboardScope.GENERAL, WidgetCategory.AMI, "allMonitorsWidget", "image-monitors"),
@@ -51,17 +52,20 @@ public enum WidgetType implements DisplayableEnum {
     
     private static final String formatKeyBase = "yukon.web.modules.dashboard.widgetType.";
     private static final String baseJSPath = "/resources/js/widgets/";
-    private static final Multimap<WidgetType, String> widgetSpecificJavascript;
+    private static final ImmutableListMultimap<WidgetType, String> widgetSpecificJavascript;
     private static final Multimap<WidgetType, String> widgetSpecificCss;
     private static final Multimap<WidgetType, WidgetParameter> widgetParameters;
     
     static {
-        widgetSpecificJavascript = ImmutableListMultimap.of(
-            SYSTEM_MESSAGING, baseJSPath + "yukon.support.systemHealth.js",
-            DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
-            DATA_COLLECTION, "HIGH_STOCK",
-            INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js"
-        );
+        Builder<WidgetType, String> javascriptBuilder = new ImmutableListMultimap.Builder<WidgetType, String>()
+            .put(SYSTEM_MESSAGING, baseJSPath + "yukon.support.systemHealth.js")
+            .putAll(DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
+                                     "HIGH_STOCK")
+            .put(INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js")
+            .putAll(PORTER_QUEUE_COUNTS, baseJSPath + "yukon.widget.porterQueueCounts.js",
+                                         "HIGH_STOCK",
+                                         "HIGH_STOCK_NO_DATA");
+        widgetSpecificJavascript = javascriptBuilder.build();
         
         widgetSpecificCss = ImmutableListMultimap.of(
             //Add specialized CSS (that only needs to be loaded when the widget is present)
@@ -77,7 +81,8 @@ public enum WidgetType implements DisplayableEnum {
                                       new WidgetParameter("showRfDa", WidgetInputType.CHECKBOX, null, "false"),
                                       new WidgetParameter("showRfGatewayDataRequest", WidgetInputType.CHECKBOX, null, "false"),
                                       new WidgetParameter("showRfGatewayData", WidgetInputType.CHECKBOX, null, "false"))
-            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null));
+            .put(MONITOR_SUBSCRIPTIONS, new WidgetParameter("selectMonitors", WidgetInputType.MONITOR_PICKER, null))
+            .put(PORTER_QUEUE_COUNTS, new WidgetParameter("selectPorts", WidgetInputType.PORT_PICKER, null));
         widgetParameters = builder.build();
     }
     
