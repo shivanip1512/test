@@ -293,8 +293,12 @@ public class DisplayDaoImpl implements DisplayDao {
             createColumns(displayId, display.getColumns());
         } else {
             displaySql.append("WHERE DISPLAYNUM").eq(displayId);
-            yukonJdbcTemplate.update(displaySql);
-            log.debug("Updating display=" + display);
+            log.debug("Updating display=" + display);    
+            try {
+                yukonJdbcTemplate.update(displaySql);
+            } catch (DataIntegrityViolationException e) {
+                throw new DuplicateException("Unable to save Display.", e);
+            }
         }
 
         return getDisplayById(displayId);
