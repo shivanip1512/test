@@ -246,7 +246,14 @@ yukon.widget.porterQueueCounts = (function () {
                         _buildChart($(widget).find('js-chart'), data);
                     }
                     else {
-                        console.log("can't update");
+                        $(widget).addMessage({
+                            message: "Must wait 15 minutes to between data refresh.",
+                            messageClass: "error"
+                        });
+                        
+                        setTimeout(function() { 
+                            $(widget).removeMessages();
+                            }, 3000);
                     }
                 });
             });
@@ -261,43 +268,6 @@ yukon.widget.porterQueueCounts = (function () {
             
             $(document).on('okClicked', function (ev, ui) {
                 okClicked = true;
-            });
-            
-            /** print chart */
-            $(document).on('click', '.js-print', function (ev) {
-                var chart = $('js-chart').highcharts();
-                var w = chart.chartWidth;
-                var h = chart.chartHeight;
-                chart.print();               
-                setTimeout(function() {
-                    chart.setSize(w, h, false);
-                }, 100);
-            });
-            
-            /** download png */
-            $(document).on('click', '.js-dl-png', function (ev) {
-                var chart = $('js-chart').highcharts();
-                chart.exportChart({type: 'image/png'});
-            });
-            
-            /** download jpg */
-            $(document).on('click', '.js-dl-jpg', function (ev) {
-                var chart = $('js-chart').highcharts();
-                chart.exportChart({type: 'image/jpeg'});
-            });
-            
-            /** download pdf */
-            $(document).on('click', '.js-dl-pdf', function (ev) {
-                var chart = $('js-chart').highcharts();
-                chart.exportChart({type: 'application/pdf'});
-            });
-            
-            /** download csv */
-            $(document).on('click', '.js-dl-csv', function (ev) {
-                var chart = $('js-chart').highcharts(),
-                    ex = chart.series[0].xAxis.getExtremes();
-                
-              //!!!!!!!!!!!!!!!!!!!!how to initiate download of data?  
             });
             
             _update();

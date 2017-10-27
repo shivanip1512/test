@@ -189,7 +189,6 @@ public class PorterQueueCountsController {
     public @ResponseBody Map<String, Object> forceUpdate(YukonUserContext userContext, @RequestParam(value="portIds[]") List<Integer> portIds, @RequestParam(value="lastGraphDataLoadTime") String lastGraphDataLoadTime) {
         Instant time = Instant.parse(lastGraphDataLoadTime, dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATEHMS_12, userContext));
         if (porterQueueCountsWidgetService.isRefreshEligible(time)) {
-            System.out.println("getting data");
             return data(userContext, portIds);
         }
         return null;
