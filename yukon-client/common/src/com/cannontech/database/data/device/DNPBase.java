@@ -58,7 +58,7 @@ public abstract class DNPBase extends AddressBase {
                                              DBChangeMsg.CHANGE_CONFIG_DB, 
                                              DBChangeMsg.CAT_DEVICE_CONFIG, 
                                              DBChangeMsg.OBJ_DEVICE, 
-                                             dbChangeType));
+                                             DbChangeType.UPDATE));
             
             DBChangeMsg[] dbChange = new DBChangeMsg[dbChangeMsgs.size()];
             return dbChangeMsgs.toArray(dbChange);
