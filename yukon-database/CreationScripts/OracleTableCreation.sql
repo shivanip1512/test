@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/26/2017 1:12:55 AM                        */
+/* Created on:     10/27/2017 7:11:37 AM                        */
 /*==============================================================*/
 
 
@@ -5832,6 +5832,8 @@ create table JOB  (
    constraint PK_JOB primary key (JobID)
 );
 
+
+/* Skipping entry with jobId=-3 for oracle because ‘spSmartIndexMaintanenceJobDefinition’ bean job entry is there with jobId=-3 and that is SqlServer specific only */
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N', -1);
