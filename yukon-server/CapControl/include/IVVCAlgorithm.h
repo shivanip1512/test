@@ -31,6 +31,8 @@ class IVVCAlgorithm
 
     protected:
 
+        bool checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus );
+
         bool checkZoneRegulatorsInProperConfig(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
         bool isBusInDisabledIvvcState( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );

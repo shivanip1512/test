@@ -423,6 +423,56 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
     return false;
 }
 
+/*
+    Get all the controllable (switched) banks on the bus and make sure they belong to one of the zones.
+        If they don't, then disable them.
+*/
+bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus )
+{
+    // 1. Collect a mapping of all of the switched banks on the bus.
+
+    std::map<long, CtiCCCapBankPtr>     banks;
+
+    for ( auto bank : subbus->getAllSwitchedCapBanks() )
+    {
+        banks.emplace( bank->getPaoId(), bank );
+    }
+    
+    // 2. Remove the ones from the mapping that are assigned to a zone on the bus.
+
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    ZoneManager & zoneManager       = store->getZoneManager();
+    Zone::IdSet subbusZoneIds       = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    for ( const auto ID : subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for ( auto bankID : zone->getBankIds() )
+        {
+            banks.erase( bankID );
+        }
+    }
+
+    // 3. Disable any banks left in the mapping.
+
+    const bool anyToDisable = ! banks.empty();
+
+    for ( auto entry : banks )
+    {
+        CtiCCCapBankPtr bank = entry.second;
+
+        CTILOG_INFO(dout, "IVVC Configuration: Bank: " << bank->getPaoName() << " on bus: " << subbus->getPaoName()
+                            << " is not assigned to a control zone. Disabling the bank." );
+
+        store->UpdatePaoDisableFlagInDB( bank, true );
+    }
+
+    return anyToDisable;
+}
+
+
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
     CtiTime timeNow;
@@ -463,13 +513,23 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     state->showZoneRegulatorConfigMsg = true;
 
-
     //  We need to handle any reverse flow conditions detected on the bus.
     if ( handleReverseFlow( subbus ) )
     {
         sendDisableRemoteControl( subbus );
+        state->setState(IVVCState::IVVC_WAIT);
+
         CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::DISABLE_SUBSTATION_BUS,
                                                                subbus->getPaoId() ) )->execute();
+        return;
+    }
+    
+    if ( checkAllBanksAreInControlZones( subbus ) )
+    {
+        state->setState(IVVCState::IVVC_WAIT);
+
+        CTILOG_INFO(dout, "IVVC Configuration: Detected banks not assigned to a control zone on bus: " << subbus->getPaoName()
+                            << ". Aborting analysis." );
         return;
     }
     
