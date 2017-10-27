@@ -284,7 +284,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> rfMeterTypes;
     private final static ImmutableSet<PaoType> rfElectricTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
-    private final static ImmutableSet<PaoType> twoWayCbcTypes;
     private final static ImmutableSet<PaoType> regulatorTypes;
     private final static ImmutableSet<PaoType> mctTypes;
     private final static ImmutableSet<PaoType> iedTypes;
@@ -360,10 +359,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             CBC_DNP,
             CBC_LOGICAL,
             CBC_FP_2800);
-        
-        twoWayCbcTypes = ImmutableSet.of(
-            CBC_8020,
-            CBC_8024);
         
         regulatorTypes = ImmutableSet.of(
             GANG_OPERATED,
@@ -735,10 +730,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isCbc() {
         return cbcTypes.contains(this);
-    }
-
-    public boolean isTwoWayCbc() {
-        return twoWayCbcTypes.contains(this);
     }
 
     public boolean isRegulator() {

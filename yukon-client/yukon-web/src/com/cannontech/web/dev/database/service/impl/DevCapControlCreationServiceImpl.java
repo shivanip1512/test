@@ -73,6 +73,7 @@ import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public class DevCapControlCreationServiceImpl extends DevObjectCreationBase implements DevCapControlCreationService {
@@ -100,6 +101,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private static int total;
     private static int setPointRegulatorConfigId;
     
+    private final static ImmutableSet<PaoType> threePhaseCbcTypes = ImmutableSet.of(PaoType.CBC_8020, PaoType.CBC_8024);
+
     @Override
     public boolean isRunning() {
         return _lock.isLocked();
@@ -169,7 +172,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                             PaoIdentifier capBankPao = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederPao, capBankIndex, bankAssignments, graphPosition);
                             graphPosition += graphPositionOffset;
                             createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, capBankIndex, capBankPao);
-                            assignCBCVoltagePointsToBank(capBankPao.getPaoId());
+                            assignCBCVoltagePointsToBank(capBankPao.getPaoId(), devCapControl.getCbcType().getPaoType());
                         }
                         
                         if (devCapControl.isUseIvvcControlType()) {
@@ -313,20 +316,20 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     }
 
     // This takes all Voltage inputs on the CBC and attaches them to the bank, and assigns a phase.
-    private void assignCBCVoltagePointsToBank(int capbankId) {
+    private void assignCBCVoltagePointsToBank(int capbankId, PaoType cbcType) {
         CapBank capbank = capbankService.getCapBank(capbankId);
         List<CCMonitorBankList> unassigned = capbankService.getUnassignedPoints(capbank);
+        Integer[] pointIds;
 
-
-        Integer[] pointIds = unassigned.stream()
-                                       .filter(item -> item.getMonitorPoint().getPointName().equalsIgnoreCase("Average Line Voltage")
-                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase B")
-                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C")
-                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Va Secondary")
-                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vb Secondary")
-                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vc Secondary"))
-                                       .map(CCMonitorBankList::getPointId)
-                                       .toArray(Integer[]::new);
+        pointIds = unassigned.stream()
+                             .filter(item -> !threePhaseCbcTypes.contains(cbcType) ? (item.getMonitorPoint().getPointName().equalsIgnoreCase("Average Line Voltage")
+                                     || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase B")
+                                     || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C")) :
+                                     item.getMonitorPoint().getPointName().equalsIgnoreCase("Va Secondary")
+                                     || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vb Secondary")
+                                     || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vc Secondary"))
+                             .map(CCMonitorBankList::getPointId)
+                             .toArray(Integer[]::new);
 
         capbankService.savePoints(capbankId, pointIds);
         capbank = capbankService.getCapBank(capbankId);
@@ -478,7 +481,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             capbankControllerDao.assignController(capBankPao.getPaoId(), cbcPao.getPaoId());
             logCapControlAssignment(cbcName, capBankPao);
             
-            if (!paoType.isTwoWayCbc()) {
+            if (!threePhaseCbcTypes.contains(paoType)) {
                 createAnalogPoint("Voltage Phase B", UnitOfMeasure.VOLTS, 230, cbcPao);
                 createAnalogPoint("Voltage Phase C", UnitOfMeasure.VOLTS, 231, cbcPao);
             } else {
