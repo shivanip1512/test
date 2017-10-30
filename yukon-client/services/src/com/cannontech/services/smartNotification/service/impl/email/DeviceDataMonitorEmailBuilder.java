@@ -1,4 +1,4 @@
-package com.cannontech.common.smartNotification.service.impl.email;
+package com.cannontech.services.smartNotification.service.impl.email;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

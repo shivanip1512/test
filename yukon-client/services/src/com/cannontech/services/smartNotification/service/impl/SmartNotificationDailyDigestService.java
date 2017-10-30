@@ -1,4 +1,4 @@
-package com.cannontech.services.smartNotification.service;
+package com.cannontech.services.smartNotification.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,12 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMessagePar
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.services.smartNotification.service.MessageParametersHelper;
+import com.cannontech.services.smartNotification.service.SmartNotificationDecider;
+import com.cannontech.services.smartNotification.service.SmartNotificationDeciderService;
 import com.google.common.collect.SetMultimap;
 
-public class SmartNotificationDailyDigestService{
+public class SmartNotificationDailyDigestService {
 
     @Autowired protected SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired protected SmartNotificationEventDao eventDao;

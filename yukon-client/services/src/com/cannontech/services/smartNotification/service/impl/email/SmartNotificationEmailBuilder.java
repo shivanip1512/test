@@ -1,4 +1,4 @@
-package com.cannontech.common.smartNotification.service.impl.email;
+package com.cannontech.services.smartNotification.service.impl.email;
 
 import java.util.List;
 
@@ -7,7 +7,6 @@ import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;

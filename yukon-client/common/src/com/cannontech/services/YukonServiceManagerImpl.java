@@ -30,14 +30,10 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     private CountDownLatch shutdownLatch = new CountDownLatch(1);
     private List<ConfigurableApplicationContext> contexts = Lists.newArrayList();
     
-    private enum ServiceType {
-        CLASS_NAME_TYPE,
-        CONTEXT_FILE_TYPE;
-    }
-
     @Override
     @PostConstruct
-    public void loadCustomServices() {
+    public void loadServices() {
+        // Load "optional" services from the database
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ServiceID, ServiceName, ServiceClass, ServiceType"); 
         sql.append("FROM YukonServices");
@@ -49,34 +45,43 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             	String displayName = rset.getString("ServiceName");
             	String path = rset.getString("ServiceClass");
             	ServiceType serviceType = rset.getEnum("ServiceType", ServiceType.class);
-            	if (startService(displayName, path, serviceType)) {
-                    log.info("successful start of the " + displayName + " service" );
+            	if (startService(path, serviceType)) {
+                    log.info("Successful start of the " + displayName + " service" );
                 } else {
                     log.error("Unable to load the " + displayName + " service: " + path);
                 }
             }
         });
-            
+        
+        // Load "required" services from enum
+        for (ManagedService service : ManagedService.values()) {
+            if (startService(service.getPath(), service.getType())) {
+                log.info("Successful start of the " + service.getName() + " service" );
+            } else {
+                log.error("Unable to load the " + service.getName() + " service: " + service.getPath());
+            }
+        }
+                      
     }
 
-    private boolean startService(String displayName, String serviceName, ServiceType serviceType) throws SQLException {
-        serviceName = serviceName.trim();
+    private boolean startService(String servicePath, ServiceType serviceType) {
+        servicePath = servicePath.trim();
 
         Exception e1, e2;
         // try as context file
         try {
-            ConfigurableApplicationContext context2 = new YukonBaseXmlApplicationContext(applicationContext, "classpath:com/cannontech/services/server/sharedServiceManagerContext.xml", serviceName);
+            ConfigurableApplicationContext context2 = new YukonBaseXmlApplicationContext(applicationContext, "classpath:com/cannontech/services/server/sharedServiceManagerContext.xml", servicePath);
             log.debug("loaded as context: " + context2);
             contexts.add(context2);
             return true;
         } catch (Exception e) {
             e1 = e;
-            log.trace("unable to load as context: " + serviceName, e);
+            log.trace("unable to load as context: " + servicePath, e);
         }
 
         try {
             Object service = null;
-            Class<?> clazz = Class.forName(serviceName);
+            Class<?> clazz = Class.forName(servicePath);
             service = clazz.newInstance();
             //better have a start() method defined in the class!
             service.getClass().getMethod("start").invoke(service);
@@ -84,7 +89,7 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
             return true;
         } catch (Exception e) {
             e2 = e;
-            log.trace("unable to load as class: " + serviceName, e);
+            log.trace("unable to load as class: " + servicePath, e);
         }
         
 		if (ServiceType.CONTEXT_FILE_TYPE == serviceType) {
@@ -98,12 +103,12 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     
     @Override
     public void shutdownServiceManager() {
-        log.info("Service Manager is shutting down");        
+        log.info("Service Manager is shutting down");
     	for (ConfigurableApplicationContext context : contexts) {
-            context.close();            
+            context.close();
             log.debug("Closed Configurable Application Context: "+ context);
         }
-        shutdownLatch.countDown();        
+        shutdownLatch.countDown();
     }
     
     @Override

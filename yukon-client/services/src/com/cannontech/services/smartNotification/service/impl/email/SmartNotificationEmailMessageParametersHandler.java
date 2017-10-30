@@ -1,4 +1,4 @@
-package com.cannontech.common.smartNotification.service.impl.email;
+package com.cannontech.services.smartNotification.service.impl.email;
 
 import java.util.List;
 import java.util.Map;
@@ -15,8 +15,8 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
-import com.cannontech.common.smartNotification.service.SmartNotificationMessageParametersHandler;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.services.smartNotification.service.SmartNotificationMessageParametersHandler;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;

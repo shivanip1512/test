@@ -1,4 +1,4 @@
-package com.cannontech.common.smartNotification.service.impl;
+package com.cannontech.services.smartNotification.service.impl;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,8 +16,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
-import com.cannontech.common.smartNotification.service.SmartNotificationMessageParametersHandler;
 import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.services.smartNotification.service.SmartNotificationMessageParametersHandler;
 
 public class SmartNotificationMessageAssembler implements MessageListener {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationMessageAssembler.class);
@@ -53,7 +53,8 @@ public class SmartNotificationMessageAssembler implements MessageListener {
     public void handle(SmartNotificationMessageParametersMulti parametersMulti) {
         log.debug("Processing message: " + parametersMulti);
         if (parametersMulti.isSendAllInOneEmail()) {
-            // Build all these parameter objects into a single super-digest
+            // This could be coalesced notifications of a single type, or a combined digest of different types.
+            // Build all these parameter objects into a single email
             SmartNotificationMessageParametersHandler builder = mediaHandlers.get(parametersMulti.getMedia());
             if (builder == null) {
                 log.error("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());

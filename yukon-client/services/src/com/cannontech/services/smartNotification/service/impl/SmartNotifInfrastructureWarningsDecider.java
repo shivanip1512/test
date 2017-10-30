@@ -1,4 +1,4 @@
-package com.cannontech.services.smartNotification.service;
+package com.cannontech.services.smartNotification.service.impl;
 
 import java.util.List;
 import java.util.Set;
@@ -9,6 +9,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
+import com.cannontech.services.smartNotification.service.SmartNotificationDecider;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 

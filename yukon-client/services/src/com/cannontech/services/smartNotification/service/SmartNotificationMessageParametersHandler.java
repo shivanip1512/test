@@ -1,4 +1,4 @@
-package com.cannontech.common.smartNotification.service;
+package com.cannontech.services.smartNotification.service;
 
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
