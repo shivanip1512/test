@@ -17,7 +17,9 @@ public class DeviceConfigSummaryDetail {
     private InSync inSync;
     private Instant actionStart;
     private Instant actionEnd;
-    private boolean displaySendReadVerify;
+    private boolean displayRead;
+    private boolean displaySend;
+    private boolean displayVerify;
     
     public DisplayableDevice getDevice() {
         return device;
@@ -67,19 +69,35 @@ public class DeviceConfigSummaryDetail {
         this.actionEnd = actionEnd;
     }
 
-    public boolean isDisplaySendReadVerify() {
-        return displaySendReadVerify;
-    }
-
-    public void setDisplaySendReadVerify(boolean displaySendReadVerify) {
-        this.displaySendReadVerify = displaySendReadVerify;
-    }
-
     public LightDeviceConfiguration getDeviceConfig() {
         return deviceConfig;
     }
 
     public void setDeviceConfig(LightDeviceConfiguration deviceConfig) {
         this.deviceConfig = deviceConfig;
+    }
+
+    public boolean isDisplayRead() {
+        return displayRead;
+    }
+
+    public void setDisplayRead(boolean displayRead) {
+        this.displayRead = displayRead;
+    }
+
+    public boolean isDisplaySend() {
+        return displaySend;
+    }
+
+    public void setDisplaySend(boolean displaySend) {
+        this.displaySend = displaySend;
+    }
+
+    public boolean isDisplayVerify() {
+        return displayVerify;
+    }
+
+    public void setDisplayVerify(boolean displayVerify) {
+        this.displayVerify = displayVerify;
     }
 }
