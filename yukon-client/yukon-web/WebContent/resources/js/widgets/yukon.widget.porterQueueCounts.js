@@ -18,7 +18,7 @@ yukon.widget.porterQueueCounts = (function () {
     /** return a list of the port ids that are currently selected for the widget */
     _getPortIds = function(widget) {
         var portIds = [];
-        $(widget).find('input[name=p12-items]').each( function() {
+        $(widget).find('input[name=portIds]').each( function() {
             portIds.push($(this).val());
         });
         return portIds;
@@ -156,9 +156,9 @@ yukon.widget.porterQueueCounts = (function () {
         chart.removeClass('js-initialize');
     },
     
-    /** Update the existing queue counts chart. */
-    _updateChart = function (data, idx) {
-        Highcharts.charts[idx].series[0].setData(data);
+    /** Update the existing pie chart. */
+    _updateChart = function (chart, data) {
+        chart.highcharts().series[0].setData(data);
     },
     
     /** Update the page every so many seconds */
@@ -183,7 +183,7 @@ yukon.widget.porterQueueCounts = (function () {
                 });
             } else {
                 if (!chart.is('.js-initialize')) {
-                    Highcharts.charts[idx].series[0].setData(null);
+                    _updateChart(chart, null);
                 }
             }
         } else { 
@@ -200,18 +200,14 @@ yukon.widget.porterQueueCounts = (function () {
                         async: false
                     }).done(function (data) {
                         if (data != null) {
-                            if (chart.is('.js-initialize')) {
-                                _buildChart(chart, data);
-                            } else {
-                                _updateChart(data, idx);
-                            }
+                            _buildChart(chart, data);
                             var dateTime = moment(data.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                             $(widget).find('.js-last-updated').text(dateTime);
                         }
                     });
                 } else {
                     if (!chart.is('.js-initialize')) {
-                        Highcharts.charts[idx].series[0].setData(null);
+                        _updateChart(chart, null);
                     }
                 }
             });
@@ -260,7 +256,7 @@ yukon.widget.porterQueueCounts = (function () {
 
             $(document).on('dialogclose', '.js-picker-dialog', function (ev, ui) {
                 if (okClicked) {
-                    var widget = $('#' + ev.target.id.substring(3));
+                    var widget = $('#' + ev.target.id.substring(6));
                     _update(widget);
                     okClicked = false;
                 }

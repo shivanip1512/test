@@ -14,7 +14,7 @@
      <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".widgetParameter.selectPorts">
             <cti:globalSetting var="maxNumPorts" globalSettingType="PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS"/>
-            <tags:pickerDialog id="p12${id}" type="portPicker" destinationFieldName="p12-items"
+            <tags:pickerDialog id="portId${id}" type="portPicker" destinationFieldName="portIds"
                 linkType="selection" selectionProperty="paoName" multiSelectMode="true"
                 maxNumSelections="${maxNumPorts}" allowEmptySelection="false" initialIds="${portIds}" endEvent='okClicked'/>
         </tags:nameValue2>

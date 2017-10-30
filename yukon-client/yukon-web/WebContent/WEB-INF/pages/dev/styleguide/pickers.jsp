@@ -194,6 +194,9 @@ or in a popup.
     <tags:nameValue name="removeValue">
     Value to set the item to when cleared.  Default will be blank.  Used with includeRemoveButton.
     </tags:nameValue>
+    <tags:nameValue name="maxNumSelections">
+    An upper bound on the number of selections that can be made with the picker. If multiSelectMode is disabled, this option will automatically get disabled.
+    </tags:nameValue>
 </tags:nameValueContainer>
 
 <form id="picker-select-form" action="<cti:url value="/dev/styleguide/pickers"/>" class="clearfix">
@@ -529,6 +532,26 @@ $(function() {
 &lt;/script&gt;
 &lt;tags:pickerDialog id=&quot;p17&quot; type=&quot;${pickerType}&quot; linkType=&quot;none&quot; destinationFieldName=&quot;p17item&quot;/&gt;
 &lt;cti:button id=&quot;p17-trigger&quot; label=&quot;Show My Hidden Picker&quot;/&gt;
+</pre>
+
+<h2>Maximum Number of Selections</h2>
+
+<p class="description">
+    A picker that limits how many selections can be made.
+</p>
+<div class="column-4-20 clearfix picker-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <tags:pickerDialog id="p18" type="${pickerType}" destinationFieldId="p18-items"
+            multiSelectMode="true" maxNumSelections="3">Pick Something</tags:pickerDialog>
+        <input type="text" id="p18-items">
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;tags:pickerDialog id=&quot;p18&quot; type=&quot;${pickerType}&quot; destinationFieldId=&quot;p18-items&quot;
+    multiSelectMode=&quot;true&quot;maxNumSelections=&quot;3&quot;&gt;Pick Something&lt;/tags:pickerDialog&gt;
+&lt;input type=&quot;text&quot; id=&quot;p18-items&quot;&gt;
 </pre>
 
 </tags:styleguide>

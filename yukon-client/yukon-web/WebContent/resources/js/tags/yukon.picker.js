@@ -174,6 +174,10 @@ yukon.protoPicker = function (okText,
     /** Called when the user clicks on a row for selection. */
     selectThisItem = function (hit) {
         
+        if (this.maxNumSelections) {
+            $(this.tooManySelectionsDiv).hide();
+        }
+        
         var 
         selectedId = hit[this.idFieldName],
         row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]'),
@@ -213,6 +217,10 @@ yukon.protoPicker = function (okText,
                     $('#' + this.pickerId + ' tr[data-id]').removeClass('highlighted');
                 }
             } else {
+                if (this.maxNumSelections && this.maxNumSelections <= this.selectedItems.length) {
+                    $(this.tooManySelectionsDiv).show();
+                    return;
+                }
                 this.selectedItems.push(hit);
                 if (onThisPage) row.addClass('highlighted');
                 updateSelectAllCheckbox.call(this);

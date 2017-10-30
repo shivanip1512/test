@@ -101,8 +101,8 @@ yukon.widget.dataCollection = (function () {
     },
     
     /** Update the existing pie chart. */
-    _updateChart = function (data, idx) {
-        Highcharts.charts[idx].series[0].setData(_getData(data));
+    _updateChart = function (chart, data) {
+        chart.highcharts().series[0].setData(data);
     },
     
     /** Update the page every so many seconds */
@@ -124,7 +124,7 @@ yukon.widget.dataCollection = (function () {
                         if (chart.is('.js-initialize')) {
                             _buildChart(chart, data.summary);
                         } else {
-                            _updateChart(data.summary, idx);
+                            _updateChart(chart, _getData(data.summary));
                         }
                         var dateTime = moment(data.summary.collectionTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                         $(item).find('.js-last-updated').text(dateTime);
@@ -132,7 +132,7 @@ yukon.widget.dataCollection = (function () {
                 });
             } else {
                 if (!chart.is('.js-initialize')) {
-                    Highcharts.charts[idx].series[0].setData(null);
+                    _updateChart(chart, null);
                 }
             }
             
