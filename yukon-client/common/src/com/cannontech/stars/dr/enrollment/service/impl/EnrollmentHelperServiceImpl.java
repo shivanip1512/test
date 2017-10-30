@@ -163,10 +163,19 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
     @Override
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
-    	EnrollmentHelperHolder enrollmentHelperHolder = buildEnrollmentHelperHolder(enrollmentHelper, enrollmentEnum, user);
-    	doEnrollment(enrollmentHelperHolder, enrollmentEnum, user);    	
+        CustomerAccount customerAccount =
+            customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
+        doEnrollment(enrollmentHelper, enrollmentEnum, user, customerAccount);
     }
-    
+
+    @Override
+    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user,
+            CustomerAccount customerAccount) {
+        EnrollmentHelperHolder enrollmentHelperHolder =
+            buildEnrollmentHelperHolder(enrollmentHelper, enrollmentEnum, user, customerAccount);
+        doEnrollment(enrollmentHelperHolder, enrollmentEnum, user);
+    }
+
     @Override
     public void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
@@ -410,9 +419,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 		return enrolledDeviceProgramsList;
 	}
 	
-    private EnrollmentHelperHolder buildEnrollmentHelperHolder(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
-    	CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
-    	
+    private EnrollmentHelperHolder buildEnrollmentHelperHolder(EnrollmentHelper enrollmentHelper,
+            EnrollmentEnum enrollmentEnum, LiteYukonUser user, CustomerAccount customerAccount) {
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
     	LiteInventoryBase liteInventoryBase;
         try {

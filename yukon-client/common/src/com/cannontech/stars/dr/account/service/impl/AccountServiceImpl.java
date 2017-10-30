@@ -150,7 +150,7 @@ public class AccountServiceImpl implements AccountService {
 
         // Checks to see if the account number is already being used.
         try {
-            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, ec.getId());
+            CustomerAccount customerAccount = customerAccountDao.getAccountByAccountNumber(accountNumber);
             if (customerAccount != null) {
                 log.error("Account " + accountNumber
                     + " could not be added: The provided account number already exists.");

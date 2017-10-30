@@ -527,4 +527,18 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         List<CustomerAccount> list = jdbcTemplate.query(sql, rowMapper);
         return list;
     }
+
+    @Override
+    public CustomerAccount getAccountByAccountNumber(String accountNumber) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        sql.append("WHERE AccountNumber").eq(accountNumber);
+        CustomerAccount account = null;
+        try {
+            account = jdbcTemplate.queryForObject(sql, rowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
+        }
+        return account;
+    }
 }

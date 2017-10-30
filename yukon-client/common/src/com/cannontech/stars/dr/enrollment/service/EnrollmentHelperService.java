@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
@@ -30,7 +31,10 @@ public interface EnrollmentHelperService {
     public EnrollmentEventLoggingData getEventLoggingData(ProgramEnrollment programEnrollment);
 
 	public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user);
-	
+
+    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user,
+            CustomerAccount ca);
+
     public void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user);
 
     /**

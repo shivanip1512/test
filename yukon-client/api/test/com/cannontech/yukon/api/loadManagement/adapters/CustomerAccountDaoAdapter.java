@@ -126,4 +126,9 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao {
     public Map<Integer, CustomerAccount> getInventoryIdsToAccountMap(Collection<Integer> inventoryIds) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public CustomerAccount getAccountByAccountNumber(String accountNumber) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }
