@@ -51,7 +51,7 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
                     new PaoLocation(device.getPaoIdentifier(), location.getLatitude(), location.getLongitude(),
                         location.getOrigin(), lastChangedDate);
                 paoLocationDao.save(paoLocation);
-                endpointEventLogService.locationUpdated(device.getPaoIdentifier(), paoLocation,
+                endpointEventLogService.locationUpdated(device.getName(), paoLocation,
                     YukonUserContext.system.getYukonUser());
             }
             sendAcknowledgement(location);

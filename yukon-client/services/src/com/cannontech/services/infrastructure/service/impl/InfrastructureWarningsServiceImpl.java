@@ -107,7 +107,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             // Add event log events for the warnings
             warnings.forEach(warning -> {
                 String warningMessage = systemMessageSourceAccessor.getMessage(warning);
-                infrastructureEventLogService.warningGenerated(warning.getPaoIdentifier(), 
+                infrastructureEventLogService.warningGenerated(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(), 
                                                                warning.getWarningType().toString(),
                                                                warning.getSeverity().toString(),
                                                                warningMessage);

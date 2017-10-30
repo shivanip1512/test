@@ -456,7 +456,7 @@ public class DevEventLogCreationService {
                 String deviceName = "45645-Name";
                 
                 endPointEventLogService.locationRemoved(deviceName, yukonUser);
-                endPointEventLogService.locationUpdated(paoIdentifier, location, yukonUser);
+                endPointEventLogService.locationUpdated(deviceName, location, yukonUser);
             }
         });
         executables.put(LogType.HARDWARE, new DevEventLogExecutable() {
@@ -644,7 +644,7 @@ public class DevEventLogCreationService {
                 String sensorSerialNumber = "45666545";
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(sensorSerialNumber, sensorManufacturer, sensorModel);
                 
-                rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName, paoId);
+                rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName,  templateName);
                 rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
             }
