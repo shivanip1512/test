@@ -16,7 +16,7 @@ ConnectionProxy::ConnectionProxy()
     :   descriptor(ConnectionManager::borrowConnection()),
         instance(++instanceCount)
 {
-    CTILOG_DEBUG(dout, "Connection proxy " << instance << " created:" << 
+    CTILOG_TRACE(dout, "Connection proxy " << instance << " created:" << 
         (descriptor ? descriptor->info.toString() : "<empty>"));
 }
 
