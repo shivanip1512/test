@@ -273,7 +273,8 @@ public class AccountServiceTest extends EasyMockSupport {
         /*
          * Record what should happen
          */
-        expect(customerAccountDaoMock.getByAccountNumber(updatableAccount.getAccountDto().getAccountNumber(), 1)).andReturn(null);
+        expect(customerAccountDaoMock.getAccountByAccountNumber(
+            updatableAccount.getAccountDto().getAccountNumber())).andReturn(null);
         expect(userDaoMock.findUserByUsername(updatableAccount.getAccountDto().getUserName())).andReturn(null);
         expect(userGroupDaoMock.getLiteUserGroupByUserGroupName(updatableAccount.getAccountDto().getUserGroup())).andReturn(new LiteUserGroup());
 
