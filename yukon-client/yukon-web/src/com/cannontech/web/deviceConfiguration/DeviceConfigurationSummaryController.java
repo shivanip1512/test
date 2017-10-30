@@ -7,6 +7,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
@@ -21,6 +22,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
+import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
@@ -36,7 +38,33 @@ public class DeviceConfigurationSummaryController {
     @Autowired private ServerDatabaseCache dbcache;
 
     @RequestMapping("view")
-    public String view(ModelMap model) {
+    public String view(ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups) {
+        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
+        model.addAttribute("configurations", configurations);
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
+        }
+        if (filter.getConfigurationIds() != null) {
+            //Include Unassigned
+            if (filter.getConfigurationIds().contains(-999)) {
+                filter.setDisplayUnassigned(true);
+            }
+            //Include any assigned
+            if (filter.getConfigurationIds().contains(-998)) {
+                List<Integer> allIds = new ArrayList<>();
+                configurations.forEach(config -> allIds.add(config.getConfigurationId()));
+                filter.setConfigurationIds(allIds);
+            }
+        }
+        filter.setGroups(subGroups);
+        model.addAttribute("filter", filter);
+        model.addAttribute("lastActionOptions", LastAction.values());
+        model.addAttribute("statusOptions", LastActionStatus.values());
+        model.addAttribute("syncOptions", InSync.values());
+        model.addAttribute("deviceSubGroups", deviceSubGroups);
         mockupData(model);
         return "summary.jsp";
     }

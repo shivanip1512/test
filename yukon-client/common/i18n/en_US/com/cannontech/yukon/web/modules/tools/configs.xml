@@ -684,4 +684,22 @@
     <entry key="yukon.web.modules.tools.configs.summary">Device Configuration Summary</entry>
     <entry key="yukon.web.modules.tools.configs.summary.pageName">Device Configuration Summary</entry>
     <entry key="yukon.web.modules.tools.configs.summary.pageDescription">Device Configuration Summary</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configurations">Configuration(s)</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.deviceGroups">Device Group(s)</entry>
+    
+    <!-- Action Types -->
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.READ">Read</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.SEND">Send</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.VERIFY">Verify</entry>
+    <!-- Status Types -->
+    <entry key="yukon.web.modules.tools.configs.summary.statusType.SUCCESS">Success</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.statusType.FAILURE">Failure</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.statusType.IN_PROGRESS">In Progress</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.statusType.NA">N/A</entry>
+    <!-- Status Types -->
+    <entry key="yukon.web.modules.tools.configs.summary.syncType.IN_SYNC">In Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.syncType.OUT_OF_SYNC">Out Of Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.syncType.UNVERIFIED">Unverified</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.syncType.NA">N/A</entry>
+    
 </properties>
