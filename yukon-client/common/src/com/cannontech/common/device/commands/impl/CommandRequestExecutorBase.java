@@ -455,8 +455,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), contextId.getId(), type, currentRequestHolder.request.getCommandString(), e.getMessage(), user);
 
                 } finally {
-                    if(execution.getCommandRequestExecutionType().isPersistedRequestRequired()){
-                        //commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIdsProcessed);
+                    if (execution.getCommandRequestExecutionType().isPersistedRequestRequired()) {
+                        commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIdsProcessed);
                     }
                     
                     if (nothingWritten && !messageListener.isCanceled()) {
