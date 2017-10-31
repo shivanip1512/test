@@ -74,7 +74,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
             }
 
             // Handle addressing data
-            // In tlv reports, either all addressing fields present in report or none.(will change after clarification on addressing)
+            // In expresscom message, assume that spid should always present (will change after clarification on addressing)
             if (decodedPayload.containsKey(FieldType.SPID)) {
                 rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
             }
