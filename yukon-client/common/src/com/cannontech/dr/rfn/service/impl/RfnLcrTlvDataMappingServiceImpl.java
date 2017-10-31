@@ -124,18 +124,25 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     private Double evaluateArchiveReadValue(ListMultimap<FieldType, byte[]> data, RfnLcr6700PointDataMap entry) {
 
         Number value = null;
-        if (CollectionUtils.isNotEmpty(data.get(entry.getFieldType()))) {
+        if (entry.getFieldType() == FieldType.RELAY_N_REMAINING_CONTROLTIME) {
             // first byte indicates the relay number (0, 1, 2) but next 4 bytes represents Remaining Control Time
-            if (entry.getFieldType() == FieldType.RELAY_N_REMAINING_CONTROLTIME) {
+            if (CollectionUtils.isNotEmpty(data.get(entry.getFieldType()))) {
                 value = data.get(entry.getFieldType()).stream()
                                                       .filter(relaynControlTime -> (ByteUtil.getInteger(relaynControlTime[0])) == entry.getRelayNum())
                                                       .map(relaynControlTime -> ByteUtil.getLong(Arrays.copyOfRange(relaynControlTime, 1, 5)))
                                                       .findFirst()
                                                       .orElse(null);
-            } else if (entry.getFieldType() == FieldType.LUF_EVENTS && entry.getFieldType() == FieldType.LUF_EVENTS) {
-                value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
             } else {
-                value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
+                // if this field is not present in message then its value is 0
+                value = 0;
+            }
+        } else {
+            if (CollectionUtils.isNotEmpty(data.get(entry.getFieldType()))) {
+                if (entry.getFieldType() == FieldType.LUF_EVENTS && entry.getFieldType() == FieldType.LUV_EVENTS) {
+                    value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
+                } else {
+                    value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
+                }
             }
         }
         if (value == null) {
@@ -171,9 +178,8 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         
         int minutesToAdd = recordedIntervals * RECORDING_INTERVAL;
         
-        Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp).plus(Duration.standardMinutes(minutesToAdd));
-        
         for (RfnLcr6700RelayMap relay : rfnLcrRelayDataMap) {
+            Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp).plus(Duration.standardMinutes(minutesToAdd));
             // first byte indicates the relay number (0, 1, 2) but next 24 bytes represents either runtime or shedtime
             List<Integer> intervalData = new ArrayList<>();
             data.get(relay.getFieldType()).stream()
@@ -186,18 +192,22 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
 
             LitePoint relayPoint = attributeService.findPointForAttribute(device, relay.getAttribute());
 
-            for (Integer interval : intervalData) {
+            for (Integer value : intervalData) {
+                // 0xFF represents invalid value
+                if (value == 0xFF) {
+                    continue;
+                }
                 // Store latest non-zero runtime for asset availability.
                 // If runtime > 0 and no time stored for this relay, store currentIntervalTimestamp.
                 if (relay.getIndex() != null) {
                     Instant relayTime = assetAvailabilityTimes.getRelayRuntime(relay.getIndex());
-                    if (interval > 0 && relayTime == null) {
+                    if (value > 0 && relayTime == null) {
                         assetAvailabilityTimes.setRelayRuntime(relay.getIndex(), currentIntervalTimestamp);
                     }
                 }
                 if (relayPoint != null) {
                     PointData pointData = buildPointData(relayPoint.getPointID(), relayPoint.getPointType(),
-                        currentIntervalTimestamp.toDate(), new Double(interval));
+                        currentIntervalTimestamp.toDate(), new Double(value));
                     intervalPointData.add(pointData);
                 }
 

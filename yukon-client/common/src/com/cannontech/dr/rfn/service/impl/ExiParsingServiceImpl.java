@@ -135,15 +135,17 @@ public class ExiParsingServiceImpl implements ExiParsingService <SimpleXPathTemp
         if (schemas.isEmpty()) {
             EXISchemaFactory factory = new EXISchemaFactory();
             for (Schema location : Schema.values()) {
-                try {
-                    Resource informingSchemaResource = loader.getResource(location.getLocation());
-                    InputSource is = new InputSource(informingSchemaResource.getInputStream());
-                    EXISchema exiSchema = factory.compile(is);
-                    schemas.put(location, exiSchema);
-                } catch (EXISchemaFactoryException | IOException e) {
-                    throw new RuntimeException("Error creating EXI schema version:"
-                                               + location.getVersion() + " location:"
-                                               + location.getLocation(), e);
+                if (location != Schema.SCHEMA_0_0_4) {
+                    try {
+                        Resource informingSchemaResource = loader.getResource(location.getLocation());
+                        InputSource is = new InputSource(informingSchemaResource.getInputStream());
+                        EXISchema exiSchema = factory.compile(is);
+                        schemas.put(location, exiSchema);
+                    } catch (EXISchemaFactoryException | IOException e) {
+                        throw new RuntimeException("Error creating EXI schema version:"
+                                                   + location.getVersion() + " location:"
+                                                   + location.getLocation(), e);
+                    }
                 }
             }
         }
