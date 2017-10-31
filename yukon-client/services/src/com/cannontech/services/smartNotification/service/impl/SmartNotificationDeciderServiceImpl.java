@@ -46,7 +46,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     @Autowired private ConfigurationSource configSource;
     private JmsTemplate jmsTemplate;
     private Executor executor = Executors.newCachedThreadPool();
-    private static final String queue = JmsApiDirectory.SMART_NOTIFICATION_ASSEMBLER.getQueue().getName();
+    private static final String queue = JmsApiDirectory.SMART_NOTIFICATION_MESSAGE_PARAMETERS.getQueue().getName();
     private static final String DEFAULT_INTERVALS = "0,1,3,5,15,30";
     private static Intervals intervals;
     

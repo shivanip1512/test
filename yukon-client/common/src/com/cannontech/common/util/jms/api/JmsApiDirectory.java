@@ -1,26 +1,8 @@
 package com.cannontech.common.util.jms.api;
 
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DATA_STREAMING;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DIGI_ZIGBEE;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.MONITOR;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.OTHER;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_LCR;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
 
 import java.io.Serializable;
 
@@ -904,25 +886,27 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .build();
     
+    //Used by SmartNotifInfrastructureWarningsDecider (smartNotificationContext.xml)
     public static JmsApi<SmartNotificationEvent,?,?> SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT =
             JmsApi.builder(SmartNotificationEvent.class)
-                  .name("Smart Notification Event")
-                  .description("Sent by various services to create smart notification events. These events are "
-                          + "by a listener that pasees them to other services to be recorded in the DB and used to "
-                          + "decide when to send notification emails.")
+                  .name("Smart Notification Infrastructure Warnings Event")
+                  .description("Sent by the Infrastructure Warnings service, to the Smart Notification Infrastructure "
+                          + "Warnings decider, when an infrastructure warning occurs. The decider then determines when "
+                          + "to send a notification, who to send it to, and what form it should take.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.infrastructureWarnings"))
                   .requestMessage(SmartNotificationEvent.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-        
+    
+    //Used by SmartNotifDeviceDataMonitorDecider (smartNotificationContext.xml)
     public static JmsApi<SmartNotificationEventMulti,?,?> SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT= 
             JmsApi.builder(SmartNotificationEventMulti.class)
-                  .name("Smart Notifications Infrastructure Warnings Decider")
-                  .description("Sent by the Smart Notification Event Listener to the Infrastructure Warnings Smart "
-                          + "Notification Decider, which determines when to send a notification, who to send it to, "
-                          + "and what format it should take.")
+                  .name("Smart Notifications Device Data Monitor Event")
+                  .description("Sent by the Device Data Monitor service, to the Smart Notification Device Data Monitor "
+                          + "decider, when a DDM event occurs. The decider then determines when "
+                          + "to send a notification, who to send it to, and what form it should take.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.event.deviceDataMonitor"))
                   .requestMessage(SmartNotificationEventMulti.class)
@@ -930,15 +914,12 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    //TODO: use in DeviceDataMonitorNotificationEventDecider
-    //TODO: use in InfrastructureWarningsNotificationEventDecider
-    //TODO: use in SmartNotificationMessageAssemblerSupervisor
-    //TODO: use in SmartNotificationMessageAssembler
-    public static JmsApi<SmartNotificationMessageParametersMulti, Serializable, Serializable> SMART_NOTIFICATION_ASSEMBLER =
+    // Used by SmartNotificationDeciderServiceImpl && SmartNotificationMessageAssembler (smartNotificationContext.xml)
+    public static JmsApi<SmartNotificationMessageParametersMulti, Serializable, Serializable> SMART_NOTIFICATION_MESSAGE_PARAMETERS =
             JmsApi.builder(SmartNotificationMessageParametersMulti.class)
-                  .name("Smart Notifications Assembler")
+                  .name("Smart Notifications Message Parameters")
                   .description("Sent by the Smart Notification deciders when they have determined that a notification "
-                          + "message should be sent. Processed by Smart Notification assemblers, which assemble a "
+                          + "message should be sent. Processed by the Smart Notification assembler, which assembles a "
                           + "complete message to be sent out to recipients.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.assembler"))
@@ -1012,7 +993,7 @@ public final class JmsApiDirectory {
             
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT)
             .put(SMART_NOTIFICATION, SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT)
-            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_ASSEMBLER)
+            .put(SMART_NOTIFICATION, SMART_NOTIFICATION_MESSAGE_PARAMETERS)
             
             .put(WIDGET_REFRESH, DATA_COLLECTION)
             .put(WIDGET_REFRESH, DATA_COLLECTION_RECALCULATION)
