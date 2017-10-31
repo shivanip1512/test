@@ -644,6 +644,11 @@ public final class CtiUtilities {
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         out.println("Yukon Version: " + VersionTools.getYUKON_VERSION());
+        
+        Map<String, String> buildInfo = VersionTools.getBuildInfo();
+        for (String buildInfoKey : buildInfo.keySet()) {
+            out.println(buildInfoKey + ": " + buildInfo.get(buildInfoKey));
+        }
         out.println("Local IP: " + getIPAddress());
         out.println("getYukonBase(): " + getYukonBase());
         out.println("USER_TIMEZONE: " + SystemUtils.USER_TIMEZONE);
