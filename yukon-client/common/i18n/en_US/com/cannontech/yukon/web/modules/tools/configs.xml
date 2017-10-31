@@ -686,6 +686,16 @@
     <entry key="yukon.web.modules.tools.configs.summary.pageDescription">Device Configuration Summary</entry>
     <entry key="yukon.web.modules.tools.configs.summary.configurations">Configuration(s)</entry>
     <entry key="yukon.web.modules.tools.configs.summary.deviceGroups">Device Group(s)</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.type">Type</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.deviceConfiguration">Device Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.lastAction">Last Action</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.lastActionStatus">Last Action Status</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.inSync">In Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.lastActionStart">Last Action Start</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.lastActionEnd">Last Action End</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.filteredResults">Filtered Results:</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.devices">Devices</entry>
     
     <!-- Action Types -->
     <entry key="yukon.web.modules.tools.configs.summary.actionType.READ">Read</entry>
