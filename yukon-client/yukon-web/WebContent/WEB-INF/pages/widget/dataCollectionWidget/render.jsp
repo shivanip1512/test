@@ -11,7 +11,7 @@
 <div class="js-data-collection-widget">
 
     <c:forEach var="range" items="${rangeTypes}">
-        <input type="hidden" class="js-${range}" value="<i:inline key="yukon.web.modules.amr.dataCollection.detail.rangeType.${range}"/>"></input>
+        <input type="hidden" class="js-${range}" value="<cti:msg2 key="yukon.web.modules.amr.dataCollection.detail.rangeType.${range}"/>"></input>
     </c:forEach>
 
      <tags:nameValueContainer2>

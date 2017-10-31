@@ -38,7 +38,7 @@
                 <form:select path="visibility">
                     <c:forEach var="visOption" items="${visibilityOptions}">
                         <c:if test="${visOption != 'SYSTEM'}">
-                            <form:option value="${visOption}"><i:inline key=".visibility.${visOption}"/></form:option>
+                            <form:option value="${visOption}"><cti:msg2 key=".visibility.${visOption}"/></form:option>
                         </c:if>
                     </c:forEach>
                 </form:select>

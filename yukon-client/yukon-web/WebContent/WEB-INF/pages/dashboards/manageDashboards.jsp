@@ -25,8 +25,8 @@
         <span class="fl"><i:inline key=".filters"/>&nbsp;&nbsp;</span>
             <cti:url var="manageUrl" value="/dashboards/manage"/>
             <select onchange="window.location.href=this.value">
-                <option value="${manageUrl}"/><i:inline key=".showAll"/></option>
-                <option value="${manageUrl}?filter=OWNEDBYME" <c:if test="${filter == 'OWNEDBYME'}">selected="selected"</c:if>><i:inline key=".ownedByMe"/></option>
+                <option value="${manageUrl}"/><cti:msg2 key=".showAll"/></option>
+                <option value="${manageUrl}?filter=OWNEDBYME" <c:if test="${filter == 'OWNEDBYME'}">selected="selected"</c:if>><cti:msg2 key=".ownedByMe"/></option>
             </select>
         <hr/>
         
