@@ -207,14 +207,15 @@ PointValueMap DispatchPointDataRequest::getPointValues(PointRequestType pointReq
     return pointMap;
 }
 
-void DispatchPointDataRequest::removePointValue(long pointId)
+int DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
 {
-    _values.erase(pointId);
-    for each(const PointRequestTypeToPointIdMap::value_type& mapPair in _requestTypeToPointId)
+    if ( _values[pointId].timestamp <= staleTime )
     {
-        std::set<long> pointIds = mapPair.second;
-        pointIds.erase(pointId);        // <---  Broken! Erasing from a copy, not _requestTypeToPointId, but I'm not sure this is even necessary...
+        _rejectedValues.insert( { pointId, _values[pointId] } );
+        _values.erase( pointId );
+        return 1;
     }
+    return 0;
 }
 
 std::set<long> DispatchPointDataRequest::getMissingPoints()
@@ -239,7 +240,7 @@ PointValueMap DispatchPointDataRequest::getRejectedPointValues()
     return _rejectedValues;
 }
 
-void DispatchPointDataRequest::reportStatusToLog()
+std::string DispatchPointDataRequest::createStatusReport()
 {
     Cti::StreamBuffer outLog;
 
@@ -282,5 +283,5 @@ void DispatchPointDataRequest::reportStatusToLog()
                << " Timestamp: " << pv.second.timestamp << endl;
     }
 
-    CTILOG_INFO(dout, outLog);
+    return outLog;
 }

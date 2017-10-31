@@ -683,7 +683,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
 
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
-                request->reportStatusToLog();
+                CTILOG_INFO(dout, request->createStatusReport());
                 break;
             }
             else if ( state->isCommsLost() )    // Currently good data but previously were comms lost
@@ -748,7 +748,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 }
 
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
-                request->reportStatusToLog();
+                CTILOG_INFO(dout, request->createStatusReport());
                 break;
             }
             else    // all good...
@@ -3424,11 +3424,8 @@ void IVVCAlgorithm::findPointInRequest( const long pointID,
     {
         missingPoints++;
     }
-    else if ( pt->second.timestamp <= ( timeNow - ( _POINT_AGE * 60 ) ) )
-    {
-        stalePoints++;
-        request->removePointValue( pointID );
-    }
+
+    stalePoints += request->isPointStale( pointID, CtiTime::now() - ( _POINT_AGE * 60 ) );
 }
 
 

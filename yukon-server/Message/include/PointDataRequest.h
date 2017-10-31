@@ -54,10 +54,10 @@ class IM_EX_MSG PointDataRequest
         virtual float ratioComplete(PointRequestType pointRequestType)=0;
         virtual PointValueMap getPointValues()=0;
         virtual PointValueMap getPointValues(PointRequestType pointRequestType)=0;
-        virtual void reportStatusToLog()=0;
+        virtual std::string createStatusReport()=0;
         virtual std::set<long> getMissingPoints()=0;
         virtual PointValueMap getRejectedPointValues()=0;
-        virtual void removePointValue(long pointId)=0;
+        virtual int isPointStale(long pointId, CtiTime & staleTime)=0;
 };
 
 typedef boost::shared_ptr<PointDataRequest> PointDataRequestPtr;

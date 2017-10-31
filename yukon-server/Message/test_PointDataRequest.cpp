@@ -1,6 +1,7 @@
 #include <boost/test/auto_unit_test.hpp>
 #include "PointDataRequestFactory.h"
 #include "DispatchPointdataRequest.h"
+#include "ctidate.h"
 
 #include "amq_constants.h"
 
@@ -12,6 +13,8 @@ class mock_DispatchConnection : public DispatchConnection
 public:
 
     mock_DispatchConnection() : DispatchConnection("mock_DispatchConnection" ) {  }
+
+    virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr) override {};
 };
 
 
@@ -443,6 +446,91 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
     BOOST_CHECK_CLOSE( 121.3 , receivedPoints[1101].value , 0.0001 );
     BOOST_CHECK_CLOSE( 120.2 , receivedPoints[1103].value , 0.0001 );
     BOOST_CHECK_CLOSE( 122.0 , receivedPoints[1104].value , 0.0001 );
+}
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_stale_point_processing)
+{
+    PointDataRequestFactory testFactory;
+    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection()));
+
+    // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
+
+    DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
+
+    BOOST_REQUIRE( request );
+
+    std::set<PointRequest>  watchlist;
+
+    // Add 5 point IDs to the watchlist
+
+    for ( long pointId = 1100; pointId < 1105; ++pointId )
+    {
+        PointRequest pr( pointId, OtherRequestType );
+        watchlist.insert( pr );
+    }
+
+    BOOST_CHECK_EQUAL( true , request->watchPoints( watchlist ) );
+
+    CtiDate day { 1, 1, 1990 };
+
+    CtiTime now               = CtiTime(day, 0, 10, 0);
+    CtiTime fiveMinutesAgo    = CtiTime(day, 0, 5,  0);
+    CtiTime tenMinutesAgo     = CtiTime(day, 0, 0,  0);
+
+    // Create five custom messages ( by default, timestamp = CtiTime::now() )
+
+    CtiPointDataMsg * Message1 = new CtiPointDataMsg(1100, 120.0, NormalQuality, AnalogPointType);
+    CtiPointDataMsg * Message2 = new CtiPointDataMsg(1101, 120.1, NormalQuality, AnalogPointType);
+    CtiPointDataMsg * Message3 = new CtiPointDataMsg(1102, 120.2, NormalQuality, AnalogPointType);
+    CtiPointDataMsg * Message4 = new CtiPointDataMsg(1103, 120.3, NormalQuality, AnalogPointType);
+    CtiPointDataMsg * Message5 = new CtiPointDataMsg(1104, 120.4, NormalQuality, AnalogPointType);
+
+    // Update timestamps and process messages
+
+    Message1->setTime(now);
+    Message2->setTime(now);
+    Message3->setTime(now);
+    Message4->setTime(tenMinutesAgo);
+    Message5->setTime(tenMinutesAgo);
+
+    request->processNewMessage(Message1);
+    request->processNewMessage(Message2);
+    request->processNewMessage(Message3);
+    request->processNewMessage(Message4);
+    request->processNewMessage(Message5);
+
+    BOOST_CHECK_EQUAL(true, request->isComplete());
+
+    // "now" messages are not stale, while "tenMinutesAgo" messages are
+
+    BOOST_CHECK_EQUAL(0, request->isPointStale(1100, fiveMinutesAgo));
+    BOOST_CHECK_EQUAL(0, request->isPointStale(1101, fiveMinutesAgo));
+    BOOST_CHECK_EQUAL(0, request->isPointStale(1102, fiveMinutesAgo));
+    BOOST_CHECK_EQUAL(1, request->isPointStale(1103, fiveMinutesAgo));
+    BOOST_CHECK_EQUAL(1, request->isPointStale(1104, fiveMinutesAgo));
+
+    // Stale messages are moved to the rejected points list 
+
+    BOOST_CHECK_EQUAL(2, request->getRejectedPointValues().size());
+
+    PointValueMap   receivedPoints = request->getPointValues();
+
+    BOOST_CHECK_EQUAL(3, receivedPoints.size());
+
+    BOOST_CHECK_EQUAL(request->createStatusReport(),
+        "\n Point Data Request Status: "
+        "\n -------------------------- "
+        "\n Points missing: "
+        "\n"
+        "\n Points Received but rejected: "
+        "\n Point Id: 1103 Quality: 5 Timestamp: 01/01/1990 00:00:00"
+        "\n Point Id: 1104 Quality: 5 Timestamp: 01/01/1990 00:00:00"
+        "\n"
+        "\n Points Received and accepted: "
+        "\n Point Id: 1100 Quality: 5 Timestamp: 01/01/1990 00:10:00"
+        "\n Point Id: 1101 Quality: 5 Timestamp: 01/01/1990 00:10:00"
+        "\n Point Id: 1102 Quality: 5 Timestamp: 01/01/1990 00:10:00"
+        "\n" );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

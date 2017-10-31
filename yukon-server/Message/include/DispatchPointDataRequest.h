@@ -26,11 +26,11 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
         virtual float ratioComplete(PointRequestType pointRequestType);
         virtual PointValueMap getPointValues();
         virtual PointValueMap getPointValues(PointRequestType pointRequestType);
-        virtual void removePointValue(long pointId);
+        virtual int isPointStale(long pointId, CtiTime & staleTime);
 
         //MessageListener
         virtual void processNewMessage(CtiMessage* message);
-        virtual void reportStatusToLog();
+        virtual std::string createStatusReport();
         virtual std::set<long> getMissingPoints();
         virtual PointValueMap getRejectedPointValues();
         void setDispatchConnection(DispatchConnectionPtr connection);
