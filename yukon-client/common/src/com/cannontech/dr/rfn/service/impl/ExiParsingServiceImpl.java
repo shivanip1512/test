@@ -135,7 +135,8 @@ public class ExiParsingServiceImpl implements ExiParsingService <SimpleXPathTemp
         if (schemas.isEmpty()) {
             EXISchemaFactory factory = new EXISchemaFactory();
             for (Schema location : Schema.values()) {
-                if (location != Schema.SCHEMA_0_0_4) {
+                //allowing only EXI Schema
+                if (location == Schema.SCHEMA_0_0_3 || location == Schema.SCHEMA_0_0_2) {
                     try {
                         Resource informingSchemaResource = loader.getResource(location.getLocation());
                         InputSource is = new InputSource(informingSchemaResource.getInputStream());

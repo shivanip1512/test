@@ -133,7 +133,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                                                       .findFirst()
                                                       .orElse(null);
             } else {
-                // if this field is not present in message then its value is 0
+             // Relays with 0 remaining control time are not included in the message, so Yukon must generate a 0 value
                 value = 0;
             }
         } else {
@@ -172,14 +172,18 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         Long intervalStartTime = ByteUtil.getLong(data.get(FieldType.RELAY_INTERVAL_START_TIME).get(0));
         
         Instant firstIntervalTimestamp = new Instant(intervalStartTime * 1000);
-        
-        int minutes = new Duration(firstIntervalTimestamp, timeOfReading).toStandardMinutes().getMinutes();
-        int recordedIntervals = (minutes / RECORDING_INTERVAL);
-        
-        int minutesToAdd = recordedIntervals * RECORDING_INTERVAL;
+        /**
+         * Calculating last interval time using UTC (LCR report generation time) and first interval time.
+         * Convert total minutes to integer (24*60) as LCR report is automatically generated after 24 Hours
+         * 
+         */
+        int totalMinutes = new Duration(firstIntervalTimestamp, timeOfReading).toStandardMinutes().getMinutes();
+
+        int minutesToAdd = (totalMinutes / RECORDING_INTERVAL) * RECORDING_INTERVAL;
+        final Instant lastIntervalTimestamp =  new Instant(firstIntervalTimestamp).plus(Duration.standardMinutes(minutesToAdd));
         
         for (RfnLcr6700RelayMap relay : rfnLcrRelayDataMap) {
-            Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp).plus(Duration.standardMinutes(minutesToAdd));
+            Instant currentIntervalTimestamp = lastIntervalTimestamp;
             // first byte indicates the relay number (0, 1, 2) but next 24 bytes represents either runtime or shedtime
             List<Integer> intervalData = new ArrayList<>();
             data.get(relay.getFieldType()).stream()
@@ -223,7 +227,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         ExpressComReportedAddress address = new ExpressComReportedAddress();
         address.setDeviceId(device.getPaoIdentifier().getPaoId());
 
-        address.setTimestamp(new Instant(ByteUtil.getLong(data.get(FieldType.RELAY_INTERVAL_START_TIME).get(0)) * 1000));
+        address.setTimestamp(new Instant(ByteUtil.getLong(data.get(FieldType.UTC).get(0)) * 1000));
 
         if (CollectionUtils.isNotEmpty(data.get(FieldType.SPID))) {
             address.setSpid(ByteUtil.getInteger(data.get(FieldType.SPID).get(0)));
