@@ -138,7 +138,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             }
         } else {
             if (CollectionUtils.isNotEmpty(data.get(entry.getFieldType()))) {
-                if (entry.getFieldType() == FieldType.LUF_EVENTS && entry.getFieldType() == FieldType.LUV_EVENTS) {
+                if (entry.getFieldType() == FieldType.LUF_EVENTS || entry.getFieldType() == FieldType.LUV_EVENTS) {
                     value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
                 } else {
                     value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
