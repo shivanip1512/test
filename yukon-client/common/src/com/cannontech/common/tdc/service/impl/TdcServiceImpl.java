@@ -453,6 +453,7 @@ public class TdcServiceImpl implements TdcService {
                         alarm.setTextMessage(signal.getDescription());
                         alarm.setCondition(signal.getCondition());
                         alarm.setAdditionalInfo(signal.getAction());
+                        alarm.setUserName(signal.getUserName());
                         data.add(alarm);
                     }
                 }
