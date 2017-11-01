@@ -1,14 +1,14 @@
 package com.cannontech.messaging.util.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.messaging.serialization.MessageFactory;
+import com.cannontech.services.jms.InternalMessagingConnectionFactory;
 
 public class AmqConnectionFactoryBase {
     protected static final String AMQ_CONNECTION_DEFAULT_QUEUE_NAME_PREFIX = "com.eaton.eas.yukon.";
 
-    @Autowired private @Qualifier("Internal_Messaging") javax.jms.ConnectionFactory connectionFactory;
+    @Autowired private InternalMessagingConnectionFactory connectionFactory;
     private MessageFactory messageFactory;
     private String queuePrefixName;
     private String queueName;
@@ -32,7 +32,7 @@ public class AmqConnectionFactoryBase {
         }
     }
 
-    public javax.jms.ConnectionFactory getConnectionFactory() {
+    public InternalMessagingConnectionFactory getConnectionFactory() {
         return connectionFactory;
     }
 

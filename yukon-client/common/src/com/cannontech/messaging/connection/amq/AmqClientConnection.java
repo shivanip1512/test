@@ -1,13 +1,13 @@
 package com.cannontech.messaging.connection.amq;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 
 import com.cannontech.messaging.connection.transport.amq.TwoWayTransport;
+import com.cannontech.services.jms.InternalMessagingConnectionFactory;
 
 public class AmqClientConnection extends AmqConnectionBase<TwoWayTransport> {
 
-    public AmqClientConnection(String name, String queueName, ConnectionFactory connectionFactory) {
+    public AmqClientConnection(String name, String queueName, InternalMessagingConnectionFactory connectionFactory) {
         super(name, queueName, connectionFactory);
         setManagedConnection(true);
     }

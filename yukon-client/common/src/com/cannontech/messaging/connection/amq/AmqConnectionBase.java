@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.BytesMessage;
-import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
@@ -19,6 +18,7 @@ import com.cannontech.messaging.connection.transport.amq.AmqTransport;
 import com.cannontech.messaging.serialization.MessageFactory;
 import com.cannontech.messaging.serialization.SerializationException;
 import com.cannontech.messaging.serialization.SerializationResult;
+import com.cannontech.services.jms.InternalMessagingConnectionFactory;
 
 public abstract class AmqConnectionBase<T extends AmqTransport> extends ConnectionBase<T> implements MessageListener,
     ExceptionListener {
@@ -29,7 +29,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     private ActiveMQConnection connection;
     private boolean managedConnection = false;
 
-    private AmqConnectionFactoryService connectionService;
+    private InternalMessagingConnectionFactory connectionFactory;
     private MessageFactory messageFactory;
 
     private static AtomicInteger conID = new AtomicInteger(0);
@@ -57,9 +57,9 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
         this("AMQConn_" + conID.getAndIncrement());
     }
 
-    protected AmqConnectionBase(String name, String queueName, ConnectionFactory connectionFactory) {
+    protected AmqConnectionBase(String name, String queueName, InternalMessagingConnectionFactory connectionFactory) {
         this(name);
-        this.connectionService = new AmqConnectionFactoryService(connectionFactory);
+        this.connectionFactory = connectionFactory;
         setQueueName(queueName);
     }
 
@@ -82,7 +82,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
                     while (! started) {
                         attempt++;
                         try {
-                            connection = getConnectionService().createConnection();
+                            connection = connectionFactory.createConnection();
                             connection.setExceptionListener(this);
                             connection.start();
                             started = true;
@@ -242,10 +242,6 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
         this.connection = connection;
     }
 
-    public AmqConnectionFactoryService getConnectionService() {
-        return connectionService;
-    }
-
     /**
      * @return The Connection URI (the broker URI since we are physically connected to the broker)
      * @throws Exception ConnectionException if an error occur
@@ -254,7 +250,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     public URI getConnectionUri() throws MessagingConnectionException {
         try {
             if (isManagedConnection()) {
-                return URI.create(getConnectionService().getBrokerUrl());
+                return URI.create(connectionFactory.getBrokerURL());
             }
             return URI.create(connection.getBrokerInfo().getBrokerURL());
         }

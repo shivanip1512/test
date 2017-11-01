@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -24,6 +23,7 @@ import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.InboundConnectionEvent;
 import com.cannontech.messaging.connection.event.InboundConnectionEventHandler;
 import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
+import com.cannontech.services.jms.InternalMessagingConnectionFactory;
 
 public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTransport> implements ListenerConnection,
     ConnectionEventHandler {
@@ -34,8 +34,8 @@ public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTranspor
     private final List<AmqServerConnection> serverConnectionList;
     private final Map<Destination, Instant> requestTimeMap;
 
-    public AmqListenerConnection(String name, String queueName, ConnectionFactory connectionFactory) {
-        super(name, queueName, connectionFactory);
+    public AmqListenerConnection(String name, String queueName, InternalMessagingConnectionFactory internalMessagingConnectionFactory) {
+        super(name, queueName, internalMessagingConnectionFactory);
         setManagedConnection(true);
         inboundConnectionEvent = new InboundConnectionEvent();
         serverConnectionList = new LinkedList<AmqServerConnection>();

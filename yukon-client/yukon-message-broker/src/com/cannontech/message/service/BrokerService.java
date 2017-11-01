@@ -9,6 +9,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.BootstrapUtils;
+import com.cannontech.common.util.activemq.ActiveMQHelper;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -52,7 +53,7 @@ public class BrokerService {
         
         
         Broker broker =
-                new Broker("YukonMessageBroker", serverListenConnection);
+                new Broker(ActiveMQHelper.MESSAGE_BROKER_NAME, serverListenConnection);
         broker.start();
     }
 }

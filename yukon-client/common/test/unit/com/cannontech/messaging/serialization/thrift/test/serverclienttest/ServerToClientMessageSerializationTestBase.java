@@ -13,11 +13,11 @@ import com.cannontech.message.util.Message;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
 import com.cannontech.messaging.connection.amq.AmqClientConnection;
-import com.cannontech.messaging.connection.amq.AmqConnectionFactoryService;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
 import com.cannontech.messaging.serialization.thrift.test.MessageSerializationTestBase;
 import com.cannontech.messaging.serialization.thrift.test.validator.AutoInitializedClassValidator;
 import com.cannontech.messaging.serialization.thrift.test.validator.ValidationResult;
+import com.cannontech.services.jms.InternalMessagingConnectionFactory;
 
 public abstract class ServerToClientMessageSerializationTestBase extends MessageSerializationTestBase implements
     MessageEventHandler {
@@ -85,13 +85,15 @@ public abstract class ServerToClientMessageSerializationTestBase extends Message
     }
 
     public Connection createClientConnection() {
-        ActiveMQConnectionFactory connectionFactory = null;
+        ActiveMQConnectionFactory amqConnectionFactory = 
+                new ActiveMQConnectionFactory("tcp://localhost:61616");        
 
-        connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+        InternalMessagingConnectionFactory imConnectionFactory = 
+                new InternalMessagingConnectionFactory(amqConnectionFactory);
 
-        AmqClientConnection client = null;
+        AmqClientConnection client = 
+                new AmqClientConnection("", "com.eaton.eas.yukon.conntest", imConnectionFactory);
 
-        client = new AmqClientConnection("", "com.eaton.eas.yukon.conntest", connectionFactory);
         client.setMessageFactory(messageFactory);
 
         return client;

@@ -1,5 +1,6 @@
 package com.cannontech.message.service;
 
+import static com.cannontech.common.util.ApplicationId.MESSAGE_BROKER;
 import java.io.IOException;
 
 import org.apache.activemq.broker.BrokerService;
@@ -9,6 +10,7 @@ import org.apache.activemq.command.ActiveMQTempQueue;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.jmx.JmxHelper;
 
 public class Broker {
 
@@ -45,7 +47,7 @@ public class Broker {
             broker.setBrokerName(name);
 
             broker.setUseJmx(true);
-            broker.getManagementContext().setConnectorPort(1097);
+            broker.getManagementContext().setConnectorPort(JmxHelper.getApplicationJmxPort(MESSAGE_BROKER));
 
             broker.addConnector(listenerHost);
             if (!listenerHost.startsWith(anyhostConnector) && !listenerHost.startsWith(localhostConnector)) {

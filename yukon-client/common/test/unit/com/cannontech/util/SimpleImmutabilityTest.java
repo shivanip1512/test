@@ -279,7 +279,6 @@ import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
 import com.cannontech.i18n.MessageCodeGenerator;
-import com.cannontech.services.jms.YukonJmsConnectionFactory.ConnectionType;
 import com.cannontech.stars.dr.optout.util.OptOutUtil;
 import com.cannontech.stars.dr.program.service.HardwareEnrollmentInfo;
 import com.cannontech.stars.util.SettlementConfigFuncs;
@@ -648,15 +647,6 @@ public class SimpleImmutabilityTest {
             NotificationReason.class,
             NotificationState.class,
             Phase.class
-        );
-         // @formatter:on
-    }
-
-    @Test
-    public void test_services() {
-        // @formatter:off
-        assertImmutability(
-            ConnectionType.class
         );
          // @formatter:on
     }
