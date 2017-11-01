@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -140,6 +141,9 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             if (CollectionUtils.isNotEmpty(data.get(entry.getFieldType()))) {
                 if (entry.getFieldType() == FieldType.LUF_EVENTS || entry.getFieldType() == FieldType.LUV_EVENTS) {
                     value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
+                } else if (entry.getFieldType() == FieldType.CONTROL_STATE) {
+                    // if control status value is 0xFF then it is in control otherwise its value is 0
+                    value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0)) & 0x01;
                 } else {
                     value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
                 }
@@ -152,6 +156,30 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             return null;
         }
         return value.doubleValue();
+    }
+
+    @Override
+    public PointData getPointData(BuiltInAttribute attribute, Double value, PaoPointIdentifier paoPointIdentifier,
+            Integer pointId, Date timeOfReading) {
+        if (attribute == BuiltInAttribute.SERVICE_STATUS) {
+            /**
+             * LCR 6700
+             * Adjust value for state group 'LCR Service Status'
+             * The service status is represented in two bits:
+             * x00 (decimal value 0) - State name: 'In Service', RawState: 1
+             * x04 (decimal value 4) - State name: 'Temporarily Out of Service', RawState: 3
+             * x08 (decimal value 8) - State Name: 'Out of Service', RawState: 2
+             */
+            if (value == 0) {
+                value = 1.0;
+            } else if (value == 4) {
+                value = 3.0;
+            } else if (value == 8) {
+                value = 2.0;
+            }
+        }
+        Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
+        return buildPointData(pointId, pointTypeId, timeOfReading, value);
     }
 
     private List<PointData> mapIntervalData(ListMultimap<FieldType, byte[]>  data, RfnDevice device,
