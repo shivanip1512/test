@@ -105,7 +105,7 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="events/{type}/{parameter}", method=RequestMethod.GET)
-    public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.asc, sort="timestamp") SortingParameters sorting, 
+    public String eventDetailByTypeId(@PathVariable String type, @PathVariable String parameter, @DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, 
                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, 
                                YukonUserContext userContext, @ModelAttribute("filter") SmartNotificationEventFilter filter) {
         return retrieveEventDetail(type, parameter, sorting, paging, userContext, model, filter);
