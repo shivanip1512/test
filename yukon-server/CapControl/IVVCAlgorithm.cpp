@@ -3425,7 +3425,10 @@ void IVVCAlgorithm::findPointInRequest( const long pointID,
         missingPoints++;
     }
 
-    stalePoints += request->isPointStale( pointID, CtiTime::now() - ( _POINT_AGE * 60 ) );
+    if ( request->isPointStale( pointID, timeNow - ( _POINT_AGE * 60 ) ) )
+    {
+        ++stalePoints;
+    }
 }
 
 

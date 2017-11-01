@@ -473,51 +473,51 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_stale_point_processing)
 
     CtiDate day { 1, 1, 1990 };
 
-    CtiTime now               = CtiTime(day, 0, 10, 0);
-    CtiTime fiveMinutesAgo    = CtiTime(day, 0, 5,  0);
-    CtiTime tenMinutesAgo     = CtiTime(day, 0, 0,  0);
+    CtiTime now               = CtiTime( day, 0, 10, 0 );
+    CtiTime fiveMinutesAgo    = CtiTime( day, 0, 5,  0 );
+    CtiTime tenMinutesAgo     = CtiTime( day, 0, 0,  0 );
 
     // Create five custom messages ( by default, timestamp = CtiTime::now() )
 
-    CtiPointDataMsg * Message1 = new CtiPointDataMsg(1100, 120.0, NormalQuality, AnalogPointType);
-    CtiPointDataMsg * Message2 = new CtiPointDataMsg(1101, 120.1, NormalQuality, AnalogPointType);
-    CtiPointDataMsg * Message3 = new CtiPointDataMsg(1102, 120.2, NormalQuality, AnalogPointType);
-    CtiPointDataMsg * Message4 = new CtiPointDataMsg(1103, 120.3, NormalQuality, AnalogPointType);
-    CtiPointDataMsg * Message5 = new CtiPointDataMsg(1104, 120.4, NormalQuality, AnalogPointType);
+    CtiPointDataMsg * Message1 = new CtiPointDataMsg( 1100, 120.0, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message2 = new CtiPointDataMsg( 1101, 120.1, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message3 = new CtiPointDataMsg( 1102, 120.2, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message4 = new CtiPointDataMsg( 1103, 120.3, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message5 = new CtiPointDataMsg( 1104, 120.4, NormalQuality, AnalogPointType );
 
     // Update timestamps and process messages
 
-    Message1->setTime(now);
-    Message2->setTime(now);
-    Message3->setTime(now);
-    Message4->setTime(tenMinutesAgo);
-    Message5->setTime(tenMinutesAgo);
+    Message1->setTime( now );
+    Message2->setTime( now );
+    Message3->setTime( now );
+    Message4->setTime( tenMinutesAgo );
+    Message5->setTime( tenMinutesAgo );
 
-    request->processNewMessage(Message1);
-    request->processNewMessage(Message2);
-    request->processNewMessage(Message3);
-    request->processNewMessage(Message4);
-    request->processNewMessage(Message5);
+    request->processNewMessage( Message1 );
+    request->processNewMessage( Message2 );
+    request->processNewMessage( Message3 );
+    request->processNewMessage( Message4 );
+    request->processNewMessage( Message5 );
 
-    BOOST_CHECK_EQUAL(true, request->isComplete());
+    BOOST_CHECK_EQUAL( true, request->isComplete() );
 
     // "now" messages are not stale, while "tenMinutesAgo" messages are
 
-    BOOST_CHECK_EQUAL(0, request->isPointStale(1100, fiveMinutesAgo));
-    BOOST_CHECK_EQUAL(0, request->isPointStale(1101, fiveMinutesAgo));
-    BOOST_CHECK_EQUAL(0, request->isPointStale(1102, fiveMinutesAgo));
-    BOOST_CHECK_EQUAL(1, request->isPointStale(1103, fiveMinutesAgo));
-    BOOST_CHECK_EQUAL(1, request->isPointStale(1104, fiveMinutesAgo));
+    BOOST_CHECK_EQUAL( false, request->isPointStale( 1100, fiveMinutesAgo ) );
+    BOOST_CHECK_EQUAL( false, request->isPointStale( 1101, fiveMinutesAgo ) );
+    BOOST_CHECK_EQUAL( false, request->isPointStale( 1102, fiveMinutesAgo ) );
+    BOOST_CHECK_EQUAL( true,  request->isPointStale( 1103, fiveMinutesAgo ) );
+    BOOST_CHECK_EQUAL( true,  request->isPointStale( 1104, fiveMinutesAgo ) );
 
     // Stale messages are moved to the rejected points list 
 
-    BOOST_CHECK_EQUAL(2, request->getRejectedPointValues().size());
+    BOOST_CHECK_EQUAL( 2, request->getRejectedPointValues().size() );
 
     PointValueMap   receivedPoints = request->getPointValues();
 
-    BOOST_CHECK_EQUAL(3, receivedPoints.size());
+    BOOST_CHECK_EQUAL( 3, receivedPoints.size() );
 
-    BOOST_CHECK_EQUAL(request->createStatusReport(),
+    BOOST_CHECK_EQUAL( request->createStatusReport(),
         "\n Point Data Request Status: "
         "\n -------------------------- "
         "\n Points missing: "

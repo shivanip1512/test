@@ -207,15 +207,15 @@ PointValueMap DispatchPointDataRequest::getPointValues(PointRequestType pointReq
     return pointMap;
 }
 
-int DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
+bool DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
 {
     if ( _values[pointId].timestamp <= staleTime )
     {
         _rejectedValues.insert( { pointId, _values[pointId] } );
         _values.erase( pointId );
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
 std::set<long> DispatchPointDataRequest::getMissingPoints()
