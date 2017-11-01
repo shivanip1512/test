@@ -209,7 +209,7 @@ PointValueMap DispatchPointDataRequest::getPointValues(PointRequestType pointReq
 
 bool DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
 {
-    if ( _values[pointId].timestamp <= staleTime )
+    if ( _values.find(pointId) != _values.end() && _values[pointId].timestamp <= staleTime )
     {
         _rejectedValues.insert( { pointId, _values[pointId] } );
         _values.erase( pointId );
