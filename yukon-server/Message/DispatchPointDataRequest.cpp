@@ -220,16 +220,16 @@ bool DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
 
 std::set<long> DispatchPointDataRequest::getMissingPoints()
 {
-    std::set<long>  missingIds;
+    std::set<long>  missingIds = _points;
 
-    // insert missing points
-    for each (long pointId in _points)
+    for( auto entry : _values )
     {
-        PointValueMap::iterator itr = _values.find(pointId);
-        if (itr == _values.end())
-        {
-            missingIds.insert(pointId);
-        }
+        missingIds.erase( entry.first );
+    }
+
+    for( auto entry : _rejectedValues )
+    {
+        missingIds.erase(entry.first);
     }
 
     return missingIds;
@@ -250,17 +250,9 @@ std::string DispatchPointDataRequest::createStatusReport()
 
     //Missing Values
     outLog << " Points missing: " << endl;
-    for each (long pointId in _points)
+    for ( long pointId : getMissingPoints() )
     {
-        PointValueMap::iterator itr = _values.find(pointId);
-        if (itr != _values.end())
-        {
-            break;
-        }
-        else
-        {
-            outLog << pointId << " ";
-        }
+        outLog << pointId << " ";
     }
     outLog << endl;
 

@@ -427,7 +427,6 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
     std::set<long>  shouldBeMissing;
 
     shouldBeMissing.insert(1100);
-    shouldBeMissing.insert(1102);
 
     std::set<long>  missingPoints = request->getMissingPoints();
 
