@@ -3,6 +3,7 @@ package com.cannontech.common.stream;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -140,5 +141,20 @@ public final class StreamUtils {
      */
     public static final <T> Stream<T> stream(IntFunction<T> indexedGetterFunction, int length) {
         return IntStream.range(0, length).mapToObj(indexedGetterFunction); 
+    }
+    
+    /**
+     * Returns a Predicate that is the logical negation of the supplied Predicate.  Provides cleaner method reference negation.
+     * 
+     * <pre>{@code 
+     * List<String> list = new ArrayList<>();
+     * Stream<String> notEmpty = list.stream().filter(not(String::empty));
+     * }</pre>
+     * 
+     * @param pred The predicate to negate.
+     * @return The negated predicate.
+     */
+    public static final <T> Predicate<T> not(Predicate<T> pred) {
+        return pred.negate();
     }
 }

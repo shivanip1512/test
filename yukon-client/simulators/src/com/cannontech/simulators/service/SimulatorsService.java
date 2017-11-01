@@ -1,6 +1,9 @@
 package com.cannontech.simulators.service;
 
+import static com.cannontech.common.stream.StreamUtils.not;
+
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -36,7 +39,9 @@ import com.google.common.collect.ImmutableMap;
  * Yukon communicates with, most notably Network Manager.
  */
 public class SimulatorsService {
-    private static final Logger log = YukonLogManager.getLogger(SimulatorsService.class);
+    private static class LogHolder {
+        static final Logger log = YukonLogManager.getLogger(SimulatorsService.class);
+    }
     private static final int incomingMessageWaitMillis = 1000;
 
     @Autowired private ConfigurationSource configSource;
@@ -60,7 +65,7 @@ public class SimulatorsService {
     public static void main(String[] args) {
         try {
             CtiUtilities.setCtiAppName(ApplicationId.SIMULATORS_SERVICE);
-            log.info("Starting simulators service from main method");
+            getLogger().info("Starting simulators service from main method");
             YukonSpringHook.setDefaultContext(YukonSpringHook.SIMULATORS_BEAN_FACTORY_KEY);
 
             SimulatorsService service = YukonSpringHook.getBean(SimulatorsService.class);
@@ -72,29 +77,31 @@ public class SimulatorsService {
                 }
             }
         } catch (Throwable t) {
-            log.error("Error in simulators service", t);
+            getLogger().error("Error in simulators service", t);
             System.exit(1);
         }
+    }
+
+    private static Logger getLogger() {
+        return LogHolder.log;
     }
 
     private synchronized void start() {
         messageListener = new SimulatorMessageListener(jmsTemplate, messageHandlers);
         messageListener.start();
         autoStartSimulators();
-        log.info("Started simulators service.");
+        getLogger().info("Started simulators service.");
     }
 
     private void autoStartSimulators() {
         if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
             yukonSimulatorSettingsDao.initYukonSimulatorSettings();
             Arrays.stream(SimulatorType.values())
-                .filter(simType -> simType != SimulatorType.SIMULATOR_STARTUP)
-                .filter(simType -> simulatorStartupSettingsService.isRunOnStartup(simType))
-                .filter(simType -> simulatorTypeToSimulator.containsKey(simType))
-                .forEach(simType -> {
-                    AutoStartableSimulator simulator = simulatorTypeToSimulator.get(simType);
-                    simulator.startSimulatorWithCurrentSettings();
-                });
+                .filter(not(SimulatorType.SIMULATOR_STARTUP::equals))
+                .filter(simulatorStartupSettingsService::isRunOnStartup)
+                .map   (simulatorTypeToSimulator::get)
+                .filter(Objects::nonNull)
+                .forEach(AutoStartableSimulator::startSimulatorWithCurrentSettings);
         }
     }
 
@@ -117,9 +124,9 @@ public class SimulatorsService {
         try {
             messageListener.stop();
             notify();
-            log.info("Stopped simulators service.");
+            getLogger().info("Stopped simulators service.");
         } catch (Exception e) {
-            log.error("Error while stopping simulators service: ", e);
+            getLogger().error("Error while stopping simulators service: ", e);
             System.exit(1);
         }
     }
