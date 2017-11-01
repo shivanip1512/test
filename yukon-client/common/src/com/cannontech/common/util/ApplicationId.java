@@ -1,7 +1,9 @@
 package com.cannontech.common.util;
 
+import java.util.Arrays;
+
+import com.cannontech.common.stream.StreamUtils;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 public enum ApplicationId {
     
@@ -15,6 +17,10 @@ public enum ApplicationId {
     TRENDING("Trending"), 
     WEBSERVER("Webserver"),
     YUKON_SYSTRAY("Yukon Systray"), 
+
+    //  Standalone Tomcat services
+    OPENADR("OpenADR"),
+    WEB_SERVICES("WebServices"),  // aka EIM
 
     //  Database/upgrade tools
     DB_TOOLS_FRAME("DBToolsFrame"),
@@ -47,20 +53,15 @@ public enum ApplicationId {
     ;
 
     private final String applicationName;
-    private final static ImmutableMap<String, ApplicationId> lookupByName;
-    static {
-        Builder<String, ApplicationId> byNameBuilder =
-            ImmutableMap.builder();
 
-        for (ApplicationId application : values()) {
-            byNameBuilder.put(application.getApplicationName(), application);
-        }
-        lookupByName = byNameBuilder.build();
-    }
-    
-    public static ApplicationId getByName(String name) {
-        return lookupByName.get(name);
-    }
+    private final static ImmutableMap<String, ApplicationId> lookupByName = 
+            ImmutableMap.copyOf(
+                Arrays.stream(values()).collect(
+                    StreamUtils.mapToSelf(ApplicationId::getApplicationName)));
+
+     public static ApplicationId getByName(String name) {
+        return lookupByName.getOrDefault(name, UNKNOWN);
+     }
 
     private ApplicationId(String appName) {
         this.applicationName = appName;

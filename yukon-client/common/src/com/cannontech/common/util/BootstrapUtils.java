@@ -195,6 +195,18 @@ public class BootstrapUtils {
         return defaultAppName.getApplicationName();
     }
 
+    public final static ApplicationId getApplicationId() throws ApplicationIdUnknownException {
+        String appName = getApplicationName();
+
+        ApplicationId id = ApplicationId.getByName(appName);
+
+        if (id == ApplicationId.UNKNOWN) {
+            throw new ApplicationIdUnknownException(appName);
+        }
+
+        return id;
+    }
+
     public static boolean isWebStartClient() {
         return StringUtils.isNotBlank(System.getProperty("jnlp.yukon.host"));
     }
