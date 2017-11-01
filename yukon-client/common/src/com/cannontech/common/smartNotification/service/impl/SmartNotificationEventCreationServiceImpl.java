@@ -1,12 +1,10 @@
 package com.cannontech.common.smartNotification.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
@@ -20,26 +18,30 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.google.common.collect.ImmutableMap;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
-    private static final Map<SmartNotificationEventType, String> queues = new HashMap<>();
-    @Autowired private ConnectionFactory connectionFactory;
-    @Autowired SmartNotificationEventDao eventsDao;
-    private JmsTemplate jmsTemplate;
-    private Executor executor = Executors.newCachedThreadPool();
+    private static final Map<SmartNotificationEventType, String> queues = ImmutableMap.of(
+        SmartNotificationEventType.INFRASTRUCTURE_WARNING, 
+        JmsApiDirectory.SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT.getQueue().getName(),
+        
+        SmartNotificationEventType.DEVICE_DATA_MONITOR, 
+        JmsApiDirectory.SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT.getQueue().getName()
+    );
     
-    @PostConstruct
-    public void init() {
+    private Executor executor = Executors.newCachedThreadPool();
+    private JmsTemplate jmsTemplate;
+    private SmartNotificationEventDao eventsDao;
+    
+    @Autowired
+    public SmartNotificationEventCreationServiceImpl(ConnectionFactory connectionFactory, SmartNotificationEventDao eventsDao) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(true);
         jmsTemplate.setPubSubDomain(false);
         
-        queues.put(SmartNotificationEventType.INFRASTRUCTURE_WARNING,
-            JmsApiDirectory.SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT.getQueue().getName());
-        queues.put(SmartNotificationEventType.DEVICE_DATA_MONITOR,
-            JmsApiDirectory.SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT.getQueue().getName());
+        this.eventsDao = eventsDao;
     }
     
     @Override
@@ -51,7 +53,7 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
                     eventsDao.save(type, events);
                     sendEvents(type, events);
                 } catch (Exception e) {
-                    log.error(e);
+                    log.error("Exception sending smart notification event", e);
                 }
             });
         }

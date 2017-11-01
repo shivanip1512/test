@@ -349,22 +349,39 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         Instant now = Instant.now();
         
         // Devices are entering violation if they were not in the group previously and are now being added.
-        List<SmartNotificationEvent> enteringViolationEvents = newViolatingDeviceIds.stream()
-                .filter(paoId -> !oldViolatingDeviceIds.contains(paoId))
-                .map(paoId -> DeviceDataMonitorEventAssembler.assemble(now, monitorId, monitorName, MonitorState.IN_VIOLATION, paoId))
-                .collect(Collectors.toList());
+        Stream<SmartNotificationEvent> enteringViolationEvents = getEnteringViolationEvents(oldViolatingDeviceIds,
+                newViolatingDeviceIds, monitorId, monitorName, now);
         
         // Devices are exiting violation if they were in the group previously, but are not being added now.
-        List<SmartNotificationEvent> exitingViolationEvents = oldViolatingDeviceIds.stream()
-                .filter(paoId -> !newViolatingDeviceIds.contains(paoId))
-                .map(paoId -> DeviceDataMonitorEventAssembler.assemble(now, monitorId, monitorName, MonitorState.OUT_OF_VIOLATION, paoId))
-                .collect(Collectors.toList());
+        Stream<SmartNotificationEvent> exitingViolationEvents = getExitingViolationEvents(oldViolatingDeviceIds,
+                newViolatingDeviceIds, monitorId, monitorName, now);
         
-        List<SmartNotificationEvent> events = Stream.of(enteringViolationEvents, exitingViolationEvents)
-                                                    .flatMap(List::stream)
+        List<SmartNotificationEvent> events = Stream.concat(enteringViolationEvents, exitingViolationEvents)
                                                     .collect(Collectors.toList());
         
         smartNotificationEventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
+    }
+    
+    /**
+     * Devices are entering violation if they were not in the group previously and are now being added.
+     */
+    private Stream<SmartNotificationEvent> getEnteringViolationEvents(Set<Integer> oldViolatingDeviceIds, 
+            Set<Integer> newViolatingDeviceIds, int monitorId, String monitorName, Instant now) {
+        
+        return newViolatingDeviceIds.stream()
+                .filter(paoId -> !oldViolatingDeviceIds.contains(paoId))
+                .map(paoId -> DeviceDataMonitorEventAssembler.assemble(now, monitorId, monitorName, MonitorState.IN_VIOLATION, paoId));
+    }
+    
+    /**
+     * Devices are exiting violation if they were in the group previously, but are not being added now.
+     */
+    private Stream<SmartNotificationEvent> getExitingViolationEvents(Set<Integer> oldViolatingDeviceIds, 
+            Set<Integer> newViolatingDeviceIds, int monitorId, String monitorName, Instant now) {
+        
+        return oldViolatingDeviceIds.stream()
+                .filter(paoId -> !newViolatingDeviceIds.contains(paoId))
+                .map(paoId -> DeviceDataMonitorEventAssembler.assemble(now, monitorId, monitorName, MonitorState.OUT_OF_VIOLATION, paoId));
     }
     
     @Autowired

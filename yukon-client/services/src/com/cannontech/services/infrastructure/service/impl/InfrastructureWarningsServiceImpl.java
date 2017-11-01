@@ -37,14 +37,14 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsServiceImpl.class);
     private static final int initialDelayMinutes = 5;
     private static final int runFrequencyMinutes = 15;
-    private static AtomicBoolean isRunning = new AtomicBoolean();
-    private MessageSourceAccessor systemMessageSourceAccessor;
-    private List<PaoType> warnableTypes = new ImmutableList.Builder<PaoType>()
+    private static final List<PaoType> warnableTypes = new ImmutableList.Builder<PaoType>()
             .addAll(PaoType.getRfGatewayTypes())
             .addAll(PaoType.getRfRelayTypes())
             .addAll(PaoType.getCcuTypes())
             .addAll(PaoType.getRepeaterTypes())
             .build();
+    private static AtomicBoolean isRunning = new AtomicBoolean();
+    private MessageSourceAccessor systemMessageSourceAccessor;
     
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private List<InfrastructureWarningEvaluator> evaluators;
@@ -130,12 +130,18 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
      */
     private void sendSmartNotifications(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
         Instant now = Instant.now();
-        List<SmartNotificationEvent> events = newWarnings.stream()
-                   .filter(warning -> !oldWarnings.contains(warning))
-                   .map(warning -> InfrastructureWarningsParametersAssembler.assemble(now, warning))
-                   .collect(Collectors.toList());
-        
+        List<SmartNotificationEvent> events = getNotificationEventsForNewWarnings(oldWarnings, newWarnings, now);
         smartNotificationEventCreationService.send(SmartNotificationEventType.INFRASTRUCTURE_WARNING, events);
+    }
+    
+    private List<SmartNotificationEvent> getNotificationEventsForNewWarnings(List<InfrastructureWarning> oldWarnings, 
+                                                                             List<InfrastructureWarning> newWarnings,
+                                                                             Instant now) {
+        
+        return newWarnings.stream()
+                .filter(warning -> !oldWarnings.contains(warning))
+                .map(warning -> InfrastructureWarningsParametersAssembler.assemble(now, warning))
+                .collect(Collectors.toList());
     }
     
     private List<PaoType> getCurrentWarnableTypes() {
