@@ -999,6 +999,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return portTypes;
     }
 
+    public static ImmutableSet<PaoType> getTwoWayLcrTypes() {
+        return twoWayLcrTypes;
+    }
+
     /**
      * Maps PaoType String IDs to their corresponding integer device IDs.
      * @param typeString

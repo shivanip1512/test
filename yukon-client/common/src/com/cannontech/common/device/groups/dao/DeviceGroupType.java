@@ -20,5 +20,7 @@ public enum DeviceGroupType {
     METERS_ALL_PLC_METERS,
     METERS_ALL_RF_ELECTRIC_METERS,
     METERS_ALL_RFW_METERS,
+    LOAD_GROUPS,
+    LOAD_PROGRAMS,
     ;
 }

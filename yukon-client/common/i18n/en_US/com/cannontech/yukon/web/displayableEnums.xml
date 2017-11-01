@@ -118,6 +118,9 @@
     <entry key="yukon.common.systemGroupEnum.ALLMETERSRFNMETERS">/System/Meters/All Meters/All RF Meters</entry>
     <entry key="yukon.common.systemGroupEnum.ALLMETERSRFELECTRICMETERS">/System/Meters/All Meters/All RF Meters/All RF Electric Meters</entry>
     <entry key="yukon.common.systemGroupEnum.ALLMETERSRFWMETERS">/System/Meters/All Meters/All RF Meters/All RFW Meters</entry>
+    <entry key="yukon.common.systemGroupEnum.DEMANDRESPONSE">/System/Demand Response</entry>
+    <entry key="yukon.common.systemGroupEnum.LOADGROUPS">/System/Demand Response/Load Groups</entry>
+    <entry key="yukon.common.systemGroupEnum.LOADPROGRAMS">/System/Demand Response/Load Programs</entry>
     
     
     
