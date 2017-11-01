@@ -793,6 +793,13 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
+        <point name="Device Temperature">
+            <uom>&#176;C</uom>
+            <multiplier value="1"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+            </modifiers>
+        </point>
     </pointGroup>
 
 
