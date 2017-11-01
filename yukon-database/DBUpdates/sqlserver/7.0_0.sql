@@ -226,6 +226,24 @@ INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfi
 INSERT INTO JobScheduledRepeating VALUES (-4, '0 01 0 ? * *');
 /* End YUK-17370 */
 
+/* Start YUK-17426 */
+/* @start-block */
+BEGIN
+    DECLARE @MaxDeviceGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE DG.DeviceGroupId < 98)
+    DECLARE @RootParentGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE SystemGroupEnum = 'SYSTEM')
+
+    INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+         VALUES(@MaxDeviceGroupId + 1, 'Demand Response', @RootParentGroupId, 'NOEDIT_NOMOD', 'STATIC', GETDATE(), 'DEMAND_RESPONSE')
+
+    INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+        VALUES(@MaxDeviceGroupId + 2, 'Load Groups', @MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'LOAD_GROUPS', GETDATE(), 'LOAD_GROUPS')
+
+    INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+        VALUES(@MaxDeviceGroupId + 3, 'Load Programs', @MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'LOAD_PROGRAMS', GETDATE(), 'LOAD_PROGRAMS')
+END;
+/* @end-block */
+/* End YUK-17426 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

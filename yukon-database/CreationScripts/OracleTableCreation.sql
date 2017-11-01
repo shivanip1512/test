@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/27/2017 7:11:37 AM                        */
+/* Created on:     10/30/2017 11:56:45 PM                       */
 /*==============================================================*/
 
 
@@ -3087,6 +3087,9 @@ INSERT INTO DeviceGroup VALUES (47, 'All MCT Meters', 46, 'NOEDIT_NOMOD', 'METER
 INSERT INTO DeviceGroup VALUES (48, 'All RFN Meters', 46, 'NOEDIT_NOMOD', 'STATIC', '02-JUN-2017', 'ALL_RFN_METERS');
 INSERT INTO DeviceGroup VALUES (49, 'All RF Electric Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RF_ELECTRIC_METERS', '02-JUN-2017', 'ALL_RF_ELECTRIC_METERS');
 INSERT INTO DeviceGroup VALUES (50, 'All RFW Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFW_METERS', '02-JUN-2017', 'ALL_RFW_METERS');
+INSERT INTO DeviceGroup VALUES (51, 'Demand Response', 12, 'NOEDIT_NOMOD', 'STATIC', '01-Nov-2017', 'DEMAND_RESPONSE');
+INSERT INTO DeviceGroup VALUES (52, 'Load Groups', 51, 'NOEDIT_NOMOD', 'LOAD_GROUPS', '01-Nov-2017', 'LOAD_GROUPS');
+INSERT INTO DeviceGroup VALUES (53, 'Load Programs', 51, 'NOEDIT_NOMOD', 'LOAD_PROGRAMS', '01-Nov-2017', 'LOAD_PROGRAMS');
 
 alter table DeviceGroup
    add constraint AK_DeviceGroup_ParentDG_GrpNam unique (GroupName, ParentDeviceGroupId);
