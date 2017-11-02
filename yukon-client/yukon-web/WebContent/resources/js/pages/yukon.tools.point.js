@@ -163,18 +163,9 @@ yukon.tools.point = (function () {
         
         $.ajax(yukon.url('/tools/fdr/' + fdrInterface + '?point-type=' + pointType))
         .done(function (data) {
-
-            /* Enable only the valid directions */
             var directionSelect = row.find('.js-fdr-direction');
-            directionSelect.find('option').prop('disabled', true);
             
-            data.directions.forEach(function (direction) {
-                directionSelect.find('option[value="' + direction + '"]').prop('disabled', false);
-            });
-            
-            if (directionSelect.find('option:selected').prop('disabled')) {
-                directionSelect.val(data.directions[0]);
-            }
+            enableValidDirections(data, row);
             
             var translationFields = row.find('.js-translation-fields');
             //Start with a fresh list of translation fields
@@ -405,6 +396,22 @@ yukon.tools.point = (function () {
         $('.js-baseline').toggleClass('dn', !isBaseLineOptSelected);
         $('.js-baseline-assigned').val(isBaseLineOptSelected);
     }
+    
+    /**
+     * Enable valid translations for the interface.
+     */
+    var enableValidDirections = function(data, row) {
+        var directionSelect = row.find('.js-fdr-direction');
+        directionSelect.find('option').prop('disabled', true);
+
+        data.directions.forEach(function(direction) {
+            directionSelect.find('option[value="' + direction + '"]').prop('disabled', false);
+        });
+
+        if (directionSelect.find('option:selected').prop('disabled')) {
+            directionSelect.val(data.directions[0]);
+        }
+    };
 
     /**
      * Calc Baseline was changed
@@ -508,9 +515,16 @@ yukon.tools.point = (function () {
                 $('#delete-point').submit();
             });
             
-            $('div[data-fdr-translation]:visible').each(function(index, value) {
-                var number = $(value).data('fdrTranslation');
-                updateFdrInterface(number);
+            $('[data-fdr-translation]').filter(':visible').each(function(index, value) {
+                var translationNumber = $(value).data('fdrTranslation'),
+                    row = $('[data-fdr-translation="' + translationNumber +'"]'),
+                    fdrInterface = row.find('.js-fdr-interface').val(),
+                    pointType = $('.js-point-type').val();
+                
+                $.ajax(yukon.url('/tools/fdr/' + fdrInterface + '?point-type=' + pointType))
+                    .done(function (data) {
+                        enableValidDirections(data, row);
+                });
             });
         }
     };
