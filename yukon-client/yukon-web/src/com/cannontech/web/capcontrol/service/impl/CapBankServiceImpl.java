@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.creation.service.CapControlCreationService;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
@@ -33,7 +34,6 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
@@ -52,6 +52,7 @@ public class CapBankServiceImpl implements CapBankService {
     @Autowired private PointDao pointDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private AttributeService attributeService;
+    @Autowired private CbcHelperService cbcHelperService;
     
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -116,9 +117,9 @@ public class CapBankServiceImpl implements CapBankService {
     @Transactional
     public int save(CapBank capbank) {
         if(capbank.getCapBank().getControlDeviceID() != 0) {
-            //  TODO - find control device ID, check for Logical devices
-            LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
-            capbank.getCapBank().setControlPointID(point.getPointID());
+            com.cannontech.database.db.capcontrol.CapBank dbCapBank = capbank.getCapBank();
+            int controlPointId = cbcHelperService.getControlPointIdForCbc(dbCapBank.getControlDeviceID());
+            dbCapBank.setControlPointID(controlPointId);
         }
         
         if (capbank.getId() == null) {

@@ -3,6 +3,7 @@ package com.cannontech.web.picker;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import com.cannontech.capcontrol.service.impl.CbcHelperServiceImpl;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
@@ -42,18 +43,22 @@ public class CapControlCBCOrphanRowMapperTest {
             + " Arguments: [cbcAttributeMapping, attributeMappings., attribute, attributeMappings., pointName,"
             + " CONTROL_POINT, CBC Expresscom, CBC Versacom, CBC 7010, CBC 7011, CBC 7012, CBC 7020, CBC 7022, CBC 7023, CBC 7024, CBC 8020, CBC 8024, CBC DNP, CBC FP-2800]";
     
-    @Test
-    public void test_getOracleSql() throws Exception {
+    private CapControlCBCOrphanRowMapper createMapper(DatabaseVendor dbVendor) throws Exception {
         VendorSpecificSqlBuilderFactory vssbf = new VendorSpecificSqlBuilderFactory();
         vssbf.setDatabaseConnectionVendorResolver(new DatabaseVendorResolver() {
             @Override
             public DatabaseVendor getDatabaseVendor() {
-                return DatabaseVendor.ORACLE10G;
+                return dbVendor;
             }
         });
         vssbf.init();  //  reinitialize to get the new DB vendor
+
+        return new CapControlCBCOrphanRowMapper(new CbcHelperServiceImpl(vssbf));
+    }
         
-        CapControlCBCOrphanRowMapper mapper = new CapControlCBCOrphanRowMapper(vssbf);
+    @Test
+    public void test_getOracleSql() throws Exception {
+        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.ORACLE10G);
         
         SqlFragmentSource oracleSql = mapper.getBaseQuery();
 
@@ -67,19 +72,10 @@ public class CapControlCBCOrphanRowMapperTest {
             + suffixExpected,
             oracleSql.getDebugSql());
     }
-    
+
     @Test
     public void test_getMicrosoftSql() throws Exception {
-        VendorSpecificSqlBuilderFactory vssbf = new VendorSpecificSqlBuilderFactory();
-        vssbf.setDatabaseConnectionVendorResolver(new DatabaseVendorResolver() {
-            @Override
-            public DatabaseVendor getDatabaseVendor() {
-                return DatabaseVendor.MS2000;
-            }
-        });
-        vssbf.init();  //  reinitialize to get the new DB vendor
-        
-        CapControlCBCOrphanRowMapper mapper = new CapControlCBCOrphanRowMapper(vssbf);
+        CapControlCBCOrphanRowMapper mapper = createMapper(DatabaseVendor.MS2000);
         
         SqlFragmentSource microsoftSql = mapper.getBaseQuery();
 

@@ -6,11 +6,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -29,8 +29,8 @@ public class CapControlCBCOrphanPicker extends DatabasePicker<Map<String, Object
     }
 
     @Autowired
-    public CapControlCBCOrphanPicker(VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
-        super(new CapControlCBCOrphanRowMapper(vendorSpecificSqlBuilderFactory), searchColumnNames);
+    public CapControlCBCOrphanPicker(CbcHelperService cbcHelperService) {
+        super(new CapControlCBCOrphanRowMapper(cbcHelperService), searchColumnNames);
     }
     
     @Override

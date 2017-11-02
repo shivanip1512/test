@@ -2,6 +2,7 @@ package com.cannontech.capcontrol.service;
 
 import java.util.function.Consumer;
 
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface CbcHelperService {
@@ -19,4 +20,13 @@ public interface CbcHelperService {
      */
     void splitLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback);
 
+    /** 
+     * Returns the point ID of the CONTROL_POINT attribute on the specified CBC.
+     */
+    public int getControlPointIdForCbc(Integer controlDeviceID);
+
+    /**
+     * Returns an SQL statement that finds all CBCs with a CONTROL_POINT that are not assigned to a Cap Bank.
+     */
+    public SqlFragmentSource getOrphanSql();
 }
