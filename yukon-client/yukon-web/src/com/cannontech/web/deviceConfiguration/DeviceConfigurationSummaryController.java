@@ -17,10 +17,14 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.DisplayableDevice;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
@@ -36,6 +40,7 @@ public class DeviceConfigurationSummaryController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper; 
     @Autowired private ServerDatabaseCache dbcache;
+    @Autowired private DeviceConfigSummaryDao deviceConfigSummaryDao;
 
     @RequestMapping("view")
     public String view(ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups) {
@@ -65,10 +70,21 @@ public class DeviceConfigurationSummaryController {
         model.addAttribute("statusOptions", LastActionStatus.values());
         model.addAttribute("syncOptions", InSync.values());
         model.addAttribute("deviceSubGroups", deviceSubGroups);
-        mockupData(model);
+       // mockupData(model);
+        getData(model, filter);
         return "summary.jsp";
     }
     
+    private void getData(ModelMap model, DeviceConfigSummaryFilter filter) {
+        
+        SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter,
+            PagingParameters.EVERYTHING, DeviceConfigSummaryDao.SortBy.DEVICE_NAME, Direction.asc);
+ 
+       // List<SimpleDevice> devices = results.getResultList().stream().map(d -> new SimpleDevice(d.getDevice())).collect(Collectors.toList());
+        
+        model.addAttribute("results",  results.getResultList());
+    }
+
     private void mockupData(ModelMap model) {
         List<DeviceConfigSummaryDetail> results = new ArrayList<>();
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
