@@ -230,7 +230,7 @@ INSERT INTO JobScheduledRepeating VALUES (-4, '0 01 0 ? * *');
 /* @start-block */
 BEGIN
     DECLARE @MaxDeviceGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE DG.DeviceGroupId < 98)
-    DECLARE @RootParentGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE SystemGroupEnum = 'SYSTEM')
+    DECLARE @RootParentGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE DG.SystemGroupEnum = 'SYSTEM')
 
     INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
          VALUES(@MaxDeviceGroupId + 1, 'Demand Response', @RootParentGroupId, 'NOEDIT_NOMOD', 'STATIC', GETDATE(), 'DEMAND_RESPONSE')

@@ -216,10 +216,10 @@ DECLARE
     v_RootParentGroupId NUMBER; 
 BEGIN
     SELECT MAX(DG.DeviceGroupId) INTO v_MaxDeviceGroupId FROM DeviceGroup DG WHERE DG.DeviceGroupId < 98;
-    SELECT MAX(DG.DeviceGroupId) INTO v_RootParentGroupId FROM DeviceGroup DG WHERE SystemGroupEnum = 'SYSTEM';
+    SELECT MAX(DG.DeviceGroupId) INTO v_RootParentGroupId FROM DeviceGroup DG WHERE DG.SystemGroupEnum = 'SYSTEM';
 
     INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
-    VALUES(v_MaxDeviceGroupId + 1, 'Demand Response', v_RootParentGroupId, 'NOEDIT_NOMOD', 'STATIC', SYSDATE(), 'DEMAND_RESPONSE');
+        VALUES(v_MaxDeviceGroupId + 1, 'Demand Response', v_RootParentGroupId, 'NOEDIT_NOMOD', 'STATIC', SYSDATE(), 'DEMAND_RESPONSE');
 
     INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
         VALUES(v_MaxDeviceGroupId + 2, 'Load Groups', v_MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'LOAD_GROUPS', SYSDATE(), 'LOAD_GROUPS');
