@@ -148,9 +148,10 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidAccountNumberException("The provided account number exceeds maximum length of 40.");
         }
 
-        // Checks to see if the account number is already being used.
+        // Checks to see if the account number is already being used in primary energy company and its descendants
         try {
-            CustomerAccount customerAccount = customerAccountDao.getAccountByAccountNumber(accountNumber);
+            CustomerAccount customerAccount =
+                customerAccountDao.getByAccountNumber(accountNumber, ec.getDescendants(true));
             if (customerAccount != null) {
                 log.error("Account " + accountNumber
                     + " could not be added: The provided account number already exists.");

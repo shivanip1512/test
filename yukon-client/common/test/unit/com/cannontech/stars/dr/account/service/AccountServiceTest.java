@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.account.service;
 import static org.easymock.EasyMock.*;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -273,8 +274,10 @@ public class AccountServiceTest extends EasyMockSupport {
         /*
          * Record what should happen
          */
-        expect(customerAccountDaoMock.getAccountByAccountNumber(
-            updatableAccount.getAccountDto().getAccountNumber())).andReturn(null);
+        List<EnergyCompany> energyCompanyList = new ArrayList<>();
+        energyCompanyList.add(ecMock1);
+
+        expect(customerAccountDaoMock.getByAccountNumber(updatableAccount.getAccountDto().getAccountNumber(), energyCompanyList)).andReturn(null);
         expect(userDaoMock.findUserByUsername(updatableAccount.getAccountDto().getUserName())).andReturn(null);
         expect(userGroupDaoMock.getLiteUserGroupByUserGroupName(updatableAccount.getAccountDto().getUserGroup())).andReturn(new LiteUserGroup());
 

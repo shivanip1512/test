@@ -112,7 +112,6 @@ public class HardwareServiceImpl implements HardwareService {
                 enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
 
                 enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user, ca);
-
             } catch (NotFoundException ignore) {
                 /* Ignore this if we are not an LMHardwareBase such as mct's */
                 deletePao = true;

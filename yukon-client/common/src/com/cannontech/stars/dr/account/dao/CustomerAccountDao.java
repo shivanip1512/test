@@ -26,8 +26,6 @@ public interface CustomerAccountDao {
      */
     CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser ecOperator);
 
-    CustomerAccount getAccountByAccountNumber(String accountNumber);
-
     /**
      * Return a list all customer accounts for user, including Primary and Additional contact relationships.
      * user is assumed to be tied directly to the account, and NOT the ec operator.

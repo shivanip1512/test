@@ -163,8 +163,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
     @Override
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(user);
         CustomerAccount customerAccount =
-            customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
+            customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), ec.getId());
         doEnrollment(enrollmentHelper, enrollmentEnum, user, customerAccount);
     }
 
