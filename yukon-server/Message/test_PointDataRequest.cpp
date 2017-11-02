@@ -419,10 +419,9 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
     CtiPointDataMsg * Message1 = new CtiPointDataMsg( 1101, 121.4, NormalQuality, AnalogPointType );
     CtiPointDataMsg * Message2 = new CtiPointDataMsg( 1104, 122.2, NormalQuality, AnalogPointType );
     CtiPointDataMsg * Message3 = new CtiPointDataMsg( 1101, 121.3, NormalQuality, AnalogPointType );
-    CtiPointDataMsg * Message4 = new CtiPointDataMsg( 1103, 120.2, NormalQuality, AnalogPointType );
-    CtiPointDataMsg * Message5 = new CtiPointDataMsg( 1102, 119.7, UnknownQuality, AnalogPointType );
-    CtiPointDataMsg * Message6 = new CtiPointDataMsg( 1104, 120.9, NormalQuality, AnalogPointType );
-    CtiPointDataMsg * Message7 = new CtiPointDataMsg( 1104, 122.0, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message4 = new CtiPointDataMsg( 1102, 119.7, UnknownQuality, AnalogPointType );
+    CtiPointDataMsg * Message5 = new CtiPointDataMsg( 1104, 120.9, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message6 = new CtiPointDataMsg( 1104, 122.0, NormalQuality, AnalogPointType );
 
     // Update timestamps for proper logging and process messages
 
@@ -432,7 +431,6 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
     Message4->setTime(now);
     Message5->setTime(now);
     Message6->setTime(now);
-    Message7->setTime(now);
 
     request->processNewMessage(Message1);
     request->processNewMessage(Message2);
@@ -440,17 +438,14 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
     request->processNewMessage(Message4);
     request->processNewMessage(Message5);
     request->processNewMessage(Message6);
-    request->processNewMessage(Message7);
 
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
     // check results
 
-    std::set<long>  shouldBeMissing;
+    const std::set<long>  shouldBeMissing{ 1100, 1103 };
 
-    shouldBeMissing.insert(1100);
-
-    std::set<long>  missingPoints = request->getMissingPoints();
+    const std::set<long>  missingPoints = request->getMissingPoints();
 
     BOOST_CHECK_EQUAL_COLLECTIONS( missingPoints.begin(),   missingPoints.end(),
                                    shouldBeMissing.begin(), shouldBeMissing.end() );
@@ -462,24 +457,22 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
 
     PointValueMap   receivedPoints = request->getPointValues();
 
-    BOOST_CHECK_EQUAL( 3 , receivedPoints.size() );
+    BOOST_CHECK_EQUAL( 2 , receivedPoints.size() );
 
     BOOST_CHECK_CLOSE( 121.3 , receivedPoints[1101].value , 0.0001 );
-    BOOST_CHECK_CLOSE( 120.2 , receivedPoints[1103].value , 0.0001 );
     BOOST_CHECK_CLOSE( 122.0 , receivedPoints[1104].value , 0.0001 );
 
     BOOST_CHECK_EQUAL(request->createStatusReport(),
         "\n Point Data Request Status: "
         "\n -------------------------- "
         "\n Points missing: "
-        "\n {1100}"
+        "\n {1100,1103}"
         "\n"
         "\n Points Received but rejected: "
         "\n Point Id: 1102 Quality: Unknown Value: 119.7 Timestamp: 01/01/1990 00:00:00"
         "\n"
         "\n Points Received and accepted: "
         "\n Point Id: 1101 Quality: Normal Value: 121.3 Timestamp: 01/01/1990 00:00:00"
-        "\n Point Id: 1103 Quality: Normal Value: 120.2 Timestamp: 01/01/1990 00:00:00"
         "\n Point Id: 1104 Quality: Normal Value: 122 Timestamp: 01/01/1990 00:00:00"
         "\n");
 }
@@ -556,8 +549,6 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_stale_point_processing)
     BOOST_CHECK_EQUAL( request->createStatusReport(),
         "\n Point Data Request Status: "
         "\n -------------------------- "
-        "\n Points missing: "
-        "\n"
         "\n Points Received but rejected: "
         "\n Point Id: 1103 Quality: Normal Value: 120.3 Timestamp: 01/01/1990 00:00:00"
         "\n Point Id: 1104 Quality: Normal Value: 120.4 Timestamp: 01/01/1990 00:00:00"

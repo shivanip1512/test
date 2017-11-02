@@ -215,7 +215,7 @@ PointValueMap DispatchPointDataRequest::getPointValues(PointRequestType pointReq
 
 bool DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
 {
-    if ( _values.count(pointId) == 1 && _values[pointId].timestamp <= staleTime )
+    if ( _values.count(pointId) && _values[pointId].timestamp <= staleTime )
     {
         _rejectedValues.insert( { pointId, _values[pointId] } );
         _values.erase( pointId );
@@ -258,34 +258,44 @@ std::string DispatchPointDataRequest::createStatusReport()
     outLog << " Point Data Request Status: " << endl;
     outLog << " -------------------------- " << endl;
 
-    //Missing Values
+    //Missing Values    
     const auto & missingPoints = getMissingPoints();
-    outLog << " Points missing: " << endl;
     if( ! missingPoints.empty() )
     {
-        outLog << " " << missingPoints << endl;
-    }
-    outLog << endl;
+        outLog << " Points missing: " << endl;
 
-    //Rejected Values
-    outLog << " Points Received but rejected: " << endl;
-    for each (PointValueMap::value_type pv in _rejectedValues)
-    {
-        outLog << " Point Id: "  << pv.first
-               << " Quality: "   << desolvePointQuality(static_cast<PointQuality_t>(pv.second.quality))
-               << " Value: "     << pv.second.value
-               << " Timestamp: " << pv.second.timestamp << endl;
+        outLog << " " << missingPoints << endl;
+
+        outLog << endl;
     }
-    outLog << endl;
+
+    //Rejected Values    
+    if( _rejectedValues.size() )
+    {
+        outLog << " Points Received but rejected: " << endl;
+
+        for each (PointValueMap::value_type pv in _rejectedValues)
+        {
+            outLog << " Point Id: " << pv.first
+                << " Quality: " << desolvePointQuality(static_cast<PointQuality_t>(pv.second.quality))
+                << " Value: " << pv.second.value
+                << " Timestamp: " << pv.second.timestamp << endl;
+        }
+        outLog << endl;
+    }
 
     //Accepted values
-    outLog << " Points Received and accepted: " << endl;
-    for each (PointValueMap::value_type pv in _values)
+    if ( _values.size() )
     {
-        outLog << " Point Id: "  << pv.first
-               << " Quality: "   << desolvePointQuality(static_cast<PointQuality_t>(pv.second.quality))
-               << " Value: "     << pv.second.value
-               << " Timestamp: " << pv.second.timestamp << endl;
+        outLog << " Points Received and accepted: " << endl;
+
+        for each (PointValueMap::value_type pv in _values)
+        {
+            outLog << " Point Id: " << pv.first
+                << " Quality: " << desolvePointQuality(static_cast<PointQuality_t>(pv.second.quality))
+                << " Value: " << pv.second.value
+                << " Timestamp: " << pv.second.timestamp << endl;
+        }
     }
 
     return outLog;
