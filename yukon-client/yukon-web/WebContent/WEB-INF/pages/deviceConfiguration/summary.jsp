@@ -105,7 +105,12 @@
                     <td>${detail.device.paoIdentifier.paoType.paoTypeName}</td>
                     <cti:url var="configUrl" value="/deviceConfiguration/config/view?configId=${detail.deviceConfig.configurationId}"/>
                     <td><a href="${configUrl}">${detail.deviceConfig.name}</a></td>
-                    <td><i:inline key=".actionType.${detail.action}"/></td>
+                    <c:if test="${detail.action != null}">
+                        <td><i:inline key=".actionType.${detail.action}"/></td>
+                    </c:if>
+                    <c:if test="${detail.action == null}">
+                        <td></td>
+                    </c:if>
                     <td><i:inline key=".statusType.${detail.status}"/></td>
                     <td><i:inline key=".syncType.${detail.inSync}"/></td>
                     <td><cti:formatDate type="BOTH" value="${detail.actionStart}"/></td>

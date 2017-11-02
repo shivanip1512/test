@@ -11,6 +11,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class DeviceConfigSummaryFilter {
@@ -31,6 +32,10 @@ public class DeviceConfigSummaryFilter {
         public static LastAction getByRequestType(DeviceRequestType type) {
             return lookupByRequestType.get(type);
         }
+        
+        public DeviceRequestType getRequestType() {
+            return requestType;
+        }
     }
 
     public enum InSync {
@@ -41,9 +46,9 @@ public class DeviceConfigSummaryFilter {
         SUCCESS, FAILURE, IN_PROGRESS, NA
     }
     
-    private List<LastAction> actions;
-    private List<InSync> inSync;
-    private List<LastActionStatus> statuses;
+    private List<LastAction> actions = Lists.newArrayList(LastAction.VERIFY);
+    private List<InSync> inSync = Lists.newArrayList(InSync.OUT_OF_SYNC);
+    private List<LastActionStatus> statuses = Lists.newArrayList(LastActionStatus.FAILURE);
     private List<DeviceGroup> groups;
     //has all ids if "ALL" selected.
     private List<Integer> configurationIds;
@@ -85,6 +90,24 @@ public class DeviceConfigSummaryFilter {
     public void setDisplayUnassigned(boolean displayUnassigned) {
         this.displayUnassigned = displayUnassigned;
     }
+    
+    public List<DeviceRequestType> getRequestTypes(){
+        return actions.stream().map(a -> a.getRequestType()).collect(Collectors.toList());
+    }
+    
+    public boolean contains(InSync option) {
+        return inSync == null ? false : inSync.contains(option);
+    }
+
+    public boolean contains(LastAction option) {
+        return actions == null ? false : actions.contains(option);
+    }
+    
+    public boolean contains(LastActionStatus option) {
+        return statuses == null ? false : statuses.contains(option);
+    }
+      
+        
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
@@ -106,4 +129,6 @@ public class DeviceConfigSummaryFilter {
         }
         return tsb.toString();
     }
+    
+    
 }
