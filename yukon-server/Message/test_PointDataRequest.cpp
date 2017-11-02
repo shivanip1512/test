@@ -412,13 +412,35 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
 
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
-    request->processNewMessage( new CtiPointDataMsg( 1101, 121.4, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1104, 122.2, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1101, 121.3, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1103, 120.2, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1102, 119.7, UnknownQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1104, 120.9, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1104, 122.0, NormalQuality, AnalogPointType ) );
+    CtiDate day{ 1, 1, 1990 };
+
+    CtiTime now = CtiTime( day, 0, 0, 0 );
+
+    CtiPointDataMsg * Message1 = new CtiPointDataMsg( 1101, 121.4, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message2 = new CtiPointDataMsg( 1104, 122.2, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message3 = new CtiPointDataMsg( 1101, 121.3, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message4 = new CtiPointDataMsg( 1103, 120.2, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message5 = new CtiPointDataMsg( 1102, 119.7, UnknownQuality, AnalogPointType );
+    CtiPointDataMsg * Message6 = new CtiPointDataMsg( 1104, 120.9, NormalQuality, AnalogPointType );
+    CtiPointDataMsg * Message7 = new CtiPointDataMsg( 1104, 122.0, NormalQuality, AnalogPointType );
+
+    // Update timestamps for proper logging and process messages
+
+    Message1->setTime(now);
+    Message2->setTime(now);
+    Message3->setTime(now);
+    Message4->setTime(now);
+    Message5->setTime(now);
+    Message6->setTime(now);
+    Message7->setTime(now);
+
+    request->processNewMessage(Message1);
+    request->processNewMessage(Message2);
+    request->processNewMessage(Message3);
+    request->processNewMessage(Message4);
+    request->processNewMessage(Message5);
+    request->processNewMessage(Message6);
+    request->processNewMessage(Message7);
 
     BOOST_CHECK_EQUAL( false , request->isComplete() );
 
@@ -445,6 +467,21 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
     BOOST_CHECK_CLOSE( 121.3 , receivedPoints[1101].value , 0.0001 );
     BOOST_CHECK_CLOSE( 120.2 , receivedPoints[1103].value , 0.0001 );
     BOOST_CHECK_CLOSE( 122.0 , receivedPoints[1104].value , 0.0001 );
+
+    BOOST_CHECK_EQUAL(request->createStatusReport(),
+        "\n Point Data Request Status: "
+        "\n -------------------------- "
+        "\n Points missing: "
+        "\n {1100}"
+        "\n"
+        "\n Points Received but rejected: "
+        "\n Point Id: 1102 Quality: Unknown Value: 119.7 Timestamp: 01/01/1990 00:00:00"
+        "\n"
+        "\n Points Received and accepted: "
+        "\n Point Id: 1101 Quality: Normal Value: 121.3 Timestamp: 01/01/1990 00:00:00"
+        "\n Point Id: 1103 Quality: Normal Value: 120.2 Timestamp: 01/01/1990 00:00:00"
+        "\n Point Id: 1104 Quality: Normal Value: 122 Timestamp: 01/01/1990 00:00:00"
+        "\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_stale_point_processing)
@@ -522,13 +559,13 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_stale_point_processing)
         "\n Points missing: "
         "\n"
         "\n Points Received but rejected: "
-        "\n Point Id: 1103 Quality: 5 Timestamp: 01/01/1990 00:00:00"
-        "\n Point Id: 1104 Quality: 5 Timestamp: 01/01/1990 00:00:00"
+        "\n Point Id: 1103 Quality: Normal Value: 120.3 Timestamp: 01/01/1990 00:00:00"
+        "\n Point Id: 1104 Quality: Normal Value: 120.4 Timestamp: 01/01/1990 00:00:00"
         "\n"
         "\n Points Received and accepted: "
-        "\n Point Id: 1100 Quality: 5 Timestamp: 01/01/1990 00:10:00"
-        "\n Point Id: 1101 Quality: 5 Timestamp: 01/01/1990 00:10:00"
-        "\n Point Id: 1102 Quality: 5 Timestamp: 01/01/1990 00:10:00"
+        "\n Point Id: 1100 Quality: Normal Value: 120 Timestamp: 01/01/1990 00:10:00"
+        "\n Point Id: 1101 Quality: Normal Value: 120.1 Timestamp: 01/01/1990 00:10:00"
+        "\n Point Id: 1102 Quality: Normal Value: 120.2 Timestamp: 01/01/1990 00:10:00"
         "\n" );
 }
 

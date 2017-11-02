@@ -160,7 +160,14 @@ inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long
     }
     else
     {
-        boost::range::copy(long_set, std::ostream_iterator<long>{ logger, "," });
+        auto itr = long_set.begin();
+
+        logger << *itr;
+
+        while( ++itr != long_set.end() )
+        {
+            logger << "," << *itr;
+        }
     }
     return logger << "}";
 }
@@ -179,11 +186,13 @@ namespace Map {
         }
         else
         {
-            bool first = true;
-            for( const auto& val : map )
+            auto itr = map.begin();
+
+            logger << "{" << itr->first << ":" << itr->second << "}";
+
+            while( ++itr != map.end() )
             {
-                logger << (first ? "{" : ",{") << val.first << ":" << val.second << "}";
-                first = false;
+                logger << ",{" << itr->first << ":" << itr->second << "}";
             }
         }
         return logger << "}";

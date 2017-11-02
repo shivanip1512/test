@@ -5,7 +5,13 @@
 #include "pointdefs.h"
 #include "logger.h"
 #include "PointDataRequest.h"
+#include "std_helper.h"
+#include "desolvers.h"
 
+#include <boost/range/algorithm/set_algorithm.hpp>
+#include <boost/range/adaptor/map.hpp>
+
+using Cti::Logging::Set::operator<<;
 using std::endl;
 
 DispatchPointDataRequest::DispatchPointDataRequest() :
@@ -209,7 +215,7 @@ PointValueMap DispatchPointDataRequest::getPointValues(PointRequestType pointReq
 
 bool DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
 {
-    if ( _values.find(pointId) != _values.end() && _values[pointId].timestamp <= staleTime )
+    if ( _values.count(pointId) == 1 && _values[pointId].timestamp <= staleTime )
     {
         _rejectedValues.insert( { pointId, _values[pointId] } );
         _values.erase( pointId );
@@ -220,17 +226,21 @@ bool DispatchPointDataRequest::isPointStale( long pointId, CtiTime & staleTime )
 
 std::set<long> DispatchPointDataRequest::getMissingPoints()
 {
-    std::set<long>  missingIds = _points;
+    std::vector<long> seenValues;
 
-    for( auto entry : _values )
-    {
-        missingIds.erase( entry.first );
-    }
+    seenValues.reserve(_values.size() + _rejectedValues.size());
 
-    for( auto entry : _rejectedValues )
-    {
-        missingIds.erase(entry.first);
-    }
+    boost::range::set_union(
+        _values | boost::adaptors::map_keys,
+        _rejectedValues | boost::adaptors::map_keys,
+        std::inserter(seenValues, seenValues.begin()));
+
+    std::set<long> missingIds;
+
+    boost::range::set_difference(
+        _points,
+        seenValues,
+        std::inserter(missingIds, missingIds.begin()));
 
     return missingIds;
 }
@@ -249,10 +259,11 @@ std::string DispatchPointDataRequest::createStatusReport()
     outLog << " -------------------------- " << endl;
 
     //Missing Values
+    const auto & missingPoints = getMissingPoints();
     outLog << " Points missing: " << endl;
-    for ( long pointId : getMissingPoints() )
+    if( ! missingPoints.empty() )
     {
-        outLog << pointId << " ";
+        outLog << " " << missingPoints << endl;
     }
     outLog << endl;
 
@@ -260,8 +271,9 @@ std::string DispatchPointDataRequest::createStatusReport()
     outLog << " Points Received but rejected: " << endl;
     for each (PointValueMap::value_type pv in _rejectedValues)
     {
-        outLog << " Point Id: " << pv.first
-               << " Quality: "  << pv.second.quality
+        outLog << " Point Id: "  << pv.first
+               << " Quality: "   << desolvePointQuality(static_cast<PointQuality_t>(pv.second.quality))
+               << " Value: "     << pv.second.value
                << " Timestamp: " << pv.second.timestamp << endl;
     }
     outLog << endl;
@@ -270,8 +282,9 @@ std::string DispatchPointDataRequest::createStatusReport()
     outLog << " Points Received and accepted: " << endl;
     for each (PointValueMap::value_type pv in _values)
     {
-        outLog << " Point Id: " << pv.first
-               << " Quality: "  << pv.second.quality
+        outLog << " Point Id: "  << pv.first
+               << " Quality: "   << desolvePointQuality(static_cast<PointQuality_t>(pv.second.quality))
+               << " Value: "     << pv.second.value
                << " Timestamp: " << pv.second.timestamp << endl;
     }
 
