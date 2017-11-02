@@ -91,11 +91,12 @@ public class InfrastructureWarningsEmailBuilder extends SmartNotificationEmailBu
         DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormattingService.DateFormatEnum.FULL, YukonUserContext.system);
         
         StringBuilder builder = new StringBuilder();
+        builder.append("   ");
         for (SmartNotificationEvent event : events) {
             
             int paoId = InfrastructureWarningsParametersAssembler.getPaoId(event.getParameters());
             String paoName = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoName();
-            builder.append(paoName).append(": ");
+            builder.append(paoName).append(" - ");
             
             InfrastructureWarningType warningType = InfrastructureWarningsParametersAssembler.getWarningType(event.getParameters());
             InfrastructureWarningSeverity severity = InfrastructureWarningsParametersAssembler.getWarningSeverity(event.getParameters());
@@ -105,7 +106,7 @@ public class InfrastructureWarningsEmailBuilder extends SmartNotificationEmailBu
             builder.append(warningTypeString).append(" - ");
             
             String date = dateFormatter.format(event.getTimestamp().toDate());
-            builder.append(date).append("\n");
+            builder.append(date).append("\n   ");
         }
         return builder.toString();
     }

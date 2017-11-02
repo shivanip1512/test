@@ -100,18 +100,19 @@ public class DeviceDataMonitorEmailBuilder extends SmartNotificationEmailBuilder
         DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormattingService.DateFormatEnum.FULL, YukonUserContext.system);
         
         StringBuilder builder = new StringBuilder();
+        builder.append("   ");
         for (SmartNotificationEvent event : events) {
             
             int paoId = DeviceDataMonitorEventAssembler.getPaoId(event.getParameters());
             String paoName = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoName();
-            builder.append(paoName).append(": ");
+            builder.append(paoName).append(" - ");
             
             String violationState = DeviceDataMonitorEventAssembler.getState(event.getParameters()).name();
             String violationText = messageSourceAccessor.getMessage("yukon.web.modules.smartNotifications.DEVICE_DATA_MONITOR." + violationState);
             builder.append(violationText).append(" - ");
             
             String date = dateFormatter.format(event.getTimestamp().toDate());
-            builder.append(date).append("\n");
+            builder.append(date).append("\n   ");
         }
         return builder.toString();
     }
