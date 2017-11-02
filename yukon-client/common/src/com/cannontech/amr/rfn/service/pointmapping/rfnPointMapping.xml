@@ -900,7 +900,6 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
             </modifiers>
         </point>
         
@@ -913,7 +912,6 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
             </modifiers>
         </point>
         <point name="Rate B Peak kVA">
@@ -925,7 +923,6 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
             </modifiers>
         </point>
         <point name="Rate C Peak kVA">
@@ -937,7 +934,6 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
             </modifiers>
         </point>
         <point name="Rate D Peak kVA">
@@ -949,7 +945,6 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
-                <modifier>Harmonic</modifier>
             </modifiers>
         </point>
         <point name="Delivered kVAh">
@@ -959,7 +954,6 @@
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
-                <modifier>Harmonic</modifier>
             </modifiers>
         </point>
         <point name="Received kVAh">
@@ -969,7 +963,6 @@
             <modifiers match="equal">
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Harmonic</modifier>
             </modifiers>
         </point>
         <point name="Power Factor">
