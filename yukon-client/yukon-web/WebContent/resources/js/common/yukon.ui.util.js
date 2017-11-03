@@ -505,6 +505,13 @@ yukon.tag.scheduledFileExportInputs = (function () {
         var thresholdValue = $('#thresholdFilter').val();
         $('[name=threshold]').val(thresholdValue);
     },
+    
+    _toggleContainerDisplay = function() {
+        var container = $(this).closest('.titled-container').toggleClass('collapsed'),
+        title = container.find('.title').text().trim().replace(/[^\w]/g, '');
+        hidden = container.is('.collapsed');
+        yukon.cookie.set('hideReveal', title, hidden ? 'hide' : 'show');
+    },
 
     _intializeAllFields = function () {
         _toggleTimestampPatternField();
@@ -529,6 +536,8 @@ yukon.tag.scheduledFileExportInputs = (function () {
             $(document).on('keyup', "#scheduleName", _nameChanged);
             $(document).on('change', "#scheduleName", _nameChanged);
             $(document).on('click', "#sameAsSchedName", _sameAsNameClicked);
+            /** Containers with show/hide behavior */
+            $(document).on('click', ".toggle-title, .titled-container .controls:has('.show-hide')", _toggleContainerDisplay);
             _intializeAllFields();
         }
     };
@@ -540,13 +549,5 @@ yukon.tag.scheduledFileExportInputs = (function () {
 $(function () {
     
     yukon.tag.scheduledFileExportInputs.init(); 
-
-    /** Containers with show/hide behavior */
-    $(document).on('click', '.toggle-title, .titled-container .controls .show-hide', function (ev) {
-        var container = $(this).closest('.titled-container').toggleClass('collapsed'),
-            title = container.find('.title').text().trim().replace(/[^\w]/g, '');
-            hidden = container.is('.collapsed');
-        yukon.cookie.set('hideReveal', title, hidden ? 'hide' : 'show');
-    });
 
 });
