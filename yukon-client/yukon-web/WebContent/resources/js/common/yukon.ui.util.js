@@ -508,8 +508,8 @@ yukon.tag.scheduledFileExportInputs = (function () {
     
     _toggleContainerDisplay = function() {
         var container = $(this).closest('.titled-container').toggleClass('collapsed'),
-        title = container.find('.title').text().trim().replace(/[^\w]/g, '');
-        hidden = container.is('.collapsed');
+            title = container.find('.title').text().trim().replace(/[^\w]/g, '');
+            hidden = container.is('.collapsed');
         yukon.cookie.set('hideReveal', title, hidden ? 'hide' : 'show');
     },
 
