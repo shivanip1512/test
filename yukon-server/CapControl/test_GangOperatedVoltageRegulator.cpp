@@ -69,11 +69,11 @@ struct gang_operated_voltage_regulator_fixture_core
 
         virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
         {
-            signalMessages.push_back( std::unique_ptr<CtiMessage>{ message } );
+            signalMessages.emplace_back( message );
         }
         virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL)
         {
-            requestMessages.push_back( std::unique_ptr<CtiRequestMsg>{ pilRequest } );
+            requestMessages.emplace_back( pilRequest );
         }
         virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
         {
