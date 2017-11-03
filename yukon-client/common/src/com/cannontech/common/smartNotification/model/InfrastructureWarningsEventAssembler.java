@@ -10,7 +10,7 @@ import org.joda.time.Instant;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
-public class InfrastructureWarningsParametersAssembler {  
+public class InfrastructureWarningsEventAssembler {  
     public static final String PAO_ID = "paoId";
     public static final String WARNING_TYPE = "WarningType";
     public static final String WARNING_SEVERITY = "WarningSeverity";
@@ -63,7 +63,7 @@ public class InfrastructureWarningsParametersAssembler {
         try {
             parameters.put(argument, warning.getArguments()[index]);
         } catch (Exception e) {
-
+            //argument wasn't present, ignore
         }
     }
 }

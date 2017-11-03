@@ -27,7 +27,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
-import com.cannontech.services.smartNotification.service.impl.SmartNotificationDeciderServiceImpl.WaitTime;
+import com.cannontech.services.smartNotification.service.impl.WaitTime;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;

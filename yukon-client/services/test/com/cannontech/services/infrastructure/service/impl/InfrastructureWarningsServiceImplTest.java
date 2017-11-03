@@ -9,7 +9,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
@@ -48,18 +48,18 @@ public class InfrastructureWarningsServiceImplTest {
         
         // Check that warning 4 is present with appropriate parameters
         SmartNotificationEvent device4event = new SmartNotificationEvent(now);
-        device4event.addParameters(InfrastructureWarningsParametersAssembler.PAO_ID, 4);
-        device4event.addParameters(InfrastructureWarningsParametersAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device4event.addParameters(InfrastructureWarningsParametersAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device4event.addParameters(InfrastructureWarningsParametersAssembler.ARGUMENT_1, (short) 3);
+        device4event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 4);
+        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
+        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
+        device4event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
         Assert.assertTrue("Event for device 4 is missing", events.contains(device4event));
         
-        // Check that warning 4 is present with appropriate parameters
+        // Check that warning 5 is present with appropriate parameters
         SmartNotificationEvent device5event = new SmartNotificationEvent(now);
-        device5event.addParameters(InfrastructureWarningsParametersAssembler.PAO_ID, 5);
-        device5event.addParameters(InfrastructureWarningsParametersAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device5event.addParameters(InfrastructureWarningsParametersAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device5event.addParameters(InfrastructureWarningsParametersAssembler.ARGUMENT_1, (short) 3);
+        device5event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 5);
+        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
+        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
+        device5event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
         Assert.assertTrue("Event for device 5 is missing", events.contains(device5event));
     }
     

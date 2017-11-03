@@ -19,7 +19,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.InfrastructureEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
@@ -143,7 +143,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
         
         return newWarnings.stream()
                 .filter(warning -> !oldWarnings.contains(warning))
-                .map(warning -> InfrastructureWarningsParametersAssembler.assemble(now, warning))
+                .map(warning -> InfrastructureWarningsEventAssembler.assemble(now, warning))
                 .collect(Collectors.toList());
     }
     

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
@@ -30,7 +31,7 @@ public class SmartNotificationDailyDigestService {
 
     @Autowired protected SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired protected SmartNotificationEventDao eventDao;
-    @Autowired private ScheduledExecutor scheduledExecutor;
+    @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private List<SmartNotificationDecider> deciders;
     @Autowired private SmartNotificationDeciderService deciderService;
     
@@ -39,11 +40,13 @@ public class SmartNotificationDailyDigestService {
     @PostConstruct
     private void scheduleDailyDigest() {
         log.info("Scheduling Daily Digest");
-        long minutesToNextRun = 60 - Integer.parseInt(new DateTime().toString("mm"));
+        DateTime now = DateTime.now();
+        long minutesToNextRun = 60 - Integer.parseInt(now.toString("mm"));
         scheduledExecutor.scheduleWithFixedDelay(() -> {
 
-            log.info("Running Daily Digest at "+ new DateTime().toString("MM-dd-yyyy HH:mm:ss"));
-            String runTimeInMinutes = new DateTime().toString("HH:mm");;
+            log.info("Running Daily Digest at "+ now.toString("MM-dd-yyyy HH:mm:ss"));
+            String runTimeInMinutes = now.toString("HH:mm");;
+            
             List<SmartNotificationMessageParameters> allMessages = new ArrayList<>();
             SetMultimap<SmartNotificationEventType, SmartNotificationSubscription> combinedSubscriptions = subscriptionDao.getDailyDigestGrouped(runTimeInMinutes);
             for (SmartNotificationEventType type : combinedSubscriptions.keySet()) {
@@ -60,13 +63,14 @@ public class SmartNotificationDailyDigestService {
                 deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, true);
             }
             
-            
         }, minutesToNextRun, 60, TimeUnit.MINUTES);
     }
     
     private List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationDecider decider,
             Set<SmartNotificationSubscription> subcriptions) {
-        List<SmartNotificationEvent> events = getEvents(decider, new Range<>(Instant.now().minus(TimeUnit.DAYS.toMillis(1)), false, Instant.now(), true));
+        
+        Instant now = Instant.now();
+        List<SmartNotificationEvent> events = getEvents(decider, new Range<>(now.minus(TimeUnit.DAYS.toMillis(1)), false, now, true));
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
             decider.mapSubscriptionsToEvents(subcriptions, events);
         List<SmartNotificationMessageParameters> messageParameters =

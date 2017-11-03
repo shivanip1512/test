@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
@@ -49,11 +49,11 @@ public class InfrastructureWarningsEmailBuilder extends SmartNotificationEmailBu
     private List<Object> getSingleEventBodyArguments(SmartNotificationEvent event, SmartNotificationVerbosity verbosity) {
         List<Object> argumentList = new ArrayList<>();
         
-        int paoId = InfrastructureWarningsParametersAssembler.getPaoId(event.getParameters());
+        int paoId = InfrastructureWarningsEventAssembler.getPaoId(event.getParameters());
         String paoName = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoName();
         argumentList.add(paoName);
         
-        InfrastructureWarningType warningType = InfrastructureWarningsParametersAssembler.getWarningType(event.getParameters());
+        InfrastructureWarningType warningType = InfrastructureWarningsEventAssembler.getWarningType(event.getParameters());
         String warningTypeString = messageSourceAccessor.getMessage(warningType);
         argumentList.add(warningTypeString);
         
@@ -94,14 +94,14 @@ public class InfrastructureWarningsEmailBuilder extends SmartNotificationEmailBu
         builder.append("   ");
         for (SmartNotificationEvent event : events) {
             
-            int paoId = InfrastructureWarningsParametersAssembler.getPaoId(event.getParameters());
+            int paoId = InfrastructureWarningsEventAssembler.getPaoId(event.getParameters());
             String paoName = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoName();
             builder.append(paoName).append(" - ");
             
-            InfrastructureWarningType warningType = InfrastructureWarningsParametersAssembler.getWarningType(event.getParameters());
-            InfrastructureWarningSeverity severity = InfrastructureWarningsParametersAssembler.getWarningSeverity(event.getParameters());
+            InfrastructureWarningType warningType = InfrastructureWarningsEventAssembler.getWarningType(event.getParameters());
+            InfrastructureWarningSeverity severity = InfrastructureWarningsEventAssembler.getWarningSeverity(event.getParameters());
             String warningKey = warningType.getFormatKey() + "." + severity.name();
-            Object[] warningArgs = InfrastructureWarningsParametersAssembler.getWarningArguments(event.getParameters());
+            Object[] warningArgs = InfrastructureWarningsEventAssembler.getWarningArguments(event.getParameters());
             String warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs);
             builder.append(warningTypeString).append(" - ");
             
@@ -125,11 +125,11 @@ public class InfrastructureWarningsEmailBuilder extends SmartNotificationEmailBu
         if (events.size() == 1) {
             SmartNotificationEvent event = events.get(0);
             
-            int paoId = InfrastructureWarningsParametersAssembler.getPaoId(event.getParameters());
+            int paoId = InfrastructureWarningsEventAssembler.getPaoId(event.getParameters());
             String paoName = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoName();
             argumentList.add(paoName);
             
-            InfrastructureWarningType warningType = InfrastructureWarningsParametersAssembler.getWarningType(event.getParameters());
+            InfrastructureWarningType warningType = InfrastructureWarningsEventAssembler.getWarningType(event.getParameters());
             String warningTypeString = messageSourceAccessor.getMessage(warningType);
             argumentList.add(warningTypeString);
         } else {

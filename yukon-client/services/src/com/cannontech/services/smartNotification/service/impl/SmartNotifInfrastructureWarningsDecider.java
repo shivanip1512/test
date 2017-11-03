@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
@@ -25,7 +25,7 @@ public class SmartNotifInfrastructureWarningsDecider extends SmartNotificationDe
     }
    
     private boolean isValidDevice(SmartNotificationEvent event) {
-        int paoId = InfrastructureWarningsParametersAssembler.getPaoId(event.getParameters());
+        int paoId = InfrastructureWarningsEventAssembler.getPaoId(event.getParameters());
         return cache.getAllPaosMap().containsKey(paoId);
     }
 

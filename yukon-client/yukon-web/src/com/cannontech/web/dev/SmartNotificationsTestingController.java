@@ -29,7 +29,7 @@ import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
-import com.cannontech.common.smartNotification.model.InfrastructureWarningsParametersAssembler;
+import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
@@ -136,7 +136,7 @@ public class SmartNotificationsTestingController {
                             List<InfrastructureWarningType> types = Lists.newArrayList(InfrastructureWarningType.values());
                             Collections.shuffle(types);
                             InfrastructureWarning warning = infrastructureWarningsGeneratorService.genarate(types.get(0));
-                            events.add(InfrastructureWarningsParametersAssembler.assemble(Instant.now(), warning));
+                            events.add(InfrastructureWarningsEventAssembler.assemble(Instant.now(), warning));
                         } else if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
                             int monitorId = DeviceDataMonitorEventAssembler.getMonitorId(
                                 subscriptions.get(nextIndex).getParameters());
