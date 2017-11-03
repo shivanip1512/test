@@ -63,7 +63,7 @@
   <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl"/>
   <bean id="databaseManagementDao" class="com.cannontech.core.dao.impl.DatabaseManagementDaoImpl"/>
   
-  <bean id="maintenanceDao" class="com.cannontech.core.dao.impl.MaintenanceDaoImpl"/>
+  <bean id="rphDataPruningDao" class="com.cannontech.core.dao.impl.RphDataPruningDaoImpl"/>
   
   <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl"/>
 

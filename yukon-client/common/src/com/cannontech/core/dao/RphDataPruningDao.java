@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
-public interface MaintenanceDao {
+public interface RphDataPruningDao {
     /**
      * Deletes records from RPH and returns number of deleted record
      * 
