@@ -17,9 +17,7 @@ public class DeviceConfigSummaryDetail {
     private InSync inSync;
     private Instant actionStart;
     private Instant actionEnd;
-    private boolean displayRead;
-    private boolean displaySend;
-    private boolean displayVerify;
+
     
     public DisplayableDevice getDevice() {
         return device;
@@ -78,26 +76,14 @@ public class DeviceConfigSummaryDetail {
     }
 
     public boolean isDisplayRead() {
-        return displayRead;
-    }
-
-    public void setDisplayRead(boolean displayRead) {
-        this.displayRead = displayRead;
+        return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
 
     public boolean isDisplaySend() {
-        return displaySend;
-    }
-
-    public void setDisplaySend(boolean displaySend) {
-        this.displaySend = displaySend;
+        return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
 
     public boolean isDisplayVerify() {
-        return displayVerify;
-    }
-
-    public void setDisplayVerify(boolean displayVerify) {
-        this.displayVerify = displayVerify;
+        return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
 }

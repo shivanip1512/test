@@ -65,9 +65,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             if (configId != null) {
                 detail.setDeviceConfig(new LightDeviceConfiguration(configId, rs.getString("ConfigName"), null));
             }
-            detail.setDisplayRead(true);
-            detail.setDisplaySend(true);
-            detail.setDisplayVerify(true);
             detail.setInSync(rs.getEnum("InSync", InSync.class));
             detail.setStatus(rs.getEnum("ActionStatus", LastActionStatus.class));
             return detail;
@@ -75,36 +72,35 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     }
     
     /*
-     *  State    Last action Success?    Prior verify?   In sync?
-        Unassigned  n/a n/a n/a n/a
+     *  State       Last action         Success?    Prior verify?       In sync?
+        Unassigned  n/a                 n/a         n/a                     n/a
                         
-        Assigned    None    n/a n/a Unverified
+        Assigned    None                n/a         n/a                 Unverified
                         
-        Assigned    Send    Fail    None    Unverified
-        Assigned    Send    Fail    Success In sync
-        Assigned    Send    Fail    Fail    Out of sync
-        Assigned    Send    Success None    Unverified
-        Assigned    Send    Success Success In sync
-        Assigned    Send    Success Fail    Unverified
+        Assigned    Send                Fail        None                Unverified
+        Assigned    Send                Fail        Success             In sync
+        Assigned    Send                Fail        Fail                Out of sync
+        Assigned    Send                Success     None                Unverified
+        Assigned    Send                Success     Success             In sync
+        Assigned    Send                Success     Fail                Unverified
                         
-        Assigned    Send in progress    n/a None    Unverified
-        Assigned    Send in progress    n/a Success In sync
-        Assigned    Send in progress    n/a Fail    Out of sync
+        Assigned    Send in progress    n/a         None                Unverified
+        Assigned    Send in progress    n/a         Success             In sync
+        Assigned    Send in progress    n/a         Fail                Out of sync
                         
-        Assigned    Read    Fail    None    Unverified
-        Assigned    Read    Fail    Success In sync
-        Assigned    Read    Fail    Fail    Out of sync
-        Assigned    Read    Success None    Unverified
-        Assigned    Read    Success Success In sync
-        Assigned    Read    Success Fail    Unverified
+        Assigned    Read                Fail        None                Unverified
+        Assigned    Read                Fail        Success             In sync
+        Assigned    Read                Fail        Fail                Out of sync
+        Assigned    Read                Success     None                Unverified
+        Assigned    Read                Success     Success             In sync
+        Assigned    Read                Success     Fail                Unverified
                         
-        Assigned    Read in progress    n/a None    Unverified
-        Assigned    Read in progress    n/a Success In sync
-        Assigned    Read in progress    n/a Fail    Out of sync
+        Assigned    Read in progress    n/a         None                Unverified
+        Assigned    Read in progress    n/a         Success             In sync
+        Assigned    Read in progress    n/a         Fail                Out of sync
                         
-        Assigned    Verify  Yes n/a In sync
-        Assigned    Verify  No  n/a Out of sync
-
+        Assigned    Verify              Yes         n/a                 In sync
+        Assigned    Verify              No          n/a                 Out of sync
      */
     
     @Override
@@ -203,7 +199,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         }
     }
 
-    private boolean buildNoActionSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
+    private void buildNoActionSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
         sql.append("SELECT");
         sql.append("    ypo.PAObjectID as DeviceId,");
         sql.append("    paoName as DeviceName,");
@@ -235,7 +231,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("    SELECT DeviceId from CommandRequestExecRequest request");
         sql.append("    JOIN CommandRequestExec cre ON cre.CommandRequestExecId = request.CommandRequestExecId");
         sql.append("    WHERE cre.CommandRequestExecType").in_k(deviceConfigExecTypes).append(")");
-        return true;
     }
 
     private void buildActionSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter, LastAction action) {
@@ -299,7 +294,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
         sql.append("JOIN CommandRequestExecRequest request ON ypo.PAObjectId = request.DeviceId");
         sql.append("JOIN CommandRequestExec cre ON request.CommandRequestExecId = cre.CommandRequestExecId");
-        sql.append("LEFT JOIN VerifyTable vt ON  ypo.PAObjectId = vt.DeviceId");
+        sql.append("LEFT " + LastAction.VERIFY + "Table vt ON  ypo.PAObjectId = vt.DeviceId");
         sql.append("WHERE ypo.type").in(getSupportedPaoTypes());
         sql.append("AND CommandRequestExecType").in(
             filter.getActions().stream().map(action -> action.getRequestType()).collect(Collectors.toList()));
