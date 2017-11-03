@@ -284,11 +284,6 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
 */ 
 bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
 {
-    if (_CC_DEBUG & CC_DEBUG_IVVC)
-    {
-        CTILOG_DEBUG(dout, "IVVC Algorithm: "<< subbus->getPaoName() << " - Scanning for invalid regulator configurations.");
-    }
-
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     ZoneManager & zoneManager       = store->getZoneManager();
     Zone::IdSet subbusZoneIds       = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
@@ -463,10 +458,14 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
     {
         CtiCCCapBankPtr bank = entry.second;
 
-        CTILOG_INFO(dout, "IVVC Configuration: Bank: " << bank->getPaoName() << " on bus: " << subbus->getPaoName()
-                            << " is not assigned to a control zone. Disabling the bank." );
+        if ( ! bank->getDisableFlag() )
+        {
+            
+            CTILOG_INFO(dout, "IVVC Configuration: Bank: " << bank->getPaoName() << " on bus: " << subbus->getPaoName()
+                                << " is not assigned to a control zone. Disabling the bank." );
 
-        store->UpdatePaoDisableFlagInDB( bank, true );
+            store->UpdatePaoDisableFlagInDB( bank, true );
+        }
     }
 
     return anyToDisable;
@@ -513,17 +512,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     state->showZoneRegulatorConfigMsg = true;
 
-    //  We need to handle any reverse flow conditions detected on the bus.
-    if ( handleReverseFlow( subbus ) )
-    {
-        sendDisableRemoteControl( subbus );
-        state->setState(IVVCState::IVVC_WAIT);
-
-        CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::DISABLE_SUBSTATION_BUS,
-                                                               subbus->getPaoId() ) )->execute();
-        return;
-    }
-    
     if ( checkAllBanksAreInControlZones( subbus ) )
     {
         state->setState(IVVCState::IVVC_WAIT);
@@ -552,6 +540,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusEnabledMessage(subbus->getPaoId(), timeNow));
     }
     state->setShowBusDisableMsg(true);
+
+    //  We need to handle any reverse flow conditions detected on the bus.
+    if ( handleReverseFlow( subbus ) )
+    {
+        sendDisableRemoteControl( subbus );
+        state->setState(IVVCState::IVVC_WAIT);
+
+        CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::DISABLE_SUBSTATION_BUS,
+                                                               subbus->getPaoId() ) )->execute();
+        return;
+    }
 
     // subbus is enabled
     // send regulator heartbeat messages as long as we are communicating
