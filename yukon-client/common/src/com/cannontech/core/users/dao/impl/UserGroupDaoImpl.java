@@ -19,6 +19,7 @@ import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -45,7 +46,7 @@ public class UserGroupDaoImpl implements UserGroupDao {
         @Override
         public void extractValues(MapSqlParameterSource p, com.cannontech.database.db.user.UserGroup userGroup) {
             p.addValue("Name", userGroup.getUserGroupName());
-            p.addValue("Description", userGroup.getUserGroupDescription());
+            p.addValue("Description", SqlUtils.convertStringToDbValue(userGroup.getUserGroupDescription()));
         }
         
         @Override
