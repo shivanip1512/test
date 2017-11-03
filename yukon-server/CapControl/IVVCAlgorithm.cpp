@@ -1055,13 +1055,13 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
     Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
 
-    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    for ( const Zone::IdSet::value_type & ID : subbusZoneIds )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
         // Regulator(s)
 
-        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        for ( const Zone::PhaseIdMap::value_type & mapping : zone->getRegulatorIds() )
         {
             try
             {
@@ -1101,21 +1101,24 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
         Zone::IdSet capbankIds = zone->getBankIds();
 
-        for each ( const Zone::IdSet::value_type & ID in capbankIds )
+        for ( const Zone::IdSet::value_type & ID : capbankIds )
         {
             if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
-            {                
-                for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+            {   
+                if ( ! bank->getDisableFlag() )     // only care about enabled banks
                 {
-                    if ( point->getPointId() > 0 )
+                    for ( CtiCCMonitorPointPtr point : bank->getMonitorPoint() )
                     {
-                        pointRequests.insert( PointRequest(point->getPointId(), CbcRequestType, ! sendScan) );
+                        if ( point->getPointId() > 0 )
+                        {
+                            pointRequests.insert( PointRequest(point->getPointId(), CbcRequestType, ! sendScan) );
+                        }
                     }
-                }
-                if ( sendScan )
-                {
-                    CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
-                                                                            bank->getControlDeviceId() ) )->execute();
+                    if ( sendScan )
+                    {
+                        CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
+                                                                                bank->getControlDeviceId() ) )->execute();
+                    }
                 }
             }
             else
@@ -1130,7 +1133,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
         // Additional voltage points
 
-        for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
+        for ( const Zone::PhaseToVoltagePointIds::value_type & mapping : zone->getPointIds() )
         {
             pointRequests.insert( PointRequest(mapping.second, OtherRequestType) );
         }
@@ -1156,7 +1159,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
         }
     }
 
-    for each (long ID in busVarPointIds)
+    for (long ID : busVarPointIds)
     {
         if (ID > 0)
         {
@@ -1178,7 +1181,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
     if ( strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder )
     {
-        for each ( CtiCCFeederPtr feeder in subbus->getCCFeeders() )
+        for ( CtiCCFeederPtr feeder : subbus->getCCFeeders() )
         {
             // watt point
             long wattPoint = feeder->getCurrentWattLoadPointId();
@@ -1198,7 +1201,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
             }
 
             // var point(s)
-            for each ( long varPoint in feeder->getCurrentVarLoadPoints() )
+            for ( long varPoint : feeder->getCurrentVarLoadPoints() )
             {
                 if (varPoint > 0)
                 {
