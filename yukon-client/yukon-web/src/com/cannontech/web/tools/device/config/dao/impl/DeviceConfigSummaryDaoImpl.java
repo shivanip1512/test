@@ -251,12 +251,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("        WHEN vt.ErrorCode > 0 THEN '" + InSync.OUT_OF_SYNC + "'");
         sql.append("        WHEN vt.ErrorCode = 0 THEN '" + InSync.IN_SYNC + "'");
         sql.append("    END as InSync,");
-        sql.append("    dc.Name as ConfigName,");
-        sql.append("    dc.DeviceConfigurationId as ConfigId");
+        sql.append("    t.ConfigName,");
+        sql.append("    t.ConfigId");
 
         sql.append("FROM YukonPAObject ypo");
-        sql.append("JOIN DeviceConfigurationDeviceMap scdm ON scdm.DeviceID = ypo.PAObjectID");
-        sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
         sql.append("JOIN " + action + "Table t ON  ypo.PAObjectId = t.DeviceId");
         sql.append("LEFT JOIN " + LastAction.VERIFY + "Table vt ON  ypo.PAObjectId = vt.DeviceId");
         sql.append("WHERE ypo.type").in(getSupportedPaoTypes());
