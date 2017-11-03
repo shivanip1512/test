@@ -6,7 +6,6 @@ import org.junit.Test;
 import com.cannontech.capcontrol.service.impl.CbcHelperServiceImpl;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.vendor.DatabaseVendor;
-import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 
 public class CapControlCBCOrphanRowMapperTest {
@@ -45,12 +44,7 @@ public class CapControlCBCOrphanRowMapperTest {
     
     private CapControlCBCOrphanRowMapper createMapper(DatabaseVendor dbVendor) throws Exception {
         VendorSpecificSqlBuilderFactory vssbf = new VendorSpecificSqlBuilderFactory();
-        vssbf.setDatabaseConnectionVendorResolver(new DatabaseVendorResolver() {
-            @Override
-            public DatabaseVendor getDatabaseVendor() {
-                return dbVendor;
-            }
-        });
+        vssbf.setDatabaseConnectionVendorResolver(() -> dbVendor);
         vssbf.init();  //  reinitialize to get the new DB vendor
 
         return new CapControlCBCOrphanRowMapper(new CbcHelperServiceImpl(vssbf));
