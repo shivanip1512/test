@@ -292,7 +292,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
         sql.append("JOIN CommandRequestExecRequest request ON ypo.PAObjectId = request.DeviceId");
         sql.append("JOIN CommandRequestExec cre ON request.CommandRequestExecId = cre.CommandRequestExecId");
-        sql.append("LEFT " + LastAction.VERIFY + "Table vt ON  ypo.PAObjectId = vt.DeviceId");
+        sql.append("LEFT JOIN " + LastAction.VERIFY + "Table vt ON  ypo.PAObjectId = vt.DeviceId");
         sql.append("WHERE ypo.type").in(getSupportedPaoTypes());
         sql.append("AND CommandRequestExecType").in(
             filter.getActions().stream().map(action -> action.getRequestType()).collect(Collectors.toList()));
