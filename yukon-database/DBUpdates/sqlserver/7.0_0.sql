@@ -244,6 +244,50 @@ END;
 /* @end-block */
 /* End YUK-17426 */
 
+/* Start YUK-17002 */
+DECLARE @MAX_PID INT = (SELECT MAX(POINTID) FROM POINT)
+
+INSERT INTO POINT
+SELECT
+    (@MAX_PID) + ROW_NUMBER() OVER (ORDER BY PT.PointId),
+    'Analog',
+    'Port Queue Count',
+    PAO.PAObjectID,
+    'Default',
+    0,
+    'N',
+    'N',
+    'R',
+    1,
+    'None', 
+    0 
+FROM YukonPAObject PAO
+LEFT JOIN Point PT
+    ON  PT.PAObjectID = PAO.PAObjectID
+    AND PT.POINTTYPE = 'Analog'
+    AND PT.POINTOFFSET = 1
+WHERE PAO.PAOClass = 'PORT'
+AND PT.PointID IS NULL;
+
+INSERT INTO PointAnalog
+    SELECT PT.POINTID, -1, 1, 1
+    FROM Point PT
+    WHERE PT.POINTNAME = 'Port Queue Count'
+    AND NOT EXISTS(SELECT POINTID
+                   FROM PointAnalog
+                   WHERE PT.POINTID = POINTID
+                   AND POINTOFFSET = 1);
+
+INSERT INTO PointUnit 
+    SELECT PT.POINTID, 9, 0, 1.0E+30, -1.0E+30, 0
+    FROM Point PT
+    WHERE PT.POINTNAME = 'Port Queue Count'
+    AND NOT EXISTS(SELECT POINTID
+                   FROM PointUnit
+                   WHERE PT.POINTID = POINTID
+                   AND POINTOFFSET = 1);
+/* End YUK-17002 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
