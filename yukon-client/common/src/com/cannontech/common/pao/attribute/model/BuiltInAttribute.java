@@ -512,7 +512,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TOTAL_OPERATION_COUNT("Total Operation Count", AttributeGroup.CAPCONTROL, false),
     UNDER_VOLTAGE_COUNT("Under Voltage Count", AttributeGroup.CAPCONTROL, false),
     VAR_CONTROL("VAr Control", AttributeGroup.CAPCONTROL, false),
-    VOLTAGE_CONTROL("Volatge Control", AttributeGroup.CAPCONTROL, false),
+    VOLTAGE_CONTROL("Voltage Control", AttributeGroup.CAPCONTROL, false),
     VOLTAGE_DELTA_ABNORMAL("Voltage Delta Abnormal", AttributeGroup.CAPCONTROL, false),
     PORT_QUEUE_COUNT("Port Queue Count", AttributeGroup.OTHER, false),
     REVERSE_BANDWIDTH("Reverse Bandwidth", AttributeGroup.CAPCONTROL, false),

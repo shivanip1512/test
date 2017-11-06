@@ -177,7 +177,7 @@ struct gang_operated_voltage_regulator_fixture_setpoint
 
 BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap, gang_operated_voltage_regulator_fixture_direct_tap )
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_IntegrityScan_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingAttribute );
 
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_IntegrityScan_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success_nonstandard_user)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_IntegrityScan_Success_nonstandard_user)
 {
     regulator->loadAttributes( &attributes );
 
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success_non
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_TapUp_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_TapUp_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -348,7 +348,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_TapDown_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
@@ -365,7 +365,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_TapDown_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableKeepAlive_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeEnableKeepAlive( "cap control" ), MissingAttribute );
 
@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableKeepAlive_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableKeepAlive_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeDisableKeepAlive( "cap control" ), MissingAttribute );
 
@@ -488,7 +488,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableKeepAlive_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -528,7 +528,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableRemoteControl_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeEnableRemoteControl( "unit test" ), MissingAttribute );
 
@@ -545,7 +545,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableRemoteControl_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -605,7 +605,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Succe
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableRemoteControl_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeDisableRemoteControl( "unit test" ), MissingAttribute );
 
@@ -622,7 +622,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Fail
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableRemoteControl_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -687,7 +687,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_SetPoint, gang_operated_voltage_regulator_fixture_setpoint )
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_RaiseSetPoint_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
@@ -704,7 +704,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_RaiseSetPoint_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -758,7 +758,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Fail)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Fail)
 {
     BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
@@ -775,7 +775,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -832,7 +832,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Cogeneration_ForwardFlow_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Cogeneration_ForwardFlow_Success)
 {
     regulator->loadAttributes( &attributes );
 
@@ -893,7 +893,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Cogeneratio
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Cogeneration_ReverseFlow_Success)
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Cogeneration_ReverseFlow_Success)
 {
     regulator->loadAttributes( &attributes );
 

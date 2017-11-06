@@ -550,7 +550,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.TOTAL_OPERATION_COUNT">Total Operation Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_COUNT">Under Voltage Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VAR_CONTROL">VAr Control</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_CONTROL">Volatge Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_CONTROL">Voltage Control</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_DELTA_ABNORMAL">Voltage Delta Abnormal</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PORT_QUEUE_COUNT">Port Queue Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_BANDWIDTH">Reverse Bandwidth</entry>
