@@ -209,7 +209,8 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
         }
     }
 
-    _logger->_logger->callAppenders(event, log4cxx::helpers::Pool{});
+    log4cxx::helpers::Pool pool;
+    _logger->_logger->callAppenders(event, pool);
 }
 
 bool Logger::isLevelEnable(Level level) const
