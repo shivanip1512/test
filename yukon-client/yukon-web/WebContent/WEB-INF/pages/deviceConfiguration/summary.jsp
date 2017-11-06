@@ -73,7 +73,7 @@
                 </div>
             
                 <div class="action-area stacked">
-                    <cti:button nameKey="filter" classes="primary action" type="submit" />
+                    <cti:button nameKey="filter" classes="primary action" type="submit" busy="true"/>
                 </div>
             
             </form:form>
