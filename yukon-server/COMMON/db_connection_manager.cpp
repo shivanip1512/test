@@ -62,7 +62,7 @@ auto ConnectionManager::borrowConnection() -> LoanedConnection
                 {
                     if( descriptor->connection->isAlive() )
                     {
-                        CTILOG_DEBUG(dout, "Existing database connection retrieved:" << descriptor->info);
+                        CTILOG_TRACE(dout, "Existing database connection retrieved:" << descriptor->info);
 
                         return LoanedConnection { descriptor.release() };
                     }
