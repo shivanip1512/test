@@ -51,10 +51,13 @@ public class LoadProgramsProvider extends BinningDeviceGroupProviderBase<String>
     @Override
     protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT LMPDG.LMGroupDeviceId ");
-        sql.append("FROM LMProgramDirectGroup LMPDG ");
-        sql.append("WHERE LMPDG.DeviceId ");
-        sql.append("IN (SELECT deviceid FROM YukonPAObject ypo JOIN LMPROGRAM lmp ON (ypo.PAObjectID = lmp.deviceid))");
+        sql.append("SELECT DISTINCT inv.DeviceId");
+        sql.append("FROM InventoryBase inv JOIN LMHardwareBase lmbase ON inv.InventoryId = lmbase.InventoryId");
+        sql.append("  JOIN LMHardwareConfiguration hdconf ON lmbase.InventoryId = hdconf.InventoryId");
+        sql.append("  JOIN LMProgramDirectGroup lmpdg ON lmpdg.LMGroupDeviceId= hdconf.AddressingGroupId");
+        sql.append("  JOIN YukonPaobject ypo ON ypo.PAObjectId = lmpdg.DeviceId");
+        sql.append("WHERE Category").eq_k(PaoCategory.LOADMANAGEMENT);
+        sql.append("  AND PAOClass").eq_k(PaoClass.LOADMANAGEMENT);
         return sql;
     }
 
