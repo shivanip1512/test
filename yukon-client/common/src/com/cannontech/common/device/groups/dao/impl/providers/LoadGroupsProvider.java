@@ -38,12 +38,10 @@ public class LoadGroupsProvider extends BinningDeviceGroupProviderBase<String> {
         sql.append("SELECT DISTINCT inv.DeviceId");
         sql.append("FROM InventoryBase inv JOIN LMHardwareBase lmbase ON inv.InventoryId = lmbase.InventoryId");
         sql.append("  JOIN LMHardwareConfiguration hdconf ON lmbase.InventoryId = hdconf.InventoryId");
-        sql.append("  JOIN ApplianceBase appbase ON hdconf.ApplianceId = appbase.ApplianceId");
-        sql.append("  JOIN LMHardwareConfiguration lmhc ON lmbase.InventoryId = lmhc.InventoryId");
-        sql.append("  JOIN YukonPaobject lmGroup ON lmGroup.PAObjectId = lmhc.AddressingGroupId");
-        sql.append("WHERE Category").eq_k(PaoCategory.DEVICE);
-        sql.append("  AND PAOClass").eq_k(PaoClass.GROUP);
-        sql.append("  AND PAOName").eq(bin);
+        sql.append("  JOIN YukonPaobject lmGroup ON lmGroup.PAObjectId = hdconf.AddressingGroupId");
+        sql.append("WHERE lmGroup.Category").eq_k(PaoCategory.DEVICE);
+        sql.append("  AND lmGroup.PAOClass").eq_k(PaoClass.GROUP);
+        sql.append("  AND lmGroup.PAOName").eq(bin);
         return sql;
     }
 

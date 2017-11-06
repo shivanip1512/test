@@ -40,10 +40,8 @@ public class LoadProgramsProvider extends BinningDeviceGroupProviderBase<String>
         sql.append("SELECT DISTINCT inv.DeviceId");
         sql.append("FROM InventoryBase inv JOIN LMHardwareBase lmbase ON inv.InventoryId = lmbase.InventoryId");
         sql.append("  JOIN LMHardwareConfiguration hdconf ON lmbase.InventoryId = hdconf.InventoryId");
-        sql.append("  JOIN ApplianceBase appbase ON hdconf.ApplianceId = appbase.ApplianceId");
-        sql.append("  JOIN LMHardwareConfiguration lmhc ON lmbase.InventoryId = lmhc.InventoryId");
-        sql.append("  JOIN LMProgramDirectGroup LMPDG ON LMPDG.LMGroupDeviceId= lmhc.AddressingGroupId");
-        sql.append("  JOIN YukonPaobject ypo ON ypo.PAObjectId = LMPDG.DeviceId");
+        sql.append("  JOIN LMProgramDirectGroup lmpdg ON lmpdg.LMGroupDeviceId= hdconf.AddressingGroupId");
+        sql.append("  JOIN YukonPaobject ypo ON ypo.PAObjectId = lmpdg.DeviceId");
         sql.append("WHERE Category").eq_k(PaoCategory.LOADMANAGEMENT);
         sql.append("  AND PAOClass").eq_k(PaoClass.LOADMANAGEMENT);
         sql.append("  AND PAOName").eq(bin);
