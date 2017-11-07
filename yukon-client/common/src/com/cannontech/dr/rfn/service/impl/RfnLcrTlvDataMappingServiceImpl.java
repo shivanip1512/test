@@ -267,13 +267,8 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             address.setGeo(ByteUtil.getInteger(data.get(FieldType.GEO_ADDRESS).get(0)));
         }
 
-        Integer sub = -1;
         if (CollectionUtils.isNotEmpty(data.get(FieldType.SUBSTATION_ADDRESS))) {
-            sub = ByteUtil.getInteger(data.get(FieldType.SUBSTATION_ADDRESS).get(0));
-        }
-
-        if (address.getSubstation() == 0) {
-            address.setSubstation(sub);
+            address.setSubstation(ByteUtil.getInteger(data.get(FieldType.SUBSTATION_ADDRESS).get(0)));
         }
 
         if (CollectionUtils.isNotEmpty(data.get(FieldType.FEEDER_ADDRESS))) {
