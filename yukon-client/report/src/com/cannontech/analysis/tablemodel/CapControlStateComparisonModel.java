@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.Lists;
@@ -22,7 +21,7 @@ import com.google.common.collect.Lists;
 public class CapControlStateComparisonModel extends BareReportModelBase<CapControlStateComparisonModel.ModelRow> implements CapControlFilterable  {
 
     private List<ModelRow> data = new ArrayList<ModelRow>();
-    private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    private JdbcOperations jdbcOps;
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
@@ -33,7 +32,8 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     private final static List<PaoType> paoTypes = Lists.newArrayList(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
                                             PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.CBC_LOGICAL);
     
-    public CapControlStateComparisonModel() {
+    public CapControlStateComparisonModel(JdbcOperations jdbcOps) {
+        this.jdbcOps = jdbcOps;
     }
     
     static public class ModelRow {

@@ -17,7 +17,7 @@ public class CapControlStateComparisonModelTest {
     @Test
     public void test_buildSQLStatement() throws Exception {
         
-        CapControlStateComparisonModel model = new CapControlStateComparisonModel();
+        CapControlStateComparisonModel model = new CapControlStateComparisonModel(null);
        
         SqlStatementBuilder builder;
         
@@ -39,7 +39,7 @@ public class CapControlStateComparisonModelTest {
     }
 
     String getSqlForFilter(int start, BiConsumer<CapControlStateComparisonModel, Set<Integer>> filter) {
-        CapControlStateComparisonModel model = new CapControlStateComparisonModel();
+        CapControlStateComparisonModel model = new CapControlStateComparisonModel(null);
         
         filter.accept(model, getThree(start));
 

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 
 public class CapControlStateComparisonReport extends SimpleYukonReportBase {
     
@@ -25,10 +24,6 @@ public class CapControlStateComparisonReport extends SimpleYukonReportBase {
         super(bareModel);
     }
     
-    public CapControlStateComparisonReport() {
-        this(new CapControlStateComparisonModel());
-    }
-
     @Override
     protected List<ColumnLayoutData> getBodyColumns() {
         return Arrays.asList(bodyColumns);

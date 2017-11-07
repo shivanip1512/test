@@ -2,11 +2,14 @@ package com.cannontech.analysis.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.jdbc.core.JdbcOperations;
+
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.report.CapControlStateComparisonReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CapControlStateComparisonModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.database.JdbcTemplateHelper;
 
 public class CapControlStateComparisonController extends CapControlReportControllerBase {
 
@@ -23,7 +26,8 @@ public class CapControlStateComparisonController extends CapControlReportControl
     
     public CapControlStateComparisonController() {
         super();
-        model = new CapControlStateComparisonModel();
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        model = new CapControlStateComparisonModel(jdbcOps);
         report = new CapControlStateComparisonReport(model);
     }
 
