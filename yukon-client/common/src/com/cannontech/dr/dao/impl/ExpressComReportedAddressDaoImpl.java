@@ -104,17 +104,15 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
     
     @Override
     @Transactional
-    public boolean save(ExpressComReportedAddress address) {
+    public boolean save(ExpressComReportedAddress address, ExpressComReportedAddress currentaddress) {
         try {
-            ExpressComReportedAddress current = getCurrentAddress(address.getDeviceId());
-            
-            if (!address.isEquivalent(current)) {
+            if (!address.isEquivalent(currentaddress)) {
                 insertAddress(address);
                 return true;
             } else {
                 return false;
             }
-            
+
         } catch (NotFoundException e) {
             insertAddress(address);
             return true;

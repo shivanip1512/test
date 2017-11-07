@@ -252,7 +252,9 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
 
     @Override
     public void storeAddressingData(JmsTemplate jmsTemplate, ListMultimap<FieldType, byte[]> data, RfnDevice device) {
-        ExpressComReportedAddress address = new ExpressComReportedAddress();
+
+        ExpressComReportedAddress currentAddress = expressComReportedAddressDao.getCurrentAddress(device.getPaoIdentifier().getPaoId());
+        ExpressComReportedAddress address = currentAddress.clone();
         address.setDeviceId(device.getPaoIdentifier().getPaoId());
 
         address.setTimestamp(new Instant(ByteUtil.getLong(data.get(FieldType.UTC).get(0)) * 1000));
@@ -269,7 +271,10 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         if (CollectionUtils.isNotEmpty(data.get(FieldType.SUBSTATION_ADDRESS))) {
             sub = ByteUtil.getInteger(data.get(FieldType.SUBSTATION_ADDRESS).get(0));
         }
-        address.setSubstation(sub);
+
+        if (address.getSubstation() == 0) {
+            address.setSubstation(sub);
+        }
 
         if (CollectionUtils.isNotEmpty(data.get(FieldType.FEEDER_ADDRESS))) {
             address.setFeeder(ByteUtil.getInteger(data.get(FieldType.FEEDER_ADDRESS).get(0)));
@@ -304,7 +309,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         address.setRelays(new HashSet<ExpressComReportedAddressRelay>(relays.values()));
 
         log.debug(String.format("Received LM Address for %s - ", address, device.getName()));
-        expressComReportedAddressDao.save(address);
+        expressComReportedAddressDao.save(address, currentAddress);
 
         jmsTemplate.convertAndSend("yukon.notif.obj.dr.rfn.LmAddressNotification", address);
 

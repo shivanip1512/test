@@ -2,6 +2,7 @@
 package com.cannontech.dr.rfn.tlv;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Holds Type ID information
@@ -44,6 +45,7 @@ public enum FieldType {
     }
 
     private static final ImmutableMap<Integer, FieldType> fieldTypes;
+    private final static ImmutableSet<FieldType> addressingFieldTypes;
 
     static {
         final ImmutableMap.Builder<Integer, FieldType> builder = ImmutableMap.builder();
@@ -51,6 +53,8 @@ public enum FieldType {
             builder.put(fieldType.type, fieldType);
         }
         fieldTypes = builder.build();
+        addressingFieldTypes = ImmutableSet.of(SPID, GEO_ADDRESS, FEEDER_ADDRESS, ZIP_ADDRESS, UDA_ADDRESS,
+            REQUIRED_ADDRESS, SUBSTATION_ADDRESS, RELAY_N_PROGRAM_ADDRESS, RELAY_N_SPLINTER_ADDRESS);
     }
 
     public static boolean isFieldTypeSupported(Integer type) {
@@ -59,6 +63,10 @@ public enum FieldType {
 
     public static FieldType getFieldType(Integer type) {
         return fieldTypes.get(type);
+    }
+
+    public static ImmutableSet<FieldType> getAddressingFieldTypes() {
+        return addressingFieldTypes;
     }
 
 }

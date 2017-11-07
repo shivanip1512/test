@@ -296,8 +296,10 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         address.setRelays(relays);
         
         log.debug(String.format("Received LM Address for %s - ", address, device.getName()));
-        expressComReportedAddressDao.save(address);
-        
+
+        ExpressComReportedAddress currentAddress = expressComReportedAddressDao.getCurrentAddress(address.getDeviceId());
+        expressComReportedAddressDao.save(address, currentAddress);
+
         jmsTemplate.convertAndSend("yukon.notif.obj.dr.rfn.LmAddressNotification", address);
     }
     

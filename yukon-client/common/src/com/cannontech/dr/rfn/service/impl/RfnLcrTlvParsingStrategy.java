@@ -3,10 +3,13 @@ package com.cannontech.dr.rfn.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,9 +76,13 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
                 log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
             }
 
-            // Handle addressing data
-            // In expresscom message, assume that spid should always present (will change after clarification on addressing)
-            if (decodedPayload.containsKey(FieldType.SPID)) {
+            // In LCR 6700, received addressing fields in data packet only if there is change in field value. 
+            // if any addressing field present in data packet then process it otherwise not
+            Set<FieldType> commonAddressingFields = decodedPayload.keySet().stream()
+                                                                           .filter(FieldType.getAddressingFieldTypes()::contains)
+                                                                           .collect(Collectors.toSet());
+
+            if (CollectionUtils.isNotEmpty(commonAddressingFields)) {
                 rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
             }
         }

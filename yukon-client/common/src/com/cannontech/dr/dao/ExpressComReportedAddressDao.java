@@ -15,7 +15,7 @@ public interface ExpressComReportedAddressDao {
      * @return Returns true if the {@link ExpressComReportedAddress} was saved meaning the address was
      *  different than the current address.
      */
-    public boolean save(ExpressComReportedAddress address);
+    public boolean save(ExpressComReportedAddress address, ExpressComReportedAddress currentaddress);
     
     /**
      * Retreives current address for device.

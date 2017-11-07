@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class ExpressComReportedAddress extends LmReportedAddress implements Serializable {
+public class ExpressComReportedAddress extends LmReportedAddress implements Serializable, Cloneable {
 
     private int spid;
     private int geo;
@@ -214,5 +214,30 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
         
         return true;
     }
-    
+
+    @Override
+    public ExpressComReportedAddress clone() {
+        ExpressComReportedAddress newAddress = new ExpressComReportedAddress();
+
+        newAddress.deviceId = deviceId;
+        newAddress.spid = spid;
+        newAddress.geo = geo;
+        newAddress.substation = substation;
+        newAddress.feeder = feeder;
+        newAddress.zip = zip;
+        newAddress.uda = uda;
+        newAddress.required = required;
+        newAddress.timestamp = timestamp;
+
+        for (ExpressComReportedAddressRelay addressRelay : relays) {
+            ExpressComReportedAddressRelay newAddressRelay = new ExpressComReportedAddressRelay();
+            newAddressRelay.setProgram(addressRelay.getProgram());
+            newAddressRelay.setRelayNumber(addressRelay.getRelayNumber());
+            newAddressRelay.setSplinter(addressRelay.getSplinter());
+            newAddress.setRelays(relays);
+        }
+
+        return newAddress;
+    }
+
 }
