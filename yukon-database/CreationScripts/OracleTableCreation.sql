@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/7/2017 6:06:42 AM                         */
+/* Created on:     11/7/2017 10:56:21 AM                        */
 /*==============================================================*/
 
 
@@ -6933,7 +6933,7 @@ create table MaintenanceTask  (
    constraint PK_MaintenanceTask primary key (TaskId)
 );
 
-INSERT INTO MaintenaceTask VALUES (1,'POINT_DATA_PRUNING', 1);
+INSERT INTO MaintenanceTask VALUES (1,'POINT_DATA_PRUNING', 1);
 
 /*==============================================================*/
 /* Table: MaintenanceTaskSettings                               */

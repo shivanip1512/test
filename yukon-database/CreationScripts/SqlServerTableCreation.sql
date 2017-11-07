@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/7/2017 6:07:35 AM                         */
+/* Created on:     11/7/2017 10:55:35 AM                        */
 /*==============================================================*/
 
 
@@ -6155,6 +6155,7 @@ create table JOB (
 go
 
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
+
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-3, 'spSmartIndexMaintanenceJobDefinition', 'N', -3);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N', -1);
@@ -7341,7 +7342,7 @@ create table MaintenanceTask (
 )
 go
 
-INSERT INTO MaintenaceTask VALUES (1,'POINT_DATA_PRUNING', 1);
+INSERT INTO MaintenanceTask VALUES (1,'POINT_DATA_PRUNING', 1);
 
 /*==============================================================*/
 /* Table: MaintenanceTaskSettings                               */
