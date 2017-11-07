@@ -283,6 +283,32 @@ INSERT INTO PointUnit
                    AND POINTOFFSET = 1);
 /* End YUK-17002 */
 
+/* Start YUK-17348 */
+CREATE TABLE MaintenaceTask  (
+   TaskId               NUMBER(10)                      NOT NULL,
+   TaskName             VARCHAR2(50)                    NOT NULL,
+   Status               CHAR(1)                         NOT NULL,
+   CONSTRAINT PK_MaintenaceTask PRIMARY KEY (TaskId)
+);
+
+INSERT INTO MaintenaceTask VALUES (1,'POINT_DATA_PRUNING', 1);
+
+CREATE TABLE MaintenanceTaskSettings  (
+   TaskPropertyId       NUMBER(10)                      NOT NULL,
+   TaskId               NUMBER(10)                      NOT NULL,
+   Attribute            VARCHAR2(50)                    NOT NULL,
+   Value                VARCHAR2(50)                    NOT NULL,
+   CONSTRAINT PK_MaintenanceTaskSettings PRIMARY KEY (TaskPropertyId)
+);
+
+INSERT INTO MaintenanceTaskSettings VALUES (1,1, 'NO_OF_MONTHS', 24);
+
+ALTER TABLE MaintenanceTaskSettings
+   ADD CONSTRAINT FK_MTaskSettings_MTask FOREIGN KEY (TaskId)
+      REFERENCES MaintenaceTask (TaskId)
+      ON DELETE CASCADE;
+/* End YUK-17348 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

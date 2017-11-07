@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/30/2017 11:56:45 PM                       */
+/* Created on:     11/7/2017 1:10:24 AM                         */
 /*==============================================================*/
 
 
@@ -6924,6 +6924,31 @@ create unique index INDEX_1 on MSPVendor (
 );
 
 /*==============================================================*/
+/* Table: MaintenaceTask                                        */
+/*==============================================================*/
+create table MaintenaceTask  (
+   TaskId               NUMBER(10)                      not null,
+   TaskName             VARCHAR2(50)                    not null,
+   Status               CHAR(1)                         not null,
+   constraint PK_MaintenaceTask primary key (TaskId)
+);
+
+INSERT INTO MaintenaceTask VALUES (1,'POINT_DATA_PRUNING', 1);
+
+/*==============================================================*/
+/* Table: MaintenanceTaskSettings                               */
+/*==============================================================*/
+create table MaintenanceTaskSettings  (
+   TaskPropertyId       NUMBER(10)                      not null,
+   TaskId               NUMBER(10)                      not null,
+   Attribute            VARCHAR2(50)                    not null,
+   Value                VARCHAR2(50)                    not null,
+   constraint PK_MaintenanceTaskSettings primary key (TaskPropertyId)
+);
+
+INSERT INTO MaintenanceTaskSettings VALUES (1,1, 'NO_OF_MONTHS', 24);
+
+/*==============================================================*/
 /* Table: MeterHardwareBase                                     */
 /*==============================================================*/
 create table MeterHardwareBase  (
@@ -12831,6 +12856,11 @@ alter table MCTConfigMapping
 alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID);
+
+alter table MaintenanceTaskSettings
+   add constraint FK_MTaskSettings_MTask foreign key (TaskId)
+      references MaintenaceTask (TaskId)
+      on delete cascade;
 
 alter table MeterHardwareBase
    add constraint FK_METERHARD_INVENBSE foreign key (InventoryID)

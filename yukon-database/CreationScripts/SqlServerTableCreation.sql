@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/30/2017 11:49:28 PM                       */
+/* Created on:     11/7/2017 1:11:26 AM                         */
 /*==============================================================*/
 
 
@@ -7331,6 +7331,33 @@ AppName ASC
 go
 
 /*==============================================================*/
+/* Table: MaintenaceTask                                        */
+/*==============================================================*/
+create table MaintenaceTask (
+   TaskId               numeric(10)          not null,
+   TaskName             varchar(50)          not null,
+   Status               char(1)              not null,
+   constraint PK_MaintenaceTask primary key (TaskId)
+)
+go
+
+INSERT INTO MaintenaceTask VALUES (1,'POINT_DATA_PRUNING', 1);
+
+/*==============================================================*/
+/* Table: MaintenanceTaskSettings                               */
+/*==============================================================*/
+create table MaintenanceTaskSettings (
+   TaskPropertyId       numeric(10)          not null,
+   TaskId               numeric(10)          not null,
+   Attribute            varchar(50)          not null,
+   Value                varchar(50)          not null,
+   constraint PK_MaintenanceTaskSettings primary key (TaskPropertyId)
+)
+go
+
+INSERT INTO MaintenanceTaskSettings VALUES (1,1, 'NO_OF_MONTHS', 24);
+
+/*==============================================================*/
 /* Table: MeterHardwareBase                                     */
 /*==============================================================*/
 create table MeterHardwareBase (
@@ -13925,6 +13952,12 @@ go
 alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID)
+go
+
+alter table MaintenanceTaskSettings
+   add constraint FK_MTaskSettings_MTask foreign key (TaskId)
+      references MaintenaceTask (TaskId)
+         on delete cascade
 go
 
 alter table MeterHardwareBase
