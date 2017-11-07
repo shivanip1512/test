@@ -16,14 +16,16 @@ yukon.da.cbc = (function () {
      * Filled out in yukon.da.cbc.init().
      * Array of strings of paoTypes that represent 2 way cbcs
      */
-    var twoWayTypes = [];
+    var twoWayTypes = [],
+        logicalTypes = [];
 
     var updatePaoTypeFields = function () {
-        var paoType = $('#pao-type').val();
-        var isTwoWay = twoWayTypes.indexOf(paoType) !== -1;
+        var paoType = $('#pao-type').val(),
+            isTwoWay = twoWayTypes.indexOf(paoType) !== -1,
+            isLogical = logicalTypes.indexOf(paoType) !== -1;
 
         $('.js-two-way').toggleClass('dn', !isTwoWay);
-        $('.js-one-way').toggleClass('dn', isTwoWay);
+        $('.js-one-way').toggleClass('dn', isTwoWay || isLogical);
         
         updateCommPortFields();
     };
@@ -47,6 +49,7 @@ yukon.da.cbc = (function () {
         init: function () {
 
             twoWayTypes = yukon.fromJson('#two-way-types');
+            logicalTypes = yukon.fromJson('#logical-types');
             tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
 
             $(document).on('yukon:da:cbc:delete', function () {

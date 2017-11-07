@@ -75,7 +75,7 @@
                                 size="25" />
                         </tags:nameValue2>
                         <c:set var="twoWayClass" value="${cbc.twoWay? '' : 'dn'} js-two-way"/>
-                        <c:set var="oneWayClass" value="${cbc.twoWay? 'dn' : ''} js-one-way"/>
+                        <c:set var="oneWayClass" value="${cbc.paoType.isLogicalCBC() || cbc.twoWay ? 'dn' : ''} js-one-way"/>
                         <tags:nameValue2 nameKey=".masterAddr" rowClass="${twoWayClass}">
                             <tags:input path="deviceAddress.masterAddress" />
                         </tags:nameValue2>
@@ -321,6 +321,7 @@
     </form:form>
 
     <cti:toJson id="two-way-types" object="${twoWayTypes}"/>
+    <cti:toJson id="logical-types" object="${logicalTypes}"/>
     <cti:toJson id="tcp-comm-ports" object="${tcpCommPorts}"/>
     <cti:includeScript link="/resources/js/pages/yukon.da.cbc.js" />
 </cti:standardPage>

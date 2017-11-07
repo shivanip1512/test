@@ -44,10 +44,16 @@ public class CapControlCBC implements YukonPao {
     private static final Set<PaoType> twoWayTypes = ImmutableSet.of(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
         PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP);
     
+    private static final Set<PaoType> logicalTypes = ImmutableSet.of(PaoType.CBC_LOGICAL);
+    
     private static final Set<PaoType> heartBeatTypes = ImmutableSet.of(PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.CBC_LOGICAL);
 
     public static final Set<PaoType> getTwoWayTypes() {
         return twoWayTypes;
+    }
+    
+    public static final Set<PaoType> getLogicalTypes() {
+        return logicalTypes;
     }
 
     public Integer getId() {
