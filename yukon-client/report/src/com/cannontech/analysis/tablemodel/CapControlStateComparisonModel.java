@@ -109,7 +109,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
             sql.append("yp.paoName cbcName, s.text capBankStatus, elf.capbankstateinfo capBankState, s1.text cbcStatus,  ");
             sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
-            sql.append("from  (select * from yukonpaobject where type").in(paoTypes).append(") yp ");
+            sql.append("from (select * from yukonpaobject where type").in_k(paoTypes).append(") yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
             sql.append("join POINT p on p.PAObjectID = cb.deviceid and p.POINTOFFSET = 1 and p.POINTTYPE").eq_k(PointType.Status);
             sql.append("left join (select pointid, capbankstateinfo from CCEventLog el, ");
@@ -125,7 +125,9 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append("left outer join (select * from yukonpaobject where type").eq_k(CapControlType.SUBSTATION).append(") yp4 on yp4.paobjectid = ss.substationid "); 
             sql.append("join dynamiccccapbank dcb on dcb.capbankid = cb.deviceid ");
             sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
+            
             sql.append("left outer join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate ");
+            
             sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
             sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
             sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type").eq_k(CapControlType.AREA).append(") ca on ca.paobjectid = saa.areaid ");
@@ -133,7 +135,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
             sql.append("yp.paoName cbcName, s.text capBankStatus, elf.capbankstateinfo capBankState, s1.text cbcStatus, ");
             sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
-            sql.append("from (select * from yukonpaobject where type").in(paoTypes).append(") yp ");
+            sql.append("from (select * from yukonpaobject where type").in_k(paoTypes).append(") yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
             sql.append("join POINT p on p.PAObjectID = cb.deviceid and p.POINTOFFSET = 1 and p.POINTTYPE").eq_k(PointType.Status);
             sql.append("left join (select pointid, capbankstateinfo from CCEventLog el, ");
@@ -149,7 +151,9 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append("left outer join (select * from yukonpaobject where type").eq_k(CapControlType.SUBSTATION).append(") yp4 on yp4.paobjectid = ss.substationid "); 
             sql.append("join dynamiccccapbank dcb on dcb.capbankid = cb.deviceid ");
             sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
+            
             sql.append("join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate and s1.rawstate != s.rawstate ");
+            
             sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
             sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
             sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type").eq_k(CapControlType.AREA).append(") ca on ca.paobjectid = saa.areaid ");
