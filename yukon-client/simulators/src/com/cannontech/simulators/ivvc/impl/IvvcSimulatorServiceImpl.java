@@ -216,7 +216,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         for (Area area : simulatedAreas) {
             List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
             subBusesByArea.parallelStream().forEach(subBus -> {
-                final boolean backfedBus = subBus.getCcName().startsWith("Backfed");
+                final boolean backfedBus = subBus.getCcName().startsWith("Backfed"); //If the bus of a Sim Area starts with the word Backfed, the bus will be a backfed bus with power coming from a "solar" source.
                 Integer bankSize = subBusKVar.get(subBus.getCcId());
                 if (bankSize == null) {
                     bankSize = capControlCache.getCapBanksBySubBus(subBus.getCcId()).stream().mapToInt(
@@ -650,7 +650,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     
     private double SolarVoltageShift(double voltage, double currentSubBusRawKw, double distance, int maxKw) {
         if (distance > 23000) {
-            return voltage - currentSubBusRawKw*2/maxKw*(SOLAR_LOCATION-Math.abs(SOLAR_LOCATION-distance))/SOLAR_LOCATION;
+            return voltage + currentSubBusRawKw*2/maxKw*(END_OF_LINE-Math.abs(distance-SOLAR_LOCATION))/END_OF_LINE;
         }
         return voltage;
     }
