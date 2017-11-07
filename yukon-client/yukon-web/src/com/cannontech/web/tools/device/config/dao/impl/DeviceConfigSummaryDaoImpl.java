@@ -28,16 +28,13 @@ import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
-import com.cannontech.web.tools.device.config.model.DeviceConfigActionHistory;
 import com.cannontech.web.tools.device.config.model.DeviceConfigActionHistoryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
@@ -49,7 +46,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private IDatabaseCache dbCache;
 
     
     private final class DetailRowMapper implements YukonRowMapper<DeviceConfigSummaryDetail> { 
@@ -382,7 +378,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     }
    
     @Override
-    public DeviceConfigActionHistory getDeviceConfigActionHistory(int deviceId) {
+    public List<DeviceConfigActionHistoryDetail> getDeviceConfigActionHistory(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT");
         sql.append("CommandRequestExecType as ExecType,");
@@ -402,11 +398,8 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("OR");
         sql.append("request.DeviceId").eq(deviceId);
         sql.append(")");
-        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(deviceId);
-        DeviceConfigActionHistory history = new DeviceConfigActionHistory();
-        history.setDevice(new DisplayableDevice(pao.getPaoIdentifier(), pao.getPaoName()));
-        history.getDetails().addAll(jdbcTemplate.query(sql, new HistoryRowMapper()));
-        return history;
+        sql.append("ORDER BY cre.StartTime DESC");
+        return jdbcTemplate.query(sql, new HistoryRowMapper());
     }
     
     private List<PaoType> getSupportedPaoTypes() {
