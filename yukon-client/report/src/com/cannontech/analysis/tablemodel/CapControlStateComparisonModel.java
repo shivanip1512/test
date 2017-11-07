@@ -159,41 +159,26 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type").eq_k(CapControlType.AREA).append(") ca on ca.paobjectid = saa.areaid ");
         }
         
-        String result = null;
+        SqlStatementBuilder result = null;
         
         if(capBankIds != null && !capBankIds.isEmpty()) {
-            result = "yp1.paobjectid in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(capBankIds);
-            result += wheres;
-            result += " ) ";
+            result = new SqlStatementBuilder("yp1.paobjectid").in(capBankIds);
         }
         if(feederIds != null && !feederIds.isEmpty()) {
-            result = "yp2.paobjectid in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
-            result += wheres;
-            result += " ) ";
+            result = new SqlStatementBuilder("yp2.paobjectid").in(feederIds);
         }
         if(subbusIds != null && !subbusIds.isEmpty()) {
-            result = "yp3.paobjectid in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
-            result += wheres;
-            result += " ) ";
+            result = new SqlStatementBuilder("yp3.paobjectid").in(subbusIds);
         }
         if(substationIds != null && !substationIds.isEmpty()) {
-            result = "yp4.paobjectid in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
-            result += wheres;
-            result += " ) ";
+            result = new SqlStatementBuilder("yp4.paobjectid").in(substationIds);
         }
         if(areaIds != null && !areaIds.isEmpty()) {
-            result = "ca.paobjectid in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
-            result += wheres;
-            result += " ) ";
+            result = new SqlStatementBuilder("ca.paobjectid").in(areaIds);
         }
         
         if (result != null) {
-            sql.append(" where ");
+            sql.append("where");
             sql.append(result);
         }
         return sql;
