@@ -216,6 +216,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         for (Area area : simulatedAreas) {
             List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
             subBusesByArea.parallelStream().forEach(subBus -> {
+                
                 final boolean backfedBus = subBus.getCcName().startsWith("Backfed"); //If the bus of a Sim Area starts with the word Backfed, the bus will be a backfed bus with power coming from a "solar" source.
                 Integer bankSize = subBusKVar.get(subBus.getCcId());
                 if (bankSize == null) {
@@ -375,7 +376,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                     
                                     double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, zone.getGraphStartPosition() * 1000, MAX_KW);
                                     if (backfedBus) {
-                                        voltage = this.SolarVoltageShift(voltage, currentSubBusBaseKw, zone.getGraphStartPosition() * 1000, MAX_KW);
+                                        voltage = this.solarVoltageBump(voltage, currentSubBusBaseKw, zone.getGraphStartPosition() * 1000, MAX_KW);
                                     }
                                     for (Entry<Integer, Phase> points : pointsForRegulatorAndPhase.entrySet()) {
                                         phaseToRegulator.put(points.getValue(), regulatorId); // We assign this regulator to phases based on the zone point assignment
@@ -421,9 +422,11 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                         for (Entry<Integer, Phase> points : pointsForBankAndPhase.entrySet()) {
                             double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
                             voltage = shiftVoltageForPhase(voltage, points.getValue(), (capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000));
+                            
                             if (backfedBus) {
-                                voltage = this.SolarVoltageShift(voltage, currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
+                                voltage = this.solarVoltageBump(voltage, currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
                             }
+                            
                             // Check if the bank itself is closed
                             LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
                             if(capBankState != null && isCapBankInOneOfCloseStates(capBankState.getStateRawState())) {
@@ -648,7 +651,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         return 120-currentSubBusRawKw/maxKw*6*distance/END_OF_LINE;
     }
     
-    private double SolarVoltageShift(double voltage, double currentSubBusRawKw, double distance, int maxKw) {
+    private double solarVoltageBump(double voltage, double currentSubBusRawKw, double distance, int maxKw) {
         if (distance > 23000) {
             return voltage + currentSubBusRawKw*2/maxKw*(END_OF_LINE-Math.abs(distance-SOLAR_LOCATION))/END_OF_LINE;
         }
