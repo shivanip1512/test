@@ -3,26 +3,21 @@ package com.cannontech.web.deviceConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
@@ -38,8 +33,6 @@ public class DeviceConfigurationSummaryController {
     
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper; 
-    @Autowired private ServerDatabaseCache dbcache;
     @Autowired private DeviceConfigSummaryDao deviceConfigSummaryDao;
 
     @RequestMapping("view")
@@ -70,9 +63,13 @@ public class DeviceConfigurationSummaryController {
         model.addAttribute("statusOptions", LastActionStatus.values());
         model.addAttribute("syncOptions", InSync.values());
         model.addAttribute("deviceSubGroups", deviceSubGroups);
-       // mockupData(model);
         getData(model, filter);
         return "summary.jsp";
+    }
+    
+    @RequestMapping("{id}/viewHistory")
+    public String viewHistory(ModelMap model, @PathVariable int id) {
+        return "history.jsp";
     }
     
     private void getData(ModelMap model, DeviceConfigSummaryFilter filter) {
@@ -83,27 +80,6 @@ public class DeviceConfigurationSummaryController {
        // List<SimpleDevice> devices = results.getResultList().stream().map(d -> new SimpleDevice(d.getDevice())).collect(Collectors.toList());
         
         model.addAttribute("results",  results.getResultList());
-    }
-
-    private void mockupData(ModelMap model) {
-        List<DeviceConfigSummaryDetail> results = new ArrayList<>();
-        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
-        LightDeviceConfiguration testConfig = configurations.get(0);
-        DeviceGroup group = deviceGroupService.resolveGroupName("/System/Device Configs/" + testConfig.getName());
-        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        collection.getDeviceList().forEach(device -> {
-            DeviceConfigSummaryDetail detail = new DeviceConfigSummaryDetail();
-            detail.setDeviceConfig(testConfig);
-            LiteYukonPAObject liteYukonPao = dbcache.getAllPaosMap().get(device.getDeviceId());
-            detail.setDevice(new DisplayableDevice(device.getPaoIdentifier(), liteYukonPao.getPaoName()));
-            detail.setAction(LastAction.VERIFY);
-            detail.setActionEnd(new Instant());
-            detail.setActionStart(new Instant());
-            detail.setInSync(InSync.IN_SYNC);
-            detail.setStatus(LastActionStatus.FAILURE);
-            results.add(detail);
-        });
-        model.addAttribute("results", results);
     }
     
 }

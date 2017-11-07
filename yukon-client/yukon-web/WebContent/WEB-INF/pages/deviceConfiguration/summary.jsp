@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 
 <cti:standardPage module="tools" page="configs.summary">
 
@@ -84,7 +85,7 @@
     <span class="fwn"><i:inline key=".filteredResults"/></span>
     <span class="badge">${results.size()}</span>&nbsp;<i:inline key=".devices"/>
 
-    <table class="compact-results-table row-highlighting">
+    <table class="compact-results-table row-highlighting has-actions">
         <thead>
             <tr>
                 <th><i:inline key=".deviceName"/></th>
@@ -95,11 +96,13 @@
                 <th><i:inline key=".inSync"/></th>
                 <th><i:inline key=".lastActionStart"/></th>
                 <th><i:inline key=".lastActionEnd"/></th>
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
             <c:forEach var="detail" items="${results}">
+                <c:set var="deviceId" value="${detail.device.paoIdentifier.paoId}"/>
                 <tr>
                     <td><cti:paoDetailUrl yukonPao="${detail.device.paoIdentifier}" newTab="true">${detail.device.name}</cti:paoDetailUrl></td>
                     <td>${detail.device.paoIdentifier.paoType.paoTypeName}</td>
@@ -115,6 +118,16 @@
                     <td><i:inline key=".syncType.${detail.inSync}"/></td>
                     <td><cti:formatDate type="BOTH" value="${detail.actionStart}"/></td>
                     <td><cti:formatDate type="BOTH" value="${detail.actionEnd}"/></td>
+                    <td>
+                        <cm:dropdown icon="icon-cog">
+                            <div class="dn js-view-history-${deviceId}" data-dialog data-title="<cti:msg2 key=".viewHistory"/>" 
+                            data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
+                            <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}"/>
+                            <cm:dropdownOption key=".send" />
+                            <cm:dropdownOption key=".read" />
+                            <cm:dropdownOption key=".verify" />
+                        </cm:dropdown>
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
