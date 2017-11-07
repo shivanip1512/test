@@ -698,6 +698,12 @@
     <entry key="yukon.web.modules.tools.configs.summary.devices">Devices</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory">View History</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.viewHistory.action">Action</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.viewHistory.actionStatus">Action Status</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.viewHistory.start">Start</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.viewHistory.end">End</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.viewHistory.none">No history found.</entry>
+       
     <entry key="yukon.web.modules.tools.configs.summary.read">Read</entry>
     <entry key="yukon.web.modules.tools.configs.summary.send">Send</entry>
     <entry key="yukon.web.modules.tools.configs.summary.verify">Verify</entry>

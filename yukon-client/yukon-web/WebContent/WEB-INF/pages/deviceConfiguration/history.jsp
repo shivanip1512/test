@@ -9,28 +9,20 @@
             <table class="compact-results-table">
                 <thead>
                     <tr>
-                        <th><i:inline
-                                key="yukon.web.modules.tools.configs.summary.viewHistory.action" /></th>
-                        <th><i:inline
-                                key="yukon.web.modules.tools.configs.summary.viewHistory.actionStatus" /></th>
-                        <th><i:inline
-                                key="yukon.web.modules.tools.configs.summary.viewHistory.start" /></th>
-                        <th><i:inline
-                                key="yukon.web.modules.tools.configs.summary.viewHistory.end" /></th>
+                        <th><i:inline key="yukon.web.modules.tools.configs.summary.viewHistory.action" /></th>
+                        <th><i:inline key="yukon.web.modules.tools.configs.summary.viewHistory.actionStatus" /></th>
+                        <th><i:inline key="yukon.web.modules.tools.configs.summary.viewHistory.start" /></th>
+                        <th><i:inline key="yukon.web.modules.tools.configs.summary.viewHistory.end" /></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
                     <c:forEach var="detail" items="${details}">
                         <tr>
-                            <td><i:inline
-                                    key="yukon.web.modules.tools.configs.summary.actionType.${detail.action}" /></td>
-                            <td><i:inline
-                                    key="yukon.web.modules.tools.configs.summary.statusType.${detail.status}" /></td>
-                            <td><cti:formatDate type="BOTH"
-                                    value="${detail.actionStart}" /></td>
-                            <td><cti:formatDate type="BOTH"
-                                    value="${detail.actionEnd}" /></td>
+                            <td><i:inline key="yukon.web.modules.tools.configs.summary.actionType.${detail.action}" /></td>
+                            <td><i:inline key="yukon.web.modules.tools.configs.summary.statusType.${detail.status}" /></td>
+                            <td><cti:formatDate type="BOTH" value="${detail.actionStart}" /></td>
+                            <td><cti:formatDate type="BOTH" value="${detail.actionEnd}" /></td>
                         </tr>
                     </c:forEach>
                 </tbody>
