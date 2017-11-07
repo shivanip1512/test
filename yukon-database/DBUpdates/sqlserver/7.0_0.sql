@@ -289,15 +289,15 @@ INSERT INTO PointUnit
 /* End YUK-17002 */
 
 /* Start YUK-17348 */
-CREATE TABLE MaintenaceTask (
+CREATE TABLE MaintenanceTask (
    TaskId               numeric(10)          NOT NULL,
    TaskName             varchar(50)          NOT NULL,
    Status               char(1)              NOT NULL,
-   CONSTRAINT PK_MaintenaceTask PRIMARY KEY (TaskId)
+   CONSTRAINT PK_MaintenanceTask PRIMARY KEY (TaskId)
 );
 GO
 
-INSERT INTO MaintenaceTask VALUES (1,'POINT_DATA_PRUNING', 1);
+INSERT INTO MaintenanceTask VALUES (1,'POINT_DATA_PRUNING', 1);
 
 CREATE TABLE MaintenanceTaskSettings (
    TaskPropertyId       NUMERIC(10)          NOT NULL,
@@ -312,7 +312,7 @@ INSERT INTO MaintenanceTaskSettings VALUES (1,1, 'NO_OF_MONTHS', 24);
 
 ALTER TABLE MaintenanceTaskSettings
    ADD CONSTRAINT FK_MTaskSettings_MTask FOREIGN KEY (TaskId)
-      REFERENCES MaintenaceTask (TaskId)
+      REFERENCES MaintenanceTask (TaskId)
          ON DELETE CASCADE;
 GO
 /* End YUK-17348 */

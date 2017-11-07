@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/7/2017 1:11:26 AM                         */
+/* Created on:     11/7/2017 6:07:35 AM                         */
 /*==============================================================*/
 
 
@@ -7331,13 +7331,13 @@ AppName ASC
 go
 
 /*==============================================================*/
-/* Table: MaintenaceTask                                        */
+/* Table: MaintenanceTask                                       */
 /*==============================================================*/
-create table MaintenaceTask (
+create table MaintenanceTask (
    TaskId               numeric(10)          not null,
    TaskName             varchar(50)          not null,
    Status               char(1)              not null,
-   constraint PK_MaintenaceTask primary key (TaskId)
+   constraint PK_MaintenanceTask primary key (TaskId)
 )
 go
 
@@ -13956,7 +13956,7 @@ go
 
 alter table MaintenanceTaskSettings
    add constraint FK_MTaskSettings_MTask foreign key (TaskId)
-      references MaintenaceTask (TaskId)
+      references MaintenanceTask (TaskId)
          on delete cascade
 go
 

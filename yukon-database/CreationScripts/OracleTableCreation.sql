@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/7/2017 1:10:24 AM                         */
+/* Created on:     11/7/2017 6:06:42 AM                         */
 /*==============================================================*/
 
 
@@ -6924,13 +6924,13 @@ create unique index INDEX_1 on MSPVendor (
 );
 
 /*==============================================================*/
-/* Table: MaintenaceTask                                        */
+/* Table: MaintenanceTask                                       */
 /*==============================================================*/
-create table MaintenaceTask  (
+create table MaintenanceTask  (
    TaskId               NUMBER(10)                      not null,
    TaskName             VARCHAR2(50)                    not null,
    Status               CHAR(1)                         not null,
-   constraint PK_MaintenaceTask primary key (TaskId)
+   constraint PK_MaintenanceTask primary key (TaskId)
 );
 
 INSERT INTO MaintenaceTask VALUES (1,'POINT_DATA_PRUNING', 1);
@@ -12859,7 +12859,7 @@ alter table MSPInterface
 
 alter table MaintenanceTaskSettings
    add constraint FK_MTaskSettings_MTask foreign key (TaskId)
-      references MaintenaceTask (TaskId)
+      references MaintenanceTask (TaskId)
       on delete cascade;
 
 alter table MeterHardwareBase
