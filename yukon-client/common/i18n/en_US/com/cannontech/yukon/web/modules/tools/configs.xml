@@ -697,6 +697,13 @@
     <entry key="yukon.web.modules.tools.configs.summary.filteredResults">Filtered Results:</entry>
     <entry key="yukon.web.modules.tools.configs.summary.devices">Devices</entry>
     
+    <entry key="yukon.web.modules.tools.configs.summary.assignConfig">Assign Config</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.sendConfig">Send Config</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.readConfig">Read Config</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.verifyConfig">Verify Config</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.summary.outOfSync">Configuration</entry>
+    
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory">View History</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.action">Action</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.actionStatus">Action Status</entry>

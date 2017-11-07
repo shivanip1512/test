@@ -84,6 +84,34 @@
     
     <span class="fwn"><i:inline key=".filteredResults"/></span>
     <span class="badge">${results.size()}</span>&nbsp;<i:inline key=".devices"/>
+    <span class="js-cog-menu">
+        <cm:dropdown icon="icon-cog">
+            <cti:url var="assignUrl" value="/bulk/config/assignConfig">
+                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                </c:forEach>
+            </cti:url>
+            <cm:dropdownOption key=".assignConfig" href="${assignUrl}" icon="icon-bullet-go-down" newTab="true"/> 
+            <cti:url var="sendUrl" value="/bulk/config/sendConfig">
+                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                </c:forEach>
+            </cti:url>
+            <cm:dropdownOption key=".sendConfig" href="${sendUrl}" icon="icon-ping" newTab="true"/> 
+            <cti:url var="readUrl" value="/bulk/config/readConfig">
+                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                </c:forEach>
+            </cti:url>
+            <cm:dropdownOption key=".readConfig" href="${readUrl}" icon="icon-read" newTab="true"/> 
+            <cti:url var="verifyUrl" value="/bulk/config/verifyConfig">
+                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                </c:forEach>
+            </cti:url>
+            <cm:dropdownOption key=".verify" href="${verifyUrl}" icon="icon-accept" newTab="true"/> 
+        </cm:dropdown>
+    </span>
 
     <table class="compact-results-table row-highlighting has-actions">
         <thead>
@@ -115,17 +143,40 @@
                         <td></td>
                     </c:if>
                     <td><i:inline key=".statusType.${detail.status}"/></td>
-                    <td><i:inline key=".syncType.${detail.inSync}"/></td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${detail.inSync == 'OUT_OF_SYNC'}">
+                                <div class="dn js-outofsync-${deviceId}" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key=".outOfSync"/>" 
+                                data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>"></div>
+                                <a href="javascript:void(0);" data-popup=".js-outofsync-${deviceId}"><i:inline key=".syncType.${detail.inSync}"/></a>
+                            </c:when>
+                            <c:otherwise>
+                                <i:inline key=".syncType.${detail.inSync}"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
                     <td><cti:formatDate type="BOTH" value="${detail.actionStart}"/></td>
                     <td><cti:formatDate type="BOTH" value="${detail.actionEnd}"/></td>
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <div class="dn js-view-history-${deviceId}" data-dialog data-cancel-omit="true" data-title="${detail.device.name}" 
                             data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
-                            <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}"/>
-                            <cm:dropdownOption key=".send" />
-                            <cm:dropdownOption key=".read" />
-                            <cm:dropdownOption key=".verify" />
+                            <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}" icon="icon-application-view-columns"/>
+                            <cti:url var="sendUrl" value="/bulk/config/sendConfig">
+                                <cti:param name="collectionType" value="idList"/>
+                                <cti:param name="idList.ids" value="${deviceId}"/>              
+                            </cti:url>
+                            <cm:dropdownOption key=".send" href="${sendUrl}" icon="icon-ping"/>
+                            <cti:url var="readUrl" value="/bulk/config/readConfig">
+                                <cti:param name="collectionType" value="idList"/>
+                                <cti:param name="idList.ids" value="${deviceId}"/>              
+                            </cti:url>
+                            <cm:dropdownOption key=".read" href="${readUrl}" icon="icon-read"/>
+                            <cti:url var="verifyUrl" value="/bulk/config/verifyConfig">
+                                <cti:param name="collectionType" value="idList"/>
+                                <cti:param name="idList.ids" value="${deviceId}"/>              
+                            </cti:url>
+                            <cm:dropdownOption key=".verify" href="${verifyUrl}" icon="icon-accept"/>
                         </cm:dropdown>
                     </td>
                 </tr>
