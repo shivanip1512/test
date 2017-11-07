@@ -18,7 +18,7 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 
 public class CbcHelperServiceImpl implements CbcHelperService {
     public static final String DEFAULT_FIXED_TEXT = "Fixed";
-    public static Pattern logicalPointPattern = Pattern.compile("^\\*Logical<.*>");
+    public static Pattern logicalPointPattern = Pattern.compile("^\\*Logical<.*> ");
 
     private RolePropertyDao rolePropertyDao;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
@@ -56,7 +56,7 @@ public class CbcHelperServiceImpl implements CbcHelperService {
             String prefix = matcher.group(0);
             pointNameCallback.accept(pointName.replace(prefix, ""));
             if (deviceNameCallback != null) {
-                deviceNameCallback.accept(prefix.substring(9, prefix.length() - 1));
+                deviceNameCallback.accept(prefix.substring(9, prefix.length() - 2));
             }
         }
     }

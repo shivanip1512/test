@@ -96,7 +96,7 @@ public class PointDaoImpl implements PointDao {
     
     private static final String logicalCBCPoints = new SqlStatementBuilder()
             .append(" JOIN YUKONPAOBJECT RTU on P.PAOBJECTID = RTU.PAOBJECTID")
-            .append(" JOIN YUKONPAOBJECT CBC on P.POINTNAME LIKE CONCAT('*Logical<', CBC.PAONAME, '>%')")
+            .append(" JOIN YUKONPAOBJECT CBC on P.POINTNAME LIKE CONCAT('*Logical<', CBC.PAONAME, '> %')")
             .append(" WHERE RTU.TYPE = 'RTU-DNP'").getSql();
 
     @Override
