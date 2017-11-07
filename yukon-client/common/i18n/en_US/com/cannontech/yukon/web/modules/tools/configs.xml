@@ -703,6 +703,9 @@
     <entry key="yukon.web.modules.tools.configs.summary.verifyConfig">Verify Config</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.outOfSync">Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.sendConfig.success">Configuration has been sent to the device.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.readConfig.success">Read Configuration has been sent.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.verifyConfig.success">Verify Configuration has been sent.</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory">View History</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.action">Action</entry>

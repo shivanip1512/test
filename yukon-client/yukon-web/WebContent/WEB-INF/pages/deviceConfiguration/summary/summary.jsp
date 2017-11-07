@@ -109,7 +109,7 @@
                     <cti:param name="${cp.key}" value="${cp.value}"/>
                 </c:forEach>
             </cti:url>
-            <cm:dropdownOption key=".verify" href="${verifyUrl}" icon="icon-accept" newTab="true"/> 
+            <cm:dropdownOption key=".verifyConfig" href="${verifyUrl}" icon="icon-accept" newTab="true"/> 
         </cm:dropdown>
     </span>
 
@@ -162,26 +162,16 @@
                             <div class="dn js-view-history-${deviceId}" data-dialog data-cancel-omit="true" data-title="${detail.device.name}" 
                             data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
                             <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}" icon="icon-application-view-columns"/>
-                            <cti:url var="sendUrl" value="/bulk/config/sendConfig">
-                                <cti:param name="collectionType" value="idList"/>
-                                <cti:param name="idList.ids" value="${deviceId}"/>              
-                            </cti:url>
-                            <cm:dropdownOption key=".send" href="${sendUrl}" icon="icon-ping"/>
-                            <cti:url var="readUrl" value="/bulk/config/readConfig">
-                                <cti:param name="collectionType" value="idList"/>
-                                <cti:param name="idList.ids" value="${deviceId}"/>              
-                            </cti:url>
-                            <cm:dropdownOption key=".read" href="${readUrl}" icon="icon-read"/>
-                            <cti:url var="verifyUrl" value="/bulk/config/verifyConfig">
-                                <cti:param name="collectionType" value="idList"/>
-                                <cti:param name="idList.ids" value="${deviceId}"/>              
-                            </cti:url>
-                            <cm:dropdownOption key=".verify" href="${verifyUrl}" icon="icon-accept"/>
+                            <cm:dropdownOption key=".send" icon="icon-ping" classes="js-send-config" data-device-id="${deviceId}"/>
+                            <cm:dropdownOption key=".read" icon="icon-read" classes="js-read-config" data-device-id="${deviceId}"/>
+                            <cm:dropdownOption key=".verify" icon="icon-accept" classes="js-verify-config" data-device-id="${deviceId}"/>
                         </cm:dropdown>
                     </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.device.config.summary.js" />
 
 </cti:standardPage>

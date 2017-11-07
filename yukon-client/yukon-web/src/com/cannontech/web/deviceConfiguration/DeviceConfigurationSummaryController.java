@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,6 +28,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
@@ -45,6 +49,8 @@ public class DeviceConfigurationSummaryController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    
+    private final static String baseKey = "yukon.web.modules.tools.configs.summary.";
 
     @RequestMapping("view")
     public String view(ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups) {
@@ -75,33 +81,36 @@ public class DeviceConfigurationSummaryController {
         model.addAttribute("syncOptions", InSync.values());
         model.addAttribute("deviceSubGroups", deviceSubGroups);
         getData(model, filter);
-        return "summary.jsp";
+        return "summary/summary.jsp";
     }
     
     @RequestMapping("{id}/viewHistory")
     public String viewHistory(ModelMap model, @PathVariable int id) {
         model.addAttribute("details", deviceConfigSummaryDao.getDeviceConfigActionHistory(id));
-        return "history.jsp";
+        return "summary/history.jsp";
     }
     
     @RequestMapping("{id}/outOfSync")
     public String outOfSync(ModelMap model, @PathVariable int id) {
-        return "outOfSync.jsp";
+        return "summary/outOfSync.jsp";
     }
        
     @RequestMapping("{id}/sendConfig")
-    public String sendConfig(ModelMap model, @PathVariable int id, FlashScope flash) {
-        return "history.jsp";
+    public void sendConfig(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletResponse resp) {
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "sendConfig.success"));
+        resp.setStatus(HttpStatus.NO_CONTENT.value());    
     }
     
     @RequestMapping("{id}/readConfig")
-    public String readConfig(ModelMap model, @PathVariable int id, FlashScope flash) {
-        return "history.jsp";
+    public void readConfig(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletResponse resp) {
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "readConfig.success"));
+        resp.setStatus(HttpStatus.NO_CONTENT.value()); 
     }
     
     @RequestMapping("{id}/verifyConfig")
-    public String verifyConfig(ModelMap model, @PathVariable int id, FlashScope flash) {
-        return "history.jsp";
+    public void verifyConfig(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletResponse resp) {
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "verifyConfig.success"));
+        resp.setStatus(HttpStatus.NO_CONTENT.value()); 
     }
     
     private void getData(ModelMap model, DeviceConfigSummaryFilter filter) {
