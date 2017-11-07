@@ -80,7 +80,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
     private final Map<Integer, Double> regulatorSetPointValues = new HashMap<>();
+    private final Map<Integer, Double> reverseSetPointValues = new HashMap<>();
     private final Map<Integer, Double> regulatorVoltageLoads = new HashMap<>();
+    
+    private final Map<Integer, Boolean> regulatorBackfedStatus = new HashMap<>();
     
     Map<Integer, RegulatorVoltageControlMode> regulatorVoltageControlModeConfig = new HashMap<>();
     private final Map<Integer, Integer> subBusKVar = new HashMap<>();
@@ -90,6 +93,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private final List<PointData> messagesToSend = new ArrayList<>();
     
     private final int END_OF_LINE = 40000;
+    private final int SOLAR_LOCATION = 27000;
     private final int INITIAL_TAP_POSITION = 3;
     
     private class PointTypeValue {
@@ -173,7 +177,11 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 } else if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId) == RegulatorVoltageControlMode.SET_POINT) {
                     if (regulatorOperations.eventType == EventType.DECREASE_SETPOINT
                         || regulatorOperations.eventType == EventType.INCREASE_SETPOINT) {
-                        regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
+                        if (this.regulatorBackfedStatus.get(regulatorOperations.regulatorId)) {
+                            reverseSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
+                        } else {
+                            regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
+                        }
                     }
                 }
                 log.debug("Found " + regulatorEventOperations.size() + " tap and setpoint operations, acting on them.");
@@ -208,7 +216,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         for (Area area : simulatedAreas) {
             List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
             subBusesByArea.parallelStream().forEach(subBus -> {
-                
+                final boolean backfedBus = subBus.getCcName().startsWith("Backfed");
                 Integer bankSize = subBusKVar.get(subBus.getCcId());
                 if (bankSize == null) {
                     bankSize = capControlCache.getCapBanksBySubBus(subBus.getCcId()).stream().mapToInt(
@@ -314,7 +322,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                         Regulator regulator = regulatorService.getRegulatorById(regulatorId);
                         Map<RegulatorPointMapping, Integer> mappings = regulator.getMappings();
                         for (Entry<RegulatorPointMapping, Integer> mapping : mappings.entrySet()) {
-                            if (mapping.getValue() != 0) {
+                            if (mapping.getValue() != null && mapping.getValue() != 0) {
                                 switch (mapping.getKey()) {
                                 case AUTO_REMOTE_CONTROL:
                                     generatePoint(mapping.getValue(), 1, PointType.Status); // 1 is "remote"
@@ -343,12 +351,32 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 case FORWARD_BANDWIDTH:
                                     generatePoint(mapping.getValue(), 2, PointType.Analog); // Really not used, here to generate point data
                                     break;
+                                case REVERSE_SET_POINT:
+                                    if (regulatorVoltageControlModeConfig.get(regulatorId)== RegulatorVoltageControlMode.SET_POINT &&
+                                        reverseSetPointValues.containsKey(regulatorId)) {
+                                        generatePoint(mapping.getValue(), reverseSetPointValues.get(regulatorId),
+                                            PointType.Analog); // Really not used, here to generate point data
+                                    } else {
+                                        generatePoint(mapping.getValue(), 120, PointType.Analog); // Really not used, here to generate point data
+                                    }
+                                    break;
+                                case REVERSE_BANDWIDTH:
+                                    generatePoint(mapping.getValue(), 2, PointType.Analog); // Really not used, here to generate point data
+                                    break;
+                                case REVERSE_FLOW_INDICATOR:
+                                    if (backfedBus) {
+                                        regulatorBackfedStatus.put(regulatorId, zone.getGraphStartPosition() >= 23);
+                                    }
+                                    break;
                                 case VOLTAGE:
                                     // Voltage is special, and needs phase information. We are looking it up via zoneService and not using the mapping
                                     Map<Integer, Phase> pointsForRegulatorAndPhase =
                                     zoneService.getMonitorPointsForBankAndPhase(regulatorId);
-                            
+                                    
                                     double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, zone.getGraphStartPosition() * 1000, MAX_KW);
+                                    if (backfedBus) {
+                                        voltage = this.SolarVoltageShift(voltage, currentSubBusBaseKw, zone.getGraphStartPosition() * 1000, MAX_KW);
+                                    }
                                     for (Entry<Integer, Phase> points : pointsForRegulatorAndPhase.entrySet()) {
                                         phaseToRegulator.put(points.getValue(), regulatorId); // We assign this regulator to phases based on the zone point assignment
                                         voltage = shiftVoltageForPhase(voltage, points.getValue(), zone.getGraphStartPosition() * 1000);
@@ -393,7 +421,9 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                         for (Entry<Integer, Phase> points : pointsForBankAndPhase.entrySet()) {
                             double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
                             voltage = shiftVoltageForPhase(voltage, points.getValue(), (capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000));
-                            
+                            if (backfedBus) {
+                                voltage = this.SolarVoltageShift(voltage, currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
+                            }
                             // Check if the bank itself is closed
                             LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
                             if(capBankState != null && isCapBankInOneOfCloseStates(capBankState.getStateRawState())) {
@@ -448,7 +478,9 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             Set<Integer> regulatorTapPositionPointIds = new HashSet<>();
             Map<Integer, Integer> pointIdToRegulator = new HashMap<>();
             Set<Integer> setPointValuePointIds = new HashSet<>();
+            Set<Integer> reverseSetPointValuePointIds = new HashSet<>();
             Map<Integer, Integer> setPointValueToRegulator = new HashMap<>();
+            Map<Integer, Integer> reverseSetPointValueToRegulator = new HashMap<>();
             capControlCache.getAreas().stream()
                                       .filter(area->area.getCcName().startsWith("Sim Area"))
                                       .flatMap(area -> capControlCache.getSubBusesByArea(area.getCcId()).stream())
@@ -457,12 +489,17 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                       .map(regulatorId -> regulatorService.getRegulatorById(regulatorId))
                                       .forEach((regulator -> { regulator.getMappings().entrySet().stream()
                                           .forEach(mapping -> {
-                                              if (mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.TAP_POSITION) {
-                                                  regulatorTapPositionPointIds.add(mapping.getValue());
-                                                  pointIdToRegulator.put(mapping.getValue(), regulator.getId());
-                                              } else if (mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.FORWARD_SET_POINT) {
-                                                  setPointValuePointIds.add(mapping.getValue());
-                                                  setPointValueToRegulator.put(mapping.getValue(), regulator.getId());
+                                              if (mapping.getValue() != null) {
+                                                  if (mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.TAP_POSITION) {
+                                                      regulatorTapPositionPointIds.add(mapping.getValue());
+                                                      pointIdToRegulator.put(mapping.getValue(), regulator.getId());
+                                                  } else if (mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.FORWARD_SET_POINT) {
+                                                      setPointValuePointIds.add(mapping.getValue());
+                                                      setPointValueToRegulator.put(mapping.getValue(), regulator.getId());
+                                                  } else if (mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.REVERSE_SET_POINT) {
+                                                      reverseSetPointValuePointIds.add(mapping.getValue());
+                                                      reverseSetPointValueToRegulator.put(mapping.getValue(), regulator.getId());
+                                                  }
                                               }
                                           });
                                           regulatorVoltageControlModeConfig.put(regulator.getId(), null);
@@ -505,8 +542,27 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                       .count();
             }
             
+            int reverseSetPointValuesLoadedsuccessCount = 0;
+            
+            if (reverseSetPointValuePointIds.size() > 0) {
+                reverseSetPointValuesLoadedsuccessCount = (int) asyncDynamicDataSource.getPointValues(reverseSetPointValuePointIds)
+                                      .stream()
+                                      .filter(setPoint -> setPoint.getPointQuality() == PointQuality.Normal)
+                                      .map(setPoint -> {
+                                          Integer regulatorId = reverseSetPointValueToRegulator.get(setPoint.getId());
+                                          if (regulatorId != null) {
+                                              reverseSetPointValues.put(regulatorId, setPoint.getValue());
+                                              return 1;
+                                          }
+                                          return 0;
+                                      })
+                                      .filter(i -> i == 1)
+                                      .count();
+            }
+            
             if ((CollectionUtils.isNotEmpty(regulatorTapPositionPointIds) && tapPositionsLoadedSuccessCount > 0)
-                && (CollectionUtils.isNotEmpty(setPointValuePointIds) && setPointValuesLoadedsuccessCount > 0)) {
+                && (CollectionUtils.isNotEmpty(setPointValuePointIds) && setPointValuesLoadedsuccessCount > 0)
+                && (CollectionUtils.isNotEmpty(reverseSetPointValuePointIds) && reverseSetPointValuesLoadedsuccessCount > 0)) {
                 tapPositionsAndSetPointValuesPreloaded = true;
             }
             
@@ -534,8 +590,14 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             if (configControlType != null && configControlType == RegulatorVoltageControlMode.SET_POINT) {
                 Double voltageLoad = regulatorVoltageLoads.get(regulatorId);
                 if (voltageLoad != null && regulatorSetPointValues.containsKey(regulatorId)) {
-                    int tapChange = getSetPointTapChange(regulatorSetPointValues.get(regulatorId), voltageLoad, BANDWIDTH);
+                    int tapChange;
+                    if (regulatorBackfedStatus.get(regulatorId)) {
+                        tapChange = getSetPointTapChange(reverseSetPointValues.get(regulatorId), voltageLoad, BANDWIDTH);
+                    } else {
+                        tapChange = getSetPointTapChange(regulatorSetPointValues.get(regulatorId), voltageLoad, BANDWIDTH);
+                    }
                     regulatorTapPositions.put(regulatorId, getRegulatorTapPosition(regulatorId) + tapChange);
+
                 }
             }
         }
@@ -584,6 +646,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         // So if we are at half the distance (20k) we get half the drop (3v)
         // Or if we have much lower power (3kv) at 40k distance we get lower drop (1v or so)
         return 120-currentSubBusRawKw/maxKw*6*distance/END_OF_LINE;
+    }
+    
+    private double SolarVoltageShift(double voltage, double currentSubBusRawKw, double distance, int maxKw) {
+        if (distance > 23000) {
+            return voltage - currentSubBusRawKw*2/maxKw*(SOLAR_LOCATION-Math.abs(SOLAR_LOCATION-distance))/SOLAR_LOCATION;
+        }
+        return voltage;
     }
     
     // Sends this point to Dispatch. Does not force archive, follows point archival settings.
