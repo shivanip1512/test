@@ -1,12 +1,13 @@
 package com.cannontech.web.tools.device.config.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.device.model.DisplayableDevice;
 
 public class DeviceConfigActionHistory {
     private DisplayableDevice device;
-    private List<DeviceConfigActionHistoryDetail> details;
+    private List<DeviceConfigActionHistoryDetail> details = new ArrayList<>();
 
     public List<DeviceConfigActionHistoryDetail> getDetails() {
         return details;

@@ -28,13 +28,16 @@ import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
 import com.cannontech.web.tools.device.config.model.DeviceConfigActionHistory;
+import com.cannontech.web.tools.device.config.model.DeviceConfigActionHistoryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
@@ -46,6 +49,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceRequestType.GROUP_DEVICE_CONFIG_READ);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private IDatabaseCache dbCache;
 
     
     private final class DetailRowMapper implements YukonRowMapper<DeviceConfigSummaryDetail> { 
@@ -66,6 +70,19 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
                 detail.setDeviceConfig(new LightDeviceConfiguration(configId, rs.getString("ConfigName"), null));
             }
             detail.setInSync(rs.getEnum("InSync", InSync.class));
+            detail.setStatus(rs.getEnum("ActionStatus", LastActionStatus.class));
+            return detail;
+        }
+    }
+    
+    private final class HistoryRowMapper implements YukonRowMapper<DeviceConfigActionHistoryDetail> { 
+        
+        @Override
+        public DeviceConfigActionHistoryDetail mapRow(YukonResultSet rs) throws SQLException {
+            DeviceConfigActionHistoryDetail detail = new DeviceConfigActionHistoryDetail();
+            detail.setAction(LastAction.getByRequestType(rs.getEnum("ExecType", DeviceRequestType.class)));
+            detail.setActionEnd(rs.getInstant("StopTime"));
+            detail.setActionStart(rs.getInstant("StartTime"));
             detail.setStatus(rs.getEnum("ActionStatus", LastActionStatus.class));
             return detail;
         }
@@ -366,7 +383,30 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
    
     @Override
     public DeviceConfigActionHistory getDeviceConfigActionHistory(int deviceId) {
-        return new DeviceConfigActionHistory();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+        sql.append("CommandRequestExecType as ExecType,");
+        sql.append("cre.StartTime,");
+        sql.append("result.CompleteTime as StopTime,");
+        sql.append("CASE");
+        sql.append("    WHEN request.DeviceId > 0 AND result.DeviceId IS NULL THEN").appendArgument_k(LastActionStatus.IN_PROGRESS);
+        sql.append("    WHEN result.ErrorCode <> 0 THEN").appendArgument_k(LastActionStatus.FAILURE);
+        sql.append("    WHEN result.ErrorCode = 0 THEN").appendArgument_k(LastActionStatus.SUCCESS);
+        sql.append("END as ActionStatus");
+        sql.append("FROM CommandRequestExec cre");
+        sql.append("LEFT JOIN CommandRequestExecResult result ON cre.CommandRequestExecId = result.CommandRequestExecId");
+        sql.append("LEFT JOIN CommandRequestExecRequest request ON cre.CommandRequestExecId = request.CommandRequestExecId");
+        sql.append("WHERE CommandRequestExecType").in_k(deviceConfigExecTypes);
+        sql.append("AND (");
+        sql.append("result.DeviceId").eq(deviceId);
+        sql.append("OR");
+        sql.append("request.DeviceId").eq(deviceId);
+        sql.append(")");
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(deviceId);
+        DeviceConfigActionHistory history = new DeviceConfigActionHistory();
+        history.setDevice(new DisplayableDevice(pao.getPaoIdentifier(), pao.getPaoName()));
+        history.getDetails().addAll(jdbcTemplate.query(sql, new HistoryRowMapper()));
+        return history;
     }
     
     private List<PaoType> getSupportedPaoTypes() {
