@@ -69,14 +69,15 @@ public class DeviceConfigurationSummaryController {
     
     @RequestMapping("{id}/viewHistory")
     public String viewHistory(ModelMap model, @PathVariable int id) {
+        model.addAttribute("details", deviceConfigSummaryDao.getDeviceConfigActionHistory(id));
         return "history.jsp";
     }
-    
+       
     private void getData(ModelMap model, DeviceConfigSummaryFilter filter) {
         
         SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter,
             PagingParameters.EVERYTHING, DeviceConfigSummaryDao.SortBy.DEVICE_NAME, Direction.asc);
- 
+        
        // List<SimpleDevice> devices = results.getResultList().stream().map(d -> new SimpleDevice(d.getDevice())).collect(Collectors.toList());
         
         model.addAttribute("results",  results.getResultList());

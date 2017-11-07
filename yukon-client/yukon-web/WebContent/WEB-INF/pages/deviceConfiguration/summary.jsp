@@ -120,7 +120,7 @@
                     <td><cti:formatDate type="BOTH" value="${detail.actionEnd}"/></td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <div class="dn js-view-history-${deviceId}" data-dialog data-title="<cti:msg2 key=".viewHistory"/>" 
+                            <div class="dn js-view-history-${deviceId}" data-dialog data-cancel-omit="true" data-title="${detail.device.name}" 
                             data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
                             <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}"/>
                             <cm:dropdownOption key=".send" />
