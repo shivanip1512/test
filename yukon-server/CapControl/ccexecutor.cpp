@@ -16,6 +16,8 @@
 #include "MsgChangeOpState.h"
 #include "ExecChangeOpState.h"
 #include "MsgCapControlServerResponse.h"
+#include "database_util.h"
+#include "database_reader.h"
 
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
@@ -5325,217 +5327,244 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-    CtiCCFeeder* oldFeederPtr = NULL;
-    CtiCCFeeder* newFeederPtr = NULL;
-    CtiCCCapBank* movedCapBankPtr = NULL;
-    CtiCCSubstationBus* oldFeederParentSub = NULL;
-    CtiCCSubstationBus* newFeederParentSub = NULL;
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    // Source Feeder -- feeder we are moving from
 
-    bool found = false;
-    bool verificationFlag = false;
+    CtiCCFeederPtr  oldFeederPtr = store->findFeederByPAObjectID( oldFeederId );
 
-    oldFeederPtr = store->findFeederByPAObjectID(oldFeederId);
-    if (oldFeederPtr != NULL)
+    if ( ! oldFeederPtr )
     {
-       oldFeederParentSub = store->findSubBusByPAObjectID(oldFeederPtr->getParentId());
-       if (oldFeederParentSub != NULL)
-       {
-           if (oldFeederParentSub->getVerificationFlag())
-           {
-               {
-                   CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< oldFeederParentSub->getPaoName() <<" PAOID: "<< oldFeederParentSub->getPaoId()
-                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<oldFeederPtr->getPaoName()<<" PAOID: "<<oldFeederPtr->getPaoId()<<".");
-               }
-               verificationFlag = true;
-               found = true;
-           }
-           else
-           {
-               oldFeederParentSub->setBusUpdatedFlag(true);
-           }
-       }
-    }
-    else
-    {
-        //Error Case.
-        if (!verificationFlag)
-        {
-            CTILOG_WARN(dout, "Feeder not found PAO Id: " << oldFeederId);
-        }
+        CTILOG_WARN( dout, "Feeder not found with ID: " << oldFeederId );
         return false;
     }
 
-    newFeederPtr = store->findFeederByPAObjectID(newFeederId);
-    if (newFeederPtr != NULL)
-    {
-       newFeederParentSub = store->findSubBusByPAObjectID(newFeederPtr->getParentId());
-       if (newFeederParentSub != NULL)
-       {
-           if (newFeederParentSub->getVerificationFlag())
-           {
-               {
-                   CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< newFeederParentSub->getPaoName() <<" PAOID: "<< newFeederParentSub->getPaoId()
-                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<newFeederPtr->getPaoName()<<" PAOID: "<<newFeederPtr->getPaoId()<<".");
-               }
-               verificationFlag = true;
-               found = true;
-           }
-           else
-           {
-               newFeederParentSub->setBusUpdatedFlag(true);
-           }
-       }
-    }
-    else
-    {
-        //Error Case.
-        if (!verificationFlag)
-        {
-            CTILOG_WARN(dout, "Feeder not found PAO Id: " << newFeederId);
-        }
+    CtiCCSubstationBusPtr   oldFeederParentSub = store->findSubBusByPAObjectID( oldFeederPtr->getParentId() );
 
+    if ( ! oldFeederParentSub )
+    {
+        CTILOG_WARN( dout, "Substation Bus not found with ID: " << oldFeederPtr->getParentId() );
         return false;
     }
 
-    movedCapBankPtr = store->findCapBankByPAObjectID(movedCapBankId);
-    if (movedCapBankPtr!=NULL && !verificationFlag)
+    if ( oldFeederParentSub->getVerificationFlag() )
     {
-        //Remove the bank from the old feeder
+        CTILOG_WARN( dout, "Cap Bank Verification is ENABLED on Substation Bus: "
+                                << oldFeederParentSub->getPaoName() << " PAOID: " << oldFeederParentSub->getPaoId()
+                                << ".  Cannot perform MOVE CAPBANK on Feeder: "
+                                << oldFeederPtr->getPaoName() << " PAOID: " << oldFeederPtr->getPaoId() << "." );
+        return false;
+    }
+    
+    // Destination Feeder -- feeder we are moving to
+
+    CtiCCFeederPtr  newFeederPtr = store->findFeederByPAObjectID( newFeederId );
+
+    if ( ! newFeederPtr )
+    {
+        CTILOG_WARN( dout, "Feeder not found with ID: " << newFeederId );
+        return false;
+    }
+        
+    CtiCCSubstationBusPtr   newFeederParentSub = store->findSubBusByPAObjectID( newFeederPtr->getParentId() );
+
+    if ( ! newFeederParentSub )
+    {
+        CTILOG_WARN( dout, "Substation Bus not found with ID: " << newFeederPtr->getParentId() );
+        return false;
+    }
+
+    if ( newFeederParentSub->getVerificationFlag() )
+    {
+        CTILOG_WARN( dout, "Cap Bank Verification is ENABLED on Substation Bus: "
+                                << newFeederParentSub->getPaoName() << " PAOID: " << newFeederParentSub->getPaoId()
+                                << ".  Cannot perform MOVE CAPBANK on Feeder: "
+                                << newFeederPtr->getPaoName() << " PAOID: " << newFeederPtr->getPaoId() << "." );
+        return false;
+    }
+
+    // Bank we are moving
+
+    CtiCCCapBankPtr movedCapBankPtr = store->findCapBankByPAObjectID( movedCapBankId );
+
+    if ( ! movedCapBankPtr )
+    {
+        CTILOG_WARN( dout, "Cap Bank not found with ID: " << movedCapBankId );
+        return false;
+    }
+
+    // If we're here, we have all of the pieces necessary to do the move
+
+    // remove the bank from the old feeder
+    {
+        CtiCCCapBank_SVector& oldBankList = oldFeederPtr->getCCCapBanks();
+
+        oldBankList.erase( std::remove( oldBankList.begin(), oldBankList.end(), movedCapBankPtr ), oldBankList.end() );
+
+        store->removeItemsFromMap( CtiCCSubstationBusStore::CapBankIdFeederIdMap, movedCapBankId );
+        store->removeItemsFromMap( CtiCCSubstationBusStore::CapBankIdSubBusIdMap, movedCapBankId );
+
+        oldFeederParentSub->setBusUpdatedFlag( true );
+
+        // Temp move, preserve the original orders
+        if ( ! permanentFlag )
         {
-            CtiCCCapBank_SVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
-
-            CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
-            while (itr != oldFeederCapBanks.end())
-            {
-                if (*itr == movedCapBankPtr) {
-                    itr = oldFeederCapBanks.erase( itr );
-                }else
-                    ++itr;
-            }
-
-            store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, movedCapBankId);
-            store->removeItemsFromMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, movedCapBankId);
-
-            //If permanent, set to 0 since there is no need to preserve the original orders
-            if (!permanentFlag)
-            {
-                movedCapBankPtr->getOriginalParent().setOriginalParentId(oldFeederPtr->getPaoId());
-                movedCapBankPtr->getOriginalParent().setOriginalSwitchingOrder(movedCapBankPtr->getControlOrder());
-                movedCapBankPtr->getOriginalParent().setOriginalCloseOrder(movedCapBankPtr->getCloseOrder());
-                movedCapBankPtr->getOriginalParent().setOriginalTripOrder(movedCapBankPtr->getTripOrder());
-            }
-            else
-            {
-                movedCapBankPtr->getOriginalParent().setOriginalParentId(0);
-                movedCapBankPtr->getOriginalParent().setOriginalSwitchingOrder(0.0);
-                movedCapBankPtr->getOriginalParent().setOriginalCloseOrder(0.0);
-                movedCapBankPtr->getOriginalParent().setOriginalTripOrder(0.0);
-
-            }
-
-            movedCapBankPtr->setParentId(newFeederId);
-            movedCapBankPtr->setDirty(true);
+            movedCapBankPtr->getOriginalParent().setOriginalParentId( oldFeederPtr->getPaoId() );
+            movedCapBankPtr->getOriginalParent().setOriginalSwitchingOrder( movedCapBankPtr->getControlOrder() );
+            movedCapBankPtr->getOriginalParent().setOriginalCloseOrder( movedCapBankPtr->getCloseOrder() );
+            movedCapBankPtr->getOriginalParent().setOriginalTripOrder( movedCapBankPtr->getTripOrder() );
+        }
+        else    // Permanent, set to 0 since there is no need to preserve the original orders
+        {
+            movedCapBankPtr->getOriginalParent().setOriginalParentId( 0 );
+            movedCapBankPtr->getOriginalParent().setOriginalSwitchingOrder( 0.0 );
+            movedCapBankPtr->getOriginalParent().setOriginalCloseOrder( 0.0 );
+            movedCapBankPtr->getOriginalParent().setOriginalTripOrder( 0.0 );
         }
 
-        //Add the bank to the new feeder.
+        // YUK-17246
+        //  If the bank is attached to a bus that is under IVVC control, we should remove the bank from its
+        //  currently assigned control zone.
+        if ( oldFeederParentSub->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
         {
-            CtiCCCapBank_SVector& newFeederCapBanks = newFeederPtr->getCCCapBanks();
+            // We are modifying an IVVC zone, so get the zone ID(s) we are changing first...
 
-            movedCapBankPtr->setControlOrder(capSwitchingOrder);
-            movedCapBankPtr->setCloseOrder(closeOrder);
-            movedCapBankPtr->setTripOrder(tripOrder);
+            std::vector<long>   zonesToReload;
+            Cti::Database::DatabaseConnection   connection;
 
-            /**
-             * Adding the bank to this feeder may not be necessary if it's
-             * here as a result of a temp move and is being kept here
-             * instead of moved to its original parent.
-             */
-            bool addNecessary = true;
-            for (CtiCCCapBank_SVector::iterator itr = newFeederCapBanks.begin(); itr != newFeederCapBanks.end(); itr++)
             {
-                if((*itr)->getPaoId() == movedCapBankPtr->getPaoId())
+                static const std::string sql =
+                    "SELECT "
+                        "M.ZoneId "
+                    "FROM "
+                        "CapBankToZoneMapping M "
+                    "WHERE "
+                        "M.DeviceId = ?";
+
+                Cti::Database::DatabaseReader   rdr( connection, sql );
+
+                rdr << movedCapBankId;
+
+                rdr.execute();
+
+                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                 {
-                    addNecessary = false;
-                    break;
+                     CTILOG_INFO( dout, rdr.asString() );
+                }
+
+                while ( rdr() )
+                {
+                    zonesToReload.push_back( rdr["ZoneId"].as<long>() );
                 }
             }
 
-            if (addNecessary)
+            // Now remove the bank from the zones
             {
-                newFeederCapBanks.push_back(movedCapBankPtr);
+                static const std::string sql =
+                    "DELETE FROM "
+                        "CapBankToZoneMapping "
+                    "WHERE "
+                        "DeviceId = ?";
+
+                Cti::Database::DatabaseReader   rdr( connection, sql );
+
+                rdr << movedCapBankId;
+
+                rdr.execute();
+
+                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                {
+                     CTILOG_INFO( dout, rdr.asString() );
+                }
             }
 
-            //If permanent, reorder the banks to get rid of any '.' values.
-            if (permanentFlag)
+            // Now issue zone reloads and DB changes.
+
+            for ( auto zoneID : zonesToReload )
             {
-                newFeederPtr->orderBanksOnFeeder();
-                oldFeederPtr->orderBanksOnFeeder();
+                store->getZoneManager().reload( zoneID );
+
+                auto dbChange = std::make_unique<CtiDBChangeMsg>( zoneID,
+                                                                  ChangeIvvcZone,
+                                                                  "CAPCONTROL",
+                                                                  "CAPCONTROL",
+                                                                  ChangeTypeUpdate );
+                dbChange->setSource( CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE );
+
+                CtiCapController::getInstance()->sendMessageToDispatch( dbChange.release(), CALLSITE );
             }
-
-            store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);
-            long subBusId = store->findSubBusIDbyFeederID(newFeederId);
-            if (subBusId != NULL)
-            {
-                store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdSubBusIdMap, &movedCapBankId, &subBusId);
-            }
-
         }
-
-        store->UpdateFeederBankListInDB(oldFeederPtr);
-        store->UpdateFeederBankListInDB(newFeederPtr);
-
-        {
-            string typeString = (permanentFlag?"Permanent":"Temporary");
-
-            CTILOG_INFO(dout, "Manual "
-                 << typeString
-                 << " Cap Bank with PAO Id: "
-                 << movedCapBankPtr->getPaoId() << ", name: "
-                 << movedCapBankPtr->getPaoName()
-                 << ", was moved from feeder PAO Id: "
-                 << oldFeederPtr->getPaoId() << ", name: "
-                 << oldFeederPtr->getPaoName() << ", to feeder PAO Id: "
-                 << newFeederPtr->getPaoId() << ", name: "
-                 << newFeederPtr->getPaoName() << ", with order: "
-                 << movedCapBankPtr->getControlOrder());
-        }
-
-        CtiCCSubstationBus_vec modifiedSubsList;
-        modifiedSubsList.clear();
-        oldFeederParentSub = store->findSubBusByPAObjectID(oldFeederPtr->getParentId());
-        newFeederParentSub = store->findSubBusByPAObjectID(newFeederPtr->getParentId());
-
-        if (newFeederParentSub != NULL)
-        {
-            modifiedSubsList.push_back(newFeederParentSub);
-        }
-
-        if (oldFeederParentSub != NULL)
-        {
-            modifiedSubsList.push_back(oldFeederParentSub);
-        }
-
-        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg( modifiedSubsList, CtiCCSubstationBusMsg::SubBusModified ))->execute();
-
-        return true;
     }
-    else
+
+    // Add bank to new feeder
     {
-        if (!verificationFlag)
+        movedCapBankPtr->setParentId( newFeederId );
+        movedCapBankPtr->setControlOrder( capSwitchingOrder );
+        movedCapBankPtr->setCloseOrder( closeOrder );
+        movedCapBankPtr->setTripOrder( tripOrder );
+        movedCapBankPtr->setDirty( true );
+
+        /**
+         * Adding the bank to this feeder may not be necessary if it's
+         * here as a result of a temp move and is being kept here
+         * instead of moved to its original parent.
+         */
+
+        CtiCCCapBank_SVector& newBankList = newFeederPtr->getCCCapBanks();
+
+        if ( std::none_of( newBankList.begin(), newBankList.end(), 
+                           [ movedCapBankPtr ]( CtiCCCapBankPtr bank )
+                           {
+                               return bank == movedCapBankPtr;
+                           } ) )
         {
-            if( movedCapBankPtr==NULL )
-            {
-                CTILOG_WARN(dout, "Cap Bank not found PAO Id: " << movedCapBankId);
-            }
+            newBankList.push_back( movedCapBankPtr );
+        }
+        
+        long subBusId = newFeederParentSub->getPaoId();
+
+        store->insertItemsIntoMap( CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId );
+        store->insertItemsIntoMap( CtiCCSubstationBusStore::CapBankIdSubBusIdMap, &movedCapBankId, &subBusId );
+
+        newFeederParentSub->setBusUpdatedFlag( true );
+
+        //If permanent, reorder the banks to get rid of any '.' values.
+
+        if ( permanentFlag )
+        {
+            newFeederPtr->orderBanksOnFeeder();
+            oldFeederPtr->orderBanksOnFeeder();
         }
     }
 
-    return false;
+    store->UpdateFeederBankListInDB( oldFeederPtr );
+    store->UpdateFeederBankListInDB( newFeederPtr );
+
+    {
+        const std::string typeString = ( permanentFlag ? "Permanent" : "Temporary" );
+
+        CTILOG_INFO( dout, "Manual "
+                             << typeString
+                             << " Cap Bank with PAO Id: "
+                             << movedCapBankPtr->getPaoId() << ", name: "
+                             << movedCapBankPtr->getPaoName()
+                             << ", was moved from feeder PAO Id: "
+                             << oldFeederPtr->getPaoId() << ", name: "
+                             << oldFeederPtr->getPaoName() << ", to feeder PAO Id: "
+                             << newFeederPtr->getPaoId() << ", name: "
+                             << newFeederPtr->getPaoName() << ", with order: "
+                             << movedCapBankPtr->getControlOrder() );
+    }
+
+    CtiCCSubstationBus_vec modifiedSubsList
+    {
+        oldFeederParentSub,
+        newFeederParentSub
+    };
+
+    CtiCCExecutorFactory::createExecutor(
+        new CtiCCSubstationBusMsg( modifiedSubsList, CtiCCSubstationBusMsg::SubBusModified ) )->execute();
+
+    return true;
 }
-
-
-
 
 
 /*===========================================================================

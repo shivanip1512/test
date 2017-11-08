@@ -576,7 +576,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineWatchPoints( subbus, dispatchConnection, shouldScan, pointRequests, strategy ) )
+            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
             {
                 // Configuration Error
                 // Disable the bus so we don't try to run again. User Intervention required.
@@ -883,7 +883,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             std::set<PointRequest> pointRequests;
 
-            if ( ! determineWatchPoints( subbus, dispatchConnection, allowScanning, pointRequests, strategy ) )
+            if ( ! determineWatchPoints( subbus, allowScanning, pointRequests, strategy ) )
             {
                 // Do we want to bail here?
             }
@@ -1043,7 +1043,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
 
 //sendScan must be false for unit tests.
-bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy)
+bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy)
 {
     bool configurationError = false;
 
@@ -1647,6 +1647,43 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     bool isPeakTime = subbus->getPeakTimeFlag();    // Is it peak time according to the bus.
 
     PointValueMap pointValues = state->getGroupRequest()->getPointValues();
+
+    // We need to check for any newly disabled things since the point request was created and remove
+    //  the disabled objects voltage values.  We don't want to use those values when doing our computations.
+    {
+        // Grab a new pointRequest reflecting the current state of the bus objects.
+        //  DO NOT SCAN the objects!  Otherwise ignore any generated errors.
+
+        std::set<PointRequest> pointRequests;
+
+        determineWatchPoints( subbus, false, pointRequests, strategy );
+
+        // strip off the extra info and just get a set of point IDs we a care about.
+
+        std::set<long> requestPointIDs;
+
+        for ( auto entry : pointRequests )
+        {
+            requestPointIDs.insert( entry.pointId );
+        }
+    
+        // Now search our PointValueMap of current data for any pointIDs that aren't present in the requestPointIDs set
+        //  and remove those entries.
+
+        for ( auto it = pointValues.begin(); it != pointValues.end(); )
+        {
+            if ( ! requestPointIDs.count( it->first ) )
+            {
+                CTILOG_INFO( dout, "IVVC: Removing invalid point request data with ID: " << it->first );
+
+                it = pointValues.erase( it );
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
 
     //calculate current power factor of the bus
 
