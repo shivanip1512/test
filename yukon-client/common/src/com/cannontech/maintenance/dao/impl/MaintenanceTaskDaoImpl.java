@@ -23,7 +23,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     public Map<MaintenanceTasksSettings, String> getTaskSettings(MaintenanceTasks taskName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Attribute, Value");
-        sql.append("FROM MaintenaceTask ms");
+        sql.append("FROM MaintenanceTask ms");
         sql.append("  JOIN MaintenanceTaskSettings msp");
         sql.append("  ON ms.TaskId = msp.TaskId");
         sql.append("AND TaskName").eq(taskName);
