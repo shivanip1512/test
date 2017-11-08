@@ -92,7 +92,8 @@ yukon.widget.dataCollection = (function () {
                     cursor: 'pointer',
                     dataLabels: { enabled: false },
                     showInLegend: true,
-                    borderWidth: 0.25
+                    borderWidth: 0.25,
+                    className: 'js-data-pie'
                 }
             },
             series: [{
@@ -161,7 +162,7 @@ yukon.widget.dataCollection = (function () {
                 $.ajax(yukon.url('/amr/dataCollection/forceUpdate'));
             });
             
-            $(document).on('click', '.js-pie-chart', function () {
+            $(document).on('click', '.js-data-pie', function () {
                 var widget = $(this).closest('.js-data-collection-widget'),
                     deviceGroup = $(widget).find('input[name=groupName]').val(),
                     includeDisabled = $(widget).find('#includeDisabled').is(":checked");
