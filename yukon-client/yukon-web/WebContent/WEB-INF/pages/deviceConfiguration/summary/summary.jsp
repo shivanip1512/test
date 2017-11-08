@@ -83,7 +83,7 @@
     </div>
     
     <span class="fwn"><i:inline key=".filteredResults"/></span>
-    <span class="badge">${results.size()}</span>&nbsp;<i:inline key=".devices"/>
+    <span class="badge">${results.hitCount}</span>&nbsp;<i:inline key=".devices"/>
     <span class="js-cog-menu">
         <cm:dropdown icon="icon-cog">
             <cti:url var="assignUrl" value="/bulk/config/assignConfig">
@@ -113,27 +113,46 @@
         </cm:dropdown>
     </span>
 
+    <cti:url var="dataUrl" value="/deviceConfiguration/summary/view">
+        <c:forEach var="config" items="${filter.configurationIds}">
+            <cti:param name="configurationIds" value="${config}"/>
+        </c:forEach>
+        <c:forEach var="subGroup" items="${filter.groups}">
+            <cti:param name="deviceSubGroups" value="${subGroup.fullName}"/>
+        </c:forEach>
+        <c:forEach var="action" items="${filter.actions}">
+            <cti:param name="actions" value="${action}"/>
+        </c:forEach>
+        <c:forEach var="sync" items="${filter.inSync}">
+            <cti:param name="inSync" value="${sync}"/>
+        </c:forEach>
+        <c:forEach var="status" items="${filter.statuses}">
+            <cti:param name="statuses" value="${status}"/>
+        </c:forEach>
+    </cti:url>
+    
+    <div data-url="${dataUrl}" data-static>
     <table class="compact-results-table row-highlighting has-actions">
         <thead>
             <tr>
-                <th><i:inline key=".deviceName"/></th>
-                <th><i:inline key=".type"/></th>
-                <th><i:inline key=".deviceConfiguration"/></th>
-                <th><i:inline key=".lastAction"/></th>
-                <th><i:inline key=".lastActionStatus"/></th>
-                <th><i:inline key=".inSync"/></th>
-                <th><i:inline key=".lastActionStart"/></th>
-                <th><i:inline key=".lastActionEnd"/></th>
+                <tags:sort column="${deviceName}" />
+                <tags:sort column="${type}" />  
+                <tags:sort column="${deviceConfiguration}" />                 
+                <tags:sort column="${lastAction}" />                  
+                <tags:sort column="${lastActionStatus}" />                  
+                <tags:sort column="${inSync}" />                  
+                <tags:sort column="${lastActionStart}" />                 
+                <tags:sort column="${lastActionEnd}" />                  
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
-            <c:forEach var="detail" items="${results}">
+            <c:forEach var="detail" items="${results.resultList}">
                 <c:set var="deviceId" value="${detail.device.paoIdentifier.paoId}"/>
                 <tr>
                     <td><cti:paoDetailUrl yukonPao="${detail.device.paoIdentifier}" newTab="true">${detail.device.name}</cti:paoDetailUrl></td>
-                    <td>${detail.device.paoIdentifier.paoType.paoTypeName}</td>
+                    <td class="wsnw">${detail.device.paoIdentifier.paoType.paoTypeName}</td>
                     <cti:url var="configUrl" value="/deviceConfiguration/config/view?configId=${detail.deviceConfig.configurationId}"/>
                     <td><a href="${configUrl}">${detail.deviceConfig.name}</a></td>
                     <c:if test="${detail.action != null}">
@@ -171,6 +190,8 @@
             </c:forEach>
         </tbody>
     </table>
+    <tags:pagingResultsControls result="${results}" adjustPageCount="true" thousands="true"/>
+    </div>
     
     <cti:includeScript link="/resources/js/pages/yukon.device.config.summary.js" />
 

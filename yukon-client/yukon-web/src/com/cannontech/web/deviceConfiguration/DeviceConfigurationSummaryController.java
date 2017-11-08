@@ -24,14 +24,23 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
+import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao.SortBy;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
@@ -49,13 +58,19 @@ public class DeviceConfigurationSummaryController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private final static String baseKey = "yukon.web.modules.tools.configs.summary.";
 
     @RequestMapping("view")
-    public String view(ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups) {
+    public String view(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, @DefaultItemsPerPage(value=250) PagingParameters paging,
+                       ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) {
+        DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("configurations", configurations);
+        boolean assignedToAny = false;
         List<DeviceGroup> subGroups = new ArrayList<>();
         if (deviceSubGroups != null) {
             for (String subGroup : deviceSubGroups) {
@@ -69,6 +84,7 @@ public class DeviceConfigurationSummaryController {
             }
             //Include any assigned
             if (filter.getConfigurationIds().contains(-998)) {
+                assignedToAny = true;
                 List<Integer> allIds = new ArrayList<>();
                 configurations.forEach(config -> allIds.add(config.getConfigurationId()));
                 filter.setConfigurationIds(allIds);
@@ -80,7 +96,16 @@ public class DeviceConfigurationSummaryController {
         model.addAttribute("statusOptions", LastActionStatus.values());
         model.addAttribute("syncOptions", InSync.values());
         model.addAttribute("deviceSubGroups", deviceSubGroups);
-        getData(model, filter);
+        getData(model, filter, sortBy.value, dir, paging);
+        if (assignedToAny) {
+            filter.setConfigurationIds(new ArrayList<>());
+            filter.getConfigurationIds().add(-998);
+        }
+        for (DetailSortBy column : DetailSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
         return "summary/summary.jsp";
     }
     
@@ -113,10 +138,9 @@ public class DeviceConfigurationSummaryController {
         resp.setStatus(HttpStatus.NO_CONTENT.value()); 
     }
     
-    private void getData(ModelMap model, DeviceConfigSummaryFilter filter) {
-        
-        SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter,
-            PagingParameters.EVERYTHING, DeviceConfigSummaryDao.SortBy.DEVICE_NAME, Direction.asc);
+    private void getData(ModelMap model, DeviceConfigSummaryFilter filter, SortBy sortBy, Direction dir, PagingParameters paging) {
+
+        SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter, paging, sortBy, dir);
         
         List<SimpleDevice> devices = results.getResultList().stream().map(d -> new SimpleDevice(d.getDevice())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
@@ -124,7 +148,34 @@ public class DeviceConfigurationSummaryController {
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
         model.addAttribute("deviceCollection", deviceCollection);
         
-        model.addAttribute("results",  results.getResultList());
+        model.addAttribute("results",  results);
+    }
+    
+    public enum DetailSortBy implements DisplayableEnum {
+
+        deviceName(SortBy.DEVICE_NAME),
+        type(SortBy.DEVICE_TYPE),
+        deviceConfiguration(SortBy.DEVICE_CONFIGURATION),
+        lastAction(SortBy.ACTION),
+        lastActionStatus(SortBy.ACTION_STATUS),
+        inSync(SortBy.IN_SYNC),
+        lastActionStart(SortBy.START),
+        lastActionEnd(SortBy.END);
+        
+        private DetailSortBy(SortBy value) {
+            this.value = value;
+        }
+
+        private final SortBy value;
+
+        public SortBy getValue() {
+            return value;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + name();
+        }
     }
     
 }
