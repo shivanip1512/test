@@ -1,6 +1,7 @@
 package com.cannontech.dr.dao;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -229,13 +230,15 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
         newAddress.required = required;
         newAddress.timestamp = timestamp;
 
+        Set<ExpressComReportedAddressRelay> newRelayAddress = new HashSet<>();
         for (ExpressComReportedAddressRelay addressRelay : relays) {
             ExpressComReportedAddressRelay newAddressRelay = new ExpressComReportedAddressRelay();
             newAddressRelay.setProgram(addressRelay.getProgram());
             newAddressRelay.setRelayNumber(addressRelay.getRelayNumber());
             newAddressRelay.setSplinter(addressRelay.getSplinter());
-            newAddress.setRelays(relays);
+            newRelayAddress.add(newAddressRelay);
         }
+        newAddress.setRelays(newRelayAddress);
 
         return newAddress;
     }
