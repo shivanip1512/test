@@ -77,6 +77,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private volatile double localVoltageOffset;
     private volatile double remoteVoltageOffset;
     private volatile boolean tapPositionsAndSetPointValuesPreloaded = false;
+    private volatile List<Integer> blockedPointIds = new ArrayList<>(); // The list of points that will not be sent
+    private volatile List<Integer> badQualityPointIds = new ArrayList<>(); //The list of points that we want to force a bad quality on
     
     private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
     private final Map<Integer, Double> regulatorSetPointValues = new HashMap<>();
@@ -659,14 +661,19 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     }
     
     // Sends this point to Dispatch. Does not force archive, follows point archival settings.
+    // May not send points or may modify quality based on simulator settings
     private void generatePoint(int pointId, double value, PointType type) {
-        if(pointId != 0) {
+        if(pointId != 0 && !blockedPointIds.contains(pointId)) {
             PointData pointData = new PointData();
             pointData.setTagsPointMustArchive(false);    
             pointData.setPointQuality(PointQuality.Normal);
             pointData.setId(pointId);
             pointData.setType(type.getPointTypeId());
             pointData.setValue(value);
+            
+            if (badQualityPointIds.contains(pointId)) {
+                pointData.setPointQuality(PointQuality.NonUpdated);
+            }
             
             if (pointData != null) {
                 messagesToSend.add(pointData);
