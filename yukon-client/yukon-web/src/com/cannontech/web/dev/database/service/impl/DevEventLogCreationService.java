@@ -730,6 +730,7 @@ public class DevEventLogCreationService {
                 systemEventLogService.passwordRequestAttempted("barney", "barney@eaton.com", "123123123", EventSource.CONSUMER);
                 systemEventLogService.rphDeleteDanglingEntries(rowsDeleted, start, finish);
                 systemEventLogService.rphDeleteDuplicates(rowsDeleted, start, finish);
+                systemEventLogService.deletePointDataEntries(rowsDeleted, start, finish);
                 systemEventLogService.systemLogDeleteDanglingEntries(rowsDeleted, start, finish);
                 systemEventLogService.systemLogWeatherDataUpdate("MSP", "Error updating weather stations.");
                 systemEventLogService.smartIndexMaintenance(start, finish);

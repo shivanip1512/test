@@ -1,28 +1,42 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.maintenance.task.dao.impl;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.RphDataPruningDao;
+import com.cannontech.maintenance.task.dao.PointDataPruningDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 
-public class RphDataPruningDaoImpl implements RphDataPruningDao {
+public class PointDataPruningDaoImpl implements PointDataPruningDao {
 
-    private static final Logger log = YukonLogManager.getLogger(RphDataPruningDaoImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(PointDataPruningDaoImpl.class);
     private static final int BATCH_SIZE = 100000;
 
     @Autowired private YukonJdbcTemplate yukonTemplate;
     @Autowired private DatabaseVendorResolver dbVendorResolver;
 
-    public int archiveRph(DateTime processEndTime, Date deleteUpto) {
+    @Override
+    public int deletePointData(Instant processEndTime, Instant deleteUpto) {
+        SqlFragmentSource deleteSql = buildDeleteQuery(deleteUpto);
+        SqlFragmentSource executeSql = buildBatchSql(deleteSql, processEndTime);
+        log.debug(executeSql);
+        return yukonTemplate.update(executeSql);
+    }
+
+    @Override
+    public int deletePointData(Instant deleteUpto) {
+        SqlFragmentSource deleteSql = buildDeleteQuery(deleteUpto);
+        log.debug(deleteSql);
+        return yukonTemplate.update(deleteSql);
+    }
+
+    private SqlFragmentSource buildDeleteQuery(Instant deleteUpto) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
@@ -51,17 +65,14 @@ public class RphDataPruningDaoImpl implements RphDataPruningDao {
             sql.append("    ON p.paObjectId = pao.paObjectId)");
             sql.append("  )");
         }
-
-        SqlFragmentSource executeSql = buildBatchSql(sql, processEndTime);
-        log.info(executeSql);
-        return yukonTemplate.update(executeSql);
+        return sql;
     }
 
     /*
      * Create a batch which executes until the processEndTime is reached or there are no records to delete.
      * The sql passed as mainQuery, will the actual query that will be running in the batch.
      */
-    private SqlFragmentSource buildBatchSql(SqlFragmentSource mainQuery, DateTime processEndTime) {
+    private SqlFragmentSource buildBatchSql(SqlFragmentSource mainQuery, Instant processEndTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
@@ -106,7 +117,7 @@ public class RphDataPruningDaoImpl implements RphDataPruningDao {
     /*
      * Sql to check if there is time available for the batch.
      */
-    private SqlFragmentSource timeCheckSql(DateTime processEndTime) {
+    private SqlFragmentSource timeCheckSql(Instant processEndTime) {
         Timestamp ts = new Timestamp(processEndTime.getMillis());
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
