@@ -9,6 +9,7 @@
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="displayUnauthorizedMessage" type="java.lang.Boolean" %>
 <%@ attribute name="title" %>
+<%@ attribute name="id" %>
 
 <%@ attribute name="helpText" description="The text to put inside of a help popup." %>
 <%@ attribute name="helpUrl" description="A url used to load a help popup with content before showing." %>
@@ -32,7 +33,12 @@
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(pageScope.paramMap,null)}" scope="request"/>
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,widgetContainerParams)}" scope="request"/>
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,pageScope.widgetAttributes)}" scope="request"/>
+
 <cti:uniqueIdentifier var="widgetId" prefix="widget_"/>
+<c:if test="${!empty id}">
+    <c:set var="widgetId" value="widget_${id}"/>
+    <c:set var="useId" value="${true}"/>
+</c:if>
 <c:set target="${widgetParameters}" property="widgetId" value="${widgetId}"/>
 <c:set target="${widgetParameters}" property="shortName" value="${beanInst.shortName}"/>
 <c:set target="${widgetParameters}" property="jsWidget" value="jsobj_${widgetParameters.widgetId}"/>
@@ -62,14 +68,15 @@
     </c:if>
 
     <c:if test="${empty container or container eq 'box'}">
-        <tags:boxContainer title="${containerTitle}" 
+        <tags:boxContainer title="${containerTitle}"
                 id="widget-titled-container-${widgetParameters.widgetId}" 
                 styleClass="widget-container ${classes}" 
                 showInitially="true" 
                 hideEnabled="${empty pageScope.hideEnabled ? true : pageScope.hideEnabled}" 
                 helpText="${pageScope.helpText}"
                 helpUrl="${pageScope.helpUrl}"
-                smartNotificationsEvent="${beanInst.smartNotificationsEvent}">
+                smartNotificationsEvent="${beanInst.smartNotificationsEvent}"
+                useIdForCookie="${useId}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                     <c:when test="${!authorized}">

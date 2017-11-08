@@ -16,6 +16,7 @@
 <%@ attribute name="titleLinkHtml" %>
 <%@ attribute name="showArrows" type="java.lang.Boolean" %>
 <%@ attribute name="smartNotificationsEvent" %>
+<%@ attribute name="useIdForCookie" type="java.lang.Boolean" %>
 
 <c:if test="${not empty pageScope.smartNotificationsEvent}">
     <cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
@@ -32,7 +33,14 @@
             <c:when test="${showInitially}"><c:set var="showHide" value="show"/></c:when>
             <c:otherwise><c:set var="showHide" value="hide"/></c:otherwise>
         </c:choose>
-        <cti:replaceAll var="persistId" input="${pageScope.title}" replace="" pattern="[^\w]"/>
+        <c:choose>
+            <c:when test="${useIdForCookie}">
+                <c:set var="persistId" value="${pageScope.id}"/>
+            </c:when>
+            <c:otherwise>
+                <cti:replaceAll var="persistId" input="${pageScope.title}" replace="" pattern="[^\w]"/>
+            </c:otherwise>
+        </c:choose>
         <cti:yukonCookie var="showHide" scope="hideReveal" id="${persistId}" defaultValue="${showHide}"/>
         <c:set var="collapsed" value="${showHide eq 'hide' ? ' collapsed' : ''}"/>
     </c:when>
@@ -46,7 +54,7 @@
     <c:set var="thisId" value="${id}"/>
 </c:if>
 
-<div class="titled-container box-container clearfix ${styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if>>
+<div class="titled-container box-container clearfix ${styleClass}" <c:if test="${!empty pageScope.id}">id="${id}"</c:if> data-use-id="${useIdForCookie}">
 
     <div class="title-bar clearfix">
         <c:if test="${!empty pageScope.titleLinkHtml}">${pageScope.titleLinkHtml}</c:if>
@@ -64,7 +72,7 @@
                 <cti:button renderMode="image" icon="icon-help" classes="widget-controls" data-popup="#box-container-info-popup-${thisId}"/>
             </c:if>
             <c:if test="${hideEnabled}">
-                <cti:button renderMode="image" icon="show-hide" classes="widget-controls"/>
+                <cti:button renderMode="image" icon="show-hide" classes="widget-controls js-show-hide"/>
             </c:if>
             <c:if test="${showArrows}">
                 <cti:button renderMode="image" icon="icon-bullet-go-up" classes="widget-controls js-move-up"/>

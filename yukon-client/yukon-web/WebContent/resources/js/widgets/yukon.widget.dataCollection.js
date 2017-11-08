@@ -53,12 +53,16 @@ yukon.widget.dataCollection = (function () {
     /** Build the pie chart for the first time. */
     _buildChart = function (chart, data) {
         debug.log('building chart');
+        var container = chart.closest('.widgetWrapper'),
+            chartWidth = container.width() - 20;
         chart.highcharts({
             chart: {
+                renderTo: 'chart',
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                height: 200
+                height: 200,
+                width: chartWidth
             },
             credits: {
                 enabled: false
