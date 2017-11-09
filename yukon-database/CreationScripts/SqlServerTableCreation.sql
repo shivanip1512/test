@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/7/2017 10:55:35 AM                        */
+/* Created on:     11/8/2017 10:35:56 PM                        */
 /*==============================================================*/
 
 
@@ -7342,8 +7342,6 @@ create table MaintenanceTask (
 )
 go
 
-INSERT INTO MaintenanceTask VALUES (1,'POINT_DATA_PRUNING', 1);
-
 /*==============================================================*/
 /* Table: MaintenanceTaskSettings                               */
 /*==============================================================*/
@@ -7355,8 +7353,6 @@ create table MaintenanceTaskSettings (
    constraint PK_MaintenanceTaskSettings primary key (TaskPropertyId)
 )
 go
-
-INSERT INTO MaintenanceTaskSettings VALUES (1,1, 'NO_OF_MONTHS', 24);
 
 /*==============================================================*/
 /* Table: MeterHardwareBase                                     */

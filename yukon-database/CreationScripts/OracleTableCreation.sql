@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/7/2017 10:56:21 AM                        */
+/* Created on:     11/8/2017 10:34:48 PM                        */
 /*==============================================================*/
 
 
@@ -6933,8 +6933,6 @@ create table MaintenanceTask  (
    constraint PK_MaintenanceTask primary key (TaskId)
 );
 
-INSERT INTO MaintenanceTask VALUES (1,'POINT_DATA_PRUNING', 1);
-
 /*==============================================================*/
 /* Table: MaintenanceTaskSettings                               */
 /*==============================================================*/
@@ -6945,8 +6943,6 @@ create table MaintenanceTaskSettings  (
    Value                VARCHAR2(50)                    not null,
    constraint PK_MaintenanceTaskSettings primary key (TaskPropertyId)
 );
-
-INSERT INTO MaintenanceTaskSettings VALUES (1,1, 'NO_OF_MONTHS', 24);
 
 /*==============================================================*/
 /* Table: MeterHardwareBase                                     */

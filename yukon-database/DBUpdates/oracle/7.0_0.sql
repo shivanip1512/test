@@ -291,8 +291,6 @@ CREATE TABLE MaintenanceTask  (
    CONSTRAINT PK_MaintenanceTask PRIMARY KEY (TaskId)
 );
 
-INSERT INTO MaintenanceTask VALUES (1,'POINT_DATA_PRUNING', 1);
-
 CREATE TABLE MaintenanceTaskSettings  (
    TaskPropertyId       NUMBER(10)                      NOT NULL,
    TaskId               NUMBER(10)                      NOT NULL,
@@ -300,8 +298,6 @@ CREATE TABLE MaintenanceTaskSettings  (
    Value                VARCHAR2(50)                    NOT NULL,
    CONSTRAINT PK_MaintenanceTaskSettings PRIMARY KEY (TaskPropertyId)
 );
-
-INSERT INTO MaintenanceTaskSettings VALUES (1,1, 'NO_OF_MONTHS', 24);
 
 ALTER TABLE MaintenanceTaskSettings
    ADD CONSTRAINT FK_MTaskSettings_MTask FOREIGN KEY (TaskId)
