@@ -26,8 +26,11 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -86,6 +89,7 @@ public class PointController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonListDao listDao;
     @Autowired private CbcHelperService cbcHelperService;
+    @Autowired private PaoDao paoDao;
     
     private static final String baseKey = "yukon.web.modules.tools.point";
 
@@ -103,9 +107,6 @@ public class PointController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
             return "point/point.jsp";
         }
-        cbcHelperService.splitLogicalPointName(pointModel.getPointBase().getPoint().getPointName(),
-                                              pointModel.getPointBase().getPoint()::setPointName,
-                                              null);
 
         PointBase base = pointModel.getPointBase();
         if (base instanceof SystemPoint){
@@ -138,7 +139,14 @@ public class PointController {
     }
 
     private String setUpModel(ModelMap model, PointModel pointModel, YukonUserContext userContext) {
+        StringBuilder parentNameBuilder = new StringBuilder();
+        cbcHelperService.splitLogicalPointName(pointModel.getPointBase().getPoint().getPointName(),
+                                               pointModel.getPointBase().getPoint()::setPointName,
+                                               deviceName -> {
+                                                   parentNameBuilder.append(deviceName);
+                                               });
 
+        
         MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
         String noneChoice = messageAccessor.getMessage("yukon.common.none.choice");
@@ -150,9 +158,17 @@ public class PointController {
         
         model.addAttribute("pointModel", pointModel);
 
-        LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
-        model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
-        model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+        String parentName = parentNameBuilder.toString();
+        if (!parentName.isEmpty()) {
+            YukonPao parent = paoDao.findYukonPao(parentName, PaoType.CBC_LOGICAL);
+            model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parentName));
+            model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+        } else {
+            LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
+            model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
+            model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+        }
+
         
         FdrInterfaceType[] interfaceTypes = FdrInterfaceType.values();
         Arrays.sort(interfaceTypes, FdrInterfaceType.alphabeticalComparator);
