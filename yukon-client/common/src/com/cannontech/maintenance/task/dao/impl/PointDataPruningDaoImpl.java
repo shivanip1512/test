@@ -26,7 +26,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         SqlFragmentSource deleteSql = buildDeleteQuery(deleteUpto);
         SqlFragmentSource executeSql = buildBatchSql(deleteSql, processEndTime);
         log.debug(executeSql);
-        return jdbcTemplate.update(executeSql);
+        return jdbcTemplate.queryForInt(executeSql);
     }
 
     @Override

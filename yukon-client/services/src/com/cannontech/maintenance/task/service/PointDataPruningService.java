@@ -7,10 +7,10 @@ public interface PointDataPruningService {
     /*
      * Delete point data
      */
-    void deletePointData(Instant processEndTime);
+    int deletePointData(Instant processEndTime) ;
 
     /*
      * Delete point data
      */
-    void deletePointDataSql(Instant processEndTime);
+    int deletePointDataSql(Instant processEndTime);
 }
