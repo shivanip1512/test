@@ -9,38 +9,6 @@ using namespace std;
 namespace Cti {
 namespace Devices {
 
-const char *Cbc7020Device::PutConfigPart_all             = "all";
-const char *Cbc7020Device::PutConfigPart_comms_lost      = "commslost";
-const char *Cbc7020Device::PutConfigPart_control_times   = "controltimes";
-const char *Cbc7020Device::PutConfigPart_data_logging    = "logging";
-const char *Cbc7020Device::PutConfigPart_dnp             = "dnp";
-const char *Cbc7020Device::PutConfigPart_fault_detection = "faultdetection";
-const char *Cbc7020Device::PutConfigPart_neutral_current = "neutralcurrent";
-const char *Cbc7020Device::PutConfigPart_time_temp_1     = "timeandtemp1";
-const char *Cbc7020Device::PutConfigPart_time_temp_2     = "timeandtemp2";
-const char *Cbc7020Device::PutConfigPart_udp             = "udp";
-const char *Cbc7020Device::PutConfigPart_voltage         = "voltage";
-
-const Cbc7020Device::ConfigPartsList Cbc7020Device::_config_parts = Cbc7020Device::initConfigParts();
-
-Cbc7020Device::ConfigPartsList Cbc7020Device::initConfigParts()
-{
-    Cbc7020Device::ConfigPartsList tempList;
-    tempList.push_back(Cbc7020Device::PutConfigPart_all);
-    tempList.push_back(Cbc7020Device::PutConfigPart_comms_lost);
-    tempList.push_back(Cbc7020Device::PutConfigPart_control_times);
-    tempList.push_back(Cbc7020Device::PutConfigPart_data_logging);
-    tempList.push_back(Cbc7020Device::PutConfigPart_dnp);
-    tempList.push_back(Cbc7020Device::PutConfigPart_fault_detection);
-    tempList.push_back(Cbc7020Device::PutConfigPart_neutral_current);
-    tempList.push_back(Cbc7020Device::PutConfigPart_time_temp_1);
-    tempList.push_back(Cbc7020Device::PutConfigPart_time_temp_2);
-    tempList.push_back(Cbc7020Device::PutConfigPart_udp);
-    tempList.push_back(Cbc7020Device::PutConfigPart_voltage);
-
-    return tempList;
-}
-
 YukonError_t Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     YukonError_t nRet = ClientErrors::NoMethod;
@@ -152,15 +120,6 @@ void Cbc7020Device::processPoints( Protocols::Interface::pointlist_t &points )
 
     //  do the final processing
     Inherited::processPoints(points);
-}
-
-YukonError_t Cbc7020Device::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
-{
-    string tempStr = "putvalue analog " + CtiNumStr(outputPt) + " " + CtiNumStr(value);
-    OUTMESS *tempOutMess = CTIDBG_new OUTMESS(*OutMessage);
-    strncpy(tempOutMess->Request.CommandStr, tempStr.c_str(), COMMAND_STR_SIZE );
-    CtiCommandParser parseSingle(tempOutMess->Request.CommandStr);
-    return Inherited::ExecuteRequest(pReq, parseSingle, tempOutMess, vgList, retList, outList);
 }
 
 }
