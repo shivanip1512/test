@@ -42,7 +42,7 @@
                    <i:inline key="yukon.web.modules.dr.home.rfPerformance.infoText"/>
                 </div>
                 <cti:icon icon="icon-information" classes="fn cp" data-popup="#rf-event-info" data-popup-toggle=""/>
-                </th>
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
