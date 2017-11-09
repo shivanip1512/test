@@ -140,7 +140,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(GlobalSettingSubCategory.AMI, booleanType(), true),
     PRESERVE_ENDPOINT_LOCATION(GlobalSettingSubCategory.AMI, booleanType(), true),
-    DATA_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.AMI, integerType(), 3),
     RFN_INCOMING_DATA_TIMESTAMP_LIMIT(GlobalSettingSubCategory.AMI, integerType(), 6),
 
     // Misc.
@@ -169,6 +168,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     CALL_PREFIX(GlobalSettingSubCategory.VOICE, stringType(), null),
     
     // Dashboard Widgets
+    DATA_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
     GATEWAY_CONNECTION_WARNING_MINUTES(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 60),
     GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3500),
     GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
