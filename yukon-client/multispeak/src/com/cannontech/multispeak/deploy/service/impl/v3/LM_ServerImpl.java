@@ -57,6 +57,7 @@ public class LM_ServerImpl implements LM_Server
     public List<ErrorObject> SCADAAnalogChangedNotification(
             List<ScadaAnalog> scadaAnalogs) throws MultispeakWebServiceException {
         init();
+        multispeakFuncs.getMultispeakVendorFromHeader();
         LiteYukonUser liteYukonUser = multispeakFuncs.authenticateMsgHeader();
         // multispeakEventLogService.methodInvoked("SCADAAnalogChangedNotification", vendor.getCompanyName()); - stop logging this, it's occurring every minute or more
         
@@ -77,6 +78,7 @@ public class LM_ServerImpl implements LM_Server
     public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses()
             throws MultispeakWebServiceException {
         init();
+        multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakFuncs.authenticateMsgHeader();
         return multispeakLMService.getActiveLoadControlStatus();
     } 

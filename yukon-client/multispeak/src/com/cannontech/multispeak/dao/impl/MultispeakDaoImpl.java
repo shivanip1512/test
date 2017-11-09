@@ -89,8 +89,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         List<MultispeakVendor> mspVendors = jdbcTemplate.query(sql, mspVendorRowMapper);
 
         if (mspVendors == null || mspVendors.isEmpty()) {
-            throw new NotFoundException("Company and/or Appname are not defined.");
-
+            throw new NotFoundException("Company and/or Appname are not defined. Company: " + vendorName + " AppName: " + appName);
         } else if (mspVendors.size() > 1) { // match on app name if possible
             // Find a matching AppName
             for (int i = 0; i < mspVendors.size(); i++) {

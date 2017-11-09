@@ -149,9 +149,9 @@ public class MR_ServerImpl implements MR_Server{
     @Override
     public boolean isAMRMeter(java.lang.String meterNo) throws MultispeakWebServiceException {
         init();
-//          Commenting out for now, not sure if we want this logged or not, it could be a lot...and doesn't have much impact to the system
-//        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-//        multispeakEventLogService.methodInvoked("IsAMRMeter", vendor.getCompanyName());
+        multispeakFuncs.getMultispeakVendorFromHeader();
+//      Commenting out for now, not sure if we want this logged or not, it could be a lot...and doesn't have much impact to the system
+//      multispeakEventLogService.methodInvoked("IsAMRMeter", vendor.getCompanyName());
 
         boolean isAmrMeter = false;
         try {

@@ -3,6 +3,7 @@ package com.cannontech.web.multispeak.validators;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -46,12 +47,20 @@ public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
                 index++;
             }
         } else {
-            boolean nameAvailable =
-                multispeakDao.isUniqueName(multispeakVendor.getCompanyName(), multispeakVendor.getAppName(),multispeak.getMspVendor().getVendorID());
-            if (nameAvailable) {
-                errors.rejectValue("mspVendor.appName",
-                    "yukon.web.modules.adminSetup.multispeak.companyAppNameConflict");
-                errors.rejectValue("mspVendor.companyName", "yukon.common.blank");
+            //Cannon is the vendor name used by Yukon. We should not allow to create any other vendor with the same name.
+            if (StringUtils.equalsIgnoreCase(multispeakVendor.getCompanyName(), MultispeakVendor.CANNON_MSP_COMPANYNAME)) {
+                errors.rejectValue("mspVendor.companyName",
+                        "yukon.web.modules.adminSetup.multispeak.companyNameConflict");
+            } else {
+                boolean nameAvailable =
+                        multispeakDao.isUniqueName(multispeakVendor.getCompanyName(), multispeakVendor.getAppName(),
+                            multispeak.getMspVendor().getVendorID());
+                    
+                if (nameAvailable) {
+                    errors.rejectValue("mspVendor.appName",
+                        "yukon.web.modules.adminSetup.multispeak.companyAppNameConflict");
+                    errors.rejectValue("mspVendor.companyName", "yukon.common.blank");
+                }
             }
             for (MultispeakInterface multispeakInterface : multispeak.getMspInterfaceList()) {
                 if (multispeakInterface.getInterfaceEnabled() != null && multispeakInterface.getInterfaceEnabled()) {
