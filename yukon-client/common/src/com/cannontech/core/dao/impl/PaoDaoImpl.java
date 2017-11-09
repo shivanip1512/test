@@ -32,7 +32,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -120,7 +120,7 @@ public final class PaoDaoImpl implements PaoDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, Type");
         sql.append("FROM YukonPAObject");
-        sql.append("WHERE PaoName").eq(StringUtils.trimSpaces(paoName));
+        sql.append("WHERE PaoName").eq(StringUtils.trim(paoName));
         sql.append("AND Category").eq(paoCategory);
         sql.append("AND PaoClass").eq(paoClass);
 
@@ -196,7 +196,7 @@ public final class PaoDaoImpl implements PaoDao {
     public LiteYukonPAObject findUnique(String paoName, PaoType paoType) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
-            sql.append("WHERE UPPER(y.PAOName) = UPPER(").appendArgument(StringUtils.trimSpaces(paoName)).append(")");
+            sql.append("WHERE UPPER(y.PAOName) = UPPER(").appendArgument(StringUtils.trim(paoName)).append(")");
             sql.append("AND y.Category").eq_k(paoType.getPaoCategory());
             sql.append("AND y.PAOClass").eq_k(paoType.getPaoClass());
             LiteYukonPAObject pao = jdbcTemplate.queryForObject(sql, litePaoRowMapper);

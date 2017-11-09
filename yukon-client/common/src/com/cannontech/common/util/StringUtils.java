@@ -29,52 +29,24 @@ public final class StringUtils {
         return percent(total, count, maxFractionDigits, "###.##%");
     }
     
+    /**
+     * Separates camelCase str with addedChar. Opposite of removeChars method.
+     * Example: str = "RampOutRandomRest", addedChar = " " 
+     * Result: "Ramp Out Random Rest"
+     */
     public static String addCharBetweenWords(char addedChar, String str) {
-        if (str == null) {
-            return null;
-        }
-
-        StringBuffer b = new StringBuffer(str);
-
-        for (int i = 0; i < b.length(); i++) {
-            if (Character.isUpperCase(b.charAt(i))) {
-                b.insert(i++, addedChar);
-            }
-        }
-
-        return b.toString().trim();
+        return org.apache.commons.lang3.StringUtils.join(org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(str), addedChar).trim();
     }
 
-    public static String trimSpaces(String s) {
-        int len = s.length();
-        int st = 0;
-        char[] val = s.toCharArray(); /* avoid getfield opcode */
-
-        while ((st < len) && (val[st] == ' ')) {
-            st++;
-        }
-        while ((st < len) && (val[len - 1] == ' ')) {
-            len--;
-        }
-
-        return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
-    }
-
+    /** 
+     * Removes deletedChar from str. Opposite of addCharBetweenWords method.
+     * Example: str = Ramp Out Random Rest, deletedChar = " " 
+     * Result: "RampOutRandomRest"
+     */
     public static String removeChars(char deletedChar, String str) {
-        if (str == null) {
-            return null;
-        }
-
-        StringBuffer b = new StringBuffer(str);
-
-        for (int indx = b.toString().indexOf(deletedChar); 
-             indx >= 0; 
-             indx = b.toString().indexOf(deletedChar)) {
-            b.deleteCharAt(indx);
-        }
-
-        return b.toString();
+        return org.apache.commons.lang3.StringUtils.remove(str, deletedChar);
     }
+    
     /**
      * Parase a comma separated string into an List<Integer>
      * @param s

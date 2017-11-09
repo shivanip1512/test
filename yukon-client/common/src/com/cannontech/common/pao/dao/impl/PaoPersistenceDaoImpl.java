@@ -273,7 +273,7 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
                     if (obj instanceof Boolean || obj.getClass() == Boolean.TYPE) {
                         obj = YNBoolean.valueOf((Boolean) obj);
                     } else if (obj instanceof String) {
-                        obj = SqlUtils.convertStringToDbValue(com.cannontech.common.util.StringUtils.trimSpaces((String) obj));
+                        obj = SqlUtils.convertStringToDbValue(StringUtils.trim((String) obj));
                     }
                     params.addValue(dbFieldMapping.getDbColumnName(), obj);
                 }
