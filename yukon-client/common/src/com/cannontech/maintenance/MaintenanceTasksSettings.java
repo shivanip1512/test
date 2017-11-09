@@ -6,15 +6,15 @@ package com.cannontech.maintenance;
 
 public enum MaintenanceTasksSettings {
 
-    NO_OF_MONTHS(MaintenanceTasks.POINT_DATA_PRUNING);
+    NO_OF_MONTHS(MaintenanceTaskName.POINT_DATA_PRUNING);
 
-    private MaintenanceTasks task;
+    private MaintenanceTaskName task;
 
-    private MaintenanceTasksSettings(MaintenanceTasks task) {
+    private MaintenanceTasksSettings(MaintenanceTaskName task) {
         this.task = task;
     }
 
-    public MaintenanceTasks getTask() {
+    public MaintenanceTaskName getTask() {
         return task;
     }
 }

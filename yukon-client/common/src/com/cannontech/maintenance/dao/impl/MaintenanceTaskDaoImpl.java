@@ -10,7 +10,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
-import com.cannontech.maintenance.MaintenanceTasks;
+import com.cannontech.maintenance.MaintenanceTaskName;
 import com.cannontech.maintenance.MaintenanceTasksSettings;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 
@@ -20,7 +20,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Autowired private YukonJdbcTemplate yukonTemplate;
 
     @Override
-    public Map<MaintenanceTasksSettings, String> getTaskSettings(MaintenanceTasks taskName) {
+    public Map<MaintenanceTasksSettings, String> getTaskSettings(MaintenanceTaskName taskName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Attribute, Value");
         sql.append("FROM MaintenanceTask ms");

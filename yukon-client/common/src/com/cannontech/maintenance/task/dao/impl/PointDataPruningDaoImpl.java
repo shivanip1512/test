@@ -18,7 +18,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
     private static final Logger log = YukonLogManager.getLogger(PointDataPruningDaoImpl.class);
     private static final int BATCH_SIZE = 100000;
 
-    @Autowired private YukonJdbcTemplate yukonTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DatabaseVendorResolver dbVendorResolver;
 
     @Override
@@ -26,14 +26,14 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         SqlFragmentSource deleteSql = buildDeleteQuery(deleteUpto);
         SqlFragmentSource executeSql = buildBatchSql(deleteSql, processEndTime);
         log.debug(executeSql);
-        return yukonTemplate.update(executeSql);
+        return jdbcTemplate.update(executeSql);
     }
 
     @Override
     public int deletePointData(Instant deleteUpto) {
         SqlFragmentSource deleteSql = buildDeleteQuery(deleteUpto);
         log.debug(deleteSql);
-        return yukonTemplate.update(deleteSql);
+        return jdbcTemplate.update(deleteSql);
     }
 
     private SqlFragmentSource buildDeleteQuery(Instant deleteUpto) {
