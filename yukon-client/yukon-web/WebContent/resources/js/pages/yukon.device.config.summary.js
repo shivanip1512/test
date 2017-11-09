@@ -48,6 +48,13 @@ yukon.deviceConfig.summary = (function () {
                     window.location.reload();
                 });
             });
+            
+            $(document).on('click', '.js-collection-action', function () {   
+                var action = $(this).data('collectionAction'),
+                    form = $('#filter-form'),
+                    data = form.serialize();
+                window.open(yukon.url('/deviceConfiguration/summary/collectionAction/' + action + '?' + data), '_blank');
+            });
 
 
             _initialized = true;

@@ -86,30 +86,10 @@
     <span class="badge">${results.hitCount}</span>&nbsp;<i:inline key=".devices"/>
     <span class="js-cog-menu">
         <cm:dropdown icon="icon-cog">
-            <cti:url var="assignUrl" value="/bulk/config/assignConfig">
-                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                </c:forEach>
-            </cti:url>
-            <cm:dropdownOption key=".assignConfig" href="${assignUrl}" icon="icon-bullet-go-down" newTab="true"/> 
-            <cti:url var="sendUrl" value="/bulk/config/sendConfig">
-                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                </c:forEach>
-            </cti:url>
-            <cm:dropdownOption key=".sendConfig" href="${sendUrl}" icon="icon-ping" newTab="true"/> 
-            <cti:url var="readUrl" value="/bulk/config/readConfig">
-                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                </c:forEach>
-            </cti:url>
-            <cm:dropdownOption key=".readConfig" href="${readUrl}" icon="icon-read" newTab="true"/> 
-            <cti:url var="verifyUrl" value="/bulk/config/verifyConfig">
-                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                </c:forEach>
-            </cti:url>
-            <cm:dropdownOption key=".verifyConfig" href="${verifyUrl}" icon="icon-accept" newTab="true"/> 
+            <cm:dropdownOption key=".assignConfig" classes="js-collection-action" icon="icon-bullet-go-down" data-collection-action="assignConfig"/> 
+            <cm:dropdownOption key=".sendConfig" classes="js-collection-action" icon="icon-ping" data-collection-action="sendConfig"/> 
+            <cm:dropdownOption key=".readConfig" classes="js-collection-action" icon="icon-read" data-collection-action="readConfig"/> 
+            <cm:dropdownOption key=".verifyConfig" classes="js-collection-action" icon="icon-accept" data-collection-action="verifyConfig"/> 
         </cm:dropdown>
     </span>
 

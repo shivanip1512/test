@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -57,7 +55,6 @@ public class DeviceConfigurationSummaryController {
     @Autowired private DeviceConfigSummaryDao deviceConfigSummaryDao;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private final static String baseKey = "yukon.web.modules.tools.configs.summary.";
@@ -70,33 +67,14 @@ public class DeviceConfigurationSummaryController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("configurations", configurations);
-        boolean assignedToAny = false;
-        List<DeviceGroup> subGroups = new ArrayList<>();
-        if (deviceSubGroups != null) {
-            for (String subGroup : deviceSubGroups) {
-                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
-            }
-        }
-        if (filter.getConfigurationIds() != null) {
-            //Include Unassigned
-            if (filter.getConfigurationIds().contains(-999)) {
-                filter.setDisplayUnassigned(true);
-            }
-            //Include any assigned
-            if (filter.getConfigurationIds().contains(-998)) {
-                assignedToAny = true;
-                List<Integer> allIds = new ArrayList<>();
-                configurations.forEach(config -> allIds.add(config.getConfigurationId()));
-                filter.setConfigurationIds(allIds);
-            }
-        }
-        filter.setGroups(subGroups);
-        model.addAttribute("filter", filter);
+        boolean assignedToAny = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(-998);
+        setFilterValues(filter, deviceSubGroups);
         model.addAttribute("lastActionOptions", LastAction.values());
         model.addAttribute("statusOptions", LastActionStatus.values());
         model.addAttribute("syncOptions", InSync.values());
         model.addAttribute("deviceSubGroups", deviceSubGroups);
-        getData(model, filter, sortBy.value, dir, paging);
+        SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter, paging, sortBy.value, dir);
+        model.addAttribute("results",  results);
         if (assignedToAny) {
             filter.setConfigurationIds(new ArrayList<>());
             filter.getConfigurationIds().add(-998);
@@ -106,6 +84,7 @@ public class DeviceConfigurationSummaryController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
+        model.addAttribute("filter", filter);
         return "summary/summary.jsp";
     }
     
@@ -138,17 +117,37 @@ public class DeviceConfigurationSummaryController {
         resp.setStatus(HttpStatus.NO_CONTENT.value()); 
     }
     
-    private void getData(ModelMap model, DeviceConfigSummaryFilter filter, SortBy sortBy, Direction dir, PagingParameters paging) {
-
-        SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter, paging, sortBy, dir);
-        
+    private void setFilterValues(DeviceConfigSummaryFilter filter, String[] deviceSubGroups) {
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
+        }
+        if (filter.getConfigurationIds() != null) {
+            //Include Unassigned
+            if (filter.getConfigurationIds().contains(-999)) {
+                filter.setDisplayUnassigned(true);
+            }
+            //Include any assigned
+            if (filter.getConfigurationIds().contains(-998)) {
+                List<Integer> allIds = new ArrayList<>();
+                List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
+                configurations.forEach(config -> allIds.add(config.getConfigurationId()));
+                filter.setConfigurationIds(allIds);
+            }
+        }
+        filter.setGroups(subGroups);
+    }
+    
+    @RequestMapping("collectionAction/{action}")
+    public String collectionAction(@PathVariable String action, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) {
+        setFilterValues(filter, deviceSubGroups);
+        SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<SimpleDevice> devices = results.getResultList().stream().map(d -> new SimpleDevice(d.getDevice())).collect(Collectors.toList());
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
-        model.addAttribute("deviceCollection", deviceCollection);
-        
-        model.addAttribute("results",  results);
+        return "redirect:/bulk/config/" + action + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
     
     public enum DetailSortBy implements DisplayableEnum {
