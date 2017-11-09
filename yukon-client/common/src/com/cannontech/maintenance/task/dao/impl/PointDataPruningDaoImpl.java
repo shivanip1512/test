@@ -124,10 +124,10 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
             sql.append("SELECT (");
             sql.append("  SELECT CASE WHEN");
-            sql.append("  (SELECT TO_CHAR(CURRENT_TIMESTAMP, 'YYYY-MM-DD HH:MI:SS') FROM DUAL)").lt(ts);
+            sql.append("  (SELECT TO_CHAR(SYS_EXTRACT_UTC(SYSTIMESTAMP), 'YYYY-MM-DD HH:MI:SS') FROM DUAL)").lt(ts);
             sql.append("  THEN 0 ELSE 1 END FROM DUAL) INTO timeAvailable FROM DUAL;");
         } else {
-            sql.append("(SELECT CASE WHEN (SELECT CURRENT_TIMESTAMP)").lt(ts);
+            sql.append("(SELECT CASE WHEN (SELECT GETUTCDATE())").lt(ts);
             sql.append("THEN 0 ELSE 1 END)");
         }
         return sql;

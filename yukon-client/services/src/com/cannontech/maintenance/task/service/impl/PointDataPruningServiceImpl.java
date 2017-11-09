@@ -20,7 +20,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     private long minimumExecutionTime = 5;
 
     @Override
-    public void deletePointDataSql(Instant processEndTime) {
+    public int deletePointDataSql(Instant processEndTime) {
         int noOfMonths = Integer.parseInt(
             getMaintenanceSettings(MaintenanceTaskName.POINT_DATA_PRUNING, MaintenanceTasksSettings.NO_OF_MONTHS));
         Instant start = new Instant();
@@ -28,21 +28,23 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         int numDeleted = pointDataPruningDao.deletePointData(processEndTime.minus(minimumExecutionTime), deleteUpto);
         Instant finish = new Instant();
         systemEventLogService.deletePointDataEntries(numDeleted, start, finish);
+        return numDeleted;
     }
 
     @Override
-    public void deletePointData(Instant processEndTime) {
+    public int deletePointData(Instant processEndTime) {
         int noOfMonths = Integer.parseInt(
             getMaintenanceSettings(MaintenanceTaskName.POINT_DATA_PRUNING, MaintenanceTasksSettings.NO_OF_MONTHS));
         Instant deleteUpto = Instant.now().toDateTime().minusMonths(noOfMonths).toInstant();
         
-        
-        while (isEnoughTimeAvailable(processEndTime)) {
+        int numDeleted = 1;
+        while (isEnoughTimeAvailable(processEndTime) && numDeleted != 0) {
             Instant start = new Instant();
-            int numDeleted = pointDataPruningDao.deletePointData(processEndTime, deleteUpto);
+            numDeleted = pointDataPruningDao.deletePointData(deleteUpto);
             Instant finish = new Instant();
             systemEventLogService.deletePointDataEntries(numDeleted, start, finish);
         }
+        return numDeleted;
     }
 
     private String getMaintenanceSettings(MaintenanceTaskName taskName, MaintenanceTasksSettings property) {
@@ -51,7 +53,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     }
     
     private boolean isEnoughTimeAvailable(Instant processEndTime) {
-        return Instant.now().toDateTime().isAfter(processEndTime.minus(minimumExecutionTime));
+        return Instant.now().isBefore(processEndTime.minus(minimumExecutionTime));
     }
 
 }
