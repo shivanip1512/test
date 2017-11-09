@@ -8,8 +8,8 @@ package com.cannontech.services;
 //TODO: (YUK-17006) move most of the services out of the database and into here.
 public enum ManagedService {
     SMART_NOTIFICATION("Smart Notification", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/smartNotification/smartNotificationContext.xml"),
+    MAINTENANCE("System Maintenance", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/maintenance/service/maintenanceContext.xml"),
     ;
-    
     private final String name;
     private final ServiceType type;
     private final String path;
