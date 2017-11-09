@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -17,17 +16,14 @@ public class LoadGroupsProvider extends BinningDeviceGroupProviderBase<String> {
     @Override
     protected List<String> getAllBins() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT PAOName ");
-        sql.append("FROM LMGroup lmg ");
-        sql.append("  JOIN LMHardwareControlGroup lmhcg ON lmg.DeviceID=lmhcg.LMGroupID ");
-        sql.append("  JOIN YukonPAObject ypo ON ypo.PAObjectID = lmg.DeviceID ");
-        sql.append("WHERE lmhcg.InventoryId IN ");
-        sql.append("    (SELECT ib.InventoryId ");
-        sql.append("     FROM InventoryBase ib,YukonPAObject ypo ");
-        sql.append("     WHERE ib.DeviceID = ypo.PAObjectID AND ypo.Type").in(PaoType.getTwoWayLcrTypes()).append(")");
-        sql.append("  AND LMHCG.groupEnrollStart IS NOT NULL");
-        sql.append("  AND LMHCG.groupEnrollStop IS NULL");
-        sql.append("ORDER BY PAOName");
+        sql.append("SELECT DISTINCT lmgroup.PAOName");
+        sql.append("FROM InventoryBase inv ");
+        sql.append("  JOIN LMHardwareBase lmbase ON inv.InventoryId = lmbase.InventoryId");
+        sql.append("  JOIN LMHardwareConfiguration hdconf ON lmbase.InventoryId = hdconf.InventoryId");
+        sql.append("  JOIN YukonPaobject lmGroup ON lmGroup.PAObjectId = hdconf.AddressingGroupId");
+        sql.append("WHERE lmGroup.Category = 'DEVICE'");
+        sql.append("  AND lmGroup.PAOClass = 'GROUP'");
+        sql.append("  AND inv.DeviceId").neq_k(0);
         List<String> bins = getJdbcTemplate().query(sql, TypeRowMapper.STRING);
         return bins;
     }
@@ -41,6 +37,7 @@ public class LoadGroupsProvider extends BinningDeviceGroupProviderBase<String> {
         sql.append("  JOIN YukonPaobject lmGroup ON lmGroup.PAObjectId = hdconf.AddressingGroupId");
         sql.append("WHERE lmGroup.Category").eq_k(PaoCategory.DEVICE);
         sql.append("  AND lmGroup.PAOClass").eq_k(PaoClass.GROUP);
+        sql.append("  AND inv.DeviceId").neq_k(0);
         sql.append("  AND lmGroup.PAOName").eq(bin);
         return sql;
     }
@@ -49,11 +46,13 @@ public class LoadGroupsProvider extends BinningDeviceGroupProviderBase<String> {
     protected SqlFragmentSource getAllBinnedDeviceSqlSelect() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT inv.DeviceId");
-        sql.append("FROM InventoryBase inv JOIN LMHardwareBase lmbase ON inv.InventoryId = lmbase.InventoryId");
+        sql.append("FROM InventoryBase inv ");
+        sql.append("  JOIN LMHardwareBase lmbase ON inv.InventoryId = lmbase.InventoryId");
         sql.append("  JOIN LMHardwareConfiguration hdconf ON lmbase.InventoryId = hdconf.InventoryId");
         sql.append("  JOIN YukonPaobject lmGroup ON lmGroup.PAObjectId = hdconf.AddressingGroupId");
-        sql.append("WHERE lmGroup.Category").eq_k(PaoCategory.DEVICE);
-        sql.append("  AND lmGroup.PAOClass").eq_k(PaoClass.GROUP);
+        sql.append("WHERE lmGroup.Category = 'DEVICE'");
+        sql.append("  AND lmGroup.PAOClass = 'GROUP'");
+        sql.append("  AND inv.DeviceId").neq_k(0);
         return sql;
     }
 
