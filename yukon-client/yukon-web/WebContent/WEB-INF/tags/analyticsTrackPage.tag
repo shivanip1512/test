@@ -10,7 +10,7 @@
 <%-- ******************* --%>
 <%-- **IMPORTANT** : New Ids need to be generated for every general release of Yukon --%>
 <c:set var="cooperDev" value="UA-30935838-8"/>
-<c:set var="cooperProd" value="UA-30935838-10"/>
+<c:set var="cooperProd" value="UA-30935838-11"/>
 
 <cti:globalSetting var="enabled" globalSettingType="GOOGLE_ANALYTICS_ENABLED"/>
 <cti:globalSetting var="additionalTrackingIds" globalSettingType="GOOGLE_ANALYTICS_TRACKING_IDS"/>
