@@ -6,13 +6,21 @@
 <div class="scroll-md">
     <c:choose>
         <c:when test="${details.size() > 0}">
-            <table class="compact-results-table">
+            <table id="history-table" class="compact-results-table" data-sortable>
                 <thead>
                     <tr>
-                        <th><i:inline key=".viewHistory.action" /></th>
-                        <th><i:inline key=".viewHistory.actionStatus" /></th>
-                        <th><i:inline key=".viewHistory.start" /></th>
-                        <th><i:inline key=".viewHistory.end" /></th>
+                        <th data-sorted="false">
+                            <i:inline key=".viewHistory.action" /><i class="icon icon=blank"/>    
+                        </th>
+                        <th data-sorted="false">
+                            <i:inline key=".viewHistory.actionStatus" /><i class="icon icon=blank"/>    
+                        </th>
+                        <th data-sorted="true" data-sorted-direction="descending">
+                            <i:inline key=".viewHistory.start" /><i class="icon icon=blank"/>    
+                        </th>
+                        <th data-sorted="false">
+                            <i:inline key=".viewHistory.end" /><i class="icon icon=blank"/>    
+                        </th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -36,4 +44,5 @@
     </c:choose>
 </div>
 </cti:msgScope>
+
     

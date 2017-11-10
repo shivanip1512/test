@@ -713,6 +713,7 @@
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.start">Start</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.end">End</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.none">No history found.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.viewHistory.title">Device:{0} History</entry>
        
     <entry key="yukon.web.modules.tools.configs.summary.read">Read</entry>
     <entry key="yukon.web.modules.tools.configs.summary.send">Send</entry>

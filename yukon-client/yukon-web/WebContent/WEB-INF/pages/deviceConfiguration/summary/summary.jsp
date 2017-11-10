@@ -86,7 +86,7 @@
     <span class="badge">${results.hitCount}</span>&nbsp;<i:inline key=".devices"/>
     <span class="js-cog-menu">
         <cm:dropdown icon="icon-cog">
-            <cm:dropdownOption key=".assignConfig" classes="js-collection-action" icon="icon-bullet-go-down" data-collection-action="assignConfig"/> 
+            <cm:dropdownOption key=".assignConfig" classes="js-collection-action" icon="icon-page-edit" data-collection-action="assignConfig"/> 
             <cm:dropdownOption key=".sendConfig" classes="js-collection-action" icon="icon-ping" data-collection-action="sendConfig"/> 
             <cm:dropdownOption key=".readConfig" classes="js-collection-action" icon="icon-read" data-collection-action="readConfig"/> 
             <cm:dropdownOption key=".verifyConfig" classes="js-collection-action" icon="icon-accept" data-collection-action="verifyConfig"/> 
@@ -158,7 +158,9 @@
                     <td><cti:formatDate type="BOTH" value="${detail.actionEnd}"/></td>
                     <td>
                         <cm:dropdown icon="icon-cog">
-                            <div class="dn js-view-history-${deviceId}" data-dialog data-cancel-omit="true" data-title="${detail.device.name}" 
+                            <cti:msg2 var="historyTitle" key=".viewHistory.title" argument="${detail.device.name}"/>
+                            <div class="dn js-view-history-${deviceId}" data-dialog data-cancel-omit="true" data-title="${historyTitle}" 
+                            data-width="600" data-load-event="yukon:config:viewHistory"
                             data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
                             <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}" icon="icon-application-view-columns"/>
                             <cm:dropdownOption key=".send" icon="icon-ping" classes="js-send-config" data-device-id="${deviceId}"/>
@@ -174,5 +176,7 @@
     </div>
     
     <cti:includeScript link="/resources/js/pages/yukon.device.config.summary.js" />
+    <cti:includeCss link="/resources/js/lib/sortable/sortable.css"/>
+    <cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>
 
 </cti:standardPage>

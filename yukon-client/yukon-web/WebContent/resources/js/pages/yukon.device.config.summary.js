@@ -55,6 +55,14 @@ yukon.deviceConfig.summary = (function () {
                     data = form.serialize();
                 window.open(yukon.url('/deviceConfiguration/summary/collectionAction/' + action + '?' + data), '_blank');
             });
+            
+            /** Load the View History popup. */
+            $(document).on('yukon:config:viewHistory', function (ev) {
+                var popup = $(ev.target),
+                    table = popup.find('#history-table');
+                Sortable.init();
+                Sortable.initTable(table);
+            });
 
 
             _initialized = true;
