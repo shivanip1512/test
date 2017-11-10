@@ -88,8 +88,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 3),
         RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 3),
         PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
-        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
-        BROADCAST_VERIFICATION_MESSAGES((byte)0x16, 8, 1);
+        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3);
 
         private final byte type;
         private final int length;
@@ -351,6 +350,26 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 // Generate TLV message
                 byte[] message = getTLVMessage();
                 outputStream.write(message);
+
+                // Add verification messages
+                outputStream.write((0x16 >> 4) & 0x0f); // Upper nibble of first byte
+                outputStream.write((0x16 & 0x0f) << 4); // Lower nibble of second byte
+                loadPerformanceVerificationEventMessages();
+                if (eventMessages != null && !eventMessages.isEmpty()) {
+                    // Add message length (No of bytes) in Hex
+                    String messageLength = Integer.toHexString(eventMessages.size() * 8);
+                    outputStream.write(Hex.decode(messageLength));
+                    for (PerformanceVerificationEventMessage eventMsg : eventMessages) {
+                        // Write first 4 byte as messageId
+                        writeLongValueAsByteArray(outputStream, eventMsg.getMessageId());
+                        // Write last 4 byte as timeStamp
+                        writeLongValueAsByteArray(outputStream, eventMsg.getTimeMessageSent().getMillis() / 1000);
+                    }
+                } else {
+                    // Add no message
+                    outputStream.write(Hex.decode("00")); // 0 message length
+                }
+
                 // Add LUF events
                 byte[] lufEvents = Hex.decode("01700200000180020000");
                 outputStream.write(lufEvents);
@@ -411,21 +430,28 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         // UTC length as 4-byte
         outputStream.write(4);
         // Generate UTC field values (4-byte)
-        long timeInSec = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().getMillis()/1000;
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-        byte[] utc = buffer.putLong(timeInSec).array();
-        utc = Arrays.copyOfRange(utc, 4, utc.length);
+        long timeInSec = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().getMillis() / 1000;
+        writeLongValueAsByteArray(outputStream, timeInSec);
+    }
 
-        for (int i = 0; i < utc.length; i++) {
-            outputStream.write(utc[i]);
+    /*
+     * This method converts long value into 4-byte array and writes into ByteArrayOutputStream
+     */
+    private void writeLongValueAsByteArray(ByteArrayOutputStream outputStream, long data) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        byte[] byteData = buffer.putLong(data).array();
+        byteData = Arrays.copyOfRange(byteData, 4, byteData.length);
+        for (int i = 0; i < byteData.length; i++) {
+            outputStream.write(byteData[i]);
         }
     }
+    
     /**
      * Generate byte Array (part of TLV report) from TLVField enum and generate random values for each field.
      */
     private byte[] getTLVMessage() {
         // Fixed length message (assuming 3-relay are present)
-        byte[] data = new byte[333];
+        byte[] data = new byte[322];
         int index = 0;
         for (TLVField field : TLVField.values()) {
             int fieldCount = 0;
