@@ -3,10 +3,12 @@
 #include "yukon.h"
 #include "dlldefs.h"
 
+#include "loggable.h"
+
 #include <string>
 #include <map>
 
-class IM_EX_CTIBASE Attribute
+class IM_EX_CTIBASE Attribute : public Cti::Loggable
 {
     Attribute( const std::string & name );
 
@@ -23,6 +25,8 @@ public:
     static const Attribute & Lookup( const std::string & name );
 
     std::string getName() const { return _name; }
+
+    std::string toString() const override { return getName(); }
 
     bool operator==( const Attribute & rhs ) const;
 

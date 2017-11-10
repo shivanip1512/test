@@ -21,7 +21,7 @@ struct TestCbcLogicalDevice : Cti::Devices::CbcLogicalDevice
     CtiPointSPtr logicalPoint;
     std::string requestedPointName;
 
-    CtiPointSPtr getLogicalPoint(const std::string& pointName) override
+    CtiPointSPtr getDevicePointByName(const std::string& pointName) override
     {
         requestedPointName = pointName;
 
@@ -376,9 +376,7 @@ BOOST_AUTO_TEST_CASE(test_control_fail)
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(), 
             "George Washington / No control offset name"
-            "\nLogical CBC ID   : 1776"
-            "\nLogical CBC name : George Washington"
-            "\nControl offset   : 14");
+            "\nAttribute : ENABLE_OVUV_CONTROL");
     }
     delete_container(retList);
     retList.clear();
@@ -409,13 +407,11 @@ BOOST_AUTO_TEST_CASE(test_control_fail)
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(), 
             "George Washington / Control offset override point not Status type"
-            "\nLogical CBC ID      : 1776"
-            "\nLogical CBC name    : George Washington"
             "\nOverride point name : Banana"
             "\nOverride point ID   : 22"
             "\nOverride device ID  : 2"
             "\nOverride point type : Analog"
-            "\nControl offset      : 1");
+            "\nAttribute           : CONTROL_POINT");
     }
     delete_container(retList);
     retList.clear();
@@ -446,12 +442,10 @@ BOOST_AUTO_TEST_CASE(test_control_fail)
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(), 
             "George Washington / Control offset override point does not have control parameters"
-            "\nLogical CBC ID      : 1776"
-            "\nLogical CBC name    : George Washington"
             "\nOverride point name : Banana"
             "\nOverride point ID   : 22"
             "\nOverride device ID  : 2"
-            "\nControl offset      : 1");
+            "\nAttribute           : CONTROL_POINT");
     }
     delete_container(retList);
     retList.clear();
@@ -482,13 +476,11 @@ BOOST_AUTO_TEST_CASE(test_control_fail)
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
             "George Washington / Control offset override not valid"
-            "\nLogical CBC ID          : 1776"
-            "\nLogical CBC name        : George Washington"
             "\nOverride point name     : Banana"
             "\nOverride point ID       : 22"
             "\nOverride device ID      : 2"
             "\nOverride control offset : -17"
-            "\nControl offset          : 1");
+            "\nAttribute               : CONTROL_POINT");
     }
     delete_container(retList);
     retList.clear();

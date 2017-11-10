@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dev_base.h"
+#include "attribute_mapping.h"
 
 namespace Cti {
 namespace Devices {
@@ -9,39 +10,23 @@ class IM_EX_DEVDB CbcLogicalDevice : public CtiDeviceBase
 {
 public:
 
+    CbcLogicalDevice();
+
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
 protected:
+
     typedef CtiDeviceBase Inherited;
 
-    enum class ControlOffsets : long
-    {
-        ControlPoint             =  1,
-        EnableControlOvuv        = 14,
-        EnableControlVar         = 15,
-        EnableControlTemperature = 16,
-        EnableControlTime        = 23,
-    };
-
-    void refreshAttributeOverrides();
-
-    virtual CtiPointSPtr getLogicalPoint(const std::string& pointName);
+    CtiPointSPtr getDevicePointByName(const std::string& name) override;
 
 private:
     
-    std::map<ControlOffsets, std::string> _controlOffsetNames;
+    AttributeMapping::AttributeList getMappableAttributes() const;
 
-    struct PaoOffset
-    {
-        long paoId;
-        long controlOffset;
-    };
+    AttributeMapping _attributeMapping;
 
-    YukonError_t executeRequestOnParent(const PaoOffset paoOffset, const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList);
-        
-    PaoOffset getControlDeviceOffset(ControlOffsets defaultControlOffset);
-
-    size_t _lastConfigId = 0;
+    YukonError_t executeRequestOnParent(const int deviceId, const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList);
 };
 
 }

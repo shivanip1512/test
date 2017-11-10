@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceCBC")
         ("class CtiDeviceCBC")
         ("class Cti::Devices::Cbc7020Device")
-        ("class Cti::Devices::DnpDevice")
+        ("class Cti::Devices::CbcDnpDevice")
         ("class Cti::Devices::CbcLogicalDevice")
         ("class Cti::Devices::Cbc8020Device")
         //  50
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "cbc 7030",                       "class Cti::Devices::Cbc7020Device" },
         { "cbc 8020",                       "class Cti::Devices::Cbc8020Device" },
         { "cbc 8024",                       "class Cti::Devices::Cbc8020Device" },
-        { "cbc dnp",                        "class Cti::Devices::DnpDevice" },
+        { "cbc dnp",                        "class Cti::Devices::CbcDnpDevice" },
         { "cbc expresscom",                 "class CtiDeviceCBC" },
         { "cbc fp-2800",                    "class CtiDeviceCBC" },
         { "cbc versacom",                   "class CtiDeviceCBC" },

@@ -130,6 +130,15 @@ boost::optional<typename Cont::reference> findIfRef(Cont& c, UnaryPredicate pred
     return *itr;
 }
 
+template <typename T, typename U>
+std::map<U, T> vectorToMap(const std::vector<T>& attributeList, U (T::*keyFunc)() const )
+{
+    std::map<U, T> m;
+    auto asPair = [=](T input) { return std::make_pair((input.*keyFunc)(), input); };
+    boost::copy(attributeList | boost::adaptors::transformed(asPair), std::inserter(m, m.begin()));
+    return m;
+}
+
 template <typename T>
 boost::iterator_range<T*> arrayToRange(T* arr, size_t len)
 {

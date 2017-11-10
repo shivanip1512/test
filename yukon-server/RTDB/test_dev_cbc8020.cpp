@@ -29,15 +29,15 @@ struct TestCbc8020Device : Cti::Devices::Cbc8020Device
 
     std::map<std::string, TypeOffset> pointNameLookup;
 
-    static const long PointOffset_FirmwareRevisionMajor = static_cast<long>(PointOffsets::FirmwareRevisionMajor);
-    static const long PointOffset_FirmwareRevisionMinor = static_cast<long>(PointOffsets::FirmwareRevisionMinor);
-    static const long PointOffset_FirmwareRevision      = static_cast<long>(PointOffsets::FirmwareRevision);
+    static const long PointOffset_FirmwareRevisionMajor = 3;
+    static const long PointOffset_FirmwareRevisionMinor = 4;
+    static const long PointOffset_FirmwareRevision      = 9999;
 
     using Cbc8020Device::processPoints;
 
     static void combineFirmwarePoints(pointlist_t &points)
     {
-        Cbc8020Device::combineFirmwarePoints(points, {3, 4});
+        Cbc8020Device::combineFirmwarePoints(points, { PointOffset_FirmwareRevisionMajor, PointOffset_FirmwareRevisionMinor });
     }
 
     long setPointName(const std::string& name, int offset, CtiPointType_t type)
@@ -623,13 +623,140 @@ struct beginExecuteRequest_helper
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
 
-BOOST_AUTO_TEST_CASE(test_dev_cbc8020_enable_ovuv)
+BOOST_AUTO_TEST_CASE(test_control)
 {
     TestCbc8020Device dev;
 
-    dev._name = "Test DNP device";
+    dev._name = "Test CBC-8020";
     dev._dnp.setAddresses(147, 1000);
-    dev._dnp.setName("Test DNP device");
+    dev._dnp.setName("Test CBC-8020");
+
+    //  set up the config
+    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    config.insertValue(Cti::Config::DNPStrings::internalRetries, "3");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset, "UTC");
+    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs, "true");
+    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest, "false");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "true");
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("control close");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK_EQUAL(vgList.size(), 1);  //  LMControlHistory message
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+        const byte_str expected(
+            "05 64 18 c4 93 00 e8 03 14 7b "
+            "c0 c1 05 0c 01 17 01 00 41 01 c8 01 00 00 00 00 a0 af "
+            "00 00 00 ff ff");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_control_override)
+{
+    TestCbc8020Device dev;
+
+    dev._name = "Test CBC-8020";
+    dev._dnp.setAddresses(147, 1000);
+    dev._dnp.setName("Test CBC-8020");
+
+    //  set up the config
+    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    config.insertValue(Cti::Config::DNPStrings::internalRetries, "3");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset, "UTC");
+    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs, "true");
+    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest, "false");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "true");
+
+    using Cti::Config::DNPStrings;
+
+    const std::map<std::string, std::string> configItems{
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix, "1" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::Attribute, "CONTROL_POINT" },
+        { DNPStrings::AttributeMappingConfiguration::AttributeMappings_Prefix + ".0."
+            + DNPStrings::AttributeMappingConfiguration::AttributeMappings::PointName, "Banana" } };
+
+    fixtureConfig->addCategory(
+        Cti::Config::Category::ConstructCategory(
+            "cbcAttributeMapping",
+            configItems));
+
+    dev.setControlOffsetName("Banana", 1776, ControlType_Normal);
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("control close");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK_EQUAL(vgList.size(), 1);  //  LMControlHistory message
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+            "05 64 1a c4 93 00 e8 03 a3 5d "
+            "c0 c1 05 0c 01 28 01 00 ef 06 41 01 c8 01 00 00 e4 ae "
+            "00 00 00 00 00 ff ff");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_enable_ovuv)
+{
+    TestCbc8020Device dev;
+
+    dev._name = "Test CBC-8020";
+    dev._dnp.setAddresses(147, 1000);
+    dev._dnp.setName("Test CBC-8020");
 
     //  set up the config
     Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
@@ -678,13 +805,13 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_enable_ovuv)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_dev_cbc8020_enable_ovuv_override)
+BOOST_AUTO_TEST_CASE(test_enable_ovuv_override)
 {
     TestCbc8020Device dev;
 
-    dev._name = "Test DNP device";
+    dev._name = "Test CBC-8020";
     dev._dnp.setAddresses(147, 1000);
-    dev._dnp.setName("Test DNP device");
+    dev._dnp.setName("Test CBC-8020");
 
     //  set up the config
     Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
@@ -750,13 +877,13 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_enable_ovuv_override)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
+BOOST_AUTO_TEST_CASE(test_integrity_scan)
 {
     TestCbc8020Device dev;
 
-    dev._name = "Test DNP device";
+    dev._name = "Test CBC-8020";
     dev._dnp.setAddresses(147, 1000);
-    dev._dnp.setName("Test DNP device");
+    dev._dnp.setName("Test CBC-8020");
 
     //  set up the config
     Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
@@ -962,9 +1089,9 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
 
     BOOST_CHECK_EQUAL(
             retMsg->ResultString(),
-            "Test DNP device / Device time: 03/24/2015 12:48:29.000"
-            "\nTest DNP device / "
-            "\nTest DNP device / Point data report:"
+            "Test CBC-8020 / Device time: 03/24/2015 12:48:29.000"
+            "\nTest CBC-8020 / "
+            "\nTest CBC-8020 / Point data report:"
             "\nAI:   132; AO:   372; DI:   122; DO:    44; Counters:     5; "
             "\nFirst/Last 5 points of each type returned:"
             "\nAnalog inputs:"

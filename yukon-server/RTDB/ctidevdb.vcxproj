@@ -356,6 +356,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="attribute_mapping.cpp" />
     <ClCompile Include="cmd_device.cpp">
     </ClCompile>
     <ClCompile Include="cmd_lcr3102_DemandResponseSummary.cpp">
@@ -428,6 +429,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="dev_cbc8020.cpp">
     </ClCompile>
+    <ClCompile Include="dev_cbcdnp.cpp" />
     <ClCompile Include="dev_cbclogical.cpp" />
     <ClCompile Include="dev_ccu.cpp">
     </ClCompile>
@@ -628,6 +630,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\attribute_mapping.h" />
     <ClInclude Include="include\cmd_device.h" />
     <ClInclude Include="include\cmd_dlc.h" />
     <ClInclude Include="include\cmd_lcr3102.h" />
@@ -671,7 +674,9 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_cbc.h" />
     <ClInclude Include="include\dev_cbc7020.h" />
     <ClInclude Include="include\dev_cbc8020.h" />
+    <ClInclude Include="include\dev_cbcdnp.h" />
     <ClInclude Include="include\dev_cbclogical.h" />
+    <ClInclude Include="include\dev_cbc_attribute_mapping.h" />
     <ClInclude Include="include\dev_ccu.h" />
     <ClInclude Include="include\dev_ccu721.h" />
     <ClInclude Include="include\dev_ccu_queue_interface.h" />

@@ -388,6 +388,7 @@
     </ClCompile>
     <ClCompile Include="test_dev_cbc8020.cpp">
     </ClCompile>
+    <ClCompile Include="test_dev_cbcdnp.cpp" />
     <ClCompile Include="test_dev_cbclogical.cpp" />
     <ClCompile Include="test_dev_ccu721.cpp">
     </ClCompile>
