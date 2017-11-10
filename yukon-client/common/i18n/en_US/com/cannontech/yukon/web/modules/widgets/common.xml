@@ -177,9 +177,8 @@
 
 <entry key="yukon.web.widgets.porterQueueCountsWidget">Comm Channel Queue Counts</entry>
 <entry key="yukon.web.widgets.porterQueueCountsWidget.helpText"><![CDATA[
-    The Comm Channel Queue Counts widget displays up to 3 months of historical data for up to 5 Comm Channels. The default comm channels are selected when the widget is created. These are the comm
-    channels that will populate the graph in the widget each time the widget is loaded. Use the comm channel picker within the widget to temporarily change the comm channels that are displayed in in the graph. To permanently change
-    the comm channels for the widget, edit the dashboard containing the widget, use the picker to select the desired comm channels, and click save.
+    The Comm Channel Queue Counts widget displays up to 3 (default) months of historical data for a maximum number of  5 (default) Comm Channels. The number of months and communication channel limits may be modified at a system level in the Yukon Configuration Settings.
+The communication channels are selected when the widget is created and are used to populate the graph each time the widget is loaded. Temporarily change the selected communication channels using the picker. To permanently change the default selected communication channels, edit the dashboard and select different communication channels, and click save.
 ]]></entry>
 
 </properties>

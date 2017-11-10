@@ -28,7 +28,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.widgets.service.PorterQueueCountsWidgetService;
 import com.cannontech.web.tools.trends.TrendUtils;
@@ -48,7 +47,6 @@ public class PorterQueueCountsController {
     @Autowired private PorterQueueCountsWidgetService porterQueueCountsWidgetService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private UserPreferenceService userPreferenceService;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private DateFormattingService dateFormattingService;
 
     private static final Logger log = YukonLogManager.getLogger(PorterQueueCountsController.class);
@@ -64,7 +62,6 @@ public class PorterQueueCountsController {
         DateTime chartDateLimit = DateTime.now();
         boolean hasCurrentDateBoundary = false;
         boolean showRightAxis = false;
-        boolean isTruncated = false;
         int colorInt = 0;
         Map<Integer, LiteYukonPAObject> pointIdToPaoMap = porterQueueCountsWidgetService.getPointIdToPaoMap(portIds);
         Map<Integer, List<PointValueHolder>> pointIdToPointValueHolderMap = porterQueueCountsWidgetService.rawPointHistoryDataProvider(pointIdToPaoMap.keySet());
@@ -74,9 +71,6 @@ public class PorterQueueCountsController {
             List<Object[]> seriesData = new ArrayList<>();
             seriesItemResult = pointIdToPointValueHolderMap.get(pointId);
             seriesData = porterQueueCountsWidgetService.graphDataProvider(seriesItemResult);
-            if (globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS) * 43800 == seriesItemResult.size()) { // 3 months * 43800 minutes per month
-                isTruncated = true;
-            }
             if (seriesData.isEmpty()) {
                 seriesProperties.put("error", graphDataStateMessage(GraphDataError.NO_TREND_DATA_AVAILABLE, userContext));
             }
@@ -108,11 +102,6 @@ public class PorterQueueCountsController {
         Map<String, Object> json = new HashMap<>();
         json.put("name", "Queue Counts");
         json.put("series", seriesList);
-        if (isTruncated) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String truncateMessage = accessor.getMessage("yukon.web.modules.tools.trends.truncateWarning");
-            json.put("truncateMessage", truncateMessage);
-        }
         List<Map<String, Object>> yAxis = new ArrayList<>();
         ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
         yAxisProperties.put("labels", labels);
@@ -191,7 +180,10 @@ public class PorterQueueCountsController {
         if (porterQueueCountsWidgetService.isRefreshEligible(time)) {
             return data(userContext, portIds);
         }
-        return null;
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<>();
+        json.put("errorMsg", accessor.getMessage("yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description", GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.getDefaultValue()));
+        return json;
     }
 
 }

@@ -27,39 +27,42 @@ yukon.widget.porterQueueCounts = (function () {
     /** Build the given chart with the given data */
     _buildChart = function (chart, data) {
         debug.log('building chart');
-        var labels = JSON.parse(data.labels);
-        var labelFormat = '%Y-%m-%d %l:%M:%S %p',
-        dateTimeLabelFormats = {
-            millisecond: [labelFormat,labelFormat],
-            second:      [labelFormat,labelFormat],
-            minute:      [labelFormat,labelFormat],
-            hour:        [labelFormat,labelFormat],
-            day:         [labelFormat,labelFormat],
-            week:        [labelFormat,labelFormat],
-            month:       [labelFormat,labelFormat],
-            year:        [labelFormat,labelFormat]
-        },
-        legend = {
-            enabled: true,
-            align: 'center',
-            backgroundColor: '#fefefe',
-            borderColor: '#ccc',
-            borderWidth: 1,
-            borderRadius: 1,
-            layout: 'vertical',
-            verticalAlign: 'bottom',
-            shadow: true,
-            title : {
-                style: {
-                    "color" :"#ff0000"
-                },
-                text: data.truncateMessage,
-            }
-        };
+        var labels = JSON.parse(data.labels),
+            labelFormat = '%Y-%m-%d %l:%M:%S %p',
+            container = chart.closest('.widgetWrapper'),
+            chartWidth = container.width() - 20,
+            dateTimeLabelFormats = {
+                millisecond: [labelFormat,labelFormat],
+                second:      [labelFormat,labelFormat],
+                minute:      [labelFormat,labelFormat],
+                hour:        [labelFormat,labelFormat],
+                day:         [labelFormat,labelFormat],
+                week:        [labelFormat,labelFormat],
+                month:       [labelFormat,labelFormat],
+                year:        [labelFormat,labelFormat]
+            },
+            legend = {
+                enabled: true,
+                align: 'center',
+                backgroundColor: '#fefefe',
+                borderColor: '#ccc',
+                borderWidth: 1,
+                borderRadius: 1,
+                layout: 'vertical',
+                verticalAlign: 'bottom',
+                shadow: true,
+                title : {
+                    style: {
+                        "color" :"#ff0000"
+                    },
+                    text: data.truncateMessage,
+                }
+            };
         chart.highcharts('StockChart', {
             chart: {
                 zoomType: 'x',
                 height: 300 + 18 * data.series.length,
+                width: chartWidth,
                 events: {
                     load: function (ev) {
                         yukon.ui.unblock('js-chart');
@@ -230,6 +233,7 @@ yukon.widget.porterQueueCounts = (function () {
             
             $(document).on('click', '.js-force-update', function () {
                 var widget = $(this).closest('.js-porter-queue-counts-widget');
+                $(widget).find('.js-force-update').attr('disabled', true);
                 $.ajax({
                     url: yukon.url('/amr/porterQueueCounts/forceUpdate'),
                     data: {
@@ -243,12 +247,13 @@ yukon.widget.porterQueueCounts = (function () {
                     }
                     else {
                         $(widget).addMessage({
-                            message: "Must wait 15 minutes to between data refresh.",
+                            message: data.errorMsg,
                             messageClass: "error"
                         });
                         
                         setTimeout(function() { 
                             $(widget).removeMessages();
+                            $(widget).find('.js-force-update').attr('disabled', false);
                             }, 3000);
                     }
                 });

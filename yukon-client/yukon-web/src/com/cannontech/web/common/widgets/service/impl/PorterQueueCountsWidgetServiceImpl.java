@@ -34,7 +34,7 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(15);
+    private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes((Integer) GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.getDefaultValue());
     private static final Logger log = YukonLogManager.getLogger(PorterQueueCountsWidgetServiceImpl.class);
 
     @Override

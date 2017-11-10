@@ -36,7 +36,7 @@ public class PickerController {
     @Autowired private ObjectFormattingService objectFormattingService;
 
     @RequestMapping("build")
-    public String build(Model model, String maxNumSelections, String type, String id, Boolean multiSelectMode, Boolean immediateSelectMode,
+    public String build(Model model, Integer maxNumSelections, String type, String id, Boolean multiSelectMode, Boolean immediateSelectMode,
             String mode, YukonUserContext userContext) {
         Picker<?> picker = pickerFactory.getPicker(type);
 
@@ -44,9 +44,8 @@ public class PickerController {
         model.addAttribute("id", StringEscapeUtils.escapeXml(id));
         model.addAttribute("multiSelectMode", multiSelectMode);
         model.addAttribute("immediateSelectMode", immediateSelectMode);
-        if (maxNumSelections != "") {
-            model.addAttribute("maxNumSelections", maxNumSelections);
-        }
+        model.addAttribute("maxNumSelections", maxNumSelections);
+            
         return "inline".equals(mode) ? "inlinePicker" : "pickerDialog";
     }
 
