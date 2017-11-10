@@ -56,7 +56,8 @@ yukon.widget.dataCollection = (function () {
         //use widget wrapper for width if within widget and summary if on detail page
         var container = chart.closest('.widgetWrapper'),
             summaryPage = chart.closest('.js-pie-chart-summary'),
-            containerWidth = container.length ? container.width() : summaryPage.width(),
+            onWidget = container.length,
+            containerWidth = onWidget ? container.width() : summaryPage.width(),
             chartWidth = containerWidth - 20;
         chart.highcharts({
             chart: {
@@ -96,7 +97,7 @@ yukon.widget.dataCollection = (function () {
                     dataLabels: { enabled: false },
                     showInLegend: true,
                     borderWidth: 0.25,
-                    className: 'js-data-pie'
+                    className: onWidget ? 'js-data-pie' : ''
                 }
             },
             series: [{
