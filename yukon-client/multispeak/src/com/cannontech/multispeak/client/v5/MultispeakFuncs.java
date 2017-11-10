@@ -278,7 +278,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             String companyName = getCompanyNameFromSOAPHeader();
             String appName = getAppNameFromSOAPHeader();
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(companyName, appName);
-            // Cannon is the vendor name for used by Yukon. We will not process the request if any other vendor is trying to 
+            // Cannon is the name used by Yukon. We will not process the request if any other vendor is trying to 
             // call the MSP web service with this name.
             if (mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
                 throw new MultispeakWebServiceException("Invalid Company and/or AppName received: Company="

@@ -47,7 +47,7 @@ public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
                 index++;
             }
         } else {
-            //Cannon is the vendor name used by Yukon. We should not allow to create any other vendor with the same name.
+            //Cannon is the name used by Yukon. We should not allow to create any other vendor with the same name.
             if (StringUtils.equalsIgnoreCase(multispeakVendor.getCompanyName(), MultispeakVendor.CANNON_MSP_COMPANYNAME)) {
                 errors.rejectValue("mspVendor.companyName",
                         "yukon.web.modules.adminSetup.multispeak.companyNameConflict");
