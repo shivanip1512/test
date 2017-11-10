@@ -23,7 +23,7 @@ public class LoadProgramsProvider extends BinningDeviceGroupProviderBase<String>
         sql.append("  JOIN YukonPaobject lmProg ON lmProg.PAObjectId = lmpdg.DeviceId");
         sql.append("WHERE Category").eq_k(PaoCategory.LOADMANAGEMENT);
         sql.append("  AND PAOClass").eq_k(PaoClass.LOADMANAGEMENT);
-        sql.append("  AND inv.DeviceId").neq_k(0);
+        sql.append("  AND inv.DeviceId").neq(0);
         List<String> bins = getJdbcTemplate().query(sql, TypeRowMapper.STRING);
         return bins;
     }
@@ -53,7 +53,7 @@ public class LoadProgramsProvider extends BinningDeviceGroupProviderBase<String>
         sql.append("  JOIN YukonPaobject lmProg ON lmProg.PAObjectId = lmpdg.DeviceId");
         sql.append("WHERE Category").eq_k(PaoCategory.LOADMANAGEMENT);
         sql.append("  AND PAOClass").eq_k(PaoClass.LOADMANAGEMENT);
-        sql.append("  AND inv.DeviceId").neq_k(0);
+        sql.append("  AND inv.DeviceId").neq(0);
         return sql;
     }
 
