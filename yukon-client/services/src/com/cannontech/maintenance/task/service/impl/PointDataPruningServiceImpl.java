@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.maintenance.MaintenanceTaskName;
-import com.cannontech.maintenance.MaintenanceTasksSettings;
+import com.cannontech.maintenance.MaintenanceTaskSettings;
 import com.cannontech.maintenance.dao.impl.MaintenanceTaskDaoImpl;
 import com.cannontech.maintenance.task.dao.PointDataPruningDao;
 import com.cannontech.maintenance.task.service.PointDataPruningService;
@@ -22,7 +22,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     @Override
     public int deletePointDataSql(Instant processEndTime) {
         int noOfMonths = Integer.parseInt(
-            getMaintenanceSettings(MaintenanceTaskName.POINT_DATA_PRUNING, MaintenanceTasksSettings.NO_OF_MONTHS));
+            getMaintenanceSettings(MaintenanceTaskName.POINT_DATA_PRUNING, MaintenanceTaskSettings.NO_OF_MONTHS));
         Instant start = new Instant();
         Instant deleteUpto = Instant.now().toDateTime().minusMonths(noOfMonths).toInstant();
         int numDeleted = pointDataPruningDao.deletePointData(processEndTime.minus(minimumExecutionTime), deleteUpto);
@@ -34,7 +34,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     @Override
     public int deletePointData(Instant processEndTime) {
         int noOfMonths = Integer.parseInt(
-            getMaintenanceSettings(MaintenanceTaskName.POINT_DATA_PRUNING, MaintenanceTasksSettings.NO_OF_MONTHS));
+            getMaintenanceSettings(MaintenanceTaskName.POINT_DATA_PRUNING, MaintenanceTaskSettings.NO_OF_MONTHS));
         Instant deleteUpto = Instant.now().toDateTime().minusMonths(noOfMonths).toInstant();
         
         int numDeleted = 1;
@@ -47,8 +47,8 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         return numDeleted;
     }
 
-    private String getMaintenanceSettings(MaintenanceTaskName taskName, MaintenanceTasksSettings property) {
-        Map<MaintenanceTasksSettings, String> settings = maintenanceTaskDao.getTaskSettings(taskName);
+    private String getMaintenanceSettings(MaintenanceTaskName taskName, MaintenanceTaskSettings property) {
+        Map<MaintenanceTaskSettings, String> settings = maintenanceTaskDao.getTaskSettings(taskName);
         return settings.get(property);
     }
     

@@ -13,7 +13,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.maintenance.MaintenanceTaskName;
-import com.cannontech.maintenance.MaintenanceTasksSettings;
+import com.cannontech.maintenance.MaintenanceTaskSettings;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
@@ -21,7 +21,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     @Override
-    public Map<MaintenanceTasksSettings, String> getTaskSettings(MaintenanceTaskName taskName) {
+    public Map<MaintenanceTaskSettings, String> getTaskSettings(MaintenanceTaskName taskName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Attribute, Value");
         sql.append("FROM MaintenanceTask ms");
@@ -29,12 +29,12 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         sql.append("  ON ms.TaskId = msp.TaskId");
         sql.append("AND TaskName").eq(taskName);
 
-        final Map<MaintenanceTasksSettings, String> taskSettings = new HashMap<>();
+        final Map<MaintenanceTaskSettings, String> taskSettings = new HashMap<>();
 
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                taskSettings.put(rs.getEnum("Attribute", MaintenanceTasksSettings.class), rs.getString("Value"));
+                taskSettings.put(rs.getEnum("Attribute", MaintenanceTaskSettings.class), rs.getString("Value"));
             }
         });
         return taskSettings;
