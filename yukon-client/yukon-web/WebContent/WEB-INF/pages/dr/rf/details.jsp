@@ -37,11 +37,13 @@
         <thead>
             <tr>
                 <th><i:inline key=".eventTime"/></th>
-                <th><i:inline key=".results"/>
-                <div id="rf-event-info" class="dn" data-title="<cti:msg2 key=".rf.details.rfPerformanceResult"/>" data-width="500">
-                   <i:inline key="yukon.web.modules.dr.home.rfPerformance.infoText"/>
-                </div>
-                <cti:icon icon="icon-information" classes="fn cp" data-popup="#rf-event-info" data-popup-toggle=""/>
+                <th>
+                    <i:inline key=".results"/>
+                    <div id="rf-event-info" class="dn" data-title="<cti:msg2 key=".rf.details.rfPerformanceResult"/>" data-width="500">
+                        <i:inline key="yukon.web.modules.dr.home.rfPerformance.infoText"/>
+                    </div>
+                    <cti:icon icon="icon-information" classes="fn cp" data-popup="#rf-event-info" data-popup-toggle=""/>
+                </th>
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
@@ -50,7 +52,7 @@
             <c:forEach items="${tests}" var="test">
                 <tr>
                     <td><cti:formatDate type="FULL" value="${test.timeMessageSent}"/></td>
-                    <td>
+                    <td colspan="2">
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
                         <c:if test="${hasStats}">
                             <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
