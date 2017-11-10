@@ -53,8 +53,11 @@ yukon.widget.dataCollection = (function () {
     /** Build the pie chart for the first time. */
     _buildChart = function (chart, data) {
         debug.log('building chart');
+        //use widget wrapper for width if within widget and summary if on detail page
         var container = chart.closest('.widgetWrapper'),
-            chartWidth = container.width() - 20;
+            summaryPage = chart.closest('.js-pie-chart-summary'),
+            containerWidth = container.length ? container.width() : summaryPage.width(),
+            chartWidth = containerWidth - 20;
         chart.highcharts({
             chart: {
                 renderTo: 'chart',
