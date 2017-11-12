@@ -51,6 +51,18 @@ class IVVCAlgorithm
         };
 
         ValidityCheckResults hasValidData( PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy );
+        bool processZoneByPhase( PointDataRequestPtr& request, 
+                                 CtiTime timeNow,
+                                 CtiCCSubstationBusPtr subbus,
+                                 IVVCStrategy* strategy, 
+                                 long ZoneId,
+                                 bool dataIsValid );
+        bool processZoneByAggregate( PointDataRequestPtr& request, 
+                                     CtiTime timeNow,
+                                     CtiCCSubstationBusPtr subbus,
+                                     IVVCStrategy* strategy, 
+                                     long ZoneId,
+                                     bool dataIsValid );
 
         virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
 

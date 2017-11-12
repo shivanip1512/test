@@ -45,7 +45,7 @@ void DispatchPointDataRequest::setDispatchConnection(DispatchConnectionPtr conne
 /*
     This whole class needs a rethink.  I believe it should just be a container for all the point data messages
     that match the requested point IDs.  All of the special processing for accepted/rejected points etc. should
-    be done somewhere else (for example an IVVCPointDataRequest).
+    be done somewhere else (for example an IVVCDispatchPointDataRequest).
 */
 void DispatchPointDataRequest::processNewMessage(CtiMessage* message)
 {
