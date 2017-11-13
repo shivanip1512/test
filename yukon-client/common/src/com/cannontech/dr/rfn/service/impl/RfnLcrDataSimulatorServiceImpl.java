@@ -359,11 +359,17 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                     // Add message length (No of bytes) in Hex
                     String messageLength = Integer.toHexString(eventMessages.size() * 8);
                     outputStream.write(Hex.decode(messageLength));
+                    int messageCount = 0; // Counter to limit message count upto 16 
                     for (PerformanceVerificationEventMessage eventMsg : eventMessages) {
-                        // Write first 4 byte as messageId
-                        writeLongValueAsByteArray(outputStream, eventMsg.getMessageId());
-                        // Write last 4 byte as timeStamp
-                        writeLongValueAsByteArray(outputStream, eventMsg.getTimeMessageSent().getMillis() / 1000);
+                        if (messageCount > 15) {
+                            break;
+                        } else {
+                            // Write first 4 byte as messageId
+                            writeLongValueAsByteArray(outputStream, eventMsg.getMessageId());
+                            // Write last 4 byte as timeStamp
+                            writeLongValueAsByteArray(outputStream, eventMsg.getTimeMessageSent().getMillis() / 1000);
+                            messageCount++;
+                        }
                     }
                 } else {
                     // Add no message
