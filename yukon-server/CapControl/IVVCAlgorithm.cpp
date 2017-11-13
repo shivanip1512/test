@@ -15,7 +15,6 @@
 #include "ExecutorFactory.h"
 #include "MsgVerifyBanks.h"
 #include "amq_connection.h"
-#include "IVVCAnalysisMessage.h"
 #include "ccutil.h"
 #include "std_helper.h"
 
@@ -3238,18 +3237,18 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
 
     // Process each zone individually
 
-    for each ( const Zone::IdSet::value_type & ZoneId in subbusZoneIds )
+    for( const auto & ZoneId : subbusZoneIds )
     {
-        if( strategy->getReportCommStatisticsByPhase() || true )
+        if( strategy->getReportCommStatisticsByPhase() )
         {
-            if( ! processZoneByPhase( request, timeNow, subbus, strategy, ZoneId, dataIsValid ) )
+            if( ! processZoneByPhase( request, timeNow, subbus, *strategy, ZoneId, dataIsValid ) )
             {
                 return ValidityCheckResults::MissingObject;
             }
         }
         else
         {
-            if( ! processZoneByAggregate( request, timeNow, subbus, strategy, ZoneId, dataIsValid ) )
+            if( ! processZoneByAggregate( request, timeNow, subbus, *strategy, ZoneId, dataIsValid ) )
             {
                 return ValidityCheckResults::MissingObject;
             }
@@ -3330,8 +3329,6 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
     dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                             totalPoints, missingPoints, stalePoints,
                                             100.0,
-                                            IVVCAnalysisMessage::Scenario_RequiredPointCommsIncomplete,
-                                            IVVCAnalysisMessage::Scenario_RequiredPointCommsStale,
                                             timeNow,
                                             "BusPower" );
 
@@ -3344,7 +3341,7 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
 bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
                                         CtiTime timeNow,
                                         CtiCCSubstationBusPtr subbus,
-                                        IVVCStrategy* strategy,
+                                        IVVCStrategy& strategy,
                                         long ZoneId,
                                         bool dataIsValid )
 {
@@ -3365,36 +3362,36 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         missingPoints = 0,
         stalePoints = 0;
 
-    for (auto phase : phases)
+    for ( auto phase : phases )
     {
         Zone::PhaseIdMap    regulatorSearch = zone->getRegulatorIds();
 
         Zone::PhaseIdMap::const_iterator    phase_ID_iterator, phase_ID_end;
 
-        boost::tie(phase_ID_iterator, phase_ID_end) = regulatorSearch.equal_range(phase);
+        boost::tie( phase_ID_iterator, phase_ID_end ) = regulatorSearch.equal_range( phase );
 
         for (; phase_ID_iterator != phase_ID_end; ++phase_ID_iterator)
         {
             try
             {
                 VoltageRegulatorManager::SharedPtr  regulator
-                    = store->getVoltageRegulatorManager()->getVoltageRegulator(phase_ID_iterator->second);
+                    = store->getVoltageRegulatorManager()->getVoltageRegulator( phase_ID_iterator->second );
 
-                const long voltagePointId = regulator->getPointByAttribute(Attribute::Voltage).getPointId();
+                const long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
-                if (voltagePointId > 0)
+                if ( voltagePointId > 0 )
                 {
                     findPointInRequest(voltagePointId, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints);
                 }
             }
-            catch (const Cti::CapControl::NoVoltageRegulator & noRegulator)
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
-                if (!subbus->getDisableFlag())
+                if ( ! subbus->getDisableFlag() )
                 {
                     CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                 }
             }
-            catch (const Cti::CapControl::MissingAttribute & missingAttribute)
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
@@ -3403,28 +3400,26 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
             }
         }
 
-        dataIsValid &= analysePointRequestData(subbus->getPaoId(),
-                                               totalPoints, missingPoints, stalePoints,
-                                               strategy->getRegulatorCommReportingPercentage(),
-                                               IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsIncomplete,
-                                               IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsStale,
-                                               timeNow,
-                                               "Regulator on Phase: " + Cti::CapControl::desolvePhase(phase));
+        dataIsValid &= analysePointRequestData( subbus->getPaoId(),
+                                                totalPoints, missingPoints, stalePoints,
+                                                strategy.getRegulatorCommReportingPercentage(),
+                                                timeNow,
+                                                "Regulator on Phase: " + Cti::CapControl::desolvePhase( phase ) );
         // capbank(s)...
 
         totalPoints = missingPoints = stalePoints = 0;      // reset stats
 
-        for (auto & ID : zone->getBankIds())
+        for ( auto & ID : zone->getBankIds() )
         {
-            if (CtiCCCapBankPtr bank = store->findCapBankByPAObjectID(ID))
+            if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
             {
-                for each (CtiCCMonitorPointPtr point in bank->getMonitorPoint())
+                for ( auto point : bank->getMonitorPoint() )
                 {
                     const long cbcPointID = point->getPointId();
 
-                    if (cbcPointID > 0 && point->getPhase() == phase)
+                    if ( cbcPointID > 0 && point->getPhase() == phase )
                     {
-                        findPointInRequest(cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints);
+                        findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
                     }
                 }
             }
@@ -3439,13 +3434,11 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
             }
         }
 
-        dataIsValid &= analysePointRequestData(subbus->getPaoId(),
-                                               totalPoints, missingPoints, stalePoints,
-                                               strategy->getCapbankCommReportingPercentage(),
-                                               IVVCAnalysisMessage::Scenario_CBCCommsIncomplete,
-                                               IVVCAnalysisMessage::Scenario_CBCCommsStale,
-                                               timeNow,
-                                               "CBC(s) on Phase: " + Cti::CapControl::desolvePhase(phase));
+        dataIsValid &= analysePointRequestData( subbus->getPaoId(),
+                                                totalPoints, missingPoints, stalePoints,
+                                                strategy.getCapbankCommReportingPercentage(),
+                                                timeNow,
+                                                "CBC(s) on Phase: " + Cti::CapControl::desolvePhase( phase ) );
 
         // voltage monitor point(s)...
 
@@ -3454,25 +3447,23 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         Zone::PhaseToVoltagePointIds    voltageMonitorSearch = zone->getPointIds();
 
         std::pair< Zone::PhaseToVoltagePointIds::const_iterator, Zone::PhaseToVoltagePointIds::const_iterator >
-            filterResult = voltageMonitorSearch.equal_range(phase);
+            filterResult = voltageMonitorSearch.equal_range( phase );
 
-        for (; filterResult.first != filterResult.second; ++filterResult.first)
+        for ( ; filterResult.first != filterResult.second; ++filterResult.first )
         {
             const long voltageMonitorPointID = filterResult.first->second;
 
-            if (voltageMonitorPointID > 0)
+            if ( voltageMonitorPointID > 0 )
             {
-                findPointInRequest(voltageMonitorPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints);
+                findPointInRequest( voltageMonitorPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
             }
         }
 
-        dataIsValid &= analysePointRequestData(subbus->getPaoId(),
-                                               totalPoints, missingPoints, stalePoints,
-                                               strategy->getVoltageMonitorCommReportingPercentage(),
-                                               IVVCAnalysisMessage::Scenario_VoltageMonitorCommsIncomplete,
-                                               IVVCAnalysisMessage::Scenario_VoltageMonitorCommsStale,
-                                               timeNow,
-                                               "Other(s) on Phase: " + Cti::CapControl::desolvePhase(phase));
+        dataIsValid &= analysePointRequestData( subbus->getPaoId(),
+                                                totalPoints, missingPoints, stalePoints,
+                                                strategy.getVoltageMonitorCommReportingPercentage(),
+                                                timeNow,
+                                                "Other(s) on Phase: " + Cti::CapControl::desolvePhase( phase ) );
     }
     return true;
 }
@@ -3481,7 +3472,7 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
 bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
                                             CtiTime timeNow,
                                             CtiCCSubstationBusPtr subbus,
-                                            IVVCStrategy* strategy,
+                                            IVVCStrategy& strategy,
                                             long ZoneId,
                                             bool dataIsValid )
 {
@@ -3490,134 +3481,108 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
 
     auto zone = store->getZoneManager().getZone(ZoneId);
 
-    const Cti::CapControl::Phase phases[] =
-    {
-        Cti::CapControl::Phase_A,
-        Cti::CapControl::Phase_B,
-        Cti::CapControl::Phase_C,
-        Cti::CapControl::Phase_Poly
-    };
-
     int totalPoints = 0,
         missingPoints = 0,
         stalePoints = 0;
 
-    for (auto phase : phases)
+    Zone::PhaseIdMap    regulatorSearch = zone->getRegulatorIds();
+
+    regulatorSearch.erase(Cti::CapControl::Phase_Unknown);
+
+    for ( auto regulatorIterator : regulatorSearch )
     {
-        Zone::PhaseIdMap    regulatorSearch = zone->getRegulatorIds();
-
-        Zone::PhaseIdMap::const_iterator    phase_ID_iterator, phase_ID_end;
-
-        boost::tie(phase_ID_iterator, phase_ID_end) = regulatorSearch.equal_range(phase);
-
-        for (; phase_ID_iterator != phase_ID_end; ++phase_ID_iterator)
+        try
         {
-            try
-            {
-                VoltageRegulatorManager::SharedPtr  regulator
-                    = store->getVoltageRegulatorManager()->getVoltageRegulator(phase_ID_iterator->second);
+            VoltageRegulatorManager::SharedPtr  regulator
+                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorIterator.second );
 
-                const long voltagePointId = regulator->getPointByAttribute(Attribute::Voltage).getPointId();
+            const long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
-                if (voltagePointId > 0)
-                {
-                    findPointInRequest(voltagePointId, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints);
-                }
-            }
-            catch (const Cti::CapControl::NoVoltageRegulator & noRegulator)
+            if ( voltagePointId > 0 )
             {
-                if (!subbus->getDisableFlag())
-                {
-                    CTILOG_EXCEPTION_ERROR(dout, noRegulator);
-                }
+                findPointInRequest( voltagePointId, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
             }
-            catch (const Cti::CapControl::MissingAttribute & missingAttribute)
+        }
+        catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+        {
+            if ( ! subbus->getDisableFlag() )
             {
-                if (missingAttribute.complain())
-                {
-                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
-                }
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+            }
+        }
+        catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+        {
+            if ( missingAttribute.complain() )
+            {
+                CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
             }
         }
     }
 
-    dataIsValid &= analysePointRequestData(subbus->getPaoId(),
-                                           totalPoints, missingPoints, stalePoints,
-                                           strategy->getRegulatorCommReportingPercentage(),
-                                           IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsIncomplete,
-                                           IVVCAnalysisMessage::Scenario_VoltageRegulatorCommsStale,
-                                           timeNow,
-                                           "Regulator");
+    dataIsValid &= analysePointRequestData( subbus->getPaoId(),
+                                            totalPoints, missingPoints, stalePoints,
+                                            strategy.getRegulatorCommReportingPercentage(),
+                                            timeNow,
+                                            "Regulator" );
 
     // capbank(s)...
 
     totalPoints = missingPoints = stalePoints = 0;      // reset stats
 
-    for( auto phase : phases )
+    for ( auto & ID : zone->getBankIds() )
     {
-        for (auto & ID : zone->getBankIds())
+        if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
         {
-            if (CtiCCCapBankPtr bank = store->findCapBankByPAObjectID(ID))
+            for ( auto point : bank->getMonitorPoint() )
             {
-                for each (CtiCCMonitorPointPtr point in bank->getMonitorPoint())
-                {
-                    const long cbcPointID = point->getPointId();
+                const long cbcPointID = point->getPointId();
 
-                    if (cbcPointID > 0 && point->getPhase() == phase)
-                    {
-                        findPointInRequest(cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints);
-                    }
+                if ( cbcPointID > 0 && point->getPhase() != Cti::CapControl::Phase_Unknown )
+                {
+                    findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
                 }
             }
-            else
-            {
-                CTILOG_ERROR(dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
-                    << ". Possible BusStore reset in progress.");
+        }
+        else
+        {
+            CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                << ". Possible BusStore reset in progress." );
 
-                // Abort the analysis without contributing to a comms lost condition
+            // Abort the analysis without contributing to a comms lost condition
 
-                return false; // ValidityCheckResults::MissingObject to be returned outside
-            }
+            return false; // ValidityCheckResults::MissingObject to be returned outside
         }
     }
 
-    dataIsValid &= analysePointRequestData(subbus->getPaoId(),
-                                           totalPoints, missingPoints, stalePoints,
-                                           strategy->getCapbankCommReportingPercentage(),
-                                           IVVCAnalysisMessage::Scenario_CBCCommsIncomplete,
-                                           IVVCAnalysisMessage::Scenario_CBCCommsStale,
-                                           timeNow,
-                                           "CBC(s)");
+    dataIsValid &= analysePointRequestData( subbus->getPaoId(),
+                                            totalPoints, missingPoints, stalePoints,
+                                            strategy.getCapbankCommReportingPercentage(),
+                                            timeNow,
+                                            "CBC(s)" );
 
     // voltage monitor point(s)...
 
     totalPoints = missingPoints = stalePoints = 0;      // reset stats
 
-    for( auto phase : phases )
+    Zone::PhaseToVoltagePointIds    voltageMonitorSearch = zone->getPointIds();
+
+    voltageMonitorSearch.erase( Cti::CapControl::Phase_Unknown );
+
+    for ( auto voltageMonitorIterator : voltageMonitorSearch )
     {
-        Zone::PhaseToVoltagePointIds    voltageMonitorSearch = zone->getPointIds();
+        const long voltageMonitorPointID = voltageMonitorIterator.second;
 
-        std::pair< Zone::PhaseToVoltagePointIds::const_iterator, Zone::PhaseToVoltagePointIds::const_iterator >
-            filterResult = voltageMonitorSearch.equal_range(phase);
-
-        for (; filterResult.first != filterResult.second; ++filterResult.first)
+        if ( voltageMonitorPointID > 0 )
         {
-            const long voltageMonitorPointID = filterResult.first->second;
-
-            if (voltageMonitorPointID > 0)
-            {
-                findPointInRequest(voltageMonitorPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints);
-            }
+            findPointInRequest( voltageMonitorPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
         }
     }
 
-    dataIsValid &= analysePointRequestData(subbus->getPaoId(),
-                                           totalPoints, missingPoints, stalePoints,
-                                           strategy->getVoltageMonitorCommReportingPercentage(),
-                                           IVVCAnalysisMessage::Scenario_VoltageMonitorCommsIncomplete,
-                                           IVVCAnalysisMessage::Scenario_VoltageMonitorCommsStale,
-                                           timeNow,
-                                           "Other(s)");
+    dataIsValid &= analysePointRequestData( subbus->getPaoId(),
+                                            totalPoints, missingPoints, stalePoints,
+                                            strategy.getVoltageMonitorCommReportingPercentage(),
+                                            timeNow,
+                                            "Other(s)" );
 
     return true;
 }
@@ -3644,10 +3609,8 @@ void IVVCAlgorithm::findPointInRequest( const long pointID,
 }
 
 
-bool IVVCAlgorithm::analysePointRequestData( const long subbusID,
-                                             const int totalPoints, const int missingPoints, const int stalePoints,
-                                             const double minimum,
-                                             const int incompleteScenario,  const int staleScenario,
+bool IVVCAlgorithm::analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, 
+                                             const int stalePoints, const double minimum, 
                                              const CtiTime & timeNow, const std::string & type )
 {
     bool isValid = true;
@@ -3668,8 +3631,6 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID,
             logMessage += "%. Minimum was ";
             logMessage += CtiNumStr( minimum );
             logMessage += "%";
-
-            sendIVVCAnalysisMessage( IVVCAnalysisMessage::createCommsRatioMessage( subbusID, incompleteScenario, timeNow, percentComplete, minimum ) );
         }
         else if ( percentNonStale < minimum )
         {
@@ -3680,8 +3641,6 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID,
             logMessage += "%. Minimum was ";
             logMessage += CtiNumStr( minimum );
             logMessage += "%";
-
-            sendIVVCAnalysisMessage( IVVCAnalysisMessage::createCommsRatioMessage( subbusID, staleScenario, timeNow, percentNonStale, minimum ) );
         }
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)

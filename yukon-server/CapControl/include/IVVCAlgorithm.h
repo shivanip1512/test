@@ -5,6 +5,7 @@
 #include "PointDataRequestFactory.h"
 #include "ZoneManager.h"
 #include "VoltageRegulatorManager.h"
+#include "IVVCAnalysisMessage.h"
 
 
 namespace Cti           {
@@ -54,13 +55,13 @@ class IVVCAlgorithm
         bool processZoneByPhase( PointDataRequestPtr& request, 
                                  CtiTime timeNow,
                                  CtiCCSubstationBusPtr subbus,
-                                 IVVCStrategy* strategy, 
+                                 IVVCStrategy& strategy, 
                                  long ZoneId,
                                  bool dataIsValid );
         bool processZoneByAggregate( PointDataRequestPtr& request, 
                                      CtiTime timeNow,
                                      CtiCCSubstationBusPtr subbus,
-                                     IVVCStrategy* strategy, 
+                                     IVVCStrategy& strategy, 
                                      long ZoneId,
                                      bool dataIsValid );
 
@@ -126,9 +127,9 @@ class IVVCAlgorithm
 
         void findPointInRequest( const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime & timeNow,
                                  int & totalPoints, int & missingPoints, int & stalePoints );
-        bool analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, const int stalePoints,
-                                      const double minimum, const int incompleteScenario, const int staleScenario, const CtiTime & timeNow,
-                                      const std::string & type );
+        bool analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, 
+                                      const int stalePoints, const double minimum, 
+                                      const CtiTime & timeNow, const std::string & type );
 
         void updateMaxOvervoltages( const long pointID,
                                     const Cti::CapControl::Phase & phase,
