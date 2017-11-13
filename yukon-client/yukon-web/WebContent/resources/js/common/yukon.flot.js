@@ -69,11 +69,6 @@ yukon.flot = (function () {
             if (typeof params !== 'undefined' && typeof params.options !== 'undefined') {
                 graph_options = $.extend(true, {}, graph_options, params.options);
             }
-            if (mod.charts[chartId].hooks) {
-                graph_options = $.extend(true, {}, graph_options, {
-                    hooks: { draw: mod.charts[chartId].hooks.draw }
-                });
-            }
 
             /* if the graph is being updated via ajax we want to use the same zoom level */
             if (mod.charts[chartId].ranges_xaxis_from) {
@@ -345,8 +340,7 @@ yukon.flot = (function () {
                 type = params.type.toLowerCase(),
                 options = params.options,
                 methods = params.methods,
-                data = params.data,
-                hooks = params.hooks;
+                data = params.data;
             /* validation */
             if (typeof chartId === 'undefined') throw "no chartId specified";
             if (typeof type === 'undefined') throw "no type specified (bar, line, etc)";
@@ -357,7 +351,6 @@ yukon.flot = (function () {
             mod.charts[chartId].options = _getDefaultMergedOptions(type, options);
             mod.charts[chartId].methods = $.extend(true, {}, _defaults.methods, methods);
             mod.charts[chartId].data_with_meta = data;
-            mod.charts[chartId].hooks = hooks;
         },
 
         /**
