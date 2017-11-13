@@ -194,7 +194,7 @@ public class MaintenanceController {
     }
 
     private void setUpModelForPointDataPruning(ModelMap model) {
-        List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks(true);
+        List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks(false);
         model.addAttribute("tasks", tasks);
     }
 

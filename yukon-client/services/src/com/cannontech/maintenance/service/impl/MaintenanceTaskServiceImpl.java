@@ -22,7 +22,7 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
 
     @Override
     public List<MaintenanceTask> getMaintenanceTasks() {
-        List<MaintenanceTaskName> maintenanceTaskNames = maintenanceTaskDao.getMaintenanceTaskNames(false);
+        List<MaintenanceTaskName> maintenanceTaskNames = maintenanceTaskDao.getMaintenanceTaskNames(true);
         List<MaintenanceTask> tasks = maintenanceTaskMap.entrySet().stream()
                                                                    .filter(e -> maintenanceTaskNames.contains(e.getKey()))
                                                                    .map(e -> e.getValue())

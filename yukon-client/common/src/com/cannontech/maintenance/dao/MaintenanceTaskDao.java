@@ -16,14 +16,14 @@ public interface MaintenanceTaskDao {
     Map<MaintenanceTaskSettings, String> getTaskSettings(MaintenanceTaskName taskName);
 
     /**
-     * Return all maintenance task if includeDisabledTask is true otherwise it will return only enable
+     * Return enable maintenance task if excludeDisabled is true otherwise it will return all
      * maintenance task
      **/
-    List<MaintenanceTaskName> getMaintenanceTaskNames(boolean includeDisabledTask);
+    List<MaintenanceTaskName> getMaintenanceTaskNames(boolean excludeDisabled);
 
     /**
-     * Returns all maintenance tasks if includeDisabledTask is true otherwise it will return only the ones
-     * that are enabled.
+     * Return enable maintenance task if excludeDisabled is true otherwise it will return all
+     * maintenance task
      **/
     List<MaintenanceTask> getMaintenanceTasks(boolean includeDisabledTask);
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -34,7 +35,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
                 MaintenanceTask maintenanceTask = new MaintenanceTask();
                 maintenanceTask.setTaskId(rs.getInt("TaskId"));
                 maintenanceTask.setTaskName(rs.getEnum("TaskName", MaintenanceTaskName.class));
-                maintenanceTask.setDisabled(!rs.getString("Status").equals("1"));
+                maintenanceTask.setDisabled(rs.getEnum("Disabled", YNBoolean.class).getBoolean());
 
                 return maintenanceTask;
             }
@@ -60,12 +61,12 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     }
 
     @Override
-    public List<MaintenanceTaskName> getMaintenanceTaskNames(boolean includeDisabledTask) {
+    public List<MaintenanceTaskName> getMaintenanceTaskNames(boolean excludeDisabled) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT TaskName");
         sql.append("FROM MaintenanceTask");
-        if (!includeDisabledTask) {
-            sql.append("WHERE Status").eq_k(1);
+        if (excludeDisabled) {
+            sql.append("WHERE Disabled").eq_k(YNBoolean.NO);
         }
         List<MaintenanceTaskName> maintenanceTaskNames = new ArrayList<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -78,12 +79,12 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     }
 
     @Override
-    public List<MaintenanceTask> getMaintenanceTasks(boolean includeDisabledTask) {
+    public List<MaintenanceTask> getMaintenanceTasks(boolean excludeDisabled) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT TaskId, TaskName, Status");
+        sql.append("SELECT TaskId, TaskName, Disabled");
         sql.append("FROM MaintenanceTask");
-        if (!includeDisabledTask) {
-            sql.append("WHERE Status").eq_k(1);
+        if (excludeDisabled) {
+            sql.append("WHERE Disabled").eq_k(YNBoolean.NO);
         }
         return jdbcTemplate.query(sql, maintenanceTaskRowMapper);
     }
@@ -91,7 +92,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Override
     public MaintenanceTask getMaintenanceTask(MaintenanceTaskName taskName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT TaskId, TaskName, Status");
+        sql.append("SELECT TaskId, TaskName, Disabled");
         sql.append("FROM MaintenanceTask");
         sql.append("WHERE TaskName").eq_k(taskName);
         MaintenanceTask maintenanceTask = jdbcTemplate.queryForObject(sql, maintenanceTaskRowMapper);
@@ -101,7 +102,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Override
     public MaintenanceTask getMaintenanceTaskById(int taskId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT TaskId, TaskName, Status");
+        sql.append("SELECT TaskId, TaskName, Disabled");
         sql.append("FROM MaintenanceTask");
         sql.append("WHERE TaskId").eq_k(taskId);
         MaintenanceTask maintenanceTask = jdbcTemplate.queryForObject(sql, maintenanceTaskRowMapper);
@@ -111,7 +112,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Override
     public void updateTaskStatus(MaintenanceTask task) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE MaintenanceTask").set("Status", task.isDisabled() ? "0" : "1");
+        sql.append("UPDATE MaintenanceTask").set("Disabled", task.isDisabled() ? YNBoolean.YES : YNBoolean.NO);
         sql.append("WHERE TaskId").eq(task.getTaskId());
         jdbcTemplate.update(sql);
     }
