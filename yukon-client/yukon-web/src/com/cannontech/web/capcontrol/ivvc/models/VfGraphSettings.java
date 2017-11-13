@@ -18,6 +18,7 @@ public class VfGraphSettings {
     private Map<Phase, String> phaseStringMap;
     private Map<Phase, String> phaseZoneLineColorMap;
     private String zoneLineColorNoPhase;
+    private String zonePointColorIgnoredPoints;
     private boolean showZoneTransitionTextBusGraph;
     private boolean showZoneTransitionTextZoneGraph;
     private String zoneTransitionDataLabel;
@@ -32,7 +33,7 @@ public class VfGraphSettings {
                            Map<Phase, String> phaseZoneLineColorMap, String zoneLineColorNoPhase,
                            boolean showZoneTransitionTextBusGraph,
                            boolean showZoneTransitionTextZoneGraph, String zoneTransitionDataLabel,
-                           String balloonDistanceText) {
+                           String balloonDistanceText, String zonePointColorIgnoredPoints) {
         this.yLowerBound = yLowerBound;
         this.yUpperBound = yUpperBound;
         this.yAxisLabel = yAxisLabel;
@@ -46,6 +47,7 @@ public class VfGraphSettings {
         this.showZoneTransitionTextZoneGraph = showZoneTransitionTextZoneGraph;
         this.zoneTransitionDataLabel = zoneTransitionDataLabel;
         this.balloonDistanceText = balloonDistanceText;
+        this.setZonePointColorIgnoredPoints(zonePointColorIgnoredPoints);
     }
 
     public double getYLowerBound() {
@@ -174,5 +176,13 @@ public class VfGraphSettings {
 
     public void setBalloonDistanceText(String balloonDistanceText) {
         this.balloonDistanceText = balloonDistanceText;
+    }
+
+    public String getZonePointColorIgnoredPoints() {
+        return zonePointColorIgnoredPoints;
+    }
+
+    public void setZonePointColorIgnoredPoints(String zonePointColorIgnoredPoints) {
+        this.zonePointColorIgnoredPoints = zonePointColorIgnoredPoints;
     }
 }

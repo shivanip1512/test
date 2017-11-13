@@ -3,6 +3,7 @@ package com.cannontech.web.capcontrol.ivvc.service.impl;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.GraphIntervalRounding;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -160,6 +162,17 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                     "yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.max"));
         graph.getSettings().setyMin(yMin);
         graph.getSettings().setyMax(yMax);
+        //adjust points so they display at top or bottom if they are off the chart
+        graph.getLines().forEach(line -> {
+            line.getPoints().forEach(point -> {
+                if (point.isIgnore() && (point.getY() < yMin)) {
+                    point.setY(yMin);
+                }
+                if (point.isIgnore() && (point.getY() > yMax)) {
+                    point.setY(yMax);
+                }
+            });
+        });
     }
     
     private void setSubBusGraphLineLegendVisibility(VfGraph graph) {
@@ -247,6 +260,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
         String zoneTransitionDataLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel");
         String zoneLineColorNoPhase = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase");
+        String zonePointColorIgnoredPoints = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorIgnoredPoints");
         boolean showZoneTransitionTextBusGraph = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.busGraph"));
         boolean showZoneTransitionTextZoneGraph = Boolean.valueOf(messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.zoneGraph"));
         String graphTitle = name + " " + graphWidgetLabel;
@@ -264,7 +278,8 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                                 showZoneTransitionTextBusGraph,
                                 showZoneTransitionTextZoneGraph,
                                 zoneTransitionDataLabel,
-                                balloonDistanceText);
+                                balloonDistanceText,
+                                zonePointColorIgnoredPoints);
         return graphSettings;
     }
 
@@ -337,8 +352,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         Double yMin = null;
         for (VfLine line : lines) {
             for (VfPoint point : line.getPoints()) {
-                if (yMin == null || point.getY() < yMin) {
-                    yMin = point.getY();
+                if (!point.isIgnore()) {
+                    if (yMin == null || point.getY() < yMin) {
+                        yMin = point.getY();
+                    }
                 }
             }
         }
@@ -349,8 +366,10 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         Double yMax = null;
         for (VfLine line : lines) {
             for (VfPoint point : line.getPoints()) {
-                if (yMax == null || point.getY() > yMax) {
-                    yMax = point.getY();
+                if (!point.isIgnore()) {
+                    if (yMax == null || point.getY() > yMax) {
+                        yMax = point.getY();
+                    }
                 }
             }
         }
@@ -439,6 +458,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	                                          CapControlCache cache, Zone zone) {
         List<VfLine> lines = Lists.newArrayList();
         List<VfPoint> points = Lists.newArrayList();
+        List<VfPoint> ignoredPoints = Lists.newArrayList();
         List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
         List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
         double graphStartPosition = getGraphStartPositionForZone(zone);
@@ -474,14 +494,19 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         }
         
         for (VfPoint vfPoint: points) {
-            Phase pointPhase = vfPoint.getPhase();
-            if(pointPhase == Phase.ALL) {
-                // Point isn't on a phase? Add it to all phases
-                for (Phase enumPhase : Phase.getRealPhases()) {
-                    phasePointsMap.get(enumPhase).add(vfPoint);
-                }
+            if (vfPoint.isIgnore()){
+                //add to something else?
+                ignoredPoints.add(vfPoint);
             } else {
-                phasePointsMap.get(pointPhase).add(vfPoint);
+                Phase pointPhase = vfPoint.getPhase();
+                if(pointPhase == Phase.ALL) {
+                    // Point isn't on a phase? Add it to all phases
+                    for (Phase enumPhase : Phase.getRealPhases()) {
+                        phasePointsMap.get(enumPhase).add(vfPoint);
+                    }
+                } else {
+                    phasePointsMap.get(pointPhase).add(vfPoint);
+                }
             }
         }
 
@@ -508,6 +533,16 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             String allPhases = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases");
             VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), allPhases, zone.getName(), Phase.ALL, 
                                             noPhaseLineSettings, phaseAPoints);
+            lines.add(noPhaseLine);
+        }
+        
+        //Add Ignored Points separately so we don't get a line
+        for (VfPoint ignoredPoint : ignoredPoints) {
+            VfLineSettings ignoredPointLineSettings = getIgnoredPointsLineSetting(settings);
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            String ignoredLabel = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.ignoredPoints");
+            VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), ignoredLabel, zone.getName(), null, 
+                                            ignoredPointLineSettings, Arrays.asList(ignoredPoint));
             lines.add(noPhaseLine);
         }
         
@@ -577,6 +612,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         } else {
             pointValue = asyncDynamicDataSource.getPointValue(pointId);
         }
+        PointQuality quality = pointValue.getPointQuality();
+        if (!quality.equals(PointQuality.Manual) && !quality.equals(PointQuality.Normal)) {
+            ignore = true;
+        }
+                
         String pointValueString = pointFormattingService.getValueString(pointValue, Format.SHORT, userContext);
         String timestamp = dateFormattingService.format(pointValue.getPointDataTimeStamp(), 
                                                         DateFormatEnum.BOTH, userContext);
@@ -624,6 +664,13 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     private VfLineSettings getNoPhaseLineSetting(VfGraphSettings settings) {
         String zoneLineColorNoPhase = settings.getZoneLineColorNoPhase();
         VfLineSettings lineSetting = new VfLineSettings(zoneLineColorNoPhase,
+                                                        true, true, true, false, true);
+        return lineSetting;
+    }
+    
+    private VfLineSettings getIgnoredPointsLineSetting(VfGraphSettings settings) {
+        String zonePointColorIgnoredPoints = settings.getZonePointColorIgnoredPoints();
+        VfLineSettings lineSetting = new VfLineSettings(zonePointColorIgnoredPoints,
                                                         true, true, true, false, true);
         return lineSetting;
     }

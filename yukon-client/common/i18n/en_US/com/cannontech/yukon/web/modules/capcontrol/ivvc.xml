@@ -52,6 +52,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.otherActions.title">Other Actions</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.otherActions.voltageDeltas">Voltage Deltas</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases">All Phases</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ignoredPoints">Ignored</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.questionable.hoverText">Questionable Quality</entry>
     
@@ -187,6 +188,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#2929FF</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#006600</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase">#000000</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorIgnoredPoints">#B0B0B0</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel">{description}</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.busGraph">true</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.zoneGraph">false</entry>
