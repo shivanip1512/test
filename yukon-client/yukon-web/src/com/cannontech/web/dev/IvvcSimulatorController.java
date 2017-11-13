@@ -67,21 +67,17 @@ public class IvvcSimulatorController {
         model.addAttribute("ivvcSimulatorSettings", response.getSettings());
         model.addAttribute("ivvcSimulatorStatus", response.getStatus());
         String blockedPointsString = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BLOCKED_POINTS);
-        if (blockedPointsString != null && !blockedPointsString.isEmpty()) {
-            ArrayList<Integer> blockedPoints = (ArrayList<Integer>) Stream.of(blockedPointsString.split(","))
-                    .filter(s -> !s.isEmpty())
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-            model.addAttribute("blockedPoints", blockedPoints);
-        }
+        ArrayList<Integer> blockedPoints = (ArrayList<Integer>) Stream.of(blockedPointsString.split(","))
+                .filter(s -> !s.isEmpty())
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        model.addAttribute("blockedPoints", blockedPoints);
         String badQualityPointsString = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BAD_QUALITY_POINTS);
-        if (badQualityPointsString != null && !badQualityPointsString.isEmpty()) {
-            ArrayList<Integer> badQualityPoints = (ArrayList<Integer>) Stream.of(badQualityPointsString.split(","))
-                    .filter(s -> !s.isEmpty())
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-            model.addAttribute("badQualityPoints", badQualityPoints);
-        }
+        ArrayList<Integer> badQualityPoints = (ArrayList<Integer>) Stream.of(badQualityPointsString.split(","))
+                .filter(s -> !s.isEmpty())
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        model.addAttribute("badQualityPoints", badQualityPoints);
         return "ivvc/ivvcSimulator.jsp";
     }
     

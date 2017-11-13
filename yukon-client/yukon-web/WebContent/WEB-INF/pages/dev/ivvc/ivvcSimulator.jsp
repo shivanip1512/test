@@ -28,13 +28,11 @@
                                 <tags:input path="ivvcSimulatorSettings.remoteVoltageOffsetVar" id="remoteVoltageOffsetVar"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".ivvcSimulator.blockedPoints">
-                                <tags:input path="ivvcSimulatorSettings.blockedPoints" id="blockedPoints" inputClass="dn"/>
                                 <tags:pickerDialog id="blockedPointsPicker" type="pointPicker" destinationFieldName="blockedPoints" 
                                     linkType="button" nameKey="choose" icon="icon-folder-edit" multiSelectMode="true"
                                     initialIds="${blockedPoints}" allowEmptySelection="true"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".ivvcSimulator.badQualityPoints">
-                                <tags:input path="ivvcSimulatorSettings.badQualityPoints" id="badQualityPoints" inputClass="dn"/>
                                 <tags:pickerDialog id="badQualityPointsPicker" type="pointPicker" destinationFieldName="badQualityPoints" 
                                     linkType="button" nameKey="choose" icon="icon-folder-edit" multiSelectMode="true"
                                     initialIds="${badQualityPoints}" allowEmptySelection="true"/>
