@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -27,6 +29,10 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.maintenance.MaintenanceTaskName;
+import com.cannontech.maintenance.dao.MaintenanceTaskDao;
+import com.cannontech.system.model.MaintenanceSetting;
+import com.cannontech.system.model.MaintenanceTask;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -53,6 +59,7 @@ public class MaintenanceController {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private MaintenanceTaskDao maintenanceTaskDao;
 
     @Autowired @Qualifier("rphDuplicateDeletion")
         private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
@@ -93,6 +100,7 @@ public class MaintenanceController {
         }
 
         model.addAttribute("jobs", jobs);
+        setUpModelForPointDataPruning(model);
         return "maintenance/home.jsp";
     }
 
@@ -183,6 +191,74 @@ public class MaintenanceController {
         scheduledRepeatingJobDao.save(job);
         jobManager.instantiateTask(job);
         return job;
+    }
+
+    private void setUpModelForPointDataPruning(ModelMap model) {
+        List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks(true);
+        model.addAttribute("tasks", tasks);
+    }
+
+    @RequestMapping("toggleDataPruningJobEnabled")
+    public String toggleDataPruningJobEnabled(int taskId) {
+        toggleDataPruningJob(taskId);
+        return "redirect:view";
+    }
+
+    private boolean toggleDataPruningJob(int taskId) {
+        boolean isEnabled = true;
+        MaintenanceTask job = maintenanceTaskDao.getMaintenanceTaskById(taskId);
+        if (!job.isDisabled()) {
+            isEnabled = false;
+        }
+        job.setDisabled(!job.isDisabled());
+        maintenanceTaskDao.updateTaskStatus(job);
+        return isEnabled;
+    }
+
+    @RequestMapping("editTask")
+    public String editTask(ModelMap model, YukonUserContext userContext, int taskId, String taskName) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        MaintenanceTaskName maintenanceTaskName = MaintenanceTaskName.valueOf(taskName);
+        MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskName);
+        List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskName(maintenanceTaskName);
+        MaintenanceEditorBean maintenanceEditorBean = new MaintenanceEditorBean();
+        maintenanceEditorBean.setTaskDetails(taskDetails);
+        maintenanceEditorBean.setSettings(settings);
+        model.addAttribute("maintenanceEditorBean", maintenanceEditorBean);
+        String taskNameMsg = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
+            + maintenanceEditorBean.getTaskDetails().getTaskName() + ".title");
+        model.addAttribute("taskNameMsg", taskNameMsg);
+        return "maintenance/editTask.jsp";
+    }
+
+    @RequestMapping("updateTask")
+    public String save(@ModelAttribute("maintenanceEditorBean") MaintenanceEditorBean maintenanceEditorBean,
+            BindingResult result, FlashScope flash, YukonUserContext userContext) {
+        maintenanceTaskDao.updateSettings(maintenanceEditorBean.getSettings());
+        return "redirect:view";
+    }
+
+    public static class MaintenanceEditorBean {
+
+        private MaintenanceTask taskDetails;
+        private List<MaintenanceSetting> settings = Lists.newArrayList();
+
+        public List<MaintenanceSetting> getSettings() {
+            return settings;
+        }
+
+        public void setSettings(List<MaintenanceSetting> settings) {
+            this.settings = settings;
+        }
+
+        public MaintenanceTask getTaskDetails() {
+            return taskDetails;
+        }
+
+        public void setTaskDetails(MaintenanceTask taskDetails) {
+            this.taskDetails = taskDetails;
+        }
+
     }
 
 }

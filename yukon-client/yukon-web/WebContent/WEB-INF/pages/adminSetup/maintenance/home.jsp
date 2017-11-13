@@ -7,6 +7,7 @@
 <cti:standardPage module="adminSetup" page="maintenance">
 
 <c:url value="/admin/maintenance/toggleJobEnabledAjax" var="toggleJobAjaxUrl"/>
+<c:url value="/admin/maintenance/toggleDataPruningJobEnabled" var="toggleDataPruningJobEnabledAjaxUrl"/>
 
 <script>
 $(function(){
@@ -16,6 +17,13 @@ $(function(){
         
         $.ajax({
             url: '${toggleJobAjaxUrl}?jobId=' + jobId
+        });
+    });
+    
+    $(document).on('change', '.js-toggleDataPruningJobEnabled .checkbox-input', function() {
+        var taskId = $(this).data('taskId');
+        $.ajax({
+            url: '${toggleDataPruningJobEnabledAjaxUrl}?taskId=' + taskId
         });
     });
 });
@@ -56,4 +64,8 @@ $(function(){
 					</c:forEach>
                 </tbody>
 				</table>
+                <br>
+                <div class="scroll-xl">
+                    <%@ include file="tasks.jsp" %>
+                </div>
 </cti:standardPage>

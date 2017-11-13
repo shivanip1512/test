@@ -1093,6 +1093,10 @@
                         <link>/admin/maintenance/edit</link>
                         <labelArgument>${jobNameMsg}</labelArgument>
                     </page>
+                    <page name="maintenance.dataPruning.EDIT" type="DETAIL" hideFavorite="true">
+                        <link>/admin/maintenance/editTask</link>
+                        <labelArgument>${taskNameMsg}</labelArgument>
+                    </page>
                 </pages>
             </page>
             <page name="home" type="BASIC">

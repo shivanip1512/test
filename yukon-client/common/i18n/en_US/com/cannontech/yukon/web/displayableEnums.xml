@@ -567,4 +567,10 @@
     <!-- DREncryption enum -->
     <entry key="yukon.common.drEncryption.HONEYWELL">Honeywell</entry>
     
+    <!-- Point Data Pruning -->
+    <entry key="yukon.common.durationType.THIRTEEN_MONTHS">13 months</entry>
+    <entry key="yukon.common.durationType.TWO_YEARS">2 years</entry>
+    <entry key="yukon.common.durationType.THREE_YEARS">3 years</entry>
+    <entry key="yukon.common.durationType.FOUR_YEARS">4 years</entry>
+    <entry key="yukon.common.durationType.FIVE_YEARS">5 years</entry>
 </properties>
