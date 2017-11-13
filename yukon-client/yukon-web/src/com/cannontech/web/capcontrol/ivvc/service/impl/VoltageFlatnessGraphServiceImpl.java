@@ -495,7 +495,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         
         for (VfPoint vfPoint: points) {
             if (vfPoint.isIgnore()){
-                //add to something else?
                 ignoredPoints.add(vfPoint);
             } else {
                 Phase pointPhase = vfPoint.getPhase();
