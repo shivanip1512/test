@@ -17,16 +17,16 @@
                     </c:if>
                 </tags:nameValue2>
                 <c:forEach items="${maintenanceEditorBean.settings}" var="setting" varStatus="status" begin="0">
-                <c:set var="indexValue" value="${status.index}" />
-                <tags:nameValue2 nameKey=".maintenance.${setting.attribute}">
-                <tags:simpleInputType input="${setting.attribute.type}" path="settings[${indexValue}].attributeValue"/>
-                <form:hidden path="settings[${indexValue}].taskId" />
-                <form:hidden path="settings[${indexValue}].attribute" />
-                </tags:nameValue2>
+                    <c:set var="indexValue" value="${status.index}" />
+                    <tags:nameValue2 nameKey=".maintenance.${setting.attribute}">
+                        <tags:simpleInputType input="${setting.attribute.type}" path="settings[${indexValue}].attributeValue"/>
+                        <form:hidden path="settings[${indexValue}].taskId" />
+                        <form:hidden path="settings[${indexValue}].attribute" />
+                    </tags:nameValue2>
                 </c:forEach>
                 <tags:nameValue2 nameKey=".nextRun">
-                <!-- TODO: Make changes to calculate the next run time after YUK-17337 is done -->
-                <span>11/18/2017 22:00</span>
+                    <!-- TODO: Make changes to calculate the next run time after YUK-17337 is done -->
+                    <span>11/18/2017 22:00</span>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
