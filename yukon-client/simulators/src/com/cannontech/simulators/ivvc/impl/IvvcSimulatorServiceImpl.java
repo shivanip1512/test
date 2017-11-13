@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -812,11 +813,25 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH, settings.isAutoGenerateSubstationBuskWh());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR, settings.getLocalVoltageOffsetVar());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR, settings.getRemoteVoltageOffsetVar());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BLOCKED_POINTS, settings.getBlockedPoints());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BAD_QUALITY_POINTS, settings.getBadQualityPoints());
         
         substationBuskWh = settings.getSubstationBuskWh();
         autoGenerateSubstationBuskWh = settings.isAutoGenerateSubstationBuskWh();
         localVoltageOffset = settings.getRemoteVoltageOffsetVar();
         remoteVoltageOffset = settings.getRemoteVoltageOffsetVar();
+        if (!settings.getBlockedPoints().isEmpty()) {
+            blockedPointIds = Stream.of(settings.getBlockedPoints().split(","))
+                    .filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
+        if (!settings.getBadQualityPoints().isEmpty()) {
+            badQualityPointIds = Stream.of(settings.getBadQualityPoints().split(","))
+                    .filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
     }
     
     @Override
@@ -828,6 +843,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH),
             yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR),
             yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR));
+        settings.setBlockedPoints(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BLOCKED_POINTS));
+        settings.setBlockedPoints(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BAD_QUALITY_POINTS));
         return settings;
     }
 

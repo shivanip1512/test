@@ -9,7 +9,9 @@ public class IvvcSimulatorSettings implements Serializable {
     private double substationBuskWh = 3000;
     private double localVoltageOffsetVar = 1200;
     private double remoteVoltageOffsetVar = 1200;
-
+    private String blockedPoints = "";
+    private String badQualityPoints = "";
+    
     public IvvcSimulatorSettings() {
     }
 
@@ -60,5 +62,21 @@ public class IvvcSimulatorSettings implements Serializable {
 
     public void setRemoteVoltageOffsetVar(double remoteVoltageOffset) {
         this.remoteVoltageOffsetVar = remoteVoltageOffset;
+    }
+
+    public String getBlockedPoints() {
+        return blockedPoints;
+    }
+
+    public void setBlockedPoints(String blockedPoints) {
+        this.blockedPoints = blockedPoints;
+    }
+
+    public String getBadQualityPoints() {
+        return badQualityPoints;
+    }
+
+    public void setBadQualityPoints(String badQualityPoints) {
+        this.badQualityPoints = badQualityPoints;
     }    
 }

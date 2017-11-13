@@ -317,6 +317,8 @@
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.generatekWhAutomatically.label">Generate Substation kWh Automatically</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.localVoltageOffsetVar">Bank kVar for 1v Local Voltage Change</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.remoteVoltageOffsetVar">Bank kVar for .2v Remote Voltage Change</entry>
+    <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.blockedPoints">Blocked Points</entry>
+    <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.badQualityPoints">Bad Quality Points</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.success">Simulator settings save successfully.</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.saveSettings.error">Unable to save simulator settings.</entry>
     <entry key="yukon.web.modules.dev.ivvc.saveSettings.label">Save Settings</entry>

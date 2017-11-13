@@ -1,8 +1,11 @@
 package com.cannontech.web.dev;
 
 import java.beans.PropertyEditor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.jms.ConnectionFactory;
 
@@ -26,6 +29,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.ivvc.model.IvvcSimulatorSettings;
 import com.cannontech.ivvc.model.IvvcSimulatorStatus;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.message.request.IvvcSimulatorSettingsChangedRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStartRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStatusRequest;
@@ -46,6 +51,8 @@ public class IvvcSimulatorController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(IvvcSimulatorController.class);
     private final IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false, 3000.0, true, 1200, 1200);
@@ -59,6 +66,22 @@ public class IvvcSimulatorController {
         }
         model.addAttribute("ivvcSimulatorSettings", response.getSettings());
         model.addAttribute("ivvcSimulatorStatus", response.getStatus());
+        String blockedPointsString = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BLOCKED_POINTS);
+        if (blockedPointsString != null && !blockedPointsString.isEmpty()) {
+            ArrayList<Integer> blockedPoints = (ArrayList<Integer>) Stream.of(blockedPointsString.split(","))
+                    .filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+            model.addAttribute("blockedPoints", blockedPoints);
+        }
+        String badQualityPointsString = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BAD_QUALITY_POINTS);
+        if (badQualityPointsString != null && !badQualityPointsString.isEmpty()) {
+            ArrayList<Integer> badQualityPoints = (ArrayList<Integer>) Stream.of(badQualityPointsString.split(","))
+                    .filter(s -> !s.isEmpty())
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+            model.addAttribute("badQualityPoints", badQualityPoints);
+        }
         return "ivvc/ivvcSimulator.jsp";
     }
     

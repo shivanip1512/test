@@ -105,7 +105,9 @@ public enum YukonSimulatorSettingsKey {
     IVVC_SIMULATOR_SUBSTATION_BUS_KWH(3000.0, InputTypeFactory.doubleType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_AUTOGENERATE_SUBSTATION_BUS_KWH(true, InputTypeFactory.booleanType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR(1200, InputTypeFactory.doubleType(), SimulatorType.IVVC),
-    IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR(1200, InputTypeFactory.doubleType(), SimulatorType.IVVC)
+    IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR(1200, InputTypeFactory.doubleType(), SimulatorType.IVVC),
+    IVVC_SIMULATOR_BLOCKED_POINTS("", InputTypeFactory.stringType(), SimulatorType.IVVC),
+    IVVC_SIMULATOR_BAD_QUALITY_POINTS("", InputTypeFactory.stringType(), SimulatorType.IVVC),
     ;
 
     private final Object defaultValue;
