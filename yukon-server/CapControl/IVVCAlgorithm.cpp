@@ -3381,7 +3381,7 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
 
                 if ( voltagePointId > 0 )
                 {
-                    findPointInRequest(voltagePointId, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints);
+                    findPointInRequest( voltagePointId, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -3393,7 +3393,7 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
             }
             catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
-                if (missingAttribute.complain())
+                if ( missingAttribute.complain() )
                 {
                     CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
@@ -3425,8 +3425,8 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
             }
             else
             {
-                CTILOG_ERROR(dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
-                    << ". Possible BusStore reset in progress.");
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                    << ". Possible BusStore reset in progress." );
 
                 // Abort the analysis without contributing to a comms lost condition
 
