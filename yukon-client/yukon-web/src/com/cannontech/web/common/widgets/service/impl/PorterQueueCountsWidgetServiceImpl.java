@@ -34,7 +34,6 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH));
     private static final Logger log = YukonLogManager.getLogger(PorterQueueCountsWidgetServiceImpl.class);
 
     @Override
@@ -79,7 +78,7 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     @Override
     public boolean isRefreshEligible(Instant lastGraphDataRefreshTime) {
         return lastGraphDataRefreshTime == null || 
-                Instant.now().isAfter(lastGraphDataRefreshTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH));
+                Instant.now().isAfter(lastGraphDataRefreshTime.plus(Duration.standardMinutes(globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH))));
     }
     
     /**
