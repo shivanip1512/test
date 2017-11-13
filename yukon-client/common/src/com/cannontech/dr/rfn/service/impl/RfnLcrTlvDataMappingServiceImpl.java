@@ -258,6 +258,11 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         address.setDeviceId(device.getPaoIdentifier().getPaoId());
 
         address.setTimestamp(new Instant(ByteUtil.getLong(data.get(FieldType.UTC).get(0)) * 1000));
+        // reject to save old addressing information in database
+        if (currentAddress.getTimestamp().isAfter(address.getTimestamp())) {
+            log.info("Latest addressing data for this Device" + device.getName() + "already exists in system");
+            return;
+        }
 
         if (CollectionUtils.isNotEmpty(data.get(FieldType.SPID))) {
             address.setSpid(ByteUtil.getInteger(data.get(FieldType.SPID).get(0)));
@@ -297,8 +302,16 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
 
         if (CollectionUtils.isNotEmpty(data.get(FieldType.RELAY_N_PROGRAM_ADDRESS))) {
             data.get(FieldType.RELAY_N_PROGRAM_ADDRESS).forEach(relayNode -> {
-                ExpressComReportedAddressRelay relay = relays.get(ByteUtil.getInteger(relayNode[0]));
-                relay.setProgram(ByteUtil.getInteger(relayNode[1]));
+                ExpressComReportedAddressRelay relay;
+                if (relays.get(ByteUtil.getInteger(relayNode[0])) != null) {
+                    relay = relays.get(ByteUtil.getInteger(relayNode[0]));
+                    relay.setProgram(ByteUtil.getInteger(relayNode[1]));
+                } else {
+                    relay = new ExpressComReportedAddressRelay();
+                    relay.setRelayNumber(ByteUtil.getInteger(relayNode[0]));
+                    relay.setProgram(ByteUtil.getInteger(relayNode[1]));
+                    relays.put(relay.getRelayNumber(), relay);
+                }
             });
         }
         address.setRelays(new HashSet<ExpressComReportedAddressRelay>(relays.values()));

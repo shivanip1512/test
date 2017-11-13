@@ -110,6 +110,10 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
                 insertAddress(address);
                 return true;
             } else {
+                if (!address.getTimestamp().equals(currentaddress.getTimestamp())) {
+                    updateReportedTimeStamp(address);
+                    return true;
+                }
                 return false;
             }
 
@@ -129,6 +133,17 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
             
             yukonJdbcTemplate.update(sql);
         }
+    }
+
+    private void updateReportedTimeStamp(ExpressComReportedAddress address) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ReportedAddressExpressCom");
+        sql.append("SET ").append("Timestamp").eq(address.getTimestamp());
+        sql.append("WHERE ChangeId = (");
+        sql.append("    SELECT MAX(ChangeId) FROM ReportedAddressExpressCom");
+        sql.append("    WHERE DeviceId").eq(address.getDeviceId());
+        sql.append("    )");
+        sql.append("  AND DeviceId").eq(address.getDeviceId());
     }
 
     @Override
@@ -159,11 +174,13 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
     @Override
     public ExpressComReportedAddress getCurrentAddress(int deviceId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ChangeId, RAEC.DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
-        sql.append("FROM ReportedAddressExpressCom lmra,");
-        sql.append("(SELECT DeviceId, MAX(Timestamp) LatestTimestamp FROM ReportedAddressExpressCom GROUP BY DeviceId) RAEC");
-        sql.append("WHERE lmra.ChangeId = (SELECT MAX(ChangeId) FROM ReportedAddressExpressCom RAEC2 WHERE RAEC2.DeviceId = RAEC.DeviceId  AND RAEC.LatestTimestamp = RAEC2.Timestamp)");
-        sql.append("AND RAEC.DeviceId").eq(deviceId);
+        sql.append("SELECT ChangeId, DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
+        sql.append("FROM ReportedAddressExpressCom");
+        sql.append("WHERE ChangeId = (");
+        sql.append("    SELECT MAX(ChangeId) FROM ReportedAddressExpressCom");
+        sql.append("    WHERE DeviceId").eq(deviceId);
+        sql.append("    )");
+        sql.append("  AND DeviceId").eq(deviceId);
         
         try {
             ExpressComReportedAddress address = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
