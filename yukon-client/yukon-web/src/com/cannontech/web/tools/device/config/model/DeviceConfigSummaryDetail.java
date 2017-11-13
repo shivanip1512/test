@@ -17,7 +17,7 @@ public class DeviceConfigSummaryDetail {
     private InSync inSync;
     private Instant actionStart;
     private Instant actionEnd;
-    private int errorCode;
+    private Integer errorCode;
 
     public DisplayableDevice getDevice() {
         return device;
@@ -87,11 +87,11 @@ public class DeviceConfigSummaryDetail {
         return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
 
-    public int getErrorCode() {
+    public Integer getErrorCode() {
         return errorCode;
     }
 
-    public void setErrorCode(int errorCode) {
+    public void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
     }
 }
