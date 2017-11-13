@@ -22,7 +22,6 @@ import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.system.model.MaintenanceSetting;
 import com.cannontech.system.model.MaintenanceTask;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
 
@@ -126,13 +125,11 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         sql.append("FROM MaintenanceTaskSettings");
         sql.append("WHERE Attribute").in(all);
 
-        final Set<MaintenanceSettingType> found = Sets.newHashSet();
         final List<MaintenanceSetting> settings = Lists.newArrayList();
 
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-
                 MaintenanceSettingType type = rs.getEnum(("Attribute"), MaintenanceSettingType.class);
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
                 if (value == null) {
@@ -142,15 +139,8 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
                 setting.setTaskPropertyId((rs.getInt("TaskPropertyId")));
                 setting.setTaskId((rs.getInt("TaskId")));
                 settings.add(setting);
-                found.add(type);
             }
         });
-
-        Set<MaintenanceSettingType> missing = Sets.difference(all, found);
-        for (MaintenanceSettingType type : missing) {
-            MaintenanceSetting setting = new MaintenanceSetting(type, type.getDefaultValue());
-            settings.add(setting);
-        }
 
         return settings;
     }
