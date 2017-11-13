@@ -17,8 +17,8 @@ public class DeviceConfigSummaryDetail {
     private InSync inSync;
     private Instant actionStart;
     private Instant actionEnd;
+    private int errorCode;
 
-    
     public DisplayableDevice getDevice() {
         return device;
     }
@@ -85,5 +85,13 @@ public class DeviceConfigSummaryDetail {
 
     public boolean isDisplayVerify() {
         return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 }
