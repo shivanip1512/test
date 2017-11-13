@@ -260,7 +260,8 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         address.setTimestamp(new Instant(ByteUtil.getLong(data.get(FieldType.UTC).get(0)) * 1000));
         // reject to save old addressing information in database
         if (currentAddress.getTimestamp().isAfter(address.getTimestamp())) {
-            log.info("Latest addressing data for this Device" + device.getName() + "already exists in system");
+            log.info("Current addressing from" + currentAddress.getTimestamp().toDate() + " is newer than newly reported at "
+                + address.getTimestamp().toDate() + " for device " + device.getName() + ", ignoring older addressing information");
             return;
         }
 
