@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -22,6 +21,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionException;
@@ -666,7 +666,7 @@ public class DBPersistentBean implements IDBPersistent {
       else
       if( o instanceof Character )
       {
-          String str = StringUtils.trim(o.toString());
+          String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
       		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
@@ -695,7 +695,7 @@ public class DBPersistentBean implements IDBPersistent {
       else
       if( o instanceof String )
       {
-          String str = StringUtils.trim(o.toString());
+          String str = StringUtils.trimSpaces(o.toString());
       	if( str == null || str.length() <= 0 )
       	{
       		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");

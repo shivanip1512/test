@@ -29,6 +29,21 @@ public final class StringUtils {
         return percent(total, count, maxFractionDigits, "###.##%");
     }
     
+    public static String trimSpaces(String s) {
+        int len = s.length();
+        int st = 0;
+        char[] val = s.toCharArray(); /* avoid getfield opcode */
+
+        while ((st < len) && (val[st] == ' ')) {
+            st++;
+        }
+        while ((st < len) && (val[len - 1] == ' ')) {
+            len--;
+        }
+
+        return ((st > 0) || (len < s.length())) ? s.substring(st, len) : s;
+    }
+
     /**
      * Separates camelCase str with addedChar. Opposite of removeChars method.
      * Example: str = "RampOutRandomRest", addedChar = " " 
