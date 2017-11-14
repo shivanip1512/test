@@ -16,8 +16,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
@@ -71,7 +73,7 @@ public class DeviceConfigurationSummaryController {
     
     private final static String baseKey = "yukon.web.modules.tools.configs.summary.";
 
-    @RequestMapping("view")
+    @RequestMapping(value="view", method=RequestMethod.GET)
     public String view(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, @DefaultItemsPerPage(value=250) PagingParameters paging,
                        ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) {
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
@@ -80,6 +82,7 @@ public class DeviceConfigurationSummaryController {
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("configurations", configurations);
         boolean assignedToAny = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(-998);
+        boolean unassigned = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(-999);
         setFilterValues(filter, deviceSubGroups);
         model.addAttribute("lastActionOptions", LastAction.values());
         model.addAttribute("statusOptions", LastActionStatus.values());
@@ -91,6 +94,9 @@ public class DeviceConfigurationSummaryController {
             filter.setConfigurationIds(new ArrayList<>());
             filter.getConfigurationIds().add(-998);
         }
+        if (unassigned) {
+            filter.getConfigurationIds().add(-999);
+        }
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
@@ -100,13 +106,13 @@ public class DeviceConfigurationSummaryController {
         return "summary/summary.jsp";
     }
     
-    @RequestMapping("{id}/viewHistory")
+    @RequestMapping(value="{id}/viewHistory", method=RequestMethod.GET)
     public String viewHistory(ModelMap model, @PathVariable int id) {
         model.addAttribute("details", deviceConfigSummaryDao.getDeviceConfigActionHistory(id));
         return "summary/history.jsp";
     }
     
-    @RequestMapping("{id}/outOfSync")
+    @RequestMapping(value="{id}/outOfSync", method=RequestMethod.GET)
     public String outOfSync(ModelMap model, YukonUserContext context, @PathVariable int id) {
         YukonDevice device = deviceDao.getYukonDevice(id);
         VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
@@ -114,14 +120,15 @@ public class DeviceConfigurationSummaryController {
         return "summary/outOfSync.jsp";
     }
     
-    @RequestMapping("{id}/displayError")
+    @RequestMapping(value="{errorCode}/displayError", method=RequestMethod.GET)
     public String displayError(ModelMap model, YukonUserContext context, @PathVariable int errorCode) {
         errorCode = 99;
-        deviceErrorTranslatorDao.translateErrorCode(errorCode, context);
-        return "summary/outOfSync.jsp";
+        DeviceErrorDescription description = deviceErrorTranslatorDao.translateErrorCode(errorCode, context);
+        model.put("errorMessage",  description.getDescription());
+        return "summary/error.jsp";
     }
        
-    @RequestMapping("{id}/sendConfig")
+    @RequestMapping(value="{id}/sendConfig", method=RequestMethod.POST)
     public void sendConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
@@ -130,7 +137,7 @@ public class DeviceConfigurationSummaryController {
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
-    @RequestMapping("{id}/readConfig")
+    @RequestMapping(value="{id}/readConfig", method=RequestMethod.POST)
     public void readConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
@@ -139,7 +146,7 @@ public class DeviceConfigurationSummaryController {
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
         
-    @RequestMapping("{id}/verifyConfig")
+    @RequestMapping(value="{id}/verifyConfig", method=RequestMethod.POST)
     public void verifyConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
@@ -181,7 +188,7 @@ public class DeviceConfigurationSummaryController {
         filter.setGroups(subGroups);
     }
     
-    @RequestMapping("collectionAction/{action}")
+    @RequestMapping(value="collectionAction/{action}", method=RequestMethod.GET)
     public String collectionAction(@PathVariable String action, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) {
         setFilterValues(filter, deviceSubGroups);
         SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);

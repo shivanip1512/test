@@ -141,7 +141,18 @@
                     <c:if test="${detail.action == null}">
                         <td></td>
                     </c:if>
-                    <td><i:inline key=".statusType.${detail.status}"/></td>
+                    <td>
+                         <c:choose>
+                            <c:when test="${detail.status == 'FAILURE'}">
+                                <div class="dn js-failure-${deviceId}" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key=".failure"/>" 
+                                data-width="600" data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/displayError"/>"></div>
+                                <a href="javascript:void(0);" data-popup=".js-failure-${deviceId}"><i:inline key=".statusType.${detail.status}"/></a>
+                            </c:when>
+                            <c:otherwise>
+                                <i:inline key=".statusType.${detail.status}"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
                     <td>
                         <c:choose>
                             <c:when test="${detail.inSync == 'OUT_OF_SYNC'}">

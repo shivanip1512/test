@@ -25,6 +25,7 @@ yukon.deviceConfig.summary = (function () {
                     url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/sendConfig'),
                     type: 'post'
                 }).done(function () {
+                    $(document).scrollTop(0);
                     window.location.reload();
                 });
             });
@@ -35,6 +36,7 @@ yukon.deviceConfig.summary = (function () {
                     url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/readConfig'),
                     type: 'post'
                 }).done(function () {
+                    $(document).scrollTop(0);
                     window.location.reload();
                 });
             });
@@ -45,6 +47,7 @@ yukon.deviceConfig.summary = (function () {
                     url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/verifyConfig'),
                     type: 'post'
                 }).done(function () {
+                    $(document).scrollTop(0);
                     window.location.reload();
                 });
             });
