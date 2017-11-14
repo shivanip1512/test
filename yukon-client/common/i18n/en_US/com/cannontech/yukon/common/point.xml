@@ -436,7 +436,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SERIAL_NUMBER">Serial Number</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UDP_PORT">UDP Port</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON">Last Control Reason</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.IGNORED_CONTROL_REASON">Last Control Reason</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.IGNORED_CONTROL_REASON">Ignored Control Reason</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.STREAMING_CAPABLE_DEVICE_COUNT">Streaming Capable Device Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.STREAMING_ACTIVE_DEVICE_COUNT">Streaming Active Device Count</entry>
