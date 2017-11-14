@@ -139,7 +139,7 @@ public class DeviceConfigSummaryFilter {
             tsb.append("configurationIds", Joiner.on(",").join(configurationIds));
         }
         if (range != null) {
-            tsb.append("Range=" + InstantRangeLogHelper.getLogString(range));
+            tsb.append("range" + InstantRangeLogHelper.getLogString(range));
         }
         return tsb.toString();
     }
