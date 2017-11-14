@@ -10,7 +10,9 @@
 .logLine { white-space: pre-wrap; word-break: break-all; }
 .spaced { margin-right: 50px; }
 </style>
-
+<div id="error-message" class="user-message error dn" >
+    <cti:msg2 key="yukon.web.modules.support.logTail.msgError.logUpdateFailed"/>
+</div>
 <cti:url var="updateUrl" value='/support/logging/view/update?file=/${file}' />
 
 <div id="page-buttons" class="dn">

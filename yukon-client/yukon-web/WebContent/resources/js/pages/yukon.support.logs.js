@@ -87,10 +87,7 @@ yukon.support.logs = (function () {
             }
         }).fail(function (xhr, status) {
             clearInterval(_repeatingTaskId);
-            _repeatingTaskId = setInterval(_update, 1000 * 10);
-            var newDiv = $('<div class="logLine">Error: ' + status + '...Trying again in 10 seconds.</div>').hide();
-            $('#logOutput').append(newDiv);
-            newDiv.slideDown();
+            $("#error-message").removeClass('dn');
         });
     },
     
