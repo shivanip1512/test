@@ -111,12 +111,18 @@ CtiTablePointAlarming& CtiTablePointAlarming::setAlarmCategory( const INT offset
 
 CtiTablePointAlarming& CtiTablePointAlarming::setAlarmCategory( const string str )
 {
-    unsigned char tchar;
-
-    for(int i = 0; i < str.length() && i < ALARM_STATE_SIZE; i++)
+    if( str.length() < ALARM_STATE_SIZE )
     {
-        tchar = (unsigned char)str[(size_t)i];
-        setAlarmCategory(i, (UINT)tchar);
+        CTILOG_WARN(dout, "Alarm category string less than ALARM_STATE_SIZE, defaulting remaining categories to 1" + Cti::FormattedList::of(
+            "Point ID", _pointID,
+            "str.length()", str.length()));
+
+        auto db_end = std::copy(str.cbegin(), str.cend(), std::begin(_alarmCategory));
+        std::fill(db_end, std::end(_alarmCategory), 1);
+    }
+    else
+    {
+        std::copy_n(str.cbegin(), ALARM_STATE_SIZE, std::begin(_alarmCategory));
     }
 
     return *this;
