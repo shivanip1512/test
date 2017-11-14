@@ -3362,7 +3362,7 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         missingPoints = 0,
         stalePoints = 0;
 
-    for ( auto phase : phases )
+    for ( const auto phase : phases )
     {
         Zone::PhaseIdMap    regulatorSearch = zone->getRegulatorIds();
 
@@ -3370,7 +3370,7 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
 
         boost::tie( phase_ID_iterator, phase_ID_end ) = regulatorSearch.equal_range( phase );
 
-        for (; phase_ID_iterator != phase_ID_end; ++phase_ID_iterator)
+        for ( ; phase_ID_iterator != phase_ID_end; ++phase_ID_iterator )
         {
             try
             {
@@ -3489,7 +3489,7 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
 
     regulatorSearch.erase(Cti::CapControl::Phase_Unknown);
 
-    for ( auto regulatorIterator : regulatorSearch )
+    for ( const auto regulatorIterator : regulatorSearch )
     {
         try
         {
@@ -3529,11 +3529,11 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
 
     totalPoints = missingPoints = stalePoints = 0;      // reset stats
 
-    for ( auto & ID : zone->getBankIds() )
+    for ( const auto ID : zone->getBankIds() )
     {
         if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
         {
-            for ( auto point : bank->getMonitorPoint() )
+            for ( const auto point : bank->getMonitorPoint() )
             {
                 const long cbcPointID = point->getPointId();
 
@@ -3568,7 +3568,7 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
 
     voltageMonitorSearch.erase( Cti::CapControl::Phase_Unknown );
 
-    for ( auto voltageMonitorIterator : voltageMonitorSearch )
+    for ( const auto voltageMonitorIterator : voltageMonitorSearch )
     {
         const long voltageMonitorPointID = voltageMonitorIterator.second;
 
