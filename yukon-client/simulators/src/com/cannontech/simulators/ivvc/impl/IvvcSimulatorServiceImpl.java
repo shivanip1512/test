@@ -180,11 +180,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 } else if (regulatorVoltageControlModeConfig.get(regulatorOperations.regulatorId) == RegulatorVoltageControlMode.SET_POINT) {
                     if (regulatorOperations.eventType == EventType.DECREASE_SETPOINT
                         || regulatorOperations.eventType == EventType.INCREASE_SETPOINT) {
-                        if (this.regulatorBackfedStatus.get(regulatorOperations.regulatorId)) {
-                            reverseSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
-                        } else {
-                            regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
-                        }
+                        regulatorSetPointValues.put(regulatorOperations.regulatorId, regulatorOperations.setPointValue);
                     }
                 }
                 log.debug("Found " + regulatorEventOperations.size() + " tap and setpoint operations, acting on them.");
@@ -201,7 +197,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     
     private void calculateAndSendCapControlPoints() {
         List<Area> simulatedAreas = capControlCache.getAreas().stream()
-                                                        .filter(area->area.getCcName().startsWith("Sim Area"))
+                                                        .filter(area->area.getCcName().toLowerCase().startsWith("sim area"))
                                                         .collect(Collectors.toList());
         
         // Each Sub Bus has its own kw and kVar that are what the system would have with no banks or regulators
@@ -220,7 +216,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
             subBusesByArea.parallelStream().forEach(subBus -> {
                 
-                final boolean backfedBus = subBus.getCcName().startsWith("Backfed"); //If the bus of a Sim Area starts with the word Backfed, the bus will be a backfed bus with power coming from a "solar" source.
+                final boolean backfedBus = subBus.getCcName().toLowerCase().startsWith("backfed"); //If the bus of a Sim Area starts with the word Backfed, the bus will be a backfed bus with power coming from a "solar" source.
                 Integer bankSize = subBusKVar.get(subBus.getCcId());
                 if (bankSize == null) {
                     bankSize = capControlCache.getCapBanksBySubBus(subBus.getCcId()).stream().mapToInt(
@@ -236,6 +232,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     kWh = substationBuskWh;
                 }
                 final double currentSubBusBaseKw = kWh;
+                final double solarKw = currentSubBusBaseKw * 2/3;
+                final double backfedDistance = END_OF_LINE - END_OF_LINE*solarKw/((MAX_KW+solarKw));
                 final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
                 
                 int subBusKVarClosed = 0;
@@ -369,7 +367,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                     break;
                                 case REVERSE_FLOW_INDICATOR:
                                     if (backfedBus) {
-                                        regulatorBackfedStatus.put(regulatorId, zone.getGraphStartPosition() >= 23);
+                                        regulatorBackfedStatus.put(regulatorId, zone.getGraphStartPosition() >= backfedDistance/1000);
                                     }
                                     break;
                                 case VOLTAGE:
@@ -655,10 +653,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     }
     
     private double solarVoltageBump(double voltage, double currentSubBusRawKw, double distance, int maxKw) {
-        if (distance > 23000) {
-            return voltage + currentSubBusRawKw*2/maxKw*(END_OF_LINE-Math.abs(distance-SOLAR_LOCATION))/END_OF_LINE;
-        }
-        return voltage;
+        return voltage + currentSubBusRawKw*2/maxKw*(END_OF_LINE-Math.abs(distance-SOLAR_LOCATION))/END_OF_LINE;
     }
     
     // Sends this point to Dispatch. Does not force archive, follows point archival settings.
