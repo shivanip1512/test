@@ -5,13 +5,13 @@
 #include "PointDataRequestFactory.h"
 #include "ZoneManager.h"
 #include "VoltageRegulatorManager.h"
-#include "IVVCAnalysisMessage.h"
 
 
 namespace Cti           {
 namespace Messaging     {
 namespace CapControl    {
     class IVVCAnalysisMessage;
+    enum IVVCAnalysisScenarios;
 }
 }
 }
@@ -129,6 +129,8 @@ class IVVCAlgorithm
                                  int & totalPoints, int & missingPoints, int & stalePoints );
         bool analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, 
                                       const int stalePoints, const double minimum, 
+                                      const Cti::Messaging::CapControl::IVVCAnalysisScenarios & incompleteScenario,
+                                      const Cti::Messaging::CapControl::IVVCAnalysisScenarios & staleScenario,
                                       const CtiTime & timeNow, const std::string & type );
 
         void updateMaxOvervoltages( const long pointID,

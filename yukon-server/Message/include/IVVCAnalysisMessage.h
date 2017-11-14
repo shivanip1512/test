@@ -13,12 +13,7 @@ namespace Cti           {
 namespace Messaging     {
 namespace CapControl    {
 
-
-class IM_EX_MSG IVVCAnalysisMessage : public StreamableMessage
-{
-public:
-
-    enum Scenarios
+    enum IM_EX_MSG IVVCAnalysisScenarios
     {
         Scenario_CBCCommsStale = 1,
         Scenario_VoltageRegulatorCommsStale,
@@ -40,6 +35,10 @@ public:
         Scenario_SubbusDisabled,
         Scenario_SubbusEnabled
     };
+
+class IM_EX_MSG IVVCAnalysisMessage : public StreamableMessage
+{
+public:
 
     static IVVCAnalysisMessage * createCommsRatioMessage( const int       subbusId,
                                                           const int       scenarioId,

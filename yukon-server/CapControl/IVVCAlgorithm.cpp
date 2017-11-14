@@ -17,6 +17,7 @@
 #include "amq_connection.h"
 #include "ccutil.h"
 #include "std_helper.h"
+#include "IVVCAnalysisMessage.h"
 
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
@@ -1003,8 +1004,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             sendIVVCAnalysisMessage(
                                 IVVCAnalysisMessage::createTapOperationMessage( subbus->getPaoId(),
                                                                                 ( voltageAdjustment > 0 )
-                                                                                    ? IVVCAnalysisMessage::Scenario_TapRaiseOperation
-                                                                                        : IVVCAnalysisMessage::Scenario_TapLowerOperation,
+                                                                                    ? Scenario_TapRaiseOperation
+                                                                                    : Scenario_TapLowerOperation,
                                                                                 timeNow,
                                                                                 regulatorId ) );
                         }
@@ -1289,8 +1290,8 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                     sendIVVCAnalysisMessage(
                         IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
                                                                             isCapBankOpen
-                                                                                ? IVVCAnalysisMessage::Scenario_CapbankCloseOperation
-                                                                                : IVVCAnalysisMessage::Scenario_CapbankOpenOperation,
+                                                                                ? Scenario_CapbankCloseOperation
+                                                                                : Scenario_CapbankOpenOperation,
                                                                             timestamp,
                                                                             bankId ) );
 
@@ -3329,6 +3330,8 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
     dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                             totalPoints, missingPoints, stalePoints,
                                             100.0,
+                                            Scenario_RequiredPointCommsIncomplete,
+                                            Scenario_RequiredPointCommsStale,
                                             timeNow,
                                             "BusPower" );
 
@@ -3403,6 +3406,8 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                                 totalPoints, missingPoints, stalePoints,
                                                 strategy.getRegulatorCommReportingPercentage(),
+                                                Scenario_RequiredPointCommsIncomplete,
+                                                Scenario_RequiredPointCommsStale,
                                                 timeNow,
                                                 "Regulator on Phase: " + Cti::CapControl::desolvePhase( phase ) );
         // capbank(s)...
@@ -3437,6 +3442,8 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                                 totalPoints, missingPoints, stalePoints,
                                                 strategy.getCapbankCommReportingPercentage(),
+                                                Scenario_RequiredPointCommsIncomplete,
+                                                Scenario_RequiredPointCommsStale,
                                                 timeNow,
                                                 "CBC(s) on Phase: " + Cti::CapControl::desolvePhase( phase ) );
 
@@ -3462,6 +3469,8 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                                 totalPoints, missingPoints, stalePoints,
                                                 strategy.getVoltageMonitorCommReportingPercentage(),
+                                                Scenario_RequiredPointCommsIncomplete,
+                                                Scenario_RequiredPointCommsStale,
                                                 timeNow,
                                                 "Other(s) on Phase: " + Cti::CapControl::desolvePhase( phase ) );
     }
@@ -3489,12 +3498,12 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
 
     regulatorSearch.erase(Cti::CapControl::Phase_Unknown);
 
-    for ( const auto regulatorIterator : regulatorSearch )
+    for ( const auto regulatorPair : regulatorSearch )
     {
         try
         {
             VoltageRegulatorManager::SharedPtr  regulator
-                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorIterator.second );
+                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorPair.second );
 
             const long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
@@ -3522,6 +3531,8 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
     dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                             totalPoints, missingPoints, stalePoints,
                                             strategy.getRegulatorCommReportingPercentage(),
+                                            Scenario_RequiredPointCommsIncomplete,
+                                            Scenario_RequiredPointCommsStale,
                                             timeNow,
                                             "Regulator" );
 
@@ -3557,6 +3568,8 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
     dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                             totalPoints, missingPoints, stalePoints,
                                             strategy.getCapbankCommReportingPercentage(),
+                                            Scenario_RequiredPointCommsIncomplete,
+                                            Scenario_RequiredPointCommsStale,
                                             timeNow,
                                             "CBC(s)" );
 
@@ -3568,9 +3581,9 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
 
     voltageMonitorSearch.erase( Cti::CapControl::Phase_Unknown );
 
-    for ( const auto voltageMonitorIterator : voltageMonitorSearch )
+    for ( const auto voltageMonitorPair : voltageMonitorSearch )
     {
-        const long voltageMonitorPointID = voltageMonitorIterator.second;
+        const long voltageMonitorPointID = voltageMonitorPair.second;
 
         if ( voltageMonitorPointID > 0 )
         {
@@ -3581,6 +3594,8 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
     dataIsValid &= analysePointRequestData( subbus->getPaoId(),
                                             totalPoints, missingPoints, stalePoints,
                                             strategy.getVoltageMonitorCommReportingPercentage(),
+                                            Scenario_RequiredPointCommsIncomplete,
+                                            Scenario_RequiredPointCommsStale,
                                             timeNow,
                                             "Other(s)" );
 
@@ -3611,6 +3626,8 @@ void IVVCAlgorithm::findPointInRequest( const long pointID,
 
 bool IVVCAlgorithm::analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, 
                                              const int stalePoints, const double minimum, 
+                                             const IVVCAnalysisScenarios & incompleteScenario,
+                                             const IVVCAnalysisScenarios & staleScenario,
                                              const CtiTime & timeNow, const std::string & type )
 {
     bool isValid = true;
@@ -3631,6 +3648,8 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID, const int tota
             logMessage += "%. Minimum was ";
             logMessage += CtiNumStr( minimum );
             logMessage += "%";
+
+            sendIVVCAnalysisMessage( IVVCAnalysisMessage::createCommsRatioMessage( subbusID, incompleteScenario, timeNow, percentComplete, minimum ) );
         }
         else if ( percentNonStale < minimum )
         {
@@ -3641,6 +3660,8 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID, const int tota
             logMessage += "%. Minimum was ";
             logMessage += CtiNumStr( minimum );
             logMessage += "%";
+
+            sendIVVCAnalysisMessage( IVVCAnalysisMessage::createCommsRatioMessage( subbusID, staleScenario, timeNow, percentComplete, minimum ) );
         }
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
