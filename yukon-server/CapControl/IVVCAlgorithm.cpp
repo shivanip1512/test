@@ -3661,7 +3661,7 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID, const int tota
             logMessage += CtiNumStr( minimum );
             logMessage += "%";
 
-            sendIVVCAnalysisMessage( IVVCAnalysisMessage::createCommsRatioMessage( subbusID, staleScenario, timeNow, percentComplete, minimum ) );
+            sendIVVCAnalysisMessage( IVVCAnalysisMessage::createCommsRatioMessage( subbusID, staleScenario, timeNow, percentNonStale, minimum ) );
         }
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
