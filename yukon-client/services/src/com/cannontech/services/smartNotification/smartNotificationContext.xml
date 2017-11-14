@@ -40,7 +40,16 @@
     </bean>
     
     <!-- Daily Digest -->
-    <bean class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDailyDigestService"/>
+    <bean id="dailyDigestService" class="com.cannontech.services.smartNotification.service.impl.SmartNotificationDailyDigestService"/>
+    
+    <!-- Daily Digest test message queue -->
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.smartNotifTest.dailyDigest"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="dailyDigestService"/>
+    </bean>
     
     <!-- Message Builders -->
     <bean class="com.cannontech.services.smartNotification.service.impl.email.SmartNotificationEmailMessageParametersHandler"/>

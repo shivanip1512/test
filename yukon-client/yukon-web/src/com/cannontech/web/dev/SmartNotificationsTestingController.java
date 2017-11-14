@@ -13,9 +13,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
+
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +31,7 @@ import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
+import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
 import com.cannontech.common.smartNotification.model.InfrastructureWarningsEventAssembler;
@@ -35,6 +40,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
@@ -48,21 +54,28 @@ import com.google.common.collect.Lists;
 
 @Controller
 public class SmartNotificationsTestingController {
-    
-    @Autowired private SmartNotificationSubscriptionService subscriptionService;
-    @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
-    @Autowired private SmartNotificationEventDao eventDao;
-    @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private SmartNotificationEventCreationService eventCreationService;
-    @Autowired protected IDatabaseCache cache;
-    @Autowired private MonitorCacheService monitorCacheService;
-    @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
-    @Autowired private DeviceDataMonitorServiceImpl monitorService;
-    @Autowired private InfrastructureWarningsGeneratorService infrastructureWarningsGeneratorService;
-
-    private Executor executor = Executors.newCachedThreadPool();
-    
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationsTestingController.class);
+    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired protected IDatabaseCache cache;
+    @Autowired private SmartNotificationEventCreationService eventCreationService;
+    @Autowired private SmartNotificationEventDao eventDao;
+    @Autowired private InfrastructureWarningsGeneratorService infrastructureWarningsGeneratorService;
+    @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
+    @Autowired private MonitorCacheService monitorCacheService;
+    @Autowired private DeviceDataMonitorServiceImpl monitorService;
+    @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
+    @Autowired private SmartNotificationSubscriptionService subscriptionService;
+    @Autowired private YukonUserDao yukonUserDao;
+    private Executor executor = Executors.newCachedThreadPool();
+    private JmsTemplate jmsTemplate;
+    
+    @PostConstruct
+    public void init() {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(true);
+        jmsTemplate.setPubSubDomain(false);
+    }
     
     @RequestMapping("smartNotificationsSimulator")
     public String smartNotificationsSimulator() {
@@ -184,6 +197,15 @@ public class SmartNotificationsTestingController {
             }
             subscriptionService.saveSubscription(subscription, userContext);
         });
+        return "redirect:smartNotificationsSimulator";
+    }
+    
+    @RequestMapping(value="startDailyDigest")
+    public String startDailyDigest(@RequestParam Integer hour, FlashScope flash) {
+        log.info("Initiating a test daily digest for " + hour + ":00");
+        jmsTemplate.convertAndSend(JmsApiDirectory.SMART_NOTIFICATION_DAILY_DIGEST_TEST.getQueue().getName(), 
+                                   new DailyDigestTestParams(hour));
+        flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Initiated a daily digest for " + hour + ":00"));
         return "redirect:smartNotificationsSimulator";
     }
 }

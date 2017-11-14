@@ -1,6 +1,9 @@
 package com.cannontech.notif.handler;
 
+import java.util.Arrays;
+
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,10 @@ public class EmailMessageHandler implements MessageHandler<EmailMsg> {
     public void handleMessage(NotifServerConnection connection, Message message) {
         EmailMsg msg = (EmailMsg) message;
         EmailMessage emailMessage = msg.getMessage();
+        String addresses = Arrays.stream(emailMessage.getTo())
+                                 .map(InternetAddress::getAddress)
+                                 .reduce("", (s1,s2) -> s1 + "," + s2);
+        log.debug("Sending email to " + addresses);
         
         try {
             emailService.sendMessage(emailMessage);

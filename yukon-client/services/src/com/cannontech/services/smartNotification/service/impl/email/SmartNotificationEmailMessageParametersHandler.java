@@ -48,6 +48,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
         
         messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         this.notifClientConnection = notifClientConnection;
+        this.globalSettingDao = globalSettingDao;
     }
     
     @Override
@@ -84,7 +85,7 @@ public class SmartNotificationEmailMessageParametersHandler implements SmartNoti
                                              }
                                          })
                                          .filter(Objects::nonNull)
-                                         .map(message -> message.getSubject() + "/n" + message.getBody() + "/n")
+                                         .map(message -> message.getBody() + "\n")
                                          .reduce("", (s1, s2) -> s1 + s2);
             
             int totalEvents = parametersMulti.getTotalEvents();

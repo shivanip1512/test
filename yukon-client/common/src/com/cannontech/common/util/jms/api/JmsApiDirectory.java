@@ -67,6 +67,7 @@ import com.cannontech.common.rfn.message.network.RfnParentReply;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
+import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
@@ -925,6 +926,19 @@ public final class JmsApiDirectory {
                   .queue(new JmsQueue("yukon.notif.obj.smartNotifEvent.assembler"))
                   .requestMessage(SmartNotificationMessageParametersMulti.class)
                   .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    // Used by SmartNotificationsTestingController && SmartNotificationDailyDigestService (smartNotificationContext.xml)
+    public static JmsApi<DailyDigestTestParams,?,?> SMART_NOTIFICATION_DAILY_DIGEST_TEST = 
+            JmsApi.builder(DailyDigestTestParams.class)
+                  .name("Smart Notification Daily Digest Test")
+                  .description("Sent from the test controller to the daily digest service to kick off a digest event "
+                          + "at any time, for testing purposes.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.smartNotifTest.dailyDigest"))
+                  .requestMessage(DailyDigestTestParams.class)
+                  .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
