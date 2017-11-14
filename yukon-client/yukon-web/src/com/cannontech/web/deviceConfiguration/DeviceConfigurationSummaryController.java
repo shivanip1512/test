@@ -124,7 +124,7 @@ public class DeviceConfigurationSummaryController {
     public String displayError(ModelMap model, YukonUserContext context, @PathVariable int errorCode) {
         errorCode = 99;
         DeviceErrorDescription description = deviceErrorTranslatorDao.translateErrorCode(errorCode, context);
-        model.put("errorMessage",  description.getDescription());
+        model.put("error",  description);
         return "summary/error.jsp";
     }
        
