@@ -109,12 +109,6 @@
     
     <div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>
     
-    <div id="change-coordinates-confirm" data-dialog title="<cti:msg2 key=".location.changeCoordinates.title"/>" class="dn">
-        <cti:msg2 key=".location.changeCoordinates.confirmation"/>
-        <cti:msg2 key=".location.latitude"/><span class="js-latitude" style="padding-left:20px;"></span><br/>
-        <cti:msg2 key=".location.longitude"/><span class="js-longitude" style="padding-left:20px;"></span>
-    </div>
-    
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
     <cti:includeScript link="/resources/js/pages/yukon.map.network.js"/>

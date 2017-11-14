@@ -26,6 +26,8 @@ yukon.assets.gateway.details = (function () {
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
     
+    _deviceDragInteraction,
+    
     /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
     _tiles = [ 
           new ol.layer.Tile({ name: 'mqosm',
@@ -78,6 +80,17 @@ yukon.assets.gateway.details = (function () {
             var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
             icon.setGeometry(new ol.geom.Point(coord));
         }
+        
+        // Drag and drop feature
+        _deviceDragInteraction = new ol.interaction.Modify({
+            features: new ol.Collection([icon]),
+            pixelTolerance: 40
+        });
+        
+     // Add the event to the drag and drop feature
+        _deviceDragInteraction.on('modifyend', function(e) {
+            yukon.map.location.changeCoordinatesPopup(e, _destProjection, src_projection);
+        }, icon);
         
         source.addFeature(icon);
         
@@ -239,6 +252,10 @@ yukon.assets.gateway.details = (function () {
                     }
                 });
                 
+            });
+            
+            $(document).on('click', '.js-edit-coordinates', function() {
+                _map.addInteraction(_deviceDragInteraction);
             });
             
             _update();

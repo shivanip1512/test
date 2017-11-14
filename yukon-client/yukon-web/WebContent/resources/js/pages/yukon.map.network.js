@@ -110,43 +110,13 @@ yukon.map.network = (function () {
         // Drag and drop feature
         _deviceDragInteraction = new ol.interaction.Modify({
             features: new ol.Collection([icon]),
-            style: style,
             pixelTolerance: 40
         });
         
      // Add the event to the drag and drop feature
-        _deviceDragInteraction.on('modifyend',function(e){
-            var feature = e.features.getArray()[0];
-            var coord = ol.proj.transform(feature.getGeometry().getCoordinates(), _destProjection, src_projection);
-            var latitude = coord[1].toFixed(6);
-            var longitude = coord[0].toFixed(6);
-            var changeCoordinatesDialog = $('#change-coordinates-confirm');
-            changeCoordinatesDialog.find('.js-latitude').html(latitude);
-            changeCoordinatesDialog.find('.js-longitude').html(longitude);
-            //confirmation
-            changeCoordinatesDialog.dialog({
-                'buttons': 
-                    [{
-                         text: yg.text.cancel, 
-                         click: function() {
-                             $(this).dialog('close');
-                             window.location.reload();
-                         }
-                    }, 
-                    {
-                         text: yg.text.ok, 
-                         click: function() {
-                             $.ajax({
-                                 url: yukon.url('/stars/mapNetwork/saveCoordinates?' + $.param({ deviceId: feature.get('pao').paoId, latitude: latitude, longitude: longitude })),
-                                 success: function(results) {
-                                     window.location.reload();
-                                 }
-                             });
-                         },
-                         'class': 'primary action'
-                    }]
-                 });
-        },icon);
+        _deviceDragInteraction.on('modifyend', function(e) {
+            yukon.map.location.changeCoordinatesPopup(e, _destProjection, src_projection);
+        }, icon);
         
         _devicePoints = icon.getGeometry().getCoordinates();
         

@@ -9,12 +9,21 @@
     </cti:checkRolesAndProperties>
 </div>
 <div class="dib js-edit-display dn" style="padding-bottom:10px;">
-    <span>${latitudeLabel}:  <tags:input path="coordinates.latitude" maxlength="10" size="10" inputClass="js-latitude-input" placeholder="${latitudeLabel}"/></span>
-    ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="11" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
+    <span>${latitudeLabel}:  <tags:input path="coordinates.latitude" maxlength="10" size="8" inputClass="js-latitude-input" placeholder="${latitudeLabel}"/></span>
+    ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="8" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
     <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
-        <cti:button nameKey="save" classes="primary action fr js-save-coordinates dn js-edit-display"/><br/>
+        <div class="dib vat fr">
+            <cti:button nameKey="save" classes="primary action js-save-coordinates dn js-edit-display" style="margin-right:2px;"/>
+            <cti:button nameKey="cancel" classes="js-cancel js-edit-display"/>
+        </div>
     </cti:checkRolesAndProperties>
     <div class="js-location-error error"></div>
 </div>
+
+<div id="change-coordinates-confirm" data-dialog title="<cti:msg2 key=".mapNetwork.location.changeCoordinates.title"/>" class="dn">
+    <cti:msg2 key=".mapNetwork.location.changeCoordinates.confirmation"/>
+    <cti:msg2 key=".mapNetwork.location.latitude"/><span class="js-latitude" style="padding-left:20px;"></span><br/>
+    <cti:msg2 key=".mapNetwork.location.longitude"/><span class="js-longitude" style="padding-left:20px;"></span>
+</div> 
 
 <cti:includeScript link="/resources/js/pages/yukon.map.location.js"/>
