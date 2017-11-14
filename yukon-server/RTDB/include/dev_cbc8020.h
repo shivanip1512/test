@@ -1,7 +1,6 @@
 #pragma once
 
 #include "dev_cbcdnp.h"
-#include "attribute_mapping.h"
 
 namespace Cti {
 namespace Devices {

@@ -92,6 +92,7 @@ public:
     boost::optional<long> getIdForOffsetAndType(long pao, int offset, CtiPointType_t Type);
 
     ptr_type getLogicalPoint(long pao, const std::string& pointname);
+    ptr_type getLogicalPoint(long pao, long pointid);
 
     virtual void expire (long pid);
     virtual void erase  (long pid);

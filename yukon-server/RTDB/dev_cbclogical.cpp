@@ -41,6 +41,20 @@ CtiPointSPtr CbcLogicalDevice::getDevicePointByName(const std::string& pointName
     return _pointMgr->getLogicalPoint(getID(), pointName);
 }
 
+CtiPointSPtr CbcLogicalDevice::getDevicePointByID(const int pointid)
+{
+    if( !_pointMgr )
+    {
+        throw YukonErrorException {
+            ClientErrors::NoConfigData,
+            "No point manager"
+            + FormattedList::of(
+                "Override point ID", pointid) };
+    }
+
+    return _pointMgr->getLogicalPoint(getID(), pointid);
+}
+
 auto CbcLogicalDevice::getMappableAttributes() const -> AttributeMapping::AttributeList
 {
     return {
@@ -99,11 +113,41 @@ try
     }
     if( parse.getCommand() == ControlRequest )
     {
-        if( !(parse.getFlags() & CMD_FLAG_OFFSET) && (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
+        const int pointid = parse.getiValue("point");
+
+        if( pointid > 0 )
+        {
+            //  select by raw pointid
+            CtiPointSPtr point = getDevicePointByID(pointid);
+
+            if( ! point )
+            {
+                throw YukonErrorException {
+                    ClientErrors::PointLookupFailed,
+                    "The point ID is not a valid logical point for device " + getName() + FormattedList::of(
+                        "Point ID", pointid) };
+            }
+
+            if( point->isStatus() )
+            {
+                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+
+                if( const auto controlParameters = pStatus->getControlParameters() )
+                {
+                    if( controlParameters->getControlOffset() > 0 )
+                    {
+                        const auto command = pReq->CommandString() + " offset " + std::to_string(controlParameters->getControlOffset());
+
+                        return executeRequestOnParent(point->getDeviceID(), command, *pReq, retList);
+                    }
+                }
+            }
+        }
+        else if( !(parse.getFlags() & CMD_FLAG_OFFSET) && (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
         {
             const auto paoOffset = _attributeMapping.getPaoControlOffset(Attribute::ControlPoint);
             
-            const std::string command = 
+            const auto command = 
                 "control"s 
                     + (parse.getFlags() & CMD_FLAG_CTL_OPEN 
                         ? " open"

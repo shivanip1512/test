@@ -1012,7 +1012,7 @@ long CtiPointManager::getPAOIdForPointId(long pointid)
 }
 
 
-auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) -> ptr_type
+auto CtiPointManager::getLogicalPoint(const long pao, const std::string& pointname) -> ptr_type
 {
     static const auto sql = 
         "SELECT"
@@ -1067,6 +1067,44 @@ auto CtiPointManager::getLogicalPoint(long pao, const std::string& pointname) ->
     return getPoint(pointPao->first, pointPao->second);
 }
 
+
+auto CtiPointManager::getLogicalPoint(const long pao, const long pointid) -> ptr_type
+{
+    //  validate that this point ID is a logical point on a parent RTU, and fetch the parent RTU's pao ID
+    static const auto sql =
+        "SELECT"
+            " P.PAOBJECTID"
+        " FROM"
+            " POINT P"
+            " JOIN YukonPAObject CBC"
+                " ON P.POINTNAME LIKE CONCAT(CONCAT('*Logical<', CBC.PAOName), '> %')"
+            " JOIN YukonPAObject Y"
+                " ON P.PAObjectID=Y.PAObjectID"
+        " WHERE"
+            " CBC.PAObjectID=?"
+            " AND P.POINTID=?"
+            " AND Y.Type='RTU-DNP'"s;
+
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseReader rdr { conn, sql };
+
+    rdr << pao << pointid;
+
+    rdr.execute();
+
+    if( rdr() )
+    {
+        //  Pass in the parent RTU's pao ID to getPoint()
+        return getPoint(pointid, rdr[0].as<long>());
+    }
+
+    CTILOG_ERROR(dout, "Point ID not a valid logical point for specified device ID"
+        << Cti::FormattedList::of(
+            "PAObjectID", pao,
+            "Point ID", pointid));
+
+    return nullptr;
+}
 
 
 void CtiPointManager::ClearList(void)

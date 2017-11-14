@@ -19,6 +19,7 @@ protected:
     typedef CtiDeviceBase Inherited;
 
     CtiPointSPtr getDevicePointByName(const std::string& name) override;
+    CtiPointSPtr getDevicePointByID(int pointid) override;
 
 private:
     

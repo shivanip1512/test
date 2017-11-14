@@ -81,7 +81,7 @@ try
             }
         }
     }
-    if( parse.getCommand() == ControlRequest )
+    else if( parse.getCommand() == ControlRequest )
     {
         const int pointid = parse.getiValue("point");
 
@@ -92,10 +92,10 @@ try
 
             if ( ! point )
             {
-                std::string errorMessage = "The specified point is not on device " + getName();
-                insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
-
-                return ClientErrors::None;
+                throw YukonErrorException {
+                    ClientErrors::PointLookupFailed,
+                    "The specified point could not be found on the device" + FormattedList::of(
+                        "Point ID", pointid) };
             }
 
             if( point->isStatus() )
@@ -106,7 +106,7 @@ try
                 {
                     if( controlParameters->getControlOffset() > 0 )
                     {
-                        parse = CtiCommandParser(pReq->CommandString() + " offset " + CtiNumStr(controlParameters->getControlOffset()));
+                        parse = CtiCommandParser(pReq->CommandString() + " offset " + std::to_string(controlParameters->getControlOffset()));
                     }
                 }
             }
@@ -132,7 +132,9 @@ try
 }
 catch( const YukonErrorException& ex )
 {
-    CTILOG_EXCEPTION_ERROR(dout, ex, "ExecuteRequest failed");
+    CTILOG_EXCEPTION_ERROR(dout, ex, "ExecuteRequest failed" + FormattedList::of(
+        "Device name", getName(),
+        "Device ID", getID()));
 
     insertReturnMsg(ex.error_code, OutMessage, retList, ex.error_description);
 
