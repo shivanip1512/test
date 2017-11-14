@@ -35,8 +35,8 @@
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(widgetParameters,pageScope.widgetAttributes)}" scope="request"/>
 
 <cti:uniqueIdentifier var="widgetId" prefix="widget_"/>
-<c:if test="${!empty id}">
-    <c:set var="widgetId" value="widget_${id}"/>
+<c:if test="${!empty pageScope.id}">
+    <c:set var="widgetId" value="widget_${pageScope.id}"/>
     <c:set var="useId" value="${true}"/>
 </c:if>
 <c:set target="${widgetParameters}" property="widgetId" value="${widgetId}"/>
