@@ -55,7 +55,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
     private void doDailyDigest(DateTime now) {
         try {
             log.info("Running Daily Digest for "+ now.toString("MM-dd-yyyy HH:mm:ss"));
-            String digestTime = now.withMinuteOfHour(0).toString("HH:mm"); //Digest should always be on the hour
+            String digestTime = now.withMinuteOfHour(0).toString("H:mm"); //Digest should always be on the hour
             log.debug("Digest time: " + digestTime);
             
             doDailyDigestGrouped(digestTime);
