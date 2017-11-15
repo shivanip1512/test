@@ -19,8 +19,8 @@ import com.google.common.collect.Maps;
 
 public class DeviceConfigSummaryFilter {
     public enum LastAction {
-        READ(DeviceRequestType.GROUP_DEVICE_CONFIG_READ),
         SEND(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND),
+        READ(DeviceRequestType.GROUP_DEVICE_CONFIG_READ),
         VERIFY(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
         private DeviceRequestType requestType;
 

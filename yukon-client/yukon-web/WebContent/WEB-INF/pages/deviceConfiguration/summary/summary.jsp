@@ -44,20 +44,6 @@
                         <tags:check name="actions" key=".actionType.${lastAction}" classes="M0 no-color" value="${lastAction}" checked="${checked}"></tags:check>
                     </c:forEach>
                 </div>
-                
-                <div class="button-group dib" style="margin-left:20px;">
-                    <c:forEach var="syncOption" items="${syncOptions}">
-                        <c:if test="${syncOption != 'NA'}">
-                            <c:set var="checked" value="${false}"/>
-                            <c:forEach var="sync" items="${filter.inSync}">
-                                <c:if test="${sync eq syncOption}">
-                                    <c:set var="checked" value="${true}"/>
-                                </c:if>
-                            </c:forEach>
-                            <tags:check name="inSync" key=".syncType.${syncOption}" classes="M0 no-color" value="${syncOption}" checked="${checked}"></tags:check>
-                        </c:if>
-                    </c:forEach>
-                </div>
                     
                 <div class="button-group dib" style="margin-left:20px;">
                     <c:forEach var="status" items="${statusOptions}">
@@ -69,6 +55,20 @@
                                 </c:if>
                             </c:forEach>
                             <tags:check name="statuses" key=".statusType.${status}" classes="M0 no-color" value="${status}" checked="${checked}"></tags:check>
+                        </c:if>
+                    </c:forEach>
+                </div>
+                
+                 <div class="button-group dib" style="margin-left:20px;">
+                    <c:forEach var="syncOption" items="${syncOptions}">
+                        <c:if test="${syncOption != 'NA'}">
+                            <c:set var="checked" value="${false}"/>
+                            <c:forEach var="sync" items="${filter.inSync}">
+                                <c:if test="${sync eq syncOption}">
+                                    <c:set var="checked" value="${true}"/>
+                                </c:if>
+                            </c:forEach>
+                            <tags:check name="inSync" key=".syncType.${syncOption}" classes="M0 no-color" value="${syncOption}" checked="${checked}"></tags:check>
                         </c:if>
                     </c:forEach>
                 </div>
