@@ -1,8 +1,8 @@
 package com.cannontech.web.dev;
 
 import java.beans.PropertyEditor;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,13 +67,13 @@ public class IvvcSimulatorController {
         model.addAttribute("ivvcSimulatorSettings", response.getSettings());
         model.addAttribute("ivvcSimulatorStatus", response.getStatus());
         String blockedPointsString = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BLOCKED_POINTS);
-        ArrayList<Integer> blockedPoints = (ArrayList<Integer>) Stream.of(blockedPointsString.split(","))
+        List<Integer> blockedPoints = Stream.of(blockedPointsString.split(","))
                 .filter(s -> !s.isEmpty())
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
         model.addAttribute("blockedPoints", blockedPoints);
         String badQualityPointsString = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BAD_QUALITY_POINTS);
-        ArrayList<Integer> badQualityPoints = (ArrayList<Integer>) Stream.of(badQualityPointsString.split(","))
+        List<Integer> badQualityPoints = Stream.of(badQualityPointsString.split(","))
                 .filter(s -> !s.isEmpty())
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());

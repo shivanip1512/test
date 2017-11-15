@@ -815,18 +815,14 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         autoGenerateSubstationBuskWh = settings.isAutoGenerateSubstationBuskWh();
         localVoltageOffset = settings.getRemoteVoltageOffsetVar();
         remoteVoltageOffset = settings.getRemoteVoltageOffsetVar();
-        if (!settings.getBlockedPoints().isEmpty()) {
-            blockedPointIds = Stream.of(settings.getBlockedPoints().split(","))
-                    .filter(s -> !s.isEmpty())
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-        }
-        if (!settings.getBadQualityPoints().isEmpty()) {
-            badQualityPointIds = Stream.of(settings.getBadQualityPoints().split(","))
-                    .filter(s -> !s.isEmpty())
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-        }
+        blockedPointIds = Stream.of(settings.getBlockedPoints().split(","))
+                .filter(s -> !s.isEmpty())
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        badQualityPointIds = Stream.of(settings.getBadQualityPoints().split(","))
+                .filter(s -> !s.isEmpty())
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -839,7 +835,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_LOCAL_VOLTAGE_OFFSET_VAR),
             yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR));
         settings.setBlockedPoints(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BLOCKED_POINTS));
-        settings.setBlockedPoints(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BAD_QUALITY_POINTS));
+        settings.setBadQualityPoints(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_BAD_QUALITY_POINTS));
         return settings;
     }
 
