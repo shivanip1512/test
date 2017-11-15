@@ -13,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.config.ConfigurationSource;
@@ -215,7 +216,7 @@ public class MaintenanceController {
         return isEnabled;
     }
 
-    @RequestMapping("editTask")
+    @RequestMapping(value = "editTask", method = RequestMethod.GET)
     public String editTask(ModelMap model, YukonUserContext userContext, int taskId, String taskName) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         MaintenanceTaskName maintenanceTaskName = MaintenanceTaskName.valueOf(taskName);
@@ -231,7 +232,7 @@ public class MaintenanceController {
         return "maintenance/editTask.jsp";
     }
 
-    @RequestMapping("updateTask")
+    @RequestMapping(value = "updateTask", method = RequestMethod.POST)
     public String save(@ModelAttribute("maintenanceEditorBean") MaintenanceEditorBean maintenanceEditorBean,
             BindingResult result, FlashScope flash, YukonUserContext userContext) {
         maintenanceTaskDao.updateSettings(maintenanceEditorBean.getSettings());

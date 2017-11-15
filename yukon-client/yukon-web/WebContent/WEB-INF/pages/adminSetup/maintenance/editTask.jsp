@@ -22,6 +22,7 @@
                         <tags:simpleInputType input="${setting.attribute.type}" path="settings[${indexValue}].attributeValue"/>
                         <form:hidden path="settings[${indexValue}].taskId" />
                         <form:hidden path="settings[${indexValue}].attribute" />
+                        <form:hidden path="settings[${indexValue}].taskPropertyId" />
                     </tags:nameValue2>
                 </c:forEach>
                 <tags:nameValue2 nameKey=".nextRun">

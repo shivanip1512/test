@@ -7,15 +7,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskName;
 import com.cannontech.maintenance.MaintenanceTaskSettings;
@@ -25,8 +31,9 @@ import com.cannontech.system.model.MaintenanceTask;
 import com.google.common.collect.Lists;
 
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
-
+    private SimpleTableAccessTemplate<MaintenanceSetting> insertTemplate;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     private static final YukonRowMapper<MaintenanceTask> maintenanceTaskRowMapper =
         new YukonRowMapper<MaintenanceTask>() {
             @Override
@@ -149,15 +156,37 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Override
     public void updateSettings(List<MaintenanceSetting> settings) {
         for (MaintenanceSetting setting : settings) {
-            updateSetting(setting);
+            insertTemplate.save(setting);
         }
     }
 
-    private void updateSetting(MaintenanceSetting setting) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE MaintenanceTaskSettings").set("Value", setting.getAttributeValue());
-        sql.append("WHERE Attribute").eq(setting.getAttribute());
-        jdbcTemplate.update(sql);
+    private final FieldMapper<MaintenanceSetting> maintenanceSettingFieldMapper =
+        new FieldMapper<MaintenanceSetting>() {
+            @Override
+            public void extractValues(MapSqlParameterSource p, MaintenanceSetting setting) {
+                p.addValue("TaskPropertyId", setting.getTaskPropertyId());
+                p.addValue("TaskId", setting.getTaskId());
+                p.addValue("Attribute", setting.getAttribute());
+                p.addValue("Value", setting.getAttributeValue());
+            }
+
+            @Override
+            public Number getPrimaryKey(MaintenanceSetting maintenanceSetting) {
+                return maintenanceSetting.getTaskPropertyId();
+            }
+
+            @Override
+            public void setPrimaryKey(MaintenanceSetting maintenanceSetting, int value) {
+                maintenanceSetting.setTaskPropertyId(value);
+            }
+        };
+
+    @PostConstruct
+    public void init() {
+        insertTemplate = new SimpleTableAccessTemplate<MaintenanceSetting>(jdbcTemplate, nextValueHelper);
+        insertTemplate.setTableName("MaintenanceTaskSettings");
+        insertTemplate.setPrimaryKeyField("TaskPropertyId");
+        insertTemplate.setFieldMapper(maintenanceSettingFieldMapper);
     }
 
 }
