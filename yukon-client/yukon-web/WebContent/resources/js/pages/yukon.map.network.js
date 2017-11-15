@@ -359,7 +359,7 @@ yukon.map.network = (function () {
                 _map = new ol.Map({
                     controls: [
                         new ol.control.Attribution(),
-                        new ol.control.FullScreen(),
+                        new ol.control.FullScreen({source: 'map-network-container'}),
                         new ol.control.Zoom() 
                     ],
                     layers: _tiles,
@@ -575,7 +575,6 @@ yukon.map.network = (function () {
                                 source.addFeature(neighbor);
                             }
                             _map.addLayer(_neighborIconLayer);
-                            _map.addLayer(_deviceLayer);
                             _updateZoom();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
@@ -605,7 +604,6 @@ yukon.map.network = (function () {
                             _map.removeLayer(neighborLine);
                         }
                         _map.removeLayer(_neighborIconLayer);
-                        _map.removeLayer(_deviceLayer);
                         _updateZoom();
                     }
                 });
@@ -700,6 +698,10 @@ yukon.map.network = (function () {
                 
                 $(document).on('click', '.js-edit-coordinates', function() {
                     _map.addInteraction(_deviceDragInteraction);
+                });
+                
+                $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
+                    _updateZoom();
                 });
 
             }

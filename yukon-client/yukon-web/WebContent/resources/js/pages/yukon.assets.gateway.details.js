@@ -166,7 +166,7 @@ yukon.assets.gateway.details = (function () {
                 _map = new ol.Map({
                     controls: [
                         new ol.control.Attribution(),
-                        new ol.control.FullScreen(),
+                        new ol.control.FullScreen({source: 'gateway-location-container'}),
                         new ol.control.Zoom() 
                     ],
                     layers: _tiles,

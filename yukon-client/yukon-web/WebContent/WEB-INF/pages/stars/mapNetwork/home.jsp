@@ -63,28 +63,30 @@
         <cti:msg2 var="locationHelp" key=".location.helpText"/>
         <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
         <%@ include file="locationInput.jspf"%>
-        <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}">
-                <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
-                <div class="buffered">
-                    <c:set var="groupClass" value=""/>
-                    <c:if test="${numLayers > 1}">
-                        <c:set var="groupClass" value="button-group"/>
-                    </c:if>
-                    <div class="${groupClass} stacked">
-                        <c:if test="${displayNeighborsLayer}">
-                            <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />                            
+        <div style="height:400px;">
+            <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}" style="height:90%;width:100%;">
+                    <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
+                    <div class="buffered">
+                        <c:set var="groupClass" value=""/>
+                        <c:if test="${numLayers > 1}">
+                            <c:set var="groupClass" value="button-group"/>
                         </c:if>
-                        <c:if test="${displayPrimaryRouteLayer}">
-                            <tags:check name="primary" key=".primary" classes="js-primary-route" />
-                        </c:if>
-                        <c:if test="${displayParentNodeLayer}">
-                            <tags:check name="parent" key=".parent" classes="js-parent-node" />
-                        </c:if>
-                    </div>
-                    <div id="map-tiles" class="fr button-group">
-                        <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                        <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                        <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                        <div class="${groupClass} stacked">
+                            <c:if test="${displayNeighborsLayer}">
+                                <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />                            
+                            </c:if>
+                            <c:if test="${displayPrimaryRouteLayer}">
+                                <tags:check name="primary" key=".primary" classes="js-primary-route" />
+                            </c:if>
+                            <c:if test="${displayParentNodeLayer}">
+                                <tags:check name="parent" key=".parent" classes="js-parent-node" />
+                            </c:if>
+                        </div>
+                        <div id="map-tiles" class="fr button-group">
+                            <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
+                            <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
+                            <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                        </div>
                     </div>
                 </div>
             </div>

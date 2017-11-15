@@ -29,85 +29,91 @@
 #filter-form .chosen-results {
     max-height: 95px;
 }
+.ui-dialog {
+    z-index: 99999999999;
+}
 </style>
 
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
     <div id="marker-info" class="well dn"></div>
     
-    <c:if test="${empty dynamic}">
-        <div id="page-buttons">
-            <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
-            <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
-        </div>
-        
-        <div id="map-popup" data-dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter"
-            data-width="500" data-height="250">
-            <cti:url value="/tools/map/filter" var="filterUrl"/>
-            <form:form commandName="filter" id="filter-form" action="${filterUrl}">
-                <cti:csrfToken/>
-                <cti:deviceCollection deviceCollection="${deviceCollection}"/>
-                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
-                    <cti:msg2 key=".chooseAttribute" var="chooseAttribute"/>
-                    <tags:selectNameValue nameKey=".attribute" path="attribute" items="${attributes}" itemLabel="message"
-                        itemValue="key" groupItems="true" id="attribute-select" defaultItemLabel="${chooseAttribute}"
-                        defaultItemValue="-1"/>
-                    <tags:nameValue2 nameKey=".states" valueClass="full-width">
-                        <div id="waiting-for-states" class="dn">
-                            <cti:icon icon="icon-spinner" style="margin-top:5px;"/>
-                            <i:inline key=".retrievingStates"/>
-                        </div>
-                        <div id="no-states-for-attribute" class="dn">
-                            <cti:icon icon="icon-error" style="margin-top:5px;"/>
-                            <i:inline key=".noStatesForAttribute"/>
-                        </div>
-                        <div id="filter-states"></div>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </form:form>
-        </div>
-        <div id="state-group-template" class="dn">
-            <input type="hidden" name="groups[?].id"> <select name="groups[?].state"></select>
-        </div>
-    </c:if>
-
-    <div class="column-19-5 clearfix stacked">
-        <div class="column one">
-            <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection"/>
-        </div>
-        <div id="status-info" class="column two nogutter">
-            <div class="dn js-status-retrieving">
-                <cti:icon icon="icon-spinner"/>
-                <i:inline key=".status.retrieving"/>
+    <div id="map-container" style="height:85%;width:100%;">
+        <c:if test="${empty dynamic}">
+            <div class="fr">
+                <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
+                <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
             </div>
-            <div class="dn js-status-filtering">
-                <cti:icon icon="icon-spinner"/>
-                <i:inline key=".status.filtering"/>
+            
+            <div id="map-popup" data-dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter"
+                data-width="500" data-height="250">
+                <cti:url value="/tools/map/filter" var="filterUrl"/>
+                <form:form commandName="filter" id="filter-form" action="${filterUrl}">
+                    <cti:csrfToken/>
+                    <cti:deviceCollection deviceCollection="${deviceCollection}"/>
+                    <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                        <cti:msg2 key=".chooseAttribute" var="chooseAttribute"/>
+                        <tags:selectNameValue nameKey=".attribute" path="attribute" items="${attributes}" itemLabel="message"
+                            itemValue="key" groupItems="true" id="attribute-select" defaultItemLabel="${chooseAttribute}"
+                            defaultItemValue="-1"/>
+                        <tags:nameValue2 nameKey=".states" valueClass="full-width">
+                            <div id="waiting-for-states" class="dn">
+                                <cti:icon icon="icon-spinner" style="margin-top:5px;"/>
+                                <i:inline key=".retrievingStates"/>
+                            </div>
+                            <div id="no-states-for-attribute" class="dn">
+                                <cti:icon icon="icon-error" style="margin-top:5px;"/>
+                                <i:inline key=".noStatesForAttribute"/>
+                            </div>
+                            <div id="filter-states"></div>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </form:form>
             </div>
-            <div class="dn js-status-loading">
-                <cti:icon icon="icon-spinner"/>
-                <i:inline key=".status.loading"/>
+            <div id="state-group-template" class="dn">
+                <input type="hidden" name="groups[?].id"> <select name="groups[?].state"></select>
             </div>
-        </div>
-    </div>
-    <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
-    <div class="buffered">
-        <div id="mouse-position" class="fl detail"></div>
-        <div id="scale-line" class="fl"></div>
-        
-        <div id="map-tiles" class="fr button-group">
-            <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-            <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-            <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
-        </div>
-        
-        <c:if test="${dynamic}">
-            <div id="map-updater" class="button-group button-group-toggle fr">
-                <cti:button nameKey="on" classes="on yes"/>
-                <cti:button nameKey="off" classes="no"/>
-            </div>
-            <span class="fr form-control"><i:inline key=".liveUpdate"/></span>
         </c:if>
+    
+        <div class="column-19-5 clearfix stacked">
+            <div class="column one">
+                <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection"/>
+            </div>
+            <div id="status-info" class="column two nogutter">
+                <div class="dn js-status-retrieving">
+                    <cti:icon icon="icon-spinner"/>
+                    <i:inline key=".status.retrieving"/>
+                </div>
+                <div class="dn js-status-filtering">
+                    <cti:icon icon="icon-spinner"/>
+                    <i:inline key=".status.filtering"/>
+                </div>
+                <div class="dn js-status-loading">
+                    <cti:icon icon="icon-spinner"/>
+                    <i:inline key=".status.loading"/>
+                </div>
+            </div>
+        </div>
+        <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
+        <div class="buffered">
+            <div id="mouse-position" class="fl detail"></div>
+            <div id="scale-line" class="fl"></div>
+            
+            <div id="map-tiles" class="fr button-group">
+                <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
+                <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
+                <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+            </div>
+            
+            <c:if test="${dynamic}">
+                <div id="map-updater" class="button-group button-group-toggle fr">
+                    <cti:button nameKey="on" classes="on yes"/>
+                    <cti:button nameKey="off" classes="no"/>
+                </div>
+                <span class="fr form-control"><i:inline key=".liveUpdate"/></span>
+            </c:if>
+        </div>
+    
     </div>
 
     <cti:url value="/tools/map/locations" var="locationsUrl">

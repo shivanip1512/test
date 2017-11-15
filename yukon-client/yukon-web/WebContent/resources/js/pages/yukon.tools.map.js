@@ -197,6 +197,20 @@ yukon.tools.map = (function() {
         });
     },
     
+    _updateZoom = function() {
+        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+        var features = source.getFeatures();
+        if (features != null && features.length > 1) {
+            _map.getView().fit(source.getExtent(), _map.getSize());
+            if (_map.getView().getZoom() > 16){
+                _map.getView().setZoom(16);
+            }
+        } else {
+            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+            _map.getView().setZoom(9);
+        }
+    },
+    
     _mod = {
         
         /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */
@@ -208,7 +222,7 @@ yukon.tools.map = (function() {
             _map = new ol.Map({
                 controls: [
                     new ol.control.Attribution(),
-                    new ol.control.FullScreen(), 
+                    new ol.control.FullScreen({source: 'map-container'}),
                     new ol.control.ScaleLine({units: 'us', target: 'scale-line'}), 
                     new ol.control.Zoom(), 
                     new ol.control.MousePosition({
@@ -241,7 +255,10 @@ yukon.tools.map = (function() {
                         _overlay.setPosition(coord);
                     });
                     //close any lingering delete dialogs to simplify handling
-                    $('#confirm-delete').dialog('destroy');
+                    var deleteDialog = $('#confirm-delete');
+                    if (deleteDialog.hasClass('ui-dialog-content')) {
+                        deleteDialog.dialog('destroy');
+                    }
                 } else {
                     $('#marker-info').hide();
                 }
@@ -265,6 +282,7 @@ yukon.tools.map = (function() {
                             row = $('#state-group-template').clone().removeAttr('id');
                             row.find('input:hidden').val(group.stateGroupID).attr('name', 'groups[' + i + '].id');
                             select = row.find('select').attr('name', 'groups[' + i + '].state');
+                            select.attr('id', 'state-select');
                             for (var ii in group.statesList) {
                                 state = group.statesList[ii];
                                 select.append('<option value="' + state.liteID + '">' + state.stateText + '</option>');
@@ -284,7 +302,7 @@ yukon.tools.map = (function() {
                 $('.js-status-retrieving').show();
                 $('#filter-btn').addClass('left');
                 $('#filter-btn .b-label').text($('#filtered-msg').val() 
-                        + ' ' + $('#attribute-select option:selected').text());
+                        + ' ' + $('#attribute-select option:selected').text() + ' - ' + $('#state-select').find('option:selected').text());
                 
                 var start = new Date().getTime();
                 
@@ -421,6 +439,10 @@ yukon.tools.map = (function() {
                     _updater = setTimeout(_update, _updateInterval);
                 }
                 $('#map-updater .button').toggleClass('on');
+            });
+            
+            $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
+                _updateZoom();
             });
             
             _initialized = true;

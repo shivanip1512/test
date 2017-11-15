@@ -68,13 +68,15 @@
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="location" styleClass="stacked">
             <%@ include file="../mapNetwork/locationInput.jspf"%>        
-            <div id="gateway-location-container" class="${empty gateway.location ? 'dn' : ''}">
-                <div id="gateway-location" class="map" data-has-location="${not empty gateway.location}"></div>
-                <div class="buffered">
-                    <div id="map-tiles" class="fr button-group">
-                        <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                        <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                        <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+            <div style="height:400px;">
+                <div id="gateway-location-container" class="${empty gateway.location ? 'dn' : ''}" style="height:90%;width:100%;">
+                    <div id="gateway-location" class="map" data-has-location="${not empty gateway.location}"></div>
+                    <div class="buffered">
+                        <div id="map-tiles" class="fr button-group">
+                            <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
+                            <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
+                            <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                        </div>
                     </div>
                 </div>
             </div>
