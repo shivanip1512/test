@@ -199,7 +199,7 @@ public class MaintenanceController {
         model.addAttribute("tasks", tasks);
     }
 
-    @RequestMapping("toggleDataPruningJobEnabled")
+    @RequestMapping(value = "toggleDataPruningJobEnabled", method = RequestMethod.GET)
     public String toggleDataPruningJobEnabled(int taskId) {
         toggleDataPruningJob(taskId);
         return "redirect:view";
