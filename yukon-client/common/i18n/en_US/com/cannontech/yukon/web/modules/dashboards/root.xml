@@ -95,8 +95,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, CCUs and Repeaters.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.name">Comm Channel Queue Counts</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description">Displays an interactive trend data graph of the queue counts for each of the comm channels selected.</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description">Data may not be refreshed more often than once every {0} minutes.</entry>    
-    
+
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Meter</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceGroup">Device Group</entry>

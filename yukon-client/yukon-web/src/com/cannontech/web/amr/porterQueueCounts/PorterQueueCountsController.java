@@ -107,7 +107,6 @@ public class PorterQueueCountsController {
         yAxisProperties.put("labels", labels);
         yAxisProperties.put("opposite", false);
         yAxisProperties.put("softMin", 0);
-        yAxisProperties.put("softMax", 25);
         yAxisProperties.put("showEmpty", false);
         yAxis.add(yAxisProperties);
         if (showRightAxis) {
@@ -182,7 +181,7 @@ public class PorterQueueCountsController {
         }
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
-        json.put("errorMsg", accessor.getMessage("yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.description", GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.getDefaultValue()));
+        json.put("errorMsg", accessor.getMessage("yukon.web.widgets.forceUpdate.noRefresh.minutes", GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.getDefaultValue()));
         return json;
     }
 

@@ -85,11 +85,10 @@ yukon.widget.porterQueueCounts = (function () {
                 }
             },
             rangeSelector : {
-                allButtonsEnabled: true,
                 inputEnabled: true,
-                inputBoxWidth: 71,
-                inputDateFormat: '%M/%d/%Y',
-                inputEditDateFormat: '%M/%d/%Y',
+                inputBoxWidth: 75,
+                inputDateFormat: '%m/%d/%Y',
+                inputEditDateFormat: '%m/%d/%Y',
                 scrollbar: {
                     height: 5,
                 },
@@ -139,14 +138,14 @@ yukon.widget.porterQueueCounts = (function () {
                 events: {
                     setExtremes: function(e) {
                         if (typeof(e.rangeSelectorButton) !== 'undefined') {
-                          var data = {
-                                  zoom : e.rangeSelectorButton.value 
-                              };
-                          $.ajax({ 
-                              type: 'post',
-                              url: yukon.url('/amr/porterQueueCounts/updateZoom'),
-                              data: data
-                          });
+                            var data = {
+                                    zoom : e.rangeSelectorButton.value 
+                                };
+                            $.ajax({ 
+                                type: 'post',
+                                url: yukon.url('/amr/porterQueueCounts/updateZoom'),
+                                data: data
+                            });
                         }
                     }
                 },
