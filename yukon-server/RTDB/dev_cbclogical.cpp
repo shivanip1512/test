@@ -86,6 +86,13 @@ try
 {
     _attributeMapping.refresh(getDeviceConfig(), getMappableAttributes());
 
+    if( parse.getCommand() == LoopbackRequest ||
+        parse.getCommand() == ScanRequest )
+    {
+        const auto paoOffset = _attributeMapping.getPaoControlOffset(Attribute::ControlPoint);
+
+        return executeRequestOnParent(paoOffset.paoId, pReq->CommandString(), *pReq, retList);
+    }
     if( parse.getCommand() == PutConfigRequest )
     {
         if ( parse.isKeyValid( "local_control_type" ) && parse.isKeyValid( "local_control_state" ) )

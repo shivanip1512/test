@@ -53,13 +53,15 @@ struct beginExecuteRequest_helper
 
     YukonError_t execute(CtiDeviceBase &dev, const std::string& command)
     {
+        request.setCommandString(command);
+
         return dev.beginExecuteRequest(&request, CtiCommandParser{ command }, vgList, retList, outList);
     }
 };
 
 BOOST_FIXTURE_TEST_SUITE(test_control_commands, beginExecuteRequest_helper)
 
-BOOST_AUTO_TEST_CASE(test_control_success)
+BOOST_AUTO_TEST_CASE(test_command_success)
 {
     using Cti::Config::DNPStrings;
 
@@ -333,9 +335,57 @@ BOOST_AUTO_TEST_CASE(test_control_success)
     }
     delete_container(retList);
     retList.clear();
+
+    //  ping
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "ping"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "ping");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  scan integrity
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "scan integrity"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "scan integrity");
+    }
+    delete_container(retList);
+    retList.clear();
 }
 
-BOOST_AUTO_TEST_CASE(test_control_fail)
+BOOST_AUTO_TEST_CASE(test_command_fail)
 {
     using Cti::Config::DNPStrings;
 
@@ -377,6 +427,86 @@ BOOST_AUTO_TEST_CASE(test_control_fail)
         BOOST_CHECK_EQUAL(ret->ResultString(), 
             "George Washington / No control offset name"
             "\nAttribute : ENABLE_OVUV_CONTROL");
+    }
+    delete_container(retList);
+    retList.clear();
+    
+    //  Missing control point
+    {
+        CtiCommandParser parse("control open");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / Override point not found"
+            "\nOverride point name : Banana"
+            "\nAttribute           : CONTROL_POINT");
+    }
+    delete_container(retList);
+    retList.clear();
+    {
+        CtiCommandParser parse("ping");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / Override point not found"
+            "\nOverride point name : Banana"
+            "\nAttribute           : CONTROL_POINT");
+    }
+    delete_container(retList);
+    retList.clear();
+    {
+        CtiCommandParser parse("scan integrity");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / Override point not found"
+            "\nOverride point name : Banana"
+            "\nAttribute           : CONTROL_POINT");
     }
     delete_container(retList);
     retList.clear();
