@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/8/2017 10:35:56 PM                        */
+/* Created on:     11/15/2017 9:43:49 PM                        */
 /*==============================================================*/
 
 
@@ -7337,7 +7337,7 @@ go
 create table MaintenanceTask (
    TaskId               numeric(10)          not null,
    TaskName             varchar(50)          not null,
-   Status               char(1)              not null,
+   Disabled             char(1)              not null,
    constraint PK_MaintenanceTask primary key (TaskId)
 )
 go

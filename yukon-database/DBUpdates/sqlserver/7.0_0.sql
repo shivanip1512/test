@@ -290,9 +290,9 @@ INSERT INTO PointUnit
 
 /* Start YUK-17348 */
 CREATE TABLE MaintenanceTask (
-   TaskId               numeric(10)          NOT NULL,
-   TaskName             varchar(50)          NOT NULL,
-   Status               char(1)              NOT NULL,
+   TaskId               NUMERIC(10)          NOT NULL,
+   TaskName             VARCHAR(50)          NOT NULL,
+   Disabled             CHAR(1)              NOT NULL,
    CONSTRAINT PK_MaintenanceTask PRIMARY KEY (TaskId)
 );
 GO

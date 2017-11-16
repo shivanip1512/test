@@ -287,7 +287,7 @@ INSERT INTO PointUnit
 CREATE TABLE MaintenanceTask  (
    TaskId               NUMBER(10)                      NOT NULL,
    TaskName             VARCHAR2(50)                    NOT NULL,
-   Status               CHAR(1)                         NOT NULL,
+   Disabled             CHAR(1)                         NOT NULL,
    CONSTRAINT PK_MaintenanceTask PRIMARY KEY (TaskId)
 );
 

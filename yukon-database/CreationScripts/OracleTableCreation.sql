@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/8/2017 10:34:48 PM                        */
+/* Created on:     11/15/2017 9:44:56 PM                        */
 /*==============================================================*/
 
 
@@ -6929,7 +6929,7 @@ create unique index INDEX_1 on MSPVendor (
 create table MaintenanceTask  (
    TaskId               NUMBER(10)                      not null,
    TaskName             VARCHAR2(50)                    not null,
-   Status               CHAR(1)                         not null,
+   Disabled             CHAR(1)                         not null,
    constraint PK_MaintenanceTask primary key (TaskId)
 );
 
