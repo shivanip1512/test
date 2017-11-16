@@ -50,11 +50,11 @@ yukon.map.location = (function () {
         },
         
         changeCoordinatesPopup : function (e, _destProjection, src_projection) {
-            var feature = e.features.getArray()[0];
-            var coord = ol.proj.transform(feature.getGeometry().getCoordinates(), _destProjection, src_projection);
-            var latitude = coord[1].toFixed(6);
-            var longitude = coord[0].toFixed(6);
-            var changeCoordinatesDialog = $('#change-coordinates-confirm');
+            var feature = e.features.getArray()[0],
+                coord = ol.proj.transform(feature.getGeometry().getCoordinates(), _destProjection, src_projection),
+                latitude = coord[1].toFixed(6),
+                longitude = coord[0].toFixed(6),
+                changeCoordinatesDialog = $('#change-coordinates-confirm');
             changeCoordinatesDialog.find('.js-latitude').html(latitude);
             changeCoordinatesDialog.find('.js-longitude').html(longitude);
             //confirmation

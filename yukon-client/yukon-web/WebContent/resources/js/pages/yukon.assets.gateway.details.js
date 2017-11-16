@@ -87,7 +87,7 @@ yukon.assets.gateway.details = (function () {
             pixelTolerance: 40
         });
         
-     // Add the event to the drag and drop feature
+        // Add the event to the drag and drop feature
         _deviceDragInteraction.on('modifyend', function(e) {
             yukon.map.location.changeCoordinatesPopup(e, _destProjection, src_projection);
         }, icon);

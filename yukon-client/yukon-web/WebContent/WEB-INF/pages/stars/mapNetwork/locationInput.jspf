@@ -13,8 +13,8 @@
     ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="8" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
     <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
         <div class="dib vat fr">
-            <cti:button nameKey="save" classes="primary action js-save-coordinates dn js-edit-display" style="margin-right:2px;"/>
-            <cti:button nameKey="cancel" classes="js-cancel js-edit-display"/>
+            <cti:button nameKey="save" classes="primary action js-save-coordinates" style="margin-right:2px;"/>
+            <cti:button nameKey="cancel" classes="js-cancel"/>
         </div>
     </cti:checkRolesAndProperties>
     <div class="js-location-error error"></div>
@@ -22,8 +22,8 @@
 
 <div id="change-coordinates-confirm" data-dialog title="<cti:msg2 key=".mapNetwork.location.changeCoordinates.title"/>" class="dn">
     <cti:msg2 key=".mapNetwork.location.changeCoordinates.confirmation"/>
-    <cti:msg2 key=".mapNetwork.location.latitude"/><span class="js-latitude" style="padding-left:20px;"></span><br/>
-    <cti:msg2 key=".mapNetwork.location.longitude"/><span class="js-longitude" style="padding-left:20px;"></span>
+    ${latitudeLabel}:&nbsp;&nbsp;<span class="js-latitude"></span><br/>
+    ${longitudeLabel}:&nbsp;&nbsp;<span class="js-longitude"></span>
 </div> 
 
 <cti:includeScript link="/resources/js/pages/yukon.map.location.js"/>
