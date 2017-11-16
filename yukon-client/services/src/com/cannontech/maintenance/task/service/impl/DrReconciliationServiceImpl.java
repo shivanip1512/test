@@ -101,25 +101,25 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
      */
     private Map<Integer, Set<Integer>> getAllTwoWayLcrStatus() {
         Map<Integer, Set<Integer>> statusInventoryMap = new HashMap<>(5);
-        Set<Integer> availableLCRs = new HashSet<>();
-        Set<Integer> unavailableLCRs = new HashSet<>();
-        Set<Integer> tempUnavailableLCRs = new HashSet<>();
-        statusInventoryMap.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, availableLCRs);
-        statusInventoryMap.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL, unavailableLCRs);
-        statusInventoryMap.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL, tempUnavailableLCRs);
+        Set<Integer> availableLcrs = new HashSet<>();
+        Set<Integer> unavailableLcrs = new HashSet<>();
+        Set<Integer> tempUnavailableLcrs = new HashSet<>();
+        statusInventoryMap.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, availableLcrs);
+        statusInventoryMap.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL, unavailableLcrs);
+        statusInventoryMap.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL, tempUnavailableLcrs);
 
         Set<Integer> inventortIds = inventoryDao.getAllTwoWayLcrInventories();
         inventortIds.forEach(inventoryId -> {
             int status = inventoryBaseDao.getDeviceStatus(inventoryId);
             switch (status) {
             case YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL:
-                availableLCRs.add(inventoryId);
+                availableLcrs.add(inventoryId);
                 break;
             case YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL:
-                unavailableLCRs.add(inventoryId);
+                unavailableLcrs.add(inventoryId);
                 break;
             case YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL:
-                tempUnavailableLCRs.add(inventoryId);
+                tempUnavailableLcrs.add(inventoryId);
                 break;
             }
         });
