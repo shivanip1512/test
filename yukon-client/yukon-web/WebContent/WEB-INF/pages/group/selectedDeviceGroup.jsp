@@ -15,13 +15,15 @@
     <%-- OPERATIONS BOX --%>
     <cti:msg2 key=".title" var="operationsTitle"/>
     <cti:msg2 key=".topLevelLabel" var="topLevelLabel"/>
-    <tags:boxContainer hideEnabled="false" title="${group.name}" escapeTitle="true">
-        
-        ${operationsTitle}:&nbsp;
-        <c:choose>
-            <c:when test="${empty group.name}">[ ${topLevelLabel} ]</c:when>
-            <c:otherwise>${fn:escapeXml(groupFullName)}</c:otherwise>
-        </c:choose>
+    <tags:boxContainer hideEnabled="false">
+        <jsp:attribute name="title">
+            ${operationsTitle}:&nbsp;
+            <c:choose>
+                <c:when test="${empty group.name}">[ ${topLevelLabel} ]</c:when>
+                <c:otherwise>${fn:escapeXml(groupFullName)}</c:otherwise>
+            </c:choose>
+        </jsp:attribute>
+        <jsp:body>
         
         <%-- EDIT GROUP --%>
         <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
@@ -264,12 +266,20 @@
              <c:otherwise><i:inline key=".noDevices"/></c:otherwise>
          </c:choose>
         </div>
+        </jsp:body>
     </tags:boxContainer>
     
    <%-- MEMBERS BOX --%>
-    <tags:boxContainer hideEnabled="false" title="${group.name}" escapeTitle="true">
-        <cti:msg2 key=".membersLabel"/>
-        &nbsp;${fn:escapeXml((empty group.name)? '[ Top Level ]' : groupFullName)}
+    <cti:msg2 key=".membersLabel" var="membersTitle"/>
+    <tags:boxContainer hideEnabled="false">
+        <jsp:attribute name="title">
+        ${membersTitle}:&nbsp;
+            <c:choose>
+                <c:when test="${empty group.name}">[ ${topLevelLabel} ]</c:when>
+                <c:otherwise>${fn:escapeXml(groupFullName)}</c:otherwise>
+            </c:choose>
+        </jsp:attribute>
+        <jsp:body>
         <span class="fr">${deviceCount} <cti:msg2 key=".devices"/></span>
 
             <%-- SUBGROUPS --%>
@@ -357,6 +367,7 @@
                     </c:choose>
                 </div>
             </tags:sectionContainer>
+        </jsp:body>
     </tags:boxContainer>
     
 </cti:msgScope>

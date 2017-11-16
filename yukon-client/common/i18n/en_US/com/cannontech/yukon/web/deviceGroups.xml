@@ -98,7 +98,7 @@
 
 <entry key="yukon.web.deviceGroups.editor.membersContainer.subGroups">Subgroups</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.groupMembers">Group Members</entry>
-<entry key="yukon.web.deviceGroups.editor.membersContainer.membersLabel">Members:</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.membersLabel">Members</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups">No subgroups</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.noDevices">No devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.devices">devices</entry>
