@@ -42,7 +42,7 @@ public class SCADAClient implements ISCADAClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =
@@ -64,7 +64,7 @@ public class SCADAClient implements ISCADAClient {
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri) throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -73,4 +73,9 @@ public class SCADAClient implements ISCADAClient {
         }
     }
 
+    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
+        int timeOut = (int) mspVendor.getRequestMessageTimeout();
+        messageSender.setReadTimeout(timeOut);
+        messageSender.setConnectionTimeout(timeOut);
+    }
 }

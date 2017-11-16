@@ -43,7 +43,7 @@ public class DRClient implements IDRClient {
             throws MultispeakWebServiceClientException {
         PingURL pingURL = objectFactory.createPingURL();
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -57,7 +57,7 @@ public class DRClient implements IDRClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =
@@ -75,4 +75,9 @@ public class DRClient implements IDRClient {
         return methodList;
     }
 
+    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
+        int timeOut = (int) mspVendor.getRequestMessageTimeout();
+        messageSender.setReadTimeout(timeOut);
+        messageSender.setConnectionTimeout(timeOut);
+    }
 }

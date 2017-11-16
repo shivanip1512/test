@@ -40,7 +40,7 @@ public class MDMClient implements IMDMClient {
     public void pingURL(MultispeakVendor mspVendor, String uri) throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
             webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
@@ -54,7 +54,7 @@ public class MDMClient implements IMDMClient {
         List<String> methodList = new ArrayList<>();
         try {
             GetMethods getMethods = objectFactory.createGetMethods();
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
@@ -71,5 +71,11 @@ public class MDMClient implements IMDMClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
         return methodList;
+    }
+
+    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
+        int timeOut = (int) mspVendor.getRequestMessageTimeout();
+        messageSender.setReadTimeout(timeOut);
+        messageSender.setConnectionTimeout(timeOut);
     }
 }

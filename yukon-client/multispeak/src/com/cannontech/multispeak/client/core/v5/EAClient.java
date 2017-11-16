@@ -41,7 +41,7 @@ public class EAClient implements IEAClient {
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri,
                                                      pingURL,
@@ -57,7 +57,7 @@ public class EAClient implements IEAClient {
         List<String> methodList = new ArrayList<>();
         try {
             GetMethods getMethods = objectFactory.createGetMethods();
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             GetMethodsResponse response = (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri,
                                                                                                         getMethods,
@@ -76,4 +76,9 @@ public class EAClient implements IEAClient {
         return methodList;
     }
 
+    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
+        int timeOut = (int) mspVendor.getRequestMessageTimeout();
+        messageSender.setReadTimeout(timeOut);
+        messageSender.setConnectionTimeout(timeOut);
+    }
 }

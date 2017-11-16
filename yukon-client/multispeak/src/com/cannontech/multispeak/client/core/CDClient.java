@@ -50,7 +50,7 @@ public class CDClient implements ICDClient {
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -63,7 +63,7 @@ public class CDClient implements ICDClient {
     public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException {
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -76,7 +76,7 @@ public class CDClient implements ICDClient {
     public GetCDSupportedMetersResponse getCDSupportedMeters(final MultispeakVendor mspVendor, String uri,
             GetCDSupportedMeters getCDSupportedMeters) throws MultispeakWebServiceClientException {
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (GetCDSupportedMetersResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDSupportedMeters,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -89,7 +89,7 @@ public class CDClient implements ICDClient {
     public InitiateConnectDisconnectResponse initiateConnectDisconnect(final MultispeakVendor mspVendor, String uri,
             InitiateConnectDisconnect initiateConnectDisconnect) throws MultispeakWebServiceClientException {
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (InitiateConnectDisconnectResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateConnectDisconnect, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -102,7 +102,7 @@ public class CDClient implements ICDClient {
     public GetCDMeterStateResponse getCDMeterState(final MultispeakVendor mspVendor, String uri,
             GetCDMeterState getCDMeterState) throws MultispeakWebServiceClientException {
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (GetCDMeterStateResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDMeterState,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -115,7 +115,7 @@ public class CDClient implements ICDClient {
     public CDDeviceAddNotificationResponse cdDeviceAddNotification(final MultispeakVendor mspVendor, String uri,
             CDDeviceAddNotification cdDeviceAddNotification) throws MultispeakWebServiceClientException {
         try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
+            setMsgSenderTimeOutValues(mspVendor);
 
             return (CDDeviceAddNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, cdDeviceAddNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -123,5 +123,10 @@ public class CDClient implements ICDClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
-    
+
+    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
+        int timeOut = (int) mspVendor.getRequestMessageTimeout();
+        messageSender.setReadTimeout(timeOut);
+        messageSender.setConnectionTimeout(timeOut);
+    }    
 }
