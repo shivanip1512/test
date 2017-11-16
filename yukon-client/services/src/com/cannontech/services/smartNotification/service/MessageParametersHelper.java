@@ -34,10 +34,10 @@ public class MessageParametersHelper {
             Set<SmartNotificationSubscription> subscriptions = split.get(mv);
             List<String> recipients = subscriptions.stream().map(s -> s.getRecipient()).collect(Collectors.toList());
             
-            List<SmartNotificationEvent> events = subscriptions.stream()
+            Set<SmartNotificationEvent> events = subscriptions.stream()
                     .map(subscriptionToEvent::get)
                     .flatMap(Set::stream)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
 
             SmartNotificationMessageParameters param = new SmartNotificationMessageParameters(type, mv.media,
                 mv.verbosity, recipients, new ArrayList<>(events), eventPeriodMinutes);
