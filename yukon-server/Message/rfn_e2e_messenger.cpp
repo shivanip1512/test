@@ -410,13 +410,17 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 
     const auto e2eNmTimeout = gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
 
-    _ackTimeouts.emplace(
+    {
+        LockGuard guard(_expirationMux);
+
+        _ackTimeouts.emplace(
             CtiTime::now().addSeconds(e2eNmTimeout),
             msg.header.messageId);
 
-    _awaitingAcks.emplace(
-            msg.header.messageId, 
-            MessageHandling { req.expiration, successCallback, timeoutCallback });
+        _awaitingAcks.emplace(
+            msg.header.messageId,
+            MessageHandling{ req.expiration, successCallback, timeoutCallback });
+    }
 
     ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
             ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
