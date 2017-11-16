@@ -355,11 +355,17 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 outputStream.write((0x16 >> 4) & 0x0f); // Upper nibble of first byte
                 outputStream.write((0x16 & 0x0f) << 4); // Lower nibble of second byte
                 loadPerformanceVerificationEventMessages();
+                byte messageLength;
                 if (eventMessages != null && !eventMessages.isEmpty()) {
-                    // Add message length (No of bytes) in Hex
-                    String messageLength = Integer.toHexString(eventMessages.size() * 8);
-                    outputStream.write(Hex.decode(messageLength));
-                    int messageCount = 0; // Counter to limit message count upto 16 
+                    // Add message length (No of bytes)
+                    if (eventMessages.size() >= 16) {
+                        // Max message length
+                        messageLength = (byte) 128;
+                    } else {
+                        messageLength = (byte) (eventMessages.size() * 8);
+                    }
+                    outputStream.write(messageLength);
+                    int messageCount = 0; // Counter to limit message count upto 16
                     for (PerformanceVerificationEventMessage eventMsg : eventMessages) {
                         if (messageCount > 15) {
                             break;
