@@ -26,9 +26,9 @@ std::string resolveControlMode( ControlPolicy::ControlModes mode )
 }
 
 /*
-    This can throw a 'FailedAttributeLookup' exception which needs to be handled
-        in application code.
-*/
+    If the ControlMode point is not mapped, we assume the regulator is in 'LockedForward' mode.
+        This maintains backwards compatibility with 6.X versions.
+*/ 
 ControlPolicy::ControlModes ControlPolicy::getControlMode()
 try
 {
@@ -46,13 +46,21 @@ try
 
     const long key = static_cast<long>( getValueByAttribute( Attribute::ControlMode ) );
 
-    return mapFindOrDefault( modeLookup, key, Unknown );
+    return mapFindOrDefault( modeLookup, key, LockedForward );
 }
 catch ( UninitializedPointValue & )
 {
-    return Unknown;
+    return LockedForward;
+}
+catch ( FailedAttributeLookup & )
+{
+    return LockedForward;
 }
 
+/*
+    If the ReverseFlowIndicator point is not mapped, we assume the regulator detects Forward Flow.
+        This maintains backwards compatibility with 6.X versions.
+*/ 
 bool ControlPolicy::inReverseFlow() const
 try
 {

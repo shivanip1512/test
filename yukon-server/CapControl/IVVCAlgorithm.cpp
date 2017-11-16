@@ -452,7 +452,7 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
 
     // 3. Disable any banks left in the mapping.
 
-    const bool anyToDisable = ! banks.empty();
+    bool anyToDisable = false;
 
     for ( auto entry : banks )
     {
@@ -465,6 +465,8 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
                                 << " is not assigned to a control zone. Disabling the bank." );
 
             store->UpdatePaoDisableFlagInDB( bank, true );
+
+            anyToDisable = true;
         }
     }
 
@@ -516,8 +518,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         state->setState(IVVCState::IVVC_WAIT);
 
-        CTILOG_INFO(dout, "IVVC Configuration: Detected banks not assigned to a control zone on bus: " << subbus->getPaoName()
-                            << ". Aborting analysis." );
+        CTILOG_INFO(dout, "IVVC Configuration: Disabled unassigned banks on bus: " << subbus->getPaoName()
+                            << ". Aborting current analysis." );
         return;
     }
     
