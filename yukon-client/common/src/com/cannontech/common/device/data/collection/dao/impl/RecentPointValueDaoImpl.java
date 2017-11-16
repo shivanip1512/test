@@ -3,6 +3,7 @@ package com.cannontech.common.device.data.collection.dao.impl;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,10 +29,13 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.SqlBuilder;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -42,7 +46,10 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
+import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 public class RecentPointValueDaoImpl implements RecentPointValueDao {
 
@@ -51,6 +58,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
 
     private static final Logger log = YukonLogManager.getLogger(RecentPointValueDaoImpl.class);
+    SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
@@ -249,6 +257,38 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     @Override
     @Transactional
     public void collectData(Map<PaoIdentifier, PointValueQualityHolder> recentValues) {
+          
+        log.debug("Attempting to insert values:" + recentValues.size());
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        List<Integer> pointIds = recentValues.values().stream().map(point -> point.getId()).collect(Collectors.toList());
+        
+        Multimap<Integer, Date> existingData =
+            template.multimappedQuery(new SqlFragmentGenerator<Integer>() {
+                @Override
+                public SqlFragmentSource generate(List<Integer> subList) {
+                    SqlStatementBuilder sql = new SqlStatementBuilder();
+                    sql.append("SELECT PAObjectId, PointId, Timestamp");
+                    sql.append("FROM RecentPointValue");
+                    sql.append("WHERE PointId").in(subList);
+                    return sql;
+                }
+            }, pointIds, rs -> {
+                return Maps.immutableEntry(rs.getInt("PointId"), rs.getDate("Timestamp"));
+            }, Functions.identity());
+
+      
+        for (Entry<PaoIdentifier, PointValueQualityHolder> value : recentValues.entrySet()) {
+            Date newTime = value.getValue().getPointDataTimeStamp();
+            if (!existingData.get(value.getValue().getId()).isEmpty()) {
+                Date timeInTheTable = existingData.get(value.getValue().getId()).iterator().next();
+                if (timeInTheTable.after(newTime) || timeInTheTable.equals(newTime)) {
+                    log.debug("---RecentPointValue[pointId=" + value.getValue().getId() + ",time:"
+                        + DATE_FORMAT.format(timeInTheTable) + "]. The new time " + DATE_FORMAT.format(newTime)
+                        + " will not be inserted in RecentPointValue because it is older or the same as value in RecentPointValue.");
+                    recentValues.remove(value.getKey());
+                }
+            }
+        }
         
         log.debug("Inserting values:" + recentValues.size());
         List<List<PaoIdentifier>> ids =

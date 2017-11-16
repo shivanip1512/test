@@ -3,9 +3,9 @@ package com.cannontech.common.device.data.collection.service;
 import static org.joda.time.Instant.now;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -104,7 +104,7 @@ public class PointDataCollectionService implements MessageListener {
                 Long lastChangeId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID);
                 Long maxChangeId = rphDao.getMaxChangeId();
                 ReadableRange<Long> changeIdRange = Range.inclusive(lastChangeId, maxChangeId);
-                Map<PaoIdentifier, PointValueQualityHolder> recentValues = new HashMap<>();
+                Map<PaoIdentifier, PointValueQualityHolder> recentValues = new ConcurrentHashMap<>();
                 addRecentValues(recentValues, meters, BuiltInAttribute.USAGE, changeIdRange);
                 addRecentValues(recentValues, lcrs, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, changeIdRange);
 
