@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.function.IntConsumer;
+import java.util.stream.IntStream;
 
 import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +60,6 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
-import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -92,7 +93,6 @@ import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusRes
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
@@ -108,7 +108,6 @@ public class NmIntegrationController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
-    @Autowired private YsmJmxQueryService jmxQueryService;
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
@@ -657,8 +656,23 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("sendRfDaArchiveRequest")
-    public String sendRfDaArchiveRequest(int serial, String manufacturer, String model) {
-        rfnEventTestingService.sendRfDaArchiveRequest(serial, manufacturer, model);
+    public String sendRfDaArchiveRequest(int serial, Integer serialEnd, String manufacturer, String model, FlashScope flashScope) {
+
+        IntConsumer sendRfDaArchive = s -> rfnEventTestingService.sendRfDaArchiveRequest(s, manufacturer, model);
+
+        MessageSourceResolvable createMessage;
+        
+        if (serialEnd != null) {
+            IntStream.rangeClosed(serial, serialEnd)
+                .forEachOrdered(sendRfDaArchive);
+            createMessage = new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestRangeSent", serial, serialEnd, manufacturer, model);
+        } else {
+            sendRfDaArchive.accept(serial);
+            createMessage = new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestSent", serial, manufacturer, model);
+        }
+
+        flashScope.setConfirm(createMessage);
+
         return "redirect:viewRfDaArchiveRequest";
     }
 

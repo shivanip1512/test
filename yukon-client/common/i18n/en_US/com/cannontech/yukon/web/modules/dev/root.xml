@@ -243,6 +243,8 @@
     <entry key="yukon.web.modules.dev.rfnTest.eventArchiveRequest.label">Event Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.alarmArchiveRequest.label">Alarm Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.label">RF DA Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestSent">Archive request sent for {0,number,#}_{1}_{2}</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfDaArchiveRequest.requestRangeSent">Archive requests sent for {0,number,#}–{1,number,#}_{2}_{3}</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfLocationArchiveRequest.label">RF Location Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewGatewayDataSimulator.crumbTitle">NM Gateway Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewGatewayDataSimulator.pageName">NM Gateway Simulator</entry>
