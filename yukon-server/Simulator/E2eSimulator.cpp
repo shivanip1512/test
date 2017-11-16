@@ -3,6 +3,7 @@
 #include "E2eSimulator.h"
 
 #include "RfnMeter.h"
+#include "RfDa.h"
 
 #include "message_factory.h"
 #include "RfnE2eDataRequestMsg.h"
@@ -38,6 +39,7 @@ using Cti::Messaging::Serialization::MessageFactory;
 using Cti::Messaging::Serialization::MessagePtr;
 
 using Cti::Logging::Vector::Hex::operator<<;
+using Cti::Logging::Range::Hex::operator<<;
 
 namespace Cti {
 namespace Messaging {
@@ -327,6 +329,17 @@ std::vector<unsigned char> E2eSimulator::buildRfnResponse(const std::vector<unsi
                     case 0x84:
                     case 0x86:
                         return RfnMeter::DataStreamingConfig(request, rfnId);
+                }
+            }
+        }
+        case static_cast<unsigned char>(ApplicationServiceIdentifiers::HubMeterCommandSet):
+        {
+            if( ! request.empty() )
+            {
+                switch( request[0] )
+                {
+                    case 0x35:
+                        return RfDa::Dnp3Address(request, rfnId);
                 }
             }
         }

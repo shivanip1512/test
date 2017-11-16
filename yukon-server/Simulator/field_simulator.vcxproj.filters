@@ -102,6 +102,9 @@
     <ClCompile Include="field_simulator_service.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RfDa.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BchBehavior.h">
@@ -195,6 +198,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\field_simulator_service.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RfDa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

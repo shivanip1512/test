@@ -357,6 +357,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="field_simulator.cpp" />
     <ClCompile Include="field_simulator_service.cpp" />
+    <ClCompile Include="RfDa.cpp" />
     <ClCompile Include="RfnMeter.cpp" />
     <ClCompile Include="CcuIDLC.cpp">
     </ClCompile>
@@ -424,6 +425,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\PlcTransmitter.h" />
     <ClInclude Include="include\PortLogger.h" />
     <ClInclude Include="include\RandomConsumptionBehavior.h" />
+    <ClInclude Include="include\RfDa.h" />
     <ClInclude Include="include\ScopedLogger.h" />
     <ClInclude Include="include\Grid.h" />
     <ClInclude Include="include\SimulatorLogger.h" />
