@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -67,6 +67,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             }
             detail.setInSync(rs.getEnum("InSync", InSync.class));
             detail.setStatus(rs.getEnum("ActionStatus", LastActionStatus.class));
+            detail.setErrorCode(rs.getNullableInt("ErrorCode"));
             return detail;
         }
     }
@@ -156,31 +157,51 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         if (selectCount) {
             sql.append("SELECT count(DeviceId)");
         } else {
-            sql.append("SELECT DeviceId, DeviceName, DeviceType, ExecId, ExecType, ActionStatus, StartTime, StopTime, InSync, ConfigName, ConfigId");
+            sql.append("SELECT DeviceId, DeviceName, DeviceType, ExecId, ExecType, ErrorCode, ActionStatus, StartTime, StopTime, InSync, ConfigName, ConfigId");
         }
         sql.append("FROM (");  
-        if (filter.contains(LastActionStatus.FAILURE) || filter.contains(LastActionStatus.SUCCESS)) {
-            filter.getActions().forEach(action -> {
-                addUnion.add(sql);
-                buildActionSelect(sql, filter, action);
-                addUnion.addUnionBeforeNextSelect = true;
-            });
-        }
-        if (filter.contains(LastActionStatus.IN_PROGRESS)) {
-            addUnion.add(sql);
-            buildInProgressSelect(sql, filter);
-            addUnion.addUnionBeforeNextSelect = true;
-        }
-        if (filter.contains(InSync.UNVERIFIED)) {
-            addUnion.add(sql);
-            buildNoActionSelect(sql, filter);
-            addUnion.addUnionBeforeNextSelect = true;
-        }
-        if (filter.isDisplayUnassigned()) {
+        if (filter.isDisplayUnassigned() && filter.getConfigurationIds().isEmpty()) {
             addUnion.add(sql);
             buildUnassignedSelect(sql, filter);
+        } else {
+            if (filter.isDisplayUnassigned()) {
+                addUnion.add(sql);
+                buildUnassignedSelect(sql, filter);
+            }
+            if (filter.contains(LastActionStatus.FAILURE) || filter.contains(LastActionStatus.SUCCESS)
+                || filter.contains(LastActionStatus.IN_PROGRESS)) {
+                addUnion.add(sql);
+                buildActionSelect(sql, filter);
+                addUnion.addUnionBeforeNextSelect = true;
+            }
+            if (filter.contains(InSync.UNVERIFIED)) {
+                addUnion.add(sql);
+                buildNoExecutionsSelect(sql, filter);
+                addUnion.addUnionBeforeNextSelect = true;
+            }
         }
         sql.append(") results");
+        if(filter.getRange() != null){
+            sql.append("WHERE");  
+            String and = "";
+            Instant startDate = filter.getRange().getMin();
+            if (startDate != null) {
+                and = "AND";
+                if (filter.getRange().isIncludesMinValue()) {
+                    sql.append("results.StartTime").gte(startDate);
+                } else {
+                    sql.append("results.StartTime").gt(startDate);
+                }
+            }
+            Instant stopDate = filter.getRange().getMax();
+            if (stopDate != null) {
+                if (filter.getRange().isIncludesMaxValue()) {
+                    sql.append(and).append("results.StopTime").lte(stopDate);
+                } else {
+                    sql.append(and).append("results.StopTime").lt(stopDate);
+                }
+            }
+        }
         if (sortBy != null) {
             sql.append("ORDER BY");
             sql.append(sortBy.getDbString());
@@ -189,6 +210,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         return sql;
     }
 
+    //doesn't have device config
     private void buildUnassignedSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
         sql.append("SELECT");
         sql.append("    ypo.PAObjectID as DeviceId,");
@@ -196,15 +218,16 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("    ypo.Type as DeviceType,");
         sql.append("    null as ExecId,");
         sql.append("    null as ExecType,");
-        sql.append("    '" + LastActionStatus.NA + "' as ActionStatus,");
+        sql.append("    null as ErrorCode,");
+        sql.append("     ").appendArgument_k(LastActionStatus.NA).append("as ActionStatus,");
         sql.append("    null as StartTime,");
         sql.append("    null as StopTime,");
-        sql.append("    '" + InSync.NA + "' as InSync,");
+        sql.append("     ").appendArgument_k(InSync.NA).append("as InSync,");
         sql.append("    null as ConfigName,");
         sql.append("    null as ConfigId");
                
         sql.append("FROM YukonPAObject ypo");
-        sql.append("WHERE ypo.type").in(getSupportedPaoTypes());
+        sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
         sql.append("AND ypo.PAObjectID NOT IN (select DeviceID from DeviceConfigurationDeviceMap)");
         if (!CollectionUtils.isEmpty(filter.getGroups())) {
             sql.append("AND").appendFragment(
@@ -212,169 +235,170 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         }
     }
 
-    private void buildNoActionSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
+    //has device config but no executions
+    private void buildNoExecutionsSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
         sql.append("SELECT");
         sql.append("    ypo.PAObjectID as DeviceId,");
         sql.append("    paoName as DeviceName,");
         sql.append("    ypo.Type as DeviceType,");
         sql.append("    null as ExecId,");
         sql.append("    null as ExecType,");
-        sql.append("    '" + LastActionStatus.NA + "' as ActionStatus,");
+        sql.append("    null as ErrorCode,");
+        sql.append("     ").appendArgument_k(LastActionStatus.NA).append("as ActionStatus,");
         sql.append("    null as StartTime,");
         sql.append("    null as StopTime,");
-        sql.append("    '" + InSync.UNVERIFIED + "' as InSync,");
+        sql.append("     ").appendArgument_k(InSync.UNVERIFIED).append("as InSync,");
         sql.append("    dc.Name as ConfigName,");
         sql.append("    dc.DeviceConfigurationId as ConfigId");
 
         sql.append("FROM YukonPAObject ypo");
         sql.append("JOIN DeviceConfigurationDeviceMap scdm ON scdm.DeviceID = ypo.PAObjectID");
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
-        sql.append("WHERE ypo.type").in(getSupportedPaoTypes());
+        sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
         if (!CollectionUtils.isEmpty(filter.getGroups())) {
             sql.append("AND").appendFragment(
                 deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "ypo.PAObjectID"));
         }
-        sql.append("AND");
-        sql.append("PAObjectID NOT IN (");
-        sql.append("    SELECT DeviceId from CommandRequestExecResult result");
-        sql.append("    JOIN CommandRequestExec cre ON cre.CommandRequestExecId = result.CommandRequestExecId");
-        sql.append("    WHERE cre.CommandRequestExecType").in_k(deviceConfigExecTypes).append(")");
-        sql.append("AND");
-        sql.append("PAObjectID NOT IN (");
-        sql.append("    SELECT DeviceId from CommandRequestExecRequest request");
-        sql.append("    JOIN CommandRequestExec cre ON cre.CommandRequestExecId = request.CommandRequestExecId");
-        sql.append("    WHERE cre.CommandRequestExecType").in_k(deviceConfigExecTypes).append(")");
+        if (!CollectionUtils.isEmpty(filter.getConfigurationIds())) {
+            sql.append("AND").append("dc.DeviceConfigurationID").in(filter.getConfigurationIds());
+        }
+        sql.append("AND PAObjectID NOT IN(");
+        sql.append("SELECT DeviceId");
+        sql.append("FROM CommandRequestExecResult result");
+        sql.append("JOIN CommandRequestExec cre ON cre.CommandRequestExecId = result.CommandRequestExecId");
+        sql.append("WHERE CommandRequestExecType").in_k(deviceConfigExecTypes);
+        sql.append("UNION");
+        sql.append("SELECT DeviceId");
+        sql.append("FROM CommandRequestExecRequest request JOIN CommandRequestExec cre ON cre.CommandRequestExecId = request.CommandRequestExecId ");
+        sql.append("WHERE CommandRequestExecType").in_k(deviceConfigExecTypes);
+        sql.append(")");
     }
 
-    private void buildActionSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter, LastAction action) {
+    //read/send/verify
+    private void buildActionSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
         sql.append("SELECT");
         sql.append("    ypo.PAObjectID as DeviceId,");
         sql.append("    paoName as DeviceName,");
         sql.append("    ypo.Type as DeviceType,");
         sql.append("    t.ExecId,");
         sql.append("    t.ExecType,");
+        sql.append("    t.ErrorCode,");
         sql.append("    CASE");
-        sql.append("        WHEN t.ErrorCode > 0 THEN '" + LastActionStatus.FAILURE + "'");
-        sql.append("        WHEN t.ErrorCode = 0 THEN '" + LastActionStatus.SUCCESS + "'");
+        sql.append("        WHEN t.ErrorCode IS NOT NULL");
+        sql.append("        THEN");
+        sql.append("            CASE");
+        sql.append("                WHEN t.ErrorCode <> 0");
+        sql.append("                THEN").appendArgument_k(LastActionStatus.FAILURE);
+        sql.append("                ELSE").appendArgument_k(LastActionStatus.SUCCESS);
+        sql.append("            END");
+        sql.append("        ELSE").appendArgument_k(LastActionStatus.IN_PROGRESS);
         sql.append("    END as ActionStatus,");
         sql.append("    t.StartTime,");
         sql.append("    t.StopTime,");
-        sql.append("    CASE");
-        sql.append("        WHEN vt.ErrorCode IS NULL THEN '" + InSync.UNVERIFIED + "'");
-        sql.append("        WHEN vt.ErrorCode > 0 THEN '" + InSync.OUT_OF_SYNC + "'");
-        sql.append("        WHEN vt.ErrorCode = 0 THEN '" + InSync.IN_SYNC + "'");
-        sql.append("    END as InSync,");
+        sql.append("    InSync,");
         sql.append("    t.ConfigName,");
         sql.append("    t.ConfigId");
 
         sql.append("FROM YukonPAObject ypo");
-        sql.append("JOIN " + action + "Table t ON  ypo.PAObjectId = t.DeviceId");
-        sql.append("LEFT JOIN " + LastAction.VERIFY + "Table vt ON  ypo.PAObjectId = vt.DeviceId");
-        sql.append("WHERE ypo.type").in(getSupportedPaoTypes());
-        addInSyncSelect(sql, filter);
+        sql.append("JOIN CONFIGTable t ON  ypo.PAObjectId = t.DeviceId");
+        sql.append("JOIN SYNCTable st ON ypo.PAObjectId = st.DeviceId");
+        sql.append("WHERE InSync").in_k(filter.getInSync());
+    }
+    
+    private void addStatusSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
         List<String> statuses = new ArrayList<>();
         if (filter.contains(LastActionStatus.FAILURE)) {
-            statuses.add("t.ErrorCode > 0");
+            statuses.add("res2.ErrorCode <> 0");
         }
         if (filter.contains(LastActionStatus.SUCCESS)) {
-            statuses.add("t.ErrorCode = 0");
+            statuses.add("res2.ErrorCode = 0");
+        }
+        if (filter.contains(LastActionStatus.IN_PROGRESS)) {
+            statuses.add("res2.ErrorCode IS NULL");
         }
         sql.append("AND (").append(Joiner.on(" OR ").join(statuses)).append(")");
-    }
     
-    private void buildInProgressSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
-        sql.append("SELECT");
-        sql.append("    ypo.PAObjectID as DeviceId,");
-        sql.append("    paoName as DeviceName,");
-        sql.append("    ypo.Type as DeviceType,");
-        sql.append("    cre.CommandRequestExecId as ExecId,");
-        sql.append("    cre.CommandRequestExecType as ExecType,");
-        sql.append("    '"+LastActionStatus.IN_PROGRESS+"' as ActionStatus,");
-        sql.append("    cre.StartTime,");
-        sql.append("    null as StopTime,");
-        sql.append("    CASE");
-        sql.append("        WHEN vt.ErrorCode IS NULL THEN '" + InSync.UNVERIFIED + "'");
-        sql.append("        WHEN vt.ErrorCode > 0 THEN '" + InSync.OUT_OF_SYNC + "'");
-        sql.append("        WHEN vt.ErrorCode = 0 THEN '" + InSync.IN_SYNC + "'");
-        sql.append("    END as InSync,");
-        sql.append("    dc.Name as ConfigName,");
-        sql.append("    dc.DeviceConfigurationId as ConfigId");
-
-        sql.append("FROM YukonPAObject ypo");
-        sql.append("JOIN DeviceConfigurationDeviceMap scdm ON scdm.DeviceID = ypo.PAObjectID");
-        sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
-        sql.append("JOIN CommandRequestExecRequest request ON ypo.PAObjectId = request.DeviceId");
-        sql.append("JOIN CommandRequestExec cre ON request.CommandRequestExecId = cre.CommandRequestExecId");
-        sql.append("LEFT JOIN " + LastAction.VERIFY + "Table vt ON  ypo.PAObjectId = vt.DeviceId");
-        sql.append("WHERE ypo.type").in(getSupportedPaoTypes());
-        sql.append("AND CommandRequestExecType").in(
-            filter.getActions().stream().map(action -> action.getRequestType()).collect(Collectors.toList()));
-        sql.append("AND PAObjectID NOT IN (SELECT deviceid from CommandRequestExecResult result WHERE request.CommandRequestExecId = result.CommandRequestExecId AND request.DeviceId = result.DeviceId)");
-        addInSyncSelect(sql, filter);
     }
-    
-    private void addInSyncSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter){
-        List<String> inSync = new ArrayList<>();
-        if (filter.contains(InSync.IN_SYNC)) {
-            inSync.add("vt.ErrorCode = 0");
-        }
-        if (filter.contains(InSync.OUT_OF_SYNC)) {
-            inSync.add("vt.ErrorCode > 0");
-        }
-        if (filter.contains(InSync.UNVERIFIED)) {
-            inSync.add("vt.ErrorCode IS NULL");
-        }
-        sql.append("AND (").append(Joiner.on(" OR ").join(inSync)).append(")");
-    }
-      
+          
     private void buildWithClause(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
         sql.append("WITH");
-        addTable(sql, filter.getGroups(), filter.getConfigurationIds(), LastAction.VERIFY, true);
-        addTable(sql, filter.getGroups(), filter.getConfigurationIds(), LastAction.SEND, true);
-        addTable(sql, filter.getGroups(), filter.getConfigurationIds(), LastAction.READ, false);
-    }
-    
-    private void addTable(SqlStatementBuilder sql, List<DeviceGroup> groups, List<Integer> configurationIds, LastAction action, boolean addComma){
-        sql.append(action + "Table AS (");
+        sql.append("CONFIGTable AS (");
         sql.append("SELECT");
         sql.append("    ypo.PAObjectID as DeviceId,");
-        sql.append("    ypo.paoName as DeviceName,");
         sql.append("    ypo.Type as DeviceType,");
         sql.append("    CommandRequestExecId as ExecId,");
         sql.append("    CommandRequestExecType as ExecType,");
-        sql.append("    ErrorCode as ErrorCode,");
+        sql.append("    ErrorCode,");
         sql.append("    StartTime,");
         sql.append("    StopTime,");
         sql.append("    dc.Name as ConfigName,");
         sql.append("    dc.DeviceConfigurationId as ConfigId");
         sql.append("FROM (");
-        sql.append("SELECT cre.CommandRequestExecId, DeviceId, CommandRequestExecType, crer.ErrorCode, cre.StartTime, crer.CompleteTime as StopTime");
+        sql.append("SELECT cre.CommandRequestExecId, req.DeviceID, cre.CommandRequestExecType, res.ErrorCode, cre.StartTime, res.CompleteTime as StopTime");
         sql.append("FROM CommandRequestExec cre");
-        sql.append("JOIN CommandRequestExecResult crer ON crer.CommandRequestExecId = cre.CommandRequestExecId");
-        sql.append("WHERE CommandRequestExecType").eq(action.getRequestType());
+        sql.append("LEFT JOIN CommandRequestExecRequest req ON cre.CommandRequestExecId = req.CommandRequestExecId");
+        sql.append("LEFT JOIN CommandRequestExecResult res ON req.CommandRequestExecId = res.CommandRequestExecId AND req.DeviceId = res.DeviceId");
+        sql.append("WHERE CommandRequestExecType").in_k(filter.getRequestTypes());
         sql.append("AND cre.CommandRequestExecId =");
         sql.append("    (");
         sql.append("        SELECT MAX(cre2.CommandRequestExecId)");
         sql.append("        FROM CommandRequestExec cre2");
-        sql.append("        JOIN CommandRequestExecResult crer2 ON crer2.CommandRequestExecId = cre2.CommandRequestExecId");
-        sql.append("        WHERE CommandRequestExecType").eq(action.getRequestType());
-        sql.append("        AND crer2.DeviceID = crer.DeviceId");
+        sql.append("        LEFT JOIN CommandRequestExecRequest req2 ON cre2.CommandRequestExecId = req2.CommandRequestExecId");
+        sql.append("        LEFT JOIN CommandRequestExecResult res2 ON req2.CommandRequestExecId = res2.CommandRequestExecId");
+        sql.append("        WHERE req.DeviceId = req2.DeviceId");
+        addStatusSelect(sql, filter);
         sql.append("    )");
-        sql.append(") AS t ");
+        sql.append(") t ");
         sql.append("JOIN YukonPAObject ypo ON t.DeviceId = ypo.PAObjectID");
         sql.append("JOIN DeviceConfigurationDeviceMap scdm ON scdm.DeviceID = ypo.PAObjectID");
         sql.append("JOIN DeviceConfiguration dc ON dc.DeviceConfigurationID = scdm.DeviceConfigurationId");
-
-        if(!CollectionUtils.isEmpty(configurationIds)){
-            sql.append("AND").append("dc.DeviceConfigurationID").in(configurationIds);
+        sql.append("WHERE ypo.type").in_k(getSupportedPaoTypes());
+        if(!CollectionUtils.isEmpty(filter.getConfigurationIds())){
+            sql.append("AND").append("dc.DeviceConfigurationID").in(filter.getConfigurationIds());
         }
-        if(!CollectionUtils.isEmpty(groups)){
-            sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(groups, "ypo.PAObjectID"));
+        if(!CollectionUtils.isEmpty(filter.getGroups())){
+            sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "ypo.PAObjectID"));
         }
         sql.append(")");
-        if(addComma){
-            sql.append(",");
-        }
+        sql.append(", SYNCTable AS (");
+        sql.append("SELECT");
+        sql.append("    ypo.PAObjectID as DeviceId,");
+        sql.append("    CASE");
+        sql.append("        WHEN t.ErrorCode IS NOT NULL");
+        sql.append("        THEN");
+        sql.append("            CASE");
+        sql.append("                WHEN t.ErrorCode <> 0");
+        sql.append("                THEN").appendArgument_k(InSync.OUT_OF_SYNC);
+        sql.append("                ELSE").appendArgument_k(InSync.IN_SYNC);
+        sql.append("            END");
+        sql.append("        ELSE").appendArgument_k(InSync.UNVERIFIED);
+        sql.append("    END as InSync");
+        sql.append("FROM");
+        sql.append("YukonPAObject ypo");
+        sql.append("LEFT JOIN");
+        sql.append("(");
+        sql.append("    SELECT");
+        sql.append("        req.DeviceId,");
+        sql.append("        res.ErrorCode");
+        sql.append("        FROM");
+        sql.append("        CommandRequestExec cre");
+        sql.append("        LEFT JOIN CommandRequestExecRequest req ON cre.CommandRequestExecId = req.CommandRequestExecId");
+        sql.append("        LEFT JOIN CommandRequestExecResult res ON req.CommandRequestExecId = res.CommandRequestExecId  AND req.DeviceId = res.DeviceId");
+        sql.append("        WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
+        sql.append("        AND cre.CommandRequestExecId =");
+        sql.append("    (");
+        sql.append("        SELECT");
+        sql.append("            MAX(cre2.CommandRequestExecId)");
+        sql.append("            FROM");
+        sql.append("            CommandRequestExec cre2");
+        sql.append("            LEFT JOIN CommandRequestExecRequest req2 ON cre2.CommandRequestExecId = req2.CommandRequestExecId");
+        sql.append("            LEFT JOIN CommandRequestExecResult res2 ON req2.CommandRequestExecId = res2.CommandRequestExecId");
+        sql.append("        WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
+        sql.append("        AND res2.DeviceID = res.DeviceId");
+        sql.append("     )");
+        sql.append(") t ON t.DeviceId = ypo.PAObjectID");
+        sql.append("LEFT JOIN CONFIGTable cfg ON t.DeviceId = cfg.DeviceId");
+        sql.append(")");
     }
    
     @Override
@@ -385,20 +409,16 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("cre.StartTime,");
         sql.append("result.CompleteTime as StopTime,");
         sql.append("CASE");
-        sql.append("    WHEN request.DeviceId > 0 AND result.DeviceId IS NULL THEN").appendArgument_k(LastActionStatus.IN_PROGRESS);
+        sql.append("    WHEN result.DeviceId IS NULL AND (SELECT COUNT(DeviceId) FROM CommandRequestExecRequest request WHERE cre.CommandRequestExecId = request.CommandRequestExecId) > 0 THEN").appendArgument_k(LastActionStatus.IN_PROGRESS);
         sql.append("    WHEN result.ErrorCode <> 0 THEN").appendArgument_k(LastActionStatus.FAILURE);
         sql.append("    WHEN result.ErrorCode = 0 THEN").appendArgument_k(LastActionStatus.SUCCESS);
         sql.append("END as ActionStatus");
         sql.append("FROM CommandRequestExec cre");
         sql.append("LEFT JOIN CommandRequestExecResult result ON cre.CommandRequestExecId = result.CommandRequestExecId");
-        sql.append("LEFT JOIN CommandRequestExecRequest request ON cre.CommandRequestExecId = request.CommandRequestExecId");
         sql.append("WHERE CommandRequestExecType").in_k(deviceConfigExecTypes);
-        sql.append("AND (");
-        sql.append("result.DeviceId").eq(deviceId);
-        sql.append("OR");
-        sql.append("request.DeviceId").eq(deviceId);
-        sql.append(")");
+        sql.append("AND result.DeviceId").eq(deviceId);
         sql.append("ORDER BY cre.StartTime DESC");
+        log.debug(sql);
         return jdbcTemplate.query(sql, new HistoryRowMapper());
     }
     
@@ -425,7 +445,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("                WHERE CommandRequestExecType").in_k(deviceConfigExecTypes);
         sql.append("                AND crer2.DeviceID = crer.DeviceId");
         sql.append("        )");
-        sql.append(") AS t");
+        sql.append(") t");
         sql.append("JOIN YukonPAObject ypo");
         sql.append("    ON t.DeviceId = ypo.PAObjectID");
         sql.append("WHERE t.CommandRequestExecType").neq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
