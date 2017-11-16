@@ -184,5 +184,10 @@ public interface InventoryDao {
     List<InventoryIdentifier> getYukonInventoryForDeviceIds(List<Integer> deviceIds);
 
     DisplayableLmHardware getDisplayableLMHardware(int inventoryId);
-    
+
+    /**
+     * Method provides inventory ids of all two way RFN LCRs
+     */
+    Set<Integer> getAllTwoWayLcrInventories();
+
 }

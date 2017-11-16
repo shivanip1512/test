@@ -210,4 +210,9 @@ public class MockInventoryDao implements InventoryDao {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public Set<Integer> getAllTwoWayLcrInventories() {
+        throw new MethodNotImplementedException();
+    }
+
 }
