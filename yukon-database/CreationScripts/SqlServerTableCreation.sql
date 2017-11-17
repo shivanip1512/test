@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/15/2017 9:43:49 PM                        */
+/* Created on:     11/16/2017 6:48:18 AM                        */
 /*==============================================================*/
 
 
@@ -4592,6 +4592,9 @@ INSERT INTO DeviceTypeCommand VALUES (-1145, -208, 'CBC 8020', 5, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1146, -209, 'CBC 8020', 6, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1147, -210, 'CBC 8020', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1148, -211, 'CBC 8020', 8, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1267, -30, 'CBC 8020', 9, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1268, -31, 'CBC 8020', 10, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1269, -173, 'CBC 8020', 11, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1149, -204, 'CBC 8024', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1150, -205, 'CBC 8024', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1151, -206, 'CBC 8024', 3, 'Y', -1);
@@ -4600,6 +4603,9 @@ INSERT INTO DeviceTypeCommand VALUES (-1153, -208, 'CBC 8024', 5, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1154, -209, 'CBC 8024', 6, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1155, -210, 'CBC 8024', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1156, -211, 'CBC 8024', 8, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1270, -30, 'CBC 8024', 9, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1271, -31, 'CBC 8024', 10, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1272, -173, 'CBC 8024', 11, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1157, -193, 'RFN-510fL', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1158, -194, 'RFN-510fL', 2, 'Y', -1);
