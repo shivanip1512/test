@@ -10,7 +10,8 @@ public enum PreferencePorterQueueCountsZoomOption implements DisplayableEnum {
     DAY_1, 
     WEEK_1, 
     MONTH_1, 
-    MONTH_3;
+    MONTH_3,
+    ALL;
 
     @Override
     public String getFormatKey() {

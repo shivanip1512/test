@@ -12,7 +12,7 @@ yukon.widget.porterQueueCounts = (function () {
     
     var
     _initialized = false,
-    okClicked = false,
+    _okClicked = false,
     _selectedOption = null,
     
     /** return a list of the port ids that are currently selected for the widget */
@@ -112,7 +112,14 @@ yukon.widget.porterQueueCounts = (function () {
                     count: 3,
                     text: labels.threeMonths,
                     value: 'MONTH_3'
+                }, {
+                	type: 'all',
+                	text: 'All',
+                	value: 'ALL'
                 }],
+                buttonTheme: {
+                	width: 20
+                },
                 
                 selected: _selectedOption
             },
@@ -259,15 +266,15 @@ yukon.widget.porterQueueCounts = (function () {
             });
 
             $(document).on('dialogclose', '.js-picker-dialog', function (ev, ui) {
-                if (okClicked) {
+                if (_okClicked) {
                     var widget = $('#' + ev.target.id.substring(6));
                     _update(widget);
-                    okClicked = false;
+                    _okClicked = false;
                 }
             });
             
             $(document).on('okClicked', function (ev, ui) {
-                okClicked = true;
+                _okClicked = true;
             });
             
             _update();
