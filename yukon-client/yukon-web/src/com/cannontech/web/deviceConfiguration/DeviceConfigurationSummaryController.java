@@ -1,6 +1,7 @@
 package com.cannontech.web.deviceConfiguration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -74,19 +75,29 @@ public class DeviceConfigurationSummaryController {
     private final static String baseKey = "yukon.web.modules.tools.configs.summary.";
 
     @RequestMapping(value="view", method=RequestMethod.GET)
-    public String view(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, @DefaultItemsPerPage(value=250) PagingParameters paging,
+    public String view(ModelMap model) {
+        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
+        model.addAttribute("configurations", configurations);
+        model.addAttribute("lastActionOptions", LastAction.values());
+        model.addAttribute("statusOptions", LastActionStatus.values());
+        model.addAttribute("syncOptions", InSync.values());
+        DeviceConfigSummaryFilter filter = new DeviceConfigSummaryFilter();
+        filter.setActions(Arrays.asList(LastAction.VERIFY));
+        filter.setInSync(Arrays.asList(InSync.OUT_OF_SYNC));
+        filter.setStatuses(Arrays.asList(LastActionStatus.FAILURE));
+        model.addAttribute("filter", filter);
+        return "summary/summary.jsp";
+    }
+    
+    @RequestMapping(value="filter", method=RequestMethod.GET)
+    public String filter(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, @DefaultItemsPerPage(value=250) PagingParameters paging,
                        ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) {
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
-        model.addAttribute("configurations", configurations);
         boolean assignedToAny = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(-998);
         boolean unassigned = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(-999);
         setFilterValues(filter, deviceSubGroups);
-        model.addAttribute("lastActionOptions", LastAction.values());
-        model.addAttribute("statusOptions", LastActionStatus.values());
-        model.addAttribute("syncOptions", InSync.values());
         model.addAttribute("deviceSubGroups", deviceSubGroups);
         SearchResults<DeviceConfigSummaryDetail> results = deviceConfigSummaryDao.getSummary(filter, paging, sortBy.value, dir);
         model.addAttribute("results",  results);
@@ -103,7 +114,7 @@ public class DeviceConfigurationSummaryController {
             model.addAttribute(column.name(), col);
         }
         model.addAttribute("filter", filter);
-        return "summary/summary.jsp";
+        return "summary/resultsTable.jsp";
     }
     
     @RequestMapping(value="{id}/viewHistory", method=RequestMethod.GET)
@@ -186,6 +197,16 @@ public class DeviceConfigurationSummaryController {
             }
         }
         filter.setGroups(subGroups);
+        //default to all if user selects none
+        if (filter.getActions() == null || filter.getActions().isEmpty()) {
+            filter.setActions(Arrays.asList(LastAction.values()));
+        }
+        if (filter.getInSync() == null || filter.getInSync().isEmpty()) {
+            filter.setInSync(Arrays.asList(InSync.values()));
+        }
+        if (filter.getStatuses() == null || filter.getStatuses().isEmpty()) {
+            filter.setStatuses(Arrays.asList(LastActionStatus.values()));
+        }
     }
     
     @RequestMapping(value="collectionAction/{action}", method=RequestMethod.GET)

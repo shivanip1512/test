@@ -14,7 +14,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.InstantRangeLogHelper;
 import com.cannontech.common.util.Range;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class DeviceConfigSummaryFilter {
@@ -49,9 +48,9 @@ public class DeviceConfigSummaryFilter {
         SUCCESS, FAILURE, IN_PROGRESS, NA
     }
     
-    private List<LastAction> actions = Lists.newArrayList(LastAction.VERIFY);
-    private List<InSync> inSync = Lists.newArrayList(InSync.OUT_OF_SYNC);
-    private List<LastActionStatus> statuses = Lists.newArrayList(LastActionStatus.FAILURE);
+    private List<LastAction> actions;
+    private List<InSync> inSync;
+    private List<LastActionStatus> statuses;
     private List<DeviceGroup> groups;
     //has all ids if "ALL" selected.
     private List<Integer> configurationIds;
