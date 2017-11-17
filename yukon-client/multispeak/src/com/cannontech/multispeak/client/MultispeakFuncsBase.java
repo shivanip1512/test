@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -310,5 +311,14 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
             }
         }
         return null;
+    }
+
+    /**
+     * This method sets value of ConnectionTimeOut and ReadTimeout for HttpComponentsMessageSender.
+     */
+    public static void setMsgSenderTimeOutValues(HttpComponentsMessageSender messageSender, MultispeakVendor mspVendor) {
+        int timeOut = (int) mspVendor.getRequestMessageTimeout();
+        messageSender.setReadTimeout(timeOut);
+        messageSender.setConnectionTimeout(timeOut);
     }
 }

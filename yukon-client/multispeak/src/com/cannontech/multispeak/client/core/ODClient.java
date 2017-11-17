@@ -13,6 +13,7 @@ import com.cannontech.msp.beans.v3.InitiateOutageDetectionEventRequest;
 import com.cannontech.msp.beans.v3.InitiateOutageDetectionEventRequestResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -36,7 +37,7 @@ public class ODClient implements IODClient {
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -49,7 +50,7 @@ public class ODClient implements IODClient {
     public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -63,18 +64,12 @@ public class ODClient implements IODClient {
             String uri, InitiateOutageDetectionEventRequest initiateOutageDetectionEventRequest)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InitiateOutageDetectionEventRequestResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateOutageDetectionEventRequest, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
-    }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
     }
 }

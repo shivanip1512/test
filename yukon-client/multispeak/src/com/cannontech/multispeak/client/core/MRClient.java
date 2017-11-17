@@ -63,6 +63,7 @@ import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroup;
 import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroupResponse;
 import com.cannontech.msp.beans.v3.ServiceLocationChangedNotification;
 import com.cannontech.msp.beans.v3.ServiceLocationChangedNotificationResponse;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -86,7 +87,7 @@ public class MRClient implements IMRClient {
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -99,7 +100,7 @@ public class MRClient implements IMRClient {
     public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -113,7 +114,7 @@ public class MRClient implements IMRClient {
             String uri, InitiateMeterReadByMeterNoAndType initiateMeterReadByMeterNoAndType)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InitiateMeterReadByMeterNoAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateMeterReadByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -127,7 +128,7 @@ public class MRClient implements IMRClient {
             String uri, InitiateMeterReadByMeterNumber initiateMeterReadByMeterNumber)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InitiateMeterReadByMeterNumberResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateMeterReadByMeterNumber, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -140,7 +141,7 @@ public class MRClient implements IMRClient {
     public InitiateDemandResetResponse initiateDemandReset(MultispeakVendor mspVendor, String uri,
             InitiateDemandReset initiateDemandReset) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InitiateDemandResetResponse) webServiceTemplate.marshalSendAndReceive(uri, initiateDemandReset,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -153,7 +154,7 @@ public class MRClient implements IMRClient {
     public IsAMRMeterResponse isAMRMeter(MultispeakVendor mspVendor, String uri, IsAMRMeter isAMRMeter)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
             return (IsAMRMeterResponse) webServiceTemplate.marshalSendAndReceive(uri, isAMRMeter,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
@@ -165,7 +166,7 @@ public class MRClient implements IMRClient {
     public GetReadingsByDateResponse getReadingsByDate(MultispeakVendor mspVendor, String uri,
             GetReadingsByDate getReadingsByDate) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetReadingsByDateResponse) webServiceTemplate.marshalSendAndReceive(uri, getReadingsByDate,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -178,7 +179,7 @@ public class MRClient implements IMRClient {
     public GetAMRSupportedMetersResponse getAMRSupportedMeters(MultispeakVendor mspVendor, String uri,
             GetAMRSupportedMeters getAMRSupportedMeters) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetAMRSupportedMetersResponse) webServiceTemplate.marshalSendAndReceive(uri, getAMRSupportedMeters,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -191,7 +192,7 @@ public class MRClient implements IMRClient {
     public GetLatestReadingByMeterNoResponse getLatestReadingByMeterNo(MultispeakVendor mspVendor, String uri,
             GetLatestReadingByMeterNo getLatestReadingByMeterNo) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetLatestReadingByMeterNoResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getLatestReadingByMeterNo, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -204,7 +205,7 @@ public class MRClient implements IMRClient {
     public GetLatestReadingsResponse getLatestReadings(MultispeakVendor mspVendor, String uri,
             GetLatestReadings getLatestReadings) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetLatestReadingsResponse) webServiceTemplate.marshalSendAndReceive(uri, getLatestReadings,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -218,7 +219,7 @@ public class MRClient implements IMRClient {
             GetLatestReadingByMeterNoAndType getLatestReadingByMeterNoAndType)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetLatestReadingByMeterNoAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getLatestReadingByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -231,7 +232,7 @@ public class MRClient implements IMRClient {
     public GetLatestReadingByTypeResponse getLatestReadingByType(MultispeakVendor mspVendor, String uri,
             GetLatestReadingByType getLatestReadingByType) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetLatestReadingByTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getLatestReadingByType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -244,7 +245,7 @@ public class MRClient implements IMRClient {
     public GetReadingsByMeterNoResponse getReadingsByMeterNo(MultispeakVendor mspVendor, String uri,
             GetReadingsByMeterNo getReadingsByMeterNo) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetReadingsByMeterNoResponse) webServiceTemplate.marshalSendAndReceive(uri, getReadingsByMeterNo,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -257,7 +258,7 @@ public class MRClient implements IMRClient {
     public GetReadingsByDateAndTypeResponse getReadingsByDateAndType(MultispeakVendor mspVendor, String uri,
             GetReadingsByDateAndType getReadingsByDateAndType) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetReadingsByDateAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getReadingsByDateAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -270,7 +271,7 @@ public class MRClient implements IMRClient {
     public GetReadingsByMeterNoAndTypeResponse getReadingsByMeterNoAndType(MultispeakVendor mspVendor, String uri,
             GetReadingsByMeterNoAndType getReadingsByMeterNoAndType) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetReadingsByMeterNoAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getReadingsByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -283,7 +284,7 @@ public class MRClient implements IMRClient {
     public GetSupportedReadingTypesResponse getSupportedReadingTypes(MultispeakVendor mspVendor, String uri,
             GetSupportedReadingTypes getSupportedReadingTypes) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetSupportedReadingTypesResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getSupportedReadingTypes, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -296,7 +297,7 @@ public class MRClient implements IMRClient {
     public MeterAddNotificationResponse meterAddNotification(MultispeakVendor mspVendor, String uri,
             MeterAddNotification meterAddNotification) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (MeterAddNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, meterAddNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -309,7 +310,7 @@ public class MRClient implements IMRClient {
     public MeterRemoveNotificationResponse meterRemoveNotification(MultispeakVendor mspVendor, String uri,
             MeterRemoveNotification meterRemoveNotification) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (MeterRemoveNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 meterRemoveNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -322,7 +323,7 @@ public class MRClient implements IMRClient {
     public MeterChangedNotificationResponse meterChangedNotification(MultispeakVendor mspVendor, String uri,
             MeterChangedNotification meterChangedNotification) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (MeterChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 meterChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -335,7 +336,7 @@ public class MRClient implements IMRClient {
     public InitiateUsageMonitoringResponse initiateUsageMonitoring(MultispeakVendor mspVendor, String uri,
             InitiateUsageMonitoring initiateUsageMonitoring) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InitiateUsageMonitoringResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateUsageMonitoring, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -348,7 +349,7 @@ public class MRClient implements IMRClient {
     public CancelUsageMonitoringResponse cancelUsageMonitoring(MultispeakVendor mspVendor, String uri,
             CancelUsageMonitoring cancelUsageMonitoring) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (CancelUsageMonitoringResponse) webServiceTemplate.marshalSendAndReceive(uri, cancelUsageMonitoring,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -361,7 +362,7 @@ public class MRClient implements IMRClient {
     public InitiateDisconnectedStatusResponse initiateDisconnectedStatus(MultispeakVendor mspVendor, String uri,
             InitiateDisconnectedStatus initiateDisconnectedStatus) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InitiateDisconnectedStatusResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateDisconnectedStatus, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -374,7 +375,7 @@ public class MRClient implements IMRClient {
     public CancelDisconnectedStatusResponse cancelDisconnectedStatus(MultispeakVendor mspVendor, String uri,
             CancelDisconnectedStatus cancelDisconnectedStatus) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (CancelDisconnectedStatusResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 cancelDisconnectedStatus, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -388,7 +389,7 @@ public class MRClient implements IMRClient {
             String uri, ServiceLocationChangedNotification serviceLocationChangedNotification)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (ServiceLocationChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 serviceLocationChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -401,7 +402,7 @@ public class MRClient implements IMRClient {
     public DeleteMeterGroupResponse deleteMeterGroup(MultispeakVendor mspVendor, String uri,
             DeleteMeterGroup deleteMeterGroup) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (DeleteMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri, deleteMeterGroup,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -414,7 +415,7 @@ public class MRClient implements IMRClient {
     public EstablishMeterGroupResponse establishMeterGroup(MultispeakVendor mspVendor, String uri,
             EstablishMeterGroup establishMeterGroup) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (EstablishMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri, establishMeterGroup,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -427,7 +428,7 @@ public class MRClient implements IMRClient {
     public InsertMeterInMeterGroupResponse insertMeterInMeterGroup(MultispeakVendor mspVendor, String uri,
             InsertMeterInMeterGroup insertMeterInMeterGroup) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InsertMeterInMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 insertMeterInMeterGroup, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -440,18 +441,12 @@ public class MRClient implements IMRClient {
     public RemoveMetersFromMeterGroupResponse removeMetersFromMeterGroup(MultispeakVendor mspVendor, String uri,
             RemoveMetersFromMeterGroup removeMetersFromMeterGroup) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (RemoveMetersFromMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 removeMetersFromMeterGroup, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
-    }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
     }
 }

@@ -13,6 +13,7 @@ import com.cannontech.msp.beans.v3.ODEventNotification;
 import com.cannontech.msp.beans.v3.ODEventNotificationResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -36,7 +37,7 @@ public class OAClient implements IOAClient {
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -49,7 +50,7 @@ public class OAClient implements IOAClient {
     public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -70,7 +71,7 @@ public class OAClient implements IOAClient {
     public ODEventNotificationResponse odEventNotification(final MultispeakVendor mspVendor, String uri,
             ODEventNotification odEventNotification) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (ODEventNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, odEventNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -78,11 +79,4 @@ public class OAClient implements IOAClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
-    }
-
 }

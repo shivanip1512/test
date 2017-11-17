@@ -15,6 +15,7 @@ import com.cannontech.msp.beans.v5.ea_server.GetMethods;
 import com.cannontech.msp.beans.v5.ea_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.ea_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.ea_server.PingURL;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -41,7 +42,7 @@ public class EAClient implements IEAClient {
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri,
                                                      pingURL,
@@ -57,7 +58,7 @@ public class EAClient implements IEAClient {
         List<String> methodList = new ArrayList<>();
         try {
             GetMethods getMethods = objectFactory.createGetMethods();
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             GetMethodsResponse response = (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri,
                                                                                                         getMethods,
@@ -74,11 +75,5 @@ public class EAClient implements IEAClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
         return methodList;
-    }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
     }
 }

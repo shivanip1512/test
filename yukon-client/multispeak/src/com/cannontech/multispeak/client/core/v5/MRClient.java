@@ -16,6 +16,7 @@ import com.cannontech.msp.beans.v5.mr_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.mr_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.mr_server.PingURL;
 import com.cannontech.msp.beans.v5.mr_server.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -42,7 +43,7 @@ public class MRClient implements IMRClient {
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
@@ -55,7 +56,7 @@ public class MRClient implements IMRClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =
@@ -71,11 +72,5 @@ public class MRClient implements IMRClient {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
         return methodList;
-    }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
     }
 }

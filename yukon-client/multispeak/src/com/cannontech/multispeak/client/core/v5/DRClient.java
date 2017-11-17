@@ -16,6 +16,7 @@ import com.cannontech.msp.beans.v5.dr_server.GetMethods;
 import com.cannontech.msp.beans.v5.dr_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.dr_server.PingURL;
 import com.cannontech.msp.beans.v5.dr_server.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -43,7 +44,7 @@ public class DRClient implements IDRClient {
             throws MultispeakWebServiceClientException {
         PingURL pingURL = objectFactory.createPingURL();
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -57,7 +58,7 @@ public class DRClient implements IDRClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =
@@ -73,11 +74,5 @@ public class DRClient implements IDRClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
         return methodList;
-    }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
     }
 }

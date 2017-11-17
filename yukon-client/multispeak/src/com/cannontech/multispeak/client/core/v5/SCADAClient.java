@@ -16,6 +16,7 @@ import com.cannontech.msp.beans.v5.scada_server.GetMethods;
 import com.cannontech.msp.beans.v5.scada_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.scada_server.PingURL;
 import com.cannontech.msp.beans.v5.scada_server.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -42,7 +43,7 @@ public class SCADAClient implements ISCADAClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =
@@ -64,18 +65,12 @@ public class SCADAClient implements ISCADAClient {
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri) throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
-    }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
     }
 }

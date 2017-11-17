@@ -19,6 +19,7 @@ import com.cannontech.msp.beans.v3.InitiateConnectDisconnect;
 import com.cannontech.msp.beans.v3.InitiateConnectDisconnectResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -50,7 +51,7 @@ public class CDClient implements ICDClient {
     public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -63,7 +64,7 @@ public class CDClient implements ICDClient {
     public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -76,7 +77,7 @@ public class CDClient implements ICDClient {
     public GetCDSupportedMetersResponse getCDSupportedMeters(final MultispeakVendor mspVendor, String uri,
             GetCDSupportedMeters getCDSupportedMeters) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetCDSupportedMetersResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDSupportedMeters,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -89,7 +90,7 @@ public class CDClient implements ICDClient {
     public InitiateConnectDisconnectResponse initiateConnectDisconnect(final MultispeakVendor mspVendor, String uri,
             InitiateConnectDisconnect initiateConnectDisconnect) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (InitiateConnectDisconnectResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 initiateConnectDisconnect, customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -102,7 +103,7 @@ public class CDClient implements ICDClient {
     public GetCDMeterStateResponse getCDMeterState(final MultispeakVendor mspVendor, String uri,
             GetCDMeterState getCDMeterState) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (GetCDMeterStateResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDMeterState,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -115,7 +116,7 @@ public class CDClient implements ICDClient {
     public CDDeviceAddNotificationResponse cdDeviceAddNotification(final MultispeakVendor mspVendor, String uri,
             CDDeviceAddNotification cdDeviceAddNotification) throws MultispeakWebServiceClientException {
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (CDDeviceAddNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, cdDeviceAddNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -123,10 +124,4 @@ public class CDClient implements ICDClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
-    }    
 }

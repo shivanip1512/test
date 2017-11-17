@@ -16,6 +16,7 @@ import com.cannontech.msp.beans.v5.cd_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.cd_server.PingURL;
 import com.cannontech.msp.beans.v5.cd_server.PingURLResponse;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -49,7 +50,7 @@ public class CDClient implements ICDClient {
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
@@ -63,7 +64,7 @@ public class CDClient implements ICDClient {
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
-            setMsgSenderTimeOutValues(mspVendor);
+            MultispeakFuncsBase.setMsgSenderTimeOutValues(messageSender, mspVendor);
             GetMethods getMethods = objectFactory.createGetMethods();
 
             GetMethodsResponse response =
@@ -79,12 +80,6 @@ public class CDClient implements ICDClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
         return methodList;
-    }
-
-    private void setMsgSenderTimeOutValues(MultispeakVendor mspVendor) {
-        int timeOut = (int) mspVendor.getRequestMessageTimeout();
-        messageSender.setReadTimeout(timeOut);
-        messageSender.setConnectionTimeout(timeOut);
     }
 
 }
