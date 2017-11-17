@@ -6,6 +6,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 
 public final class PaoIdToYukonDeviceMapper implements ObjectMapper<Integer, SimpleDevice> {
     private DeviceDao deviceDao = null;
@@ -19,7 +20,7 @@ public final class PaoIdToYukonDeviceMapper implements ObjectMapper<Integer, Sim
 
         try {
             return deviceDao.getYukonDevice(id);
-        } catch (IncorrectResultSizeDataAccessException  e) {
+        } catch (IncorrectResultSizeDataAccessException | NotFoundException e) {
             throw new ObjectMappingException("Device with id: " + id + " not found.", "invalidId", id, e);
         }
     }

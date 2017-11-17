@@ -106,7 +106,12 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public SimpleDevice getYukonDevice(int paoId) {
-        return getYukonDevice(cache.getAllPaosMap().get(paoId));
+        LiteYukonPAObject litePao = cache.getAllPaosMap().get(paoId);
+        if (litePao == null) {
+            throw new NotFoundException("A PAObject with id " + paoId + " cannot be found.");
+        }
+        return getYukonDevice(litePao);
+        
     }
 
     @Override
