@@ -229,6 +229,7 @@ yukon.widget.porterQueueCounts = (function () {
         init : function () {
             if (_initialized) return;
             
+            Highcharts.setOptions(yg.highcharts_options);
             $.ajax({
                 url: yukon.url('/amr/porterQueueCounts/getZoom'),
                 type: 'get',
