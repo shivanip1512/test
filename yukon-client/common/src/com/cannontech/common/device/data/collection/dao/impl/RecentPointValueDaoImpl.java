@@ -34,8 +34,6 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.SqlBuilder;
-import com.cannontech.common.util.SqlFragmentGenerator;
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -262,19 +260,13 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
         List<Integer> pointIds = recentValues.values().stream().map(point -> point.getId()).collect(Collectors.toList());
         
-        Multimap<Integer, Date> existingData =
-            template.multimappedQuery(new SqlFragmentGenerator<Integer>() {
-                @Override
-                public SqlFragmentSource generate(List<Integer> subList) {
-                    SqlStatementBuilder sql = new SqlStatementBuilder();
-                    sql.append("SELECT PAObjectId, PointId, Timestamp");
-                    sql.append("FROM RecentPointValue");
-                    sql.append("WHERE PointId").in(subList);
-                    return sql;
-                }
-            }, pointIds, rs -> {
-                return Maps.immutableEntry(rs.getInt("PointId"), rs.getDate("Timestamp"));
-            }, Functions.identity());
+        Multimap<Integer, Date> existingData = template.multimappedQuery(subList -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PAObjectId, PointId, Timestamp");
+            sql.append("FROM RecentPointValue");
+            sql.append("WHERE PointId").in(subList);
+            return sql;
+        }, pointIds, rs -> Maps.immutableEntry(rs.getInt("PointId"), rs.getDate("Timestamp")), Functions.identity());
 
       
         for (Entry<PaoIdentifier, PointValueQualityHolder> value : recentValues.entrySet()) {

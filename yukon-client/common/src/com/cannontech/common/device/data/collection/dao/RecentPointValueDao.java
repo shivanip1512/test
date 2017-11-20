@@ -38,9 +38,11 @@ public interface RecentPointValueDao {
             return dbString;
         }
     }
+
     /**
-     * Deletes all the data from RecentPointValue.
-     * Inserts recent values.
+     * If timestamp is more recent then timestamp in the table for the point id, updates the data in the
+     * table with more recent values.
+     * 
      * @param recentValues - values to insert
      */
     void collectData(Map<PaoIdentifier, PointValueQualityHolder> recentValues);
