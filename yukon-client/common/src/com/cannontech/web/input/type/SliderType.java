@@ -20,10 +20,6 @@ public class SliderType extends BaseEnumeratedType<String> {
         this.setting = setting;
     }
 
-    public SliderType() {
-
-    }
-
     public List<InputOptionProvider> getOptionList() {
         List<InputOptionProvider> optionList = Lists.newArrayList();
         GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);

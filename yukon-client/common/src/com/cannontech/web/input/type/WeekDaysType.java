@@ -21,10 +21,6 @@ public class WeekDaysType extends BaseEnumeratedType<String> {
         this.setting = setting;
     }
 
-    public WeekDaysType() {
-
-    }
-
     public List<InputOptionProvider> getOptionList() {
         List<InputOptionProvider> optionList = Lists.newArrayList();
         GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
