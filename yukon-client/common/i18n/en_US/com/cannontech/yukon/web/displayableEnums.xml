@@ -384,6 +384,8 @@
     <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
+    <entry key="yukon.common.setting.SEND_ECOBEE_NOTIFICATIONS">ecobee DR notification</entry>
+    <entry key="yukon.common.setting.SEND_ECOBEE_NOTIFICATIONS.description">Enables/Disables notifications being sent when a DR request is made through yukon</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING">Honeywell Wifi Connection</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING.description">Connection string for the Honeywell wifi service bus.</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE">Honeywell Wifi Queue</entry>

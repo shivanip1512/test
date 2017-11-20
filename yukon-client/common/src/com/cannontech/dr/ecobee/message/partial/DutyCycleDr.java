@@ -1,10 +1,7 @@
 package com.cannontech.dr.ecobee.message.partial;
 
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,9 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class DutyCycleDr {
-    @Autowired private GlobalSettingDao globalSettingDao;
-    
+public class DutyCycleDr {    
     private final String name;
     private final String message;
     private final DutyCycleEvent event;
@@ -24,13 +19,14 @@ public class DutyCycleDr {
     
     
     public DutyCycleDr(String name, String message, int dutyCyclePercentage, Instant startDate, 
-                       boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime, boolean isOptional) {
+                       boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime, boolean isOptional,
+                       boolean sendEmail) {
         this.name = name;
         this.message = message;
         this.randomizeStartTime = randomizeStartTime;
         this.randomizeEndTime = randomizeEndTime;
         event = new DutyCycleEvent(name, dutyCyclePercentage, startDate, endDate, isOptional);
-        sendEmail = globalSettingDao.getBoolean(GlobalSettingType.SEND_ECOBEE_NOTIFICATIONS);
+        this.sendEmail = sendEmail;
     }
 
     @JsonCreator
@@ -80,6 +76,7 @@ public class DutyCycleDr {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + (randomizeEndTime ? 1231 : 1237);
         result = prime * result + (randomizeStartTime ? 1231 : 1237);
+        result = prime * result + (sendEmail ? 1231 : 1237);
         return result;
     }
 
@@ -120,6 +117,9 @@ public class DutyCycleDr {
             return false;
         }
         if (randomizeStartTime != other.randomizeStartTime) {
+            return false;
+        }
+        if (sendEmail != other.sendEmail) {
             return false;
         }
         return true;
