@@ -11,23 +11,6 @@ yukon.deviceConfig.summary = (function () {
     
     var
     _initialized = false,
-    
-    _filterResults = function () {
-        var filterButton = $('.js-filter'),
-            form = $('#filter-form');
-        yukon.ui.busy(filterButton);
-        form.ajaxSubmit({
-            success: function(data, status, xhr, $form) {
-                yukon.ui.unbusy(filterButton);
-                $('#results-table').html(data);
-                $('#results-table').data('url', yukon.url('/deviceConfiguration/summary/filter?' + form.serialize()));
-            },
-            error: function(xhr, status, error, $form) {
-                yukon.ui.unbusy(filterButton);
-                $('#results-table').html(xhr.responseText);
-            }
-        });
-    },
 
     mod = {
 
@@ -36,39 +19,11 @@ yukon.deviceConfig.summary = (function () {
             
             if (_initialized) return;
             
-            _filterResults();
-            
-            /** Filter the results */
-            $(document).on('click', '.js-filter', function (ev) {
-                _filterResults();
-            });
-            
-            $(document).on('click', '.js-send-config', function () {   
-                var deviceId = $(this).data('deviceId');
+            $(document).on('click', '.js-device-action', function () {   
+                var deviceId = $(this).data('deviceId'),
+                    action = $(this).data('action');
                 $.ajax({
-                    url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/sendConfig'),
-                    type: 'post'
-                }).done(function () {
-                    $(document).scrollTop(0);
-                    window.location.reload();
-                });
-            });
-            
-            $(document).on('click', '.js-read-config', function () {   
-                var deviceId = $(this).data('deviceId');
-                $.ajax({
-                    url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/readConfig'),
-                    type: 'post'
-                }).done(function () {
-                    $(document).scrollTop(0);
-                    window.location.reload();
-                });
-            });
-            
-            $(document).on('click', '.js-verify-config', function () {   
-                var deviceId = $(this).data('deviceId');
-                $.ajax({
-                    url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/verifyConfig'),
+                    url: yukon.url('/deviceConfiguration/summary/' + deviceId + '/' + action),
                     type: 'post'
                 }).done(function () {
                     $(document).scrollTop(0);

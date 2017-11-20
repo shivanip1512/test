@@ -9,7 +9,6 @@
         <div class="column one">
 
             <form:form id="filter-form" action="filter" method="get" commandName="filter">
-                <cti:csrfToken/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".configurations">
                         <form:select multiple="true" path="configurationIds" size="6" style="min-width:200px;">
@@ -72,7 +71,7 @@
                 </div>
             
                 <div class="action-area stacked">
-                    <cti:button nameKey="filter" classes="primary action js-filter"/>
+                    <cti:button nameKey="filter" classes="primary action" type="submit" busy="true"/>
                 </div>
             
             </form:form>
@@ -81,7 +80,25 @@
     </div>
     
     <br/>
-    <div id="results-table" data-url="">
+    <cti:url var="dataUrl" value="/deviceConfiguration/summary/filter">
+        <c:forEach var="config" items="${filter.configurationIds}">
+            <cti:param name="configurationIds" value="${config}"/>
+        </c:forEach>
+        <c:forEach var="subGroup" items="${filter.groups}">
+            <cti:param name="deviceSubGroups" value="${subGroup.fullName}"/>
+        </c:forEach>
+        <c:forEach var="action" items="${filter.actions}">
+            <cti:param name="actions" value="${action}"/>
+        </c:forEach>
+        <c:forEach var="sync" items="${filter.inSync}">
+            <cti:param name="inSync" value="${sync}"/>
+        </c:forEach>
+        <c:forEach var="status" items="${filter.statuses}">
+            <cti:param name="statuses" value="${status}"/>
+        </c:forEach>
+    </cti:url>
+    <div data-url="${dataUrl}" data-static>
+        <%@ include file="resultsTable.jsp" %>
     </div>
     
     <cti:includeScript link="/resources/js/pages/yukon.device.config.summary.js" />

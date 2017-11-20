@@ -99,12 +99,15 @@
                             data-width="600" data-load-event="yukon:config:viewHistory"
                             data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
                             <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}" icon="icon-application-view-columns"/>
-                            <c:set var="sendClass" value="${detail.displaySend ? 'js-send-config' : ''}"/>
-                            <cm:dropdownOption key=".send" icon="icon-ping" classes="${sendClass}" data-device-id="${deviceId}" disabled="${!detail.displaySend}"/>
-                            <c:set var="readClass" value="${detail.displayRead ? 'js-read-config' : ''}"/>
-                            <cm:dropdownOption key=".read" icon="icon-read" classes="${readClass}" data-device-id="${deviceId}" disabled="${!detail.displayRead}"/>
-                            <c:set var="verifyClass" value="${detail.displayVerify ? 'js-verify-config' : ''}"/>
-                            <cm:dropdownOption key=".verify" icon="icon-accept" classes="${verifyClass}" data-device-id="${deviceId}" disabled="${!detail.displayVerify}"/>
+                            <c:set var="sendClass" value="${detail.displaySend ? 'js-device-action' : ''}"/>
+                            <cm:dropdownOption key=".send" icon="icon-ping" classes="${sendClass}" data-device-id="${deviceId}" 
+                                data-action="sendConfig" disabled="${!detail.displaySend}"/>
+                            <c:set var="readClass" value="${detail.displayRead ? 'js-device-action' : ''}"/>
+                            <cm:dropdownOption key=".read" icon="icon-read" classes="${readClass}" data-device-id="${deviceId}" 
+                                data-action="readConfig" disabled="${!detail.displayRead}"/>
+                            <c:set var="verifyClass" value="${detail.displayVerify ? 'js-device-action' : ''}"/>
+                            <cm:dropdownOption key=".verify" icon="icon-accept" classes="${verifyClass}" data-device-id="${deviceId}" 
+                                data-action="verifyConfig" disabled="${!detail.displayVerify}"/>
                         </cm:dropdown>
                     </td>
                 </tr>
