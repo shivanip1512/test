@@ -13,7 +13,7 @@
     ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="8" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
     <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
         <div class="dib vat fr">
-            <cti:button nameKey="save" classes="primary action js-save-coordinates" style="margin-right:2px;"/>
+            <cti:button nameKey="save" classes="primary action js-save-coordinates MR0"/>
             <cti:button nameKey="cancel" classes="js-cancel"/>
         </div>
     </cti:checkRolesAndProperties>
