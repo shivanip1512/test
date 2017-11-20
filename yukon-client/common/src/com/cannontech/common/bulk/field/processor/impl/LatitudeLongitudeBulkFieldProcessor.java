@@ -1,5 +1,6 @@
 package com.cannontech.common.bulk.field.processor.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -11,11 +12,14 @@ import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
+    @Autowired private PaoDao paoDao;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private IDatabaseCache cache;
@@ -50,8 +54,18 @@ public class LatitudeLongitudeBulkFieldProcessor extends BulkYukonDeviceFieldPro
                 new PaoLocation(device.getPaoIdentifier(), value.getLatitude(), value.getLongitude(),
                     Origin.BULK_IMPORT, new Instant());
             paoLocationDao.save(location);
-            endpointEventLogService.locationUpdated(cache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName(), location,
-                YukonUserContext.system.getYukonUser());
+
+            String deviceName = value.getName();    // this will only ever be populated if Name is NOT the identifier field (first column)
+            if (StringUtils.isBlank(deviceName)) {
+                // try to load from cache
+                LiteYukonPAObject litePao = cache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
+                if (litePao != null) {
+                    deviceName = litePao.getPaoName();
+                } else {
+                    deviceName = paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId());
+                }
+            }
+            endpointEventLogService.locationUpdated(deviceName, location, YukonUserContext.system.getYukonUser());
         } catch (DataAccessException e) {
             throw new ProcessingException("Could not set location of device with paoId " + device.getPaoIdentifier()
                 + ": " + e.getMessage(), "setLocation", e, device.getPaoIdentifier());
