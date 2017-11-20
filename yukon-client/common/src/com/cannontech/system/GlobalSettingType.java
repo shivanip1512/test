@@ -175,7 +175,13 @@ public enum GlobalSettingType implements DisplayableEnum {
     GATEWAY_READY_NODES_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 25),
     PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
     PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5),
-    PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 15)
+    PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 15),
+
+    //Data Point Pruning
+    EXTERNAL_MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("EXTERNAL_MAINTENANCE_DAYS"), "NNNNNNN"),
+    DATABASE_MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("DATABASE_MAINTENANCE_DAYS"), "NNNNNNN"),
+    EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME"), "0,240"),
+    DATABASE_MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("DATABASE_MAINTENANCE_HOURS_START_STOP_TIME"), "0,240")
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;

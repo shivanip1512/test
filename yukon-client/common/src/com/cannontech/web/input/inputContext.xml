@@ -26,5 +26,6 @@
  
  <bean class="com.cannontech.web.input.DatePropertyEditorFactory"/>
  <bean class="com.cannontech.web.input.StateIdPairingPropertyEditor"/>
- 
+ <bean id="inputWeekDaysType" class="com.cannontech.web.input.type.WeekDaysType" />
+ <bean id="sliderType" class="com.cannontech.web.input.type.SliderType" />
  </beans>

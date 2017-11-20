@@ -18,8 +18,10 @@ import com.cannontech.web.input.type.InputOptionProvider;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.LongType;
+import com.cannontech.web.input.type.SliderType;
 import com.cannontech.web.input.type.StringType;
 import com.cannontech.web.input.type.UserType;
+import com.cannontech.web.input.type.WeekDaysType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -101,6 +103,14 @@ public class InputTypeFactory {
         return userType;
     }
     
+    public static InputType<String> weekDaysType(String setting) {
+        return new WeekDaysType(setting);
+    }
+
+    public static InputType<String> sliderType(String setting) {
+        return new SliderType(setting);
+    }
+
     public static Object convertPropertyValue(InputType<?> type, String value) {
         if (StringUtils.isBlank(value)) {
             if (log.isDebugEnabled()) {

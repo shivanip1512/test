@@ -22,6 +22,11 @@ public class InputOption implements InputOptionProvider {
         setText(text);
     }
 
+    public InputOption(String value, boolean enabled) {
+        this.value = value;
+        setEnabled(enabled);
+    }
+
     public InputOption(String value, String text, boolean enabled) {
         this(value, text);
         setEnabled(enabled);
