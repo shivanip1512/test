@@ -1,18 +1,27 @@
 package com.cannontech.dr.ecobee.message.partial;
 
 import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
+
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DutyCycleDr {
+    @Autowired private GlobalSettingDao globalSettingDao;
+    
     private final String name;
     private final String message;
     private final DutyCycleEvent event;
     private final boolean randomizeStartTime;
     private final boolean randomizeEndTime;
+    private final boolean sendEmail;
+    
     
     public DutyCycleDr(String name, String message, int dutyCyclePercentage, Instant startDate, 
                        boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime, boolean isOptional) {
@@ -21,18 +30,21 @@ public class DutyCycleDr {
         this.randomizeStartTime = randomizeStartTime;
         this.randomizeEndTime = randomizeEndTime;
         event = new DutyCycleEvent(name, dutyCyclePercentage, startDate, endDate, isOptional);
+        sendEmail = globalSettingDao.getBoolean(GlobalSettingType.SEND_ECOBEE_NOTIFICATIONS);
     }
 
     @JsonCreator
     public DutyCycleDr(@JsonProperty("name") String name, @JsonProperty("message") String message,
             @JsonProperty("event") DutyCycleEvent event, 
             @JsonProperty("randomizeStartTime") boolean randomizeStartTime, 
-            @JsonProperty("randomizeEndTime") boolean randomizeEndTime) {
+            @JsonProperty("randomizeEndTime") boolean randomizeEndTime,
+            @JsonProperty("sendEmail") boolean sendEmail) {
         this.name = name;
         this.message = message;
         this.event = event;
         this.randomizeStartTime = randomizeStartTime;
         this.randomizeEndTime = randomizeEndTime;
+        this.sendEmail = sendEmail;
     }
     
     public String getName() {
@@ -55,6 +67,10 @@ public class DutyCycleDr {
         return randomizeEndTime;
     }
 
+    public boolean getSendEmail() {
+        return sendEmail;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -108,4 +124,5 @@ public class DutyCycleDr {
         }
         return true;
     }
+    
 }

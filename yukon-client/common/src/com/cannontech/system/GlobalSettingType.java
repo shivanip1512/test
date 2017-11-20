@@ -114,6 +114,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     HONEYWELL_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://qtccna.honeywell.com/TrueHomeStage/"),
     HONEYWELL_CLIENTID(GlobalSettingSubCategory.DR, stringType(), ""),
     HONEYWELL_SECRET(GlobalSettingSubCategory.DR, stringType(), ""),
+    SEND_ECOBEE_NOTIFICATIONS(GlobalSettingSubCategory.DR, booleanType(), false),
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
