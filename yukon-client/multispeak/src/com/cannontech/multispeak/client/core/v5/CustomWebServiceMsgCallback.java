@@ -46,7 +46,7 @@ public class CustomWebServiceMsgCallback {
                 try {
                     SOAPHeader header = env.getHeader();
                     SOAPElement headElement = header.addChildElement("MultiSpeakRequestMsgHeader", "req");
-                    multispeakFuncs.getHeader(headElement, "req");
+                    multispeakFuncs.getHeader(headElement, "req", mspVendor);
 
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);

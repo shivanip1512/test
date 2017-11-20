@@ -114,7 +114,7 @@
                         </tags:nameValueContainer2>
 
                         <h5>
-                            <i:inline key=".outcomingAuthentication" />
+                            <i:inline key=".outgoingAuthentication" />
                         </h5>
 
                         <tags:nameValueContainer2>

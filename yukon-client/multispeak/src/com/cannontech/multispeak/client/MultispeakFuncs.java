@@ -77,16 +77,20 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         try {
             env = getResponseMessageSOAPEnvelope();
             SoapHeader header = env.getHeader();
-            getHeader(header);
+            // the YukonMultispeakMsgHeader will be built with "dummy" values for userId and pwd fields. The
+            // expectation is that getMultispeakVendorFromHeader will replace these values with the correct
+            // values from the other vendor once it is loaded.
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
+                MultispeakDefines.MSP_APPNAME_YUKON);
+            getHeader(header, mspVendor);
+
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
         }
     }
 
-    public SoapHeaderElement getHeader(SoapHeader header) throws SOAPException {
+    public SoapHeaderElement getHeader(SoapHeader header, MultispeakVendor mspVendor) throws SOAPException {
 
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                MultispeakDefines.MSP_APPNAME_YUKON);
         YukonMultispeakMsgHeader yukonMspMsgHeader =
             new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword(), version().getVersion());
         QName qname = new QName(version().namespace, "MultiSpeakMsgHeader");
@@ -222,6 +226,9 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
                 throw new MultispeakWebServiceException("Invalid Company and/or AppName received: Company="
                     + companyName + " AppName=" + appName);
             }
+            // update the responseHeader, replace with the correct userId and pwd from the "other" vendor now that we have it loaded.
+            getResponseHeaderElement().addAttribute(new QName("UserID"), mspVendor.getOutUserName());
+            getResponseHeaderElement().addAttribute(new QName("Pwd"), mspVendor.getOutPassword());
             return mspVendor;
         } catch (NotFoundException e) {
             throw new MultispeakWebServiceException(e.getMessage());

@@ -84,6 +84,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     private static final QName QNAME_OBJECT_REMAINING = new QName("http://www.multispeak.org/V5.0/commonTypes",
         "objectsRemaining");
     private static final QName QNAME_RESULT = new QName("http://www.multispeak.org/V5.0/response", "Result");
+    private static final QName QNAME_CALLER_RES = new QName("http://www.multispeak.org/V5.0/ws/response", "Caller");
 
 
     public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
@@ -129,7 +130,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
     
     
-    public void getHeader(SOAPMessage soapMessage) throws SOAPException {
+    public void getHeader(SOAPMessage soapMessage, MultispeakVendor mspVendor) throws SOAPException {
         SOAPEnvelope env = soapMessage.getSOAPPart().getEnvelope();
 
         Node nxtNode = getRequestSOAPMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
@@ -149,16 +150,12 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         SOAPHeader header = env.getHeader();
         SOAPElement headElement = header.addChildElement("MultiSpeakResponseMsgHeader", "res");
-        
-        getHeader(headElement, "res");
+        getHeader(headElement, "res", mspVendor);
 
     }
 
-    public void getHeader(SOAPElement headElement, String prefix) throws SOAPException {
-        
-        MultispeakVendor mspVendor =
-                multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                    MultispeakDefines.MSP_APPNAME_YUKON);
+    public void getHeader(SOAPElement headElement, String prefix, MultispeakVendor mspVendor) throws SOAPException {
+
         SOAPElement callerElement = headElement.addChildElement("Caller", prefix);
         SOAPElement appNameElement = callerElement.addChildElement("AppName", "com");
         appNameElement.addTextNode("Yukon");
@@ -166,10 +163,10 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         appVersionElement.addTextNode(VersionTools.getYUKON_VERSION());
         SOAPElement companyElement = callerElement.addChildElement("Company", "com");
         companyElement.addTextNode("Cannon");
-        SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
-        passwordElement.addTextNode(mspVendor.getOutPassword());
         SOAPElement systemIDElement = callerElement.addChildElement("SystemID", "com");
         systemIDElement.addTextNode(mspVendor.getOutUserName());
+        SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
+        passwordElement.addTextNode(mspVendor.getOutPassword());
         SOAPElement coordSysInforElement = headElement.addChildElement("CoordinateSystemInformation", prefix);
         SOAPElement csUnit = coordSysInforElement.addChildElement("CSUnits", "com");
         csUnit.addTextNode(CSUnitsKind.FEET.value());
@@ -187,7 +184,12 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         SOAPMessage soapMessage;
         try {
             soapMessage = getResponseSOAPMessage();
-            getHeader(soapMessage);
+            // the MultiSpeakResponseMsgHeader.Caller will be built with "dummy" values for userId and pwd
+            // fields. The expectation is that getMultispeakVendorFromHeader will replace these values with
+            // the correct values from the other vendor once it is loaded.
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
+                MultispeakDefines.MSP_APPNAME_YUKON);
+            getHeader(soapMessage, mspVendor);
 
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
@@ -232,7 +234,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
      * @throws SOAPException
      **/
     public String getCompanyNameFromSOAPHeader() throws SOAPException {
-        return getNodeValueFromSOAPMessage(QNAME_COMPANY, QNAME_CALLER);
+        return getNodeValueFromRequestSOAPMessage(QNAME_COMPANY, QNAME_CALLER);
     }
 
     /**
@@ -240,15 +242,15 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
      * @throws SOAPException
      **/
     public String getAppNameFromSOAPHeader() throws SOAPException {
-        return getNodeValueFromSOAPMessage(QNAME_APPNAME, QNAME_CALLER);
+        return getNodeValueFromRequestSOAPMessage(QNAME_APPNAME, QNAME_CALLER);
     }
 
     @Override
     public LiteYukonUser authenticateMsgHeader() throws MultispeakWebServiceException {
         LiteYukonUser user = null;
         try {
-            String username = getNodeValueFromSOAPMessage(QNAME_USERNAME, QNAME_CALLER);
-            String password = getNodeValueFromSOAPMessage(QNAME_PASSWORD, QNAME_CALLER);
+            String username = getNodeValueFromRequestSOAPMessage(QNAME_USERNAME, QNAME_CALLER);
+            String password = getNodeValueFromRequestSOAPMessage(QNAME_PASSWORD, QNAME_CALLER);
 
             if (username != null && password != null) {
                 user = authenticationService.login(username, password);
@@ -284,6 +286,10 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
                 throw new MultispeakWebServiceException("Invalid Company and/or AppName received: Company="
                     + companyName + " AppName=" + appName);
             }
+            // update the responseHeader, replace with the correct userId and pwd from the "other" vendor now
+            // that we have it loaded.
+            updateNodeValueInResponseSOAPMessage(mspVendor.getOutUserName(), QNAME_USERNAME, QNAME_CALLER_RES);
+            updateNodeValueInResponseSOAPMessage(mspVendor.getOutPassword(), QNAME_PASSWORD, QNAME_CALLER_RES);
             return mspVendor;
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
@@ -291,13 +297,34 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     }
 
     /**
-     * This method returns an child node value from SOAPHeader
+     * Update Node value in response
+     * 
+     * @throws SOAPException
+     */
+    private void updateNodeValueInResponseSOAPMessage(String nodeValue, QName qNameToFind, QName callerQname)
+            throws SOAPException {
+        SOAPHeader header = getResponseSOAPMessage().getSOAPPart().getEnvelope().getHeader();
+        SOAPElement childSoapElement = getElementFromSOAPMessage(header, qNameToFind, callerQname);
+        childSoapElement.setValue(nodeValue);
+    }
+
+    /**
+     * This method returns node value from SOAPHeader
      **/
 
-    private String getNodeValueFromSOAPMessage(QName qNameToFind, QName callerQname) throws SOAPException {
-        String nodeValue = null;
-
+    private String getNodeValueFromRequestSOAPMessage(QName qNameToFind, QName callerQname) throws SOAPException {
         SOAPHeader header = getRequestSOAPMessage().getSOAPPart().getEnvelope().getHeader();
+        SOAPElement childSoapElement = getElementFromSOAPMessage(header, qNameToFind, callerQname);
+        return childSoapElement.getValue();
+    }
+
+    /**
+     * This method returns child SOAPElement from SOAPHeader
+     **/
+
+    private SOAPElement getElementFromSOAPMessage(SOAPHeader header, QName qNameToFind, QName callerQname) throws SOAPException {
+        SOAPElement childSoapElement = null;
+
         Iterator<?> headerElements = header.examineAllHeaderElements();
         while (headerElements.hasNext()) {
             SOAPHeaderElement headerElement = (SOAPHeaderElement) headerElements.next();
@@ -306,30 +333,25 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
                 Node soapNode = (Node) childElements.next();
                 if (soapNode instanceof SOAPElement) {
                     SOAPElement element = (SOAPElement) soapNode;
-                    nodeValue = getFirstChildElementValue(element, qNameToFind);
-
+                    childSoapElement = getFirstChildElementValue(element, qNameToFind);
                 }
-
             }
-
         }
-        return nodeValue;
+        return childSoapElement;
     }
 
     /**
-     * This method returns child node value from SOAPElement
+     * This method returns child SOAPElement
      **/
 
-    private String getFirstChildElementValue(SOAPElement soapElement, QName qNameToFind) {
-        String nodeValue = null;
+    private SOAPElement getFirstChildElementValue(SOAPElement soapElement, QName qNameToFind) {
+        SOAPElement childSoapElement = null;
         Iterator<?> childElements = soapElement.getChildElements(qNameToFind);
         while (childElements.hasNext()) {
-            SOAPElement element = (SOAPElement) childElements.next(); // use first
-
-            nodeValue = element.getValue();
+            childSoapElement = (SOAPElement) childElements.next(); // use first
         }
 
-        return nodeValue;
+        return childSoapElement;
     }
 
     /**
@@ -455,7 +477,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
                     Node soapNode = (Node) childElements.next();
                     if (soapNode instanceof SOAPElement) {
                         SOAPElement element = (SOAPElement) soapNode;
-                        nodeValue = getFirstChildElementValue(element, qNameToFind);
+                        nodeValue = getFirstChildElementValue(element, qNameToFind).getValue();
                     }
                 }
             }
