@@ -164,10 +164,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             addUnion.add(sql);
             buildUnassignedSelect(sql, filter);
         } else {
-            if (filter.isDisplayUnassigned()) {
-                addUnion.add(sql);
-                buildUnassignedSelect(sql, filter);
-            }
             if (filter.contains(LastActionStatus.FAILURE) || filter.contains(LastActionStatus.SUCCESS)
                 || filter.contains(LastActionStatus.IN_PROGRESS)) {
                 addUnion.add(sql);
@@ -178,6 +174,10 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
                 addUnion.add(sql);
                 buildNoExecutionsSelect(sql, filter);
                 addUnion.addUnionBeforeNextSelect = true;
+            }
+            if (filter.isDisplayUnassigned()) {
+                addUnion.add(sql);
+                buildUnassignedSelect(sql, filter);
             }
         }
         sql.append(") results");
@@ -308,13 +308,13 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     private void addStatusSelect(SqlStatementBuilder sql, DeviceConfigSummaryFilter filter) {
         List<String> statuses = new ArrayList<>();
         if (filter.contains(LastActionStatus.FAILURE)) {
-            statuses.add("res2.ErrorCode <> 0");
+            statuses.add("res.ErrorCode <> 0");
         }
         if (filter.contains(LastActionStatus.SUCCESS)) {
-            statuses.add("res2.ErrorCode = 0");
+            statuses.add("res.ErrorCode = 0");
         }
         if (filter.contains(LastActionStatus.IN_PROGRESS)) {
-            statuses.add("res2.ErrorCode IS NULL");
+            statuses.add("res.ErrorCode IS NULL");
         }
         sql.append("AND (").append(Joiner.on(" OR ").join(statuses)).append(")");
     
@@ -339,14 +339,14 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("LEFT JOIN CommandRequestExecRequest req ON cre.CommandRequestExecId = req.CommandRequestExecId");
         sql.append("LEFT JOIN CommandRequestExecResult res ON req.CommandRequestExecId = res.CommandRequestExecId AND req.DeviceId = res.DeviceId");
         sql.append("WHERE CommandRequestExecType").in_k(filter.getRequestTypes());
+        addStatusSelect(sql, filter);
         sql.append("AND cre.CommandRequestExecId =");
         sql.append("    (");
         sql.append("        SELECT MAX(cre2.CommandRequestExecId)");
         sql.append("        FROM CommandRequestExec cre2");
         sql.append("        LEFT JOIN CommandRequestExecRequest req2 ON cre2.CommandRequestExecId = req2.CommandRequestExecId");
-        sql.append("        LEFT JOIN CommandRequestExecResult res2 ON req2.CommandRequestExecId = res2.CommandRequestExecId");
+        sql.append("        LEFT JOIN CommandRequestExecResult res2 ON req2.CommandRequestExecId = res2.CommandRequestExecId AND req2.DeviceId = res2.DeviceId");
         sql.append("        WHERE req.DeviceId = req2.DeviceId");
-        addStatusSelect(sql, filter);
         sql.append("    )");
         sql.append(") t ");
         sql.append("JOIN YukonPAObject ypo ON t.DeviceId = ypo.PAObjectID");
@@ -367,9 +367,19 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("        WHEN t.ErrorCode IS NOT NULL");
         sql.append("        THEN");
         sql.append("            CASE");
-        sql.append("                WHEN t.ErrorCode <> 0");
-        sql.append("                THEN").appendArgument_k(InSync.OUT_OF_SYNC);
-        sql.append("                ELSE").appendArgument_k(InSync.IN_SYNC);
+        sql.append("                WHEN t.ErrorCode = 0");
+        sql.append("                THEN").appendArgument_k(InSync.IN_SYNC);
+        sql.append("                ELSE");
+        sql.append("                    CASE");
+        sql.append("                        WHEN");
+        sql.append("                            (SELECT COUNT(*)");
+        sql.append("                            FROM CONFIGTable InnerConfig");
+        sql.append("                            WHERE ypo.PAObjectID = InnerConfig.DeviceId");
+        sql.append("                            AND InnerConfig.ExecType").neq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
+        sql.append("                            AND InnerConfig.ErrorCode = 0) > 0");
+        sql.append("                        THEN").appendArgument_k(InSync.UNVERIFIED);
+        sql.append("                        ELSE").appendArgument_k(InSync.OUT_OF_SYNC);
+        sql.append("                    END");
         sql.append("            END");
         sql.append("        ELSE").appendArgument_k(InSync.UNVERIFIED);
         sql.append("    END as InSync");
@@ -386,16 +396,16 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("        LEFT JOIN CommandRequestExecResult res ON req.CommandRequestExecId = res.CommandRequestExecId  AND req.DeviceId = res.DeviceId");
         sql.append("        WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
         sql.append("        AND cre.CommandRequestExecId =");
-        sql.append("    (");
-        sql.append("        SELECT");
-        sql.append("            MAX(cre2.CommandRequestExecId)");
-        sql.append("            FROM");
-        sql.append("            CommandRequestExec cre2");
-        sql.append("            LEFT JOIN CommandRequestExecRequest req2 ON cre2.CommandRequestExecId = req2.CommandRequestExecId");
-        sql.append("            LEFT JOIN CommandRequestExecResult res2 ON req2.CommandRequestExecId = res2.CommandRequestExecId");
-        sql.append("        WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
-        sql.append("        AND res2.DeviceID = res.DeviceId");
-        sql.append("     )");
+        sql.append("        (");
+        sql.append("            SELECT");
+        sql.append("                MAX(cre2.CommandRequestExecId)");
+        sql.append("                FROM");
+        sql.append("                CommandRequestExec cre2");
+        sql.append("                LEFT JOIN CommandRequestExecRequest req2 ON cre2.CommandRequestExecId = req2.CommandRequestExecId");
+        sql.append("                LEFT JOIN CommandRequestExecResult res2 ON req2.CommandRequestExecId = res2.CommandRequestExecId");
+        sql.append("            WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
+        sql.append("            AND res2.DeviceID = res.DeviceId");
+        sql.append("        )");
         sql.append(") t ON t.DeviceId = ypo.PAObjectID");
         sql.append("LEFT JOIN CONFIGTable cfg ON t.DeviceId = cfg.DeviceId");
         sql.append(")");
