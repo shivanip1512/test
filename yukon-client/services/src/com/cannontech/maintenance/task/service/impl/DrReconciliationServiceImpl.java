@@ -78,7 +78,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
      */
     private List<Integer> getAllTwoWayRfnLcrsByStatus(int status) {
         List<Integer> lcrsForStatus = new ArrayList<>();
-        Set<Integer> inventortIds = inventoryDao.getAllTwoWayLcrInventories();
+        Set<Integer> inventortIds = inventoryDao.getAllTwoWayRfnLcrInventories();
 
         lcrsForStatus = inventortIds.stream().filter(
             inventoryId -> inventoryBaseDao.getDeviceStatus(inventoryId) == status).collect(Collectors.toList());

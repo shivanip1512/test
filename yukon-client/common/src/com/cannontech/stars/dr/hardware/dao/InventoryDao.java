@@ -188,6 +188,6 @@ public interface InventoryDao {
     /**
      * Method provides inventory ids of all two way RFN LCRs
      */
-    Set<Integer> getAllTwoWayLcrInventories();
+    Set<Integer> getAllTwoWayRfnLcrInventories();
 
 }

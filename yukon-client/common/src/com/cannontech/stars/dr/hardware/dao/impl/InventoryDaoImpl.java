@@ -527,7 +527,7 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
-    public Set<Integer> getAllTwoWayLcrInventories() {
+    public Set<Integer> getAllTwoWayRfnLcrInventories() {
         Set<Integer> inventoryIds = new HashSet<>();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ib.InventoryID");
