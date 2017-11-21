@@ -311,7 +311,7 @@ public class SimpleEqualsTest {
      */
     private void testEqualsAndHashCode(Class<?> aClass, boolean immutable) {
         try {
-            ObjectPermutations objs = getPouplatedObjects(aClass, immutable);
+            ObjectPermutations objs = getPopulatedObjects(aClass, immutable);
             assertEquals(aClass.getSimpleName() + ".equals() failed test. ", objs.getObjectA(), objs.getObjectB());
             assertEquals(aClass.getSimpleName() + ".hashCode() failed test. ", 
                 objs.getObjectA().hashCode(), objs.getObjectB().hashCode());
@@ -348,7 +348,7 @@ public class SimpleEqualsTest {
      * then generates inequal objects by changing one property at a time: InequalPermuations
      * 
      */
-    private ObjectPermutations getPouplatedObjects(Class<?> type, boolean immutable) throws IntrospectionException,
+    private ObjectPermutations getPopulatedObjects(Class<?> type, boolean immutable) throws IntrospectionException,
             IllegalArgumentException, ReflectiveOperationException {
         Object objA = ObjectGenerator.newDefault().getNewPopulatedInstance(type, immutable);
         Object objB = ObjectGenerator.newDefault().getNewPopulatedInstance(type, immutable);
