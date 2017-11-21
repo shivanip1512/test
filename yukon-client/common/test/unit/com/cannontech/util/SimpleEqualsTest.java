@@ -116,7 +116,7 @@ public class SimpleEqualsTest {
 
     @Test
     public void test_DutyCycleDrRequest() {
-//        testEqualsAndHashCode(DutyCycleDrRequest.class, true); TODO fix this test.
+        testEqualsAndHashCode(DutyCycleDrRequest.class, true);
     }
 
     @Test
@@ -370,7 +370,11 @@ public class SimpleEqualsTest {
             for (int i = 0; i < numberOfArgs; i++) {
                 Object[] oneDifferentArgValues = new Object[numberOfArgs];
                 System.arraycopy(originalArgValues, 0, oneDifferentArgValues, 0, numberOfArgs);
-                oneDifferentArgValues[i] = nonDefaultObjectGenerator.getObject(c.getParameterTypes()[i], immutable);
+                if (c.getParameterTypes()[i].getSimpleName().toLowerCase().equals("boolean")) {
+                    oneDifferentArgValues[i] = !(Boolean)oneDifferentArgValues[i];
+                } else {
+                    oneDifferentArgValues[i] = nonDefaultObjectGenerator.getObject(c.getParameterTypes()[i], immutable);
+                }
                 Object obj = c.newInstance(oneDifferentArgValues);
                 inequalObjectPermutations.add(new ModifiedObject(obj, c.getParameterTypes()[i], ""));
             }
