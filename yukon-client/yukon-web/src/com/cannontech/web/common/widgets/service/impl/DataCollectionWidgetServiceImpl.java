@@ -30,6 +30,7 @@ import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.Sort
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
 import com.cannontech.common.device.data.collection.message.RecalculationRequest;
+import com.cannontech.common.device.data.collection.service.PointDataCollectionService;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -58,6 +59,15 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     private Map<DeviceGroup, DataCollectionSummary> allDeviceSummary = new ConcurrentHashMap<>();
     private boolean calculating = false;
 
+    @Override
+    public Instant getRunTime(boolean nextRunTime) {
+        Instant runTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
+        if(nextRunTime){
+            return runTime.plus(PointDataCollectionService.MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION);
+        } 
+        return runTime;
+    }
+    
     @Override
     public DataCollectionSummary getDataCollectionSummary(DeviceGroup group, boolean includeDisabled) {
         DataCollectionSummary summary = null;

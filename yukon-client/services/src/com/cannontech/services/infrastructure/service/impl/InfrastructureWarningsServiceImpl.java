@@ -8,14 +8,11 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.events.loggers.InfrastructureEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -48,7 +45,6 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     private static AtomicBoolean isRunning = new AtomicBoolean();
     private MessageSourceAccessor systemMessageSourceAccessor;
     
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private List<InfrastructureWarningEvaluator> evaluators;
     @Autowired private InfrastructureEventLogService infrastructureEventLogService;
@@ -81,7 +77,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     @Override
     public void calculateWarnings() {
         try {
-            if (!minimumTimeBetweenRunsExceeded()) {
+            if (!infrastructureWarningsDao.minimumTimeBetweenRunsExceeded()) {
                 log.debug("Prevented start of calculation thread - insufficient time between runs.");
                 return;
             }
@@ -152,18 +148,5 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                                   .stream()
                                   .filter(type -> warnableTypes.contains(type))
                                   .collect(Collectors.toList());
-    }
-    
-    private boolean minimumTimeBetweenRunsExceeded() {
-        Instant lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
-        Duration minTimeBetweenRuns = Duration.standardMinutes(InfrastructureWarningsDao.minimumMinutesBetweenCalculations);
-        if (configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
-            minTimeBetweenRuns = Duration.standardMinutes(1);
-        }
-        
-        if (lastRun == null || lastRun.plus(minTimeBetweenRuns).isBeforeNow()) {
-            return true;
-        }
-        return false;
     }
 }

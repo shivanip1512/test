@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -41,12 +44,18 @@ public class InfrastructureWarningsController {
     @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache cache;
+    private Instant lastAttemptedRefresh = null;
 
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
 
+    @PostConstruct
+    public void init() {
+        lastAttemptedRefresh = infrastructureWarningsDao.getRunTime(false);
+    }
     
     @RequestMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
+        lastAttemptedRefresh = new Instant();
         Map<String, Object> json = new HashMap<>();
         infrastructureWarningsRefreshService.initiateRecalculation();
         json.put("success", true);
@@ -65,6 +74,14 @@ public class InfrastructureWarningsController {
             warnings = warnings.subList(0,  10);
         }
         model.addAttribute("warnings",  warnings);
+        model.addAttribute("lastAttemptedRefresh", lastAttemptedRefresh);
+        Instant nextRun = infrastructureWarningsDao.getRunTime(true);
+        if (nextRun.isAfterNow()) {
+            model.addAttribute("nextRefresh", nextRun);
+            model.addAttribute("isRefreshPossible", false);
+        } else {
+            model.addAttribute("isRefreshPossible", true);
+        }
         return "infrastructureWarnings/widgetView.jsp";
     }
     

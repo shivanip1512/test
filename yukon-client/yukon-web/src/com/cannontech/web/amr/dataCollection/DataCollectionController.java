@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -40,8 +42,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -71,6 +73,12 @@ public class DataCollectionController {
     @Autowired private DateFormattingService dateFormattingService;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
+    private Instant lastAttemptedRefresh = null;
+    
+    @PostConstruct
+    public void init() {
+        lastAttemptedRefresh = dataCollectionWidgetService.getRunTime(false);
+    }
     
     @RequestMapping(value="updateChart", method=RequestMethod.GET)
     public @ResponseBody Map<String, Object> updateChart(ModelMap model, String deviceGroup, Boolean includeDisabled, HttpServletResponse resp) throws Exception {
@@ -78,11 +86,20 @@ public class DataCollectionController {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
         json.put("summary",  summary);
+        json.put("lastAttemptedRefresh", lastAttemptedRefresh);
+        Instant nextRun = dataCollectionWidgetService.getRunTime(true);
+        if (nextRun.isAfterNow()) {
+            json.put("nextRefresh", nextRun);
+            json.put("isRefreshPossible", false);
+        } else {
+            json.put("isRefreshPossible", true);
+        }
         return json;
     }
     
     @RequestMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
+        lastAttemptedRefresh = new Instant();
         Map<String, Object> json = new HashMap<>();
         dataCollectionWidgetService.collectData();
         json.put("success", true);

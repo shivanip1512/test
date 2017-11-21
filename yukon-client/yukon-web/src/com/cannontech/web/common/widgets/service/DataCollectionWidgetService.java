@@ -3,6 +3,8 @@ package com.cannontech.web.common.widgets.service;
 
 import java.util.List;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
@@ -43,4 +45,9 @@ public interface DataCollectionWidgetService {
     SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
             boolean includeDisabled, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
             Direction direction);
+
+    /**
+     * If nextRunTime is true returns next time refresh can be attempted, otherwise return time the data was collected last.
+     */
+    Instant getRunTime(boolean nextRunTime);
 }

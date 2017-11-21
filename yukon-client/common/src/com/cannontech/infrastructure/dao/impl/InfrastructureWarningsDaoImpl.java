@@ -8,12 +8,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -39,9 +44,18 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
     private static InfrastructureWarningSummary cachedSummary;
     private static Instant cachedSummaryUpdateTime;
     private static Instant lastRun;
+    private Duration minTimeBetweenRuns = Duration.standardMinutes(minimumMinutesBetweenCalculations);
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private DatabaseVendorResolver dbVendorResolver;
+    @Autowired private ConfigurationSource configurationSource;
+    
+    @PostConstruct
+    public void init() {
+        if (configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
+            minTimeBetweenRuns = Duration.standardMinutes(1);
+        }
+    }
     
     @Override
     @Transactional
@@ -236,5 +250,22 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
             lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
         }
         return lastRun;
+    }
+
+    @Override
+    public Instant getRunTime(boolean nextCollectionTime) {
+        Instant runTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
+        if (nextCollectionTime) {
+            return runTime.plus(minTimeBetweenRuns);
+        }
+        return runTime;
+    }
+    
+    @Override
+    public boolean minimumTimeBetweenRunsExceeded() {
+        if (lastRun == null || getRunTime(true).isBeforeNow()) {
+            return true;
+        }
+        return false;
     }
 }
