@@ -124,8 +124,8 @@ See {2}
     <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.multi.subject">[yukon] Infrastructure Warnings - {0} Events</entry>
     
     <!-- Infrastructure Warnings (single event) -->
-    <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.SUMMARY.text">An Infrastructure Warning has occurred: {1}. See {2}</entry>
-    <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.EXPANDED.text">An Infrastructure Warning has occurred: {1} {2}. See {3}</entry>
+    <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.SUMMARY.text">An Infrastructure Warning has occurred: {0} {1}. See {2}</entry>
+    <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.EXPANDED.text">An Infrastructure Warning has occurred: {0} {1}. See {2}</entry>
     <entry key="yukon.web.modules.smartNotifications.INFRASTRUCTURE_WARNING.single.subject">[yukon] Infrastructure Warnings - {0} {1}</entry>
     
     <!-- Combined Digest -->
