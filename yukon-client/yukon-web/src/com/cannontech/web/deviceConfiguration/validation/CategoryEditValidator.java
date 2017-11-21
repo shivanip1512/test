@@ -12,6 +12,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.deviceConfiguration.enumeration.CBCHeartbeatModeInput.CBCHeartbeatMode;
 import com.cannontech.web.deviceConfiguration.enumeration.CentronDisplayItemEnumeration;
 import com.cannontech.web.deviceConfiguration.enumeration.DisconnectMode.ConfigurationType;
 import com.cannontech.web.deviceConfiguration.enumeration.ReconnectParameter.ReconnectType;
@@ -113,7 +114,13 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                         && !Boolean.valueOf(target.getCategoryInputs().get("enableTou"))) {
                         // Do not validate the other fields in case enable TOU is false
                         return;
-                    } else if (StringUtils.isBlank(value)) {
+                    }
+                    if (CategoryType.CBC_HEARTBEAT.value().equals(categoryTemplate.getCategoryType())
+                        && CBCHeartbeatMode.DISABLED.name().equals(target.getCategoryInputs().get("cbcHeartbeatMode"))) {
+                        // Do not validate the CBC heartbeat fields if it is disabled
+                        return;
+                    } 
+                    if (StringUtils.isBlank(value)) {
                         errors.rejectValue(path, baseKey + ".emptyValue");
                         continue;
                     }
