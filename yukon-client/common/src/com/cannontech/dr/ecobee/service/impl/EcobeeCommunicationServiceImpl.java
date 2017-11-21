@@ -302,7 +302,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         DutyCycleDrRequest request = new DutyCycleDrRequest(groupIdString, YUKON_CYCLE_EVENT_NAME, eventDisplayMessage,
                     parameters.getDutyCyclePercent(), parameters.getStartTime(), parameters.isRampIn(),
                     parameters.getEndTime(), parameters.isRampOut(), parameters.isOptional(),
-                    settingDao.getBoolean(GlobalSettingType.SEND_ECOBEE_NOTIFICATIONS));
+                    settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
 
         HttpEntity<DutyCycleDrRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
         
@@ -336,7 +336,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         Instant endTime = startTime.plus(Duration.standardMinutes(5));
         
         DutyCycleDr dr = new DutyCycleDr(YUKON_OVERRIDE_EVENT_NAME, displayMessage, 100, startTime, false, endTime, 
-                                         false, false, settingDao.getBoolean(GlobalSettingType.SEND_ECOBEE_NOTIFICATIONS));
+                                         false, false, settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
         DutyCycleDrRequest request = new DutyCycleDrRequest(selection, dr);
         
         HttpEntity<DutyCycleDrRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
