@@ -9,4 +9,4 @@
     <input id="val2" <tags:attributeHelper name="id" value="${param.id}"/> type="hidden" size="30" name="${status.expression}" 
            value="${inputType.optionList[1].value}" class="sliderValue" data-index="1">
 <br/>
-<div class="slider-range"></div>
+<div class="slider-range" style="margin-top: 10px; margin-bottom: 10px;"></div>

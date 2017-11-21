@@ -13,9 +13,10 @@ yukon.admin.slider = (function () {
         init : function () {
             $(document).ready(function() {
                 $('div.slider-range').slider({
-                	min: 0,
+                    min: 0,
                     max: 1439,
                     values: [540, 1020],
+                    step:15,
                     slide: function(event, ui) {
                         var inputs= $(this).prevAll('.sliderValue');
                         var i=1;

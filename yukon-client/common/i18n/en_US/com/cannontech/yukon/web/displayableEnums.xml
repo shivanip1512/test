@@ -578,11 +578,11 @@
     <entry key="yukon.common.durationType.FOUR_YEARS">4 years</entry>
     <entry key="yukon.common.durationType.FIVE_YEARS">5 years</entry>
     <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_DAYS">External Maintenance Days</entry>
-    <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_DAYS.description">External Maintenance days when the maintenance tasks will run.</entry>
+    <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_DAYS.description">Days when the maintenance tasks will run.</entry>
     <entry key="yukon.common.setting.DATABASE_MAINTENANCE_DAYS">Database Maintenance Days</entry>
-    <entry key="yukon.common.setting.DATABASE_MAINTENANCE_DAYS.description">Database maintenance days when the database backup tasks will run.</entry>
-    <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME">External Maintenance hours Start - Stop Time</entry>
-    <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME.description">External Maintenance hours when the maintenance tasks will run.</entry>
-    <entry key="yukon.common.setting.DATABASE_MAINTENANCE_HOURS_START_STOP_TIME">Database Maintenance hours Start - Stop Time</entry>
-    <entry key="yukon.common.setting.DATABASE_MAINTENANCE_HOURS_START_STOP_TIME.description">Database maintenance hours when the database backup tasks will run.</entry>
+    <entry key="yukon.common.setting.DATABASE_MAINTENANCE_DAYS.description">Days when the database backup tasks will run.</entry>
+    <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME">External Maintenance Hours</entry>
+    <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME.description">Hours when the maintenance tasks will run.</entry>
+    <entry key="yukon.common.setting.DATABASE_MAINTENANCE_HOURS_START_STOP_TIME">Database Maintenance Hours</entry>
+    <entry key="yukon.common.setting.DATABASE_MAINTENANCE_HOURS_START_STOP_TIME.description">Hours when the database backup tasks will run.</entry>
 </properties>

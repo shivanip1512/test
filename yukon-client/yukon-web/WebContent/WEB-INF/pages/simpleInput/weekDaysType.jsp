@@ -4,8 +4,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
  <cti:includeScript link="/resources/js/pages/yukon.admin.weekdays.js"/>
-<c:set var="noDaysSelected" value="${true}"/>
-<c:set var="daysString" value=""/>
 <div class="button-group stacked">
     <c:forEach var="dayOfWeek" items="${inputType.optionList}">
         <c:set var="selected" value="${false}"/>
