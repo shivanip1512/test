@@ -101,7 +101,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT TaskId, TaskName, Disabled");
         sql.append("FROM MaintenanceTask");
-        sql.append("WHERE TaskName").eq_k(taskName);
+        sql.append("WHERE TaskName").eq(taskName);
         MaintenanceTask maintenanceTask = jdbcTemplate.queryForObject(sql, maintenanceTaskRowMapper);
         return maintenanceTask;
     }
