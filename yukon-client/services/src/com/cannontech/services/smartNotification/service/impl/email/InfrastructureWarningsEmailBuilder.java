@@ -133,7 +133,10 @@ public class InfrastructureWarningsEmailBuilder extends SmartNotificationEmailBu
             argumentList.add(paoName);
             
             InfrastructureWarningType warningType = InfrastructureWarningsEventAssembler.getWarningType(event.getParameters());
-            String warningTypeString = messageSourceAccessor.getMessage(warningType);
+            InfrastructureWarningSeverity severity = InfrastructureWarningsEventAssembler.getWarningSeverity(event.getParameters());
+            String warningKey = warningType.getFormatKey() + "." + severity.name();
+            Object[] warningArgs = InfrastructureWarningsEventAssembler.getWarningArguments(event.getParameters());
+            String warningTypeString = messageSourceAccessor.getMessage(warningKey, warningArgs);
             argumentList.add(warningTypeString);
         } else {
             argumentList.add(events.size());
