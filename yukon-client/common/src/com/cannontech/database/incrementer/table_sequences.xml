@@ -405,5 +405,8 @@
       <sequence name="SmartNotificationEvent">
         <table name="SmartNotificationEvent" identitycolumn="EventId" initsequence="true"/>
       </sequence>
+      <sequence name="MaintenanceTaskSettings">
+        <table name="MaintenanceTaskSettings" identitycolumn="TaskPropertyId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
