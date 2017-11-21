@@ -86,20 +86,20 @@ yukon.tags.deviceGroupPicker = (function () {
             
             /** Initialize/Open a device group picker */
             $(document).on('click', '.js-device-group-picker', function (ev) {
-                
-                var
-                picker = $(this),
-                initialized = picker.is('.js-initialized'),
-                groups, dialog;
+                var picker = $(this),
+                    initialized = picker.is('.js-initialized'),
+                    groups, 
+                    dialog,
+                    dialogMaxHeight = 750;
                 
                 if (initialized) {
-                    
                     dialog = picker.data('dialog');
+                    dialog.dialog({
+                        "height" : "auto",
+                        "maxHeight" : dialogMaxHeight
+                    });
                     dialog.dialog('open');
-                    yukon.dynatree.adjustMaxHeight(dialog);
-                    
                 } else {
-                    
                     groups = picker.data('groups');
                     dialog = picker.next('.js-device-group-picker-dialog');
                     picker.data('dialog', dialog);
@@ -108,8 +108,9 @@ yukon.tags.deviceGroupPicker = (function () {
                     _buildTree(dialog, groups);
                     
                     yukon.ui.dialog(dialog);
-                    yukon.dynatree.adjustMaxHeight(dialog);
-                    
+                    dialog.dialog("option", "height", "auto");
+                    dialog.dialog("option", "maxHeight", dialogMaxHeight);
+
                     picker.addClass('js-initialized');
                     
                 }

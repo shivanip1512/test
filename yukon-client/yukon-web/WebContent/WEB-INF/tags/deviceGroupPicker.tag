@@ -86,5 +86,5 @@
         <a href="javascript:void(0);" class="close-all fl" title="${collapse}">${collapse}</a>
         <input type="text" class="tree-search fl" placeholder="${search}" title="${tooltip}"/>
     </div>
-    <div class="clearfix tree-canvas oa" style="max-height: 400px"></div>
+    <div class="clearfix tree-canvas oa"></div>
 </div>
