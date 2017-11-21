@@ -50,132 +50,157 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
 
         if (CategoryType.CENTRON_420_DISPLAY_ITEMS.value().equals(categoryTemplate.getCategoryType())
                 || CategoryType.CENTRON_410_DISPLAY_ITEMS.value().equals(categoryTemplate.getCategoryType())) {
-            // Handle this guy differently.
-            boolean slotDisabledHit = false;
-            for (Field<?> field : fields) {
-                if (target.getCategoryInputs().get(field.getFieldName()).equals(
-                		CentronDisplayItemEnumeration.Item.SLOT_DISABLED.name())) {
-                    slotDisabledHit = true;
-                } else if (slotDisabledHit) {
-                    // Error
-                    errors.rejectValue("categoryInputs[" + field.getFieldName() + "]", baseKey + ".postDisabled");
-                }
+            validateCentronDisplayItemCategory(target, errors, fields);
+            return;
+        }
+
+        if (CategoryType.TOU.value().equals(categoryTemplate.getCategoryType())) {
+            if (!Boolean.valueOf(target.getCategoryInputs().get("enableTou"))) {
+                // Do not validate the other fields if TOU is disabled
+                return;
             }
-        } else {
-            for (Field<?> field : fields) {
-                if ( field.getInputType().getTypeClass().equals(RateInput.class)) {
-
-                    RateBackingBean rateBackingBean = target.getScheduleInputs().get(field.getFieldName());
-
-                    int prevTime = 0; // Start at midnight.
-                    boolean midnightHit = false; // Keep track of if we've encountered a midnight entry.
-
-                    for (Entry<String, RateInput> entry : rateBackingBean.getRateInputs().entrySet()) {
-                        if (!"time0".equals(entry.getKey())) {
-                            int thisTime = Integer.parseInt(entry.getValue().getTime().replace(":", ""));
-
-                            if (thisTime <= prevTime) {
-                                if (thisTime == 0) {
-                                    // As long as the rest are midnights, this is okay.
-                                    midnightHit = true;
-                                    prevTime = thisTime;
-                                } else {
-                                    // Problem. This is never okay
-                                    String path = "scheduleInputs[" + field.getFieldName() + "].rateInputs[" + entry.getKey() + "].time";
-                                    errors.rejectValue(path, baseKey + ".invalidTime");
-                                }
-                            } else {
-                                if (midnightHit) {
-                                    // Problem. We've already hit midnight, the list should be over.
-                                    String path = "scheduleInputs[" + field.getFieldName() + "].rateInputs[" + entry.getKey() + "].time";
-                                    errors.rejectValue(path, baseKey + ".invalidTime");
-                                } else {
-                                    prevTime = thisTime;
-                                }
-                            }
-                        }
-                    }
-                } else if ( field.getInputType().getTypeClass().equals(List.class)) {
-                    if (field.getClass() == RfnChannelField.class) {
-                        RfnChannelField rfnChannelField = (RfnChannelField) field;
-                        InputValidator<List<RfnChannelInput>> validator = rfnChannelField.getValidator();
-                        validator.validate("channelInputs", "Channel Errors", target.getChannelInputs(), errors);
-                    } else if (field.getClass() == AttributeMappingField.class) {
-                        AttributeMappingField attributeMappingField = (AttributeMappingField) field;
-                        InputValidator<List<AttributeMappingInput>> validator = attributeMappingField.getValidator();
-                        validator.validate("attributeMappingInputs", "Attribute Mapping Errors", target.getAttributeMappingInputs(), errors);
-                    }
-                } else {
-                    String value = target.getCategoryInputs().get(field.getFieldName());
-
-                    final String path = "categoryInputs[" + field.getFieldName() + "]";
-
-                    if (CategoryType.TOU.value().equals(categoryTemplate.getCategoryType())
-                        && !Boolean.valueOf(target.getCategoryInputs().get("enableTou"))) {
-                        // Do not validate the other fields in case enable TOU is false
-                        return;
-                    }
-                    if (CategoryType.CBC_HEARTBEAT.value().equals(categoryTemplate.getCategoryType())
-                        && CBCHeartbeatMode.DISABLED.name().equals(target.getCategoryInputs().get("cbcHeartbeatMode"))) {
-                        // Do not validate the CBC heartbeat fields if it is disabled
-                        return;
-                    } 
-                    if (StringUtils.isBlank(value)) {
-                        errors.rejectValue(path, baseKey + ".emptyValue");
-                        continue;
-                    }
-
-                    if (field.getValidator() != null) {
-                        try {
-                        	if (field.getClass() == IntegerField.class) {
-                                try {
-                                    IntegerField intField = (IntegerField) field;
-                                    InputValidator<Integer> validator = intField.getValidator();
-                                    validator.validate(path, field.getDisplayName(), Integer.valueOf(value), errors);
-                                } catch (NumberFormatException nfe) {
-                                    //  Failed parsing as an int - if it parses as a float, reject it
-                                    Float.parseFloat(value);
-                                    errors.rejectValue(path, baseKey + ".integer");
-                                }
-                            } else if (field.getClass() == FloatField.class) {
-                                FloatField floatField = (FloatField) field;
-                                InputValidator<Float> validator = floatField.getValidator();
-                                validator.validate(path, field.getDisplayName(), Float.valueOf(value), errors);
-
-                                if (floatField.isDigitsLimited()) {
-                                    BigDecimal decimal = new BigDecimal(value);
-                                    int numDigits = floatField.getDecimalDigits();
-                                    if (decimal.scale() > numDigits) {
-                                        Object[] args = {Integer.toString(numDigits)};
-                                        errors.rejectValue(path, baseKey + ".decimalDigits", args, "");
-                                    }
-                                }
-                            } else if (field.getClass() == EnumField.class) {
-                                EnumField enumField = (EnumField) field;
-                                InputValidator<String> validator = enumField.getValidator();
-                                validator.validate(path, field.getDisplayName(), value, errors);
-                            } else {
-                                log.error("Received a validator for an unsupported type: " + field.getClass().getSimpleName());
-                            }
-                        } catch (NumberFormatException nfe) {
-                            // The value wasn't a number
-                            errors.rejectValue(path, baseKey + ".nonNumber");
-                        }
-                    }
-                }
+        }
+        
+        if (CategoryType.CBC_HEARTBEAT.value().equals(categoryTemplate.getCategoryType())) {
+            if (CBCHeartbeatMode.DISABLED.name().equals(target.getCategoryInputs().get("cbcHeartbeatMode"))) {
+                // Do not validate the CBC heartbeat fields if it is disabled
+                return;
+            }
+        }
+        
+        for (Field<?> field : fields) {
+            Class<?> typeClass = field.getInputType().getTypeClass();
+            
+            if (RateInput.class.equals(typeClass)) {
+                validateRateInput(target, errors, field);
+            } else if (List.class.equals(typeClass)) {
+                validateListInput(target, errors, field);
+            } else {
+                validateInput(target, errors, field);
             }
         }
 
         if ( ! errors.hasErrors() && CategoryType.RFN_DISCONNECT_CONFIGURATION.value().equals(categoryTemplate.getCategoryType())) {
+            validateRfnDisconnectCategory(target, errors);
+        }
+    }
 
-            ConfigurationType mode = ConfigurationType.valueOf(target.getCategoryInputs().get("disconnectMode"));
-            ReconnectType reconnectType = ReconnectType.valueOf(target.getCategoryInputs().get("reconnectParam"));
-            int delay = Integer.valueOf(target.getCategoryInputs().get("disconnectLoadLimitConnectDelay"));
-
-            if (mode == ConfigurationType.DEMAND_THRESHOLD && reconnectType == ReconnectType.IMMEDIATE && delay == 0) {
-                errors.rejectValue("categoryInputs[reconnectParam]", baseKey + ".error.immediateDisconnect");
-                errors.rejectValue("categoryInputs[disconnectLoadLimitConnectDelay]", baseKey + ".error.immediateDisconnect");
+    private void validateCentronDisplayItemCategory(CategoryEditBean target, Errors errors, List<Field<?>> fields) {
+        // Handle this guy differently.
+        boolean slotDisabledHit = false;
+        for (Field<?> field : fields) {
+            if (target.getCategoryInputs().get(field.getFieldName()).equals(
+                    CentronDisplayItemEnumeration.Item.SLOT_DISABLED.name())) {
+                slotDisabledHit = true;
+            } else if (slotDisabledHit) {
+                // Error
+                errors.rejectValue("categoryInputs[" + field.getFieldName() + "]", baseKey + ".postDisabled");
             }
+        }
+    }
+
+    private void validateRateInput(CategoryEditBean target, Errors errors, Field<?> field) {
+        RateBackingBean rateBackingBean = target.getScheduleInputs().get(field.getFieldName());
+
+        int prevTime = 0; // Start at midnight.
+        boolean midnightHit = false; // Keep track of if we've encountered a midnight entry.
+
+        for (Entry<String, RateInput> entry : rateBackingBean.getRateInputs().entrySet()) {
+            if (!"time0".equals(entry.getKey())) {
+                int thisTime = Integer.parseInt(entry.getValue().getTime().replace(":", ""));
+
+                if (thisTime <= prevTime) {
+                    if (thisTime == 0) {
+                        // As long as the rest are midnights, this is okay.
+                        midnightHit = true;
+                        prevTime = thisTime;
+                    } else {
+                        // Problem. This is never okay
+                        String path = "scheduleInputs[" + field.getFieldName() + "].rateInputs[" + entry.getKey() + "].time";
+                        errors.rejectValue(path, baseKey + ".invalidTime");
+                    }
+                } else {
+                    if (midnightHit) {
+                        // Problem. We've already hit midnight, the list should be over.
+                        String path = "scheduleInputs[" + field.getFieldName() + "].rateInputs[" + entry.getKey() + "].time";
+                        errors.rejectValue(path, baseKey + ".invalidTime");
+                    } else {
+                        prevTime = thisTime;
+                    }
+                }
+            }
+        }
+    }
+
+    private void validateListInput(CategoryEditBean target, Errors errors, Field<?> field) {
+        if (field.getClass() == RfnChannelField.class) {
+            RfnChannelField rfnChannelField = (RfnChannelField) field;
+            InputValidator<List<RfnChannelInput>> validator = rfnChannelField.getValidator();
+            validator.validate("channelInputs", "Channel Errors", target.getChannelInputs(), errors);
+        } else if (field.getClass() == AttributeMappingField.class) {
+            AttributeMappingField attributeMappingField = (AttributeMappingField) field;
+            InputValidator<List<AttributeMappingInput>> validator = attributeMappingField.getValidator();
+            validator.validate("attributeMappingInputs", "Attribute Mapping Errors", target.getAttributeMappingInputs(), errors);
+        }
+    }
+
+    private void validateInput(CategoryEditBean target, Errors errors, Field<?> field) {
+        String value = target.getCategoryInputs().get(field.getFieldName());
+
+        final String path = "categoryInputs[" + field.getFieldName() + "]";
+
+        if (StringUtils.isBlank(value)) {
+            errors.rejectValue(path, baseKey + ".emptyValue");
+            return;
+        }
+
+        if (field.getValidator() != null) {
+            try {
+                if (field.getClass() == IntegerField.class) {
+                    try {
+                        IntegerField intField = (IntegerField) field;
+                        InputValidator<Integer> validator = intField.getValidator();
+                        validator.validate(path, field.getDisplayName(), Integer.valueOf(value), errors);
+                    } catch (NumberFormatException nfe) {
+                        //  Failed parsing as an int - if it parses as a float, reject it
+                        Float.parseFloat(value);
+                        errors.rejectValue(path, baseKey + ".integer");
+                    }
+                } else if (field.getClass() == FloatField.class) {
+                    FloatField floatField = (FloatField) field;
+                    InputValidator<Float> validator = floatField.getValidator();
+                    validator.validate(path, field.getDisplayName(), Float.valueOf(value), errors);
+
+                    if (floatField.isDigitsLimited()) {
+                        BigDecimal decimal = new BigDecimal(value);
+                        int numDigits = floatField.getDecimalDigits();
+                        if (decimal.scale() > numDigits) {
+                            Object[] args = {Integer.toString(numDigits)};
+                            errors.rejectValue(path, baseKey + ".decimalDigits", args, "");
+                        }
+                    }
+                } else if (field.getClass() == EnumField.class) {
+                    EnumField enumField = (EnumField) field;
+                    InputValidator<String> validator = enumField.getValidator();
+                    validator.validate(path, field.getDisplayName(), value, errors);
+                } else {
+                    log.error("Received a validator for an unsupported type: " + field.getClass().getSimpleName());
+                }
+            } catch (NumberFormatException nfe) {
+                // The value wasn't a number
+                errors.rejectValue(path, baseKey + ".nonNumber");
+            }
+        }
+    }
+
+    private void validateRfnDisconnectCategory(CategoryEditBean target, Errors errors) {
+        ConfigurationType mode = ConfigurationType.valueOf(target.getCategoryInputs().get("disconnectMode"));
+        ReconnectType reconnectType = ReconnectType.valueOf(target.getCategoryInputs().get("reconnectParam"));
+        int delay = Integer.valueOf(target.getCategoryInputs().get("disconnectLoadLimitConnectDelay"));
+
+        if (mode == ConfigurationType.DEMAND_THRESHOLD && reconnectType == ReconnectType.IMMEDIATE && delay == 0) {
+            errors.rejectValue("categoryInputs[reconnectParam]", baseKey + ".error.immediateDisconnect");
+            errors.rejectValue("categoryInputs[disconnectLoadLimitConnectDelay]", baseKey + ".error.immediateDisconnect");
         }
     }
 }
