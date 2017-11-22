@@ -15,7 +15,7 @@
     </cti:checkRolesAndProperties>
     
     <tags:sectionContainer2 nameKey="serverBrokerStatistics">
-        <table class="compact-results-table stacked-md">
+        <table class="compact-results-table stacked-md has-alerts">
             <thead>
                 <th></th>
                 <th><i:inline key=".queue"/></th>
@@ -51,7 +51,7 @@
             </tbody>
         </table>
         
-        <table class="compact-results-table stacked-md">
+        <table class="compact-results-table stacked-md has-alerts">
             <thead>
                 <th></th>
                 <th><i:inline key=".queue"/></th>

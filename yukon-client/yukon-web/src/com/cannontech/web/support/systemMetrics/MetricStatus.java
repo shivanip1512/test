@@ -7,7 +7,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
  */
 public enum MetricStatus implements DisplayableEnum {
     UNKNOWN("icon-disabled"),       // Waiting for more data (usually shortly after startup)
-    GOOD("icon-enabled"),           // All is well
+    GOOD("icon-accept"),            // All is well
     WARN("icon-error"),             // There may be problems
     ERROR("icon-exclamation"),      // There is definitely a problem
     ;
