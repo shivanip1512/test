@@ -165,63 +165,58 @@ yukon.widget.porterQueueCounts = (function () {
         chart.removeClass('js-initialize');
     },
     
-    /** Update the existing pie chart. */
+    _retrieveLatestData = function (widget) {
+        var portIds = _getPortIds(widget),
+            chart = $(widget).find('.js-chart');
+        if (portIds) {
+            $.ajax({
+                url: yukon.url('/amr/porterQueueCounts/data'),
+                data: {
+                    portIds: portIds
+                },
+                type: 'post',
+                async: false
+            }).done(function (data) {
+                if (data != null) {
+                    _buildChart(chart, data);
+                }
+                _updateWidgetRefresh($(widget), data);
+            });
+        } else {
+            if (!chart.is('.js-initialize')) {
+                _updateChart(chart, null);
+            }
+        }
+    },
+    
+    _updateWidgetRefresh = function (widget, data) {
+        var dateTime = moment(data.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+            refreshButton = widget.find('.js-update-queue-counts');
+        widget.find('.js-last-updated').text(dateTime);
+        refreshButton.prop('title', data.refreshTooltip);
+        refreshButton.attr('disabled', true);
+        setTimeout(function() { 
+            refreshButton.attr('disabled', false);
+            refreshButton.prop('title', data.updateTooltip);
+            }, data.refreshMillis);
+    },
+    
+    /** Update the existing chart. */
     _updateChart = function (chart, data) {
         chart.highcharts().series[0].setData(data);
     },
     
-    /** Update the page every so many seconds */
+    /** Update the chart whenever the page is refreshed or new comm channels are selected */
     _update = function (widget) {
         if (widget != null) {
-            var chart = $(widget).find('.js-chart'),
-                portIds = _getPortIds(widget);
-            if (portIds) {
-                $.ajax({
-                    url: yukon.url('/amr/porterQueueCounts/data'),
-                    data: {
-                        portIds: portIds
-                    },
-                    type: 'post',
-                    async: false
-                }).done(function (data) {
-                    if (data != null) {
-                        _buildChart(chart, data);
-                        var dateTime = moment(data.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                        $(widget).find('.js-last-updated').text(dateTime);
-                    }
-                });
-            } else {
-                if (!chart.is('.js-initialize')) {
-                    _updateChart(chart, null);
-                }
-            }
+            _retrieveLatestData(widget);
         } else { 
             $('.js-porter-queue-counts-widget').each(function (idx, widget) {
-                var portIds = _getPortIds(widget),
-                chart = $(widget).find('.js-chart');
-                if (portIds) {
-                    $.ajax({
-                        url: yukon.url('/amr/porterQueueCounts/data'),
-                        data: {
-                            portIds: portIds
-                        },
-                        type: 'post',
-                        async: false
-                    }).done(function (data) {
-                        if (data != null) {
-                            _buildChart(chart, data);
-                            var dateTime = moment(data.lastUpdateTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                            $(widget).find('.js-last-updated').text(dateTime);
-                        }
-                    });
-                } else {
-                    if (!chart.is('.js-initialize')) {
-                        _updateChart(chart, null);
-                    }
-                }
+                _retrieveLatestData(widget);
             });
         }
     },
+    
 
     mod = {
         
@@ -238,32 +233,9 @@ yukon.widget.porterQueueCounts = (function () {
                 _selectedOption = data.prefZoom;
             });
             
-            $(document).on('click', '.js-force-update', function () {
+            $(document).on('click', '.js-update-queue-counts', function () {
                 var widget = $(this).closest('.js-porter-queue-counts-widget');
-                $(widget).find('.js-force-update').attr('disabled', true);
-                $.ajax({
-                    url: yukon.url('/amr/porterQueueCounts/forceUpdate'),
-                    data: {
-                        lastGraphDataLoadTime: $(this).siblings('.js-last-updated').text(),
-                        portIds: _getPortIds(widget)
-                    },
-                    type: 'post'
-                }).done(function (data) {
-                    if (data.series != null) {
-                        _buildChart($(widget).find('js-chart'), data);
-                    }
-                    else {
-                        $(widget).addMessage({
-                            message: data.errorMsg,
-                            messageClass: "error"
-                        });
-                        
-                        setTimeout(function() { 
-                            $(widget).removeMessages();
-                            $(widget).find('.js-force-update').attr('disabled', false);
-                            }, 3000);
-                    }
-                });
+                _retrieveLatestData(widget);
             });
 
             $(document).on('dialogclose', '.js-picker-dialog', function (ev, ui) {

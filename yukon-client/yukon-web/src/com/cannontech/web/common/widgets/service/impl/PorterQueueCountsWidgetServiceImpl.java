@@ -74,11 +74,15 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
         log.debug("graphDataProvider returned " + values.size() + " {time, value} pairs");
         return values;
     }
-
+    
     @Override
-    public boolean isRefreshEligible(Instant lastGraphDataRefreshTime) {
-        return lastGraphDataRefreshTime == null || 
-                Instant.now().isAfter(lastGraphDataRefreshTime.plus(Duration.standardMinutes(globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH))));
+    public Instant getNextRefreshTime(Instant lastGraphDataRefreshTime) {
+        return lastGraphDataRefreshTime.plus(Duration.standardMinutes(globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH)));
+    }
+    
+    @Override
+    public long getRefreshMilliseconds() {
+        return Duration.standardMinutes(globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH)).getMillis();
     }
     
     /**

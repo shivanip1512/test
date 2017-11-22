@@ -21,7 +21,6 @@ import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.PreferencePorterQueueCountsZoomOption;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -51,11 +50,14 @@ public class PorterQueueCountsController {
 
     private static final Logger log = YukonLogManager.getLogger(PorterQueueCountsController.class);
     
+    private final static String widgetKey = "yukon.web.widgets.";
+    
     /**
      * Get the data for the graph and build the graph definition.
      */
     @RequestMapping("data")
     public @ResponseBody Map<String, Object> data(YukonUserContext userContext, @RequestParam(value="portIds[]") List<Integer> portIds) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         List<Map<String, Object>> seriesList = new ArrayList<>();
         Map<String, Object> yAxisProperties = new HashMap<>();
         DateTime chartDatePrime = DateTime.now();
@@ -113,7 +115,13 @@ public class PorterQueueCountsController {
             addRightAxis(userContext, seriesList, yAxis, labels);
         }
         json.put("yAxis", yAxis);
-        json.put("lastUpdateTime", new DateTime());
+        Instant lastUpdateTime = new Instant();
+        json.put("lastUpdateTime", lastUpdateTime);
+        Instant nextRun = porterQueueCountsWidgetService.getNextRefreshTime(lastUpdateTime);
+        String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+        json.put("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
+        json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
+        json.put("refreshMillis",  porterQueueCountsWidgetService.getRefreshMilliseconds());
         json.put("maxNumSelections", GlobalSettingType.PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS);
         json.put("labels",TrendUtils.getLabels(userContext, messageResolver));
         return json;
@@ -170,18 +178,6 @@ public class PorterQueueCountsController {
         Map<String, Object> json = new HashMap<>();
         PreferencePorterQueueCountsZoomOption trendZoom = userPreferenceService.getPorterDefaultZoomType(user);
         json.put("prefZoom", trendZoom.ordinal());
-        return json;
-    }
-    
-    @RequestMapping("forceUpdate")
-    public @ResponseBody Map<String, Object> forceUpdate(YukonUserContext userContext, @RequestParam(value="portIds[]") List<Integer> portIds, @RequestParam(value="lastGraphDataLoadTime") String lastGraphDataLoadTime) {
-        Instant time = Instant.parse(lastGraphDataLoadTime, dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATEHMS_12, userContext));
-        if (porterQueueCountsWidgetService.isRefreshEligible(time)) {
-            return data(userContext, portIds);
-        }
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        Map<String, Object> json = new HashMap<>();
-        json.put("errorMsg", accessor.getMessage("yukon.web.widgets.forceUpdate.noRefresh.minutes", GlobalSettingType.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.getDefaultValue()));
         return json;
     }
 

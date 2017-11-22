@@ -44,11 +44,15 @@ public interface PorterQueueCountsWidgetService {
     List<Object[]> graphDataProvider(List<PointValueHolder> data);
 
     /**
-     * Determine if the data for a widget should be eligible for refresh (according to some 
-     * predetermined minimum waiting interval).
+     * Gets the next available refresh time.
      * @param Instant value indicating the most recent time the data was loaded for this graph
-     * @return true if the data should be refreshed and false otherwise
+     * @return Instant the next refresh time
      */
-    boolean isRefreshEligible(Instant lastGraphDataLoadTime);
+    Instant getNextRefreshTime(Instant lastGraphDataRefreshTime);
+    /**
+     * Gets the milliseconds for refresh time
+     * @return long the refresh time
+     */
+    long getRefreshMilliseconds();
 
 }

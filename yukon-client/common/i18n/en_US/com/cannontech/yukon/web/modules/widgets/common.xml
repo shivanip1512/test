@@ -155,7 +155,6 @@
 <entry key="yukon.web.widgets.forceUpdate">Force Update of Data</entry>
 <entry key="yukon.web.widgets.lastUpdated">Date/Time data was last updated</entry>
 <entry key="yukon.web.widgets.nextRefresh">Next Refresh Available: </entry>
-<entry key="yukon.web.widgets.forceUpdate.noRefresh.minutes">Data may not be refreshed more often than once every {0} minutes.</entry>    
 
 <entry key="yukon.web.widgets.infrastructureWarningsWidget">Infrastructure Warnings</entry>
 <entry key="yukon.web.widgets.infrastructureWarningsWidget.helpText"><![CDATA[
