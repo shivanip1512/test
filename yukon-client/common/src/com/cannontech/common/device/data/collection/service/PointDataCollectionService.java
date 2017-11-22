@@ -40,7 +40,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class PointDataCollectionService implements MessageListener {
 
-    public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION = Duration.standardMinutes(1);
+    public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION = Duration.standardMinutes(15);
     private static final String recalculationQueueName = "yukon.qr.obj.data.collection.RecalculationRequest";
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private RawPointHistoryDao rphDao;
