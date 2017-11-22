@@ -25,6 +25,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
@@ -44,9 +45,12 @@ public class InfrastructureWarningsController {
     @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache cache;
+    @Autowired private DateFormattingService dateFormattingService;
+
     private Instant lastAttemptedRefresh = null;
 
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
+    private final static String widgetKey = "yukon.web.widgets.";
 
     @PostConstruct
     public void init() {
@@ -64,7 +68,8 @@ public class InfrastructureWarningsController {
     
     
     @RequestMapping(value="updateWidget", method=RequestMethod.GET)
-    public String updateWidget(ModelMap model) {
+    public String updateWidget(ModelMap model, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         InfrastructureWarningSummary summary = infrastructureWarningsDao.getWarningsSummary();
         model.addAttribute("summary", summary);
         List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings();
@@ -79,8 +84,11 @@ public class InfrastructureWarningsController {
         if (nextRun.isAfterNow()) {
             model.addAttribute("nextRefresh", nextRun);
             model.addAttribute("isRefreshPossible", false);
+            String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
         } else {
             model.addAttribute("isRefreshPossible", true);
+            model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         }
         return "infrastructureWarnings/widgetView.jsp";
     }

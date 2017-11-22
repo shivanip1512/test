@@ -27,7 +27,7 @@
     <span class="fr">
         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
         <span class="js-last-updated fl" style="font-size:11px" title="${lastUpdatedMsg}"></span>
-        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-refresh-button js-update-data-collection"/>
+        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-update-data-collection"></cti:button>
     </span>
 
 </div>

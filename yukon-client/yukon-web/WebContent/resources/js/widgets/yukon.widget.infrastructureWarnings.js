@@ -33,6 +33,7 @@ yukon.widget.infrastructureWarnings = (function () {
             _update();
             
             $(document).on('click', '.js-update-infrastructure-warnings', function () {
+                $(this).attr('disabled', true);
                 $.ajax(yukon.url('/stars/infrastructureWarnings/forceUpdate'));
             });
 

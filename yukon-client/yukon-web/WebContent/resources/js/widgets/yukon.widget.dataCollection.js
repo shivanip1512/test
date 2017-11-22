@@ -129,9 +129,8 @@ yukon.widget.dataCollection = (function () {
                     },
                     async: false
                 }).done(function (data) {
-                    var refreshButton = $(item).find('.js-refresh-button');
+                    var refreshButton = $(item).find('.js-update-data-collection');
                     refreshButton.prop('title', data.refreshTooltip);
-                    refreshButton.toggleClass('js-update-data-collection', data.isRefreshPossible);
                     refreshButton.attr('disabled', !data.isRefreshPossible);
                     var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                     $(item).find('.js-last-updated').text(dateTime);
@@ -167,7 +166,7 @@ yukon.widget.dataCollection = (function () {
             _update();
             
             $(document).on('click', '.js-update-data-collection', function () {
-                //$(this).attr('disabled', true);
+                $(this).attr('disabled', true);
                 $.ajax(yukon.url('/amr/dataCollection/forceUpdate'));
             });
             

@@ -93,9 +93,8 @@
         
     <span class="fr">
         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
-        <span class="fl" style="font-size:11px" title="${lastUpdatedMsg}"><cti:formatDate value="${summary.lastRun}" type="DATEHMS_12"/></span>
-        <cti:msg2 key="yukon.web.widgets.forceUpdate" var="forceUpdateMsg"/>
-        <cti:icon icon="icon-arrow-refresh" title="${forceUpdateMsg}" classes="js-update-infrastructure-warnings cp"/>
+        <span class="fl" style="font-size:11px" title="${lastUpdatedMsg}"><cti:formatDate value="${lastAttemptedRefresh}" type="DATEHMS_12"/></span>
+        <cti:button renderMode="image" icon="icon-arrow-refresh" title="${refreshTooltip}" classes="js-update-infrastructure-warnings" disabled="${!isRefreshPossible}"/>
     </span>
 
 </cti:msgScope>
