@@ -129,14 +129,18 @@ yukon.widget.dataCollection = (function () {
                     },
                     async: false
                 }).done(function (data) {
+                    var refreshButton = $(item).find('.js-refresh-button');
+                    refreshButton.prop('title', data.refreshTooltip);
+                    refreshButton.toggleClass('js-update-data-collection', data.isRefreshPossible);
+                    refreshButton.attr('disabled', !data.isRefreshPossible);
+                    var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                    $(item).find('.js-last-updated').text(dateTime);
                     if (data.summary != null) {
                         if (chart.is('.js-initialize')) {
                             _buildChart(chart, data.summary);
                         } else {
                             _updateChart(chart, _getData(data.summary));
                         }
-                        var dateTime = moment(data.summary.collectionTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                        $(item).find('.js-last-updated').text(dateTime);
                     }
                 });
             } else {
@@ -162,7 +166,8 @@ yukon.widget.dataCollection = (function () {
 
             _update();
             
-            $(document).on('click', '.js-force-update', function () {
+            $(document).on('click', '.js-update-data-collection', function () {
+                //$(this).attr('disabled', true);
                 $.ajax(yukon.url('/amr/dataCollection/forceUpdate'));
             });
             

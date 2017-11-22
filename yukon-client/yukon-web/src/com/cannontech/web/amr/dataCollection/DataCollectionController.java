@@ -73,6 +73,7 @@ public class DataCollectionController {
     @Autowired private DateFormattingService dateFormattingService;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
+    private final static String widgetKey = "yukon.web.widgets.";
     private Instant lastAttemptedRefresh = null;
     
     @PostConstruct
@@ -81,7 +82,8 @@ public class DataCollectionController {
     }
     
     @RequestMapping(value="updateChart", method=RequestMethod.GET)
-    public @ResponseBody Map<String, Object> updateChart(ModelMap model, String deviceGroup, Boolean includeDisabled, HttpServletResponse resp) throws Exception {
+    public @ResponseBody Map<String, Object> updateChart(String deviceGroup, Boolean includeDisabled, YukonUserContext userContext) throws Exception {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
@@ -91,8 +93,11 @@ public class DataCollectionController {
         if (nextRun.isAfterNow()) {
             json.put("nextRefresh", nextRun);
             json.put("isRefreshPossible", false);
+            String nextRefreshDate = dateFormattingService.format(nextRun, DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+            json.put("refreshTooltip", accessor.getMessage(widgetKey + "nextRefresh") + nextRefreshDate);
         } else {
             json.put("isRefreshPossible", true);
+            json.put("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         }
         return json;
     }
