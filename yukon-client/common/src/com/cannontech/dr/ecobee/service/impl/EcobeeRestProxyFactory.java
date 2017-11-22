@@ -101,6 +101,7 @@ public class EcobeeRestProxyFactory {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("Authorization", "Bearer " + getAuthenticationToken());
+                log.debug("Added auth header. Headers: " + headers);
                 args[i] = new HttpEntity<>(httpBody, headers);
             }
         }

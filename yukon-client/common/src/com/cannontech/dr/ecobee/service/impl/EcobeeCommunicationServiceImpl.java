@@ -385,6 +385,8 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         try {
             String requestJson = JsonUtils.toJson(request);
             log.debug("Body json: " + requestJson);
+            log.debug("Full URL: " + url + requestJson);
+            log.debug("Headers: " + requestEntity.getHeaders());
             ResponseEntity<E> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType,
                                                    Collections.singletonMap("bodyJson", requestJson));
             E response = responseEntity.getBody();
