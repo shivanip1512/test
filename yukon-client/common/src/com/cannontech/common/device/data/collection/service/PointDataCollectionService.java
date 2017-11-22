@@ -40,7 +40,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class PointDataCollectionService implements MessageListener {
 
-    public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION = Duration.standardMinutes(15);
+    public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION = Duration.standardMinutes(1);
     private static final String recalculationQueueName = "yukon.qr.obj.data.collection.RecalculationRequest";
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private RawPointHistoryDao rphDao;
@@ -86,6 +86,7 @@ public class PointDataCollectionService implements MessageListener {
         }
         Instant lastCollectionTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
         if (lastCollectionTime == null || now().isAfter(lastCollectionTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION))) {
+            persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_TIME, new Instant());
             try {
                 collectingData = true;
                 List<LiteYukonPAObject> devices = databaseCache.getAllYukonPAObjects();
@@ -116,7 +117,6 @@ public class PointDataCollectionService implements MessageListener {
                     jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest());
                 }
             } finally {
-                persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_TIME, new Instant());
                 collectingData = false;
             }
         }

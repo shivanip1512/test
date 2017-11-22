@@ -89,6 +89,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             }
             
             log.info("Calculating infrastructure warnings");
+            persistedSystemValueDao.setValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME, Instant.now());
             
             List<InfrastructureWarning> oldWarnings = infrastructureWarningsDao.getWarnings();
             
@@ -112,7 +113,6 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                                                                warningMessage);
             });
             
-            persistedSystemValueDao.setValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME, Instant.now());
             isRunning.set(false);
             log.info("Infrastructure warnings calculation complete");
             
