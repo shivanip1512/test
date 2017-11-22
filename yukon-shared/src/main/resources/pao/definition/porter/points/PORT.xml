@@ -3,6 +3,7 @@
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
         <name>Port Queue Count</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
         <multiplier value="1"/>
         <unitofmeasure value="COUNTS"/>
         <decimalplaces value="0"/>
