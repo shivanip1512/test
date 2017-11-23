@@ -322,33 +322,34 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
     
     protected void removeProgramEnrollment(List<ProgramEnrollment> programEnrollments,
-                                           ProgramEnrollment removedProgramEnrollment){
-        
-    	removedProgramEnrollment.setEnroll(true);
+            ProgramEnrollment removedProgramEnrollment) {
 
-    	List<ProgramEnrollment> programEnrollmentResults = new ArrayList<ProgramEnrollment>();
-    	programEnrollmentResults.addAll(programEnrollments);
-    	
-    	boolean found = false;
-    	for (int i = 0;i < programEnrollments.size();i++) {
-    		ProgramEnrollment programEnrollment = programEnrollments.get(i);
-    		if (removedProgramEnrollment.getAssignedProgramId() == 0){
-    			if(removedProgramEnrollment.getInventoryId() == programEnrollment.getInventoryId()){
-    				programEnrollmentResults.remove(programEnrollment);
-    				found = true;
-    			}
-    		}
-    			
-    		if (removedProgramEnrollment.equivalent(programEnrollment)) {
-    			programEnrollmentResults.remove(programEnrollment);
-    			found = true;
-    		}
-    	}
-        if (!found && removedProgramEnrollment.getAssignedProgramId() > 0) {
-            throw new NotFoundException("Enrollment not found for program [" + removedProgramEnrollment.getAssignedProgramId() + "]");            
+        removedProgramEnrollment.setEnroll(true);
+
+        List<ProgramEnrollment> programEnrollmentResults = new ArrayList<ProgramEnrollment>();
+        programEnrollmentResults.addAll(programEnrollments);
+
+        boolean found = false;
+        for (int i = 0; i < programEnrollments.size(); i++) {
+            ProgramEnrollment programEnrollment = programEnrollments.get(i);
+            if (removedProgramEnrollment.getAssignedProgramId() == 0) {
+                if (removedProgramEnrollment.getInventoryId() == programEnrollment.getInventoryId()) {
+                    programEnrollmentResults.remove(programEnrollment);
+                    found = true;
+                }
+            }
+
+            if (removedProgramEnrollment.equivalent(programEnrollment)) {
+                programEnrollmentResults.remove(programEnrollment);
+                found = true;
+            }
         }
-    	programEnrollments.retainAll(programEnrollmentResults);
-    }           
+        if (!found && removedProgramEnrollment.getAssignedProgramId() > 0) {
+            throw new NotFoundException(
+                "Enrollment not found for program [" + removedProgramEnrollment.getAssignedProgramId() + "]");
+        }
+        programEnrollments.retainAll(programEnrollmentResults);
+    }
 
     private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, Set<Integer> energyCompanyIds){
         
@@ -381,68 +382,73 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
     
     
-	
-	@Override
-	public List<EnrolledDevicePrograms> getEnrolledDeviceProgramsByAccountNumber(String accountNumber, Date startDate, Date stopDate, LiteYukonUser user) throws AccountNotFoundException {
-		
-		// account
-		CustomerAccount account = null;
-		try {
-			account = customerAccountDao.getByAccountNumber(accountNumber, user);
-		} catch (NotFoundException e) {
-			throw new AccountNotFoundException("Account not found: " + accountNumber, e);
-		}
-		
-		// inventory
-		List<Integer> inventoryIdList = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
-		List<LiteLmHardwareBase> inventoryList = inventoryBaseDao.getLMHardwareForIds(inventoryIdList);
-		
-		// enrolledDeviceProgramsList
-		List<EnrolledDevicePrograms> enrolledDeviceProgramsList = Lists.newArrayListWithExpectedSize(inventoryIdList.size());
-		for (LiteLmHardwareBase lmHardware : inventoryList) {
-			
-			String serialNumber = lmHardware.getManufacturerSerialNumber();
-			
-			List<Program> programs = enrollmentDao.getEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
-			MappingList<Program, String> programNames = new MappingList<Program, String>(programs, new ObjectMapper<Program, String>() {
-	            @Override
-                public String map(Program from) {
-	                return from.getProgramPaoName();
-	            }
-	        });
-			
-			if (programNames.size() > 0) {
-				EnrolledDevicePrograms enrolledDevicePrograms = new EnrolledDevicePrograms(serialNumber, programNames);
-				enrolledDeviceProgramsList.add(enrolledDevicePrograms);
-			}
-		}
-		
-		return enrolledDeviceProgramsList;
-	}
-	
+    @Override
+    public List<EnrolledDevicePrograms> getEnrolledDeviceProgramsByAccountNumber(String accountNumber, Date startDate,
+            Date stopDate, LiteYukonUser user) throws AccountNotFoundException {
+
+        // account
+        CustomerAccount account = null;
+        try {
+            account = customerAccountDao.getByAccountNumber(accountNumber, user);
+        } catch (NotFoundException e) {
+            throw new AccountNotFoundException("Account not found: " + accountNumber, e);
+        }
+
+        // inventory
+        List<Integer> inventoryIdList = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
+        List<LiteLmHardwareBase> inventoryList = inventoryBaseDao.getLMHardwareForIds(inventoryIdList);
+
+        // enrolledDeviceProgramsList
+        List<EnrolledDevicePrograms> enrolledDeviceProgramsList =
+            Lists.newArrayListWithExpectedSize(inventoryIdList.size());
+        for (LiteLmHardwareBase lmHardware : inventoryList) {
+
+            String serialNumber = lmHardware.getManufacturerSerialNumber();
+
+            List<Program> programs =
+                enrollmentDao.getEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
+            MappingList<Program, String> programNames =
+                new MappingList<Program, String>(programs, new ObjectMapper<Program, String>() {
+                    @Override
+                    public String map(Program from) {
+                        return from.getProgramPaoName();
+                    }
+                });
+
+            if (programNames.size() > 0) {
+                EnrolledDevicePrograms enrolledDevicePrograms = new EnrolledDevicePrograms(serialNumber, programNames);
+                enrolledDeviceProgramsList.add(enrolledDevicePrograms);
+            }
+        }
+
+        return enrolledDeviceProgramsList;
+    }
+
     private EnrollmentHelperHolder buildEnrollmentHelperHolder(EnrollmentHelper enrollmentHelper,
             EnrollmentEnum enrollmentEnum, LiteYukonUser user, CustomerAccount customerAccount) {
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-    	LiteInventoryBase liteInventoryBase;
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        LiteInventoryBase liteInventoryBase;
         try {
-        	liteInventoryBase = starsSearchDao.searchLmHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
+            liteInventoryBase = starsSearchDao.searchLmHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
         } catch (ObjectInOtherEnergyCompanyException e) {
-            if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL)) {
+            if (enrollmentEnum.equals(EnrollmentEnum.UNENROLL)) {
                 liteInventoryBase = (LiteInventoryBase) e.getObject();
             } else {
                 throw new RuntimeException(e);
             }
         }
         if (liteInventoryBase == null) {
-            throw new IllegalArgumentException("The supplied piece of hardware was not found: " + enrollmentHelper.getSerialNumber());
-        }        
-		if (liteInventoryBase.getAccountID() != customerAccount.getAccountId()) {
-            throw new IllegalArgumentException("The supplied piece of hardware: " + enrollmentHelper.getSerialNumber() + 
-            		" does not belong to the supplied account: " + enrollmentHelper.getAccountNumber());
+            throw new IllegalArgumentException(
+                "The supplied piece of hardware was not found: " + enrollmentHelper.getSerialNumber());
         }
-		
-		LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
-    	EnrollmentHelperHolder enrollmentHelperHolder = new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase);
-    	return enrollmentHelperHolder;
+        if (liteInventoryBase.getAccountID() != customerAccount.getAccountId()) {
+            throw new IllegalArgumentException("The supplied piece of hardware: " + enrollmentHelper.getSerialNumber()
+                + " does not belong to the supplied account: " + enrollmentHelper.getAccountNumber());
+        }
+
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(liteInventoryBase.getInventoryID());
+        EnrollmentHelperHolder enrollmentHelperHolder =
+            new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase);
+        return enrollmentHelperHolder;
     }
 }
