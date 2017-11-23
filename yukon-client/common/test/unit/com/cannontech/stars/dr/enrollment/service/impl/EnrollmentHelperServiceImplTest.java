@@ -69,16 +69,15 @@ public class EnrollmentHelperServiceImplTest {
         enrollmentHelperService = new EnrollmentHelperEndpointServiceMock();
         
         ProgramEnrollment newProgramEnrollment = new ProgramEnrollment(11, 42, false, 31, 47, 53, 0);
-        ProgramEnrollment newProgramEnrollmentTest = new ProgramEnrollment(11, 42, true, 31, 47, 53, 0);
         List<ProgramEnrollment> programEnrollments = 
             enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
 
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, true);
 
-        Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertTrue(programEnrollments.contains(newProgramEnrollmentTest));
-        Assert.assertEquals(53, programEnrollments.get(1).getAssignedProgramId());
-        Assert.assertEquals(47, programEnrollments.get(1).getLmGroupId());
+        Assert.assertEquals(5, programEnrollments.size());
+        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
+        Assert.assertEquals(53, programEnrollments.get(4).getAssignedProgramId());
+        Assert.assertEquals(47, programEnrollments.get(4).getLmGroupId());
     }
     
     @Test
@@ -164,7 +163,7 @@ public class EnrollmentHelperServiceImplTest {
         enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, false);
 
         Assert.assertEquals(4, programEnrollments.size());
-        Assert.assertEquals(100, programEnrollments.get(0).getLmGroupId());
+        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
     
     /**
@@ -247,6 +246,28 @@ public class EnrollmentHelperServiceImplTest {
         Assert.assertEquals(4, programEnrollments.size());
         Assert.assertEquals(41, programEnrollments.get(0).getLmGroupId());
         Assert.assertEquals(3, programEnrollments.get(0).getRelay());
+    }
+    
+    /**
+     * This test case is to test behavior when enrolling a program with same inventory, same appliance category, 
+     * same device, same relay but load group and assigned program are different. isMultipleProgramsPerCategoryAllowed = true) 
+     * 
+     * It will enroll the new program. The existing program where inventory, appliance category, device and relay is same
+     * will NOT be un-enrolled.
+     */
+    @Test
+    public void testAddProgramEnrollmentCase_7() throws Exception {
+
+        enrollmentHelperService = new EnrollmentHelperEndpointServiceMock();
+
+        ProgramEnrollment newProgramEnrollment = new ProgramEnrollment(10, 20, false, 30, 94, 95, 1);
+        List<ProgramEnrollment> programEnrollments =
+            enrollmentHelperService.enrollmentDao.getActiveEnrollmentsByAccountId(0);
+
+        enrollmentHelperService.addProgramEnrollment(programEnrollments, newProgramEnrollment, false, true);
+
+        Assert.assertEquals(5, programEnrollments.size());
+        Assert.assertTrue(programEnrollments.contains(newProgramEnrollment));
     }
 
 }

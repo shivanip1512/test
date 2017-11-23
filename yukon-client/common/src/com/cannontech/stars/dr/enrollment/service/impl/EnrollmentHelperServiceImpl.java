@@ -279,31 +279,27 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                 if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
                     if (programEnrollment.getRelay() == newProgramEnrollment.getRelay()) {
                         if (seasonalLoad){
-                            if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
-                                programEnrollment.update(newProgramEnrollment);
-                                programEnrollment.setEnroll(true);
+                            if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
                                 isProgramEnrollmentEnrolled = true;
                             } else {
                                 continue;
                             }
                         } else {
-                            programEnrollment.update(newProgramEnrollment);
-                            programEnrollment.setEnroll(true);
-                            isProgramEnrollmentEnrolled = true;
+                            if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
+                                isProgramEnrollmentEnrolled = true;
+                            } else if (!isMultipleProgramsPerCategoryAllowed) {
+                                removedEnrollments.add(programEnrollment);
+                            }
                         }
                     } else {
-                        if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
-                            programEnrollment.update(newProgramEnrollment);
-                            programEnrollment.setEnroll(true);
+                        if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
                             isProgramEnrollmentEnrolled = true;
                         } else if (!isMultipleProgramsPerCategoryAllowed) {
                             removedEnrollments.add(programEnrollment);
                         }
                     }
                 } else if (!isMultipleProgramsPerCategoryAllowed) {
-                    if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
-                        programEnrollment.update(newProgramEnrollment);
-                        programEnrollment.setEnroll(true);
+                    if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
                         isProgramEnrollmentEnrolled = true;
                     } else {
                         removedEnrollments.add(programEnrollment);
@@ -450,5 +446,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         EnrollmentHelperHolder enrollmentHelperHolder =
             new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase);
         return enrollmentHelperHolder;
+    }
+    
+    private boolean checkAssignedProgram(ProgramEnrollment programEnrollment, ProgramEnrollment newProgramEnrollment) {
+        if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
+            programEnrollment.update(newProgramEnrollment);
+            programEnrollment.setEnroll(true);
+            return true;
+        }
+        return false;
     }
 }
