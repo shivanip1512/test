@@ -597,8 +597,8 @@ yukon.namespace = function (ns) {
             //  Create timeline event spans for each set of binned events
             var timelineEvents = Object.entries(binnedEvents).map(function (keyval) {
             
-                position = keyval[0];
-                events = keyval[1];
+                var position = keyval[0];
+                var events = keyval[1];
 
                 var firstEvent = events[0];
                 
