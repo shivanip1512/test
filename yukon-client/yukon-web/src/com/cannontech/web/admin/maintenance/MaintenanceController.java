@@ -311,7 +311,7 @@ public class MaintenanceController {
                 public GlobalSetting apply(MappableProperty<GlobalSetting, ?> input) {
                     GlobalSetting setting = input.getExtra();
                     if (setting.getType() == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME
-                        || (setting.getType() == GlobalSettingType.DATABASE_BACKUP_HOURS_START_STOP_TIME)) {
+                        || (setting.getType() == GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME)) {
                         String[] values = (String[]) command.getValues().get(setting.getType());
                         setting.setValue(values[0] + "," + values[1]);
                     } else {
@@ -362,22 +362,22 @@ public class MaintenanceController {
         if ((businessHrsEndTime - businessHrsStartTime) / 60 == 24) {
             cronOption = CronExprOption.WEEKDAYS;
         }
-        GlobalSettingType backupDaysSettingType =
-            GlobalSettingType.valueOf(GlobalSettingType.DATABASE_BACKUP_DAYS.name());
-        GlobalSetting backupDaysSetting = globalSettingDao.getSetting(backupDaysSettingType);
-        GlobalSettingType backupHourSettingType =
-            GlobalSettingType.valueOf(GlobalSettingType.DATABASE_BACKUP_HOURS_START_STOP_TIME.name());
-        GlobalSetting backupHourSetting = globalSettingDao.getSetting(backupHourSettingType);
-        String backupTimeSetting[] = ((String) backupHourSetting.getValue()).split(",");
+        GlobalSettingType maintenanceDaysSettingType =
+            GlobalSettingType.valueOf(GlobalSettingType.MAINTENANCE_DAYS.name());
+        GlobalSetting maintenanceDaysSetting = globalSettingDao.getSetting(maintenanceDaysSettingType);
+        GlobalSettingType maintenanceHourSettingType =
+            GlobalSettingType.valueOf(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME.name());
+        GlobalSetting maintenanceHourSetting = globalSettingDao.getSetting(maintenanceHourSettingType);
+        String maintenanceTimeSetting[] = ((String) maintenanceHourSetting.getValue()).split(",");
         Date nextRunDataPruning = null;
         try {
             String cronDataPruning = TimeUtil.buildCronExpression(cronOption, Integer.parseInt(businessTimeSetting[1]),
                 (String) businessDaysSetting.getValue(), 'N', userContext);
 
             nextRunDataPruning = TimeUtil.getNextRuntime(new Date(), cronDataPruning, userContext);
-            if (((String) backupDaysSetting.getValue()).contains("Y")) {
+            if (((String) maintenanceDaysSetting.getValue()).contains("Y")) {
                 String cronDBBackup = TimeUtil.buildCronExpression(CronExprOption.WEEKDAYS,
-                    Integer.parseInt(backupTimeSetting[1]), (String) backupDaysSetting.getValue(), 'Y', userContext);
+                    Integer.parseInt(maintenanceTimeSetting[1]), (String) maintenanceDaysSetting.getValue(), 'Y', userContext);
                 Date nextRunDBBackup = TimeUtil.getNextRuntime(new Date(), cronDBBackup, userContext);
                 DateTime startDate = new DateTime(nextRunDataPruning);
                 DateTime endDate = new DateTime(nextRunDBBackup); // current date

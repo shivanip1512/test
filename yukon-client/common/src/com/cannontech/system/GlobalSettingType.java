@@ -181,9 +181,9 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     //Data Point Pruning
     BUSINESS_HOURS_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("BUSINESS_HOURS_DAYS"), "NNNNNNN"),
-    DATABASE_BACKUP_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("DATABASE_BACKUP_DAYS"), "NNNNNNN"),
+    MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("MAINTENANCE_DAYS"), "NNNNNNN"),
     BUSINESS_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("BUSINESS_HOURS_START_STOP_TIME"), "420,1020"),
-    DATABASE_BACKUP_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("DATABASE_BACKUP_HOURS_START_STOP_TIME"), "1260,60")
+    MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("MAINTENANCE_HOURS_START_STOP_TIME"), "1260,60")
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;
@@ -216,9 +216,9 @@ public enum GlobalSettingType implements DisplayableEnum {
 
         maintenanceTasksSettings = ImmutableSet.of(
             BUSINESS_HOURS_DAYS,
-            DATABASE_BACKUP_DAYS,
+            MAINTENANCE_DAYS,
             BUSINESS_HOURS_START_STOP_TIME,
-            DATABASE_BACKUP_HOURS_START_STOP_TIME);
+            MAINTENANCE_HOURS_START_STOP_TIME);
     }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

@@ -579,10 +579,10 @@
     <entry key="yukon.common.durationType.FIVE_YEARS">5 years</entry>
     <entry key="yukon.common.setting.BUSINESS_HOURS_DAYS">Business Hours Days</entry>
     <entry key="yukon.common.setting.BUSINESS_HOURS_DAYS.description">Days of the week for general business hours. During the start and stop times of these days, maintenance tasks will not run.</entry>
-    <entry key="yukon.common.setting.DATABASE_BACKUP_DAYS">Maintenance Days</entry>
-    <entry key="yukon.common.setting.DATABASE_BACKUP_DAYS.description">Days of the week when the database backup tasks are scheduled to run. During the start and stop times of these days, maintenance tasks will not run.</entry>
+    <entry key="yukon.common.setting.MAINTENANCE_DAYS">Maintenance Days</entry>
+    <entry key="yukon.common.setting.MAINTENANCE_DAYS.description">Days of the week when the database backup tasks are scheduled to run. During the start and stop times of these days, maintenance tasks will not run.</entry>
     <entry key="yukon.common.setting.BUSINESS_HOURS_START_STOP_TIME">Business Hours</entry>
     <entry key="yukon.common.setting.BUSINESS_HOURS_START_STOP_TIME.description">Start and Stop times of the Business Hours Days.</entry>
-    <entry key="yukon.common.setting.DATABASE_BACKUP_HOURS_START_STOP_TIME">Maintenance Hours</entry>
-    <entry key="yukon.common.setting.DATABASE_BACKUP_HOURS_START_STOP_TIME.description">Start  and Stop times of the Database Backup Days.</entry>
+    <entry key="yukon.common.setting.MAINTENANCE_HOURS_START_STOP_TIME">Maintenance Hours</entry>
+    <entry key="yukon.common.setting.MAINTENANCE_HOURS_START_STOP_TIME.description">Start  and Stop times of the Database Backup Days.</entry>
 </properties>
