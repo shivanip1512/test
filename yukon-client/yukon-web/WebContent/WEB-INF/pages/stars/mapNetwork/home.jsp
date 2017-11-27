@@ -75,11 +75,11 @@
                             <c:if test="${displayNeighborsLayer}">
                                 <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />                            
                             </c:if>
-                            <c:if test="${displayPrimaryRouteLayer}">
-                                <tags:check name="primary" key=".primary" classes="js-primary-route" />
-                            </c:if>
                             <c:if test="${displayParentNodeLayer}">
                                 <tags:check name="parent" key=".parent" classes="js-parent-node" />
+                            </c:if>
+                            <c:if test="${displayPrimaryRouteLayer}">
+                                <tags:check name="primary" key=".primary" classes="js-primary-route" />
                             </c:if>
                         </div>
                         <div id="map-tiles" class="fr button-group">
