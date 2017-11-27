@@ -26,8 +26,14 @@
                     </tags:nameValue2>
                 </c:forEach>
                 <tags:nameValue2 nameKey=".nextRun">
-                    <!-- TODO: Make changes to calculate the next run time after YUK-17337 is done -->
-                    <span>11/18/2017 22:00</span>
+                    <c:choose>
+                        <c:when test="${maintenanceEditorBean.nextRun != null}">
+                            <span>${maintenanceEditorBean.nextRun}</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="empty-list"><i:inline key=".nextRunNever"/></span>
+                        </c:otherwise>
+                    </c:choose>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>

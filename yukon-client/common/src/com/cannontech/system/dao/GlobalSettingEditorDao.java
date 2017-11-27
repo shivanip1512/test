@@ -1,6 +1,7 @@
 package com.cannontech.system.dao;
 
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.util.Pair;
 import com.cannontech.system.GlobalSettingSubCategory;
@@ -21,5 +22,10 @@ public interface GlobalSettingEditorDao {
      * any changes to that method can affect the outcome of this method.
      */
     public Map<GlobalSettingType, Pair<Object, String>> getValuesAndCommentsForCategory(GlobalSettingSubCategory category);
+
+    /**
+     * Returns all values for given GlobalSettingType's
+     */
+    Map<GlobalSettingType, GlobalSetting> getSettings(Set<GlobalSettingType> all);
     
 }

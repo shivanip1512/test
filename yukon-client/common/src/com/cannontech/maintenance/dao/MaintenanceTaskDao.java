@@ -3,8 +3,11 @@ package com.cannontech.maintenance.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.cannontech.maintenance.MaintenanceTaskName;
 import com.cannontech.maintenance.MaintenanceTaskSettings;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.MaintenanceSetting;
 import com.cannontech.system.model.MaintenanceTask;
 
@@ -51,5 +54,7 @@ public interface MaintenanceTaskDao {
      * Updates all the settings provided.
      **/
     void updateSettings(List<MaintenanceSetting> settings);
+
+    Map<GlobalSettingType, Pair<Object, String>> getValuesAndComments();
 
 }

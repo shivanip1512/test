@@ -1,11 +1,14 @@
 package com.cannontech.common.util;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -20,7 +23,9 @@ import org.joda.time.PeriodType;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.quartz.CronExpression;
 
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 /**
@@ -372,5 +377,72 @@ public static int differenceMinutes(Date from, Date to) {
      */
     public static boolean isXMinutesBeforeNow(int minutes, ReadableInstant value) {
         return value.isBefore(Instant.now().minus(Duration.standardMinutes(minutes)));
+    }
+
+    /**
+     * @return Cron expression for the given time and selected days.
+     */
+    public static String buildCronExpression(CronExprOption cronOption, int time, String days, char checkChar,
+            YukonUserContext userContext) throws ParseException {
+
+        String[] parts = new String[] { "*", "*", "*", "*", "*", "*" };
+
+        // time
+        parts[0] = "0";
+        parts[1] = String.valueOf(time % 60);
+        parts[2] = (time / 60) != 24 ? String.valueOf(time / 60) : "0";
+
+        // weekly
+        parts[3] = "?";
+        parts[4] = "*";
+        if (cronOption == CronExprOption.EVERYDAY) {
+            parts[5] = "*";
+        } else {
+            List<String> selectedDays = new ArrayList<String>();
+
+            for (int i = 0; i < days.length(); i++) {
+                if (days.charAt(i) == checkChar) {
+                    selectedDays.add(String.valueOf(i + 1));
+                }
+            }
+
+            if (selectedDays.size() > 0) {
+                parts[5] = StringUtils.join(selectedDays, ",");
+            }
+        }
+
+        String cronExpression = StringUtils.join(parts, " ").trim();
+        try {
+            new CronExpression(cronExpression);
+        } catch (ParseException e) {
+            throw e;
+        }
+        return cronExpression;
+    }
+
+    /**
+     * @return Next runtime from the given date as per the Cron expression provided.
+     */
+    public static Date getNextRuntime(Date from, String cron, YukonUserContext userContext) {
+        Date nextValidTimeAfter = null;
+        try {
+            CronExpression cronExpression = new CronExpression(cron);
+            // is this the right thing to do?
+            TimeZone timeZone = userContext.getTimeZone();
+            cronExpression.setTimeZone(timeZone);
+
+            // If the next run time has already passed, check for the one after that,
+            // and so on, until we catch back up to the present.
+            nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
+            while (nextValidTimeAfter != null && nextValidTimeAfter.before(new Date())) {
+                from = nextValidTimeAfter;
+                nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (UnsupportedOperationException e) {
+            e.printStackTrace();
+        }
+        return nextValidTimeAfter;
     }
 }

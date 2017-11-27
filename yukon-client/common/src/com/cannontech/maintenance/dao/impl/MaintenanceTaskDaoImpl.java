@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -26,14 +27,22 @@ import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskName;
 import com.cannontech.maintenance.MaintenanceTaskSettings;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingEditorDao;
+import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.system.model.MaintenanceSetting;
 import com.cannontech.system.model.MaintenanceTask;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     private SimpleTableAccessTemplate<MaintenanceSetting> insertTemplate;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
+
     private static final YukonRowMapper<MaintenanceTask> maintenanceTaskRowMapper =
         new YukonRowMapper<MaintenanceTask>() {
             @Override
@@ -187,6 +196,19 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         insertTemplate.setTableName("MaintenanceTaskSettings");
         insertTemplate.setPrimaryKeyField("TaskPropertyId");
         insertTemplate.setFieldMapper(maintenanceSettingFieldMapper);
+    }
+
+    @Override
+    public Map<GlobalSettingType, Pair<Object, String>> getValuesAndComments() {
+        ImmutableSet<GlobalSettingType> all = GlobalSettingType.getMaintenanceTasksSettings();
+        Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettings(all);
+        return Maps.transformValues(settings, new Function<GlobalSetting, Pair<Object, String>>() {
+            @Override
+            public Pair<Object, String> apply(GlobalSetting input) {
+                Pair<Object, String> valueAndComment = Pair.of(input.getValue(), input.getComments());
+                return valueAndComment;
+            }
+        });
     }
 
 }

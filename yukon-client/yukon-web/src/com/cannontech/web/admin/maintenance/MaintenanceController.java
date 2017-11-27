@@ -1,10 +1,21 @@
 package com.cannontech.web.admin.maintenance;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
@@ -20,7 +31,12 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.CronExprOption;
+import org.apache.commons.lang3.tuple.Pair;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -32,6 +48,11 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.maintenance.MaintenanceTaskName;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.system.dao.GlobalSettingEditorDao;
+import com.cannontech.system.dao.GlobalSettingUpdateDao;
+import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.system.model.MaintenanceSetting;
 import com.cannontech.system.model.MaintenanceTask;
 import com.cannontech.user.YukonUserContext;
@@ -45,8 +66,16 @@ import com.cannontech.web.maintenance.tasks.ScheduledRphDuplicateDeletionExecuti
 import com.cannontech.web.maintenance.tasks.ScheduledSmartIndexMaintenanceExecutionTask;
 import com.cannontech.web.maintenance.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.support.MappedPropertiesHelper;
+import com.cannontech.web.support.MappedPropertiesHelper.MappableProperty;
+import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/maintenance/*")
@@ -61,7 +90,10 @@ public class MaintenanceController {
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private MaintenanceTaskDao maintenanceTaskDao;
-
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
+    @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("rphDuplicateDeletion")
         private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
     @Autowired @Qualifier("rphDanglingDeletion")
@@ -76,7 +108,8 @@ public class MaintenanceController {
         private YukonJobDefinition<RepeatingExportHistoryDeletionTask> exportHistoryJobDef;
     @Autowired @Qualifier("spSmartIndexMaintanence")
         private YukonJobDefinition<ScheduledSmartIndexMaintenanceExecutionTask> spSmartIndexMaintanenceJobDef;
-    
+    private LoadingCache<ImmutableSet<GlobalSettingType>, MappedPropertiesHelper<GlobalSetting>> helperLookup;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
     private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
@@ -85,8 +118,29 @@ public class MaintenanceController {
     private final static String EXPORT_HISTORY_UPDATE_CRON = "0 45 21 ? * *"; // every night at 9:45pm
     private final static String SP_SMART_INDEX_MAINT_UPDATE_CRON = "0 0 22 ? * SAT"; // every saturday at 10:00pm
     
+    @PostConstruct
+    public void setupHelperLookup() {
+        helperLookup = CacheBuilder.newBuilder().concurrencyLevel(1).build(
+            new CacheLoader<ImmutableSet<GlobalSettingType>, MappedPropertiesHelper<GlobalSetting>>() {
+                @Override
+                public MappedPropertiesHelper<GlobalSetting> load(ImmutableSet<GlobalSettingType> all) throws Exception {
+                    return getHelper(all);
+                }
+            });
+    }
+
+    private MappedPropertiesHelper<GlobalSetting> getHelper(ImmutableSet<GlobalSettingType> all) {
+        Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettings(all);
+        MappedPropertiesHelper<GlobalSetting> mappedPropertiesHelper = new MappedPropertiesHelper<>("values");
+        for (GlobalSetting setting : settings.values()) {
+            GlobalSettingType type = setting.getType();
+            mappedPropertiesHelper.add(type.name(), setting, type.getType());
+        }
+        MappedPropertiesHelper<GlobalSetting> result = mappedPropertiesHelper;
+        return result;
+    }
     @RequestMapping("view")
-    public String view(ModelMap model, YukonUserContext userContext) {
+    public String view(ModelMap model, YukonUserContext userContext) throws ExecutionException{
         List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
         jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
@@ -101,7 +155,7 @@ public class MaintenanceController {
         }
 
         model.addAttribute("jobs", jobs);
-        setUpModelForPointDataPruning(model);
+        setUpModelForPointDataPruning(model, userContext);
         return "maintenance/home.jsp";
     }
 
@@ -194,9 +248,81 @@ public class MaintenanceController {
         return job;
     }
 
-    private void setUpModelForPointDataPruning(ModelMap model) {
+    private void setUpModelForPointDataPruning(ModelMap model, YukonUserContext context) throws ExecutionException {
         List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks(false);
         model.addAttribute("tasks", tasks);
+        final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        ImmutableSet<GlobalSettingType> all = GlobalSettingType.getMaintenanceTasksSettings();
+        MappedPropertiesHelper<GlobalSetting> mappedPropertiesHelper = helperLookup.get(all);
+        Comparator<MappedPropertiesHelper.MappableProperty<GlobalSetting, ?>> comparator =
+            new Comparator<MappedPropertiesHelper.MappableProperty<GlobalSetting, ?>>() {
+                @Override
+                public int compare(MappedPropertiesHelper.MappableProperty<GlobalSetting, ?> o1,
+                        MappedPropertiesHelper.MappableProperty<GlobalSetting, ?> o2) {
+                    String o1Text = accessor.getMessage(o1.getExtra().getType().getFormatKey());
+                    String o2Text = accessor.getMessage(o2.getExtra().getType().getFormatKey());
+                    return o1Text.compareToIgnoreCase(o2Text);
+                }
+            };
+
+        Collections.sort(mappedPropertiesHelper.getMappableProperties(), comparator);
+        model.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
+        ExclusionSettingsBean command = new ExclusionSettingsBean();
+        Map<GlobalSettingType, Pair<Object, String>> settings = maintenanceTaskDao.getValuesAndComments();
+        command.setValues(Maps.transformValues(settings, new Function<Pair<Object, String>, Object>() {
+            @Override
+            public Object apply(Pair<Object, String> input) {
+                return input.getLeft();
+            }
+        }));
+        command.setComments(Maps.transformValues(settings, new Function<Pair<Object, String>, String>() {
+            @Override
+            public String apply(Pair<Object, String> input) {
+                return input.getRight();
+            }
+        }));
+        model.addAttribute("command", command);
+    }
+
+    @RequestMapping(value = "updateMaintenanceSettings", method = RequestMethod.POST, params = "save")
+    public String save(HttpServletRequest request,
+            @ModelAttribute("exclusionSettingsBean") ExclusionSettingsBean exclusionSettingsBean, BindingResult result,
+            YukonUserContext context, ModelMap map, FlashScope flash) throws Exception {
+
+        List<GlobalSetting> settings = Lists.newArrayList(adjustSettings(exclusionSettingsBean));
+        try {
+            globalSettingUpdateDao.updateSettings(settings, context.getYukonUser());
+        } catch (Exception e) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.maintenance.updateFailed"));
+            return "redirect:view";
+        }
+        flash.setConfirm(
+            new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.maintenance.exclusionHoursSettingsUpdated"));
+
+        return "redirect:view";
+    }
+
+    private List<GlobalSetting> adjustSettings(final ExclusionSettingsBean command) throws ExecutionException {
+        ImmutableSet<GlobalSettingType> all = GlobalSettingType.getMaintenanceTasksSettings();
+        MappedPropertiesHelper<GlobalSetting> helper = helperLookup.get(all);
+        List<GlobalSetting> settings = Lists.transform(helper.getMappableProperties(),
+            new Function<MappableProperty<GlobalSetting, ?>, GlobalSetting>() {
+                @Override
+                public GlobalSetting apply(MappableProperty<GlobalSetting, ?> input) {
+                    GlobalSetting setting = input.getExtra();
+                    if (setting.getType() == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME
+                        || (setting.getType() == GlobalSettingType.DATABASE_BACKUP_HOURS_START_STOP_TIME)) {
+                        String[] values = (String[]) command.getValues().get(setting.getType());
+                        setting.setValue(values[0] + "," + values[1]);
+                    } else {
+                        setting.setValue(command.getValues().get(setting.getType()));
+                    }
+                    
+                    return setting;
+                }
+            });
+
+        return settings;
     }
 
     @RequestMapping(value = "toggleDataPruningJobEnabled", method = RequestMethod.GET)
@@ -217,14 +343,67 @@ public class MaintenanceController {
     }
 
     @RequestMapping(value = "editTask", method = RequestMethod.GET)
-    public String editTask(ModelMap model, YukonUserContext userContext, int taskId, String taskName) {
+    public String editTask(ModelMap model, YukonUserContext userContext, int taskId, FlashScope flashScope,
+            String taskName) {
+        CronExprOption cronOption = CronExprOption.EVERYDAY;
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         MaintenanceTaskName maintenanceTaskName = MaintenanceTaskName.valueOf(taskName);
         MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskName);
         List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskName(maintenanceTaskName);
+        GlobalSettingType businessDaysSettingType =
+            GlobalSettingType.valueOf(GlobalSettingType.BUSINESS_HOURS_DAYS.name());
+        GlobalSetting businessDaysSetting = globalSettingDao.getSetting(businessDaysSettingType);
+        GlobalSettingType businessHourSettingType =
+            GlobalSettingType.valueOf(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME.name());
+        GlobalSetting businessHourSetting = globalSettingDao.getSetting(businessHourSettingType);
+        String businessTimeSetting[] = ((String) businessHourSetting.getValue()).split(",");
+        int businessHrsStartTime = Integer.parseInt(businessTimeSetting[0]);
+        int businessHrsEndTime = Integer.parseInt(businessTimeSetting[1]);
+        if ((businessHrsEndTime - businessHrsStartTime) / 60 == 24) {
+            cronOption = CronExprOption.WEEKDAYS;
+        }
+        GlobalSettingType backupDaysSettingType =
+            GlobalSettingType.valueOf(GlobalSettingType.DATABASE_BACKUP_DAYS.name());
+        GlobalSetting backupDaysSetting = globalSettingDao.getSetting(backupDaysSettingType);
+        GlobalSettingType backupHourSettingType =
+            GlobalSettingType.valueOf(GlobalSettingType.DATABASE_BACKUP_HOURS_START_STOP_TIME.name());
+        GlobalSetting backupHourSetting = globalSettingDao.getSetting(backupHourSettingType);
+        String backupTimeSetting[] = ((String) backupHourSetting.getValue()).split(",");
+        Date nextRunDataPruning = null;
+        try {
+            String cronDataPruning = TimeUtil.buildCronExpression(cronOption, Integer.parseInt(businessTimeSetting[1]),
+                (String) businessDaysSetting.getValue(), 'N', userContext);
+
+            nextRunDataPruning = TimeUtil.getNextRuntime(new Date(), cronDataPruning, userContext);
+            if (((String) backupDaysSetting.getValue()).contains("Y")) {
+                String cronDBBackup = TimeUtil.buildCronExpression(CronExprOption.WEEKDAYS,
+                    Integer.parseInt(backupTimeSetting[1]), (String) backupDaysSetting.getValue(), 'Y', userContext);
+                Date nextRunDBBackup = TimeUtil.getNextRuntime(new Date(), cronDBBackup, userContext);
+                DateTime startDate = new DateTime(nextRunDataPruning);
+                DateTime endDate = new DateTime(nextRunDBBackup); // current date
+                Days diff = Days.daysBetween(startDate, endDate);
+                if (diff.getDays() == 0) {
+                    SimpleDateFormat localDateFormat = new SimpleDateFormat("HH:mm");
+                    String time = localDateFormat.format(nextRunDBBackup);
+                    LocalTime localTime = LocalTime.parse(time);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(nextRunDataPruning);
+                    cal.set(Calendar.HOUR_OF_DAY, localTime.getHour());
+                    cal.set(Calendar.MINUTE, localTime.getMinute());
+                    nextRunDataPruning = cal.getTime();
+                }
+            }
+        } catch (Exception e) {
+            MessageSourceResolvable invalidCronMsg = new YukonMessageSourceResolvable("yukon.common.invalidCron");
+            flashScope.setError(invalidCronMsg);
+            return "maintenance/editTask.jsp";
+        }
+        String dateStr = dateFormattingService.format(nextRunDataPruning, DateFormatEnum.DATEHM, userContext);
         MaintenanceEditorBean maintenanceEditorBean = new MaintenanceEditorBean();
         maintenanceEditorBean.setTaskDetails(taskDetails);
         maintenanceEditorBean.setSettings(settings);
+        maintenanceEditorBean.setNextRun(dateStr);
+
         model.addAttribute("maintenanceEditorBean", maintenanceEditorBean);
         String taskNameMsg = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
             + maintenanceEditorBean.getTaskDetails().getTaskName() + ".title");
@@ -240,7 +419,7 @@ public class MaintenanceController {
     }
 
     public static class MaintenanceEditorBean {
-
+        private String nextRun;
         private MaintenanceTask taskDetails;
         private List<MaintenanceSetting> settings = Lists.newArrayList();
 
@@ -260,6 +439,36 @@ public class MaintenanceController {
             this.taskDetails = taskDetails;
         }
 
+        public String getNextRun() {
+            return nextRun;
+        }
+
+        public void setNextRun(String nextRun) {
+            this.nextRun = nextRun;
+        }
+
+    }
+
+    public static class ExclusionSettingsBean {
+        private Map<GlobalSettingType, Object> values = Maps.newLinkedHashMap();
+        private Map<GlobalSettingType, String> comments = Maps.newLinkedHashMap();
+        public Map<GlobalSettingType, Object> getValues() {
+            return values;
+        }
+
+        public void setValues(Map<GlobalSettingType, Object> values) {
+            this.values = values;
+        }
+
+        public Map<GlobalSettingType, String> getComments() {
+            return comments;
+        }
+
+        public void setComments(Map<GlobalSettingType, String> comments) {
+            this.comments = comments;
+        }
+        
+        
     }
 
 }

@@ -2,8 +2,12 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <cti:msgScope paths="modules.adminSetup.maintenance.dataPruning,yukon.web.modules.adminSetup.maintenance">
 <tags:sectionContainer2 nameKey="dataPruning" styleClass="stacked-md">
+    <div class="stacked">
+        <em><i:inline key=".tasksInfo"/></em>
+    </div>
     <div class="column-12-12 clearfix">
         <div class="column one">
             <table class="compact-results-table has-alerts">
@@ -34,7 +38,7 @@
                                 </a>
                             </td>
                             <td class="fr">
-                                <tags:switch checked="${not task.disabled}" name="toggle" data-task-id="${task.taskId}" 
+                                <tags:switch checked="${not task.disabled}" name="toggle" data-task-id="${task.taskId}"
                                              classes="js-toggleDataPruningJobEnabled toggle-sm"/>
                             </td>
                         </tr>
@@ -44,7 +48,25 @@
                 </div>
             <!-- Add exclusion hours section -->
             <div class="column two nogutter">
-            
+                <tags:boxContainer2 nameKey="exclusionHours" styleClass="largeContainer">
+                    <cti:url var="saveUrl" value="/admin/maintenance/updateMaintenanceSettings"/>
+                    <form:form action="${saveUrl}" id="settingsForm" method="post">
+                        <cti:csrfToken/>
+                        <tags:nameValueContainer2>
+                            <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="setting" 
+                                       varStatus="loopStatus">
+                                <tags:nameValue2 nameKey="yukon.common.setting.${setting.extra.type}">
+                                    <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}"
+                                                          path="${setting.path}" />
+                                    <tags:hidden path="comments[${setting.extra.type}]" /> 
+                                </tags:nameValue2>
+                            </c:forEach>
+                        </tags:nameValueContainer2>
+                        <div class="action-area">
+                            <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
+                        </div>
+                    </form:form>
+                </tags:boxContainer2>
             </div>
 </tags:sectionContainer2>
 </cti:msgScope>

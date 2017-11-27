@@ -35,7 +35,11 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
     @Override
     public Map<GlobalSettingType, GlobalSetting> getSettingsForCategory(GlobalSettingSubCategory category) {
         Set<GlobalSettingType> all = GlobalSettingType.getSettingsForCategory(category);
-        
+        return getSettings(all);
+    }
+
+    @Override
+    public Map<GlobalSettingType, GlobalSetting> getSettings(Set<GlobalSettingType> all) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GlobalSettingId, Name, Value, Comments, LastChangedDate");
         sql.append("FROM GlobalSetting");

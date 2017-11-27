@@ -66,6 +66,6 @@ $(function(){
 				</table>
                 <br>
                 <div class="scroll-xl">
-                    <%@ include file="tasks.jsp" %>
+                    <%@ include file="tasksAndSettings.jsp" %>
                 </div>
 </cti:standardPage>
