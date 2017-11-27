@@ -10,7 +10,17 @@
 <style>
 .description { line-height: 22px; }
 </style>
-
+<h2>Adding Icons to Sprite</h2>
+<ul>
+    <li>Open the sprite up in some image editor (You can use Paint.NET for windows) and the image you want to add.</li>
+    <li>Select All > Copy, the image you want to add, and then on the sprite you Paste, then drag the image to the first 
+        available spot.The sprite slots are 16x16 pixels. Once you have it where you want it, you save the sprite image</li>
+    <li>Then, Select All > and do an image adjustment to black and white.(Adjustments menu->Black and White)</li>
+    <li>Then Save As change the file name to ...-disabled.png (File names are icons.png and icons-disabled.png)</li>
+    <li>Update an entry for the icon in icons.css</li>
+    <li>Pick a new class name and use the background-position of the icon before it and add a -16px to to the x position.</li>
+</ul>
+<br>
 <div class="description">
     Yukon uses 16 and 32 pixel icons based on the <a href="https://github.com/webarto/famfamfam" target="_blank">famfam</a> 
     and <a href="http://www.designshock.com/google-plus-interface-icons/" target="_blank">google plus</a> libraries. Yukon 
