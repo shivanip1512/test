@@ -55,6 +55,9 @@ public interface MaintenanceTaskDao {
      **/
     void updateSettings(List<MaintenanceSetting> settings);
 
+    /**
+     * Returns all global maintenance setting values and comments.
+     **/
     Map<GlobalSettingType, Pair<Object, String>> getValuesAndComments();
 
 }
