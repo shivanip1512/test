@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/16/2017 6:47:21 AM                        */
+/* Created on:     11/27/2017 1:01:22 PM                        */
 /*==============================================================*/
 
 
@@ -1736,10 +1736,19 @@ create table CommandRequestExec  (
 );
 
 /*==============================================================*/
-/* Index: Indx_CmdReqExec_ContId                                */
+/* Index: INDX_CRE_ContId                                       */
 /*==============================================================*/
-create index Indx_CmdReqExec_ContId on CommandRequestExec (
+create index INDX_CRE_ContId on CommandRequestExec (
    CommandRequestExecContextId ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CRE_ExType_ExId_ExStart                          */
+/*==============================================================*/
+create index INDX_CRE_ExType_ExId_ExStart on CommandRequestExec (
+   CommandRequestExecType ASC,
+   CommandRequestExecId ASC,
+   StartTime ASC
 );
 
 /*==============================================================*/
@@ -1753,10 +1762,11 @@ create table CommandRequestExecRequest  (
 );
 
 /*==============================================================*/
-/* Index: INDX_CmdReqExReq_CmdReqExId                           */
+/* Index: INDX_CREReq_ExecId_DevId                              */
 /*==============================================================*/
-create index INDX_CmdReqExReq_CmdReqExId on CommandRequestExecRequest (
-   CommandRequestExecId ASC
+create index INDX_CREReq_ExecId_DevId on CommandRequestExecRequest (
+   CommandRequestExecId ASC,
+   DeviceId ASC
 );
 
 /*==============================================================*/
@@ -1774,11 +1784,21 @@ create table CommandRequestExecResult  (
 );
 
 /*==============================================================*/
-/* Index: Indx_CmdReqExecRes_ExecId_ErrC                        */
+/* Index: INDX_CRERes_ExecId_ErrC                               */
 /*==============================================================*/
-create index Indx_CmdReqExecRes_ExecId_ErrC on CommandRequestExecResult (
+create index INDX_CRERes_ExecId_ErrC on CommandRequestExecResult (
    CommandRequestExecId ASC,
    ErrorCode ASC
+);
+
+/*==============================================================*/
+/* Index: INDX_CRERex_ExecId_DevId                              */
+/*==============================================================*/
+create index INDX_CRERex_ExecId_DevId on CommandRequestExecResult (
+   CommandRequestExecId ASC,
+   DeviceId ASC,
+   ErrorCode ASC,
+   CompleteTime ASC
 );
 
 /*==============================================================*/

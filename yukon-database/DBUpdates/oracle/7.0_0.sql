@@ -315,6 +315,91 @@ INSERT INTO DeviceTypeCommand VALUES (-1271, -31, 'CBC 8024', 10, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1272, -173, 'CBC 8024', 11, 'Y', -1);
 /* End YUK-17417 */
 
+/* Start YUK-17498 */
+DROP INDEX Indx_CmdReqExec_ContId;
+DROP INDEX INDX_CmdReqExReq_CmdReqExId;
+DROP INDEX Indx_CmdReqExecRes_ExecId_ErrC;
+                
+                                                                                                   
+CREATE INDEX INDX_CRE_ContId ON CommandRequestExec 
+(
+    CommandRequestExecContextId
+);
+
+CREATE INDEX INDX_CRE_ExType_ExId_ExStart ON CommandRequestExec 
+(
+    CommandRequestExecType,
+    CommandRequestExecId,
+    StartTime
+);
+
+CREATE INDEX INDX_CREReq_ExecId_DevId ON CommandRequestExecRequest 
+(
+    CommandRequestExecId,
+    DeviceId
+);
+
+CREATE INDEX INDX_CRERes_ExecId_ErrC ON CommandRequestExecResult 
+(
+   CommandRequestExecId,
+   ErrorCode
+);
+
+CREATE INDEX INDX_CRERex_ExecId_DevId ON CommandRequestExecResult 
+(
+   CommandRequestExecId,
+   DeviceId,
+   ErrorCode,
+   CompleteTime
+);
+
+/* @start-block */
+DECLARE
+    v_maxId NUMBER;
+BEGIN
+    SELECT COALESCE((SELECT MAX(CommandRequestExecId) FROM CommandRequestExecRequest), 0) INTO v_maxId FROM dual;
+
+    INSERT INTO CommandRequestExecRequest ( CommandRequestExecRequestId, CommandRequestExecId, DeviceId )
+    SELECT v_maxId + ROW_NUMBER() OVER ( ORDER BY cre.CommandRequestExecId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
+    FROM CommandRequestExec cre
+    JOIN CommandRequestExecResult res ON cre.CommandRequestExecId = res.CommandRequestExecId 
+    LEFT JOIN CommandRequestExecRequest req ON res.CommandRequestExecId = req.CommandRequestExecId AND res.DeviceId = req.DeviceId
+    WHERE cre.CommandRequestExecType IN ( 'GROUP_DEVICE_CONFIG_VERIFY', 'GROUP_DEVICE_CONFIG_SEND', 'GROUP_DEVICE_CONFIG_READ' )
+    AND req.CommandRequestExecId IS NULL
+    AND cre.CommandRequestExecId = ( SELECT MAX(cre2.CommandRequestExecId)
+                                     FROM CommandRequestExec cre2
+                                     JOIN CommandRequestExecResult res2
+                                         ON cre2.CommandRequestExecId = res2.CommandRequestExecId
+                                     WHERE res.DeviceId = res2.DeviceId
+                                     AND cre2.CommandRequestExecType IN ( 'GROUP_DEVICE_CONFIG_VERIFY', 'GROUP_DEVICE_CONFIG_SEND', 'GROUP_DEVICE_CONFIG_READ' ) );
+END;
+/
+/* @end-block */
+
+/* @start-block */
+DECLARE
+    v_maxId NUMBER;
+BEGIN
+    SELECT COALESCE((SELECT MAX(CommandRequestExecId) FROM CommandRequestExecRequest), 0) INTO v_maxId FROM dual;
+
+    INSERT INTO CommandRequestExecRequest ( CommandRequestExecRequestId, CommandRequestExecId, DeviceId )
+    SELECT v_maxId + ROW_NUMBER() OVER ( ORDER BY cre.CommandRequestExecId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
+    FROM CommandRequestExec cre
+    JOIN CommandRequestExecResult res ON cre.CommandRequestExecId = res.CommandRequestExecId 
+    LEFT JOIN CommandRequestExecRequest req ON res.CommandRequestExecId = req.CommandRequestExecId AND res.DeviceId = req.DeviceId
+    WHERE cre.CommandRequestExecType = 'GROUP_DEVICE_CONFIG_VERIFY'
+    AND req.CommandRequestExecId IS NULL
+    AND cre.CommandRequestExecId = ( SELECT MAX(cre2.CommandRequestExecId)
+                                     FROM CommandRequestExec cre2
+                                     JOIN CommandRequestExecResult res2
+                                         ON cre2.CommandRequestExecId = res2.CommandRequestExecId
+                                     WHERE res.DeviceId = res2.DeviceId
+                                     AND cre2.CommandRequestExecType = 'GROUP_DEVICE_CONFIG_VERIFY' );
+END;
+/
+/* @end-block */
+/* End YUK-17498 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
