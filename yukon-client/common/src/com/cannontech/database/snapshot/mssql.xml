@@ -8515,7 +8515,7 @@
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
-            <string>INDX_CmdReqExReq_CmdReqExId</string>
+            <string>INDX_CREReq_ExecId_DevId</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -8524,8 +8524,14 @@
                   <i__columnName>CommandRequestExecId</i__columnName>
                   <i__nonNonUnique>true</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExecRequest</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>DeviceId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>INDX_CmdReqExReq_CmdReqExId</indexName>
+              <indexName>INDX_CREReq_ExecId_DevId</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -34867,7 +34873,39 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>Indx_CmdReqExecRes_ExecId_ErrC</string>
+            <string>INDX_CRERex_ExecId_DevId</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExecResult</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>CommandRequestExecId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExecResult</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>DeviceId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExecResult</i__tableName>
+                  <i__ordinalPosition>3</i__ordinalPosition>
+                  <i__columnName>ErrorCode</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExecResult</i__tableName>
+                  <i__ordinalPosition>4</i__ordinalPosition>
+                  <i__columnName>CompleteTime</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>INDX_CRERex_ExecId_DevId</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
+            <string>INDX_CRERes_ExecId_ErrC</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -34883,7 +34921,7 @@
                   <i__nonNonUnique>true</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>Indx_CmdReqExecRes_ExecId_ErrC</indexName>
+              <indexName>INDX_CRERes_ExecId_ErrC</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -60961,7 +60999,7 @@
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
-            <string>Indx_CmdReqExec_ContId</string>
+            <string>INDX_CRE_ContId</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -60971,7 +61009,33 @@
                   <i__nonNonUnique>true</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>Indx_CmdReqExec_ContId</indexName>
+              <indexName>INDX_CRE_ContId</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
+            <string>INDX_CRE_ExType_ExId_ExStart</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExec</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>CommandRequestExecType</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExec</i__tableName>
+                  <i__ordinalPosition>2</i__ordinalPosition>
+                  <i__columnName>CommandRequestExecId</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CommandRequestExec</i__tableName>
+                  <i__ordinalPosition>3</i__ordinalPosition>
+                  <i__columnName>StartTime</i__columnName>
+                  <i__nonNonUnique>true</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>INDX_CRE_ExType_ExId_ExStart</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
