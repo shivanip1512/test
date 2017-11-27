@@ -82,7 +82,7 @@ public class DNPConfiguration extends LightDeviceConfiguration {
         return enableNonUpdatedOnFailedScan;
     }
     
-    public void setEnableNonUpdatedOnFailedScan(boolean EnableNonUpdatedOnFailedScan) {
+    public void setEnableNonUpdatedOnFailedScan(boolean enableNonUpdatedOnFailedScan) {
         this.enableNonUpdatedOnFailedScan = enableNonUpdatedOnFailedScan;
     }
 

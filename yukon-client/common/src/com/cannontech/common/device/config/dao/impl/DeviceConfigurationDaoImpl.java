@@ -1066,7 +1066,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                 dnpConfiguration.setEnableUnsolicitedMessageClass3(Boolean.valueOf(item.getValue()));
                 break;
             case "enableNonUpdatedOnFailedScan":
-                dnpConfiguration.setEnableUnsolicitedMessageClass3(Boolean.valueOf(item.getValue()));
+                dnpConfiguration.setEnableNonUpdatedOnFailedScan(Boolean.valueOf(item.getValue()));
                 break;
             case "localTime":
                 dnpConfiguration.setLocalTime(Boolean.valueOf(item.getValue()));
