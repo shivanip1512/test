@@ -566,20 +566,20 @@ yukon.namespace = function (ns) {
         _drawEvents: function () {
             
             var container = this.element;
+            var containerWidth = container.width();
             
             var begin = this.options.begin;
             var end = this.options.end;
             
             // positionedEvents will only include elements between the bounds, and be sorted by time.
-            var positionedEvents = Object.entries(this.options.events).filter(function (keyval) {
-                return begin < keyval[1].timestamp && keyval[1].timestamp < end;
+            var positionedEvents = Object.values(this.options.events).filter(function (event) {
+                return begin < event.timestamp && event.timestamp < end;
             })
             .sort(function (lhs, rhs) {
-                return lhs[1].timestamp - rhs[1].timestamp;
+                return lhs.timestamp - rhs.timestamp;
             })
-            .map(function (keyval) {
-                var event = keyval[1];
-                var position = (event.timestamp - begin) / (end - begin) * container.width();
+            .map(function (event) {
+                var position = (event.timestamp - begin) / (end - begin) * containerWidth;
                 return { event: event, position: position };
             });
             
