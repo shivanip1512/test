@@ -251,7 +251,7 @@ SELECT
     'N',
     'R',
     1,
-    'None', 
+    'On Update', 
     0 
 FROM YukonPAObject PAO
 LEFT JOIN Point PT
