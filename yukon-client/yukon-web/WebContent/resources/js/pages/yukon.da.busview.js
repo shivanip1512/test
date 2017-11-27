@@ -12,7 +12,6 @@ yukon.da.busview = (function () {
     
    
     var _initialized = false;
-    var initializedTimelines = {};
     
     /** @type {Object} - A hash of TimeRange enum entry to hours it represents. */
     var _range_hours = {};
@@ -49,9 +48,6 @@ yukon.da.busview = (function () {
                 });
                 timeline.timeline(options);
                 timeline.timeline('addEvents', toAdd);
-                initializedTimelines[_id] = true;
-                timeline.timeline('draw');
-
             });
 
         });

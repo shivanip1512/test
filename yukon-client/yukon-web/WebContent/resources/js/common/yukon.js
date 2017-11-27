@@ -569,103 +569,112 @@ yukon.namespace = function (ns) {
             
             var begin = this.options.begin;
             var end = this.options.end;
-            var events = this.options.events;
             
-            // eventIds will only include elements between the bounds, and be sorted by time.
-            var eventIds = Object.keys(events).filter(function (id) {
-                return begin < events[id].timestamp && events[id].timestamp < end;
+            // positionedEvents will only include elements between the bounds, and be sorted by time.
+            var positionedEvents = Object.entries(this.options.events).filter(function (keyval) {
+                return begin < keyval[1].timestamp && keyval[1].timestamp < end;
             })
             .sort(function (lhs, rhs) {
-                return events[lhs].timestamp - events[rhs].timestamp;
+                return lhs[1].timestamp - rhs[1].timestamp;
+            })
+            .map(function (keyval) {
+                var event = keyval[1];
+                var position = (event.timestamp - begin) / (end - begin) * container.width();
+                return { event: event, position: position };
             });
             
-            eventIds.forEach(function (id) {
-                
-                var event = events[id];
-                
-                var percent = yukon.percent(event.timestamp - begin, end - begin, 5);
-                
-                var icon = $('<i class="M0 icon ' + (event.icon || 'icon-blank') + '"/>');
+            //  Bin the items together by proximity - if they are within 16 pixels, put them in the same bin
+            var lastBin;
+            var binnedEvents = positionedEvents.reduce(function (bins, positionedEvent) {
+                if (!lastBin || positionedEvent.position - lastBin > 16) {
+                    lastBin = positionedEvent.position;
+                } 
+                bins[lastBin] = bins[lastBin] || [];
+                bins[lastBin].push(positionedEvent.event);
+                return bins;
+            }, {});
+            
+            //  Create timeline event spans for each set of binned events
+            var timelineEvents = Object.entries(binnedEvents).map(function (keyval) {
+            
+                position = keyval[0];
+                events = keyval[1];
+
+                var firstEvent = events[0];
                 
                 var span = $('<span class="timeline-event">')
-                .toggleClass('timeline-icon', event.icon !== undefined)
-                .css({'left': 'calc(' + percent + ' - 8px)' })
-                .append(icon);
+                    .css({'left': position - 8 + 'px' });
                 
-                var prevEvent = container.find('.timeline-event:last');
-                
-                container.append(span);
-                
-                var tooltipped;
-                var offset = parseFloat(span.css('left')) - parseFloat(prevEvent.css('left'));
-                
-                // Cluster if closer than 10 px away.
-                if (prevEvent.length && offset < 10) {
+                if (events.length > 1) {
+                    // If there is there more than one event to cluster together, use the count as the icon
                     
-                    span.remove();
-                    prevEvent.addClass('multi')
-                    .data('count', prevEvent.data('count') + 1);
+                    span.addClass('timeline-icon multi');
                     
-                    prevEvent.find('> .icon').remove();
-                    
-                    if (prevEvent.find('.timeline-event-count').length === 0) {
-                        prevEvent.append('<span class="timeline-event-count">');
-                    }
-                    
-                    prevEvent.find('.timeline-event-count')
-                        .text(prevEvent.data('count'));
-                    
-                    tooltipped = prevEvent;
+                    $('<span class="timeline-event-count">')
+                        .text(events.length)
+                        .appendTo(span);
                     
                 } else {
+                    //  otherwise use the single event's icon
                     
-                    var tooltipTemplate = $('<ul class="dn simple-list">')
-                    .addClass('js-event-tooltip js-sticky-tooltip')
-                    .attr('data-event-id', id);
-                    
-                    span.data('count', 1)
-                    .append(tooltipTemplate)
-                    .attr('data-tooltip', '.js-event-tooltip[data-event-id="' + id + '"]');
-                    
-                    tooltipped = span;
-                }
-                
-                var tooltip = tooltipped.find('.js-event-tooltip');
+                    $('<i class="M0 icon ' + (firstEvent.icon || 'icon-blank') + '"/>')
+                        .appendTo(span);
 
-                if (tooltip.find('li').length > 10) {
-                                        
-                    tooltip.find('li:gt(9)').remove();
+                    if (firstEvent.icon) {
+                        span.addClass('timeline-icon');
+                    }
+                }
                     
-                    var moreCount = tooltipped.data('count') - 10;
+                var tooltip = $('<ul class="dn simple-list">')
+                    .addClass('js-event-tooltip js-sticky-tooltip')
+                    .attr('data-event-id', firstEvent.id);
+
+                span.attr('data-tooltip', '.js-event-tooltip[data-event-id="' + firstEvent.id + '"]');
+                
+                //  Only use the first 10 events for the tooltip
+                var tooltipEvents = events.slice(0, 10);
+
+                var shouldDisplayIcons = tooltipEvents.some(function (event) {
+                    return event.icon;
+                });
+                
+                var tooltipEventItems = tooltipEvents.map(function (event) {
+                    var text = '';
+                    
+                    if (shouldDisplayIcons) {
+                        text += '<i class="icon ' + (event.icon || 'icon-blank') + '"></i>'; 
+                    }
+                    
+                    text += moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
+                    
+                    if (event.message) {
+                        text += ' - ' + event.message; 
+                    }
+                    
+                    var tooltipEventItem = document.createElement("li");
+                    tooltipEventItem.innerHTML = text;
+                    
+                    return tooltipEventItem;
+                });
+                
+                tooltip.append(tooltipEventItems);
+                
+                if (events.length > 10) {
+                    
+                    var moreCount = events.length - 10;
                     var moreText = yg.text.more.replace(/\{0\}/g, '<strong>' + moreCount + '</strong>');
                     
                     $('<li class="tac">')
-                    .html(moreText)
-                    .appendTo(tooltip);
-                    return;
+                        .html(moreText)
+                        .appendTo(tooltip);
                 }
                 
-                var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
-                var message = event.message ? ' - ' + event.message : '';
+                span.append(tooltip);
                 
-                $('<li>').html(timeText + message)
-                .prepend(icon.clone())
-                .appendTo(tooltip);
-                
-                var tooltipIcons = tooltip.find('.icon');
-                
-                /* 
-                 * If there is at least 1 'real' icon, show them with a margin.
-                 * If all icons are icon-blank, hide them
-                 */
-                if (tooltipIcons.is(':not(.icon-blank)')) {
-                    tooltipIcons.removeClass('dn M0');
-                } else {
-                    tooltipIcons.addClass('dn M0');
-                }
-                
-           });
+                return span;
+            });
             
+            container.append(timelineEvents);
         },
         
         /** 
