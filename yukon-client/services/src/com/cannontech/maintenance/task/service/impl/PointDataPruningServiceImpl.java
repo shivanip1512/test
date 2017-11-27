@@ -56,4 +56,15 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         return Instant.now().isBefore(processEndTime.minus(minimumExecutionTime));
     }
 
+    @Override
+    public int deleteDuplicatePointData(Instant processEndTime) {
+        Instant start = new Instant();
+        int numDeleted = 0;
+        // TODO : Add appropriate dao call here.
+        //int numDeleted = databaseManagementDao.deleteRphDuplicates();
+        Instant finish = new Instant();
+        systemEventLogService.rphDeleteDuplicates(numDeleted, start, finish);
+        return 0;
+    }
+
 }

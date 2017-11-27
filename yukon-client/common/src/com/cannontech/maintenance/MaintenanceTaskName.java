@@ -5,5 +5,6 @@ package com.cannontech.maintenance;
  */
 public enum MaintenanceTaskName {
 
-    POINT_DATA_PRUNING,
+    DUPLICATE_POINT_DATA_PRUNING,
+    POINT_DATA_PRUNING
 }

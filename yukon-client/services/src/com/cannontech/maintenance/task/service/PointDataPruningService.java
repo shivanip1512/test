@@ -13,4 +13,9 @@ public interface PointDataPruningService {
      * Delete point data
      */
     int deletePointDataSql(Instant processEndTime);
+    
+    /*
+     * Delete duplicate point data.
+     */
+    int deleteDuplicatePointData(Instant processEndTime);
 }

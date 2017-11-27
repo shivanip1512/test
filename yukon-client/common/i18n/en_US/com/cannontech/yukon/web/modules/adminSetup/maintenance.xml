@@ -21,6 +21,7 @@
     <entry key="yukon.web.modules.adminSetup.maintenance.scheduledGroupRequestExecutionJobDefinition.title">Scheduled Group Request Execution Maintenance</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.scheduledMeterEventsFileExportJobDefinition.title">Scheduled Meter Events File Export Maintenance</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.dataPruning.title">System</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.DUPLICATE_POINT_DATA_PRUNING.title">Duplicate Point Data Pruning</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.title">Point Data Pruning</entry>
     
     
