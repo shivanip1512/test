@@ -228,6 +228,10 @@
                             valueClass="js-dnp-field js-dnp-enableUnsolicitedMessagesClass3">
                             ${dnpConfig.enableUnsolicitedMessageClass3}
                         </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".nonUpdated"
+                            valueClass="js-dnp-field js-dnp-enableNonUpdatedOnFailedScan">
+                            ${dnpConfig.enableNonUpdatedOnFailedScan}
+                        </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </c:if>
