@@ -90,7 +90,8 @@ yukon.tags.deviceGroupPicker = (function () {
                     initialized = picker.is('.js-initialized'),
                     groups, 
                     dialog,
-                    dialogMaxHeight = 750;
+                    windowHeight = $(window).height(),
+                    dialogMaxHeight = windowHeight * 0.70;
                 
                 if (initialized) {
                     dialog = picker.data('dialog');

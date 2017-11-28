@@ -61,13 +61,15 @@
         
         var dialog = $('#window_selectGroupTree_${uniqueId}'),
             content = dialog.find('.ui-dialog-content'),
-            dialogMaxHeight = 750;
+            windowHeight = $(window).height(),
+            dialogMaxHeight = windowHeight * 0.70,
+            divHeigth = windowHeight * 0.50;
         
         // prevents double scrollbars on tree container
         dialog.css('overflow', 'hidden');
 
         // Set the max-height of the div that displays the tree inside the dialog.
-        dialog.find('div.tree-canvas').css('max-height',630);
+        dialog.find('div.tree-canvas').css('max-height',divHeigth);
         
         // Initialize the dialog's height to resize automatically and also set the maximum height to which it can grow.
         dialog.dialog({
