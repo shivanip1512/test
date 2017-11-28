@@ -31,7 +31,7 @@
                             <span>${maintenanceEditorBean.nextRun}</span>
                         </c:when>
                         <c:otherwise>
-                            <span class="empty-list"><i:inline key=".nextRunNever"/></span>
+                            <span class="empty-list"><i:inline key="yukon.common.na"/></span>
                         </c:otherwise>
                     </c:choose>
                 </tags:nameValue2>
