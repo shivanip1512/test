@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.meter.model.DisplayableMeter;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -29,12 +30,19 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.rfn.message.metadata.RfnMetadata;
+import com.cannontech.common.rfn.model.NmCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
+import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
@@ -71,6 +79,9 @@ public class MapController {
     @Autowired private PointService pointService;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private RfnGatewayDataCache gatewayDataCache;
+    @Autowired private RfnDeviceMetadataService metadataService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -112,13 +123,43 @@ public class MapController {
     public String info(ModelMap model, @PathVariable int id) {
         
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
+        PaoType type = pao.getPaoIdentifier().getPaoType();
         DisplayablePao displayable = paoLoadingService.getDisplayablePao(pao);
         if (displayable instanceof DisplayableMeter) {
-            if (StringUtils.isNotBlank(((DisplayableMeter) displayable).getMeter().getRoute())) {
+            DisplayableMeter meter = (DisplayableMeter) displayable;
+            if (StringUtils.isNotBlank(meter.getMeter().getRoute())) {
                 model.addAttribute("showRoute", true);
             }
-            if (StringUtils.isNotBlank(((DisplayableMeter) displayable).getMeter().getSerialOrAddress())) {
+            if (StringUtils.isNotBlank(meter.getMeter().getSerialOrAddress())) {
                 model.addAttribute("showAddressOrSerial", true);
+            }
+            if (StringUtils.isNotBlank(meter.getMeter().getMeterNumber())) {
+                model.addAttribute("showMeterNumber", true);
+            }
+        }
+        if (type.isRfGateway()) {
+            try {
+                RfnGatewayData gateway = gatewayDataCache.get(pao.getPaoIdentifier());
+                model.addAttribute("gatewayIPAddress", gateway.getIpAddress());
+            } catch (NmCommunicationException e) {
+                log.error("Failed to get gateway data for " + id, e);           
+            }
+        }
+        if (type.isRfn()) {
+            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
+            Map<RfnMetadata, Object> metadata;
+            try {
+                metadata = metadataService.getMetadata(rfnDevice);
+                Object macAddress = metadata.get(RfnMetadata.NODE_ADDRESS);
+                if (macAddress != null) {
+                    model.addAttribute("macAddress", String.valueOf(macAddress));
+                }
+                Object primaryGateway = metadata.get(RfnMetadata.PRIMARY_GATEWAY);
+                if (primaryGateway != null) {
+                    model.addAttribute("primaryGateway", String.valueOf(primaryGateway));
+                }
+            } catch (NmCommunicationException e) {
+                log.error("Failed to get metadata for " + id, e);           
             }
         }
 

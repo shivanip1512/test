@@ -23,6 +23,11 @@ public abstract class MappingInfo {
     private String distanceDisplay;
     private MessageSourceAccessor accessor;
     private boolean gatewayType;
+    private String deviceDetailUrl;
+    private String primaryGateway;
+    private String macAddress;
+    private String ipAddress;
+    private String meterNumber;
 
     public MappingInfo(RfnDevice device, FeatureCollection location, MessageSourceAccessor accessor) {
         this.device = device;
@@ -104,6 +109,46 @@ public abstract class MappingInfo {
 
     public void setConnectionStatus(ConnectionStatus connectionStatus) {
         this.connectionStatus = connectionStatus;
+    }
+
+    public String getDeviceDetailUrl() {
+        return deviceDetailUrl;
+    }
+
+    public void setDeviceDetailUrl(String deviceDetailUrl) {
+        this.deviceDetailUrl = deviceDetailUrl;
+    }
+
+    public String getPrimaryGateway() {
+        return primaryGateway;
+    }
+
+    public void setPrimaryGateway(String primaryGateway) {
+        this.primaryGateway = primaryGateway;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getMeterNumber() {
+        return meterNumber;
+    }
+
+    public void setMeterNumber(String meterNumber) {
+        this.meterNumber = meterNumber;
     }
 
 }

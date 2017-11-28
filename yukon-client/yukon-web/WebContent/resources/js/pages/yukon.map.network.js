@@ -395,7 +395,13 @@ yukon.map.network = (function () {
                         if (parent != null) {
                             var parentData = parent.data;
                             $('.js-device-display').toggleClass('dn', parent.device.name == null);
-                            $('.js-device').text(parent.device.name);
+                            if (parent.deviceDetailUrl != null) {
+                                $('.js-device').html('<a href="' + yukon.url(parent.deviceDetailUrl) + '" target=_blank>' + parent.device.name + '</a>');
+                            } else {
+                                $('.js-device').text(parent.device.name);
+                            }
+                            $('.js-meter-number-display').toggleClass('dn', parent.meterNumber == null);
+                            $('.js-meter-number').text(parent.meterNumber);
                             $('.js-type-display').toggleClass('dn', parent.device.paoIdentifier.paoType == null);
                             $('.js-type').text(parent.device.paoIdentifier.paoType);
                             $('.js-status-display').toggleClass('dn', parent.statusDisplay == null);
@@ -406,8 +412,12 @@ yukon.map.network = (function () {
                             $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
                             $('.js-gateway-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber == null || !parent.gatewayType));
                             $('.js-gateway-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-ip-address-display').toggleClass('dn', parent.ipAddress == null);
+                            $('.js-ip-address').text(parent.ipAddress);
                             $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress == null);
                             $('.js-mac-address').text(parentData.nodeMacAddress);
+                            $('.js-primary-gateway-display').toggleClass('dn', parent.primaryGateway == null);
+                            $('.js-primary-gateway').text(parent.primaryGateway);
                             $('.js-distance-display').toggleClass('dn', parent.distanceDisplay == null);
                             $('.js-distance').text(parent.distanceDisplay);
                             $('#neighbor-info').hide();
@@ -419,7 +429,13 @@ yukon.map.network = (function () {
                         } else if (neighbor != null) {
                             var neighborData = neighbor.data;
                             $('.js-device-display').toggleClass('dn', neighbor.device.name == null);
-                            $('.js-device').text(neighbor.device.name);
+                            if (neighbor.deviceDetailUrl != null) {
+                                $('.js-device').html('<a href="' + yukon.url(neighbor.deviceDetailUrl) + '" target=_blank>' + neighbor.device.name + '</a>');
+                            } else {
+                                $('.js-device').text(neighbor.device.name);
+                            }
+                            $('.js-meter-number-display').toggleClass('dn', neighbor.meterNumber == null);
+                            $('.js-meter-number').text(neighbor.meterNumber);
                             $('.js-type-display').toggleClass('dn', neighbor.device.paoIdentifier.paoType == null);
                             $('.js-type').text(neighbor.device.paoIdentifier.paoType);
                             $('.js-status-display').toggleClass('dn', neighbor.statusDisplay == null);
@@ -430,8 +446,12 @@ yukon.map.network = (function () {
                             $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
                             $('.js-gateway-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber == null || !neighbor.gatewayType));
                             $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress == null);
+                            $('.js-ip-address').text(neighbor.ipAddress);
                             $('.js-address-display').toggleClass('dn', neighborData.neighborAddress == null);
                             $('.js-address').text(neighborData.neighborAddress);
+                            $('.js-primary-gateway-display').toggleClass('dn', neighbor.primaryGateway == null);
+                            $('.js-primary-gateway').text(neighbor.primaryGateway);
                             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags == null);
                             $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
                             $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost == null);
@@ -450,7 +470,13 @@ yukon.map.network = (function () {
                             _overlay.setPosition(coord);
                         } else if (routeInfo != null) {
                             $('.js-device-display').toggleClass('dn', routeInfo.device.name == null);
-                            $('.js-device').text(routeInfo.device.name);
+                            if (routeInfo.deviceDetailUrl != null) {
+                                $('.js-device').html('<a href="' + yukon.url(routeInfo.deviceDetailUrl) + '" target=_blank>' + routeInfo.device.name + '</a>');
+                            } else {
+                                $('.js-device').text(routeInfo.device.name);
+                            }
+                            $('.js-meter-number-display').toggleClass('dn', routeInfo.meterNumber == null);
+                            $('.js-meter-number').text(routeInfo.meterNumber);
                             $('.js-type-display').toggleClass('dn', routeInfo.device.paoIdentifier.paoType == null);
                             $('.js-type').text(routeInfo.device.paoIdentifier.paoType);
                             $('.js-status-display').toggleClass('dn', routeInfo.statusDisplay == null);
@@ -461,6 +487,12 @@ yukon.map.network = (function () {
                             $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
                             $('.js-gateway-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber == null || !routeInfo.gatewayType));
                             $('.js-gateway-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
+                            $('.js-ip-address-display').toggleClass('dn', routeInfo.ipAddress == null);
+                            $('.js-ip-address').text(routeInfo.ipAddress);
+                            $('.js-primary-gateway-display').toggleClass('dn', routeInfo.primaryGateway == null);
+                            $('.js-primary-gateway').text(routeInfo.primaryGateway);
+                            $('.js-address-display').toggleClass('dn', routeInfo.macAddress == null);
+                            $('.js-address').text(routeInfo.macAddress);
                             $('.js-destination-address-display').toggleClass('dn', routeInfo.route.destinationAddress == null);
                             $('.js-destination-address').text(routeInfo.route.destinationAddress);
                             $('.js-next-hop-address-display').toggleClass('dn', routeInfo.route.nextHopAddress == null);

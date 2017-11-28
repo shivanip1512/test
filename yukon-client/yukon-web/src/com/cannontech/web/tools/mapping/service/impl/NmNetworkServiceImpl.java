@@ -14,12 +14,15 @@ import org.apache.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -47,6 +50,7 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.tools.mapping.model.MappingInfo;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
@@ -80,6 +84,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private RfnDeviceMetadataService metadataService;
+    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
+    @Autowired private MeterDao meterDao;
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
@@ -166,7 +172,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             }
             FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(parentLocation));
             Parent parent = new Parent(parentDevice, location, data, accessor);
-            addCommStatus(parent, accessor);
+            parent.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(parentDevice));
+            addMetadata(parent, accessor);
             addDistance(parent, deviceLocation, parentLocation);
             log.debug(parent);
             log.debug("-----" + deviceLocation + " <<>> " + parentLocation);
@@ -230,6 +237,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             if (paoLocation != null) {
                 FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
                 RouteInfo routeInfo = new RouteInfo(routeDevice, data, location, accessor);
+                routeInfo.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(routeDevice));
                 // the first element shows the distance from the first element to the 2nd element
                 // only the last element has no distance, because it has no "next hop"
                 if (i < response.getRouteData().size() - 1) {
@@ -242,7 +250,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     }
                     addDistance(routeInfo, paoLocation, nextHopLocation);
                 }
-                addCommStatus(routeInfo, accessor);
+                addMetadata(routeInfo, accessor);
                 routes.add(routeInfo);
                 log.debug(routeInfo);
                 if(nextHopLocation == null){
@@ -305,7 +313,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     FeatureCollection location =
                         paoLocationService.getFeatureCollection(Lists.newArrayList(neighborLocation));
                     Neighbor neighbor = new Neighbor(neighborDevice, location, data, accessor);
-                    addCommStatus(neighbor, accessor);
+                    neighbor.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(neighborDevice));
+                    addMetadata(neighbor, accessor);
                     // distance is from device to each neighbor
                     addDistance(neighbor, deviceLocation, neighborLocation);
                     log.debug(neighbor);
@@ -321,13 +330,20 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
     
     /**
-     * Attempts to get communication status for a devices from NM and adds to to MappingInfo
+     * Attempts to get metadata for devices from NM and adds to to MappingInfo
      */
-    private void addCommStatus(MappingInfo info, MessageSourceAccessor accessor) {
-        if (info.getDevice().getPaoIdentifier().getPaoType().isRfGateway()) {
+    private void addMetadata(MappingInfo info, MessageSourceAccessor accessor) {
+        PaoType type = info.getDevice().getPaoIdentifier().getPaoType();
+        if (type.isRfGateway()) {
             try {
                 RfnGatewayData gateway = gatewayDataCache.get(info.getDevice().getPaoIdentifier());
                 info.setConnectionStatus(gateway.getConnectionStatus());
+                info.setIpAddress(gateway.getIpAddress());
+                Map<RfnMetadata, Object> metadata = metadataService.getMetadata(info.getDevice());
+                Object macAddress = metadata.get(RfnMetadata.NODE_ADDRESS);
+                if (macAddress != null) {
+                    info.setMacAddress(String.valueOf(macAddress));
+                }
             } catch (NmCommunicationException e) {
                 // ignore, status will be set to "UNKNOWN"
                 log.error("Failed to get gateway data for " + info.getDevice(), e);
@@ -342,9 +358,21 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     // ignore, status will be set to "UNKNOWN"
                     log.error("NM didn't return communication status for " + info.getDevice());
                 }
+                Object primaryGateway = metadata.get(RfnMetadata.PRIMARY_GATEWAY);
+                if (primaryGateway != null) {
+                    info.setPrimaryGateway(String.valueOf(primaryGateway));
+                }
+                Object macAddress = metadata.get(RfnMetadata.NODE_ADDRESS);
+                if (macAddress != null) {
+                    info.setMacAddress(String.valueOf(macAddress));
+                }
             } catch (NmCommunicationException e) {
                 // ignore, status will be set to "UNKNOWN"
                 log.error("Failed to get meta-data for " + info.getDevice(), e);
+            }
+            if (type.isMeter()) {
+                YukonMeter meter = meterDao.getForId(info.getDevice().getPaoIdentifier().getPaoId());
+                info.setMeterNumber(meter.getMeterNumber());
             }
         }
     }

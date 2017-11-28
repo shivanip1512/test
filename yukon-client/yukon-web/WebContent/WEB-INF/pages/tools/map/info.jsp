@@ -9,6 +9,18 @@
 <cti:msgScope paths="modules.tools.map,modules.operator.mapNetwork">
 <tags:nameValueContainer2 tableClass="name-collapse">
     <tags:nameValue2 nameKey=".device"><cti:paoDetailUrl yukonPao="${pao}" newTab="true">${pao.name}</cti:paoDetailUrl></tags:nameValue2>
+    <c:if test="${showMeterNumber}">
+        <tags:nameValue2 nameKey=".meterNumber">${fn:escapeXml(pao.meter.meterNumber)}</tags:nameValue2>
+    </c:if>
+    <c:if test="${!empty gatewayIPAddress}">
+        <tags:nameValue2 nameKey=".ipAddress">${fn:escapeXml(gatewayIPAddress)}</tags:nameValue2>
+    </c:if>
+    <c:if test="${!empty macAddress}">
+        <tags:nameValue2 nameKey=".macAddress">${fn:escapeXml(macAddress)}</tags:nameValue2>
+    </c:if>
+    <c:if test="${!empty primaryGateway}">
+        <tags:nameValue2 nameKey=".primaryGateway">${fn:escapeXml(primaryGateway)}</tags:nameValue2>
+    </c:if>
     <tags:nameValue2 nameKey=".type">${fn:escapeXml(pao.paoIdentifier.paoType.paoTypeName)}</tags:nameValue2>
     <tags:nameValue2 nameKey=".status" nameClass="dn js-status-display" valueClass="dn js-status js-status-display"></tags:nameValue2>
     <c:if test="${showRoute}">
