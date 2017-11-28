@@ -750,37 +750,25 @@ YukonError_t DnpDevice::sendCommResult(INMESS &InMessage)
 
 void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
 {
-    CtiReturnMsg                *vgMsg;
-    CtiPointDataMsg             *pt_msg;
-    CtiPointSPtr                point;
-    CtiPointNumeric             *pNumeric;
-    string                    resultString;
-    CtiTime                       Now;
+    auto vgMsg = std::make_unique<CtiReturnMsg>(getID());  //  , InMessage.Return.CommandStr
 
-    Protocols::Interface::pointlist_t points;
-    Protocols::Interface::pointlist_t::iterator itr;
-
-    vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage.Return.CommandStr
-
-    double tmpValue;
-
-    _dnp.getInboundPoints(points);
-
-    //  do any device-dependent work on the points
-    processPoints(points);
-
-    //  then toss them into the return msg
-    for( itr = points.begin(); itr != points.end(); itr++ )
     {
-        pt_msg = *itr;
+        Protocols::Interface::pointlist_t points;
 
-        if( pt_msg )
+        _dnp.getInboundPoints(points);
+
+        //  do any device-dependent work on the points
+        processPoints(points);
+
+        //  then toss them into the return msg
+        for( auto pt_msg : points )
         {
-            vgMsg->PointData().push_back(pt_msg);
+            if( pt_msg )
+            {
+                vgMsg->PointData().push_back(pt_msg);
+            }
         }
     }
-
-    points.erase(points.begin(), points.end());
 
     //  now send the pseudos related to the control point
     //    note:  points are the domain of the device, not the protocol,
@@ -806,150 +794,151 @@ void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
         }
     }
 
-    vg_connection.WriteConnQue(vgMsg, CALLSITE);
+    vg_connection.WriteConnQue(std::move(vgMsg), CALLSITE);
 }
 
 
-void DnpDevice::processPoints( Protocols::Interface::pointlist_t &points )
+std::unique_ptr<CtiPointDataMsg> DnpDevice::calculateDemandAccumulator(const CtiPointAccumulatorSPtr& demandPoint, dnp_accumulator_pointdata current)
 {
-    Protocols::Interface::pointlist_t::iterator itr;
-    CtiPointDataMsg *msg;
-    CtiPointSPtr point;
-    string resultString;
-
-    Protocols::Interface::pointlist_t demand_points;
-
-    for( itr = points.begin(); itr != points.end(); itr++ )
+    if( auto previous = Cti::mapFindRef(_lastIntervalAccumulatorData, demandPoint->getPointOffset()) )
     {
-        msg = *itr;
+        double demandValue;
 
-        //  !!! msg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
-        if( msg && (point = getDevicePointOffsetTypeEqual(msg->getId(), msg->getType())) )
+        CTILOG_INFO(dout, "demand accumulator calculation data for device \"" << getName() << "\", pointid " << demandPoint->getPointID() <<
+            endl << "current.point_value  = " << current.point_value <<
+            endl << "current.point_time   = " << current.point_time <<
+            endl << "previous.point_value = " << previous->point_value <<
+            endl << "previous.point_time  = " << previous->point_time
+        );
+
+        if( previous->point_time + 60 <= current.point_time )
         {
-            //  if it's a pulse accumulator, we must attempt to calculate its demand accumulator
-            if( point->getType() == PulseAccumulatorPointType )
+            if( previous->point_value <= current.point_value )
             {
-                CtiPointAccumulatorSPtr demandPoint;
-
-                //  is there an accompanying demand accumulator for this pulse accumulator?
-                if( demandPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) )
+                demandValue = current.point_value - previous->point_value;
+            }
+            else // previous.point_value > current.point_value
+            {
+                //  rollover has occurred - figure out how big the accumulator was
+                if( previous->point_value > 0x0000ffff )
                 {
-                    dnp_accumulator_pointdata_map::iterator pd_itr;
-                    dnp_accumulator_pointdata previous, current;
-
-                    //  get the raw pulses from the pulse accumulator
-                    current.point_value = msg->getValue();
-                    current.point_time  = msg->getTime().seconds();
-
-                    pd_itr = _lastIntervalAccumulatorData.find(demandPoint->getPointOffset());
-
-                    if( pd_itr != _lastIntervalAccumulatorData.end() )
-                    {
-                        float demandValue;
-                        previous = pd_itr->second;
-
-                        CTILOG_INFO(dout, "demand accumulator calculation data for device \""<< getName() <<"\", pointid "<< point->getPointID() <<
-                                endl <<"current.point_value  = "<< current.point_value <<
-                                endl <<"current.point_time   = "<< current.point_time <<
-                                endl <<"previous.point_value = "<< previous.point_value <<
-                                endl <<"previous.point_time  = "<< previous.point_time
-                                );
-
-                        if( previous.point_time + 60 <= current.point_time )
-                        {
-                            if( previous.point_value <= current.point_value )
-                            {
-                                demandValue = current.point_value - previous.point_value;
-                            }
-                            else // previous.point_value > current.point_value
-                            {
-                                //  rollover has occurred - figure out how big the accumulator was
-                                if( previous.point_value > 0x0000ffff )
-                                {
-                                    //  it was a 32-bit accumulator
-                                    demandValue = (numeric_limits<unsigned long>::max() - previous.point_value) + current.point_value;
-                                }
-                                else
-                                {
-                                    //  it was a 16-bit accumulator
-                                    demandValue = (numeric_limits<unsigned short>::max() - previous.point_value) + current.point_value;
-                                }
-                            }
-
-                            demandValue *= 3600.0;
-                            demandValue /= (current.point_time - previous.point_time);
-
-                            demandValue = demandPoint->computeValueForUOM(demandValue);
-
-                            resultString = getName() + " / " + demandPoint->getName();
-                            resultString += ": " + CtiNumStr(demandValue, (demandPoint)->getPointUnits().getDecimalPlaces());
-
-                            CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
-                            demandMsg->setTime(current.point_time);
-
-                            demand_points.push_back(demandMsg);
-
-                            CTILOG_INFO(dout, "updating demand accumulator calculation data"<<
-                                    endl <<"current.point_value  = "<< current.point_value <<
-                                    endl <<"current.point_time   = "<< current.point_time
-                                    );
-
-                            pd_itr->second = current;
-                        }
-                        else
-                        {
-                            CTILOG_ERROR(dout, "demand not calculated; interval < 60 sec");
-                        }
-                    }
-                    else
-                    {
-                        CTILOG_INFO(dout, "inserting demand accumulator calculation data" <<
-                                endl <<"current.point_value  = "<< current.point_value <<
-                                endl <<"current.point_time   = "<< current.point_time
-                                );
-
-                        _lastIntervalAccumulatorData.insert(dnp_accumulator_pointdata_map::value_type(point->getPointOffset(), current));
-                    }
+                    //  it was a 32-bit accumulator
+                    demandValue = (numeric_limits<unsigned long>::max() - previous->point_value) + current.point_value;
+                }
+                else
+                {
+                    //  it was a 16-bit accumulator
+                    demandValue = (numeric_limits<unsigned short>::max() - previous->point_value) + current.point_value;
                 }
             }
 
-            //  NOTE:  we had to retrieve the actual pointid by offset+type (see above), so we assign the actual id now
-            msg->setId(point->getID());
+            demandValue *= 3600.0;
+            demandValue /= (current.point_time - previous->point_time);
 
-            if( point->isNumeric() )
-            {
-                CtiPointNumericSPtr pNumeric = boost::static_pointer_cast<CtiPointNumeric>(point);
+            demandValue = demandPoint->computeValueForUOM(demandValue);
 
-                msg->setValue(pNumeric->computeValueForUOM(msg->getValue()));
+            auto resultString = getName() + " / " + demandPoint->getName();
+            resultString += ": " + CtiNumStr(demandValue, (demandPoint)->getPointUnits().getDecimalPlaces());
 
-                resultString  = getName() + " / " + point->getName();
-                resultString += ": " + CtiNumStr(msg->getValue(), (pNumeric)->getPointUnits().getDecimalPlaces());
-                resultString += " @ " + msg->getTime().asString();
-            }
-            else if( point->isStatus() )
-            {
-                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
-                resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(pStatus->getStateGroupID(), msg->getValue());
-                resultString += " @ " + msg->getTime().asString();
-            }
-            else
-            {
-                resultString = "";
-            }
+            CTILOG_INFO(dout, "updating demand accumulator calculation data" <<
+                endl << "current.point_value  = " << current.point_value <<
+                endl << "current.point_time   = " << current.point_time
+            );
 
-            msg->setString(resultString);
+            previous = current;
+
+            auto msg = std::make_unique<CtiPointDataMsg>(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
+            msg->setTime(current.point_time);
+
+            return msg;
         }
         else
         {
-            delete *itr;
-
-            *itr = 0;
+            CTILOG_WARN(dout, "demand not calculated; interval < 60 sec");
         }
+    }
+    else
+    {
+        CTILOG_INFO(dout, "inserting demand accumulator calculation data" <<
+            endl << "current.point_value  = " << current.point_value <<
+            endl << "current.point_time   = " << current.point_time
+        );
+
+        _lastIntervalAccumulatorData.emplace(demandPoint->getPointOffset(), current);
+    }
+
+    return nullptr;
+}
+
+void DnpDevice::processPoints( Protocols::Interface::pointlist_t &points )
+{
+    Protocols::Interface::pointlist_t demand_points;
+
+    for( auto& msg : points )
+    {
+        if( ! msg )
+        {
+            continue;
+        }
+
+        //  !!! msg->getId() is actually returning the offset !!!  because only the offset and type are known in the protocol object
+        auto point = getDevicePointOffsetTypeEqual(msg->getId(), msg->getType());
+
+        if( ! point )
+        {
+            delete msg;
+            msg = nullptr;
+            continue;
+        }
+
+        std::string resultString;
+
+        //  if it's a pulse accumulator, we must attempt to calculate its demand accumulator
+        if( point->getType() == PulseAccumulatorPointType )
+        {
+            //  is there an accompanying demand accumulator for this pulse accumulator?
+            if( auto demandPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) )
+            {
+                //  get the raw pulses from the pulse accumulator
+                dnp_accumulator_pointdata update {
+                    msg->getValue(),
+                    msg->getTime().seconds() };
+
+                if( auto demand_msg = calculateDemandAccumulator(demandPoint, update) )
+                {
+                    demand_points.push_back(demand_msg.release());
+                }
+            }
+        }
+
+        //  NOTE:  we had to retrieve the actual pointid by offset+type (see above), so we assign the actual id now
+        msg->setId(point->getID());
+
+        if( point->isNumeric() )
+        {
+            CtiPointNumericSPtr pNumeric = boost::static_pointer_cast<CtiPointNumeric>(point);
+
+            msg->setValue(pNumeric->computeValueForUOM(msg->getValue()));
+
+            resultString  = getName() + " / " + point->getName();
+            resultString += ": " + CtiNumStr(msg->getValue(), (pNumeric)->getPointUnits().getDecimalPlaces());
+            resultString += " @ " + msg->getTime().asString();
+        }
+        else if( point->isStatus() )
+        {
+            CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+            resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(pStatus->getStateGroupID(), msg->getValue());
+            resultString += " @ " + msg->getTime().asString();
+        }
+        else
+        {
+            resultString = "";
+        }
+
+        msg->setString(resultString);
     }
 
     points.insert(points.end(), demand_points.begin(), demand_points.end());
-
-    demand_points.erase(demand_points.begin(), demand_points.end());
 }
 
 

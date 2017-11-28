@@ -1,11 +1,13 @@
 #pragma once
 
 #include "dev_remote.h"
+#include "pt_accum.h"
 #include "prot_dnp.h"
 #include "tbl_dv_address.h"
 
 #include <map>
 #include <string>
+#include <memory>
 
 namespace Cti {
 namespace Devices {
@@ -16,8 +18,8 @@ class IM_EX_DEVDB DnpDevice : public CtiDeviceRemote
 
     struct dnp_accumulator_pointdata
     {
-        unsigned long point_value;
-        unsigned long point_time;
+        double point_value;
+        ctitime_t point_time;
     };
 
     struct pseudo_info
@@ -47,9 +49,11 @@ class IM_EX_DEVDB DnpDevice : public CtiDeviceRemote
     info_struct _porter_info;
     info_struct _pil_info;  //  only used for the call to sendCommRequest(), unreliable after - DO NOT USE FOR DECODES
 
-    typedef std::map< long, dnp_accumulator_pointdata > dnp_accumulator_pointdata_map;
+    using dnp_accumulator_pointdata_map = std::map<long, dnp_accumulator_pointdata>;
 
     dnp_accumulator_pointdata_map _lastIntervalAccumulatorData;
+
+    std::unique_ptr<CtiPointDataMsg> calculateDemandAccumulator(const CtiPointAccumulatorSPtr& pt, dnp_accumulator_pointdata current);
 
 protected:
 
