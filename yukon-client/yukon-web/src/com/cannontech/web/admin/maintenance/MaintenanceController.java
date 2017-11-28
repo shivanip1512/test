@@ -32,6 +32,8 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CronExprOption;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -313,7 +315,7 @@ public class MaintenanceController {
                     if (setting.getType() == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME
                         || (setting.getType() == GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME)) {
                         String[] values = (String[]) command.getValues().get(setting.getType());
-                        setting.setValue(values[0] + "," + values[1]);
+                        setting.setValue(StringUtils.join(values, ","));
                     } else {
                         setting.setValue(command.getValues().get(setting.getType()));
                     }
