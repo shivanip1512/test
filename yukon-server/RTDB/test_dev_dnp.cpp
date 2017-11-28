@@ -13,6 +13,8 @@ struct test_DnpDevice : Cti::Devices::DnpDevice
     using CtiTblPAOLite::_name;
     using DnpDevice::_dnp;
 
+    using DnpDevice::processPoints;
+
     Cti::Test::DevicePointHelper pointHelper;
 
     CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type) override
@@ -33,6 +35,94 @@ struct test_DnpDevice : Cti::Devices::DnpDevice
 
 BOOST_AUTO_TEST_SUITE( test_dev_dnp )
 
+BOOST_AUTO_TEST_CASE(test_dev_dnp_demand_accumulator)
+{
+    test_DnpDevice dev;
+
+    const CtiDate date { 212, 2017 };
+    const CtiTime time { date, 12, 34, 56 };
+
+    //  Initial point data
+    {
+        Cti::Protocols::Interface::pointlist_t points;
+
+        auto msg = std::make_unique<CtiPointDataMsg>(17, 4, NormalQuality, PulseAccumulatorPointType);
+        msg->setTime(time);
+
+        points.push_back(msg.release());
+
+        dev.processPoints(points);
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+        auto itr = points.cbegin();
+
+        //  Unmodified
+        BOOST_CHECK_EQUAL((*itr)->getId(),      1);
+        BOOST_CHECK_EQUAL((*itr)->getValue(),   4);
+        BOOST_CHECK_EQUAL((*itr)->getQuality(), NormalQuality);
+        BOOST_CHECK_EQUAL((*itr)->getType(),    PulseAccumulatorPointType);
+        BOOST_CHECK_EQUAL((*itr)->getTime(),    time);
+
+        delete_container(points);
+    }
+
+    //  Additional point data less than 1 minute in the future
+    {
+        Cti::Protocols::Interface::pointlist_t points;
+
+        auto msg = std::make_unique<CtiPointDataMsg>(17, 5, NormalQuality, PulseAccumulatorPointType);
+        msg->setTime(time + 59);
+
+        points.push_back(msg.release());
+
+        dev.processPoints(points);
+
+        BOOST_REQUIRE_EQUAL(points.size(), 1);
+        auto itr = points.cbegin();
+
+        //  Unmodified
+        BOOST_CHECK_EQUAL((*itr)->getId(),      1);
+        BOOST_CHECK_EQUAL((*itr)->getValue(),   5);
+        BOOST_CHECK_EQUAL((*itr)->getQuality(), NormalQuality);
+        BOOST_CHECK_EQUAL((*itr)->getType(),    PulseAccumulatorPointType);
+        BOOST_CHECK_EQUAL((*itr)->getTime(),    time + 59);
+
+        delete_container(points);
+    }
+
+    //  Additional point data exactly 1 minute from the first
+    {
+        Cti::Protocols::Interface::pointlist_t points;
+
+        auto msg = std::make_unique<CtiPointDataMsg>(17, 6, NormalQuality, PulseAccumulatorPointType);
+        msg->setTime(time + 60);
+
+        points.push_back(msg.release());
+
+        dev.processPoints(points);
+
+        BOOST_REQUIRE_EQUAL(points.size(), 2);
+        auto itr = points.cbegin();
+
+        //  Unmodified
+        BOOST_CHECK_EQUAL((*itr)->getId(),      1);
+        BOOST_CHECK_EQUAL((*itr)->getValue(),   6);
+        BOOST_CHECK_EQUAL((*itr)->getQuality(), NormalQuality);
+        BOOST_CHECK_EQUAL((*itr)->getType(),    PulseAccumulatorPointType);
+        BOOST_CHECK_EQUAL((*itr)->getTime(),    time + 60);
+        
+        //  New demand accumulator value
+        ++itr;
+        BOOST_CHECK_EQUAL((*itr)->getId(),      2);
+        BOOST_CHECK_EQUAL((*itr)->getValue(),   120);
+        BOOST_CHECK_EQUAL((*itr)->getQuality(), NormalQuality);
+        BOOST_CHECK_EQUAL((*itr)->getType(),    DemandAccumulatorPointType);
+        BOOST_CHECK_EQUAL((*itr)->getTime(),    time + 60);
+
+        delete_container(points);
+    }
+}
+    
 struct beginExecuteRequest_helper
 {
     CtiRequestMsg           request;

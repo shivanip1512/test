@@ -839,7 +839,7 @@ void DnpDevice::processPoints( Protocols::Interface::pointlist_t &points )
 
                     //  get the raw pulses from the pulse accumulator
                     current.point_value = msg->getValue();
-                    current.point_time  = CtiTime::now().seconds();
+                    current.point_time  = msg->getTime().seconds();
 
                     pd_itr = _lastIntervalAccumulatorData.find(demandPoint->getPointOffset());
 
@@ -885,6 +885,7 @@ void DnpDevice::processPoints( Protocols::Interface::pointlist_t &points )
                             resultString += ": " + CtiNumStr(demandValue, (demandPoint)->getPointUnits().getDecimalPlaces());
 
                             CtiPointDataMsg *demandMsg = new CtiPointDataMsg(demandPoint->getID(), demandValue, NormalQuality, DemandAccumulatorPointType, resultString);
+                            demandMsg->setTime(current.point_time);
 
                             demand_points.push_back(demandMsg);
 
