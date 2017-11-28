@@ -891,51 +891,45 @@ void DnpDevice::processPoints( Protocols::Interface::pointlist_t &points )
             continue;
         }
 
-        std::string resultString;
-
-        //  if it's a pulse accumulator, we must attempt to calculate its demand accumulator
-        if( point->getType() == PulseAccumulatorPointType )
-        {
-            //  is there an accompanying demand accumulator for this pulse accumulator?
-            if( auto demandPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) )
-            {
-                //  get the raw pulses from the pulse accumulator
-                dnp_accumulator_pointdata update {
-                    msg->getValue(),
-                    msg->getTime().seconds() };
-
-                if( auto demand_msg = calculateDemandAccumulator(demandPoint, update) )
-                {
-                    demand_points.push_back(demand_msg.release());
-                }
-            }
-        }
-
-        //  NOTE:  we had to retrieve the actual pointid by offset+type (see above), so we assign the actual id now
+        //  assign the device's actual point id now
         msg->setId(point->getID());
 
         if( point->isNumeric() )
         {
+            //  if it's a pulse accumulator, we must attempt to calculate its demand accumulator
+            if( point->getType() == PulseAccumulatorPointType )
+            {
+                //  is there an accompanying demand accumulator for this pulse accumulator?
+                if( auto demandPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(point->getPointOffset(), DemandAccumulatorPointType)) )
+                {
+                    //  get the raw pulses from the pulse accumulator
+                    dnp_accumulator_pointdata update {
+                        msg->getValue(),
+                        msg->getTime().seconds() };
+
+                    if( auto demand_msg = calculateDemandAccumulator(demandPoint, update) )
+                    {
+                        demand_points.push_back(demand_msg.release());
+                    }
+                }
+            }
+
             CtiPointNumericSPtr pNumeric = boost::static_pointer_cast<CtiPointNumeric>(point);
 
             msg->setValue(pNumeric->computeValueForUOM(msg->getValue()));
 
-            resultString  = getName() + " / " + point->getName();
-            resultString += ": " + CtiNumStr(msg->getValue(), (pNumeric)->getPointUnits().getDecimalPlaces());
+            auto resultString  = getName() + " / " + point->getName() + ": " + CtiNumStr(msg->getValue(), (pNumeric)->getPointUnits().getDecimalPlaces());
             resultString += " @ " + msg->getTime().asString();
+            msg->setString(resultString);
         }
         else if( point->isStatus() )
         {
             CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
-            resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(pStatus->getStateGroupID(), msg->getValue());
+            
+            auto resultString  = getName() + " / " + point->getName() + ": " + ResolveStateName(pStatus->getStateGroupID(), msg->getValue());
             resultString += " @ " + msg->getTime().asString();
+            msg->setString(resultString);
         }
-        else
-        {
-            resultString = "";
-        }
-
-        msg->setString(resultString);
     }
 
     points.insert(points.end(), demand_points.begin(), demand_points.end());
