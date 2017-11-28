@@ -269,44 +269,43 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
     }
 
+    /*
+     * Note : If we send an EIM request for enrollment with same account, load group, load program as one of the already enrolled programs 
+     * but different serial number, the matching program enrollment is updated to ADD the device with serial number received in the request.
+     * Whereas when we try to do the same from web server, we ask for user confirmation before performing this enrollment
+     * update. 
+     */
     protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
-            ProgramEnrollment newProgramEnrollment, boolean seasonalLoad, boolean isMultipleProgramsPerCategoryAllowed) {
+                                         ProgramEnrollment newProgramEnrollment, boolean seasonalLoad,
+                                         boolean isMultipleProgramsPerCategoryAllowed) {
         boolean isProgramEnrollmentEnrolled = false;
         List<ProgramEnrollment> removedEnrollments = Lists.newArrayList();
         for (ProgramEnrollment programEnrollment : programEnrollments) {
-            
-            if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()){
+
+            if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()) {
                 if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
                     if (programEnrollment.getRelay() == newProgramEnrollment.getRelay()) {
-                        if (seasonalLoad){
-                            if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
-                                isProgramEnrollmentEnrolled = true;
-                            } else {
-                                continue;
-                            }
-                        } else {
-                            if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
-                                isProgramEnrollmentEnrolled = true;
-                            } else if (!isMultipleProgramsPerCategoryAllowed) {
-                                removedEnrollments.add(programEnrollment);
-                            }
+                        // The below change is intentional. Even if isMultipleProgramsPerCategoryAllowed = true, it would 
+                        // un-enroll the matching program and enroll the new program when ApplianceCategoryId, InventoryId
+                        // relay are same and seasonalLoad = false.
+                        // This behavior is different from that in Web.
+                        if (!seasonalLoad || programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
+                            programEnrollment.update(newProgramEnrollment);
+                            programEnrollment.setEnroll(true);
+                            isProgramEnrollmentEnrolled = true;
                         }
                     } else {
-                        if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
+                        if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
+                            programEnrollment.update(newProgramEnrollment);
+                            programEnrollment.setEnroll(true);
                             isProgramEnrollmentEnrolled = true;
                         } else if (!isMultipleProgramsPerCategoryAllowed) {
                             removedEnrollments.add(programEnrollment);
                         }
                     }
-                } else if (!isMultipleProgramsPerCategoryAllowed) {
-                    if (checkAssignedProgram(programEnrollment, newProgramEnrollment)) {
-                        isProgramEnrollmentEnrolled = true;
-                    } else {
-                        removedEnrollments.add(programEnrollment);
-                    }
                 }
             }
-        }    
+        }
 
         if (CollectionUtils.isNotEmpty(removedEnrollments)) {
             programEnrollments.removeAll(removedEnrollments);
@@ -425,7 +424,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         LiteInventoryBase liteInventoryBase;
         try {
-            liteInventoryBase = starsSearchDao.searchLmHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
+            liteInventoryBase =
+                starsSearchDao.searchLmHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
         } catch (ObjectInOtherEnergyCompanyException e) {
             if (enrollmentEnum.equals(EnrollmentEnum.UNENROLL)) {
                 liteInventoryBase = (LiteInventoryBase) e.getObject();
@@ -446,14 +446,5 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         EnrollmentHelperHolder enrollmentHelperHolder =
             new EnrollmentHelperHolder(enrollmentHelper, customerAccount, lmHardwareBase);
         return enrollmentHelperHolder;
-    }
-    
-    private boolean checkAssignedProgram(ProgramEnrollment programEnrollment, ProgramEnrollment newProgramEnrollment) {
-        if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
-            programEnrollment.update(newProgramEnrollment);
-            programEnrollment.setEnroll(true);
-            return true;
-        }
-        return false;
     }
 }
