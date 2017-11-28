@@ -1,13 +1,15 @@
 #pragma once
 
 #include "dev_remote.h"
-#include "pt_accum.h"
 #include "prot_dnp.h"
 #include "tbl_dv_address.h"
 
 #include <map>
 #include <string>
 #include <memory>
+
+class CtiPointAccumulator;
+using CtiPointAccumulatorSPtr = boost::shared_ptr<CtiPointAccumulator>;
 
 namespace Cti {
 namespace Devices {
