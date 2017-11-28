@@ -422,8 +422,9 @@ public static int differenceMinutes(Date from, Date to) {
 
     /**
      * @return Next runtime from the given date as per the Cron expression provided.
+     * @throws ParseException 
      */
-    public static Date getNextRuntime(Date from, String cron, YukonUserContext userContext) {
+    public static Date getNextRuntime(Date from, String cron, YukonUserContext userContext) throws ParseException {
         Date nextValidTimeAfter = null;
         try {
             CronExpression cronExpression = new CronExpression(cron);
@@ -439,9 +440,9 @@ public static int differenceMinutes(Date from, Date to) {
                 nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw e;
         } catch (UnsupportedOperationException e) {
-            e.printStackTrace();
+            throw e;
         }
         return nextValidTimeAfter;
     }
