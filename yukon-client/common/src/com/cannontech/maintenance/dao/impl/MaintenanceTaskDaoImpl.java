@@ -2,10 +2,12 @@ package com.cannontech.maintenance.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -38,7 +40,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
-    private SimpleTableAccessTemplate<MaintenanceSetting> insertTemplate;
+    private SimpleTableAccessTemplate<MaintenanceTask> maintenanceTaskTemplate;
+    private SimpleTableAccessTemplate<MaintenanceSetting> maintenanceSettingTemplate;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
@@ -165,15 +168,15 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Override
     public void updateSettings(List<MaintenanceSetting> settings) {
         for (MaintenanceSetting setting : settings) {
-            insertTemplate.save(setting);
+            maintenanceSettingTemplate.save(setting);
         }
     }
+
 
     private final FieldMapper<MaintenanceSetting> maintenanceSettingFieldMapper =
         new FieldMapper<MaintenanceSetting>() {
             @Override
             public void extractValues(MapSqlParameterSource p, MaintenanceSetting setting) {
-                p.addValue("TaskPropertyId", setting.getTaskPropertyId());
                 p.addValue("TaskId", setting.getTaskId());
                 p.addValue("Attribute", setting.getAttribute());
                 p.addValue("Value", setting.getAttributeValue());
@@ -190,13 +193,51 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
             }
         };
 
+    private final FieldMapper<MaintenanceTask> maintenanceTaskFieldMapper = new FieldMapper<MaintenanceTask>() {
+        @Override
+        public void extractValues(MapSqlParameterSource p, MaintenanceTask maintenanceTask) {
+            p.addValue("TaskName", maintenanceTask.getTaskName());
+            p.addValue("Disabled", YNBoolean.YES);
+        }
+
+        @Override
+        public Number getPrimaryKey(MaintenanceTask maintenanceTask) {
+            return maintenanceTask.getTaskId();
+        }
+
+        @Override
+        public void setPrimaryKey(MaintenanceTask maintenanceTask, int value) {
+            maintenanceTask.setTaskId(value);
+        }
+    };
+    
     @PostConstruct
     public void init() {
-        insertTemplate = new SimpleTableAccessTemplate<MaintenanceSetting>(jdbcTemplate, nextValueHelper);
-        insertTemplate.setTableName("MaintenanceTaskSettings");
-        insertTemplate.setPrimaryKeyField("TaskPropertyId");
-        insertTemplate.setFieldMapper(maintenanceSettingFieldMapper);
+        maintenanceTaskTemplate = new SimpleTableAccessTemplate<MaintenanceTask>(jdbcTemplate, nextValueHelper);
+        maintenanceTaskTemplate.setTableName("MaintenanceTask");
+        maintenanceTaskTemplate.setPrimaryKeyField("TaskId");
+        maintenanceTaskTemplate.setFieldMapper(maintenanceTaskFieldMapper);
+        maintenanceTaskTemplate.setPrimaryKeyValidOver(0);
+
+        maintenanceSettingTemplate = new SimpleTableAccessTemplate<MaintenanceSetting>(jdbcTemplate, nextValueHelper);
+        maintenanceSettingTemplate.setTableName("MaintenanceTaskSettings");
+        maintenanceSettingTemplate.setPrimaryKeyField("TaskPropertyId");
+        maintenanceSettingTemplate.setFieldMapper(maintenanceSettingFieldMapper);
+        insertMaintenanceTask();
     }
+
+    private void insertMaintenanceTask() {
+        List<MaintenanceTaskName> allMaintenanceTaskNames = getMaintenanceTaskNames(false);
+        List<MaintenanceTaskName> maintenanceTaskNames = Arrays.stream(MaintenanceTaskName.values())
+                                                               .filter(task -> !allMaintenanceTaskNames.contains(task))
+                                                               .collect(Collectors.toList());
+        maintenanceTaskNames.forEach(maintenanceTaskName -> {
+            MaintenanceTask task = new MaintenanceTask();
+            task.setTaskName(maintenanceTaskName);
+            maintenanceTaskTemplate.save(task);
+        });
+    }
+
 
     @Override
     public Map<GlobalSettingType, Pair<Object, String>> getValuesAndComments() {
