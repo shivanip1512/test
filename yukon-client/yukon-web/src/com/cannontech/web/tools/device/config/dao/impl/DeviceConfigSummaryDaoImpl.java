@@ -362,7 +362,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append(")");
         sql.append(", SYNCTable AS (");
         sql.append("SELECT");
-        sql.append("    ypo.PAObjectID as DeviceId,");
+        sql.append("    cfg.DeviceId,");
         sql.append("    CASE");
         sql.append("        WHEN t.ErrorCode IS NOT NULL");
         sql.append("        THEN");
@@ -374,7 +374,7 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("                        WHEN");
         sql.append("                            (SELECT COUNT(*)");
         sql.append("                            FROM CONFIGTable InnerConfig");
-        sql.append("                            WHERE ypo.PAObjectID = InnerConfig.DeviceId");
+        sql.append("                            WHERE t.DeviceId = InnerConfig.DeviceId");
         sql.append("                            AND InnerConfig.ExecType").neq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
         sql.append("                            AND InnerConfig.ErrorCode = 0) > 0");
         sql.append("                        THEN").appendArgument_k(InSync.UNVERIFIED);
@@ -383,7 +383,9 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("            END");
         sql.append("        ELSE").appendArgument_k(InSync.UNVERIFIED);
         sql.append("    END as InSync");
-        sql.append("FROM (");
+        sql.append("FROM CONFIGTable cfg");
+        sql.append("     LEFT JOIN");
+        sql.append("     (");
         sql.append("        SELECT");
         sql.append("            req.DeviceId,");
         sql.append("            res.ErrorCode");
@@ -391,19 +393,26 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         sql.append("            CommandRequestExec cre");
         sql.append("            LEFT JOIN CommandRequestExecRequest req ON cre.CommandRequestExecId = req.CommandRequestExecId");
         sql.append("            LEFT JOIN CommandRequestExecResult res ON req.CommandRequestExecId = res.CommandRequestExecId  AND req.DeviceId = res.DeviceId");
-        sql.append("            WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
-        sql.append("            AND cre.CommandRequestExecId =");
+        sql.append("            WHERE");
         sql.append("            (");
-        sql.append("                SELECT");
-        sql.append("                    MAX(cre2.CommandRequestExecId)");
-        sql.append("                    FROM CommandRequestExec cre2");
-        sql.append("                    JOIN CommandRequestExecRequest req2 ON cre2.CommandRequestExecId = req2.CommandRequestExecId");
-        sql.append("                WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
-        sql.append("                AND req2.DeviceID = res.DeviceId");
+        sql.append("                cre.CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
+        sql.append("                AND cre.CommandRequestExecId =");
+        sql.append("                (");
+        sql.append("                    SELECT");
+        sql.append("                        MAX(cre2.CommandRequestExecId)");
+        sql.append("                        FROM CommandRequestExec cre2");
+        sql.append("                        JOIN CommandRequestExecRequest req2 ON cre2.CommandRequestExecId = req2.CommandRequestExecId");
+        sql.append("                        WHERE CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
+        sql.append("                        AND req2.DeviceID = res.DeviceId"); 
+        sql.append("                )");
         sql.append("            )");
-        sql.append("    ) t");
-        sql.append("JOIN YukonPAObject ypo ON t.DeviceId = ypo.PAObjectID");
-        sql.append("JOIN CONFIGTable cfg ON t.DeviceId = cfg.DeviceId");
+        sql.append("            OR");
+        sql.append("            (");
+        sql.append("                req.DeviceId IS NOT NULL");
+        sql.append("                AND res.DeviceId IS NULL");
+        sql.append("                AND CommandRequestExecType").eq_k(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);        
+        sql.append("            )");
+        sql.append("    ) t ON cfg.DeviceId = t.DeviceId");
         sql.append(")");
     }
    
