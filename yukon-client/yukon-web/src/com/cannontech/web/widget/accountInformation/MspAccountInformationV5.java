@@ -18,7 +18,6 @@ import com.cannontech.common.model.Address;
 import com.cannontech.common.model.Contact;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.msp.beans.v5.commontypes.AddressItems;
 import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
 import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
 import com.cannontech.msp.beans.v5.multispeak.BillingStatusInformation;
@@ -26,6 +25,7 @@ import com.cannontech.msp.beans.v5.multispeak.ContactInfo;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.service.v5.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
@@ -36,6 +36,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     public ModelAndView getMspInformation(YukonMeter meter, MultispeakVendor mspVendor, ModelAndView mav,
             YukonUserContext userContext) {
@@ -47,16 +48,16 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         mav.addObject("mspServLoc", mspServLoc);
         if (mspServLoc != null && mspServLoc.getContactInfo() != null
             && mspServLoc.getContactInfo().getAddressItems() != null) {
-            List<Address> servLocAddresses = getAddressList(mspServLoc.getContactInfo().getAddressItems());
-            mav.addObject("servLocAddresses", servLocAddresses);
+            List<Address> servLocAddresses = multispeakFuncs.getAddressList(mspServLoc.getContactInfo().getAddressItems());
+            mav.addObject("servLocAddresses", servLocAddresses.get(0));
         }
         Map<PhoneTypeKind, String> primaryContact = getPrimaryContacts(mspCustomer);
         mav.addObject("homePhone", primaryContact.get(PhoneTypeKind.HOME));
         mav.addObject("dayPhone", primaryContact.get(PhoneTypeKind.BUSINESS));
 
         if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getAddressItems() != null) {
-            List<Address> custAddressInfo = getAddressList(mspCustomer.getContactInfo().getAddressItems());
-            mav.addObject("custAddressInfo", custAddressInfo);
+            List<Address> custAddressInfo = multispeakFuncs.getAddressList(mspCustomer.getContactInfo().getAddressItems());
+            mav.addObject("custAddressInfo", custAddressInfo.get(0));
         }
         // Customer Basic Information
         List<Info> custBasicsInfo = getCustomerBasicsInfo(mspCustomer, userContext);
@@ -91,6 +92,12 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         // Service Location Information
         List<Info> servLocBasicsInfo = getServLocBasicsInfo(mspServLoc, userContext);
         mav.addObject("servLocBasicsInfo", servLocBasicsInfo);
+        
+        if (mspServLoc != null && mspServLoc.getContactInfo() != null
+                && mspServLoc.getContactInfo().getAddressItems() != null) {
+                List<Address> servLocAddresses = multispeakFuncs.getAddressList(mspServLoc.getContactInfo().getAddressItems());
+                mav.addObject("servLocAddressesList", servLocAddresses);
+        }
 
         if (mspServLoc.getServiceHazards() != null) {
             Map<AtomicInteger, List<Info>> servLocHazardInfo = getServiceLocationHazardInfo(mspServLoc, userContext);
@@ -154,7 +161,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 multispeakCustomerInfoService.getEmailAddresses(contactInfo.getEMailAddresses(), userContext);
             contact.setEmailAddresses(emailAddresses);
             if (contactInfo.getAddressItems() != null) {
-                contact.setAddresses(getAddressList(contactInfo.getAddressItems()));
+                contact.setAddresses(multispeakFuncs.getAddressList(contactInfo.getAddressItems()));
             }
             info.add(contact);
         }
@@ -295,28 +302,11 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 Contact contact =
                     new Contact(alternateContact.getFirstName(), alternateContact.getMName(),
                         alternateContact.getLastName(), phoneNumbers, emailAddresses,
-                        contactInfo.getAddressItems() != null ? getAddressList(contactInfo.getAddressItems()) : null);
+                        contactInfo.getAddressItems() != null ? multispeakFuncs.getAddressList(contactInfo.getAddressItems()) : null);
                 info.add(contact);
 
             });
         return info;
-    }
-
-    private List<Address> getAddressList(AddressItems addressItems) {
-        List<Address> addressList = new ArrayList<>();
-        addressItems.getAddressItem().forEach(addressItem -> {
-            if (addressItem.getAddress() != null) {
-                Address address = new Address();
-                address.setLocationAddress1(addressItem.getAddress().getAddress1());
-                address.setLocationAddress2(addressItem.getAddress().getAddress2());
-                address.setCityName(addressItem.getAddress().getCity());
-                address.setStateCode(addressItem.getAddress().getState());
-                address.setCounty(addressItem.getAddress().getCountry());
-                address.setZipCode(addressItem.getAddress().getPostalCode());
-                addressList.add(address);
-            }
-        });
-        return addressList;
     }
 
     // Service location basic information

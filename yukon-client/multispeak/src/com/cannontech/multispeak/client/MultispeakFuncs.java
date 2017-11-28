@@ -11,6 +11,7 @@ import javax.xml.soap.SOAPMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import com.cannontech.common.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
@@ -434,6 +435,26 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             arrayOfString.getString().addAll(strings);
         }
         return arrayOfString;
+    }
+    
+    public Address getCustomerAddressInfo(Customer mspCustomer) {
+        Address address = new Address();
+        address.setLocationAddress1(mspCustomer.getBillAddr1());
+        address.setLocationAddress2(mspCustomer.getBillAddr2());
+        address.setCityName(mspCustomer.getBillCity());
+        address.setStateCode(mspCustomer.getBillState());
+        address.setZipCode(mspCustomer.getBillZip());
+        return address;
+    }
+
+    public Address getServLocAddressInfo(ServiceLocation mspServLoc) {
+        Address address = new Address();
+        address.setLocationAddress1(mspServLoc.getServAddr1());
+        address.setLocationAddress2(mspServLoc.getServAddr2());
+        address.setCityName(mspServLoc.getServCity());
+        address.setStateCode(mspServLoc.getServState());
+        address.setZipCode(mspServLoc.getServZip());
+        return address;
     }
 
     @Override

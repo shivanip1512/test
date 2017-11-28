@@ -59,6 +59,17 @@
                         <tags:nameValue name="${serviceInfo.label}">${serviceInfo.value}</tags:nameValue>
                     </c:forEach>
                 </tags:nameValueContainer>
+                <c:forEach var="address" items="${servLocAddressesList}" varStatus="addressStatus">
+                    <h3><i:inline key=".alternateContactAddressInfo" />${addressStatus.index+1}</h3>
+                    <tags:nameValueContainer2 tableClass="name-value-table natural-width  stacked-md natural-width">
+                        <tags:nameValue2 nameKey=".address1Label">${address.locationAddress1}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".address2Label">${address.locationAddress2}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".cityLabel">${address.cityName}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".stateLabel">${address.stateCode}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".zipLabel">${address.zipCode}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".countyLabel">${address.county}</tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </c:forEach>
             </tags:sectionContainer>
 
             <!-- Meter -->

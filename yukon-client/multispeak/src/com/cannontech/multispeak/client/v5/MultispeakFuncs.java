@@ -32,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.model.Address;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -45,6 +46,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
+import com.cannontech.msp.beans.v5.commontypes.AddressItems;
 import com.cannontech.msp.beans.v5.commontypes.CSUnitsKind;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
@@ -546,5 +548,22 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
         return mspMeters;
 
+    }
+
+    public List<Address> getAddressList(AddressItems addressItems) {
+        List<Address> addressList = new ArrayList<>();
+        addressItems.getAddressItem().forEach(addressItem -> {
+            if (addressItem.getAddress() != null) {
+                Address address = new Address();
+                address.setLocationAddress1(addressItem.getAddress().getAddress1());
+                address.setLocationAddress2(addressItem.getAddress().getAddress2());
+                address.setCityName(addressItem.getAddress().getCity());
+                address.setStateCode(addressItem.getAddress().getState());
+                address.setCounty(addressItem.getAddress().getCountry());
+                address.setZipCode(addressItem.getAddress().getPostalCode());
+                addressList.add(address);
+            }
+        });
+        return addressList;
     }
 }

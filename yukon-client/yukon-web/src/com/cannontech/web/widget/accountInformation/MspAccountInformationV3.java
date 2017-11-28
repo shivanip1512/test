@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.service.DateFormattingService;
@@ -31,23 +30,20 @@ import com.cannontech.msp.beans.v3.ObjectRef;
 import com.cannontech.msp.beans.v3.PointType;
 import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.msp.beans.v3.UtilityInfo;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.v3.MultispeakCustomerInfoService;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class MspAccountInformationV3 implements MspAccountInformation {
     
     @Autowired private MspObjectDao mspObjectDao;
-    @Autowired private MultispeakDao multispeakDao;
-    @Autowired private MeterDao meterDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     public ModelAndView getMspInformation(YukonMeter meter, MultispeakVendor mspVendor, ModelAndView mav, YukonUserContext userContext) {
         
@@ -65,7 +61,7 @@ public class MspAccountInformationV3 implements MspAccountInformation {
        
         // cust info detail
         List<Info> custBasicsInfo = getCustomerBasicsInfo(mspCustomer, userContext);
-        Address custAddress = getCustomerAddressInfo(mspCustomer);
+        Address custAddress = multispeakFuncs.getCustomerAddressInfo(mspCustomer);
         mav.addObject("custBasicsInfo", custBasicsInfo);
         mav.addObject("custAddress", custAddress);
         if (mspCustomer.getContactInfo() != null) {
@@ -77,7 +73,7 @@ public class MspAccountInformationV3 implements MspAccountInformation {
         
         // serv loc info detail
         List<Info> servLocBasicsInfo = getServLocBasicsInfo(mspServLoc, userContext);
-        Address servLocAddress = getServLocAddressInfo(mspServLoc);
+        Address servLocAddress = multispeakFuncs.getServLocAddressInfo(mspServLoc);
         List<Info> servLocNetworkInfo = getServLocNetworkInfo(mspServLoc, userContext);
         mav.addObject("servLocBasicsInfo", servLocBasicsInfo);
         mav.addObject("servLocAddress", servLocAddress);
@@ -127,19 +123,7 @@ public class MspAccountInformationV3 implements MspAccountInformation {
         add("Email Address", StringUtils.join(emailAddresses, ", "), true, infoList, userContext);
         return infoList;
     }
-    
-    private Address getCustomerAddressInfo(Customer mspCustomer) {
-        
-        Address address = new Address();
-        address.setLocationAddress1(mspCustomer.getBillAddr1());
-        address.setLocationAddress2(mspCustomer.getBillAddr2());
-        address.setCityName(mspCustomer.getBillCity());
-        address.setStateCode(mspCustomer.getBillState());
-        address.setZipCode(mspCustomer.getBillZip());
-        
-        return address;
-    }
-    
+
     // SERV LOC INFO
     private List<Info> getServLocBasicsInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
         
@@ -201,19 +185,7 @@ public class MspAccountInformationV3 implements MspAccountInformation {
         }        
         return serviceLocationIDs;
     }
-    
-    private Address getServLocAddressInfo(ServiceLocation mspServLoc) {
-        
-        Address address = new Address();
-        address.setLocationAddress1(mspServLoc.getServAddr1());
-        address.setLocationAddress2(mspServLoc.getServAddr2());
-        address.setCityName(mspServLoc.getServCity());
-        address.setStateCode(mspServLoc.getServState());
-        address.setZipCode(mspServLoc.getServZip());
-        
-        return address;
-    }   
-    
+
     private List<Info> getServLocNetworkInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();

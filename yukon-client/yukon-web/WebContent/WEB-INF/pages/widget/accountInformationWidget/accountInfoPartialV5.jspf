@@ -20,6 +20,10 @@
             <tags:nameValue2 nameKey=".dba">${fn:escapeXml(mspCustomer.DBAName)}</tags:nameValue2>
         </c:if>
 
+        <tags:nameValue2 nameKey=".address">
+            <tags:address address="${custAddressInfo}" />
+        </tags:nameValue2>
+
         <c:if test="${not empty homePhone}">
             <tags:nameValue2 nameKey=".phoneNumber">${fn:escapeXml(homePhone)}</tags:nameValue2>
         </c:if>
@@ -51,11 +55,9 @@
             <tags:nameValue2 nameKey=".mapLocation">${fn:escapeXml(mspServLoc.gridLocation)}</tags:nameValue2>
         </c:if>
 
-        <c:forEach var="servLocAddress" items="${servLocAddresses}">
-            <tags:nameValue2 nameKey=".address">
-                <tags:address address="${servLocAddress}" />
-            </tags:nameValue2>
-        </c:forEach>
+        <tags:nameValue2 nameKey=".address">
+            <tags:address address="${servLocAddresses}" />
+        </tags:nameValue2>
 
     </tags:nameValueContainer2>
 </tags:sectionContainer>
