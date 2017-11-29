@@ -387,7 +387,13 @@
             </ul>
         </troubleshooting>
     </error>
-
+    
+    <error code="37">
+        <category>N/A</category>
+        <porter>Unknown Error</porter>
+        <description>Troubleshooting tips for this error code are not available at this time.</description>
+    </error>
+    
     <error code="46">
         <category>Bulk Communications</category>
         <porter>REQACK Flag set-- Frame Unexecutable</porter>
