@@ -739,5 +739,6 @@
     <entry key="yukon.web.modules.tools.configs.summary.description">Description</entry>
     <entry key="yukon.web.modules.tools.configs.summary.troubleshooting">Troubleshooting</entry>
     
+    <entry key="yukon.web.modules.tools.download">Download</entry>
     
 </properties>

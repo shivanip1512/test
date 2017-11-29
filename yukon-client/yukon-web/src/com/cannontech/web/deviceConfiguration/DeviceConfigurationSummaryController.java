@@ -1,5 +1,6 @@
 package com.cannontech.web.deviceConfiguration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +56,7 @@ import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
+import com.cannontech.web.util.WebFileUtils;
 
 @Controller
 @RequestMapping("/summary/*")
@@ -225,6 +227,66 @@ public class DeviceConfigurationSummaryController {
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
         return "redirect:/bulk/config/" + action + "?collectionType=group&group.name=" + tempGroup.getFullName();
+    }
+    
+    @RequestMapping(value="download", method=RequestMethod.GET)
+    public String download(HttpServletResponse response, @ModelAttribute DeviceConfigSummaryFilter filter, YukonUserContext userContext) throws IOException {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        SearchResults<DeviceConfigSummaryDetail> details = deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
+        List<String> headerRow = getHeader(accessor);
+        List<List<String>> dataRows = getDataRows(details);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Device_Config_Summary.csv");
+        return null;
+    }
+    
+    private List<String> getHeader(MessageSourceAccessor accessor) {
+        ArrayList<String> retValue = new ArrayList<>();
+        retValue.add(accessor.getMessage(DetailSortBy.deviceName));
+        retValue.add(accessor.getMessage(DetailSortBy.type));
+        retValue.add(accessor.getMessage(DetailSortBy.deviceConfiguration));
+        retValue.add(accessor.getMessage(DetailSortBy.lastAction));
+        retValue.add(accessor.getMessage(DetailSortBy.lastActionStatus));
+        retValue.add(accessor.getMessage(DetailSortBy.inSync));
+        retValue.add(accessor.getMessage(DetailSortBy.lastActionStart));
+        retValue.add(accessor.getMessage(DetailSortBy.lastActionEnd));
+        return retValue;
+    }
+    
+    private List<List<String>> getDataRows(SearchResults<DeviceConfigSummaryDetail> details) {
+        ArrayList<List<String>> retValue = new ArrayList<>();
+        details.getResultList().forEach(d -> {
+            ArrayList<String> row = new ArrayList<>();
+            row.add(d.getDevice().getName());
+            row.add(d.getDevice().getPaoIdentifier().getPaoType().getPaoTypeName());
+            row.add(d.getDeviceConfig().toString());
+            if (d.getAction() != null) {
+                row.add(d.getAction().toString());
+            } else {
+                row.add("N/A");
+            }
+            if (d.getStatus() != null) {
+                row.add(d.getStatus().toString());
+            } else {
+                row.add("N/A");
+            }
+            if (d.getInSync() != null) {
+                row.add(d.getInSync().toString());
+            } else {
+                row.add("N/A");
+            }
+            if (d.getActionStart() != null) {
+                row.add(d.getActionStart().toString());
+            } else {
+                row.add("N/A");
+            }
+            if (d.getAction() != null) {
+                row.add(d.getActionEnd().toString());
+            } else {
+                row.add("N/A");
+            }
+            retValue.add(row);
+        });
+        return retValue;
     }
     
     public enum DetailSortBy implements DisplayableEnum {

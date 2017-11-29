@@ -2,9 +2,31 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="tools" page="configs.summary">
-
+    
+    <div id="page-actions" class="dn">
+        <cti:url var="download" value="/deviceConfiguration/summary/download">
+            <c:forEach var="config" items="${filter.configurationIds}">
+                <cti:param name="configurationIds" value="${config}"/>
+            </c:forEach>
+            <c:forEach var="subGroup" items="${filter.groups}">
+                <cti:param name="deviceSubGroups" value="${subGroup.fullName}"/>
+            </c:forEach>
+            <c:forEach var="action" items="${filter.actions}">
+                <cti:param name="actions" value="${action}"/>
+            </c:forEach>
+            <c:forEach var="sync" items="${filter.inSync}">
+                <cti:param name="inSync" value="${sync}"/>
+            </c:forEach>
+            <c:forEach var="status" items="${filter.statuses}">
+                <cti:param name="statuses" value="${status}"/>
+            </c:forEach>
+        </cti:url>
+        <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
+    </div>
+    
     <div class="column-18-6 clearfix">
         <div class="column one">
 
@@ -75,10 +97,9 @@
                 </div>
             
             </form:form>
-        
         </div>
     </div>
-    
+
     <br/>
     <cti:url var="dataUrl" value="/deviceConfiguration/summary/filter">
         <c:forEach var="config" items="${filter.configurationIds}">
