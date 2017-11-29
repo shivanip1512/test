@@ -6,13 +6,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
@@ -28,6 +26,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -63,10 +63,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
 import com.cannontech.web.support.MappedPropertiesHelper.MappableProperty;
 import com.google.common.base.Function;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -102,7 +98,7 @@ public class MaintenanceController {
         private YukonJobDefinition<RepeatingExportHistoryDeletionTask> exportHistoryJobDef;
     @Autowired @Qualifier("spSmartIndexMaintanence")
         private YukonJobDefinition<ScheduledSmartIndexMaintenanceExecutionTask> spSmartIndexMaintanenceJobDef;
-    private LoadingCache<ImmutableSet<GlobalSettingType>, MappedPropertiesHelper<GlobalSetting>> helperLookup;
+
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
@@ -112,18 +108,7 @@ public class MaintenanceController {
     private final static String EXPORT_HISTORY_UPDATE_CRON = "0 45 21 ? * *"; // every night at 9:45pm
     private final static String SP_SMART_INDEX_MAINT_UPDATE_CRON = "0 0 22 ? * SAT"; // every saturday at 10:00pm
     
-    @PostConstruct
-    public void setupHelperLookup() {
-        helperLookup = CacheBuilder.newBuilder().concurrencyLevel(1).build(
-            new CacheLoader<ImmutableSet<GlobalSettingType>, MappedPropertiesHelper<GlobalSetting>>() {
-                @Override
-                public MappedPropertiesHelper<GlobalSetting> load(ImmutableSet<GlobalSettingType> all) throws Exception {
-                    return getHelper(all);
-                }
-            });
-    }
-
-    private MappedPropertiesHelper<GlobalSetting> getHelper(ImmutableSet<GlobalSettingType> all) {
+    private MappedPropertiesHelper<GlobalSetting> getHelper(Set<GlobalSettingType> all) {
         Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettings(all);
         MappedPropertiesHelper<GlobalSetting> mappedPropertiesHelper = new MappedPropertiesHelper<>("values");
         for (GlobalSetting setting : settings.values()) {
@@ -246,8 +231,8 @@ public class MaintenanceController {
         List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks(false);
         model.addAttribute("tasks", tasks);
         final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-        ImmutableSet<GlobalSettingType> all = GlobalSettingType.getMaintenanceTasksSettings();
-        MappedPropertiesHelper<GlobalSetting> mappedPropertiesHelper = helperLookup.get(all);
+       Set<GlobalSettingType> all = maintenanceHelper.getGlobalSettingsForMaintenance();
+        MappedPropertiesHelper<GlobalSetting> mappedPropertiesHelper = getHelper(all);
         Comparator<MappedPropertiesHelper.MappableProperty<GlobalSetting, ?>> comparator =
             new Comparator<MappedPropertiesHelper.MappableProperty<GlobalSetting, ?>>() {
                 @Override
@@ -297,8 +282,8 @@ public class MaintenanceController {
     }
 
     private List<GlobalSetting> adjustSettings(final ExclusionSettingsBean command) throws ExecutionException {
-        ImmutableSet<GlobalSettingType> all = GlobalSettingType.getMaintenanceTasksSettings();
-        MappedPropertiesHelper<GlobalSetting> helper = helperLookup.get(all);
+        Set<GlobalSettingType> all = maintenanceHelper.getGlobalSettingsForMaintenance();
+        MappedPropertiesHelper<GlobalSetting> helper = getHelper(all);
         List<GlobalSetting> settings = Lists.transform(helper.getMappableProperties(),
             new Function<MappableProperty<GlobalSetting, ?>, GlobalSetting>() {
                 @Override

@@ -8,7 +8,7 @@
     <div class="stacked">
         <em><i:inline key=".tasksInfo"/></em>
     </div>
-    <div class="column-12-12 clearfix">
+    <div class="column-11-13 clearfix">
         <div class="column one">
             <table class="compact-results-table has-alerts">
                 <thead>

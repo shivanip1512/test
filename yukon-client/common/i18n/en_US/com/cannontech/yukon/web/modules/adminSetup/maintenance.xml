@@ -51,5 +51,5 @@
     <entry key="yukon.web.modules.adminSetup.maintenance.updateFailed">There was an error saving the exclusion hours settings.</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.exclusionHoursSettingsUpdated">Exclusion hours settings updated successfully.</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.exclusionHours.title">Exclusion Hours</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.tasksInfo">Runs during available maintenance hours (excluding days/time listed).</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.tasksInfo">System tasks will not be started during the exclusion hours.</entry>
 </properties>

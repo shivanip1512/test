@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
@@ -15,6 +16,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
+import com.google.common.collect.Sets;
 
 /**
  * This class contains helper functions for Maintenance Tasks.
@@ -68,5 +70,16 @@ public class MaintenanceHelper {
             throw e;
         }
         return nextRunForDataPruning;
+    }
+
+    /**
+     * Gets all the GlobalSettings for Maintenance.
+     */
+    public Set<GlobalSettingType> getGlobalSettingsForMaintenance(){
+        return Sets.newHashSet(
+            GlobalSettingType.BUSINESS_HOURS_DAYS,
+            GlobalSettingType.MAINTENANCE_DAYS,
+            GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME,
+            GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME);
     }
 }

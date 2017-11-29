@@ -25,6 +25,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.maintenance.MaintenanceHelper;
 import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
@@ -34,9 +35,9 @@ import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.system.model.MaintenanceSetting;
 import com.cannontech.system.model.MaintenanceTask;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.apache.commons.collections4.CollectionUtils;
 
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
@@ -44,6 +45,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     private SimpleTableAccessTemplate<MaintenanceSetting> maintenanceSettingTemplate;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private MaintenanceHelper maintenanceHelper;
     
     private final LeastRecentlyUsedCacheMap<MaintenanceTaskType, List<MaintenanceSetting>> cache = new LeastRecentlyUsedCacheMap<>(100);
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
@@ -243,8 +245,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
 
     @Override
     public Map<GlobalSettingType, Pair<Object, String>> getValuesAndComments() {
-        ImmutableSet<GlobalSettingType> all = GlobalSettingType.getMaintenanceTasksSettings();
-        Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettings(all);
+        Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettings(maintenanceHelper.getGlobalSettingsForMaintenance());
         return Maps.transformValues(settings, new Function<GlobalSetting, Pair<Object, String>>() {
             @Override
             public Pair<Object, String> apply(GlobalSetting input) {
