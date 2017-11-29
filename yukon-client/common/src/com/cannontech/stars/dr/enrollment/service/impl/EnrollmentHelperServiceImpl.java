@@ -304,6 +304,10 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                         }
                     }
                 }
+                /* 
+                 * The EIM does not remove enrollments from other devices on the same account (even if 
+                 * isMultipleProgramsPerCategoryAllowed=false), while the web does. 
+                 */
             }
         }
 
