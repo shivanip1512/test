@@ -187,8 +187,10 @@ ALTER TABLE CommandRequestExecRequest
       REFERENCES CommandRequestExec (CommandRequestExecId)
       ON DELETE CASCADE;
 
-CREATE INDEX INDX_CmdReqExReq_CmdReqExId ON CommandRequestExecRequest (
-   CommandRequestExecId ASC
+CREATE INDEX INDX_CREReq_ExecId_DevId ON CommandRequestExecRequest 
+(
+    CommandRequestExecId,
+    DeviceId
 );
 /* End YUK-17309 */
 
@@ -316,16 +318,6 @@ INSERT INTO DeviceTypeCommand VALUES (-1272, -173, 'CBC 8024', 11, 'Y', -1);
 /* End YUK-17417 */
 
 /* Start YUK-17498 */
-DROP INDEX Indx_CmdReqExec_ContId;
-DROP INDEX INDX_CmdReqExReq_CmdReqExId;
-DROP INDEX Indx_CmdReqExecRes_ExecId_ErrC;
-                
-                                                                                                   
-CREATE INDEX INDX_CRE_ContId ON CommandRequestExec 
-(
-    CommandRequestExecContextId
-);
-
 CREATE INDEX INDX_CRE_ExType_ExId_ExStart ON CommandRequestExec 
 (
     CommandRequestExecType,
@@ -333,25 +325,14 @@ CREATE INDEX INDX_CRE_ExType_ExId_ExStart ON CommandRequestExec
     StartTime
 );
 
-CREATE INDEX INDX_CREReq_ExecId_DevId ON CommandRequestExecRequest 
-(
-    CommandRequestExecId,
-    DeviceId
-);
-
-CREATE INDEX INDX_CRERes_ExecId_ErrC ON CommandRequestExecResult 
-(
-   CommandRequestExecId,
-   ErrorCode
-);
-
-CREATE INDEX INDX_CRERex_ExecId_DevId ON CommandRequestExecResult 
+CREATE INDEX INDX_CRERes_ExecId_DevId ON CommandRequestExecResult 
 (
    CommandRequestExecId,
    DeviceId,
    ErrorCode,
    CompleteTime
 );
+
 
 /* @start-block */
 DECLARE

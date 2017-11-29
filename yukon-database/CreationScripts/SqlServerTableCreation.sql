@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/27/2017 1:00:20 PM                        */
+/* Created on:     11/29/2017 10:16:49 AM                       */
 /*==============================================================*/
 
 
@@ -1849,9 +1849,9 @@ create table CommandRequestExec (
 go
 
 /*==============================================================*/
-/* Index: INDX_CRE_ContId                                       */
+/* Index: Indx_CmdReqExec_ContId                                */
 /*==============================================================*/
-create index INDX_CRE_ContId on CommandRequestExec (
+create index Indx_CmdReqExec_ContId on CommandRequestExec (
 CommandRequestExecContextId ASC
 )
 go
@@ -1902,18 +1902,18 @@ create table CommandRequestExecResult (
 go
 
 /*==============================================================*/
-/* Index: INDX_CRERes_ExecId_ErrC                               */
+/* Index: Indx_CmdReqExecRes_ExecId_ErrC                        */
 /*==============================================================*/
-create index INDX_CRERes_ExecId_ErrC on CommandRequestExecResult (
+create index Indx_CmdReqExecRes_ExecId_ErrC on CommandRequestExecResult (
 CommandRequestExecId ASC,
 ErrorCode ASC
 )
 go
 
 /*==============================================================*/
-/* Index: INDX_CRERex_ExecId_DevId                              */
+/* Index: INDX_CRERes_ExecId_DevId                              */
 /*==============================================================*/
-create index INDX_CRERex_ExecId_DevId on CommandRequestExecResult (
+create index INDX_CRERes_ExecId_DevId on CommandRequestExecResult (
 CommandRequestExecId ASC,
 DeviceId ASC,
 ErrorCode ASC,
