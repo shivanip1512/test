@@ -43,6 +43,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
@@ -146,10 +147,9 @@ public class MapController {
             }
         }
         if (type.isRfn()) {
-            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
-            Map<RfnMetadata, Object> metadata;
             try {
-                metadata = metadataService.getMetadata(rfnDevice);
+                RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
+                Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
                 Object macAddress = metadata.get(RfnMetadata.NODE_ADDRESS);
                 if (macAddress != null) {
                     model.addAttribute("macAddress", String.valueOf(macAddress));
@@ -160,6 +160,8 @@ public class MapController {
                 }
             } catch (NmCommunicationException e) {
                 log.error("Failed to get metadata for " + id, e);           
+            } catch (NotFoundException e) {
+                log.error("Failed to find RFN Device for " + id, e);           
             }
         }
 
