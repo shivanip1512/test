@@ -1,8 +1,5 @@
 package com.cannontech.web.admin.maintenance;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,8 +11,8 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import org.joda.time.DateTime;
-import org.joda.time.Days;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
@@ -31,11 +28,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.CronExprOption;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -48,10 +40,10 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.maintenance.MaintenanceHelper;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.system.model.GlobalSetting;
@@ -92,10 +84,10 @@ public class MaintenanceController {
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private MaintenanceTaskDao maintenanceTaskDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private MaintenanceHelper maintenanceHelper;
     @Autowired @Qualifier("rphDuplicateDeletion")
         private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
     @Autowired @Qualifier("rphDanglingDeletion")
@@ -347,54 +339,14 @@ public class MaintenanceController {
     @RequestMapping(value = "editTask", method = RequestMethod.GET)
     public String editTask(ModelMap model, YukonUserContext userContext, int taskId, FlashScope flashScope,
             String taskName) {
-        CronExprOption cronOption = CronExprOption.EVERYDAY;
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         MaintenanceTaskType maintenanceTaskType = MaintenanceTaskType.valueOf(taskName);
         MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskType);
         List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskDetails.getTaskName());
-        GlobalSettingType businessDaysSettingType =
-            GlobalSettingType.valueOf(GlobalSettingType.BUSINESS_HOURS_DAYS.name());
-        GlobalSetting businessDaysSetting = globalSettingDao.getSetting(businessDaysSettingType);
-        GlobalSettingType businessHourSettingType =
-            GlobalSettingType.valueOf(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME.name());
-        GlobalSetting businessHourSetting = globalSettingDao.getSetting(businessHourSettingType);
-        String businessTimeSetting[] = ((String) businessHourSetting.getValue()).split(",");
-        int businessHrsStartTime = Integer.parseInt(businessTimeSetting[0]);
-        int businessHrsEndTime = Integer.parseInt(businessTimeSetting[1]);
-        if ((businessHrsEndTime - businessHrsStartTime) / 60 == 24) {
-            cronOption = CronExprOption.WEEKDAYS;
-        }
-        GlobalSettingType maintenanceDaysSettingType =
-            GlobalSettingType.valueOf(GlobalSettingType.MAINTENANCE_DAYS.name());
-        GlobalSetting maintenanceDaysSetting = globalSettingDao.getSetting(maintenanceDaysSettingType);
-        GlobalSettingType maintenanceHourSettingType =
-            GlobalSettingType.valueOf(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME.name());
-        GlobalSetting maintenanceHourSetting = globalSettingDao.getSetting(maintenanceHourSettingType);
-        String maintenanceTimeSetting[] = ((String) maintenanceHourSetting.getValue()).split(",");
+        
         Date nextRunDataPruning = null;
         try {
-            String cronDataPruning = TimeUtil.buildCronExpression(cronOption, Integer.parseInt(businessTimeSetting[1]),
-                (String) businessDaysSetting.getValue(), 'N', userContext);
-
-            nextRunDataPruning = TimeUtil.getNextRuntime(new Date(), cronDataPruning, userContext);
-            if (((String) maintenanceDaysSetting.getValue()).contains("Y")) {
-                String cronDBBackup = TimeUtil.buildCronExpression(CronExprOption.WEEKDAYS,
-                    Integer.parseInt(maintenanceTimeSetting[1]), (String) maintenanceDaysSetting.getValue(), 'Y', userContext);
-                Date nextRunDBBackup = TimeUtil.getNextRuntime(new Date(), cronDBBackup, userContext);
-                DateTime startDate = new DateTime(nextRunDataPruning);
-                DateTime endDate = new DateTime(nextRunDBBackup); // current date
-                Days diff = Days.daysBetween(startDate, endDate);
-                if (diff.getDays() == 0) {
-                    SimpleDateFormat localDateFormat = new SimpleDateFormat("HH:mm");
-                    String time = localDateFormat.format(nextRunDBBackup);
-                    LocalTime localTime = LocalTime.parse(time);
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(nextRunDataPruning);
-                    cal.set(Calendar.HOUR_OF_DAY, localTime.getHour());
-                    cal.set(Calendar.MINUTE, localTime.getMinute());
-                    nextRunDataPruning = cal.getTime();
-                }
-            }
+            nextRunDataPruning = maintenanceHelper.getNextScheduledRunTime(userContext.getTimeZone());
         } catch (Exception e) {
             MessageSourceResolvable invalidCronMsg = new YukonMessageSourceResolvable("yukon.common.invalidCron");
             flashScope.setError(invalidCronMsg);

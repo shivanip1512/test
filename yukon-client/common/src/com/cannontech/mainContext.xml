@@ -137,6 +137,8 @@
     
     <bean id="timeSource" class="com.cannontech.common.util.TimeSourceImpl"/>
 
+    <bean id="maintenanceHelper" class="com.cannontech.maintenance.MaintenanceHelper"/>
+
     <!--  basenames of i18n files as a  List<String>. The classpath will be changed to file in dev mode -->
     <bean id="i18nBasenames" class="com.cannontech.common.i18n.I18nBasenamesFactory" factory-method="getBaseNames">
         <constructor-arg>

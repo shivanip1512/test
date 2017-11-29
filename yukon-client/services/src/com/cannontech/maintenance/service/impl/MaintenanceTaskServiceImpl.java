@@ -1,25 +1,37 @@
 package com.cannontech.maintenance.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import org.joda.time.Duration;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CronExprOption;
+import com.cannontech.common.util.TimeUtil;
+import com.cannontech.maintenance.MaintenanceHelper;
 import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.maintenance.task.MaintenanceTask;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.system.model.MaintenanceSetting;
+import com.cannontech.user.YukonUserContext;
 
 public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
+    private final static Logger log = YukonLogManager.getLogger(MaintenanceTaskServiceImpl.class);
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MaintenanceTaskDao maintenanceTaskDao;
+    @Autowired private MaintenanceHelper maintenanceHelper;
     private Map<MaintenanceTaskType, MaintenanceTask> maintenanceTaskMap = new HashMap<>();
 
     @Override
@@ -34,14 +46,49 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
 
     @Override
     public Instant getEndOfRunWindow() {
-        // TODO get this value from global settings
-        return Instant.now().plus(Duration.standardMinutes(10));
+        TimeZone timeZone = YukonUserContext.system.getTimeZone();
+        GlobalSetting businessDaysSetting = globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_DAYS);
+        GlobalSetting businessHourSetting = globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME);
+        String businessTimeSetting[] = ((String) businessHourSetting.getValue()).split(",");
+
+        GlobalSetting maintenanceDaysSetting = globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_DAYS);
+        GlobalSetting maintenanceHourSetting = globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME);
+        String maintenanceTimeSetting[] = ((String) maintenanceHourSetting.getValue()).split(",");
+        Instant instant = null;
+        try {
+            String cronForBusineesDay = TimeUtil.buildCronExpression(CronExprOption.WEEKDAYS,
+                                                           Integer.parseInt(businessTimeSetting[0]),
+                                                           (String) businessDaysSetting.getValue(),
+                                                           'Y');
+            Date nextBusineesDayStartTime = TimeUtil.getNextRuntime(new Date(), cronForBusineesDay, timeZone);
+
+            String cronForMaintenanceDay = TimeUtil.buildCronExpression(CronExprOption.WEEKDAYS,
+                                                        Integer.parseInt(maintenanceTimeSetting[0]),
+                                                        (String) maintenanceDaysSetting.getValue(),
+                                                        'Y');
+            Date nextMaintenanceStartTime = TimeUtil.getNextRuntime(new Date(), cronForMaintenanceDay, timeZone);
+            DateTime businessHourStartDate = new DateTime(nextBusineesDayStartTime);
+            DateTime maintenanceHourStartDate = new DateTime(nextMaintenanceStartTime);
+            boolean isMaintenanceFirst = businessHourStartDate.isAfter(maintenanceHourStartDate);
+            DateTime endOfRunWindow = isMaintenanceFirst ? maintenanceHourStartDate : businessHourStartDate;
+            instant = endOfRunWindow.toInstant();
+        } catch (Exception e) {
+            log.error("Parsing exception for end time", e);
+        }
+        return instant;
     }
 
     @Override
     public long getSecondsUntilRun() {
-        // TODO get this value from global settings (scheduled time - current time)
-        return 300;
+        TimeZone timeZone = YukonUserContext.system.getTimeZone();
+        Date nextRunDataPruning = null;
+        try {
+            nextRunDataPruning = maintenanceHelper.getNextScheduledRunTime(timeZone);
+        } catch (Exception e) {
+            log.error("Parsing exception for next run time", e);
+        }
+        long curentTimeInSec = new DateTime().getMillis()/1000;
+     return nextRunDataPruning.getTime() - curentTimeInSec;
     }
 
     @Override

@@ -25,7 +25,6 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.quartz.CronExpression;
 
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 /**
@@ -382,8 +381,7 @@ public static int differenceMinutes(Date from, Date to) {
     /**
      * @return Cron expression for the given time and selected days.
      */
-    public static String buildCronExpression(CronExprOption cronOption, int time, String days, char checkChar,
-            YukonUserContext userContext) throws ParseException {
+    public static String buildCronExpression(CronExprOption cronOption, int time, String days, char checkChar) throws ParseException {
 
         String[] parts = new String[] { "*", "*", "*", "*", "*", "*" };
 
@@ -424,12 +422,11 @@ public static int differenceMinutes(Date from, Date to) {
      * @return Next runtime from the given date as per the Cron expression provided.
      * @throws ParseException 
      */
-    public static Date getNextRuntime(Date from, String cron, YukonUserContext userContext) throws ParseException {
+    public static Date getNextRuntime(Date from, String cron, TimeZone timeZone) throws ParseException {
         Date nextValidTimeAfter = null;
         try {
             CronExpression cronExpression = new CronExpression(cron);
             // is this the right thing to do?
-            TimeZone timeZone = userContext.getTimeZone();
             cronExpression.setTimeZone(timeZone);
 
             // If the next run time has already passed, check for the one after that,

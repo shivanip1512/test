@@ -14,7 +14,11 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class MaintenanceScheduler {
     
@@ -23,11 +27,26 @@ public class MaintenanceScheduler {
 
     @Autowired MaintenanceTaskRunner taskRunner;
     @Autowired MaintenanceTaskService maintenanceService;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private GlobalSettingDao globalSettingDao;
     private ScheduledFuture<?> future;
 
     // Update the schedule on startup
     @PostConstruct
     public void init() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+            Integer primaryKeyId = Integer.valueOf(event.getPrimaryKey());
+            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && (primaryKeyId.equals(
+                globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_DAYS).getId())
+                || primaryKeyId.equals(
+                    globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId())
+                || primaryKeyId.equals(
+                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_DAYS).getId())
+                || primaryKeyId.equals(
+                                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME).getId()))) {
+                reschedule();
+            }
+        });
         reschedule();
     }
 
@@ -44,8 +63,10 @@ public class MaintenanceScheduler {
     // Schedule the task runner to run at the start of the next run window
     // In the future, when we want to run things in parallel, this would need to change
     private synchronized void reschedule() {
+        if (future != null) {
+            future.cancel(true);
+        }
         long secondsUntilRun = maintenanceService.getSecondsUntilRun();
-
         // Schedule the runner
         future = scheduledExecutorService.schedule(() -> {
             Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
