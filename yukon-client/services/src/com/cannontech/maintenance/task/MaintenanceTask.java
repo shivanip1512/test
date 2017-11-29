@@ -2,7 +2,7 @@ package com.cannontech.maintenance.task;
 
 import org.joda.time.Instant;
 
-import com.cannontech.maintenance.MaintenanceTaskName;
+import com.cannontech.maintenance.MaintenanceTaskType;
 
 public interface MaintenanceTask {
     /**
@@ -13,5 +13,5 @@ public interface MaintenanceTask {
     /**
      * Return all enabled Maintenance Task Name.
      **/
-    public MaintenanceTaskName getMaintenanceTaskName();
+    public MaintenanceTaskType getMaintenanceTaskType();
 }

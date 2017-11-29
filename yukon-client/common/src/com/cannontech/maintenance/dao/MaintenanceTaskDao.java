@@ -5,24 +5,18 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.cannontech.maintenance.MaintenanceTaskName;
-import com.cannontech.maintenance.MaintenanceTaskSettings;
+import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.MaintenanceSetting;
 import com.cannontech.system.model.MaintenanceTask;
 
 public interface MaintenanceTaskDao {
-    /**
-     * Return the settings for a particular task.
-     * 
-     **/
-    Map<MaintenanceTaskSettings, String> getTaskSettings(MaintenanceTaskName taskName);
 
     /**
      * Return enable maintenance task if excludeDisabled is true otherwise it will return all
-     * maintenance task
+     * maintenance task type
      **/
-    List<MaintenanceTaskName> getMaintenanceTaskNames(boolean excludeDisabled);
+    List<MaintenanceTaskType> getMaintenanceTaskTypes(boolean excludeDisabled);
 
     /**
      * Return enable maintenance task if excludeDisabled is true otherwise it will return all
@@ -31,9 +25,9 @@ public interface MaintenanceTaskDao {
     List<MaintenanceTask> getMaintenanceTasks(boolean includeDisabledTask);
 
     /**
-     * Returns a maintenance task with the given task name.
+     * Returns a maintenance task with the given task type.
      **/
-    MaintenanceTask getMaintenanceTask(MaintenanceTaskName taskName);
+    MaintenanceTask getMaintenanceTask(MaintenanceTaskType taskName);
 
     /**
      * Returns a maintenance task with the given taskId.
@@ -46,9 +40,9 @@ public interface MaintenanceTaskDao {
     void updateTaskStatus(MaintenanceTask task);
 
     /**
-     * Returns all settings for the given maintenance task.
+     * Returns all settings for the given maintenance task type.
      **/
-    List<MaintenanceSetting> getSettingsForMaintenanceTaskName(MaintenanceTaskName task);
+    List<MaintenanceSetting> getSettingsForMaintenanceTaskType(MaintenanceTaskType taskType);
 
     /**
      * Updates all the settings provided.

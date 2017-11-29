@@ -1,11 +1,11 @@
 package com.cannontech.system.model;
 
-import com.cannontech.maintenance.MaintenanceTaskName;
+import com.cannontech.maintenance.MaintenanceTaskType;
 
 public class MaintenanceTask {
 
     private int taskId;
-    private MaintenanceTaskName taskName;
+    private MaintenanceTaskType taskName;
     private boolean disabled;
 
     public int getTaskId() {
@@ -16,11 +16,11 @@ public class MaintenanceTask {
         this.taskId = taskId;
     }
 
-    public MaintenanceTaskName getTaskName() {
+    public MaintenanceTaskType getTaskName() {
         return taskName;
     }
 
-    public void setTaskName(MaintenanceTaskName taskName) {
+    public void setTaskName(MaintenanceTaskType taskName) {
         this.taskName = taskName;
     }
 

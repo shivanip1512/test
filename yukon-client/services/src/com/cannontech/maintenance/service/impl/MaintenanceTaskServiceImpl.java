@@ -9,22 +9,24 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.maintenance.MaintenanceTaskName;
+import com.cannontech.maintenance.MaintenanceSettingType;
+import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.maintenance.task.MaintenanceTask;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.system.model.MaintenanceSetting;
 
 public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MaintenanceTaskDao maintenanceTaskDao;
-    private Map<MaintenanceTaskName, MaintenanceTask> maintenanceTaskMap = new HashMap<>();
+    private Map<MaintenanceTaskType, MaintenanceTask> maintenanceTaskMap = new HashMap<>();
 
     @Override
     public List<MaintenanceTask> getMaintenanceTasks() {
-        List<MaintenanceTaskName> maintenanceTaskNames = maintenanceTaskDao.getMaintenanceTaskNames(true);
+        List<MaintenanceTaskType> maintenanceTaskTypes = maintenanceTaskDao.getMaintenanceTaskTypes(true);
         List<MaintenanceTask> tasks = maintenanceTaskMap.entrySet().stream()
-                                                                   .filter(e -> maintenanceTaskNames.contains(e.getKey()))
+                                                                   .filter(e -> maintenanceTaskTypes.contains(e.getKey()))
                                                                    .map(e -> e.getValue())
                                                                    .collect(Collectors.toList());
         return tasks;
@@ -42,10 +44,17 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
         return 300;
     }
 
+    @Override
+    public Object getMaintenanceSettings(MaintenanceTaskType taskName, MaintenanceSettingType type) {
+        List<MaintenanceSetting> allSettings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskName);
+        MaintenanceSetting settings = allSettings.stream().filter(setting -> setting.getAttribute() == type).findAny().get();
+        return settings.getAttributeValue();
+    }
+
     @Autowired
     public void setMaintenanceTasks(List<MaintenanceTask> listOfMaintenanceTask) {
         for (MaintenanceTask maintenanceTask : listOfMaintenanceTask) {
-            maintenanceTaskMap.put(maintenanceTask.getMaintenanceTaskName(), maintenanceTask);
+            maintenanceTaskMap.put(maintenanceTask.getMaintenanceTaskType(), maintenanceTask);
         }
     }
 

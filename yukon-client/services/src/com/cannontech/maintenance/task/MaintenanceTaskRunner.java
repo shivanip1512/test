@@ -7,13 +7,13 @@ import java.util.Set;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import com.cannontech.maintenance.MaintenanceTaskName;
+import com.cannontech.maintenance.MaintenanceTaskType;
 
 public class MaintenanceTaskRunner {
     // TODO will remove after discussion on this
     private long minimumExecutionTime = 5;
     // Store completed Tasks
-    private Set<MaintenanceTaskName> completedMaintenanceTask = new HashSet<>();
+    private Set<MaintenanceTaskType> completedMaintenanceTask = new HashSet<>();
 
     // This method is run at the start of a run window
     public synchronized void run(List<MaintenanceTask> tasks, Instant endOfRunWindow) {
@@ -35,11 +35,11 @@ public class MaintenanceTaskRunner {
             Instant endOfTimeSlice = Instant.now().plus(timeSliceLength);
             // The task runs repeatedly, until it's out of work, or the allotted time is up
             boolean taskIsDone = false;
-            if (!completedMaintenanceTask.contains(task.getMaintenanceTaskName())) {
+            if (!completedMaintenanceTask.contains(task.getMaintenanceTaskType())) {
                 while (!taskIsDone && Instant.now().isBefore(endOfTimeSlice)) {
                     taskIsDone = task.doTask(endOfTimeSlice);
                     if (taskIsDone) {
-                        completedMaintenanceTask.add(task.getMaintenanceTaskName());
+                        completedMaintenanceTask.add(task.getMaintenanceTaskType());
                     }
                 }
             }

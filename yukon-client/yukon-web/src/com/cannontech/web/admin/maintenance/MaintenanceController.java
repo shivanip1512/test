@@ -48,7 +48,7 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
-import com.cannontech.maintenance.MaintenanceTaskName;
+import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -349,9 +349,9 @@ public class MaintenanceController {
             String taskName) {
         CronExprOption cronOption = CronExprOption.EVERYDAY;
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        MaintenanceTaskName maintenanceTaskName = MaintenanceTaskName.valueOf(taskName);
-        MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskName);
-        List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskName(maintenanceTaskName);
+        MaintenanceTaskType maintenanceTaskType = MaintenanceTaskType.valueOf(taskName);
+        MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskType);
+        List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskDetails.getTaskName());
         GlobalSettingType businessDaysSettingType =
             GlobalSettingType.valueOf(GlobalSettingType.BUSINESS_HOURS_DAYS.name());
         GlobalSetting businessDaysSetting = globalSettingDao.getSetting(businessDaysSettingType);

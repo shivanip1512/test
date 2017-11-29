@@ -3,7 +3,7 @@ package com.cannontech.maintenance.task.impl;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.maintenance.MaintenanceTaskName;
+import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.task.MaintenanceTask;
 import com.cannontech.maintenance.task.service.PointDataPruningService;
 
@@ -23,8 +23,8 @@ public class PointDataPruningTask implements MaintenanceTask {
     }
 
     @Override
-    public MaintenanceTaskName getMaintenanceTaskName() {
-        return MaintenanceTaskName.POINT_DATA_PRUNING;
+    public MaintenanceTaskType getMaintenanceTaskType() {
+        return MaintenanceTaskType.POINT_DATA_PRUNING;
     }
 
 }

@@ -3,7 +3,6 @@ package com.cannontech.maintenance.dao.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.FieldMapper;
@@ -26,8 +26,7 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.maintenance.MaintenanceSettingType;
-import com.cannontech.maintenance.MaintenanceTaskName;
-import com.cannontech.maintenance.MaintenanceTaskSettings;
+import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
@@ -38,12 +37,15 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     private SimpleTableAccessTemplate<MaintenanceTask> maintenanceTaskTemplate;
     private SimpleTableAccessTemplate<MaintenanceSetting> maintenanceSettingTemplate;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    
+    private final LeastRecentlyUsedCacheMap<MaintenanceTaskType, List<MaintenanceSetting>> cache = new LeastRecentlyUsedCacheMap<>(100);
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
 
     private static final YukonRowMapper<MaintenanceTask> maintenanceTaskRowMapper =
@@ -53,48 +55,29 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
 
                 MaintenanceTask maintenanceTask = new MaintenanceTask();
                 maintenanceTask.setTaskId(rs.getInt("TaskId"));
-                maintenanceTask.setTaskName(rs.getEnum("TaskName", MaintenanceTaskName.class));
+                maintenanceTask.setTaskName(rs.getEnum("TaskName", MaintenanceTaskType.class));
                 maintenanceTask.setDisabled(rs.getEnum("Disabled", YNBoolean.class).getBoolean());
 
                 return maintenanceTask;
             }
         };
-    @Override
-    public Map<MaintenanceTaskSettings, String> getTaskSettings(MaintenanceTaskName taskName) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Attribute, Value");
-        sql.append("FROM MaintenanceTask ms");
-        sql.append("  JOIN MaintenanceTaskSettings msp");
-        sql.append("  ON ms.TaskId = msp.TaskId");
-        sql.append("AND TaskName").eq(taskName);
-
-        final Map<MaintenanceTaskSettings, String> taskSettings = new HashMap<>();
-
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                taskSettings.put(rs.getEnum("Attribute", MaintenanceTaskSettings.class), rs.getString("Value"));
-            }
-        });
-        return taskSettings;
-    }
 
     @Override
-    public List<MaintenanceTaskName> getMaintenanceTaskNames(boolean excludeDisabled) {
+    public List<MaintenanceTaskType> getMaintenanceTaskTypes(boolean excludeDisabled) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT TaskName");
         sql.append("FROM MaintenanceTask");
         if (excludeDisabled) {
             sql.append("WHERE Disabled").eq_k(YNBoolean.NO);
         }
-        List<MaintenanceTaskName> maintenanceTaskNames = new ArrayList<>();
+        List<MaintenanceTaskType> maintenanceTaskTypes = new ArrayList<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                maintenanceTaskNames.add(rs.getEnum("TaskName", MaintenanceTaskName.class));
+                maintenanceTaskTypes.add(rs.getEnum("TaskName", MaintenanceTaskType.class));
             }
         });
-        return maintenanceTaskNames;
+        return maintenanceTaskTypes;
     }
 
     @Override
@@ -109,11 +92,11 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     }
 
     @Override
-    public MaintenanceTask getMaintenanceTask(MaintenanceTaskName taskName) {
+    public MaintenanceTask getMaintenanceTask(MaintenanceTaskType taskType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT TaskId, TaskName, Disabled");
         sql.append("FROM MaintenanceTask");
-        sql.append("WHERE TaskName").eq(taskName);
+        sql.append("WHERE TaskName").eq(taskType);
         MaintenanceTask maintenanceTask = jdbcTemplate.queryForObject(sql, maintenanceTaskRowMapper);
         return maintenanceTask;
     }
@@ -137,8 +120,31 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     }
 
     @Override
-    public List<MaintenanceSetting> getSettingsForMaintenanceTaskName(MaintenanceTaskName task) {
-        Set<MaintenanceSettingType> all = MaintenanceSettingType.getSettingsForTask(task);
+    public List<MaintenanceSetting> getSettingsForMaintenanceTaskType(MaintenanceTaskType taskType) {
+        List<MaintenanceSetting> settings = cache.get(taskType);
+        if (CollectionUtils.isEmpty(settings)) {
+            settings = getSettingsForTaskType(taskType);
+            if (CollectionUtils.isEmpty(settings)) {
+                settings = Lists.newArrayList();
+                Set<MaintenanceSettingType> maintenanceSettingTypes = MaintenanceTaskType.getMaintenancetasksettingmapping().get(taskType);
+                MaintenanceTask maintenanceTask = getMaintenanceTask(taskType);
+                for (MaintenanceSettingType type : maintenanceSettingTypes) {
+                    MaintenanceSetting setting = new MaintenanceSetting();
+                    setting.setTaskId(maintenanceTask.getTaskId());
+                    Object value = type.getDefaultValue();
+                    setting.setAttribute(type);
+                    setting.setAttributeValue(value);
+                    settings.add(setting);
+                }
+            }
+            cache.put(taskType, settings);
+        }
+
+        return settings;
+    }
+
+    private List<MaintenanceSetting> getSettingsForTaskType(MaintenanceTaskType taskType) {
+        Set<MaintenanceSettingType> all = MaintenanceTaskType.getSettingsForTask(taskType);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT TaskPropertyId, TaskId, Attribute, Value");
@@ -152,9 +158,6 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
             public void processRow(YukonResultSet rs) throws SQLException {
                 MaintenanceSettingType type = rs.getEnum(("Attribute"), MaintenanceSettingType.class);
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
-                if (value == null) {
-                    value = type.getDefaultValue();
-                }
                 MaintenanceSetting setting = new MaintenanceSetting(type, value);
                 setting.setTaskPropertyId((rs.getInt("TaskPropertyId")));
                 setting.setTaskId((rs.getInt("TaskId")));
@@ -170,8 +173,8 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         for (MaintenanceSetting setting : settings) {
             maintenanceSettingTemplate.save(setting);
         }
+        cache.clear();
     }
-
 
     private final FieldMapper<MaintenanceSetting> maintenanceSettingFieldMapper =
         new FieldMapper<MaintenanceSetting>() {
@@ -227,17 +230,16 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     }
 
     private void insertMaintenanceTask() {
-        List<MaintenanceTaskName> allMaintenanceTaskNames = getMaintenanceTaskNames(false);
-        List<MaintenanceTaskName> maintenanceTaskNames = Arrays.stream(MaintenanceTaskName.values())
-                                                               .filter(task -> !allMaintenanceTaskNames.contains(task))
-                                                               .collect(Collectors.toList());
-        maintenanceTaskNames.forEach(maintenanceTaskName -> {
+        List<MaintenanceTaskType> allMaintenanceTaskTypes = getMaintenanceTaskTypes(false);
+        List<MaintenanceTaskType> taskTypes = Arrays.stream(MaintenanceTaskType.values())
+                                                    .filter(task -> !allMaintenanceTaskTypes.contains(task))
+                                                    .collect(Collectors.toList());
+        taskTypes.forEach(taskType -> {
             MaintenanceTask task = new MaintenanceTask();
-            task.setTaskName(maintenanceTaskName);
+            task.setTaskName(taskType);
             maintenanceTaskTemplate.save(task);
         });
     }
-
 
     @Override
     public Map<GlobalSettingType, Pair<Object, String>> getValuesAndComments() {

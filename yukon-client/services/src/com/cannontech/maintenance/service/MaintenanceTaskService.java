@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import com.cannontech.maintenance.MaintenanceSettingType;
+import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.task.MaintenanceTask;
 
 public interface MaintenanceTaskService {
@@ -22,5 +24,10 @@ public interface MaintenanceTaskService {
      * Return start time of maintenance tasks in seconds
      **/
     long getSecondsUntilRun();
+
+    /**
+     * Return value for given maintenance task and setting type.
+     **/
+    Object getMaintenanceSettings(MaintenanceTaskType taskName, MaintenanceSettingType type);
 
 }
