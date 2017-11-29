@@ -140,7 +140,6 @@ public class DeviceConfigurationSummaryController {
     
     @RequestMapping(value="{errorCode}/displayError", method=RequestMethod.GET)
     public String displayError(ModelMap model, YukonUserContext context, @PathVariable int errorCode) {
-        errorCode = 99;
         DeviceErrorDescription description = deviceErrorTranslatorDao.translateErrorCode(errorCode, context);
         model.put("error",  description);
         return "summary/error.jsp";

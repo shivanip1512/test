@@ -70,7 +70,7 @@
                                  <c:choose>
                                     <c:when test="${detail.status == 'FAILURE'}">
                                         <div class="dn js-failure-${deviceId}" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key=".failure"/>" 
-                                        data-width="600" data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/displayError"/>"></div>
+                                        data-width="600" data-url="<cti:url value="/deviceConfiguration/summary/${detail.errorCode}/displayError"/>"></div>
                                         <a href="javascript:void(0);" data-popup=".js-failure-${deviceId}"><i:inline key=".statusType.${detail.status}"/></a>
                                     </c:when>
                                     <c:otherwise>
