@@ -17,7 +17,6 @@ import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
 
@@ -180,10 +179,10 @@ public enum GlobalSettingType implements DisplayableEnum {
     PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 15),
 
     //Data Point Pruning
-    BUSINESS_HOURS_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("BUSINESS_HOURS_DAYS"), "NNNNNNN"),
-    MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("MAINTENANCE_DAYS"), "NNNNNNN"),
+    BUSINESS_HOURS_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("BUSINESS_HOURS_DAYS"), "NYYYYYN"),
+    MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("MAINTENANCE_DAYS"), "YNNNNNN"),
     BUSINESS_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("BUSINESS_HOURS_START_STOP_TIME"), "420,1020"),
-    MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("MAINTENANCE_HOURS_START_STOP_TIME"), "1260,60")
+    MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("MAINTENANCE_HOURS_START_STOP_TIME"), "60,180")
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;
@@ -191,7 +190,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     private final  Object defaultValue;
     private final  GlobalSettingSubCategory category;
     private final static ImmutableList<GlobalSettingType> sensitiveSettings;
-    private final static ImmutableSet<GlobalSettingType> maintenanceTasksSettings;
 
     static {
         final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
@@ -214,11 +212,6 @@ public enum GlobalSettingType implements DisplayableEnum {
             SMTP_USERNAME,
             SMTP_PASSWORD);
 
-        maintenanceTasksSettings = ImmutableSet.of(
-            BUSINESS_HOURS_DAYS,
-            MAINTENANCE_DAYS,
-            BUSINESS_HOURS_START_STOP_TIME,
-            MAINTENANCE_HOURS_START_STOP_TIME);
     }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
@@ -258,10 +251,6 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     public static ImmutableList<GlobalSettingType> getSensitiveSettings() {
         return sensitiveSettings;
-    }
-
-    public static ImmutableSet<GlobalSettingType> getMaintenanceTasksSettings() {
-        return maintenanceTasksSettings;
     }
 
 }
