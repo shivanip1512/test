@@ -20,15 +20,15 @@ public enum MaintenanceTaskType {
     }
 
     static {
-        final ImmutableMap.Builder <MaintenanceTaskType, Set<MaintenanceSettingType>> b = ImmutableMap.builder();
+        final ImmutableMap.Builder <MaintenanceTaskType, Set<MaintenanceSettingType>> taskTypebuilder = ImmutableMap.builder();
         for (MaintenanceTaskType taskType : values()) {
-            b.put(taskType, taskType.maintenanceSettingTypes);
+            taskTypebuilder.put(taskType, taskType.maintenanceSettingTypes);
         }
-        maintenanceTaskSettingMapping = b.build();
+        maintenanceTaskSettingMapping = taskTypebuilder.build();
 
     }
 
-    public static ImmutableMap<MaintenanceTaskType, Set<MaintenanceSettingType>> getMaintenancetasksettingmapping() {
+    public static ImmutableMap<MaintenanceTaskType, Set<MaintenanceSettingType>> getMaintenanceTaskSettingMapping() {
         return maintenanceTaskSettingMapping;
     }
 

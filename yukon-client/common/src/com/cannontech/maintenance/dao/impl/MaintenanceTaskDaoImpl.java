@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
-import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.FieldMapper;
@@ -38,16 +38,13 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     private SimpleTableAccessTemplate<MaintenanceTask> maintenanceTaskTemplate;
     private SimpleTableAccessTemplate<MaintenanceSetting> maintenanceSettingTemplate;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private MaintenanceHelper maintenanceHelper;
-    
-    private final LeastRecentlyUsedCacheMap<MaintenanceTaskType, List<MaintenanceSetting>> cache = new LeastRecentlyUsedCacheMap<>(100);
+
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
 
     private static final YukonRowMapper<MaintenanceTask> maintenanceTaskRowMapper =
@@ -123,12 +120,10 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
 
     @Override
     public List<MaintenanceSetting> getSettingsForMaintenanceTaskType(MaintenanceTaskType taskType) {
-        List<MaintenanceSetting> settings = cache.get(taskType);
-        if (CollectionUtils.isEmpty(settings)) {
-            settings = getSettingsForTaskType(taskType);
+        List<MaintenanceSetting> settings = getSettingsForTaskType(taskType);
             if (CollectionUtils.isEmpty(settings)) {
                 settings = Lists.newArrayList();
-                Set<MaintenanceSettingType> maintenanceSettingTypes = MaintenanceTaskType.getMaintenancetasksettingmapping().get(taskType);
+                Set<MaintenanceSettingType> maintenanceSettingTypes = MaintenanceTaskType.getMaintenanceTaskSettingMapping().get(taskType);
                 MaintenanceTask maintenanceTask = getMaintenanceTask(taskType);
                 for (MaintenanceSettingType type : maintenanceSettingTypes) {
                     MaintenanceSetting setting = new MaintenanceSetting();
@@ -139,9 +134,6 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
                     settings.add(setting);
                 }
             }
-            cache.put(taskType, settings);
-        }
-
         return settings;
     }
 
@@ -175,7 +167,6 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         for (MaintenanceSetting setting : settings) {
             maintenanceSettingTemplate.save(setting);
         }
-        cache.clear();
     }
 
     private final FieldMapper<MaintenanceSetting> maintenanceSettingFieldMapper =
