@@ -348,15 +348,15 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         
         Instant now = Instant.now();
 
-        Set<Integer> enteringViolationEvents = new HashSet<>(newViolatingDeviceIds);
-        enteringViolationEvents.removeAll(oldViolatingDeviceIds);
+        Set<Integer> enteringViolationDeviceIds = new HashSet<>(newViolatingDeviceIds);
+        enteringViolationDeviceIds.removeAll(oldViolatingDeviceIds);
 
-        Set<Integer> exitingViolationEvents = new HashSet<>(oldViolatingDeviceIds);
-        exitingViolationEvents.removeAll(newViolatingDeviceIds);
+        Set<Integer> exitingViolationDeviceIds = new HashSet<>(oldViolatingDeviceIds);
+        exitingViolationDeviceIds.removeAll(newViolatingDeviceIds);
 
         List<SmartNotificationEvent> events = Lists.newArrayList(
-            Iterables.concat(getEvents(monitor, enteringViolationEvents, MonitorState.IN_VIOLATION, now),
-                getEvents(monitor, exitingViolationEvents, MonitorState.OUT_OF_VIOLATION, now)));
+            Iterables.concat(getEvents(monitor, enteringViolationDeviceIds, MonitorState.IN_VIOLATION, now),
+                getEvents(monitor, exitingViolationDeviceIds, MonitorState.OUT_OF_VIOLATION, now)));
         
         log.debug("Sending event=" + events);
         smartNotificationEventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
@@ -367,7 +367,6 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
      */
     private List<SmartNotificationEvent> getEvents(DeviceDataMonitor monitor, Set<Integer> ids, MonitorState state,
             Instant now) {
-
         return ids.stream().map(paoId -> DeviceDataMonitorEventAssembler.assemble(now, monitor.getId(),
             monitor.getName(), state, paoId)).collect(Collectors.toList());
     }
