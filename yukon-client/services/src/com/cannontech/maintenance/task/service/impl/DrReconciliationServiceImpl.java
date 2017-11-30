@@ -17,7 +17,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
 
     @Override
     public List<Integer> getOutOfServiceExpectedLcrs() {
-        if (!isSupressMessage()) {
+        if (!isSuppressMessage()) {
             List<Integer> oosExpectedLcrInventoryIds = drReconciliationDao.getOutOfServiceExpectedLcrs();
             return oosExpectedLcrInventoryIds;
         }
@@ -26,20 +26,20 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
 
     @Override
     public List<Integer> getInServiceExpectedLcrs() {
-        if (!isSupressMessage()) {
+        if (!isSuppressMessage()) {
             List<Integer> inServiceExpectedLcrInventoryIds = drReconciliationDao.getInServiceExpectedLcrs();
             return inServiceExpectedLcrInventoryIds;
         }
         return Collections.emptyList();
     }
 
-    private boolean isSupressMessage() {
+    private boolean isSuppressMessage() {
         List<EnergyCompany> allEnergyCompanies = (List<EnergyCompany>) energyCompanyDao.getAllEnergyCompanies();
         for (EnergyCompany energyCompany : allEnergyCompanies) {
-            boolean isSupressMessage = ecSettingDao.getBoolean(
+            boolean isSuppressMessage = ecSettingDao.getBoolean(
                 EnergyCompanySettingType.SUPPRESS_IN_OUT_SERVICE_MESSAGES, energyCompany.getId());
-            if (isSupressMessage) {
-                return isSupressMessage;
+            if (isSuppressMessage) {
+                return isSuppressMessage;
             }
         }
         return false;
