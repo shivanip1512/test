@@ -28,6 +28,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
@@ -143,6 +144,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
                  */
                 if (!inViolationsGroup) {
                     deviceGroupMemberEditorDao.addDevices(violationsDeviceGroup, paoIdentifier);
+                    deviceDataMonitorCalculationService.sendSmartNotificationEvent(monitor, paoIdentifier.getPaoId(), MonitorState.IN_VIOLATION);
                     LogHelper.debug(log, "Device Data Monitor [%s] found a data match! Adding device to device group [%s]",
                                     violationsDeviceGroup.getName(),
                                     violationsDeviceGroup.getFullName());
@@ -157,6 +159,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
                  */
                 if (inViolationsGroup) {
                     deviceGroupMemberEditorDao.removeDevicesById(violationsDeviceGroup, Collections.singleton(paoIdentifier.getPaoId()));
+                    deviceDataMonitorCalculationService.sendSmartNotificationEvent(monitor, paoIdentifier.getPaoId(), MonitorState.OUT_OF_VIOLATION);
                     LogHelper.debug(log, "Device Data Monitor [%s] data did NOT match! Removing device from device group [%s]",
                                     violationsDeviceGroup.getName(),
                                     violationsDeviceGroup.getFullName());
