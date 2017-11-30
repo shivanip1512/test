@@ -329,15 +329,6 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 
-    @Override
-    public boolean hasEnrollments(int inventoryId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*)");
-        sql.append("FROM lmHardwareControlGroup hcg");
-        sql.append("WHERE hcg.inventoryId").eq(inventoryId);
-        return yukonJdbcTemplate.queryForInt(sql) > 0;
-    }
-
     private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
         @Override
         public ProgramEnrollment mapRow(YukonResultSet rs) throws SQLException {

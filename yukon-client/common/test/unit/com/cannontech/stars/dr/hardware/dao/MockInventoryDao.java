@@ -209,10 +209,4 @@ public class MockInventoryDao implements InventoryDao {
     public DisplayableLmHardware getDisplayableLMHardware(int inventoryId) {
         throw new MethodNotImplementedException();
     }
-
-    @Override
-    public Set<Integer> getAllTwoWayRfnLcrInventories() {
-        throw new MethodNotImplementedException();
-    }
-
 }

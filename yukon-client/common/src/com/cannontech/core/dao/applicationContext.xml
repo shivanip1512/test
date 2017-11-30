@@ -64,7 +64,9 @@
   <bean id="databaseManagementDao" class="com.cannontech.core.dao.impl.DatabaseManagementDaoImpl"/>
   
   <bean id="pointDataPruningDaoImpl" class="com.cannontech.maintenance.task.dao.impl.PointDataPruningDaoImpl"/>
-  
+
+  <bean id="DrReconciliationDaoImpl" class="com.cannontech.maintenance.task.dao.impl.DrReconciliationDaoImpl"/>
+
   <bean id="maintenanceTaskDaoImpl" class="com.cannontech.maintenance.dao.impl.MaintenanceTaskDaoImpl"/>
   
   <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl"/>

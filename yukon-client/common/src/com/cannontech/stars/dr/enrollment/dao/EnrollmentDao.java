@@ -119,9 +119,4 @@ public interface EnrollmentDao {
      */
     List<ProgramEnrollment> findOtherApplianceConflictingEnrollments(int accountId, int assignedProgramId,
             List<Integer> inventoryIds , int assignedProgramCategoryId);
-
-    /**
-     * Method returns true if device with inventoryId is enrolled at least once
-     */
-    boolean hasEnrollments(int inventoryId);
 }

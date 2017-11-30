@@ -527,25 +527,6 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
-    public Set<Integer> getAllTwoWayRfnLcrInventories() {
-        Set<Integer> inventoryIds = new HashSet<>();
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ib.InventoryID");
-        sql.append("FROM InventoryBase ib");
-        sql.append("  JOIN YukonPAObject ypo ON ypo.PAObjectID = ib.DeviceID");
-        sql.append("WHERE ypo.Type").in(PaoType.getRfLcrTypes());
-
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                int inventoryId = rs.getInt("InventoryID");
-                inventoryIds.add(inventoryId);
-            }
-        });
-        return inventoryIds;
-    }
-
-    @Override
     public InventoryIdentifier getYukonInventoryForDeviceId(int deviceId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
