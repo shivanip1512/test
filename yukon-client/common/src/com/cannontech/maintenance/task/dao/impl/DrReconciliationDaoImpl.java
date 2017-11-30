@@ -102,15 +102,15 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
      */
     private SqlFragmentSource getAllEnrolledDevicesSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(    "SELECT InventoryID ");
-        sql.append(    "FROM (");
-        sql.append(        "SELECT InventoryID, GroupEnrollStart, GroupEnrollStop, ROW_NUMBER() ");
-        sql.append(          "OVER (PARTITION BY lhcg.InventoryID, lhcg.programId ORDER BY lhcg.ControlEntryID DESC) AS rnum");
-        sql.append(        "FROM LMHardwareControlGroup lhcg");
-        sql.append(    ") lmInventories");
-        sql.append(    "WHERE rnum = 1"); 
-        sql.append(      "AND lmInventories.GroupEnrollStart IS NOT NULL");
-        sql.append(      "AND lmInventories.GroupEnrollStop IS NULL");
+        sql.append("SELECT InventoryID ");
+        sql.append("FROM (");
+        sql.append(    "SELECT InventoryID, GroupEnrollStart, GroupEnrollStop, ROW_NUMBER() ");
+        sql.append(        "OVER (PARTITION BY lhcg.InventoryID, lhcg.programId ORDER BY lhcg.ControlEntryID DESC) AS rnum");
+        sql.append(    "FROM LMHardwareControlGroup lhcg");
+        sql.append(") lmInventories");
+        sql.append("WHERE rnum = 1"); 
+        sql.append(  "AND lmInventories.GroupEnrollStart IS NOT NULL");
+        sql.append(  "AND lmInventories.GroupEnrollStop IS NULL");
         return sql;
         
     }
@@ -122,11 +122,11 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
      */
     private SqlFragmentSource getAllUnenrolledDevicesSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(    "SELECT InventoryID ");
+        sql.append("SELECT InventoryID ");
         sql.append("FROM LMHardwareControlGroup lhcg");
         sql.append("WHERE InventoryID NOT IN (");
         sql.append(getAllEnrolledDevicesSql()).append(") ");
-        sql.append(  "AND lhcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        sql.append("AND lhcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         return sql;
     }
 }
