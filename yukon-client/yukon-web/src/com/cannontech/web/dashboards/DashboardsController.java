@@ -178,6 +178,7 @@ public class DashboardsController {
     @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
     public String assignUsersDialog(@PathVariable int id, ModelMap model) {
         List<LiteDashboard> dashboards = dashboardService.getDashboards();
+        Collections.sort(dashboards);
         model.addAttribute("dashboards", dashboards);
         model.addAttribute("dashboardId", id);
         model.addAttribute("pageTypes", DashboardPageType.values());
