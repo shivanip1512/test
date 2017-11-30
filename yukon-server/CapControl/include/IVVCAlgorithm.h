@@ -98,6 +98,8 @@ class IVVCAlgorithm
 
         virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 
+        virtual void stopDisabledDeviceHeartbeats(CtiCCSubstationBusPtr subbus);
+
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
         bool busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);

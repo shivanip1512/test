@@ -558,8 +558,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     // send regulator heartbeat messages as long as we are communicating
     if ( ! state->isCommsLost() )
     {
-        sendKeepAlive(subbus);
+        sendKeepAlive( subbus );
     }
+
+    stopDisabledDeviceHeartbeats( subbus );
 
     DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
 
@@ -1473,11 +1475,28 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-        for ( const long bankID : zone->getBankIds() )
+        auto bankIDs = zone->getBankIds();
+
+        // If the feeder is disabled, we don't want to send a heartbeat to its child banks
+        for ( const auto feeder : subbus->getCCFeeders() )
+        {
+            if ( feeder->getDisableFlag() )
+            {
+                for ( const long childBankID : feeder->getAllCapBankIds() )
+                {
+                    bankIDs.erase( childBankID );
+                }
+            }
+        }
+
+        for ( const long bankID : bankIDs )
         {
             if ( auto bank = store->findCapBankByPAObjectID( bankID ) )
             {
-                bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+                if ( ! bank->getDisableFlag() )
+                {
+                    bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+                }
             }
             else
             {
@@ -1491,6 +1510,35 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
     }
 }
 
+void IVVCAlgorithm::stopDisabledDeviceHeartbeats( CtiCCSubstationBusPtr subbus )
+{
+    // First look for disabled feeders on the bus and stop the heartbeat on all banks under that feeder if it is
+    auto & feeders = subbus->getCCFeeders();
+
+    for ( auto feeder : feeders ) 
+    {
+        auto & banks = feeder->getCCCapBanks();
+
+        if ( feeder->getDisableFlag() )
+        {
+            for ( auto bank : banks ) 
+            {
+                bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+            }
+        }
+        // If the feeder is enabled, check for individually disabled banks
+        else
+        {
+            for (auto bank : banks)
+            {
+                if ( bank->getDisableFlag() )
+                {
+                    bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+                }
+            }
+        }
+    }
+}
 
 void IVVCAlgorithm::sendPointChanges(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges)
 {

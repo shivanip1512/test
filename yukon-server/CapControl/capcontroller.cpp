@@ -963,13 +963,17 @@ void CtiCapController::controlLoop()
                                     }
                                 }
                             }
-                            else    // feeder is enabled so send heartbeats
+                            else    // feeder is enabled so send heartbeats to enabled banks
                             {
                                 for ( auto bank : feeder->getCCCapBanks() )
                                 {
                                     if ( ! bank->getDisableFlag() )
                                     {
                                         bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+                                    }
+                                    else
+                                    {
+                                        bank->executeStopHeartbeat(Cti::CapControl::SystemUser);
                                     }
                                 }
                             }
