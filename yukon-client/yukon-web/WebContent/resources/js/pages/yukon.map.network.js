@@ -21,7 +21,7 @@ yukon.map.network = (function () {
     //grey
     _parentColor = "#808080",
     //dark blue
-    _routeColor = "#1E66CC",
+    _routeColor = "#0000CC",
     
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,
@@ -160,7 +160,6 @@ yukon.map.network = (function () {
                 })]
             }),
             style: new ol.style.Style({
-                fill: new ol.style.Fill({ color: _parentColor, weight: 4 }),
                 stroke: new ol.style.Stroke({ color: _parentColor, width: 2, lineDash: [10,10] })
             })
         });
@@ -242,7 +241,6 @@ yukon.map.network = (function () {
                 }),
 
                 style: new ol.style.Style({
-                    fill: new ol.style.Fill({ color: lineColor, weight: lineThickness }),
                     stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
                 })
             });
@@ -303,8 +301,7 @@ yukon.map.network = (function () {
                     })]
                 }),
                 style: new ol.style.Style({
-                    fill: new ol.style.Fill({ color: _routeColor, weight: 4 }),
-                    stroke: new ol.style.Stroke({ color: _routeColor, width: 2 })
+                    stroke: new ol.style.Stroke({ color: _routeColor, width: 3.5 })
                 })
             });
             
