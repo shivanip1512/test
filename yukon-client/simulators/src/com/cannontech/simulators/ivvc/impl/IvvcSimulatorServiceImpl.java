@@ -595,7 +595,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 Double voltageLoad = regulatorVoltageLoads.get(regulatorId);
                 if (voltageLoad != null && regulatorSetPointValues.containsKey(regulatorId)) {
                     int tapChange;
-                    if (regulatorBackfedStatus.get(regulatorId)) {
+                    if (regulatorBackfedStatus.containsKey(regulatorId) && regulatorBackfedStatus.get(regulatorId) == true) {
                         tapChange = getSetPointTapChange(reverseSetPointValues.get(regulatorId), voltageLoad, BANDWIDTH);
                     } else {
                         tapChange = getSetPointTapChange(regulatorSetPointValues.get(regulatorId), voltageLoad, BANDWIDTH);
