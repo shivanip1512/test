@@ -2,6 +2,7 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/range/algorithm/set_algorithm.hpp>
 
 #include "IVVCAlgorithm.h"
 #include "IVVCStrategy.h"
@@ -1477,19 +1478,21 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
         auto bankIDs = zone->getBankIds();
 
+        decltype(bankIDs) disabledBankIDs, heartbeatBankIDs;
+
         // If the feeder is disabled, we don't want to send a heartbeat to its child banks
         for ( const auto feeder : subbus->getCCFeeders() )
         {
             if ( feeder->getDisableFlag() )
             {
-                for ( const long childBankID : feeder->getAllCapBankIds() )
-                {
-                    bankIDs.erase( childBankID );
-                }
+                auto feederBankIds = feeder->getAllCapBankIds();
+                disabledBankIDs.insert( feederBankIds.begin(), feederBankIds.end());
             }
         }
 
-        for ( const long bankID : bankIDs )
+        boost::range::set_difference( bankIDs, disabledBankIDs, std::inserter( heartbeatBankIDs, heartbeatBankIDs.begin() ) );
+
+        for ( const long bankID : heartbeatBankIDs )
         {
             if ( auto bank = store->findCapBankByPAObjectID( bankID ) )
             {
@@ -1512,29 +1515,18 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
 void IVVCAlgorithm::stopDisabledDeviceHeartbeats( CtiCCSubstationBusPtr subbus )
 {
-    // First look for disabled feeders on the bus and stop the heartbeat on all banks under that feeder if it is
+    // Stop heartbeat for all banks under a disabled feeder or individually disabled banks
     auto & feeders = subbus->getCCFeeders();
 
     for ( auto feeder : feeders ) 
     {
         auto & banks = feeder->getCCCapBanks();
 
-        if ( feeder->getDisableFlag() )
+        for ( auto bank : banks )
         {
-            for ( auto bank : banks ) 
+            if ( feeder->getDisableFlag() || bank->getDisableFlag() )
             {
                 bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
-            }
-        }
-        // If the feeder is enabled, check for individually disabled banks
-        else
-        {
-            for (auto bank : banks)
-            {
-                if ( bank->getDisableFlag() )
-                {
-                    bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
-                }
             }
         }
     }
