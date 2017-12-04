@@ -98,36 +98,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                 }
             });
         });
-            
-            
-
-          
-       
-        /*for (Integer lcr : lcrInMultipleGroups.keySet()) {
-            HashSet<Integer> groups = (HashSet) lcrInMultipleGroups.get(lcr);
-            List<Integer> tempAddress = Arrays.asList(0, 0, 0, 0, 0, 0);
-
-            for (Integer group : groups) {
-                if (conflictingLCR.contains(lcr)) {
-                    ExpressComAddressView lmGroupAddressing = lmGroupDaoImpl.getExpressComAddressing(group);
-                    List<Integer> groupAddress = parseAddress(lmGroupAddressing);
-
-                    for (int position = 0; position < tempAddress.size(); position++) {
-                        if (groupAddress.get(position) != 0) {
-                            if (tempAddress.get(position) != 0) {
-                                if (groupAddress.get(position) != tempAddress.get(position)) {
-                                    // mismatch, we can not fix it dont send message
-                                    conflictingLCR.remove(lcr);
-                                    break;
-                                }
-                            } else {
-                                tempAddress.set(position, groupAddress.get(position));
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
+        conflictingLCR.removeAll(groupConflictingLCR);
         return conflictingLCR;
     }
 
