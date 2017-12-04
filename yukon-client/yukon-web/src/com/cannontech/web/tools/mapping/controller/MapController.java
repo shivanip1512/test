@@ -150,14 +150,8 @@ public class MapController {
             try {
                 RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
                 Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
-                Object macAddress = metadata.get(RfnMetadata.NODE_ADDRESS);
-                if (macAddress != null) {
-                    model.addAttribute("macAddress", String.valueOf(macAddress));
-                }
-                Object primaryGateway = metadata.get(RfnMetadata.PRIMARY_GATEWAY);
-                if (primaryGateway != null) {
-                    model.addAttribute("primaryGateway", String.valueOf(primaryGateway));
-                }
+                model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
+                model.addAttribute("primaryGateway", metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata));
             } catch (NmCommunicationException e) {
                 log.error("Failed to get metadata for " + id, e);           
             } catch (NotFoundException e) {

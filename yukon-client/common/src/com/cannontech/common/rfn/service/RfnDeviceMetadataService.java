@@ -25,5 +25,12 @@ public interface RfnDeviceMetadataService {
      * @throws NmCommunicationException if there was communication error or if NM returned an error
      */
     public Map<RfnMetadata, Object> getMetadata(RfnDevice device) throws NmCommunicationException;
+    
+    /**
+     * Gets a specific metadata item from the map and returns as string
+     * 
+     * @return String the metadata value
+     */
+    public String getMetaDataValueAsString(RfnMetadata nodeAddress, Map<RfnMetadata, Object> metadata);
 
 }

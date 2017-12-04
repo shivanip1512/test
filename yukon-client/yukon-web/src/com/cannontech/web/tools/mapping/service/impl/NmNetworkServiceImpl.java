@@ -340,10 +340,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 info.setConnectionStatus(gateway.getConnectionStatus());
                 info.setIpAddress(gateway.getIpAddress());
                 Map<RfnMetadata, Object> metadata = metadataService.getMetadata(info.getDevice());
-                Object macAddress = metadata.get(RfnMetadata.NODE_ADDRESS);
-                if (macAddress != null) {
-                    info.setMacAddress(String.valueOf(macAddress));
-                }
+                info.setMacAddress(metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
             } catch (NmCommunicationException e) {
                 // ignore, status will be set to "UNKNOWN"
                 log.error("Failed to get gateway data for " + info.getDevice(), e);
@@ -358,14 +355,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     // ignore, status will be set to "UNKNOWN"
                     log.error("NM didn't return communication status for " + info.getDevice());
                 }
-                Object primaryGateway = metadata.get(RfnMetadata.PRIMARY_GATEWAY);
-                if (primaryGateway != null) {
-                    info.setPrimaryGateway(String.valueOf(primaryGateway));
-                }
-                Object macAddress = metadata.get(RfnMetadata.NODE_ADDRESS);
-                if (macAddress != null) {
-                    info.setMacAddress(String.valueOf(macAddress));
-                }
+                info.setPrimaryGateway(metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata));
+                info.setMacAddress(metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
             } catch (NmCommunicationException e) {
                 // ignore, status will be set to "UNKNOWN"
                 log.error("Failed to get meta-data for " + info.getDevice(), e);

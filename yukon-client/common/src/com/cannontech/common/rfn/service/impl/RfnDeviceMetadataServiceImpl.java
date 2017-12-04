@@ -114,6 +114,14 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
         }
     }
     
+    public String getMetaDataValueAsString(RfnMetadata metadata, Map<RfnMetadata, Object> data){
+        Object value = data.get(metadata);
+        if (value != null) {
+           return String.valueOf(value);
+        }
+       return null;
+    }
+    
   
     @PostConstruct
     public void initialize() {
