@@ -9,7 +9,7 @@
 <tags:nameValueContainer2 tableClass="name-collapse">    
     <tags:nameValue2 nameKey=".device" nameClass="js-device-display" valueClass="js-device js-device-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".meterNumber" nameClass="js-meter-number-display" valueClass="js-meter-number js-meter-number-display"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".ipAddress" nameClass="js-ip-address-display" valueClass="js-ip-adress js-ip-address-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".ipAddress" nameClass="js-ip-address-display" valueClass="js-ip-address js-ip-address-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".type" nameClass="js-type-display" valueClass="js-type js-type-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".status" nameClass="js-status-display" valueClass="js-status js-status-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".nodeSN" nameClass="js-node-sn-display" valueClass="js-node-sn js-node-sn-display"></tags:nameValue2>
