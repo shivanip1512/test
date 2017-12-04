@@ -343,9 +343,9 @@ CREATE INDEX INDX_CRERes_ExecId_DevId ON CommandRequestExecResult
 GO
 
 
-DECLARE @maxId AS numeric( 18,0 ) = COALESCE((SELECT MAX(CommandRequestExecId) FROM CommandRequestExecRequest), 0)
+DECLARE @maxId AS numeric( 18,0 ) = COALESCE((SELECT MAX(CommandRequestExecRequestId) FROM CommandRequestExecRequest), 0)
 INSERT INTO CommandRequestExecRequest ( CommandRequestExecRequestId, CommandRequestExecId, DeviceId )
-SELECT @maxId + ROW_NUMBER() OVER ( ORDER BY cre.CommandRequestExecId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
+SELECT @maxId + ROW_NUMBER() OVER ( ORDER BY req.CommandRequestExecRequestId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
 FROM CommandRequestExec cre
 JOIN CommandRequestExecResult res ON cre.CommandRequestExecId = res.CommandRequestExecId 
 LEFT JOIN CommandRequestExecRequest req ON res.CommandRequestExecId = req.CommandRequestExecId AND res.DeviceId = req.DeviceId
@@ -359,9 +359,9 @@ AND cre.CommandRequestExecId = ( SELECT MAX(cre2.CommandRequestExecId)
                                  AND cre2.CommandRequestExecType IN ( 'GROUP_DEVICE_CONFIG_VERIFY', 'GROUP_DEVICE_CONFIG_SEND', 'GROUP_DEVICE_CONFIG_READ' ) );
 GO
 
-DECLARE @maxId AS numeric( 18,0 ) = COALESCE((SELECT MAX(CommandRequestExecId) FROM CommandRequestExecRequest), 0)
+DECLARE @maxId AS numeric( 18,0 ) = COALESCE((SELECT MAX(CommandRequestExecRequestId) FROM CommandRequestExecRequest), 0)
 INSERT INTO CommandRequestExecRequest ( CommandRequestExecRequestId, CommandRequestExecId, DeviceId )
-SELECT @maxId + ROW_NUMBER() OVER ( ORDER BY cre.CommandRequestExecId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
+SELECT @maxId + ROW_NUMBER() OVER ( ORDER BY req.CommandRequestExecRequestId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
 FROM CommandRequestExec cre
 JOIN CommandRequestExecResult res ON cre.CommandRequestExecId = res.CommandRequestExecId 
 LEFT JOIN CommandRequestExecRequest req ON res.CommandRequestExecId = req.CommandRequestExecId AND res.DeviceId = req.DeviceId
