@@ -14,6 +14,8 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.maintenance.task.dao.DrReconciliationDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 public class DrReconciliationDaoImpl implements DrReconciliationDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -93,6 +95,70 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
         });
 
         return requiredInventories;
+    }
+    
+    @Override
+    public List<Integer> getGroupsWithRfnDeviceEnrolled() {
+
+        final List<Integer> groupsWithRfnDeviceEnrolled = new ArrayList<>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT AddressingGroupId");
+        sql.append("FROM LMHardwareConfiguration hdconf");
+        sql.append("  JOIN InventoryBase inv ON hdconf.InventoryId = inv.InventoryId");
+        sql.append("  JOIN YukonPaobject pao ON inv.DeviceID = pao.PAObjectID");
+        sql.append("WHERE type").in(PaoType.getRfLcrTypes());
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                groupsWithRfnDeviceEnrolled.add(rs.getInt("AddressingGroupId"));
+            }
+        });
+        return groupsWithRfnDeviceEnrolled;
+    }
+    
+    @Override
+    public List<Integer> getEnrolledRfnLcrForGroup(int groupId) {
+
+        final List<Integer> lcrsInGroup = new ArrayList<>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT inv.deviceId");
+        sql.append("FROM InventoryBase inv");
+        sql.append("  JOIN LMHardwareConfiguration hdconf ON inv.InventoryId = hdconf.InventoryId");
+        sql.append("WHERE AddressingGroupId").eq(groupId);
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                lcrsInGroup.add(rs.getInt("deviceId"));
+            }
+        });
+        return lcrsInGroup;
+    }
+    
+    @Override
+    public Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(List<Integer> lcrs) {
+
+        final Multimap<Integer, Integer> lcrEnrolledInMultipleGroups = HashMultimap.create();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT inv.deviceId, hdconf.AddressingGroupId");
+        sql.append("FROM InventoryBase inv ");
+        sql.append("  JOIN LMHardwareConfiguration hdconf ON inv.InventoryId = hdconf.InventoryId");
+        sql.append("  AND inv.InventoryID IN");
+        sql.append("      ( SELECT InventoryID");
+        sql.append("        FROM LMHardwareConfiguration");
+        sql.append("       GROUP BY InventoryID");
+        sql.append("       HAVING COUNT(InventoryID) > 1)");
+        sql.append("  AND inv.DeviceId != 0");
+        sql.append("  AND inv.DeviceId").in(lcrs);
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                lcrEnrolledInMultipleGroups.put(rs.getInt("deviceId"), rs.getInt("AddressingGroupId"));
+            }
+        });
+        return lcrEnrolledInMultipleGroups;
     }
 
     /**

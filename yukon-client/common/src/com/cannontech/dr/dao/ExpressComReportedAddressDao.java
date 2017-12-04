@@ -37,4 +37,9 @@ public interface ExpressComReportedAddressDao {
      */
     public Set<ExpressComReportedAddress> getAllCurrentAddresses();
     
+    /**
+     * Retrieves the most current address for devices.
+     */
+    List<ExpressComReportedAddress> getCurrentAddresses(List<Integer> deviceId);
+    
 }

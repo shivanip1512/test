@@ -2,6 +2,8 @@ package com.cannontech.maintenance.task.dao;
 
 import java.util.List;
 
+import com.google.common.collect.Multimap;
+
 public interface DrReconciliationDao {
 
     /**
@@ -17,4 +19,19 @@ public interface DrReconciliationDao {
      * @return list of InventoryIds of LCRs
      */
     List<Integer> getOutOfServiceExpectedLcrs();
+    
+    /**
+     * Get Groups which have RFN device enrolled.
+     */
+    List<Integer> getGroupsWithRfnDeviceEnrolled();
+    
+    /**
+     * Get Enrolled LCR for a group.
+     */
+    List<Integer> getEnrolledRfnLcrForGroup(int groupId);
+    
+    /**
+     * Get LCR and associated group, for those LCR's which are enrolled in multiple groups.
+     */
+    Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(List<Integer> lcrs);
 }

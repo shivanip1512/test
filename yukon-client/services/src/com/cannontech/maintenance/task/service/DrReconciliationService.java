@@ -17,4 +17,9 @@ public interface DrReconciliationService {
      * @return list of InventoryIds of LCRs
      */
     public List<Integer> getInServiceExpectedLcrs();
+    
+    /**
+     * Give a list of LCR which have conflicting addresses and messages have to be send for them.
+     */
+    List<Integer> getLCRWithConflictingAddressing();
 }

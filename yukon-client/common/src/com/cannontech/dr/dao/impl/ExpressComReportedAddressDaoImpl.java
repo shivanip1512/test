@@ -209,4 +209,22 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
         return Sets.newHashSet(addresses);
     }
     
+    @Override
+    public List<ExpressComReportedAddress> getCurrentAddresses(List<Integer> deviceId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ChangeId, RAEC.DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
+        sql.append("FROM ReportedAddressExpressCom lmra,");
+        sql.append("(SELECT DeviceId, MAX(Timestamp) LatestTimestamp FROM ReportedAddressExpressCom GROUP BY DeviceId) RAEC");
+        sql.append("WHERE lmra.ChangeId = (SELECT MAX(ChangeId) FROM ReportedAddressExpressCom RAEC2 WHERE RAEC2.DeviceId = RAEC.DeviceId  AND RAEC.LatestTimestamp = RAEC2.Timestamp)");
+        sql.append("AND DeviceId").in(deviceId);
+        
+        List<ExpressComReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
+        for (ExpressComReportedAddress address : addresses) {
+            address.setRelays(getRelays(address.getChangeId()));
+        }
+        
+        return addresses;
+    }
+    
 }
