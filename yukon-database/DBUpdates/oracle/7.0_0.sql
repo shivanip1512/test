@@ -338,10 +338,10 @@ CREATE INDEX INDX_CRERes_ExecId_DevId ON CommandRequestExecResult
 DECLARE
     v_maxId NUMBER;
 BEGIN
-    SELECT COALESCE((SELECT MAX(CommandRequestExecId) FROM CommandRequestExecRequest), 0) INTO v_maxId FROM dual;
+    SELECT COALESCE((SELECT MAX(CommandRequestExecRequestId) FROM CommandRequestExecRequest), 0) INTO v_maxId FROM dual;
 
     INSERT INTO CommandRequestExecRequest ( CommandRequestExecRequestId, CommandRequestExecId, DeviceId )
-    SELECT v_maxId + ROW_NUMBER() OVER ( ORDER BY cre.CommandRequestExecId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
+    SELECT v_maxId + ROW_NUMBER() OVER ( ORDER BY req.CommandRequestExecRequestId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
     FROM CommandRequestExec cre
     JOIN CommandRequestExecResult res ON cre.CommandRequestExecId = res.CommandRequestExecId 
     LEFT JOIN CommandRequestExecRequest req ON res.CommandRequestExecId = req.CommandRequestExecId AND res.DeviceId = req.DeviceId
@@ -361,10 +361,10 @@ END;
 DECLARE
     v_maxId NUMBER;
 BEGIN
-    SELECT COALESCE((SELECT MAX(CommandRequestExecId) FROM CommandRequestExecRequest), 0) INTO v_maxId FROM dual;
+    SELECT COALESCE((SELECT MAX(CommandRequestExecRequestId) FROM CommandRequestExecRequest), 0) INTO v_maxId FROM dual;
 
     INSERT INTO CommandRequestExecRequest ( CommandRequestExecRequestId, CommandRequestExecId, DeviceId )
-    SELECT v_maxId + ROW_NUMBER() OVER ( ORDER BY cre.CommandRequestExecId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
+    SELECT v_maxId + ROW_NUMBER() OVER ( ORDER BY req.CommandRequestExecRequestId ) AS CommandRequestExecRequestId, cre.CommandRequestExecId, res.DeviceId
     FROM CommandRequestExec cre
     JOIN CommandRequestExecResult res ON cre.CommandRequestExecId = res.CommandRequestExecId 
     LEFT JOIN CommandRequestExecRequest req ON res.CommandRequestExecId = req.CommandRequestExecId AND res.DeviceId = req.DeviceId
