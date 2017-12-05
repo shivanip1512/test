@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/29/2017 10:15:56 AM                       */
+/* Created on:     12/5/2017 9:38:32 AM                         */
 /*==============================================================*/
 
 
@@ -3168,6 +3168,15 @@ create table DevicePagingReceiverSettings  (
    CapCode16            NUMBER                          not null,
    Frequency            FLOAT                           not null,
    constraint PK_DEVICEPAGINGRECEIVERSETTING primary key (DeviceID)
+);
+
+/*==============================================================*/
+/* Table: DeviceParent                                          */
+/*==============================================================*/
+create table DeviceParent  (
+   DeviceID             NUMBER                          not null,
+   ParentID             NUMBER                          not null,
+   constraint PK_DeviceParent primary key (DeviceID, ParentID)
 );
 
 /*==============================================================*/
@@ -11899,6 +11908,15 @@ alter table DeviceMCT400Series
 
 alter table DevicePagingReceiverSettings
    add constraint FK_DevPaRec_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID);
+
+alter table DeviceParent
+   add constraint FK_DeviceParent_Device foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table DeviceParent
+   add constraint FK_DeviceParent_Parent foreign key (ParentID)
       references DEVICE (DEVICEID);
 
 alter table DeviceRTC

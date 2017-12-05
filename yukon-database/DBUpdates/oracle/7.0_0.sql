@@ -381,6 +381,23 @@ END;
 /* @end-block */
 /* End YUK-17498 */
 
+/* Start YUK-17579 */
+CREATE TABLE DeviceParent  (
+   DeviceID             NUMBER                          NOT NULL,
+   ParentID             NUMBER                          NOT NULL,
+   CONSTRAINT PK_DeviceParent PRIMARY KEY (DeviceID, ParentID)
+);
+
+ALTER TABLE DeviceParent
+   ADD CONSTRAINT FK_DeviceParent_Device FOREIGN KEY (DeviceID)
+      REFERENCES DEVICE (DEVICEID)
+      ON DELETE CASCADE;
+
+ALTER TABLE DeviceParent
+   ADD CONSTRAINT FK_DeviceParent_Parent FOREIGN KEY (ParentID)
+      REFERENCES DEVICE (DEVICEID);
+/* End YUK-17579 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/29/2017 10:16:49 AM                       */
+/* Created on:     12/5/2017 9:37:48 AM                         */
 /*==============================================================*/
 
 
@@ -3377,6 +3377,16 @@ create table DevicePagingReceiverSettings (
    CapCode16            numeric              not null,
    Frequency            float                not null,
    constraint PK_DEVICEPAGINGRECEIVERSETTING primary key (DeviceID)
+)
+go
+
+/*==============================================================*/
+/* Table: DeviceParent                                          */
+/*==============================================================*/
+create table DeviceParent (
+   DeviceID             numeric              not null,
+   ParentID             numeric              not null,
+   constraint PK_DeviceParent primary key (DeviceID, ParentID)
 )
 go
 
@@ -12769,6 +12779,17 @@ go
 
 alter table DevicePagingReceiverSettings
    add constraint FK_DevPaRec_Dev foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+go
+
+alter table DeviceParent
+   add constraint FK_DeviceParent_Device foreign key (DeviceID)
+      references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table DeviceParent
+   add constraint FK_DeviceParent_Parent foreign key (ParentID)
       references DEVICE (DEVICEID)
 go
 

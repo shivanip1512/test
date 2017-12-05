@@ -376,6 +376,26 @@ AND cre.CommandRequestExecId = ( SELECT MAX( cre2.CommandRequestExecId )
 GO
 /* End YUK-17498 */
 
+/* Start YUK-17579 */
+CREATE TABLE DeviceParent  (
+   DeviceID             NUMERIC              NOT NULL,
+   ParentID             NUMERIC              NOT NULL,
+   CONSTRAINT PK_DeviceParent PRIMARY KEY (DeviceID, ParentID)
+);
+GO
+
+ALTER TABLE DeviceParent
+   ADD CONSTRAINT FK_DeviceParent_Device FOREIGN KEY (DeviceID)
+      REFERENCES DEVICE (DEVICEID)
+         ON DELETE CASCADE;
+GO
+
+ALTER TABLE DeviceParent
+   ADD CONSTRAINT FK_DeviceParent_Parent FOREIGN KEY (ParentID)
+      REFERENCES DEVICE (DEVICEID);
+GO
+/* End YUK-17579 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
