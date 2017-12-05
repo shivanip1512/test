@@ -367,6 +367,7 @@ public class OperatorHardwareController {
             int deviceId = inventoryDao.getDeviceId(inventoryId);
             model.addAttribute("deviceId", deviceId);
             model.addAttribute("showNetworkInfo", true);
+            model.addAttribute("showMapNetwork", true);
         }
         return "operator/hardware/hardware.jsp";
     }

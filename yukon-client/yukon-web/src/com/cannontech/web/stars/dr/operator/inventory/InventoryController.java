@@ -146,6 +146,7 @@ public class InventoryController {
             int deviceId = inventoryDao.getDeviceId(inventoryId);
             model.addAttribute("deviceId", deviceId);
             model.addAttribute("showNetworkInfo", true);
+            model.addAttribute("showMapNetwork", true);
         }
         setupModel(model, userContext, hardware);
 

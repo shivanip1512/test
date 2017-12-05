@@ -16,7 +16,14 @@
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/stars/operator/inventory/create" var="action"/>
     </cti:displayForPageEditModes>
- <%@ include file="../inventory/shedRestoreLoadPopup.jsp" %>   
+    <%@ include file="../inventory/shedRestoreLoadPopup.jsp" %>   
+    
+    <cti:displayForPageEditModes modes="VIEW"> 
+         <div id="page-actions" class="dn">
+            <%@ include file="../hardware/hardwareDeviceActions.jspf" %>
+        </div>
+    </cti:displayForPageEditModes>
+    
  <c:if test="${not empty hardware}">
     <div class="column-12-12">
         <div class="column one">
@@ -25,12 +32,6 @@
 
         <cti:displayForPageEditModes modes="VIEW">
             <div class = "column two nogutter">
-            <%--DEVICE ACTIONS --%>
-            <tags:sectionContainer2 nameKey="actions" styleClass="stacked">
-                <ul class="button-stack">
-                    <%@ include file="../hardware/hardwareDeviceActions.jspf" %>
-                </ul>
-            </tags:sectionContainer2>
                  <c:if test="${showPoints}">
                     <%@ include file="../hardware/hardwarePoints.jspf" %>
                     <br>

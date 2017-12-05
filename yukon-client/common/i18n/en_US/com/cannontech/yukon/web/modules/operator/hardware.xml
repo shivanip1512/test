@@ -54,6 +54,8 @@
     <entry key="yukon.web.modules.operator.hardware.testShed.hoverText">Send shed command</entry>
     <entry key="yukon.web.modules.operator.hardware.timedShedRestore.label">Send Control</entry>
     
+    <entry key="yukon.web.modules.operator.hardware.mapNetwork.label">Map Network</entry>
+    
     <!-- General Hardware Terms -->
     <entry key="yukon.web.modules.operator.hardware.deviceInfoSection.title">Device Info</entry>
     

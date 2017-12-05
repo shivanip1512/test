@@ -1,34 +1,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-
+<c:if test="${showMapNetwork}">
+    <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}&inventoryId=${inventoryId}"/>
+    <cm:dropdownOption key=".mapNetwork.label" href="${mapNetworkUrl}" icon="icon-map"/>
+</c:if>
+<c:if test="${canSendShed}">
+    <c:set var="shedKey" value="${isAllowDRControl ? '.timedShedRestore.label' : '.testShed.label'}"/>
+    <cm:dropdownOption key="${shedKey}" icon="icon-link-go" id="sendShedRestore" data-popup="#device-shed-restore-load-popup"/>
+</c:if> 
 <c:if test="${canEnableDisable}"> 
     <cti:url var="enableUrl" value="/stars/operator/inventory/enable">
         <cti:param name="inventoryId" value="${param.inventoryId}"/>
     </cti:url>
-    <li>
-        <cti:button nameKey="sendEnable" href="${enableUrl}" renderMode="labeledImage" icon="icon-accept" id="enable-hardware-btn"/>
-        <d:confirm on="#enable-hardware-btn" nameKey="confirmEnable" argument="${hardware.displayName}"/>
-    </li>
+    <cm:dropdownOption key=".sendEnable.label" data-href="${enableUrl}" icon="icon-accept" id="enable-hardware-btn"/>
+    <d:confirm on="#enable-hardware-btn" nameKey="confirmEnable" argument="${hardware.displayName}"/>
+
     <cti:url var="disableUrl" value="/stars/operator/inventory/disable">
         <cti:param name="inventoryId" value="${param.inventoryId}"/>
     </cti:url>
-    <li>
-        <cti:button nameKey="sendDisable" href="${disableUrl}" renderMode="labeledImage" icon="icon-delete" id="disable-hardware-btn"/>
-        <d:confirm on="#disable-hardware-btn" nameKey="confirmDisable" argument="${hardware.displayName}"/>
-    </li>
+    <cm:dropdownOption key=".sendDisable.label" data-href="${disableUrl}" icon="icon-delete" id="disable-hardware-btn"/>
+    <d:confirm on="#disable-hardware-btn" nameKey="confirmDisable" argument="${hardware.displayName}"/>
 </c:if>
-<li>
-    <c:if test="${canSendShed}">
-      <c:choose>
-          <c:when test="${isAllowDRControl}">
-              <cti:button nameKey="timedShedRestore" data-popup="#device-shed-restore-load-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShedRestore"/>
-          </c:when>
-         <c:otherwise>
-             <cti:button nameKey="testShed" data-popup="#device-shed-restore-load-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShedRestore"/>
-         </c:otherwise>
-      </c:choose>
-    </c:if>    
-</li>
-
-

@@ -17,21 +17,25 @@
 <script>
 /** 'Send' button clicked on the shed/restore load configuration popup. */
 $(document).on('yukon:assets:shed:restore:load:send', function (ev) {
-    var data = $('#shed-restore-load-form').serialize();
+    var data = $('#shed-restore-load-form').serialize(),
+        sendShedOption = $('#sendShedRestore'),
+        sendShedIcon = sendShedOption.find('i'),
+        sendShedIconClass = sendShedIcon.attr('class');
     $('#device-shed-restore-load-popup').dialog('close');
-    yukon.ui.busy('#sendShedRestore');
-            $.ajax({
-                 url: yukon.url('/stars/operator/inventory/shedRestoreLoad'),
-                 data: data,
-                 type: 'post',
-                 success: function (result, status, xhr, $form) {
-                    window.location.href = window.location.href;
-                    yukon.ui.unbusy('#sendShedRestore');
-                 },
-                 error: function (xhr, status, error, $form) {
-                    yukon.ui.unbusy('#sendShedRestore');
-                     }
-                 });
+    sendShedOption.addClass('disabled-look');
+    sendShedIcon.attr('class', 'icon icon-spinner');
+        $.ajax({
+             url: yukon.url('/stars/operator/inventory/shedRestoreLoad'),
+             data: data,
+             type: 'post',
+             success: function (result, status, xhr, $form) {
+                window.location.href = window.location.href;
+             },
+             error: function (xhr, status, error, $form) {
+                 sendShedOption.removeClass('disabled-look');
+                 sendShedIcon.attr('class', sendShedIconClass);
+             }
+         });
 }); 
 </script>
 </cti:msgScope>
