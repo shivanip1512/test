@@ -17,6 +17,7 @@ struct TestCbcLogicalDevice : Cti::Devices::CbcLogicalDevice
 {
     using CtiTblPAOLite::setID;
     using CtiDeviceBase::setName;
+    using CbcLogicalDevice::setParentDeviceId;
 
     CtiPointSPtr logicalPoint;
     std::string requestedPointName;
@@ -94,6 +95,7 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     TestCbcLogicalDevice dev;
 
     dev.logicalPoint.reset(Cti::Test::makeControlPoint(1729, 17, 172, 3458, ControlType_Normal));
+    dev.setParentDeviceId(1729, test_tag);
 
     using P = CtiCommandParser;
 
@@ -340,8 +342,6 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "ping"));
 
-        BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
-
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
@@ -363,8 +363,6 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     //  scan integrity
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "scan integrity"));
-
-        BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
 
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
@@ -458,6 +456,8 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
     }
     delete_container(retList);
     retList.clear();
+
+    //  parent device ID not set
     {
         CtiCommandParser parse("ping");
 
@@ -478,9 +478,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
-            "George Washington / Override point not found"
-            "\nOverride point name : Banana"
-            "\nAttribute           : CONTROL_POINT");
+            "George Washington / Parent device ID not set");
     }
     delete_container(retList);
     retList.clear();
@@ -504,9 +502,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
-            "George Washington / Override point not found"
-            "\nOverride point name : Banana"
-            "\nAttribute           : CONTROL_POINT");
+            "George Washington / Parent device ID not set");
     }
     delete_container(retList);
     retList.clear();

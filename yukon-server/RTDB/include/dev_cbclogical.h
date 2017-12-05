@@ -14,12 +14,14 @@ public:
 
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
+    std::string getSQLCoreStatement() const override;
+    void DecodeDatabaseReader(RowReader& rdr) override;
+
 protected:
 
     typedef CtiDeviceBase Inherited;
 
-    CtiPointSPtr getDevicePointByName(const std::string& name) override;
-    CtiPointSPtr getDevicePointByID(int pointid) override;
+    void setParentDeviceId(long parentDeviceId, Test::use_in_unit_tests_only&);
 
 private:
     
@@ -27,7 +29,9 @@ private:
 
     AttributeMapping _attributeMapping;
 
-    YukonError_t executeRequestOnParent(const int deviceId, const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList);
+    long _parentDeviceId;
+
+    YukonError_t executeRequestOnParent(const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList);
 };
 
 }

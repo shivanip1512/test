@@ -24,16 +24,9 @@ public:
 
     void refresh(Config::DeviceConfigSPtr deviceConfig, const AttributeList& mappableAttributes);
 
-    struct PaoControlOffset
-    {
-        int paoId;
-        int controlOffset;
-    };
-
     using OptionalInt = boost::optional<int>;
 
     //  These throw YukonErrorException
-    auto getPaoControlOffset(const Attribute attribute) -> PaoControlOffset;
     auto getControlOffset   (const Attribute attribute) -> int;
     auto getPointOffset     (const Attribute attribute) -> int;
 
@@ -46,10 +39,9 @@ private:
     template<typename Value>
     using Expected = boost::variant<std::string, Value>;
 
-    using PointStatusExpected = Expected<CtiPointStatusSPtr>;
     using IntExpected         = Expected<int>;
 
-    auto tryGetControlOffset(const Attribute attribute) -> PointStatusExpected;
+    auto tryGetControlOffset(const Attribute attribute) -> IntExpected;
     auto tryGetPointOffset  (const Attribute attribute) -> IntExpected;
 
     std::map<Attribute, std::string> _overrides;

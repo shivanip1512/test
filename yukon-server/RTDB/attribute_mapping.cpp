@@ -68,7 +68,7 @@ auto AttributeMapping::findControlOffset(const Attribute attribute) -> OptionalI
 
     if( pcox.which() )
     {
-        return boost::strict_get<CtiPointStatusSPtr>(pcox)->getControlParameters()->getControlOffset();
+        return boost::strict_get<int>(pcox);
     }
 
     CTILOG_DEBUG(dout, boost::strict_get<std::string>(pcox));
@@ -76,27 +76,19 @@ auto AttributeMapping::findControlOffset(const Attribute attribute) -> OptionalI
     return boost::none;
 }
 
-auto AttributeMapping::getPaoControlOffset(const Attribute attribute) -> PaoControlOffset
+int AttributeMapping::getControlOffset(const Attribute attribute)
 {
     auto pcox = tryGetControlOffset(attribute);
 
     if( pcox.which() )
     {
-        const auto& statusPt = boost::strict_get<CtiPointStatusSPtr>(pcox);
-        
-        return { statusPt->getDeviceID(), statusPt->getControlParameters()->getControlOffset() };
+        return boost::strict_get<int>(pcox);
     }
 
-    throw YukonErrorException { ClientErrors::NoConfigData, boost::strict_get<std::string>(pcox) };
+    throw YukonErrorException{ ClientErrors::NoConfigData, boost::strict_get<std::string>(pcox) };
 }
 
-int AttributeMapping::getControlOffset(const Attribute attribute)
-{
-    //  Caller does not care about the pao ID
-    return getPaoControlOffset(attribute).controlOffset;
-}
-
-auto AttributeMapping::tryGetControlOffset(const Attribute attribute) -> PointStatusExpected
+auto AttributeMapping::tryGetControlOffset(const Attribute attribute) -> IntExpected
 {
     auto optName = mapFindRef(_overrides, attribute);
 
@@ -155,7 +147,7 @@ auto AttributeMapping::tryGetControlOffset(const Attribute attribute) -> PointSt
                 "Attribute", attribute);
     }
 
-    return statusPt;
+    return control->getControlOffset();
 }
 
 

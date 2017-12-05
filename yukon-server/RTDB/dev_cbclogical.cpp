@@ -23,36 +23,38 @@ namespace Cti {
 namespace Devices {
 
 CbcLogicalDevice::CbcLogicalDevice()
-    :   _attributeMapping([this](const std::string& name) { return getDevicePointByName(name); })
+    :   _attributeMapping { [this](const std::string& name) { return getDevicePointByName(name); } },
+        _parentDeviceId {}
 {
 }
 
-CtiPointSPtr CbcLogicalDevice::getDevicePointByName(const std::string& pointName)
+std::string CbcLogicalDevice::getSQLCoreStatement() const
 {
-    if( !_pointMgr )
-    {
-        throw YukonErrorException {
-            ClientErrors::NoConfigData,
-            "No point manager"
-            + FormattedList::of(
-                "Override point name", pointName) };
-    }
+    static const std::string sqlCore = 
+        "SELECT"
+            " YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag"
+            ", DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, DUS.phonenumber"
+            ", DP.parentid"
+        " FROM"
+            " YukonPAObject YP"
+            " JOIN Device DV on YP.PAObjectID=DV.DeviceID"
+            " JOIN DeviceParent DP on DV.DeviceID=DP.DeviceID"
+        " WHERE"
+            " YP.type='CBC Logical'";
 
-    return _pointMgr->getLogicalPoint(getID(), pointName);
+    return sqlCore;
 }
 
-CtiPointSPtr CbcLogicalDevice::getDevicePointByID(const int pointid)
+void CbcLogicalDevice::DecodeDatabaseReader(RowReader& rdr)
 {
-    if( !_pointMgr )
-    {
-        throw YukonErrorException {
-            ClientErrors::NoConfigData,
-            "No point manager"
-            + FormattedList::of(
-                "Override point ID", pointid) };
-    }
+    Inherited::DecodeDatabaseReader(rdr);
 
-    return _pointMgr->getLogicalPoint(getID(), pointid);
+    rdr["ParentID"] >> _parentDeviceId;
+}
+
+void CbcLogicalDevice::setParentDeviceId(const long parentDeviceId, Test::use_in_unit_tests_only&)
+{
+    _parentDeviceId = parentDeviceId;
 }
 
 auto CbcLogicalDevice::getMappableAttributes() const -> AttributeMapping::AttributeList
@@ -66,13 +68,19 @@ auto CbcLogicalDevice::getMappableAttributes() const -> AttributeMapping::Attrib
     };
 }
 
-YukonError_t CbcLogicalDevice::executeRequestOnParent(const int deviceId, const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList)
+YukonError_t CbcLogicalDevice::executeRequestOnParent(const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList)
 {
+    if( ! _parentDeviceId )
+    {
+        throw YukonErrorException(ClientErrors::MissingConfig, "Parent device ID not set");
+    }
+
     auto newRequest = std::make_unique<CtiRequestMsg>(req);
 
-    newRequest->setDeviceId(deviceId);
+    newRequest->setDeviceId(_parentDeviceId);
     newRequest->setCommandString(command);
     newRequest->setConnectionHandle(req.getConnectionHandle());
+    newRequest->setOptionsField(getID());
 
     CTILOG_INFO(dout, "Submitting request to logical CBC parent device" << *newRequest);
 
@@ -89,9 +97,7 @@ try
     if( parse.getCommand() == LoopbackRequest ||
         parse.getCommand() == ScanRequest )
     {
-        const auto paoOffset = _attributeMapping.getPaoControlOffset(Attribute::ControlPoint);
-
-        return executeRequestOnParent(paoOffset.paoId, pReq->CommandString(), *pReq, retList);
+        return executeRequestOnParent(pReq->CommandString(), *pReq, retList);
     }
     if( parse.getCommand() == PutConfigRequest )
     {
@@ -110,11 +116,11 @@ try
 
             if ( auto attrib = Cti::mapFind( _offsetLookup, controlType ) )
             {
-                const auto paoOffset = _attributeMapping.getPaoControlOffset(*attrib);
+                const auto controlOffset = _attributeMapping.getControlOffset(*attrib);
 
-                const std::string command = "control " + controlAction + " offset " + std::to_string( paoOffset.controlOffset );
+                const std::string command = "control " + controlAction + " offset " + std::to_string(controlOffset);
 
-                return executeRequestOnParent(paoOffset.paoId, command, *pReq, retList);
+                return executeRequestOnParent(command, *pReq, retList);
             }
         }
     }
@@ -145,23 +151,23 @@ try
                     {
                         const auto command = pReq->CommandString() + " offset " + std::to_string(controlParameters->getControlOffset());
 
-                        return executeRequestOnParent(point->getDeviceID(), command, *pReq, retList);
+                        return executeRequestOnParent(command, *pReq, retList);
                     }
                 }
             }
         }
         else if( !(parse.getFlags() & CMD_FLAG_OFFSET) && (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
         {
-            const auto paoOffset = _attributeMapping.getPaoControlOffset(Attribute::ControlPoint);
+            const auto controlOffset = _attributeMapping.getControlOffset(Attribute::ControlPoint);
             
             const auto command = 
                 "control"s 
                     + (parse.getFlags() & CMD_FLAG_CTL_OPEN 
                         ? " open"
                         : " close")
-                    + " offset " + std::to_string(paoOffset.controlOffset);
+                    + " offset " + std::to_string(controlOffset);
 
-            return executeRequestOnParent(paoOffset.paoId, command, *pReq, retList);
+            return executeRequestOnParent(command, *pReq, retList);
         }
     }
 
