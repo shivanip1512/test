@@ -523,50 +523,6 @@ CtiCCTwoWayPointsCbcLogical::CtiCCTwoWayPointsCbcLogical( const long paoid, cons
     // empty...
 }
 
-void CtiCCTwoWayPointsCbcLogical::assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                                                   const std::map<Attribute, std::string> & overloads,
-                                                                   const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
-                                                                   const boost::optional<const CtiCCCapBank &> & bank )
-{
-    for ( const LitePoint & point : points )
-    {
-        _points.emplace( point.getPointId(), point );
-    }
-
-    if ( ! overloads.empty() )
-    {
-        // match size : 2
-        //  match[ 0 ] == entire point name including the CBC name
-        //  match[ 1 ] == just the point name
-        const std::regex pointname_regex( "^\\*Logical<.*> (.*)$" );
-
-        for ( auto entry : overloads )
-        {
-            for ( const LitePoint & point : points )
-            {
-                std::smatch pieces_match;
-                std::string pointName = point.getPointName();
-
-                if ( std::regex_match( pointName, pieces_match, pointname_regex ) )
-                {
-                    if ( pieces_match.size() == 2 
-                            && pieces_match[ 1 ].str() == entry.second )
-                    {
-                        _attributeIds[ entry.first ] = point.getPointId();
-                    }
-                }
-            }
-        }
-    }
-
-    if ( dynamicData && bank )
-    {
-        setDynamicData( *dynamicData,
-                        bank->getReportedCBCState(),
-                        bank->getReportedCBCStateTime() );
-    }
-}
-
 // ------------------------------
 
 

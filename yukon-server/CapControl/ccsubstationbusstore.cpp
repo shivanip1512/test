@@ -6163,7 +6163,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 dynamicDataCache.emplace( rdr[ "DeviceID" ].as<long>(), rdr );
             }
         }
-        // load points for all 2 way CBCs except 'CBC Logical' type CBCs - they will be done after this
+        // load points for all 2 way CBCs and CBC Logical type CBCs
         {
             static const std::string sql =
                 "SELECT "
@@ -6195,8 +6195,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         "LEFT OUTER JOIN POINTANALOG PA "
                             "ON P.POINTID = PA.POINTID "
                 "WHERE "
-                    "C.CONTROLDEVICEID <> 0 "
-                        "AND Y.Type <> 'CBC Logical'";
+                    "C.CONTROLDEVICEID <> 0 ";
 
             static const std::string sqlID = sql +
                 " AND C.DEVICEID = ?";
@@ -6323,186 +6322,6 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                     cache.emplace_back( rdr );
                 }
             } 
-            while ( validRow );
-        }
-        // load points for 'CBC Logical' type CBCs
-        {
-            static const std::string sql =
-                "WITH X AS ( "
-                    "SELECT "
-                        "PAOName, "
-                        "CbcID, "
-                        "CapbankID "
-                    "FROM "
-                        "YukonPAObject Z "
-                            "JOIN ( "
-                                "SELECT "
-                                    "C.CONTROLDEVICEID AS CbcID, "
-                                    "Y.PAObjectID AS CapbankID "
-                                "FROM "
-                                    "YukonPAObject Y "
-                                "JOIN CAPBANK C "
-                                    "ON Y.PAObjectID = C.DEVICEID "
-                            ") AS T "
-                                "ON Z.PAObjectID = T.CbcID "
-                    "WHERE "
-                        "Z.Type = 'CBC Logical' "
-                ") "
-                "SELECT "
-                    "CapbankID, "
-                    "CbcID, "
-                    "P.POINTID, "
-                    "P.POINTTYPE, "
-                    "P.POINTNAME, "
-                    "P.PAObjectID, "
-                    "P.POINTOFFSET, "
-                    "P.STATEGROUPID, "
-                    "PC.ControlOffset, "
-                    "PSC.ControlType, "
-                    "PSC.StateZeroControl, "
-                    "PSC.StateOneControl, "
-                    "PSC.CloseTime1, "
-                    "PSC.CloseTime2, "
-                    "COALESCE(PACC.MULTIPLIER, PA.MULTIPLIER) AS MULTIPLIER "
-                "FROM "
-                    "POINT P "
-                        "JOIN YukonPAObject RTU "
-                            "ON P.PAObjectID = RTU.PAObjectID "
-                        "JOIN X ON P.POINTNAME "
-                            "LIKE CONCAT(CONCAT('*Logical<', X.PAOName), '> %') "
-                        "LEFT OUTER JOIN PointControl PC "
-                            "ON P.POINTID = PC.PointId "
-                        "LEFT OUTER JOIN PointStatusControl PSC "
-                            "ON P.POINTID = PSC.PointId "
-                        "LEFT OUTER JOIN POINTACCUMULATOR PACC "
-                            "ON P.POINTID = PACC.POINTID "
-                        "LEFT OUTER JOIN POINTANALOG PA "
-                            "ON P.POINTID = PA.POINTID "
-                "WHERE "
-                    "RTU.Type = 'RTU-DNP' "
-                        "AND CbcID <> 0";
-
-            static const std::string sqlID = sql +
-                " AND CapbankID = ?";
-
-            static const std::string ordering =
-                " ORDER BY P.POINTNAME";
-
-            Cti::Database::DatabaseConnection   connection;
-            Cti::Database::DatabaseReader       rdr( connection );
-
-            if ( capBankId > 0 )
-            {
-                rdr.setCommandText( sqlID + ordering );
-                rdr << capBankId;
-            }
-            else
-            {
-                rdr.setCommandText( sql + ordering );
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO( dout, rdr.asString() );
-            }
-
-            std::vector<LitePoint>  cache;
-
-            long previousCbcID = -1,
-                 currentCbcId  = -1;
-
-            bool validRow;
-
-            do
-            {
-                validRow = rdr();
-
-                previousCbcID = currentCbcId;
-
-                if ( validRow )
-                {
-                    rdr["CbcID"] >> currentCbcId;
-                }
-
-                if ( ( previousCbcID > 0 && previousCbcID != currentCbcId ) || ! validRow )
-                {
-                    // we are at the boundry where the previousCbcID differs from the currentCbcId, this means the cache is
-                    //  full of points for the previousCbcID -- or we have an invalid row, which means the cache has all the
-                    //  points for the last CBC (still previousCbcID) in it.
-
-                    if ( cache.size() > 0 )
-                    {
-                        long currentCapBankId = Cti::mapFindOrDefault( *cbc_capbank_map, previousCbcID, 0 );
-
-                        if ( currentCapBankId > 0 )
-                        {
-                            if ( CtiCCCapBankPtr bank = findInMap( currentCapBankId, paobject_capbank_map ) )
-                            {
-                                if ( bank->isControlDeviceTwoWay() )
-                                {
-                                    std::map<Attribute, std::string>    pointOverloads;
-
-                                    // config
-                                    auto deviceConfig = 
-                                        Cti::ConfigManager::getConfigForIdAndType(
-                                            bank->getControlDeviceId(),
-                                            resolveDeviceType( bank->getControlDeviceType() ) );
-
-                                    if ( deviceConfig )
-                                    {
-                                        // build the Attribute -> PointName overlay
-
-                                        using AMC  = Cti::Config::DNPStrings::AttributeMappingConfiguration;
-                                        using AAPN = Cti::Devices::AttributeAndPointName;
-                                        using Cti::Devices::getConfigDataVector;
-
-                                        try
-                                        {
-                                            // channel selection configuration data
-                                            const auto cfgAttributesPointName = getConfigDataVector<AAPN>( deviceConfig, AMC::AttributeMappings_Prefix );
-
-                                            for ( const auto & entry : cfgAttributesPointName )
-                                            {
-                                                pointOverloads[ Attribute::Lookup( entry.attributeName ) ] = entry.pointName;
-                                            }                                            
-                                        }
-                                        catch ( Cti::Devices::MissingConfigDataException & ex )
-                                        {
-                                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                                            {
-                                                CTILOG_EXCEPTION_WARN( dout, ex, "No Attribute->PointName mappings in the device configuration for bank: " << bank->getPaoName() );
-                                            }
-                                        }
-                                    }
-
-                                    // add points and the attribute mappings to the bank
-
-                                    bank->getTwoWayPoints().assignTwoWayPointsAndAttributes( cache, 
-                                                                                             pointOverloads, 
-                                                                                             Cti::mapFind( dynamicDataCache, bank->getControlDeviceId() ), 
-                                                                                             *bank );
-
-                                    for ( const LitePoint & point : cache )
-                                    {
-                                        bank->addPointId( point.getPointId() );
-
-                                        pointid_capbank_map->insert( std::make_pair( point.getPointId(), bank ) );
-                                    }
-                                }
-                            }
-                        }
-
-                        cache.clear();
-                    }
-                }
-
-                if ( validRow )
-                {
-                    cache.emplace_back( rdr );
-                }
-            }
             while ( validRow );
         }
 

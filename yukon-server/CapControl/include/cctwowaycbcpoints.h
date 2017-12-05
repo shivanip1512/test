@@ -201,11 +201,6 @@ public:
     CtiCCTwoWayPointsCbcLogical( const long paoid, const std::string & paotype,
                                  std::unique_ptr<LastControlReason>    lastControlReason,
                                  std::unique_ptr<IgnoredControlReason> ignoredControlReason );
-
-    void assignTwoWayPointsAndAttributes( const std::vector<LitePoint> & points,
-                                          const std::map<Attribute, std::string> & overloads,
-                                          const boost::optional<Transport::TwoWayDynamicDataTransport> & dynamicData,
-                                          const boost::optional<const CtiCCCapBank &> & bank ) override;
 };
 
 

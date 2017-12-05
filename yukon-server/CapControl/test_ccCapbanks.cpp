@@ -146,11 +146,11 @@ struct cbc_device_logical : cbc_heartbeat_fixture_core
 {
     std::vector<LitePoint>  twoWayPoints
     {
-        LitePoint(1234,  StatusPointType, "*Logical<Some Logical CBC> CBC Heartbeat Enable", 1000, -1, "control pulse", "control pulse", 1.0, 0),
-        LitePoint(5678,  StatusPointType, "*Logical<Some Logical CBC> CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0),
-        LitePoint(4567,  StatusPointType, "*Logical<Some Logical CBC> CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0),
-        LitePoint(2345,  AnalogPointType, "*Logical<Some Logical CBC> CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0),
-        LitePoint(3456,  AnalogPointType, "*Logical<Some Logical CBC> CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0)
+        LitePoint(1234,  StatusPointType, "CBC Heartbeat Enable", 1000, -1, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(5678,  StatusPointType, "CBC Heartbeat Clear", 1000, 0, "control pulse", "control pulse", 1.0, 0),
+        LitePoint(4567,  StatusPointType, "CBC Heartbeat Type", 1000, 2, "", "", 1.0, 0),
+        LitePoint(2345,  AnalogPointType, "CBC Heartbeat Countdown Timer", 1000, 10466, "", "", 1.0, 0),
+        LitePoint(3456,  AnalogPointType, "CBC Heartbeat Analog Timer", 1000, 10467, "", "", 1.0, 0)
     };
 
     std::map<Attribute, std::string>    pointOverloads
@@ -875,9 +875,9 @@ BOOST_FIXTURE_TEST_CASE( test_capbank_point_loading_and_initialization_with_cbc_
     {
         std::vector<LitePoint>  pointCache
         {
-            LitePoint( 4631,  AnalogPointType, "*Logical<Some Logical CBC> Banana Pancakes",     1773, 1, "", "", 1.0, 0 ),
-            LitePoint( 4634,  AnalogPointType, "*Logical<Some Logical CBC> Blueberry Pancakes",  1773, 4, "", "", 1.0, 0 ),
-            LitePoint( 4635,  AnalogPointType, "*Logical<Some Logical CBC> Maple Syrup",         1773, 5, "", "", 1.0, 0 )
+            LitePoint( 4631,  AnalogPointType, "Banana Pancakes",     1773, 1, "", "", 1.0, 0 ),
+            LitePoint( 4634,  AnalogPointType, "Blueberry Pancakes",  1773, 4, "", "", 1.0, 0 ),
+            LitePoint( 4635,  AnalogPointType, "Maple Syrup",         1773, 5, "", "", 1.0, 0 )
         };
 
         std::map<Attribute, std::string>    pointOverloads
