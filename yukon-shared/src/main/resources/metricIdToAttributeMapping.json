@@ -85,7 +85,7 @@
 
                 { "metricId" : 184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR" },
 
-                { "metricId" : 200, "attributeMagnitude" : 3, "attribute" : "DEMAND" },
+                { "metricId" : 200, "attributeMagnitude" : 3, "attribute" : "INSTANTANEOUS_KW" },
                 { "metricId" : 201, "attributeMagnitude" : 3, "attribute" : "KVAR" },
                 { "metricId" : 202, "attributeMagnitude" : 3, "attribute" : "KVA" },
                 

@@ -51,6 +51,7 @@ public:
     static const Attribute  DeliveredDemand;
     static const Attribute  ReceivedDemand;
     static const Attribute  DemandPeakkVACoin;
+    static const Attribute  InstantaneouskW;
     static const Attribute  DisconnectStatus;
     static const Attribute  FaultStatus;
     static const Attribute  ForwardInductivekVArh;

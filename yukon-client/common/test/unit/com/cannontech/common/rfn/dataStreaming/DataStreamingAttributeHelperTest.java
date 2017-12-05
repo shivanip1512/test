@@ -7,12 +7,15 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.fail;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.management.AttributeNotFoundException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -21,10 +24,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMapper.PointMapper;
+import com.cannontech.amr.rfn.dao.impl.RfnDeviceAttributeDaoImpl;
 import com.cannontech.amr.rfn.service.pointmapping.UnitOfMeasureToPointMappingParser;
 import com.cannontech.common.config.dao.RfnPointMappingDao;
 import com.cannontech.common.mock.MockPointDao;
@@ -33,7 +38,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.loader.DefinitionLoaderService;
 import com.cannontech.common.pao.definition.loader.DefinitionLoaderServiceImpl;
 import com.cannontech.common.pao.definition.loader.PaoConfigurationException;
 import com.cannontech.common.pao.service.impl.PointCreationServiceImpl;
@@ -52,7 +56,7 @@ public class DataStreamingAttributeHelperTest {
     private static Map<PaoType, Map<Attribute, AttributeDefinition>> paoAttributeAttrDefinitionMap;
     private static Multimap<PaoType, Attribute> paoTypeAttributesMultiMap;
     private static Multimap<PaoType, PointMapper> rfnPointMap;
-    @Autowired private DefinitionLoaderService definitionLoaderService;
+    private static RfnDeviceAttributeDaoImpl rfnDeviceAttributeDao;
     private ApplicationContext ctx;
 
     @Before
@@ -107,6 +111,11 @@ public class DataStreamingAttributeHelperTest {
             builder.putAll(entry.getKey(), entry.getValue().keySet());
         }
         paoTypeAttributesMultiMap = builder.build();
+        
+        InputStream mapping = this.getClass().getClassLoader().getResourceAsStream("metricIdToAttributeMapping.json");
+        rfnDeviceAttributeDao = new RfnDeviceAttributeDaoImpl();
+        rfnDeviceAttributeDao.setInputFile(new InputStreamResource(mapping));
+        rfnDeviceAttributeDao.initialize();
     }
 
     @After
@@ -115,14 +124,16 @@ public class DataStreamingAttributeHelperTest {
         paoAttributeAttrDefinitionMap = null;
         paoTypeAttributesMultiMap = null;
         rfnPointMap = null;
-        definitionLoaderService = null;
+        rfnDeviceAttributeDao = null;
         ctx = null;
     }
 
     @Test
     public void testInOrder() throws Exception {
+        testConsistentPaoTypes();
         testRFNAndDeviceTypeXMLs();
         testRfnPointMappingXML();
+        testRfnDeviceAttributes();
     }
 
     public void testConsistentPaoTypes() {
@@ -147,15 +158,12 @@ public class DataStreamingAttributeHelperTest {
             Collection<Attribute> attrsList = paoTypeAttributesMultiMap.get(dspa.getPaoType());
             builtInAttributesSet.forEach(entry -> {
                 BuiltInAttribute builtInAttribute = (BuiltInAttribute) entry;
-                if (!attrsList.contains(builtInAttribute)) {
-                    System.out.println("Point Mismatch for " + dspa.getPaoType() + " for Point "
-                        + builtInAttribute.getDescription());
-                }
+                Assert.assertTrue("Point Mismatch for " + dspa.getPaoType() + " for Point " + builtInAttribute.getDescription(), 
+                    attrsList.contains(builtInAttribute));
             });
-
         }
     }
-
+    
     /**
      * Validates DataStreamingAttributeHelper attributes to the points defined in
      * rfnPointMapping xml.
@@ -173,12 +181,20 @@ public class DataStreamingAttributeHelperTest {
                 BuiltInAttribute builtInAttribute = (BuiltInAttribute) entry;
                 AttributeDefinition attributeDefinition = attrDefMap.get(builtInAttribute);
 
-                if (!rfnPoints.contains(attributeDefinition.getPointTemplate().getName())) {
-                    System.out.println("Missing point in rfnPointMapping.xml " + builtInAttribute.getDescription()
-                        + " for PaoType" + dspa.getPaoType());
-                }
+                Assert.assertTrue("Missing point in rfnPointMapping.xml " + builtInAttribute.getDescription() + " for PaoType" + dspa.getPaoType(),
+                        rfnPoints.contains(attributeDefinition.getPointTemplate().getName()));
             });
-
+        }
+    }
+    
+    /**
+     * Validates DataStreamingAttributeHelper attributes to the attributes defined in
+     * metricIdToAttributeMapping.json (rfnDeviceAttributeDao).
+     */
+    private void testRfnDeviceAttributes() {
+        for (DataStreamingPaoAttributes dspa : DataStreamingPaoAttributes.values()) {
+            dspa.getSupportedAttributes().forEach(attribute -> 
+                rfnDeviceAttributeDao.getMetricIdForAttribute(attribute, dspa.getPaoType()));
         }
     }
 }

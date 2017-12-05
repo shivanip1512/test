@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(test_GetMetricId_success)
         BOOST_CHECK_EQUAL(metricId, 5);
     }
     {
-        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::Demand, TYPE_RFN430SL1);
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::InstantaneouskW, TYPE_RFN430SL1);
 
         BOOST_CHECK_EQUAL(metricId, 200);
     }
@@ -103,8 +103,8 @@ BOOST_AUTO_TEST_CASE(test_getAttribute_override)
     {
         const auto attrib = Cti::MetricIdLookup::GetAttribute(200, TYPE_RFN430SL1);
 
-        BOOST_CHECK(attrib == Attribute::Demand);
-        BOOST_CHECK_EQUAL(attrib.getName(), "DEMAND");
+        BOOST_CHECK(attrib == Attribute::InstantaneouskW);
+        BOOST_CHECK_EQUAL(attrib.getName(), "INSTANTANEOUS_KW");
     }
 
     {

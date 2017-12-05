@@ -364,7 +364,7 @@ public class DataStreamingAttributeHelper {
         RFN_430SL1(PaoType.RFN430SL1,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.INSTANTANEOUS_KW,//metric 200
                 BuiltInAttribute.KVAR,            //metric 201
                 BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
@@ -376,7 +376,7 @@ public class DataStreamingAttributeHelper {
         RFN_430SL2(PaoType.RFN430SL2,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.INSTANTANEOUS_KW,//metric 200
                 BuiltInAttribute.KVAR,            //metric 201
                 BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
@@ -388,7 +388,7 @@ public class DataStreamingAttributeHelper {
         RFN_430SL3(PaoType.RFN430SL3,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.INSTANTANEOUS_KW,//metric 200
                 BuiltInAttribute.KVAR,            //metric 201
                 BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
@@ -400,7 +400,7 @@ public class DataStreamingAttributeHelper {
         RFN_430SL4(PaoType.RFN430SL4,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 200
+                BuiltInAttribute.INSTANTANEOUS_KW,//metric 200
                 BuiltInAttribute.KVAR,            //metric 201
                 BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80

@@ -60,7 +60,7 @@
         <pointInfo name="kVAh Lagging Rate C"/>
         <pointInfo name="kVAh Lagging Rate D"/>
         <pointInfo name="kVAr" attributes="KVAR"/>
-        <pointInfo name="kW" attributes="DEMAND"/>
+        <pointInfo name="kW" attributes="DEMAND,INSTANTANEOUS_KW"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Low Loss Potential" attributes="LOW_LOSS_POTENTIAL"/>
         <pointInfo name="Mass Memory Error" attributes="MASS_MEMORY_ERROR"/>

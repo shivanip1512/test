@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
               + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "INTERVAL" },
             { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
-              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DEMAND" },
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "INSTANTANEOUS_KW" },
             { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
               + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "INTERVAL" },
             { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },

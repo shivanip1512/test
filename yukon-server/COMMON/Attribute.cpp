@@ -60,6 +60,7 @@ INIT_ATTRIBUTE( Demand,                                             "DEMAND" );
 INIT_ATTRIBUTE( DeliveredDemand,                                    "DELIVERED_DEMAND" );
 INIT_ATTRIBUTE( ReceivedDemand,                                     "RECEIVED_DEMAND" );
 INIT_ATTRIBUTE( DemandPeakkVACoin,                                  "DEMAND_PEAK_KVA_COIN" );
+INIT_ATTRIBUTE( InstantaneouskW,                                    "INSTANTANEOUS_KW" );
 INIT_ATTRIBUTE( DisconnectStatus,                                   "DISCONNECT_STATUS" );
 INIT_ATTRIBUTE( FaultStatus,                                        "FAULT_STATUS" );
 INIT_ATTRIBUTE( ForwardInductivekVArh,                              "FORWARD_INDUCTIVE_KVARH" );

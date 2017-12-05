@@ -52,6 +52,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     DELIVERED_DEMAND("Delivered Demand", AttributeGroup.DEMAND),
     RECEIVED_DEMAND("Received Demand", AttributeGroup.DEMAND),
     DEMAND_PEAK_KVA_COIN("Demand at Peak kVa Coincidental", AttributeGroup.DEMAND),
+    INSTANTANEOUS_KW("Instantaneous kW", AttributeGroup.DEMAND),
     DISCONNECT_STATUS("Disconnect Status", AttributeGroup.STATUS),
     FAULT_STATUS("Fault Status", AttributeGroup.STATUS, false),
     FORWARD_INDUCTIVE_KVARH("Forward Inductive kVArh", AttributeGroup.REACTIVE, false),   //440 types only

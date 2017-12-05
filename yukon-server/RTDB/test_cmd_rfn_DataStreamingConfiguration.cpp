@@ -126,7 +126,7 @@ R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
-    "attribute" : "DEMAND",
+    "attribute" : "INSTANTANEOUS_KW",
     "interval" : 5,
     "enabled" : true,
     "status" : "OK"
