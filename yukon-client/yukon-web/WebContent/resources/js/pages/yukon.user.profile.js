@@ -110,17 +110,15 @@ yukon.userProfile = (function () {
     },
     
     _validateAndSetCommanderPriority = function (ev) {
-        
-        var value = parseInt($('#commandPriority').val(), 10),
+        var value = Number($('#commandPriority').val()),
             url = yukon.url('/user/updatePreference.json'),
             btn = $(this),
             row = btn.closest('tr'),
-            minPriority = $('#commandPriority').attr('min'),
-            maxPriority = $('#commandPriority').attr('max')
-            ;
-        if (value < minPriority || value > maxPriority) {
-            $('.warning').removeClass('dn');
-            $('#commandPriority').val(maxPriority);
+            minPriority = Number($('#commandPriority').attr('min')),
+            maxPriority = Number($('#commandPriority').attr('max'));
+        
+        if (isNaN(value) || ((value % 1) !== 0) || value < minPriority || value > maxPriority) {
+            $('#commandPriority').val(minPriority);
         }
         
         var params = {

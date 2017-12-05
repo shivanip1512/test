@@ -2,10 +2,12 @@ package com.cannontech.web.user;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandPriority;
 import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreference;
@@ -17,6 +19,7 @@ import com.cannontech.web.user.service.UserPreferenceService;
 @Component
 public class UserPreferencesHelper {
 
+    private static final Logger log = YukonLogManager.getLogger(UserPreferencesHelper.class);
     @Autowired private UserPreferenceService prefService;
 
     /**
@@ -30,11 +33,18 @@ public class UserPreferencesHelper {
         model.addAttribute("userPreferenceMap", prefMap);
         model.addAttribute("allPreferenceNames",
             UserPreferenceName.getUserPreferencesByType(PreferenceType.EDITABLE));
-        
-        Integer priority = Integer.valueOf(prefService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
-        if (priority == null || !CommandPriority.isCommandPriorityValid(priority)) {
-            priority = CommandPriority.maxPriority;
+        Integer priority = null;
+        try {
+            priority = Integer.valueOf(prefService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
+            if (priority == null || !CommandPriority.isCommandPriorityValid(priority)) {
+                priority = CommandPriority.minPriority;
+            }
+        } catch (NumberFormatException e) {
+            log.warn("Could not parse commander priority." + " : " + e.getMessage());
+            log.warn("Setting commander priority to " + CommandPriority.minPriority);
+            priority = CommandPriority.minPriority;
         }
+        
         model.addAttribute("priority", priority);
         Boolean queueCmd =
             Boolean.valueOf(prefService.getPreference(user, UserPreferenceName.COMMANDER_QUEUE_COMMAND));

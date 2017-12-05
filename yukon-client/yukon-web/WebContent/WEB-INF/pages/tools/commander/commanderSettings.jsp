@@ -7,20 +7,9 @@
 <cti:includeScript link="/resources/js/pages/yukon.tools.commander.js"/>
 <cti:msgScope paths="modules.tools.commander,yukon.common">
 <cti:msg2 key=".commandPriority.title" var="priorityRange" arguments="${minCmdPriority}-${maxCmdPriority}"/>
-<script>
-    $('#commandPriority').bind('keyup mouseup', function () {
-          var value = $('#commandPriority').val();
-          $('.warning').addClass('dn');
-          if (value < 1){
-              $('.warning').removeClass('dn');
-              $('#commandPriority').val(1);
-          }
-          if (value > 14) {
-              $('.warning').removeClass('dn');
-              $('#commandPriority').val(14);
-          }
-    });
-</script>
+<div id="invalidCommanderPriority" class="error user-message dn">
+    <cti:msg2 key=".commandPriority.error.invalid" arguments="${minCmdPriority}-${maxCmdPriority}"/>
+</div>
 <form:form commandName="commandParams">
     <cti:dataGrid cols="2"
         tableClasses="collectionActionAlignment collectionActionCellPadding">

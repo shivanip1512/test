@@ -51,6 +51,7 @@
     <entry key="yukon.web.modules.tools.commander.error.porter.invalid">Command not sent - Connection to Porter @ {0} is not valid.</entry>
     <entry key="yukon.web.modules.tools.commander.error.unAuthorizedMessage">You do not have permission to execute this command.</entry>
     <entry key="yukon.web.modules.tools.commander.commandPriority.title">Accepted range {0}</entry>
+    <entry key="yukon.web.modules.tools.commander.commandPriority.error.invalid">Please enter integer value between {0}</entry>
     
     <!-- Map -->
     <entry key="yukon.web.modules.tools.map.pageTitle">Tools: Map Devices ({0})</entry>

@@ -689,18 +689,29 @@ yukon.tools.commander = (function () {
             
             /** User clicked ok on commander settings dialog. */
             $(document).on('yukon:tools:commander:popup', function (ev) {
-            	_saveFields();
-            	var dialog = $('.js-settings-popup'),
-            	    params = {
-                        priority : $('#commandPriority').val(),
-                        queueCommand : $('#queueCommand').val()
-                    };
-                $.ajax({
-                    type: 'post',
-                    url: 'commander/updateCommanderPreferences',
-                    data: params,
-                });
-                dialog.dialog('close');
+                var value = Number($('#commandPriority').val()),
+                    minPriority = Number($('#commandPriority').attr('min')),
+                    maxPriority = Number($('#commandPriority').attr('max'));
+                
+                if (isNaN(value) || ((value % 1) !== 0) || value < minPriority || value > maxPriority) {
+                    $('#commandPriority').addClass('error');
+                    $('#invalidCommanderPriority').removeClass('dn');
+                } else {
+                    $('#commandPriority').removeClass('error');
+                    $('#invalidCommanderPriority').addClass('dn');
+                    _saveFields();
+                    var dialog = $('.js-settings-popup'),
+                        params = {
+                            priority : $('#commandPriority').val(),
+                            queueCommand : $('#queueCommand').val()
+                        };
+                    $.ajax({
+                        type: 'post',
+                        url: 'commander/updateCommanderPreferences',
+                        data: params,
+                    });
+                    dialog.dialog('close');
+                }
             });
             /** User has supplied input for command, use it and check if more is needed. */
             $('#prompt-dialog').on('yukon.tools.commander.user.input keyup', function (ev) {
@@ -718,6 +729,16 @@ yukon.tools.commander = (function () {
                 $('#prompt-dialog').dialog('close');
                 field.focus();
                 _promptForInput();
+            });
+            
+            $('#commandPriority').bind('keyup mouseup', function () {
+                var value = Number($('#commandPriority').val()),
+                    minPriority = Number($('#commandPriority').attr('min')),
+                    maxPriority = Number($('#commandPriority').attr('max'));
+                
+                if (isNaN(value) || value < minPriority || value > maxPriority) {
+                    $('#commandPriority').val(minPriority);
+                }
             });
             
             /** Prime the pending cache with any pending requests found in the console. */
