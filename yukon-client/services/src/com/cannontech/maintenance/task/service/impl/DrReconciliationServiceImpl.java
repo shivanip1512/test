@@ -3,7 +3,6 @@ package com.cannontech.maintenance.task.service.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,8 +73,8 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         final List<Integer> groupConflictingLCR = new ArrayList<>();
         
         lcrInMultipleGroups.keySet().forEach(lcr -> {
-            HashSet<Integer> groups = (HashSet) lcrInMultipleGroups.get(lcr);
-            List<Integer> tempAddress = Arrays.asList(0, 0, 0, 0, 0, 0);
+            ArrayList<Integer> groups =   new ArrayList<Integer>(lcrInMultipleGroups.get(lcr));
+            List<Integer> tempAddress = Arrays.asList(0, 0, 0, 0, 0);
 
             groups.forEach(group -> {
                 if (!groupConflictingLCR.contains(lcr)) {
@@ -105,7 +104,6 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     
     private List<Integer> parseAddress(ExpressComAddressView lmGroupAddressing) {
         List<Integer> address = new ArrayList<>();
-         address.add(Integer.parseInt(lmGroupAddressing.getSerialNumber()));
         address.add(lmGroupAddressing.getSpid());
         address.add(lmGroupAddressing.getGeo());
         address.add(lmGroupAddressing.getSubstation());
