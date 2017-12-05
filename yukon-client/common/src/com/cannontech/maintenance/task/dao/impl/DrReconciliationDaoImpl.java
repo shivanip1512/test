@@ -69,9 +69,9 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
         sql.append(") inventories ");
         sql.append("WHERE rn = 1");
 
-        if (YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL == status) {
+        if (status == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
             sql.append("AND YukonDefinitionID").eq_k(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION);
-        } else if (YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL == status) {
+        } else if (status == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
             sql.append("AND YukonDefinitionID NOT IN (");
             sql.append(    YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).append(",");
             sql.append(    YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION).append(",");
@@ -79,10 +79,10 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
         }
 
         sql.append(  "AND InventoryID IN (");
-        if (YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL == status) {
-            sql.append(getAllEnrolledDevicesSql());
-        } else if (YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL == status) {
+        if (status == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
             sql.append(getAllUnenrolledDevicesSql());
+        } else if (status == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
+            sql.append(getAllEnrolledDevicesSql());
         }
         sql.append(    ")");
 
@@ -135,7 +135,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
         });
         return lcrsInGroup;
     }
-    
+
     @Override
     public Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(List<Integer> lcrs) {
 
@@ -163,8 +163,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
 
     /**
      * This method is to generate a SQL which will fetch all devices that are
-     * 1. Enrolled currently in any of the program
-     * 2. Not Opted out currently
+     * enrolled currently in any of the program
      */
     private SqlFragmentSource getAllEnrolledDevicesSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -178,8 +177,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
 
     /**
      * This method is to generate a SQL which fetches all devices that are
-     * 1. Not enrolled currently in any of the program
-     * 2. Not opted out currently
+     * not enrolled currently in any of the program but have been enrolled previously.
      */
     private SqlFragmentSource getAllUnenrolledDevicesSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
