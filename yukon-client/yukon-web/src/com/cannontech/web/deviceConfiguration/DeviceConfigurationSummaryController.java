@@ -75,6 +75,8 @@ public class DeviceConfigurationSummaryController {
     ExecutorService executor = Executors.newCachedThreadPool();
     
     private final static String baseKey = "yukon.web.modules.tools.configs.summary.";
+    private final static int DEVICE_CONFIG_ASSIGNED_TO_ANY = -998;
+    private final static int DEVICE_CONFIG_UNASSIGNED = -999;
 
     @RequestMapping(value="view", method=RequestMethod.GET)
     public String view(ModelMap model, @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
@@ -84,25 +86,25 @@ public class DeviceConfigurationSummaryController {
         filter.setActions(Arrays.asList(LastAction.VERIFY));
         filter.setInSync(Arrays.asList(InSync.OUT_OF_SYNC));
         filter.setStatuses(Arrays.asList(LastActionStatus.FAILURE));
-        model.addAttribute("filter", filter);
         prepareModel(model, filter, sorting, paging, userContext);
+        filter.setConfigurationIds(new ArrayList<>(Arrays.asList(DEVICE_CONFIG_ASSIGNED_TO_ANY)));
+        model.addAttribute("filter", filter);
         return "summary/summary.jsp";
     }
     
     @RequestMapping(value="filter", method=RequestMethod.GET)
     public String filter(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, @DefaultItemsPerPage(value=250) PagingParameters paging,
                        ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) {
-        boolean assignedToAny = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(-998);
-        boolean unassigned = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(-999);
+        boolean assignedToAny = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(DEVICE_CONFIG_ASSIGNED_TO_ANY);
+        boolean unassigned = filter.getConfigurationIds() != null && filter.getConfigurationIds().contains(DEVICE_CONFIG_UNASSIGNED);
         setFilterValues(filter, deviceSubGroups);
         prepareModel(model, filter, sorting, paging, userContext);
         model.addAttribute("deviceSubGroups", deviceSubGroups);
         if (assignedToAny) {
-            filter.setConfigurationIds(new ArrayList<>());
-            filter.getConfigurationIds().add(-998);
+            filter.setConfigurationIds(new ArrayList<>(Arrays.asList(DEVICE_CONFIG_ASSIGNED_TO_ANY)));
         }
         if (unassigned) {
-            filter.getConfigurationIds().add(-999);
+            filter.getConfigurationIds().add(DEVICE_CONFIG_UNASSIGNED);
         }
         model.addAttribute("filter", filter);
         return "summary/summary.jsp";
@@ -193,13 +195,13 @@ public class DeviceConfigurationSummaryController {
         }
         if (filter.getConfigurationIds() != null) {
             //Include Unassigned
-            int index = filter.getConfigurationIds().indexOf(-999);
+            int index = filter.getConfigurationIds().indexOf(DEVICE_CONFIG_UNASSIGNED);
             if (index > -1) {
                 filter.getConfigurationIds().remove(index);
                 filter.setDisplayUnassigned(true);
             }
             //Include any assigned
-            if (filter.getConfigurationIds().contains(-998)) {
+            if (filter.getConfigurationIds().contains(DEVICE_CONFIG_ASSIGNED_TO_ANY)) {
                 List<Integer> allIds = new ArrayList<>();
                 List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
                 configurations.forEach(config -> allIds.add(config.getConfigurationId()));

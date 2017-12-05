@@ -684,6 +684,24 @@
     <entry key="yukon.web.modules.tools.configs.summary">Device Configuration Summary</entry>
     <entry key="yukon.web.modules.tools.configs.summary.pageName">Device Configuration Summary</entry>
     <entry key="yukon.web.modules.tools.configs.summary.pageDescription">Device Configuration Summary</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.helpTitle">Device Configuration Summary Help</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.helpText">
+        <![CDATA[
+            The Device Configuration Summary page displays the status of device configuration messaging being processed throughout the system.<br/>
+            The following filters can be applied to the results:
+            <ul>
+                <li><b>Configuration(s)</b> - Select one to many configurations (by holding down the Ctrl key).  There are also options to include any devices that are Unassigned or Assigned to Any configuration.</li>
+                <li><b>Device Group(s)</b> - Select one to many device groups to filter by.
+                <li><b>Send/Read/Verify</b> - Select whether to include devices where the Last Action was a Read, Send, and/or Verify Command.</li>
+                <li><b>Success/Failure/In Progress</b> - Select whether to include devices where the Last Action was Successful, resulted in Failure and/or is currently In Progress.</li>
+                <li><b>In Sync/Out Of Sync/Unverified</b> - Select whether to include devices that are currently In Sync, Out of Sync and/or Unverified.  This is based off of the last verification result.</li>
+            </ul>
+            The resulting devices will display in the table.<br/>
+            There are options to Download the results, Assign Config, Send Config, Read Config and Verify Config on the resulting collection of devices.<br/>
+            There are also options to View the History, Send, Ready and Verify for each individual device.
+    
+        ]]>
+    </entry>
     <entry key="yukon.web.modules.tools.configs.summary.configurations">Configuration(s)</entry>
     <entry key="yukon.web.modules.tools.configs.summary.deviceGroups">Device Group(s)</entry>
     <entry key="yukon.web.modules.tools.configs.summary.deviceName">Device Name</entry>
