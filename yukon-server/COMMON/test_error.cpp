@@ -83,7 +83,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Unknown Error Code (52)")
     ("Unknown Error Code (53)")
     ("ID Not Found")
-    ("Unknown Error Code (55)")
+    ("Child Device Unknown")
     ("Function and/or Type Not Found")
     ("E-Word Received in Returned Message")
     ("B-Word Received in Returned Message")

@@ -47,6 +47,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::ReqackFlagSet,               ei{ ERRTYPECOMM,     "REQACK Flag set-- Frame Unexecutable"        } },
         { ClientErrors::RouteNotFound,               ei{ ERRTYPESYSTEM,   "Route Not Found"                             } },
         { ClientErrors::IdNotFound,                  ei{ ERRTYPESYSTEM,   "ID Not Found"                                } },
+        { ClientErrors::ChildDeviceUnknown,          ei{ ERRTYPESYSTEM,   "Child Device Unknown"                        } },
         { ClientErrors::TypeNotFound,                ei{ ERRTYPESYSTEM,   "Function and/or Type Not Found"              } },
         { ClientErrors::EWordReceived,               ei{ ERRTYPEPROTOCOL, "E-Word Received in Returned Message"         } },
         { ClientErrors::BWordReceived,               ei{ ERRTYPEPROTOCOL, "B-Word Received in Returned Message"         } },

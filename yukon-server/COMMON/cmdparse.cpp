@@ -1446,10 +1446,6 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 
                 _cmd["analogoffset"] = CtiParseValue( atoi(cmdtok().c_str()) );
                 _cmd["analogvalue"]  = CtiParseValue( atof(cmdtok().c_str()) );
-                if( containsRegex(token, str_floatnum_only) )
-                {
-                    _cmd["analogfloatvalue"] = _cmd["analogvalue"];
-                }
             }
             if(!(token = matchRegex(CmdStr, re_analog_no_offset)).empty())
             {

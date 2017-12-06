@@ -189,7 +189,7 @@ struct ClientErrors
         z_052,
         z_053,
         IdNotFound,
-        z_055,
+        ChildDeviceUnknown,
         TypeNotFound,
         EWordReceived,
         BWordReceived,
