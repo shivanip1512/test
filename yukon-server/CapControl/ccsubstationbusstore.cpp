@@ -7353,6 +7353,20 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 }
 
             }
+
+            // this is a sanity check to make sure we've removed all the references to the bus
+            //  that we are deleting from the _pointid_subbus_map
+            for ( auto iter = _pointid_subbus_map.begin(); iter != _pointid_subbus_map.end();  )
+            {
+                if ( iter->second == subToDelete )
+                {
+                    iter = _pointid_subbus_map.erase( iter );
+                }
+                else
+                {
+                    ++iter;
+                }
+            }
         }
         catch(...)
         {
