@@ -72,7 +72,6 @@ public class CbcController {
     @Autowired private CapControlCache ccCache;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
-    @Autowired private CbcHelperService cbcHelperService;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
     
@@ -237,13 +236,10 @@ public class CbcController {
 
             }
 
-            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId(), cbc.getPaoType().isLogicalCBC());
+            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
             //check for special formats
             for(List<PointInfo> pointList : points.values()){
                 for(PointInfo point : pointList){
-                    if (cbc.getPaoType().isLogicalCBC()) {
-                        cbcHelperService.splitLogicalPointName(point.getName(), point::setName, null);
-                    }
                     LitePoint litePoint = pointDao.getLitePoint(point.getPointId());
                     PointIdentifier pid = new PointIdentifier(point.getType(), litePoint.getPointOffset());
                     PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(cbc.getPaoType(), pid);
@@ -271,6 +267,13 @@ public class CbcController {
         if (cbc.isHeartBeat()) {
             HeartbeatConfiguration heartbeat = cbcService.getCBCHeartbeatConfigForDevice(cbc);
             model.addAttribute("heartbeatConfig", heartbeat);
+        }
+        if (cbc.isLogical()) {
+            LiteYukonPAObject parentRtu = cbc.getParentRtu();
+            if (parentRtu != null) {
+                model.addAttribute("parentRtuId", parentRtu.getLiteID());
+                model.addAttribute("parentRtuName", parentRtu.getPaoName());
+            }
         }
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
         model.addAttribute("logicalTypes", CapControlCBC.getLogicalTypes());

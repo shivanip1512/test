@@ -28,6 +28,7 @@ public class CapControlCBC implements YukonPao {
     private PaoType paoType;
     private boolean disableFlag;
     private LiteYukonPAObject parent;
+    private LiteYukonPAObject parentRtu;
     private Map<PointType, List<String>> points;
     private Device device;
     private DeviceCBC deviceCBC;
@@ -91,6 +92,14 @@ public class CapControlCBC implements YukonPao {
 
     public void setParent(LiteYukonPAObject parent) {
         this.parent = parent;
+    }
+
+    public LiteYukonPAObject getParentRtu() {
+        return parentRtu;
+    }
+
+    public void setParentRtu(LiteYukonPAObject parentRtu) {
+        this.parentRtu = parentRtu;
     }
 
     public boolean isDisableFlag() {
@@ -201,8 +210,16 @@ public class CapControlCBC implements YukonPao {
         return twoWayTypes.contains(getPaoType());
     }
     
+    public boolean isOneWay() {
+        return !isTwoWay() && !isLogical();
+    }
+    
     public boolean isHeartBeat() {
         return heartBeatTypes.contains(getPaoType());
+    }
+
+    public boolean isLogical() {
+        return logicalTypes.contains(getPaoType());
     }
 
     public boolean isEditingIntegrity() {

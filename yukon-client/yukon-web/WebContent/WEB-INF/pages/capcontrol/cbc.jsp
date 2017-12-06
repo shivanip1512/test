@@ -75,7 +75,8 @@
                                 size="25" />
                         </tags:nameValue2>
                         <c:set var="twoWayClass" value="${cbc.twoWay? '' : 'dn'} js-two-way"/>
-                        <c:set var="oneWayClass" value="${cbc.paoType.isLogicalCBC() || cbc.twoWay ? 'dn' : ''} js-one-way"/>
+                        <c:set var="oneWayClass" value="${cbc.oneWay? '' : 'dn'} js-one-way"/>
+                        <c:set var="logicalClass" value="${cbc.logical? '' : 'dn'} js-logical"/>
                         <tags:nameValue2 nameKey=".masterAddr" rowClass="${twoWayClass}">
                             <tags:input path="deviceAddress.masterAddress" />
                         </tags:nameValue2>
@@ -90,6 +91,15 @@
                                 items="${availablePorts}"
                                 itemValue="liteID" itemLabel="paoName"
                                 inputClass="with-option-hiding" />
+                        </tags:nameValue2>
+
+                        <tags:nameValue2 nameKey=".parentRtu" rowClass="${logicalClass}">
+                            <c:choose>
+                                <c:when test="${empty parentRtuId || parentRtuId == 0}">
+                                    <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                                </c:when>
+                                <c:otherwise>${fn:escapeXml(parentRtuName)}</c:otherwise>
+                           </c:choose>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey="yukon.common.ipaddress" rowClass="${twoWayClass}" data-tcp-port="true">
@@ -173,12 +183,9 @@
                         <%@ include file="pointsTable.jsp" %>
                     </div>
                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                        <c:if test="${!cbc.paoType.isLogicalCBC()}">
-                            <div class="action-area">
-                                <tags:pointCreation paoId="${cbc.id}" />
-                            </div>
-                        </c:if>
-
+                        <div class="action-area">
+                            <tags:pointCreation paoId="${cbc.id}" />
+                        </div>
                     </cti:checkRolesAndProperties>
                 </tags:sectionContainer2>
 
