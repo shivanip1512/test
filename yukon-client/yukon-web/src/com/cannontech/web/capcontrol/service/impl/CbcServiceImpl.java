@@ -367,7 +367,13 @@ public class CbcServiceImpl implements CbcService {
     @Override
     public int create(CapControlCBC cbc) {
         CompleteCbcBase completeCbc = null;
-        if (cbc.isTwoWay()) {
+        if (cbc.isLogical()) {
+            CompleteCbcLogical completeLogical = new CompleteCbcLogical();
+
+            //  TODO - assign parent RTU
+
+            completeCbc = completeLogical;
+        } else if (cbc.isTwoWay()) {
             CompleteTwoWayCbc completeTwoWay = new CompleteTwoWayCbc();
             completeTwoWay.setPortId(cbc.getDeviceDirectCommSettings().getPortID());
             
