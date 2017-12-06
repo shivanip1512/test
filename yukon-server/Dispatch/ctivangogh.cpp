@@ -46,6 +46,7 @@
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm/remove_copy_if.hpp>
+#include <boost/range/algorithm/stable_sort.hpp>
 
 using namespace std;
 
@@ -2795,6 +2796,21 @@ YukonError_t CtiVanGogh::checkDataStateQuality(CtiMessage *pMsg, CtiMultiWrapper
 
     return ClientErrors::None;
 }
+
+bool sortPointDataByTimestamp( const CtiMessage * a, const CtiMessage * b )
+{
+    if( a && b && a->isA() == MSG_POINTDATA && b->isA() == MSG_POINTDATA )
+    {
+        auto aPd = static_cast<const CtiPointDataMsg *>(a);
+        auto bPd = static_cast<const CtiPointDataMsg *>(b);
+
+        return
+            std::make_pair( aPd->getTime(), aPd->getMillis() ) <
+            std::make_pair( bPd->getTime(), bPd->getMillis() );
+    }
+    return false;
+}
+
 /*
  *  Could recurse.  Does not worry about self referential loops... Don't do it.
  */
@@ -2803,6 +2819,8 @@ YukonError_t CtiVanGogh::checkMultiDataStateQuality(CtiMultiMsg  *pMulti, CtiMul
     if( pMulti )
     {
         auto &bag = pMulti->getData();
+
+        boost::range::stable_sort( bag, sortPointDataByTimestamp );
 
         for( auto itr = bag.begin(); itr != bag.end(); )
         {
