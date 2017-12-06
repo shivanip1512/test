@@ -80,10 +80,10 @@
                             </td>
                             <td>
                                 <c:choose>
-                                    <c:when test="${detail.inSync == 'OUT_OF_SYNC'}">
+                                    <c:when test="${detail.inSync == 'OUT_OF_SYNC'  && detail.status != 'IN_PROGRESS'}">
                                         <div class="dn js-outofsync-${deviceId}" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key=".outOfSync"/>" 
                                         data-width="600" data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>"></div>
-                                        <a href="javascript:void(0);" data-popup=".js-outofsync-${deviceId}"><i:inline key=".syncType.${detail.inSync}"/></a>
+                                        <a href="javascript:void(0);" data-popup=".js-outofsync-${deviceId}" ><i:inline key=".syncType.${detail.inSync}"/></a>
                                     </c:when>
                                     <c:otherwise>
                                         <i:inline key=".syncType.${detail.inSync}"/>

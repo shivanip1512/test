@@ -43,8 +43,10 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -72,6 +74,7 @@ public class DeviceConfigurationSummaryController {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private ServerDatabaseCache dbCache;
     ExecutorService executor = Executors.newCachedThreadPool();
     
     private final static String baseKey = "yukon.web.modules.tools.configs.summary.";
@@ -153,8 +156,9 @@ public class DeviceConfigurationSummaryController {
     public void sendConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
         executor.submit(() -> deviceConfigService.sendConfig(device, context.getYukonUser()));
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "sendConfig.success"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "sendConfig.success", pao.getPaoName()));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
@@ -162,8 +166,9 @@ public class DeviceConfigurationSummaryController {
     public void readConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
         executor.submit(() -> deviceConfigService.readConfig(device, context.getYukonUser()));
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "readConfig.success"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "readConfig.success", pao.getPaoName()));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
         
