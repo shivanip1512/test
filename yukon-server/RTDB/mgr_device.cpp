@@ -58,6 +58,9 @@
 
 #include <boost/range/algorithm/set_algorithm.hpp>
 #include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/type_erased.hpp>
+#include <boost/range/adaptor/uniqued.hpp>
+#include <boost/range/any_range.hpp>
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
@@ -1488,7 +1491,11 @@ void CtiDeviceManager::refreshDnpChildDevices(Cti::Database::id_set &paoids)
             parentMapping.emplace(rdr["ParentID"].as<long>(), rdr["DeviceID"].as<long>());
         }
 
-        for( const auto id : paoids )
+        auto devices = paoids.empty() 
+            ? (parentMapping | boost::adaptors::map_keys | boost::adaptors::uniqued | boost::adaptors::type_erased<>())
+            : (paoids | boost::adaptors::type_erased<>());
+
+        for( const auto id : devices )
         {
             auto dev = getDeviceByID(id);
 
