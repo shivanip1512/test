@@ -84,10 +84,10 @@ public:
     void     apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
     virtual ptr_type getPoint(LONG Pt, LONG pao = 0);
-    ptr_type getControlOffsetEqual(LONG pao, INT Offset);
+    virtual ptr_type getControlOffsetEqual(LONG pao, INT Offset);
     virtual ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqualByName(LONG pao, std::string pname);
-    void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
+    virtual void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
     boost::optional<long> getIdForOffsetAndType(long pao, int offset, CtiPointType_t Type);
 

@@ -19,6 +19,7 @@
 #include "dev_idlc.h"
 #include "dev_ccu721.h"
 #include "dev_carrier.h"
+#include "dev_dnp.h"
 #include "dev_lmi.h"
 #include "dev_mct.h"
 #include "dev_mct410.h"
@@ -56,6 +57,7 @@
 #include "coroutine_util.h"
 
 #include <boost/range/algorithm/set_algorithm.hpp>
+#include <boost/range/adaptor/map.hpp>
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
@@ -1442,6 +1444,81 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
 }
 
 
+void CtiDeviceManager::refreshDnpChildDevices(Cti::Database::id_set &paoids)
+{
+    if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "Looking for DNP Child Devices");
+    }
+
+    string sql = 
+        "SELECT DeviceID, ParentID"
+        " FROM DeviceParent DP";
+
+    if( ! paoids.empty() )
+    {
+        sql += " WHERE " + Cti::Database::createIdInClause("DP", "ParentID", paoids.size());
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    if( ! paoids.empty() )
+    {
+        rdr << paoids;
+    }
+
+    rdr.execute();
+
+    if( ! rdr.isValid() )
+    {
+        CTILOG_ERROR(dout, "DB read failed for SQL query: " << rdr.asString());
+    }
+    else 
+    {
+        if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: " << rdr.asString());
+        }
+
+        std::multimap<long, long> parentMapping;
+
+        while( rdr() )
+        {
+            parentMapping.emplace(rdr["ParentID"].as<long>(), rdr["DeviceID"].as<long>());
+        }
+
+        for( const auto id : paoids )
+        {
+            auto dev = getDeviceByID(id);
+
+            if( dev->getDeviceType() == TYPE_DNPRTU )
+            {
+                auto dnp = boost::static_pointer_cast<Cti::Devices::DnpDevice>(dev);
+
+                auto childDevices = boost::copy_range<std::set<long>>(boost::make_iterator_range(parentMapping.equal_range(id)) | boost::adaptors::map_values);
+                
+                dnp->setChildDevices(std::move(childDevices));
+            }
+            else if( parentMapping.count(id) )
+            {
+                //  Device had rows, but was not a DNP RTU
+                CTILOG_WARN(dout, "Child devices only supported for DNP RTU types: " << FormattedList::of(
+                    "Device ID",   dev->getID(),
+                    "Device type", dev->getDeviceType(),
+                    "Device name", dev->getName()));
+            }
+        }
+    }
+
+
+    if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "Done looking for DNP Child Devices");
+    }
+}
+
+
 void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
 {
     CtiDeviceSPtr pTempCtiDevice;
@@ -1719,6 +1796,12 @@ void CtiDeviceManager::refreshDeviceProperties(Cti::Database::id_set &paoids, in
         Timing::DebugTimer timer("loading MCT configs");
         refreshMCTConfigs(paoids);
         refreshMCT400Configs(paoids);
+    }
+
+    if( !type || type == TYPE_DNPRTU )
+    {
+        Timing::DebugTimer timer("loading DNP RTU child devices");
+        refreshDnpChildDevices(paoids);
     }
 
     {

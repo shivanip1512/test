@@ -64,6 +64,7 @@ private:
     void refreshExclusions     (Cti::Database::id_set &paoids);
     void refreshIONMeterGroups (Cti::Database::id_set &paoids);
     void refreshMacroSubdevices(Cti::Database::id_set &paoids);
+    void refreshDnpChildDevices(Cti::Database::id_set &paoids);
     void refreshMCTConfigs     (Cti::Database::id_set &paoids);
     void refreshMCT400Configs  (Cti::Database::id_set &paoids);
     void refreshStaticPaoInfo  (Cti::Database::id_set &paoids);

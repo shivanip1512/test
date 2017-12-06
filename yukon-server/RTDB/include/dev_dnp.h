@@ -57,6 +57,8 @@ class IM_EX_DEVDB DnpDevice : public CtiDeviceRemote
 
     std::unique_ptr<CtiPointDataMsg> calculateDemandAccumulator(const CtiPointAccumulatorSPtr& pt, dnp_accumulator_pointdata current);
 
+    std::set<long> _childDevices;
+
 protected:
 
     Protocols::DnpProtocol _dnp;
@@ -80,6 +82,8 @@ public:
 
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
+
+    void setChildDevices(std::set<long>&& childDevices);
 
     LONG getAddress() const;
     LONG getMasterAddress() const;

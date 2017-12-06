@@ -3,6 +3,7 @@
 #include "dev_cbc8020.h"
 #include "config_data_dnp.h"
 #include "ctidate.h"
+#include "mgr_point.h"
 
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
@@ -179,6 +180,26 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_override)
             configItems));
 
     TestCbc8020Device testDevice;
+
+    struct overrideMgr : CtiPointManager
+    {
+        overrideMgr(std::initializer_list<CtiPointSPtr>&& points)
+            :   paoPoints(points.begin(), points.end())
+        {}
+
+        std::vector<CtiPointSPtr> paoPoints;
+
+        void getEqualByPAO(const long pao, std::vector<ptr_type>& points) override
+        {
+            points.insert(points.end(), paoPoints.begin(), paoPoints.end());
+        }
+    } pt_mgr {
+        testDevice.getDevicePointOffsetTypeEqual(TestCbc8020Device::PointOffset_FirmwareRevision, AnalogPointType),
+        testDevice.getDevicePointOffsetTypeEqual(OverrideFirmwareMajor, AnalogPointType),
+        testDevice.getDevicePointOffsetTypeEqual(OverrideFirmwareMinor, AnalogPointType)
+    };
+
+    testDevice.setPointManager(&pt_mgr);
 
     const auto PointIdFirmwareMajor = testDevice.setPointName("Banana",  OverrideFirmwareMajor, AnalogPointType);
     const auto PointIdFirmwareMinor = testDevice.setPointName("Coconut", OverrideFirmwareMinor, AnalogPointType);
