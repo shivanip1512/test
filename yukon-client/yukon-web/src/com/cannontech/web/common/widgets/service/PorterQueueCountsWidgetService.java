@@ -56,9 +56,17 @@ public interface PorterQueueCountsWidgetService {
     long getRefreshMilliseconds();
 
     /**
-     * Gets the port ids for all of the ports in Yukon
-     * @return List<Integer> of port ids
+     * Gets the lite port paos for all of the ports in Yukon
+     * @return List<LiteYukonPAObject> of port paos
      */
-    List<Integer> getAllPortIds();
+    List<LiteYukonPAObject> getAllPortPaos();
 
+    /**
+     * Return a map of Porter Queue Count point Id's to their corresponding port PAO.
+     * The idea behind this function is for the PorterQueueCountsWidget to be able to take portIds
+     * as a widget parameter, and get the pao info to display in the trend graph (e.g. port name).
+     * @param LiteYukonPAObject list of portPaos
+     * @return a map of the Porter Queue Counts point Id's to port PAO's
+     */
+    Map<Integer, LiteYukonPAObject> makeAndGetPointIdToPaoMap(List<LiteYukonPAObject> portPaos);
 }

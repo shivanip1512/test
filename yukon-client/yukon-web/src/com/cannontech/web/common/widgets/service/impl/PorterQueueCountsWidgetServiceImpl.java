@@ -39,9 +39,13 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
 
     @Override
     public Map<Integer, LiteYukonPAObject> getPointIdToPaoMap(List<Integer> portIds) {
-        return paoDao.getLiteYukonPaos(portIds)
-                .stream()
-                .collect(StreamUtils.mapToSelf(pao -> attributeService.getPointForAttribute(pao, BuiltInAttribute.PORT_QUEUE_COUNT).getPointID()));
+        return makeAndGetPointIdToPaoMap(paoDao.getLiteYukonPaos(portIds));
+    }
+    
+    @Override 
+    public Map<Integer, LiteYukonPAObject> makeAndGetPointIdToPaoMap(List<LiteYukonPAObject> portPaos) {
+        return portPaos.stream()
+                       .collect(StreamUtils.mapToSelf(pao -> attributeService.getPointForAttribute(pao, BuiltInAttribute.PORT_QUEUE_COUNT).getPointID()));
     }
     
     @Override
@@ -96,14 +100,12 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     }
     
     @Override
-    public List<Integer> getAllPortIds() {
+    public List<LiteYukonPAObject> getAllPortPaos() {
         List<LiteYukonPAObject> paos = new ArrayList<LiteYukonPAObject>();
         PaoType.getPortTypes().stream().forEach(portType -> {
             paos.addAll(paoDao.getLiteYukonPAObjectByType(portType));
         });
-        return paos.stream()
-               .map(lp -> lp.getLiteID())
-               .collect(Collectors.toList()); 
+        return paos;
     }
     
 }

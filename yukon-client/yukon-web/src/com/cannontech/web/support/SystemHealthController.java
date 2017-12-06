@@ -70,7 +70,7 @@ public class SystemHealthController {
         List<SystemHealthMetric> queueData = systemHealthService.getMetricsByType(SystemHealthMetricType.JMS_QUEUE);
         model.addAttribute("queueData", queueData);
         
-        Map<Integer, LiteYukonPAObject> portPointIdToPaoMap = porterQueueCountsWidgetService.getPointIdToPaoMap(porterQueueCountsWidgetService.getAllPortIds());
+        Map<Integer, LiteYukonPAObject> portPointIdToPaoMap = porterQueueCountsWidgetService.makeAndGetPointIdToPaoMap(porterQueueCountsWidgetService.getAllPortPaos());
         model.addAttribute("portData", getPortJson(portPointIdToPaoMap));
         
         return "systemHealth.jsp";
