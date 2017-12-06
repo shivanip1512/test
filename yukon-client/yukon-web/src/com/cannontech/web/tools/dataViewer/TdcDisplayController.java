@@ -36,20 +36,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tag.service.TagService;
 import com.cannontech.common.tdc.dao.DisplayDao;
@@ -66,7 +63,6 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -122,8 +118,6 @@ public class TdcDisplayController {
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private TdcCustomDisplayValidator customDisplayValidator;
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private CbcHelperService cbcHelperService;
     
     private final static String baseKey = "yukon.web.modules.tools.tdc.";
     private final static int itemsPerPage = 50;
@@ -175,16 +169,6 @@ public class TdcDisplayController {
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
-        for (DisplayData item: displayData) {
-            cbcHelperService.splitLogicalPointName(item.getPointName(), 
-                                                  item::setPointName, 
-                                                  deviceName -> {
-                                                      item.setDeviceName(deviceName);
-                                                      LiteYukonPAObject lpo = deviceDao.getLiteYukonPAObject(item.getDeviceName(), PaoType.CBC_LOGICAL);
-                                                      if (lpo != null) {
-                                                          item.setDevice(SimpleDevice.of(lpo.getPaoIdentifier()));
-                                                      }                                                  });
-        }
         if (display.getType() == DisplayType.CUSTOM_DISPLAYS) {
             model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));
         }

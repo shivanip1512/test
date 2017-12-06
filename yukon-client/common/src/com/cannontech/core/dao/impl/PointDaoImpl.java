@@ -94,11 +94,6 @@ public class PointDaoImpl implements PointDao {
         }
     };
     
-    private static final String logicalCBCPoints = new SqlStatementBuilder()
-            .append(" JOIN YUKONPAOBJECT RTU on P.PAOBJECTID = RTU.PAOBJECTID")
-            .append(" JOIN YUKONPAOBJECT CBC on P.POINTNAME LIKE CONCAT('*Logical<', CBC.PAONAME, '> %')")
-            .append(" WHERE RTU.TYPE = 'RTU-DNP'").getSql();
-
     @Override
     public LitePoint findPointByName(YukonPao pao, String pointName) {
         try {
@@ -253,19 +248,9 @@ public class PointDaoImpl implements PointDao {
     
     @Override
     public List<LitePoint> getLitePointsByPaObjectId(int paobjectId) {
-        return getLitePointsByPaObjectId(paobjectId, false);
-    }
-
-    @Override
-    public List<LitePoint> getLitePointsByPaObjectId(int paobjectId, boolean logicalCBC) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
-        if (logicalCBC) {
-            sql.append(logicalCBCPoints);
-            sql.append(" AND CBC.PAObjectID").eq(paobjectId);
-        } else {
-            sql.append("where PAObjectId").eq(paobjectId);
-        }
+        sql.append("where PAObjectId").eq(paobjectId);
         
         List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
 
@@ -288,23 +273,13 @@ public class PointDaoImpl implements PointDao {
     
     @Override
     public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
-        return getAllPointNamesAndTypesForPAObject(paobjectId, false);
-    }
-    
-    @Override
-    public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId, boolean logicalCBC) {
         RowMapper<PointInfo> rowMapper = new PointInfoMapper();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT POINTID,POINTTYPE,POINTNAME,P.PAObjectID");
         sql.append(" FROM Point P");
-        if (logicalCBC) {
-            sql.append(logicalCBCPoints);
-            sql.append(" AND CBC.PAObjectID").eq(paobjectId);
-        } else {
-            sql.append(" WHERE PAObjectID").eq(paobjectId);
-        }
+        sql.append(" WHERE PAObjectID").eq(paobjectId);
         sql.append(" ORDER BY POINTNAME");
 
         List<PointInfo> points = jdbcTemplate.query(sql, rowMapper);

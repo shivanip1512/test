@@ -295,14 +295,4 @@ public class MockPointDao implements PointDao {
     public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
         return null;
     }
-
-    @Override
-    public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId, boolean logicalCBC) {
-        return null;
-    }
-
-    @Override
-    public List<LitePoint> getLitePointsByPaObjectId(int paobjectId, boolean logicalCBC) {
-        return null;
-    }
 }

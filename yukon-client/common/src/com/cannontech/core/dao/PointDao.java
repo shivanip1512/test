@@ -254,12 +254,4 @@ public interface PointDao {
     
     /** Retrieves all points and puts them in a Map. */
     Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId);
-
-    /** Retrieves all points and puts them in a Map. */
-    Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId, boolean logicalCBC);
-    /**
-     * Returns a list of all the lite points associated with the given PAO id.
-     */
-    List<LitePoint> getLitePointsByPaObjectId(int paobjectId, boolean logicalCBC);
-
 }

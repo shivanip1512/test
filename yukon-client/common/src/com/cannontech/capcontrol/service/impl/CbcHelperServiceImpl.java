@@ -1,7 +1,5 @@
 package com.cannontech.capcontrol.service.impl;
 
-import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,27 +47,6 @@ public class CbcHelperServiceImpl implements CbcHelperService {
         this.rolePropertyDao = rolePropertyDao;
     }
     
-    @Override
-    public void splitLogicalPointName(String pointName, Consumer<String> pointNameCallback, Consumer<String> deviceNameCallback) {
-        Matcher matcher = logicalPointPattern.matcher(pointName);
-        if (matcher.find()) {
-            String prefix = matcher.group(0);
-            pointNameCallback.accept(pointName.replace(prefix, ""));
-            if (deviceNameCallback != null) {
-                deviceNameCallback.accept(prefix.substring(9, prefix.length() - 2));
-            }
-        }
-    }
-    
-    @Override
-    public void updateLogicalPointName(String oldPointName, String newPointName, Consumer<String> pointNameCallback) {
-        Matcher matcher = logicalPointPattern.matcher(oldPointName);
-        if (matcher.find()) {
-            String prefix = matcher.group(0);
-            pointNameCallback.accept(prefix+newPointName);
-        }
-    }
-
     @Override
     public int getControlPointIdForCbc(Integer controlDeviceID) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();

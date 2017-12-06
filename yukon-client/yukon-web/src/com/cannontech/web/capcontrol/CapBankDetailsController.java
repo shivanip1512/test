@@ -199,7 +199,7 @@ public class CapBankDetailsController {
     public String cbcPoints(ModelMap model, int cbcId) {
         PaoType paoType = paoDao.getLiteYukonPAO(cbcId).getPaoType();
 
-        Map<CBCPointGroup, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId, paoType.isLogicalCBC());
+        Map<CBCPointGroup, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
         model.addAttribute("pointMap", pointTimestamps);
 
         List<LitePoint> analogPoints = pointTimestamps.get(CBCPointGroup.ANALOG);
