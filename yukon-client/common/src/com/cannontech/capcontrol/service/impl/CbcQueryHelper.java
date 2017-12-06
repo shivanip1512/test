@@ -104,12 +104,10 @@ final class CbcQueryHelper {
             builder.append(        "JOIN OverridePointName opn"); 
             builder.append(            "ON opn.PAObjectID=y.PAObjectID");
             builder.append(        "JOIN POINT p"); 
-            builder.append(            "ON CONCAT(CONCAT(CONCAT('*Logical<',y.PAOName),'> '), opn.POINTNAME)=p.POINTNAME");
-            builder.append(        "JOIN YukonPAObject rtu"); 
-            builder.append(            "ON p.PAObjectID=rtu.PAObjectID");
+            builder.append(            "ON y.PAObjectID=p.PAObjectID");
+            builder.append(            "AND opn.POINTNAME=p.POINTNAME");
             builder.append("WHERE");
             builder.append(    "y.Type").in_k(isLogicalCbc.get(true));
-            builder.append(    "AND rtu.type").eq_k(PaoType.RTU_DNP);
         }
     }
 
