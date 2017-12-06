@@ -31,19 +31,19 @@ public class MaintenanceScheduler {
     @Autowired private GlobalSettingDao globalSettingDao;
     private ScheduledFuture<?> future;
 
-    // Update the schedule on startup
+    // Update the schedule on startup and on maintenance Global Setting change
     @PostConstruct
     public void init() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
-            Integer primaryKeyId = Integer.valueOf(event.getPrimaryKey());
-            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && (primaryKeyId.equals(
-                globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_DAYS).getId())
-                || primaryKeyId.equals(
-                    globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId())
-                || primaryKeyId.equals(
-                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_DAYS).getId())
-                || primaryKeyId.equals(
-                                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME).getId()))) {
+            int primaryKeyId = event.getPrimaryKey();
+            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && (primaryKeyId ==
+                globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_DAYS).getId().intValue()
+                || primaryKeyId ==
+                    globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId().intValue()
+                || primaryKeyId == 
+                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_DAYS).getId().intValue()
+                || primaryKeyId ==
+                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue())) {
                 reschedule();
             }
         });

@@ -2,7 +2,6 @@ package com.cannontech.web.admin.maintenance;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,8 @@ import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeleti
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.DateTime;
+
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -329,7 +330,7 @@ public class MaintenanceController {
         MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskType);
         List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskDetails.getTaskName());
         
-        Date nextRunDataPruning = null;
+        DateTime nextRunDataPruning = null;
         try {
             nextRunDataPruning = maintenanceHelper.getNextScheduledRunTime(userContext.getTimeZone());
         } catch (Exception e) {
