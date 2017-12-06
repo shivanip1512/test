@@ -47,6 +47,7 @@ import com.cannontech.common.pao.model.CompleteCapControlSpecialArea;
 import com.cannontech.common.pao.model.CompleteCapControlSubstation;
 import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.model.CompleteCbcBase;
+import com.cannontech.common.pao.model.CompleteCbcLogical;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
@@ -186,7 +187,17 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         
         CompleteCbcBase pao;
         YukonPao commChannel = null;
-        if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
+        if (cbcImportData.getCbcType().isLogicalCBC()) {
+            pao = new CompleteCbcLogical();
+            CompleteCbcLogical cbc = (CompleteCbcLogical)pao;
+            YukonPao parentRtu = paoDao.findYukonPao(cbcImportData.getParentRtuName(), PaoType.RTU_DNP);
+            if (parentRtu != null) {
+                cbc.setParentDeviceId(parentRtu.getPaoIdentifier().getPaoId());
+            } else {
+                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_PARENT_RTU));
+                return;
+            }
+        } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
             pao = new CompleteOneWayCbc();
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
             pao = new CompleteTwoWayCbc();
@@ -289,7 +300,17 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         List<PointBase> copyPoints = pointDao.getPointsForPao(templatePaoId);
         
         CompleteCbcBase template;
-        if (paoDefinitionDao.isTagSupported(templateIdentifier.getPaoType(), PaoTag.ONE_WAY_DEVICE)) {
+        if (templateIdentifier.getPaoType().isLogicalCBC()) {
+            template = paoPersistenceService.retreivePao(templateIdentifier, CompleteCbcLogical.class);
+            CompleteCbcLogical cbc = (CompleteCbcLogical)template;
+            YukonPao parentRtu = paoDao.findYukonPao(cbcImportData.getParentRtuName(), PaoType.RTU_DNP);
+            if (parentRtu != null) {
+                cbc.setParentDeviceId(parentRtu.getPaoIdentifier().getPaoId());
+            } else {
+                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_PARENT_RTU));
+                return;
+            }
+        } else if (paoDefinitionDao.isTagSupported(templateIdentifier.getPaoType(), PaoTag.ONE_WAY_DEVICE)) {
             template = paoPersistenceService.retreivePao(templateIdentifier, CompleteOneWayCbc.class);
         } else if (paoDefinitionDao.isTagSupported(templateIdentifier.getPaoType(), PaoTag.TWO_WAY_DEVICE)) {
             template = paoPersistenceService.retreivePao(templateIdentifier, CompleteTwoWayCbc.class);
@@ -345,10 +366,10 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         paoPersistenceService.createPaoWithCustomPoints(template, template.getPaoType(), copyPoints);
         
         /*
-         * Two-way CBCs need to have a DNP config assigned. In the future, this config may
+         * Some CBCs need to have a device config assigned. In the future, this config may
          * come from the import data.
          */
-        if (paoDefinitionDao.isDnpConfigurationType(cbcImportData.getCbcType())) {
+        if (paoDefinitionDao.isDnpConfigurationType(cbcImportData.getCbcType()) || cbcImportData.getCbcType().isLogicalCBC()) {
             YukonDevice device = new SimpleDevice(templatePao.getPaoIdentifier());
             LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
             YukonDevice newDevice = new SimpleDevice(template.getPaoIdentifier());
@@ -382,7 +403,17 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         Integer parentId = getParentCapBankId(cbcImportData);
 
         CompleteCbcBase pao;
-        if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
+        if (cbcImportData.getCbcType().isLogicalCBC()) {
+            pao = paoPersistenceService.retreivePao(yukonPao.getPaoIdentifier(), CompleteCbcLogical.class);
+            CompleteCbcLogical cbc = (CompleteCbcLogical)pao;
+            YukonPao parentRtu = paoDao.findYukonPao(cbcImportData.getParentRtuName(), PaoType.RTU_DNP);
+            if (parentRtu != null) {
+                cbc.setParentDeviceId(parentRtu.getPaoIdentifier().getPaoId());
+            } else {
+                results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_PARENT_RTU));
+                return;
+            }
+        } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.ONE_WAY_DEVICE)) {
             pao = paoPersistenceService.retreivePao(yukonPao.getPaoIdentifier(), CompleteOneWayCbc.class);
         } else if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.TWO_WAY_DEVICE)) {
             pao = paoPersistenceService.retreivePao(yukonPao.getPaoIdentifier(), CompleteTwoWayCbc.class);

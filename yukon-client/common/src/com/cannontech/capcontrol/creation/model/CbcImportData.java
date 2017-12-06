@@ -9,6 +9,7 @@ public class CbcImportData {
 	private final String cbcName;
 	private final PaoType cbcType;
 	private String capBankName;
+    private String parentRtuName;
 	private String commChannel;
 	private Integer cbcSerialNumber;
 	private Integer masterAddress;
@@ -38,6 +39,14 @@ public class CbcImportData {
 	
 	public void setCapBankName(String capBankName) {
 		this.capBankName = capBankName;
+	}
+	
+	public String getParentRtuName() {
+		return parentRtuName;
+	}
+	
+	public void setParentRtuName(String parentName) {
+		this.parentRtuName = parentName;
 	}
 	
 	public String getCommChannel() {

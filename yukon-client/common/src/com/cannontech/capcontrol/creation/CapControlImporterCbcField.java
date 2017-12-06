@@ -14,6 +14,7 @@ public enum CapControlImporterCbcField {
 	CBC_TYPE("CBC Type", true),
 	CBC_SERIAL_NUMBER("CBC Serial Number", true),
 	CAPBANK_NAME("Cap Bank Name", false),
+	PARENT_RTU_NAME("Parent RTU Name", false),
 	MASTER_ADDRESS("Master Address", true),
 	SLAVE_ADDRESS("Slave Address", true),
 	COMM_CHANNEL("Comm Channel", true),

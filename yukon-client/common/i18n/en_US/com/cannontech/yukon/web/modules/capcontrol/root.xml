@@ -899,6 +899,7 @@
     <entry key="yukon.web.modules.capcontrol.import.description.CBC.Import Action">Options: Add, Update, or Remove</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.CBC.Template Name">The name of the CBC to serve as the template</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.CBC.Cap Bank Name">The name of the parent Cap Bank of the CBC</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.CBC.Parent RTU Name">The name of the parent RTU of the Logical CBC&lt;br&gt;Required for CBC Logical</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.CBC.Scan Enabled">Whether Scanning is enabled for the CBC&lt;br&gt;Options:Y,N</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.CBC.Scan Interval">Scan Interval for the CBC in seconds</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.CBC.Alt Interval">Alt Scan Interval for the CBC in seconds</entry>
@@ -1139,6 +1140,7 @@
     <entry key="yukon.web.modules.capcontrol.cbc.scanGroup">Scan Group</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.commChannel">Comm Channel</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.port">Port</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.parentRtu">Parent RTU</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.dnpConfig">DNP Config</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.heartbeatConfig">Heartbeat Config</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.internalRetries">Internal Retries</entry>

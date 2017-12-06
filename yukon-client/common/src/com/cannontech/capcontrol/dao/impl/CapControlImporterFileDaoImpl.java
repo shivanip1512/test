@@ -146,6 +146,13 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				    }
 				}
 				
+				Integer parentRtuColumn = headerColumnMap.get(CapControlImporterCbcField.PARENT_RTU_NAME);
+				if (parentRtuColumn != null) {
+					if (!StringUtils.isBlank(line[parentRtuColumn])) {
+						cbcData.setParentRtuName(line[parentRtuColumn]);
+					}
+				}
+				
 				Integer scanEnabledColumn = headerColumnMap.get(CapControlImporterCbcField.SCAN_ENABLED);
 				if (scanEnabledColumn != null) {
 				    boolean scanEnabled = "Y".equals(line[headerColumnMap.get(CapControlImporterCbcField.SCAN_ENABLED)]);
