@@ -15,6 +15,7 @@ import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.stream.StreamUtils;
@@ -93,5 +94,16 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
         Months months = Months.months(globalSettingDao.getInteger(GlobalSettingType.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS));
         return new DateTime().withTimeAtStartOfDay().minus(months);
     }
-
+    
+    @Override
+    public List<Integer> getAllPortIds() {
+        List<LiteYukonPAObject> paos = new ArrayList<LiteYukonPAObject>();
+        PaoType.getPortTypes().stream().forEach(portType -> {
+            paos.addAll(paoDao.getLiteYukonPAObjectByType(portType));
+        });
+        return paos.stream()
+               .map(lp -> lp.getLiteID())
+               .collect(Collectors.toList()); 
+    }
+    
 }

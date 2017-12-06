@@ -55,4 +55,10 @@ public interface PorterQueueCountsWidgetService {
      */
     long getRefreshMilliseconds();
 
+    /**
+     * Gets the port ids for all of the ports in Yukon
+     * @return List<Integer> of port ids
+     */
+    List<Integer> getAllPortIds();
+
 }

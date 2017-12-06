@@ -4,6 +4,7 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="support" page="systemHealth">
     
@@ -81,6 +82,32 @@
                 </c:forEach>
             </tbody>
         </table>
+    </tags:sectionContainer2>
+    
+    <tags:sectionContainer2 nameKey="porterQueueStatistics">
+        <div class="scroll-lg">
+            <table class="compact-results-table stacked-md has-alerts">
+                <thead>
+                    <th></th>
+                    <th><i:inline key=".port"/></th>
+                    <th class="tar"><i:inline key=".queueSize"/></th>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="port" items="${portData}">
+                        <tr>
+                            <td></td>
+                            <td class="wsnw">
+                                <cti:paoDetailUrl yukonPao="${port.paoIdentifier}">
+                                    <c:if test="${!empty port}">${fn:escapeXml(port.paoName)}</c:if>
+                                </cti:paoDetailUrl>
+                            </td>
+                            <td class="tar"><cti:pointValue pointId="${port.pointId}" format="VALUE"/></td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </tags:sectionContainer2>
     
     <cti:includeScript link="/resources/js/pages/yukon.support.systemHealth.js"/>

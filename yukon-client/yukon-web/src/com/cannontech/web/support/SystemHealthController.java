@@ -1,6 +1,7 @@
 package com.cannontech.web.support;
 
 import java.beans.PropertyEditorSupport;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,12 @@ import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.widgets.service.PorterQueueCountsWidgetService;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.service.SystemHealthService;
 import com.cannontech.web.support.systemMetrics.MetricStatus;
@@ -49,6 +52,7 @@ public class SystemHealthController {
     
     @Autowired private SystemHealthService systemHealthService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private PorterQueueCountsWidgetService porterQueueCountsWidgetService;
     
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
@@ -66,9 +70,12 @@ public class SystemHealthController {
         List<SystemHealthMetric> queueData = systemHealthService.getMetricsByType(SystemHealthMetricType.JMS_QUEUE);
         model.addAttribute("queueData", queueData);
         
+        Map<Integer, LiteYukonPAObject> portPointIdToPaoMap = porterQueueCountsWidgetService.getPointIdToPaoMap(porterQueueCountsWidgetService.getAllPortIds());
+        model.addAttribute("portData", getPortJson(portPointIdToPaoMap));
+        
         return "systemHealth.jsp";
     }
-    
+
     @RequestMapping("dataUpdate")
     public @ResponseBody Map<SystemHealthMetricType, List<SystemHealthMetric>> dataUpdate() {
         
@@ -138,6 +145,18 @@ public class SystemHealthController {
         resp.setStatus(HttpStatus.OK.value());
         json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.sync.success"));
         return json;
+    }
+    
+    private List<Map<String, Object>> getPortJson(Map<Integer, LiteYukonPAObject> portPointIdToPaoMap) {
+        List<Map<String, Object>> portData = new ArrayList<Map<String, Object>>();
+        portPointIdToPaoMap.keySet().forEach(pointId -> {
+            Map<String, Object> portMap = new HashMap<String, Object>();
+            portMap.put("pointId", pointId);
+            portMap.put("paoIdentifier", portPointIdToPaoMap.get(pointId).getPaoIdentifier());
+            portMap.put("paoName", portPointIdToPaoMap.get(pointId).getPaoName());
+            portData.add(portMap);
+        });
+        return portData;
     }
     
     @InitBinder
