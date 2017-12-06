@@ -17,6 +17,7 @@
                 <value>com.cannontech.common.pao.model.CompleteYukonPao</value>
                 <value>com.cannontech.common.pao.model.CompleteCapBank</value>
                 <value>com.cannontech.common.pao.model.CompleteCbcBase</value>
+                <value>com.cannontech.common.pao.model.CompleteCbcLogical</value>
                 <value>com.cannontech.common.pao.model.CompleteDevice</value>
                 <value>com.cannontech.common.pao.model.CompleteRegulator</value>
                 <value>com.cannontech.common.pao.model.CompleteCapControlSubstationBus</value>
@@ -41,6 +42,7 @@
                 <value>com.cannontech.common.pao.model.CompleteDeviceScanRate</value>
                 <value>com.cannontech.common.pao.model.CompleteDeviceAddress</value>
                 <value>com.cannontech.common.pao.model.CompleteDeviceWindow</value>
+                <value>com.cannontech.common.pao.model.CompleteDeviceParent</value>
             </set>
         </constructor-arg>
     </bean>

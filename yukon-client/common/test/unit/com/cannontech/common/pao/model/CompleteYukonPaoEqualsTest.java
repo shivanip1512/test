@@ -71,4 +71,28 @@ public class CompleteYukonPaoEqualsTest {
         pao2.setPaoName("something different");
         assertNotEquals("objects with different alternateOpen matched", pao1, pao2);
     }
+
+    @Test
+    public void testEquals_CompleteCbcLogical() {
+        CompleteCbcLogical pao1 = new CompleteCbcLogical();
+        CompleteCbcLogical pao2 = new CompleteCbcLogical();
+
+        assertFalse("the test doesn't do any good if we're comparing the same exact instances", pao1 == pao2);
+        assertEquals("default objects should be the same", pao1, pao2);
+
+        pao1.setPaoName("pao 1");
+        pao2.setPaoName("pao 2");
+        assertNotEquals("objects with different names matched", pao1, pao2);
+
+        pao1.setParentDeviceId(5);
+        pao2.setParentDeviceId(7);
+        pao2.setPaoName("pao 1");
+        assertNotEquals("objects with different deviceParentId matched", pao1, pao2);
+
+        pao2.setParentDeviceId(5);
+        assertEquals("objects with different names matched", pao1, pao2);
+
+        pao2.setPaoName("something different");
+        assertNotEquals("objects with different deviceParentId matched", pao1, pao2);
+    }
 }

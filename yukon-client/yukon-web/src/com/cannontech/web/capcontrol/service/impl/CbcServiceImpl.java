@@ -23,6 +23,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.model.CompleteCbcBase;
+import com.cannontech.common.pao.model.CompleteCbcLogical;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -34,6 +35,7 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
+import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -86,7 +88,12 @@ public class CbcServiceImpl implements CbcService {
         cbc.setDevice(deviceBase.getDevice());
         PaoType paoType = deviceBase.getPaoType();
 
-        if (dbPersistent instanceof TwoWayDevice) {
+        if (dbPersistent instanceof CapBankControllerLogical) {
+            CapBankControllerLogical logicalCbc = (CapBankControllerLogical) dbPersistent;
+            LiteYukonPAObject rtu = dbCache.getAllPaosMap().get(logicalCbc.getParentDeviceId());
+            cbc.setParentRtu(rtu);
+            
+        } else if (dbPersistent instanceof TwoWayDevice) {
             DNPBase dnpBase = (DNPBase) dbPersistent;
 
             cbc.setDeviceWindow(dnpBase.getDeviceWindow());
@@ -182,9 +189,15 @@ public class CbcServiceImpl implements CbcService {
 
         LiteYukonPAObject lite = dbCache.getAllPaosMap().get(id);
 
-        boolean twoWayDevice = CapControlCBC.getTwoWayTypes().contains(lite.getPaoType());
+        Class<? extends CompleteCbcBase> clazz;
 
-        Class<? extends CompleteCbcBase> clazz = twoWayDevice ? CompleteTwoWayCbc.class : CompleteOneWayCbc.class;
+        if (CapControlCBC.getTwoWayTypes().contains(lite.getPaoType())) {
+            clazz = CompleteTwoWayCbc.class;
+        } else if (CapControlCBC.getLogicalTypes().contains(lite.getPaoType())) {
+            clazz = CompleteCbcLogical.class;
+        } else {
+            clazz = CompleteOneWayCbc.class;
+        }
 
         CompleteCbcBase completeCbc= paoPersistenceService.retreivePao(lite, clazz);
 
