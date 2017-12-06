@@ -5,8 +5,9 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage module="tools" page="configs.summary">
-    
-    <div id="page-actions" class="dn">
+ 
+ <!-- Commenting Out for Now for Demo - this will be moved to the results cog -->   
+<%--     <div id="page-actions" class="dn">
         <cti:url var="download" value="/deviceConfiguration/summary/download">
             <c:forEach var="config" items="${filter.configurationIds}">
                 <cti:param name="configurationIds" value="${config}"/>
@@ -25,7 +26,7 @@
             </c:forEach>
         </cti:url>
         <cm:dropdownOption key=".download" href="${download}" icon="icon-page-white-excel"/>
-    </div>
+    </div> --%>
     
     <div class="column-18-6 clearfix">
         <div class="column one filter-container">
