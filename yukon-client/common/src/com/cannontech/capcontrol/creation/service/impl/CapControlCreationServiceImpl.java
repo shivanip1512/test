@@ -37,6 +37,11 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, LightDeviceConfiguration config) {
         CompleteYukonPao pao;
         
+        // TODO
+        if (paoType.isLogicalCBC()) {
+            throw new IllegalArgumentException("Import of " + name + " failed. Cannot create Logical CBC without parent RTU");
+        }
+        
         if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
             pao = new CompleteOneWayCbc();
         } else if (paoDefinitionDao.isTagSupported(paoType, PaoTag.TWO_WAY_DEVICE)) {
