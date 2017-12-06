@@ -3858,7 +3858,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             parentBank = getMonitorPointParentBank(point);
             if (parentBank != NULL)
             {
-                if ( ! parentBank->getDisableFlag() &&
+                if ( parentBank->isSwitched() &&
+                     ! parentBank->getDisableFlag() &&
                         ( parentBank->getControlStatus() == CtiCCCapBank::Open ||
                           parentBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
                 {
@@ -3917,7 +3918,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             {
                 for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    if ( ! currentCapBank->getDisableFlag() &&
+                    if ( currentCapBank->isSwitched() &&
+                         ! currentCapBank->getDisableFlag() &&
                             ( currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
                               currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ) )
                     {
@@ -3978,7 +3980,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             CtiCCCapBankPtr parentBank = getMonitorPointParentBank(point);
             if (parentBank != NULL)
             {
-                if ( ! parentBank->getDisableFlag() &&
+                if ( parentBank->isSwitched() &&
+                     ! parentBank->getDisableFlag() &&
                         ( parentBank->getControlStatus() == CtiCCCapBank::Close ||
                           parentBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                 {
@@ -4036,7 +4039,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             {
                 for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    if ( ! currentCapBank->getDisableFlag() &&
+                    if ( currentCapBank->isSwitched() &&
+                         ! currentCapBank->getDisableFlag() &&
                             ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
                               currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
                     {
@@ -4260,7 +4264,7 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
         {
             CtiCCCapBankPtr bank = getMonitorPointParentBank( *point );
 
-            if ( bank && ! bank->getDisableFlag() )
+            if ( bank && bank->isSwitched() && ! bank->getDisableFlag() )
             {
                 double upperBound = upperLimit;
                 double lowerBound = lowerLimit;

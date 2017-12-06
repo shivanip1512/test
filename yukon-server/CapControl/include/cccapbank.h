@@ -260,6 +260,8 @@ public:
 
     CtiCCCapBank& operator=(const CtiCCCapBank& right);
 
+    bool isSwitched() const;
+
     /* Static Members */
 
     //Possible operational states

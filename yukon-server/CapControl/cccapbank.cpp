@@ -2205,6 +2205,11 @@ bool CtiCCCapBank::supportsHeartbeat() const
     return false;
 }
 
+bool CtiCCCapBank::isSwitched() const
+{
+    return ciStringEqual( _operationalstate, CtiCCCapBank::SwitchedOperationalState );
+}
+
 /* Public Static members */
 const string CtiCCCapBank::SwitchedOperationalState = "Switched";
 const string CtiCCCapBank::FixedOperationalState = "Fixed";
