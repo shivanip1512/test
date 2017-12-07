@@ -84,6 +84,7 @@ public:
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     void addChildDevice(long childDevice);
+    void removeChildDevice(long childDevice);
 
     LONG getAddress() const;
     LONG getMasterAddress() const;

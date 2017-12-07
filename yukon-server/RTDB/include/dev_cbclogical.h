@@ -14,6 +14,8 @@ public:
 
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 
+    long getParentDeviceId() const;
+
     std::string getSQLCoreStatement() const override;
     void DecodeDatabaseReader(RowReader& rdr) override;
 

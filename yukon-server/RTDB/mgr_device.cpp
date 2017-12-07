@@ -853,6 +853,21 @@ void CtiDeviceManager::removeAssociations(const CtiDeviceBase &evictedDevice)
 {
     _portDevices[evictedDevice.getPortID()].erase(evictedDevice.getID());
     _typeDevices[evictedDevice.getType()  ].erase(evictedDevice.getID());
+
+    if( evictedDevice.getDeviceType() == TYPE_CBCLOGICAL )
+    {
+        const auto& cbc = static_cast<const Devices::CbcLogicalDevice&>(evictedDevice);
+
+        if( auto parent = getDeviceByID(cbc.getParentDeviceId()) )
+        {
+            if( parent->getDeviceType() == TYPE_DNPRTU )
+            {
+                auto& dnp = static_cast<Devices::DnpDevice&>(*parent);
+
+                dnp.removeChildDevice(cbc.getID());
+            }
+        }
+    }
 }
 
 

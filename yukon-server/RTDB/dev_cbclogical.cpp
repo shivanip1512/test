@@ -52,6 +52,11 @@ void CbcLogicalDevice::DecodeDatabaseReader(RowReader& rdr)
     rdr["ParentID"] >> _parentDeviceId;
 }
 
+long CbcLogicalDevice::getParentDeviceId() const
+{
+    return _parentDeviceId;
+}
+
 void CbcLogicalDevice::setParentDeviceId(const long parentDeviceId, Test::use_in_unit_tests_only&)
 {
     _parentDeviceId = parentDeviceId;

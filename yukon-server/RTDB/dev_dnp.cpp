@@ -1216,5 +1216,10 @@ void DnpDevice::addChildDevice(const long childDeviceId)
     _childDevices.insert(childDeviceId);
 }
 
+void DnpDevice::removeChildDevice(const long childDeviceId)
+{
+    _childDevices.erase(childDeviceId);
+}
+
 }
 }
