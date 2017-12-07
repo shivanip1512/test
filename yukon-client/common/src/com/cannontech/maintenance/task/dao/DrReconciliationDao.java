@@ -1,6 +1,7 @@
 package com.cannontech.maintenance.task.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.collect.Multimap;
 
@@ -33,5 +34,5 @@ public interface DrReconciliationDao {
     /**
      * Get LCR and associated group, for those LCR's which are enrolled in multiple groups.
      */
-    Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(List<Integer> lcrs);
+    Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(Set<Integer> lcrs);
 }

@@ -3,6 +3,8 @@ package com.cannontech.maintenance.task.dao.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -137,7 +139,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
     }
 
     @Override
-    public Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(List<Integer> lcrs) {
+    public Multimap<Integer, Integer> getLcrEnrolledInMultipleGroup(Set<Integer> lcrs) {
 
         final Multimap<Integer, Integer> lcrEnrolledInMultipleGroups = HashMultimap.create();
         SqlStatementBuilder sql = new SqlStatementBuilder();

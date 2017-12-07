@@ -1,9 +1,10 @@
 package com.cannontech.maintenance.task.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,11 +45,11 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         }
         return Collections.emptyList();
     }
-    
-    @Override
-    public List<Integer> getLCRWithConflictingAddressing() {
 
-        List<Integer> conflictingLCR = new ArrayList<>();
+    @Override
+    public Set<Integer> getLCRWithConflictingAddressing() {
+
+        Set<Integer> conflictingLCR = new HashSet<>();
 
         // Get Group which have atleast one LCR enrolled
         List<Integer> groupsWithRfnLcrEnrollements = drReconciliationDao.getGroupsWithRfnDeviceEnrolled();
@@ -63,60 +64,44 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             // Get LCR addressing - This can be heavy
             List<ExpressComReportedAddress> lcrAddressing = expressComDaoImpl.getCurrentAddresses(lcrsInGroup);
 
+            Set<Integer> conflicts = findConflicts(lmGroupAddressing, lcrAddressing);
+            
             // Check conflicts
-            conflictingLCR = findConflicts(lmGroupAddressing, lcrAddressing);
+            conflictingLCR.addAll(conflicts);
         }
         // Get LCR enrolled in multiple group
         Multimap<Integer, Integer> lcrInMultipleGroups =
-                drReconciliationDao.getLcrEnrolledInMultipleGroup(conflictingLCR);
-        
-        final List<Integer> groupConflictingLCR = new ArrayList<>();
-        
-        lcrInMultipleGroups.keySet().forEach(lcr -> {
-            ArrayList<Integer> groups =   new ArrayList<Integer>(lcrInMultipleGroups.get(lcr));
-            List<Integer> tempAddress = Arrays.asList(0, 0, 0, 0, 0);
+            drReconciliationDao.getLcrEnrolledInMultipleGroup(conflictingLCR);
 
-            groups.forEach(group -> {
+        final List<Integer> groupConflictingLCR = new ArrayList<>();
+
+        lcrInMultipleGroups.keySet().forEach(lcr -> {
+            ArrayList<Integer> groups = new ArrayList<Integer>(lcrInMultipleGroups.get(lcr));
+            ExpressComAddressView tempGroup = new ExpressComAddressView();
+            for (int group : groups) {
                 if (!groupConflictingLCR.contains(lcr)) {
                     ExpressComAddressView lmGroupAddressing = lmGroupDaoImpl.getExpressComAddressing(group);
-                    List<Integer> groupAddress = parseAddress(lmGroupAddressing);
+                    ExpressComAddressView addressing = findGroupConflicts(tempGroup, lmGroupAddressing);
 
-                    for (int position = 0; position < tempAddress.size(); position++) {
-                        if (groupAddress.get(position) != 0) {
-                            if (tempAddress.get(position) != 0) {
-                                if (groupAddress.get(position) != tempAddress.get(position)) {
-                                    // mismatch, we can not fix it dont send message
-                                    groupConflictingLCR.add(lcr);
-                                    break;
-                                }
-                            } else {
-                                tempAddress.set(position, groupAddress.get(position));
-                            }
-                        }
+                    // Return null when there is a mismatch and no further checking is required.
+                    if (addressing != null) {
+                        tempGroup = addressing;
+                    } else {
+                        // Mismatch, we can not fix it do not send message
+                        groupConflictingLCR.add(lcr);
                     }
                 }
-            });
+            }
         });
         conflictingLCR.removeAll(groupConflictingLCR);
         return conflictingLCR;
     }
 
-    
-    private List<Integer> parseAddress(ExpressComAddressView lmGroupAddressing) {
-        List<Integer> address = new ArrayList<>();
-        address.add(lmGroupAddressing.getSpid());
-        address.add(lmGroupAddressing.getGeo());
-        address.add(lmGroupAddressing.getSubstation());
-        address.add(lmGroupAddressing.getZip());
-        address.add(lmGroupAddressing.getUser());
-        return address;
-    }
-
-    private ArrayList<Integer> findConflicts(ExpressComAddressView lmGroupAddressing,
+    private Set<Integer> findConflicts(ExpressComAddressView lmGroupAddressing,
             List<ExpressComReportedAddress> lcrAddressing) {
 
         String addressUsage = lmGroupAddressing.getUsage().toLowerCase();
-        ArrayList<Integer> incorrectAddressingLCR = new ArrayList<>();
+        Set<Integer> incorrectAddressingLCR = new HashSet<>();
 
         for (ExpressComReportedAddress lcrAddress : lcrAddressing) {
             if (addressUsage.contains("s")) {
@@ -138,7 +123,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                 }
             }
             if (addressUsage.contains("f")) {
-                if ((lmGroupAddressing.getFeeder() & lcrAddress.getFeeder()) != lmGroupAddressing.getFeeder()) {
+                if ((lmGroupAddressing.getFeeder() & lcrAddress.getFeeder()) == 0) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
                     break;
                 }
@@ -198,6 +183,46 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             }
         }
         return incorrectAddressingLCR;
+    }
+
+    private ExpressComAddressView findGroupConflicts(ExpressComAddressView tempGroup, ExpressComAddressView group) {
+
+        if (tempGroup.getSpid() == 0 && group.getSpid() != 0) {
+            tempGroup.setSpid(group.getSpid());
+        } else if (tempGroup.getSpid() != 0 && group.getSpid() != 0 && tempGroup.getSpid() != group.getSpid()) {
+            return null;
+        }
+
+        if (tempGroup.getGeo() == 0 && group.getGeo() != 0) {
+            tempGroup.setGeo(group.getGeo());
+        } else if (tempGroup.getGeo() != 0 && group.getGeo() != 0 && tempGroup.getGeo() != group.getGeo()) {
+            return null;
+        }
+
+        if (tempGroup.getSubstation() == 0 && group.getSubstation() != 0) {
+            tempGroup.setSubstation(group.getSubstation());
+        } else if (tempGroup.getSubstation() != 0 && group.getSubstation() != 0 && tempGroup.getGeo() != group.getSubstation()) {
+            return null;
+        }
+
+        if (tempGroup.getFeeder() == 0 && group.getFeeder() != 0) {
+            tempGroup.setFeeder(group.getFeeder());
+        } else if ((tempGroup.getFeeder() != 0 && group.getFeeder() != 0 && (tempGroup.getFeeder() & group.getFeeder()) < 0)) {
+            return null;
+        }
+
+        if (tempGroup.getZip() == 0 && group.getZip() != 0) {
+            tempGroup.setZip(group.getZip());
+        } else if (tempGroup.getZip() != 0 && group.getZip() != 0 && tempGroup.getZip() != group.getZip()) {
+            return null;
+        }
+
+        if (tempGroup.getUser() == 0 && group.getUser() != 0) {
+            tempGroup.setUser(group.getUser());
+        } else if (tempGroup.getUser() != 0 && group.getUser() != 0 && tempGroup.getUser() != group.getUser()) {
+            return null;
+        }
+        return tempGroup;
     }
 
     private boolean isSuppressMessage() {

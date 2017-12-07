@@ -11,6 +11,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
@@ -19,8 +22,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
+import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.google.common.collect.Sets;
 
@@ -211,19 +214,28 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
     
     @Override
     public List<ExpressComReportedAddress> getCurrentAddresses(List<Integer> deviceId) {
+        final ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ChangeId, RAEC.DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
-        sql.append("FROM ReportedAddressExpressCom lmra,");
-        sql.append("(SELECT DeviceId, MAX(Timestamp) LatestTimestamp FROM ReportedAddressExpressCom GROUP BY DeviceId) RAEC");
-        sql.append("WHERE lmra.ChangeId = (SELECT MAX(ChangeId) FROM ReportedAddressExpressCom RAEC2 WHERE RAEC2.DeviceId = RAEC.DeviceId  AND RAEC.LatestTimestamp = RAEC2.Timestamp)");
-        sql.append("AND DeviceId").in(deviceId);
-        
-        List<ExpressComReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ChangeId, RAEC.DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
+                sql.append("FROM ReportedAddressExpressCom lmra,");
+                sql.append("(SELECT DeviceId, MAX(Timestamp) LatestTimestamp FROM ReportedAddressExpressCom GROUP BY DeviceId) RAEC");
+                sql.append("WHERE lmra.ChangeId = ");
+                sql.append("    (SELECT MAX(ChangeId) ");
+                sql.append("    FROM ReportedAddressExpressCom RAEC2"); 
+                sql.append("    WHERE RAEC2.DeviceId = RAEC.DeviceId  AND RAEC.LatestTimestamp = RAEC2.Timestamp)");
+                sql.append("AND DeviceId").in(deviceId);
+                return sql;
+            }
+        };
+        List<ExpressComReportedAddress> addresses = chunkingTemplate.query(sqlGenerator, deviceId, addressRowMapper);
+
         for (ExpressComReportedAddress address : addresses) {
             address.setRelays(getRelays(address.getChangeId()));
         }
-        
         return addresses;
     }
     

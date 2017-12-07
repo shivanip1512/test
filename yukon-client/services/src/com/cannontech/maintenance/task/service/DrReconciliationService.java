@@ -1,6 +1,7 @@
 package com.cannontech.maintenance.task.service;
 
 import java.util.List;
+import java.util.Set;
 
 public interface DrReconciliationService {
 
@@ -21,5 +22,5 @@ public interface DrReconciliationService {
     /**
      * Give a list of LCR which have conflicting addresses and messages have to be send for them.
      */
-    List<Integer> getLCRWithConflictingAddressing();
+    Set<Integer> getLCRWithConflictingAddressing();
 }
