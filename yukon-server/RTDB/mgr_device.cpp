@@ -1497,23 +1497,24 @@ void CtiDeviceManager::refreshDnpChildDevices(Cti::Database::id_set &paoids)
 
         for( const auto id : devices )
         {
-            auto dev = getDeviceByID(id);
-
-            if( dev->getDeviceType() == TYPE_DNPRTU )
+            if( auto dev = getDeviceByID(id) )
             {
-                auto dnp = boost::static_pointer_cast<Cti::Devices::DnpDevice>(dev);
+                if( dev->getDeviceType() == TYPE_DNPRTU )
+                {
+                    auto dnp = boost::static_pointer_cast<Cti::Devices::DnpDevice>(dev);
 
-                auto childDevices = boost::copy_range<std::set<long>>(boost::make_iterator_range(parentMapping.equal_range(id)) | boost::adaptors::map_values);
-                
-                dnp->setChildDevices(std::move(childDevices));
-            }
-            else if( parentMapping.count(id) )
-            {
-                //  Device had rows, but was not a DNP RTU
-                CTILOG_WARN(dout, "Child devices only supported for DNP RTU types: " << FormattedList::of(
-                    "Device ID",   dev->getID(),
-                    "Device type", dev->getDeviceType(),
-                    "Device name", dev->getName()));
+                    auto childDevices = boost::copy_range<std::set<long>>(boost::make_iterator_range(parentMapping.equal_range(id)) | boost::adaptors::map_values);
+
+                    dnp->setChildDevices(std::move(childDevices));
+                }
+                else if( parentMapping.count(id) )
+                {
+                    //  Device had rows, but was not a DNP RTU
+                    CTILOG_WARN(dout, "Child devices only supported for DNP RTU types: " << FormattedList::of(
+                        "Device ID", dev->getID(),
+                        "Device type", dev->getDeviceType(),
+                        "Device name", dev->getName()));
+                }
             }
         }
     }
