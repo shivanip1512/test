@@ -2808,7 +2808,7 @@ bool sortPointDataByTimestamp( const CtiMessage * a, const CtiMessage * b )
             std::make_pair( aPd->getTime(), aPd->getMillis() ) <
             std::make_pair( bPd->getTime(), bPd->getMillis() );
     }
-    return false;
+    return false; // Non-PointData messages are treated as equivalent to all other messages and will not be sorted.
 }
 
 /*
