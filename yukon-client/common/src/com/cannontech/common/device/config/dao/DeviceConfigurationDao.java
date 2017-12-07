@@ -304,4 +304,9 @@ public interface DeviceConfigurationDao {
      * @return a HeartbeatsConfiguration model object containing the Heartbeat category data of the configuration
      */
     HeartbeatConfiguration getHeartbeatConfiguration(DeviceConfiguration config);
+
+    /**
+     * Returns configs that have at least one category that can be verified.
+     */
+    List<LightDeviceConfiguration> getAllVerifiableConfigurations();
 }

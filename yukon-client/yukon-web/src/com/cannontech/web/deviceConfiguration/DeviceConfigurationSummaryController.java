@@ -125,7 +125,7 @@ public class DeviceConfigurationSummaryController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
+        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllVerifiableConfigurations();
         model.addAttribute("configurations", configurations);
         model.addAttribute("lastActionOptions", LastAction.values());
         model.addAttribute("statusOptions", LastActionStatus.values());

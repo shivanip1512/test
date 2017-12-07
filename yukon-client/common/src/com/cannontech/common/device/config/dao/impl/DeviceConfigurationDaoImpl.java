@@ -70,6 +70,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
@@ -80,6 +81,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     private static final int defaultDnpConfigId = -1;
     private static final int defaultRegulatorConfigId = -2;
+    private static final List<String> unverifiableCategories = Lists.newArrayList("cbcAttributeMapping", "cbcHeartbeat", "dnp");
     
     public static final Map<Integer, Set<PaoType>> requiredConfigs = ImmutableMap.of(
         defaultDnpConfigId, ImmutableSet.of(PaoType.CBC_7020,
@@ -938,15 +940,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("   JOIN DeviceConfigCategory DCC ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId");
         sql.append("WHERE DCDT.PaoType").eq(paoType);
         sql.append("   AND DCC.CategoryType").in(requiredCategories);
-        Multimap<LightDeviceConfiguration, String> deviceConfigToCategoryMap = ArrayListMultimap.create();
-
-        jdbcTemplate.query(sql, (YukonResultSet rs) -> {
-                                                       int configurationId = rs.getInt("DeviceConfigurationId");
-                                                       String name = rs.getString("Name");
-                                                       String description = rs.getString("Description");
-                deviceConfigToCategoryMap.put(new LightDeviceConfiguration(configurationId, name, description),
-                                                                             rs.getString("CategoryType"));
-        }); 
+        Multimap<LightDeviceConfiguration, String> deviceConfigToCategoryMap = getDeviceConfigToCategoryMap(sql);
 
         List<LightDeviceConfiguration> assignableConfigurations =
             deviceConfigToCategoryMap.entries()
@@ -1178,5 +1172,39 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         // A configuration is deletable if it isn't the default DNP configuration or Regulator configuration
         // and has no assigned devices.
         return !requiredConfigs.keySet().contains(configId) && getNumberOfDevicesForConfiguration(configId) == 0;
+    }
+    
+    @Override
+    public List<LightDeviceConfiguration> getAllVerifiableConfigurations() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DC.DeviceConfigurationId, DC.Name, DC.Description, DCC.CategoryType");
+        sql.append("FROM DeviceConfiguration DC");
+        sql.append("   JOIN DeviceConfigCategoryMap DCCM ON DCCM.DeviceConfigurationId = DC.DeviceConfigurationID");
+        sql.append("   JOIN DeviceConfigCategory DCC ON DCC.DeviceConfigCategoryId = DCCM.DeviceConfigCategoryId");
+        Multimap<LightDeviceConfiguration, String> deviceConfigToCategoryMap = getDeviceConfigToCategoryMap(sql);
+
+        List<LightDeviceConfiguration> verifiableConfigurations = new ArrayList<>();
+        deviceConfigToCategoryMap.keySet().forEach(config -> {
+            List<String> categories = Lists.newArrayList(deviceConfigToCategoryMap.get(config));
+            categories.removeAll(unverifiableCategories);
+            if (!categories.isEmpty()) {
+                verifiableConfigurations.add(config);
+            }
+        });
+        verifiableConfigurations.sort(Comparator.comparing(c -> c.getName()));
+        return verifiableConfigurations;
+    }
+    
+    private Multimap<LightDeviceConfiguration, String> getDeviceConfigToCategoryMap(SqlStatementBuilder sql){
+        Multimap<LightDeviceConfiguration, String> deviceConfigToCategoryMap = ArrayListMultimap.create();
+
+        jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+                                                       int configurationId = rs.getInt("DeviceConfigurationId");
+                                                       String name = rs.getString("Name");
+                                                       String description = rs.getString("Description");
+                deviceConfigToCategoryMap.put(new LightDeviceConfiguration(configurationId, name, description),
+                                                                             rs.getString("CategoryType"));
+        });
+        return deviceConfigToCategoryMap;
     }
 }
