@@ -1211,9 +1211,9 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
    }
 }
 
-void DnpDevice::setChildDevices(std::set<long>&& childDevices)
+void DnpDevice::addChildDevice(const long childDeviceId)
 {
-    _childDevices = std::move(childDevices);
+    _childDevices.insert(childDeviceId);
 }
 
 }

@@ -83,7 +83,7 @@ public:
     virtual std::string getDescription(const CtiCommandParser & parse) const;
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
-    void setChildDevices(std::set<long>&& childDevices);
+    void addChildDevice(long childDevice);
 
     LONG getAddress() const;
     LONG getMasterAddress() const;

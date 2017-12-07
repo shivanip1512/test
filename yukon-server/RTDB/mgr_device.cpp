@@ -1166,6 +1166,11 @@ bool CtiDeviceManager::isIon(int type)
     return false;
 }
 
+bool CtiDeviceManager::isDnpChild(int type)
+{
+    return type == TYPE_CBCLOGICAL;
+}
+
 
 void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
 {
@@ -1460,7 +1465,7 @@ void CtiDeviceManager::refreshDnpChildDevices(Cti::Database::id_set &paoids)
 
     if( ! paoids.empty() )
     {
-        sql += " WHERE " + Cti::Database::createIdInClause("DP", "ParentID", paoids.size());
+        sql += " WHERE " + Cti::Database::createIdInClause("DP", "DeviceID", paoids.size());
     }
 
     Cti::Database::DatabaseConnection connection;
@@ -1491,31 +1496,45 @@ void CtiDeviceManager::refreshDnpChildDevices(Cti::Database::id_set &paoids)
             parentMapping.emplace(rdr["ParentID"].as<long>(), rdr["DeviceID"].as<long>());
         }
 
-        auto devices = paoids.empty() 
-            ? (parentMapping | boost::adaptors::map_keys | boost::adaptors::uniqued | boost::adaptors::type_erased<>())
-            : (paoids | boost::adaptors::type_erased<>());
+        long parentId = -1;
+        CtiDeviceSPtr dev;
 
-        for( const auto id : devices )
+        for( auto itr = parentMapping.begin(); itr != parentMapping.end(); )
         {
-            if( auto dev = getDeviceByID(id) )
+            if( itr->first != parentId )
             {
-                if( dev->getDeviceType() == TYPE_DNPRTU )
+                parentId = itr->first;
+
+                dev = getDeviceByID(parentId);
+
+                if( ! dev )
                 {
-                    auto dnp = boost::static_pointer_cast<Cti::Devices::DnpDevice>(dev);
+                    //  Device had rows, but was not loaded
+                    CTILOG_ERROR(dout, "Parent device not found, skipping rows: " << FormattedList::of(
+                        "Parent ID", itr->first,
+                        "Child ID",  itr->second));
 
-                    auto childDevices = boost::copy_range<std::set<long>>(boost::make_iterator_range(parentMapping.equal_range(id)) | boost::adaptors::map_values);
+                    itr = parentMapping.upper_bound(parentId);
 
-                    dnp->setChildDevices(std::move(childDevices));
+                    continue;
                 }
-                else if( parentMapping.count(id) )
+                else if( dev->getDeviceType() != TYPE_DNPRTU )
                 {
                     //  Device had rows, but was not a DNP RTU
                     CTILOG_WARN(dout, "Child devices only supported for DNP RTU types: " << FormattedList::of(
                         "Device ID", dev->getID(),
                         "Device type", dev->getDeviceType(),
                         "Device name", dev->getName()));
+
+                    itr = parentMapping.upper_bound(dev->getID());
+
+                    continue;
                 }
             }
+
+            static_cast<Cti::Devices::DnpDevice&>(*dev).addChildDevice(itr->second);
+
+            ++itr;
         }
     }
 
@@ -1806,7 +1825,7 @@ void CtiDeviceManager::refreshDeviceProperties(Cti::Database::id_set &paoids, in
         refreshMCT400Configs(paoids);
     }
 
-    if( !type || type == TYPE_DNPRTU )
+    if( !type || isDnpChild(type) )
     {
         Timing::DebugTimer timer("loading DNP RTU child devices");
         refreshDnpChildDevices(paoids);

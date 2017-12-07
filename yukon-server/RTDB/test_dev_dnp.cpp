@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_child_device_success)
         dev._name = "Test DNP device";
         dev._dnp.setAddresses(1234, 1);
         dev._dnp.setName("Test DNP device");
-        dev.setChildDevices(std::set<long>{1620, 1776});
+        dev.addChildDevice(1620);
         dev.setPointManager(&pt_mgr);
 
         CtiCommandParser parse("control close offset 1997");
@@ -454,7 +454,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_child_device_success)
         dev._name = "Test DNP device";
         dev._dnp.setAddresses(1234, 1);
         dev._dnp.setName("Test DNP device");
-        dev.setChildDevices(std::set<long>{1620, 1776});
+        dev.addChildDevice(1776);
         dev.setPointManager(&pt_mgr);
 
         CtiCommandParser parse("control close select pointid 2001");
@@ -529,7 +529,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_child_device_success)
         dev._name = "Test DNP device";
         dev._dnp.setAddresses(1234, 1);
         dev._dnp.setName("Test DNP device");
-        dev.setChildDevices(std::set<long>{1620, 1776});
+        dev.addChildDevice(1620);
         dev.setPointManager(&pt_mgr);
 
         CtiCommandParser parse("putvalue analog value 1792 select pointid 9876");
@@ -599,7 +599,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_child_device_fail)
         dev._dnp.setAddresses(1234, 1);
         dev._dnp.setName("Test DNP device");
         dev.setPointManager(&pt_mgr);
-        dev.setChildDevices(std::set<long>{1776});
+        dev.addChildDevice(1776);
 
         CtiCommandParser parse("control close select pointid 10");
         request.setOptionsField(9999);
@@ -633,7 +633,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_child_device_fail)
         dev._dnp.setAddresses(1234, 1);
         dev._dnp.setName("Test DNP device");
         dev.setPointManager(&pt_mgr);
-        dev.setChildDevices(std::set<long>{1776});
+        dev.addChildDevice(1776);
 
         CtiCommandParser parse("control close select pointid 10");
         request.setOptionsField(1776);
@@ -835,8 +835,8 @@ BOOST_AUTO_TEST_CASE(test_processPoints)
 
 BOOST_AUTO_TEST_CASE(test_processPoints_children)
 {
-    CtiPointDataMsg msg1, msg2;
-    Cti::Protocols::Interface::pointlist_t points{ &msg1, &msg2 };
+    CtiPointDataMsg msg1, msg2, msg3, msg4;
+    Cti::Protocols::Interface::pointlist_t points{ &msg1, &msg2, &msg3, &msg4 };
 
     msg1.setValue(4);
     msg1.setType(AnalogPointType);
@@ -845,6 +845,14 @@ BOOST_AUTO_TEST_CASE(test_processPoints_children)
     msg2.setValue(1);
     msg2.setType(AnalogPointType);
     msg2.setId(19);
+
+    msg3.setValue(8);
+    msg3.setType(AnalogPointType);
+    msg3.setId(23);
+
+    msg4.setValue(3);
+    msg4.setType(AnalogPointType);
+    msg4.setId(29);
 
     test_DnpDevice dev;
 
@@ -857,15 +865,21 @@ BOOST_AUTO_TEST_CASE(test_processPoints_children)
                 points.emplace_back(ptr_type{ Cti::Test::makeAnalogPoint(pao, 1717, 17) });
                 points.emplace_back(ptr_type{ Cti::Test::makeAnalogPoint(pao, 1919, 19) });
             }
+            if( pao == 1917 )
+            {
+                points.emplace_back(ptr_type{ Cti::Test::makeAnalogPoint(pao, 2323, 23) });
+                points.emplace_back(ptr_type{ Cti::Test::makeAnalogPoint(pao, 2929, 29) });
+            }
         }
     } pt_mgr;
 
     dev.setPointManager(&pt_mgr);
-    dev.setChildDevices(std::set<long>{1812});
+    dev.addChildDevice(1812);
+    dev.addChildDevice(1917);
 
     dev.processPoints(points);
 
-    BOOST_REQUIRE_EQUAL(points.size(), 2);
+    BOOST_REQUIRE_EQUAL(points.size(), 4);
 
     BOOST_CHECK_EQUAL(points[0]->getValue(), 4);
     BOOST_CHECK_EQUAL(points[0]->getType(), AnalogPointType);
@@ -874,6 +888,14 @@ BOOST_AUTO_TEST_CASE(test_processPoints_children)
     BOOST_CHECK_EQUAL(points[1]->getValue(), 1);
     BOOST_CHECK_EQUAL(points[1]->getType(), AnalogPointType);
     BOOST_CHECK_EQUAL(points[1]->getId(), 1919);
+
+    BOOST_CHECK_EQUAL(points[2]->getValue(), 8);
+    BOOST_CHECK_EQUAL(points[2]->getType(), AnalogPointType);
+    BOOST_CHECK_EQUAL(points[2]->getId(), 2323);
+
+    BOOST_CHECK_EQUAL(points[3]->getValue(), 3);
+    BOOST_CHECK_EQUAL(points[3]->getType(), AnalogPointType);
+    BOOST_CHECK_EQUAL(points[3]->getId(), 2929);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

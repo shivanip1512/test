@@ -60,6 +60,7 @@ private:
 
     static bool isMct(int type);
     static bool isIon(int type);
+    static bool isDnpChild(int type);
 
     void refreshExclusions     (Cti::Database::id_set &paoids);
     void refreshIONMeterGroups (Cti::Database::id_set &paoids);
