@@ -46,7 +46,17 @@ yukon.deviceConfig.summary = (function () {
                 Sortable.initTable(table);
             });
 
-
+            /** Download CSV */
+            $(document).on('click', '.js-config-download', function () {
+                var startDate = $('input[name=startDate]').val(),
+                    endDate = $('input[name=endDate]').val(),
+                    form = $('#filter-form'),
+                    data = form.serialize() + '&startDate=' + startDate 
+                            + '&endDate=' + endDate;
+                window.open(yukon.url('/deviceConfiguration/summary/download?' + data), '_blank');
+                
+            });
+            
             _initialized = true;
 
         },

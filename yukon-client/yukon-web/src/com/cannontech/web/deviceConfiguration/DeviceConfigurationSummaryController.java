@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -41,8 +45,11 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -74,6 +81,7 @@ public class DeviceConfigurationSummaryController {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private ServerDatabaseCache dbCache;
     ExecutorService executor = Executors.newCachedThreadPool();
     
@@ -237,13 +245,21 @@ public class DeviceConfigurationSummaryController {
     }
     
     @RequestMapping(value="download", method=RequestMethod.GET)
-    public String download(HttpServletResponse response, @ModelAttribute DeviceConfigSummaryFilter filter, YukonUserContext userContext) throws IOException {
+    public String download(HttpServletResponse response, ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext,
+                           @RequestParam String startDate, @RequestParam String endDate) throws IOException {
+        setFilterValues(filter, deviceSubGroups);
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
+        Instant start = startDate.isEmpty() ? null : formatter.parseDateTime(startDate).toInstant();
+        Instant end = endDate.isEmpty() ? null : formatter.parseDateTime(endDate).toInstant();
+        if (start != null && end != null) {
+            filter.setRange(new Range<Instant>(start, true, end, true));
+        }
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         SearchResults<DeviceConfigSummaryDetail> details = deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<String> headerRow = getHeader(accessor);
         List<List<String>> dataRows = getDataRows(details);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Device_Config_Summary.csv");
-        return null;
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Device_Config_Summary_" + DateTime.now().toString(formatter) + ".csv");
+        return "";
     }
     
     private List<String> getHeader(MessageSourceAccessor accessor) {
@@ -265,7 +281,7 @@ public class DeviceConfigurationSummaryController {
             ArrayList<String> row = new ArrayList<>();
             row.add(d.getDevice().getName());
             row.add(d.getDevice().getPaoIdentifier().getPaoType().getPaoTypeName());
-            row.add(d.getDeviceConfig().toString());
+            row.add(d.getDeviceConfig().getName());
             if (d.getAction() != null) {
                 row.add(d.getAction().toString());
             } else {

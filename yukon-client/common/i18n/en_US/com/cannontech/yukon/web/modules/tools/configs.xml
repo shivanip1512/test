@@ -719,6 +719,9 @@
     <entry key="yukon.web.modules.tools.configs.summary.sendConfig">Send Config</entry>
     <entry key="yukon.web.modules.tools.configs.summary.readConfig">Read Config</entry>
     <entry key="yukon.web.modules.tools.configs.summary.verifyConfig">Verify Config</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.download">Download</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.date">Date (Optional)</entry>    
+    <entry key="yukon.web.modules.tools.configs.summary.filter.to">to</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.outOfSync">Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.summary.failure">Error Message</entry>
@@ -756,7 +759,6 @@
     <entry key="yukon.web.modules.tools.configs.summary.error">Error</entry>
     <entry key="yukon.web.modules.tools.configs.summary.description">Description</entry>
     <entry key="yukon.web.modules.tools.configs.summary.troubleshooting">Troubleshooting</entry>
-    
-    <entry key="yukon.web.modules.tools.download">Download</entry>
-    
+
+
 </properties>

@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
     
 <cti:msgScope paths="modules.tools.configs.summary">
     
@@ -16,6 +17,22 @@
                     <cm:dropdownOption key=".sendConfig" classes="js-collection-action" icon="icon-ping" data-collection-action="sendConfig"/> 
                     <cm:dropdownOption key=".readConfig" classes="js-collection-action" icon="icon-read" data-collection-action="readConfig"/> 
                     <cm:dropdownOption key=".verifyConfig" classes="js-collection-action" icon="icon-accept" data-collection-action="verifyConfig"/> 
+                    <div id="js-download" class="dn" data-title="<cti:msg2 key=".download"/>"    data-width="600">
+                        <form:form id="config-summary-download" action="${download}" method="get">
+                            <cti:csrfToken/>
+                            <tags:nameValueContainer2>
+                                <tags:nameValue2 nameKey=".date">
+                                    <dt:dateRange startName="startDate" endName="endDate">
+                                        <span class="fl" style="margin-right: 5px;"><cti:msg2 key=".filter.to"/></span>
+                                    </dt:dateRange>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                            <div class="action-area">
+                                <cti:button nameKey="download" classes="js-config-download" type="button"/>
+                            </div>
+                        </form:form>
+                    </div>
+                    <cm:dropdownOption key=".download" data-popup="#js-download" icon="icon-page-white-excel"/>
                 </cm:dropdown>
             </span>
             
