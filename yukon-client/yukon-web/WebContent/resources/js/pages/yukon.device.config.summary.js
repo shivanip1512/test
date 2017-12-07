@@ -53,8 +53,7 @@ yukon.deviceConfig.summary = (function () {
                     form = $('#filter-form'),
                     data = form.serialize() + '&startDate=' + startDate 
                             + '&endDate=' + endDate;
-                window.open(yukon.url('/deviceConfiguration/summary/download?' + data), '_blank');
-                
+                window.location = yukon.url('/deviceConfiguration/summary/download?' + data);
             });
             
             _initialized = true;

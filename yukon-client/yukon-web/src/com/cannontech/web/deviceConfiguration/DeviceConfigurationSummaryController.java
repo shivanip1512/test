@@ -3,6 +3,7 @@ package com.cannontech.web.deviceConfiguration;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -257,8 +257,9 @@ public class DeviceConfigurationSummaryController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         SearchResults<DeviceConfigSummaryDetail> details = deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<String> headerRow = getHeader(accessor);
-        List<List<String>> dataRows = getDataRows(details);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Device_Config_Summary_" + DateTime.now().toString(formatter) + ".csv");
+        List<List<String>> dataRows = getDataRows(details, accessor, userContext);
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "Device_Config_Summary_" + now + ".csv");
         return "";
     }
     
@@ -275,7 +276,7 @@ public class DeviceConfigurationSummaryController {
         return retValue;
     }
     
-    private List<List<String>> getDataRows(SearchResults<DeviceConfigSummaryDetail> details) {
+    private List<List<String>> getDataRows(SearchResults<DeviceConfigSummaryDetail> details, MessageSourceAccessor accessor, YukonUserContext userContext) {
         ArrayList<List<String>> retValue = new ArrayList<>();
         details.getResultList().forEach(d -> {
             ArrayList<String> row = new ArrayList<>();
@@ -285,25 +286,27 @@ public class DeviceConfigurationSummaryController {
             if (d.getAction() != null) {
                 row.add(d.getAction().toString());
             } else {
-                row.add("N/A");
+                row.add("");
             }
             if (d.getStatus() != null) {
                 row.add(d.getStatus().toString());
             } else {
-                row.add("N/A");
+                row.add(accessor.getMessage(baseKey+"statusType.NA"));
             }
             if (d.getInSync() != null) {
                 row.add(d.getInSync().toString());
             } else {
-                row.add("N/A");
+                row.add(accessor.getMessage(baseKey+"syncType.NA"));
             }
             if (d.getActionStart() != null) {
-                row.add(d.getActionStart().toString());
+                String start = dateFormattingService.format(d.getActionStart(), DateFormatEnum.BOTH, userContext);
+                row.add(start.toString());
             } else {
                 row.add("N/A");
             }
             if (d.getAction() != null) {
-                row.add(d.getActionEnd().toString());
+                String end = dateFormattingService.format(d.getActionEnd(), DateFormatEnum.BOTH, userContext);
+                row.add(end.toString());
             } else {
                 row.add("N/A");
             }
