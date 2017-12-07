@@ -166,6 +166,17 @@ public class NmIntegrationController {
         return "redirect:gatewaySimulator";
     }
 
+    @RequestMapping("deleteGateway")
+    public String deleteGateway(@RequestParam String serial, 
+                                @RequestParam(defaultValue="false") boolean returnGwy800Model,
+                                FlashScope flash) {
+        
+        gatewaySimService.sendGatewayDeleteRequest(serial, returnGwy800Model);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDelete", serial));
+        
+        return "redirect:gatewaySimulator";
+    }
+
     @RequestMapping("sendGatewayDataResponse")
     public String sendGatewayDataResponse(@RequestParam String serial,
             @RequestParam(defaultValue = "false") boolean returnGwy800Model, FlashScope flash) {

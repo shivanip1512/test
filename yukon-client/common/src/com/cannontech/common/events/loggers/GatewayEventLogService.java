@@ -39,6 +39,10 @@ public interface GatewayEventLogService {
                                @Arg(ArgEnum.serialNumber) String serialNumber);
     
     @YukonEventLog(category="system.rfn.gateway")
+    public void deletedGatewayAutomatically(@Arg(ArgEnum.paoName) String paoName,
+                                            @Arg(ArgEnum.serialNumber) String serialNumber);
+    
+    @YukonEventLog(category="system.rfn.gateway")
     public void sentCertificateUpdate(@Arg(ArgEnum.username) LiteYukonUser user,
                                       String fileName,
                                       String certificateId,

@@ -270,6 +270,7 @@
     <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.6">Super Admin Username</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.deletedGateway">Gateway {2} deleted with serial number {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.deletedGatewayAutomatically">Gateway {1} deleted with Serial number={2} via Network Manager.</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate">Certificate update {2} sent with id {3} to {7} gateways by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.2">Package Name</entry>

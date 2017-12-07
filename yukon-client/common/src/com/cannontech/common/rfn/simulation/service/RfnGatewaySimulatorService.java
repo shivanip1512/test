@@ -155,4 +155,9 @@ public interface RfnGatewaySimulatorService extends AutoStartableSimulator{
     boolean isAutoFirmwareReplyStopping();
     
     boolean isAutoFirmwareVersionReplyStopping();
+
+    /**
+     * Send an unsolicited gateway delete message (which will delete gateway device in Yukon).
+     */
+    void sendGatewayDeleteRequest(String serial, boolean isGateway2);
 }

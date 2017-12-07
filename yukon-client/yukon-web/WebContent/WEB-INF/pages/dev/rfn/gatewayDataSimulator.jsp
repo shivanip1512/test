@@ -473,6 +473,22 @@
                     <cti:button label="Send" type="submit"/>
                 </form>
             </tags:sectionContainer>
+            <tags:sectionContainer title="Delete Gateway">
+                 Queue an unsolicited gateway delete message, as though it were coming from Network Manager (which will delete gateway device in Yukon).
+                <br><br>
+                <form action="deleteGateway">
+                    <cti:csrfToken/>
+                    <tags:nameValueContainer tableClass="natural-width">
+                        <tags:nameValue name="Serial Number">
+                            <input name="serial" value="7500000019">
+                        </tags:nameValue>
+                        <tags:nameValue name="GWY-800">
+                            <input name="returnGwy800Model" type="checkbox">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                    <cti:button label="Delete" type="submit"/>
+                </form>
+            </tags:sectionContainer>
         </div>
     </div>
     <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.gatewayDataSimulator.events.js"/>

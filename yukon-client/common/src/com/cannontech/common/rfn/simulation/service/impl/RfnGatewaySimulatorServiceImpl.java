@@ -61,6 +61,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private static final String certificateUpgradeQueue = "yukon.qr.obj.common.rfn.GatewayUpgradeRequest";
     private static final String dataAndUpgradeResponseQueue = "yukon.qr.obj.common.rfn.GatewayData";
     private static final String archiveRequestQueue = "yukon.qr.obj.common.rfn.GatewayArchiveRequest";
+    private static final String deleteRequestQueue = "yukon.qr.obj.common.rfn.GatewayDeleteRequest";
     private static final String firmwareUpgradeRequestQueue = "yukon.qr.obj.common.rfn.RfnGatewayFirmwareUpdateRequest";
     private static final String firmwareUpgradeResponseQueue = "yukon.qr.obj.common.rfn.RfnGatewayFirmwareUpdateResponse";
     private static final String firmwareAvailableVersionQueue = "yukon.qr.obj.common.rfn.UpdateServerAvailableVersionRequest";
@@ -238,7 +239,18 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         
         jmsTemplate.convertAndSend(archiveRequestQueue, request);
     }
-    
+
+    @Override
+    public void sendGatewayDeleteRequest(String serial, boolean isGateway2) {
+
+        GatewayDeleteRequest request = new GatewayDeleteRequest();
+        String model = isGateway2 ? RfnDeviceCreationService.GATEWAY_2_MODEL_STRING : RfnDeviceCreationService.GATEWAY_1_MODEL_STRING;
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
+        request.setRfnIdentifier(rfnIdentifier);
+
+        jmsTemplate.convertAndSend(deleteRequestQueue, request);
+    }
+
     private Thread getAutoFirmwareThread(SimulatedFirmwareReplySettings settings) {
         Thread autoFirmwareThread = new Thread() {
             @Override
