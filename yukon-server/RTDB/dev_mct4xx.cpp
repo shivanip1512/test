@@ -2044,7 +2044,7 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
                                                           0,  //  Do not specify a routeid, PIL will grab it from the device
                                                           MacroOffset::none,  //  Do not specify a macro offset, PIL will calculate it
                                                           0,
-                                                          requestId,
+                                                          requestId,  //  smuggle the request ID in OptionsField
                                                           InMessage.Priority);
 
                 newReq->setConnectionHandle(InMessage.Return.Connection);
@@ -2092,7 +2092,7 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
                                                                   getRouteID(),  //  make sure that we start over on any macro routes
                                                                   MacroOffset::none,  //  this will be recalculated by PIL
                                                                   0,
-                                                                  InMessage.Return.OptionsField,
+                                                                  InMessage.Return.OptionsField,  //  make sure to include the OptionsField to convey the request ID
                                                                   InMessage.Priority);
 
                         newReq->setConnectionHandle(InMessage.Return.Connection);

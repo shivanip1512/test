@@ -155,9 +155,8 @@ YukonError_t CtiDeviceSingle::initiateAccumulatorScan( OutMessageList &outList, 
         0,                        // This is a number used to track the message on the outbound request.
         0,                        // Client can track this request with this number
         getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-        MacroOffset::none,        // This is no longer relavant
-        0,                        // Try the zeroeth macro offset.
-        1 );                       // One attempt on this route.
+        MacroOffset::none,        // 
+        1 );                      // One attempt on this route.
 
     CtiCommandParser parse( pReq->CommandString() );
 
@@ -279,9 +278,8 @@ YukonError_t CtiDeviceSingle::initiateIntegrityScan( OutMessageList &outList, IN
         0,                        // This is a number used to track the message on the outbound request.
         0,                        // Client can track this request with this number
         getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-        MacroOffset::none,        // This is no longer relavant
-        0,                        // Try the zeroeth macro offset.
-        1 );                       // One attempt on this route.
+        MacroOffset::none,        // 
+        1 );                      // One attempt on this route.
 
     CtiCommandParser parse( pReq->CommandString() );
 
@@ -385,9 +383,8 @@ YukonError_t CtiDeviceSingle::initiateGeneralScan( OutMessageList &outList, INT 
         0,                        // This is a number used to track the message on the outbound request.
         0,                        // Client can track this request with this number
         getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-        MacroOffset::none,        // This is no longer relavant
-        0,                        // Try the zeroeth macro offset.
-        1 );                       // One attempt on this route.
+        MacroOffset::none,        // 
+        1 );                      // One attempt on this route.
 
     CtiCommandParser parse( pReq->CommandString() );
 
@@ -532,9 +529,8 @@ YukonError_t CtiDeviceSingle::initiateLoadProfileScan( OutMessageList &outList, 
         0,                        // This is a number used to track the message on the outbound request.
         0,                        // Client can track this request with this number
         getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-        MacroOffset::none,        // This is no longer relavant
-        0,                        // Try the zeroeth macro offset.
-        1 );                       // One attempt on this route.
+        MacroOffset::none,        // 
+        1 );                      // One attempt on this route.
 
     CtiCommandParser parse( pReq->CommandString() );
 

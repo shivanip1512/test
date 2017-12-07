@@ -3186,7 +3186,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   &InMessag
                                                                      InMessage.Return.RouteID,
                                                                      MacroOffset::none,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
                                                                      0,
-                                                                     InMessage.Return.OptionsField,
+                                                                     InMessage.Return.OptionsField,  //  make sure to copy any request ID in OptionsField
                                                                      InMessage.Priority));
 
         newReq->setConnectionHandle(InMessage.Return.Connection);
@@ -3629,7 +3629,7 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
                                                                          InMessage.Return.RouteID,
                                                                          MacroOffset::none,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
                                                                          0,
-                                                                         InMessage.Return.OptionsField,
+                                                                         InMessage.Return.OptionsField,  //  make sure to copy any request ID in OptionsField
                                                                          InMessage.Priority));
 
             newReq->setConnectionHandle(InMessage.Return.Connection);

@@ -3135,7 +3135,7 @@ YukonError_t Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &
                          0,
                          MacroOffset::none,
                          0,
-                         requestId,
+                         requestId,  //  smuggle the request ID in OptionsField
                          InMessage.Priority);
 
     if( ! overlap )
