@@ -946,21 +946,24 @@ void DnpDevice::processPoints( Protocols::Interface::pointlist_t &pointdata )
 
     for( auto& pt : hierarchyPoints )
     {
-        auto result = devicePointsByType[pt->getType()].emplace(pt->getPointOffset(), pt);
-
-        if( ! result.second )
+        if( ! pt->isPseudoPoint() )
         {
-            auto& existingPoint = *result.first->second;
+            auto result = devicePointsByType[pt->getType()].emplace(pt->getPointOffset(), pt);
 
-            CTILOG_WARN(dout, "Hierarchy point collision, keeping first encountered point:" + FormattedList::of(
-                "Device ID", getID(),
-                "Device name", getName(),
-                "Point type", pt->getType(),
-                "Point offset", pt->getPointOffset(),
-                "Retained point ID", existingPoint.getPointID(),
-                "Retained device ID", existingPoint.getDeviceID(),
-                "Rejected point ID", pt->getPointID(),
-                "Rejected device ID", pt->getDeviceID()));
+            if( !result.second )
+            {
+                auto& existingPoint = *result.first->second;
+
+                CTILOG_WARN(dout, "Hierarchy point collision, keeping first encountered point:" + FormattedList::of(
+                    "Device ID", getID(),
+                    "Device name", getName(),
+                    "Point type", pt->getType(),
+                    "Point offset", pt->getPointOffset(),
+                    "Retained point ID", existingPoint.getPointID(),
+                    "Retained device ID", existingPoint.getDeviceID(),
+                    "Rejected point ID", pt->getPointID(),
+                    "Rejected device ID", pt->getDeviceID()));
+            }
         }
     }
 
