@@ -92,7 +92,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.location"><![CDATA[Location <em class="subtle">(optional)</em>]]></entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.helpText"><![CDATA[A map will display if the device has coordinates entered, with a map marker in the location of the device.<br/><br/>
     To edit the coordinates, click on the pencil icon next to the Latitude/Longitude.  You will then be able to either enter new coordinates and click on the Save button or drag and drop the device icon marker on the map to the new location.<br/><br/>
-    Click on the Neighbors button (if applicable) to see all of the neighboring devices.  Click on the Primary Route button (if applicable) to see the primary route to the gateway.  Click on the Parent Node button (if applicable) to view the parent node of the device.<br/><br/>
+    Click on the Neighbors button (if applicable) to see all of the neighboring devices.<br/>Click on the Primary Route button (if applicable) to see the primary route to the gateway.<br/>Click on the Parent Node button (if applicable) to view the parent node of the device.<br/>Select the number of miles and click on the Nearby button (if applicable) to view nearby devices.<br/><br/>
     Click on any of the device map markers to view a popup of metadata for the device.<br/><br/>
     Toggle the Map, Satellite and Hybrid buttons for the different map views.]]></entry>
     
