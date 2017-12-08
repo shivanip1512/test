@@ -338,10 +338,10 @@
     <entry key="yukon.web.modules.support.systemHealth.porterQueueStatistics.helpText">
         <![CDATA[
             <h3>Comm Channel</h3>
-            What is a good description of a comm channel in the context of system health???
+            Comm Channels are used for communication between devices and Yukon.
             
             <h3>Metrics</h3>
-            These metrics show how much work is to be done by comm channels.
+            These metrics shows information about the current state of comm channels.
             <ul>
                 <li><b>Queue Size:</b> The number of work entries currently on the comm channel.</li>
             </ul>

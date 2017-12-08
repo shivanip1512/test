@@ -56,10 +56,10 @@ public interface PorterQueueCountsWidgetService {
     long getRefreshMilliseconds();
 
     /**
-     * Gets the lite port paos for all of the ports in Yukon
-     * @return List<LiteYukonPAObject> of port paos
+     * Return a map of Porter Queue Count point Id's to their corresponding port PAO for all ports.
+     * @return a map of the Porter Queue Counts point Id's to port PAO's for ALL ports.
      */
-    List<LiteYukonPAObject> getAllPortPaos();
+    Map<Integer, LiteYukonPAObject> getPointIdToPaoMapForAllPorts();
 
     /**
      * Return a map of Porter Queue Count point Id's to their corresponding port PAO.

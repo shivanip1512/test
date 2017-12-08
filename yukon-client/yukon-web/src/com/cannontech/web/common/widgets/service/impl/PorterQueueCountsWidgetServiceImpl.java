@@ -15,7 +15,6 @@ import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.stream.StreamUtils;
@@ -25,6 +24,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.widgets.service.PorterQueueCountsWidgetService;
@@ -35,6 +35,7 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private ServerDatabaseCache serverDatabaseCache;
     private static final Logger log = YukonLogManager.getLogger(PorterQueueCountsWidgetServiceImpl.class);
 
     @Override
@@ -100,12 +101,8 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     }
     
     @Override
-    public List<LiteYukonPAObject> getAllPortPaos() {
-        List<LiteYukonPAObject> paos = new ArrayList<LiteYukonPAObject>();
-        PaoType.getPortTypes().stream().forEach(portType -> {
-            paos.addAll(paoDao.getLiteYukonPAObjectByType(portType));
-        });
-        return paos;
+    public Map<Integer, LiteYukonPAObject> getPointIdToPaoMapForAllPorts() {
+        return makeAndGetPointIdToPaoMap(serverDatabaseCache.getAllPorts());
     }
     
 }

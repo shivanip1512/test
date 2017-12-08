@@ -16,7 +16,7 @@
     </cti:checkRolesAndProperties>
     
     <tags:sectionContainer2 nameKey="serverBrokerStatistics">
-        <table class="compact-results-table stacked-md has-alerts">
+        <table class="compact-results-table stacked-md has-alerts row-highlighting">
             <thead>
                 <th></th>
                 <th><i:inline key=".queue"/></th>
@@ -52,7 +52,7 @@
             </tbody>
         </table>
         
-        <table class="compact-results-table stacked-md has-alerts">
+        <table class="compact-results-table stacked-md has-alerts row-highlighting">
             <thead>
                 <th></th>
                 <th><i:inline key=".queue"/></th>
@@ -84,31 +84,35 @@
         </table>
     </tags:sectionContainer2>
     
-    <tags:sectionContainer2 nameKey="porterQueueStatistics">
-        <div class="scroll-lg">
-            <table class="compact-results-table stacked-md has-alerts">
-                <thead>
-                    <th></th>
-                    <th><i:inline key=".port"/></th>
-                    <th class="tar"><i:inline key=".queueSize"/></th>
-                </thead>
-                <tfoot></tfoot>
-                <tbody>
-                    <c:forEach var="port" items="${portData}">
-                        <tr>
-                            <td></td>
-                            <td class="wsnw">
-                                <cti:paoDetailUrl yukonPao="${port.paoIdentifier}">
-                                    <c:if test="${!empty port}">${fn:escapeXml(port.paoName)}</c:if>
-                                </cti:paoDetailUrl>
-                            </td>
-                            <td class="tar"><cti:pointValue pointId="${port.pointId}" format="VALUE"/></td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+    <div class="column-10-14 clearfix">
+        <div class="column one"> 
+            <tags:sectionContainer2 nameKey="porterQueueStatistics">
+                <div class="scroll-md">
+                    <table class="compact-results-table stacked-md has-alerts row-highlighting">
+                        <thead>
+                            <th></th>
+                            <th><i:inline key=".port"/></th>
+                            <th class="tar"><i:inline key=".queueSize"/></th>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach var="port" items="${portData}">
+                                <tr>
+                                    <td></td>
+                                    <td class="wsnw">
+                                        <cti:paoDetailUrl yukonPao="${port.paoIdentifier}">
+                                            <c:if test="${!empty port}">${fn:escapeXml(port.paoName)}</c:if>
+                                        </cti:paoDetailUrl>
+                                    </td>
+                                    <td class="tar"><cti:pointValue pointId="${port.pointId}" format="VALUE"/></td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </tags:sectionContainer2>
         </div>
-    </tags:sectionContainer2>
+    </div>
     
     <cti:includeScript link="/resources/js/pages/yukon.support.systemHealth.js"/>
 </cti:standardPage>
