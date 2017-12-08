@@ -1715,7 +1715,7 @@ void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
         3. device
  
     In all instances we need to get a collection of pao IDs and types that we need to reload.  The only things
-        in CapControl that currently uses a device config are regulators and CBC 802x controllers.  We filter out
+        in CapControl that currently uses a device config are regulators, DNP CBCs and Logical CBCs.  We filter out
         all the other device types.
 */
 
@@ -1723,6 +1723,10 @@ void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
         "'LTC', "
         "'GO_REGULATOR', "
         "'PO_REGULATOR', "
+        "'CBC 7020', "
+        "'CBC 7022', "
+        "'CBC 7023', "
+        "'CBC 7024', "
         "'CBC 8020', "
         "'CBC 8024', "
         "'CBC DNP', "
