@@ -6,6 +6,7 @@
 
 using std::string;
 using Cti::CapControl::setVariableIfDifferent;
+using Cti::CapControl::deserializeFlag;
 
 /*---------------------------------------------------------------------------
     Constructor
@@ -20,15 +21,13 @@ _disabledFlag(false)
 
 CtiPAOSchedule::CtiPAOSchedule(Cti::RowReader& rdr)
 {
-    string tempBoolString;
-
     rdr["scheduleid"] >> _scheduleId;
     rdr["schedulename"] >> _scheduleName;
     rdr["nextruntime"] >> _nextRunTime;
     rdr["lastruntime"] >> _lastRunTime;
     rdr["intervalrate"] >> _intervalRate;
-    rdr["disabled"] >> tempBoolString;
-    _disabledFlag = (((tempBoolString=="y") || (tempBoolString=="Y"))?true:false);
+
+    _disabledFlag = deserializeFlag( rdr[ "disabled" ].as<std::string>() );
 
     _dirty = false;
 
