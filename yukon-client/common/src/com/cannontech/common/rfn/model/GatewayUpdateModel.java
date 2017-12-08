@@ -74,7 +74,7 @@ public class GatewayUpdateModel {
     }
 
     public boolean isUpdateAvailable() {
-        return availableVersion != null && !availableVersion.equals(currentVersion);
+        return availableVersion != null;
     }
 
     public static GatewayUpdateModel of(RfnGateway gateway) {
@@ -98,7 +98,7 @@ public class GatewayUpdateModel {
             GatewayFirmwareVersion availableVersion = GatewayFirmwareVersion.parse(this.availableVersion);
             int comparison = currentVersion.compareTo(availableVersion);
             log.debug("Comparing gateway firmware versions: " + currentVersion + " <=> " + availableVersion + " = " + comparison);
-            return comparison < 0;
+            return comparison <= 0;
         } catch (Exception e) {
             //If there's any reason we can't compare the versions, assume it's an invalid upgrade.
             log.debug("Comparison failed", e);
