@@ -259,7 +259,7 @@
     <entry key="yukon.common.events.system.rfn.gateway.createdGateway.5">Admin Username</entry>
     <entry key="yukon.common.events.system.rfn.gateway.createdGateway.6">Super Admin Username</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.createdGatewayAutomatically">Gateway {1} created with Serial number={2} via Network Manager.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.createdGatewayAutomatically">Gateway {1} created with serial number {2} by Network Manager.</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed">Gateway creation initiated by {1} failed. Gateway settings: Name={2}, IP Adderss={3}, Admin={4}, Super Admin={5}</entry>
     <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed.4">Admin Username</entry>
@@ -270,7 +270,7 @@
     <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.6">Super Admin Username</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.deletedGateway">Gateway {2} deleted with serial number {3} by {1}.</entry>
-    <entry key="yukon.common.events.system.rfn.gateway.deletedGatewayAutomatically">Gateway {1} deleted with Serial number={2} via Network Manager.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.deletedGatewayAutomatically">Gateway {1} deleted with serial number {2} by Network Manager.</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate">Certificate update {2} sent with id {3} to {7} gateways by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.2">Package Name</entry>
