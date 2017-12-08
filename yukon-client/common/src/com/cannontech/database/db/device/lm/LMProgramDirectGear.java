@@ -78,7 +78,7 @@ public abstract class LMProgramDirectGear
         "BackRampOption",
         "BackRampTime",
         "KWReduction",
-        "stopCommandRepeat"
+        "StopCommandRepeat"
    };
 
 	public static final String CONSTRAINT_COLUMNS[] = { "GearID" };
