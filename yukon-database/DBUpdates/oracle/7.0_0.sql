@@ -398,6 +398,17 @@ ALTER TABLE DeviceParent
       REFERENCES DEVICE (DEVICEID);
 /* End YUK-17579 */
 
+/* Start YUK-17588 */
+ALTER TABLE LmProgramDirectGear 
+    ADD StopCommandRepeat NUMBER;
+
+UPDATE LmProgramDirectGear 
+    SET StopCommandRepeat = 0;
+
+ALTER TABLE LmProgramDirectGear 
+    MODIFY StopCommandRepeat NUMBER NOT NULL;
+/* End YUK-17588 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

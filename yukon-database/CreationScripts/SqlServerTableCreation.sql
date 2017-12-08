@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/5/2017 9:37:48 AM                         */
+/* Created on:     12/8/2017 9:27:04 AM                         */
 /*==============================================================*/
 
 
@@ -7070,6 +7070,7 @@ create table LMProgramDirectGear (
    BackRampOption       varchar(80)          not null,
    BackRampTime         numeric              not null,
    KWReduction          float                not null,
+   StopCommandRepeat    numeric              not null,
    constraint PK_LMPROGRAMDIRECTGEAR primary key (GearID)
 )
 go

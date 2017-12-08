@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/5/2017 9:38:32 AM                         */
+/* Created on:     12/8/2017 9:24:32 AM                         */
 /*==============================================================*/
 
 
@@ -6681,6 +6681,7 @@ create table LMProgramDirectGear  (
    BackRampOption       VARCHAR2(80)                    not null,
    BackRampTime         NUMBER                          not null,
    KWReduction          FLOAT                           not null,
+   StopCommandRepeat    NUMBER                          not null,
    constraint PK_LMPROGRAMDIRECTGEAR primary key (GearID)
 );
 
