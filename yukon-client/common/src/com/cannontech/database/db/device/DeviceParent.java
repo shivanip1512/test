@@ -5,75 +5,72 @@ import java.sql.SQLException;
 import com.cannontech.database.db.DBPersistent;
 
 public class DeviceParent extends DBPersistent {
-	private Integer deviceId = null;
-	private Integer parentId = null;
+    private Integer deviceId = null;
+    private Integer parentId = null;
 
-	public static final String SETTER_COLUMNS[] = { "ParentID" };
+    public static final String SETTER_COLUMNS[] = { "ParentID" };
 
-	public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
-	public static final String TABLE_NAME = "DeviceParent";
+    public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
+    public static final String TABLE_NAME = "DeviceParent";
 
-public DeviceParent() {
-	super();
-	initialize( null, null );
-}
+    public DeviceParent() {
+        super();
+        initialize(null, null);
+    }
 
-public DeviceParent(Integer deviceID, Integer routeID) {
-	super();
-	initialize( deviceID, routeID );
-}
+    public DeviceParent(Integer deviceID, Integer routeID) {
+        super();
+        initialize(deviceID, routeID);
+    }
 
-public void add() throws SQLException {
+    public void add() throws SQLException {
 
-	Object addValues[] = { getDeviceId(), getParentId() };
+        Object addValues[] = { getDeviceId(), getParentId() };
+        add(DeviceParent.TABLE_NAME, addValues);
+    }
 
-	add( DeviceParent.TABLE_NAME, addValues ); 
-}
+    public void delete() throws SQLException {
+        Object values[] = { getDeviceId() };
+        delete(DeviceParent.TABLE_NAME, CONSTRAINT_COLUMNS, values);
+    }
 
-public void delete() throws SQLException {
+    public Integer getDeviceId() {
+        return deviceId;
+    }
 
-	Object values[] = { getDeviceId() };
-	delete( DeviceParent.TABLE_NAME, CONSTRAINT_COLUMNS, values);
-}
+    public Integer getParentId() {
+        return parentId;
+    }
 
-public Integer getDeviceId() {
-	return deviceId;
-}
+    public void initialize(Integer deviceId, Integer parentId) {
+        this.deviceId = deviceId;
+        this.parentId = parentId;
+    }
 
-public Integer getParentId() {
-	return parentId;
-}
+    public void retrieve() throws SQLException {
 
-public void initialize(Integer deviceId, Integer parentId ) {
-	this.deviceId = deviceId;
-	this.parentId = parentId;
-}
+        Object constraintValues[] = { getDeviceId() };
 
-public void retrieve() throws SQLException {
+        Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
-	Object constraintValues[] = { getDeviceId() };
+        if (results.length == SETTER_COLUMNS.length) {
+            setParentId((Integer) results[0]);
+        }
+    }
 
-	Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
+    public void setDeviceId(Integer newValue) {
+        this.deviceId = newValue;
+    }
 
-	if( results.length == SETTER_COLUMNS.length )
-	{
-		setParentId( (Integer) results[0] );
-	}
-}
+    public void setParentId(Integer newValue) {
+        this.parentId = newValue;
+    }
 
-public void setDeviceId(Integer newValue) {
-	this.deviceId = newValue;
-}
+    public void update() throws SQLException {
 
-public void setParentId(Integer newValue) {
-	this.parentId = newValue;
-}
+        Object setValues[] = { getParentId() };
+        Object constraintValues[] = { getDeviceId() };
 
-public void update() throws SQLException {
-	
-	Object setValues[] = { getParentId() };
-	Object constraintValues[] = { getDeviceId() };
-
-	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-}
+        update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
+    }
 }
