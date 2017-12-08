@@ -45,8 +45,6 @@
 #include "MessageCounter.h"
 #include "database_reader.h"
 
-#include <boost/regex.hpp>
-
 extern void refreshGlobalCParms();
 
 namespace Cti
@@ -1721,6 +1719,22 @@ void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
         all the other device types.
 */
 
+    static const std::string configurableDevTypes =
+        "'LTC', "
+        "'GO_REGULATOR', "
+        "'PO_REGULATOR', "
+        "'CBC 8020', "
+        "'CBC 8024', "
+        "'CBC DNP', "
+        "'CBC Logical'";
+
+    static const std::set<DeviceTypes>  resolvedRegulatorTypes
+    {
+        TYPE_LOAD_TAP_CHANGER,
+        TYPE_GANG_OPERATED_REGULATOR,
+        TYPE_PHASE_OPERATED_REGULATOR
+    };
+
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseReader       rdr( connection );
 
@@ -1738,7 +1752,7 @@ void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
                     "JOIN YukonPAObject Y "
                         "ON M.DeviceID = Y.PAObjectID "
             "WHERE "
-                "Y.Type IN ('LTC', 'PO_REGULATOR', 'GO_REGULATOR', 'CBC 8020', 'CBC 8024') "
+                "Y.Type IN (" + configurableDevTypes + ") "
                     "AND "
                         "M.DeviceConfigurationId = ?"
         );
@@ -1759,7 +1773,7 @@ void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
                     "JOIN YukonPAObject Y "
                         "ON M.DeviceID = Y.PAObjectID "
             "WHERE "
-                "Y.Type IN ('LTC', 'PO_REGULATOR', 'GO_REGULATOR', 'CBC 8020', 'CBC 8024') "
+                "Y.Type IN (" + configurableDevTypes + ") "
                     "AND "
                         "C.DeviceConfigCategoryId = ?"
         );
@@ -1776,7 +1790,7 @@ void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
             "FROM "
                 "YukonPAObject Y "
             "WHERE "
-                "Y.Type IN ('LTC', 'PO_REGULATOR', 'GO_REGULATOR', 'CBC 8020', 'CBC 8024') "
+                "Y.Type IN (" + configurableDevTypes + ") "
                     "AND "
                         "Y.PAObjectID = ?"
         );
@@ -1802,7 +1816,7 @@ void CtiCapController::handleConfigDbChange( CtiDBChangeMsg * dbChange )
         long reloadID = paoID;
         Cti::CapControl::CapControlType reloadType = Cti::CapControl::VoltageRegulatorType;
 
-        if ( boost::regex_search( paoType, boost::regex( "^CBC 802[04]$" ) ) ) // paoType is a 'CBC 8020' or 'CBC 8024'
+        if ( ! resolvedRegulatorTypes.count( resolveDeviceType( paoType ) ) )    // its not a regulator type, so CBC
         {
             reloadID = CtiCCSubstationBusStore::getInstance()->findCapBankIDbyCbcID( paoID ); 
             reloadType = Cti::CapControl::CapBank;
