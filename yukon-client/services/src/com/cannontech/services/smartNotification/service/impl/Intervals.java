@@ -32,7 +32,11 @@ public final class Intervals {
         try {
             // Load intervals from string representation
             intervals.clear();
-            intervals.addAll(Stream.of(intervalStr.split(",")).map(Integer::parseInt).collect(Collectors.toSet()));
+            log.debug("Parsing intervals string: \"" + intervalStr + "\"");
+            intervals.addAll(Stream.of(intervalStr.split(","))
+                                   .map(String::trim)
+                                   .map(Integer::parseInt)
+                                   .collect(Collectors.toSet()));
             
             // If there is an invalid interval, return false
             if (intervals.iterator().next() < 0) {

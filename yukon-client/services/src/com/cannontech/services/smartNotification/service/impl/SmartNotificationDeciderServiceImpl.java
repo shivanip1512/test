@@ -96,7 +96,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             } else if (result.isReschedule()){
                 schedule(decider, result.getNextRun());
                 putMessagesOnAssemblerQueue(result.getMessageParameters(), 
-                        result.getDecider().getWaitTime().getInterval(), false);
+                        result.getDecider().getWaitTime().getPreviousInterval(), false);
             }
         } catch (Exception e) {
             decider.resetWaitTime();
@@ -116,7 +116,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                 try {
                     logDebug("Sending message parameters immediately", result.getDecider());
                     WaitTime waitTime = result.getDecider().getWaitTime();
-                    int interval = waitTime == null ? 0 : waitTime.getInterval();
+                    int interval = waitTime == null ? 0 : waitTime.getPreviousInterval();
                     putMessagesOnAssemblerQueue(result.getMessageParameters(), interval, false);
                 } catch (Exception e) {
                     log.error("Error sending smart notification message parameters", e);

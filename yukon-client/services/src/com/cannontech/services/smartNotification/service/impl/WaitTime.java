@@ -4,7 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
 public final class WaitTime {
-    private static Intervals intervals = new Intervals("", "1, 3, 5, 15, 30");
+    private static Intervals intervals;
     
     /**
      * This should be set before any instances of WaitTime are used.
@@ -19,14 +19,16 @@ public final class WaitTime {
     public static WaitTime getFirst(Instant now) {
         int newInterval = intervals.getFirstInterval();
         DateTime newRunTime = now.toDateTime().plusMinutes(newInterval);
-        return new WaitTime(newInterval, newRunTime);
+        return new WaitTime(newInterval, 0, newRunTime);
     }
     
     private int interval;
+    private int previousInterval;
     private DateTime runTime;
 
-    public WaitTime(int interval, DateTime runTime) {
+    public WaitTime(int interval, int previousInterval, DateTime runTime) {
         this.interval = interval;
+        this.previousInterval = previousInterval;
         this.runTime = runTime;
     }
 
@@ -34,6 +36,10 @@ public final class WaitTime {
         return interval;
     }
 
+    public int getPreviousInterval() {
+        return previousInterval;
+    }
+    
     public DateTime getRunTime() {
         return runTime;
     }
@@ -44,7 +50,7 @@ public final class WaitTime {
     public WaitTime getNext(Instant now) {
         int newInterval = intervals.getNextInterval(interval);
         DateTime newRunTime = now.toDateTime().plusMinutes(newInterval);
-        return new WaitTime(newInterval, newRunTime);
+        return new WaitTime(newInterval, interval, newRunTime);
     }
     
     @Override
