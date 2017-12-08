@@ -17,6 +17,11 @@ import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.klg.jclass.field.DataProperties;
+import com.klg.jclass.field.JCInvalidInfo;
+import com.klg.jclass.field.JCSpinField;
+import com.klg.jclass.field.validate.JCIntegerValidator;
+import com.klg.jclass.util.value.MutableValueModel;
  
 public class SmartCycleGearPanel extends GenericGearPanel {
 	private javax.swing.JComboBox ivjJComboBoxCycleCountSndType = null;
@@ -30,6 +35,8 @@ public class SmartCycleGearPanel extends GenericGearPanel {
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldControlPercent = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldCyclePeriod = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldPercentReduction = null;
+	private JCSpinField stopCommandRepeat;
+	private JLabel stopCommandRepeatLabel;
 	private javax.swing.JLabel ivjJLabelChangeDuration = null;
 	private javax.swing.JLabel ivjJLabelChangePriority = null;
 	private javax.swing.JLabel ivjJLabelChangeTriggerNumber = null;
@@ -64,35 +71,47 @@ public SmartCycleGearPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
-	if (e.getSource() == getJComboBoxWhenChange()) 
-		connEtoC1(e);
-	if (e.getSource() == getJComboBoxPeriodCount()) 
-		connEtoC6(e);
-	if (e.getSource() == getJComboBoxSendRateDigits() || e.getSource() == getJComboBoxSendRateUnits()) 
-		connEtoC7(e);
-	if (e.getSource() == getJComboBoxHowToStop()) 
-		connEtoC10(e);
-	if (e.getSource() == getJComboBoxCycleCountSndType()) 
-		connEtoC11(e);
-	if (e.getSource() == getJComboBoxMaxCycleCount()) 
-		connEtoC12(e);
+	if (e.getSource() == getJComboBoxWhenChange()) {
+        connEtoC1(e);
+    }
+	if (e.getSource() == getJComboBoxPeriodCount()) {
+        connEtoC6(e);
+    }
+	if (e.getSource() == getJComboBoxSendRateDigits() || e.getSource() == getJComboBoxSendRateUnits()) {
+        connEtoC7(e);
+    }
+	if (e.getSource() == getJComboBoxHowToStop()) {
+        connEtoC10(e);
+    }
+	if (e.getSource() == getJComboBoxCycleCountSndType()) {
+        connEtoC11(e);
+    }
+	if (e.getSource() == getJComboBoxMaxCycleCount()) {
+        connEtoC12(e);
+    }
     if (e.getSource() == getJCheckBoxNoRamp())
-        this.fireInputUpdate();
+     {
+        fireInputUpdate();
 	// user code end
+    }
 	
 	// user code begin {2}
 	// user code end
 }
 
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
     // user code begin {1}
     // user code end
-    if (e.getSource() == getJTextFieldKWReduction()) 
+    if (e.getSource() == getJTextFieldKWReduction())
+     {
         fireInputUpdate();
     // user code begin {2}
     // user code end
+    }
 }
 /**
  * connEtoC1:  (JComboBoxWhenChange.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.jComboBoxWhenChange_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
@@ -103,7 +122,7 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jComboBoxWhenChange_ActionPerformed(arg1);
+		jComboBoxWhenChange_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -121,7 +140,7 @@ private void connEtoC10(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -139,7 +158,7 @@ private void connEtoC11(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -157,7 +176,7 @@ private void connEtoC12(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -175,7 +194,7 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -193,7 +212,7 @@ private void connEtoC7(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -304,8 +323,10 @@ private javax.swing.JComboBox getJComboBoxMaxCycleCount() {
 			// user code begin {1}
 			ivjJComboBoxMaxCycleCount.addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 			for( int i = 1; i <= 63; i++ )
-				ivjJComboBoxMaxCycleCount.addItem( new Integer(i) );
+             {
+                ivjJComboBoxMaxCycleCount.addItem( new Integer(i) );
 			// user code end
+            }
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -328,8 +349,9 @@ private javax.swing.JComboBox getJComboBoxPeriodCount() {
 			ivjJComboBoxPeriodCount.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
 			ivjJComboBoxPeriodCount.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
 			// user code begin {1}
-			for( int i = 1; i <= 63; i++ )
-				ivjJComboBoxPeriodCount.addItem( new Integer(i) );
+			for( int i = 1; i <= 63; i++ ) {
+                ivjJComboBoxPeriodCount.addItem( new Integer(i) );
+            }
 
 			//default value
 			ivjJComboBoxPeriodCount.setSelectedItem( new Integer(8) );
@@ -1016,6 +1038,38 @@ private javax.swing.JLabel getJLabelWhenChange() {
 	}
 	return ivjJLabelWhenChange;
 }
+
+private JLabel getStopCommandRepeatLabel() {
+    if (stopCommandRepeatLabel == null) {
+        stopCommandRepeatLabel = new javax.swing.JLabel();
+        stopCommandRepeatLabel.setName("JLabelStopCommandRepeat");
+        stopCommandRepeatLabel.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+        stopCommandRepeatLabel.setText("Stop Command Repeat:");
+        stopCommandRepeatLabel.setFont(new java.awt.Font("dialog", 0, 12));
+    }
+    return stopCommandRepeatLabel;
+}
+
+private JCSpinField getStopCommandRepeat() {
+    if (stopCommandRepeat == null) {
+        stopCommandRepeat = new JCSpinField();
+        stopCommandRepeat.setName("JCSpinFieldStopCommandRepeat");
+        stopCommandRepeat.setToolTipText("Number of additional times to send the stop command (at minute intervals) after the program ends.");
+        stopCommandRepeat.setPreferredSize(new java.awt.Dimension(88, 20));
+        stopCommandRepeat.setMaximumSize(new java.awt.Dimension(88, 20));
+        stopCommandRepeat.setMinimumSize(new java.awt.Dimension(88, 20));
+        stopCommandRepeat.setDataProperties(
+            new DataProperties(
+                new JCIntegerValidator(null, 0, 5, null, true, null, 1, "#", false, false, false, null, 5),
+                new MutableValueModel(Integer.class, 0),
+                new JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))
+            )
+        );
+        stopCommandRepeat.setValue(0);
+    }
+    return stopCommandRepeat;
+}
+
 /**
  * Return the JPanelChangeMethod property value.
  * @return javax.swing.JPanel
@@ -1160,6 +1214,7 @@ private javax.swing.JTextField getJTextFieldChangeTriggerOffset() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	LMProgramDirectGear gear = null;
@@ -1180,11 +1235,14 @@ public Object getValue(Object o)
 	gear.setChangePriority( new Integer( ((Number)getJCSpinFieldChangePriority().getValue()).intValue() ) );
 	gear.setChangeTriggerNumber( new Integer( ((Number)getJCSpinFieldChangeTriggerNumber().getValue()).intValue() ) );
 	
-	if( getJTextFieldChangeTriggerOffset().getText() == null || getJTextFieldChangeTriggerOffset().getText().length() <= 0 )
-		gear.setChangeTriggerOffset( new Double(0.0) );
-	else
-		gear.setChangeTriggerOffset( Double.valueOf(getJTextFieldChangeTriggerOffset().getText()) );
+	if( getJTextFieldChangeTriggerOffset().getText() == null || getJTextFieldChangeTriggerOffset().getText().length() <= 0 ) {
+        gear.setChangeTriggerOffset( new Double(0.0) );
+    } else {
+        gear.setChangeTriggerOffset( Double.valueOf(getJTextFieldChangeTriggerOffset().getText()) );
+    }
 
+	gear.setStopCommandRepeat(((Number)getStopCommandRepeat().getValue()).intValue());
+	
 	com.cannontech.database.data.device.lm.SmartCycleGear s = (com.cannontech.database.data.device.lm.SmartCycleGear)gear;
 
 	s.setControlPercent( new Integer( 
@@ -1202,20 +1260,22 @@ public Object getValue(Object o)
 			|| getJComboBoxMaxCycleCount().getSelectedItem() instanceof String )
 	{
 		s.setMethodOptionMax( new Integer(0) );
-	}
-	else
-		s.setMethodOptionMax( (Integer)getJComboBoxMaxCycleCount().getSelectedItem() );
+	} else {
+        s.setMethodOptionMax( (Integer)getJComboBoxMaxCycleCount().getSelectedItem() );
+    }
 
 	s.setMethodOptionType( StringUtils.removeChars( ' ', getJComboBoxCycleCountSndType().getSelectedItem().toString() ) );
 	
-	if(getJCheckBoxNoRamp().isSelected())
-		s.setFrontRampOption("NoRamp");
+	if(getJCheckBoxNoRamp().isSelected()) {
+        s.setFrontRampOption("NoRamp");
+    }
 	
     if(gear instanceof TargetCycleGear) {
-        if(getJTextFieldKWReduction().getText().length() > 0)
+        if(getJTextFieldKWReduction().getText().length() > 0) {
             s.setKWReduction(new Double(getJTextFieldKWReduction().getText()));
-        else
+        } else {
             s.setKWReduction(new Double(0.0));
+        }
     }
     
 	return s;
@@ -1254,6 +1314,7 @@ private void initConnections() throws java.lang.Exception {
 	getJTextFieldChangeTriggerOffset().addCaretListener(this);
     getJCheckBoxNoRamp().addActionListener(this);
     getJTextFieldKWReduction().addCaretListener(this);
+    getStopCommandRepeat().addValueListener(this);
 
 	// user code end
 }
@@ -1270,7 +1331,6 @@ private void initialize() {
 		java.awt.GridBagConstraints constraintJLabelControlPercent = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJCSpinFieldControlPercent = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJCSpinFieldCyclePeriod = new java.awt.GridBagConstraints();
-		java.awt.GridBagConstraints consGridBagConstraints142 = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJLabelCycleCntSndType = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJLabelCyclePeriod = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJLabelMaxCycleCnt = new java.awt.GridBagConstraints();
@@ -1284,20 +1344,13 @@ private void initialize() {
 		java.awt.GridBagConstraints constraintJLabelSendRate = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJCSpinFieldPercentReduction = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJComboBoxHowToStop = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJLabelStopCommandRepeat = new java.awt.GridBagConstraints();
+		java.awt.GridBagConstraints constraintJComboBoxStopCommandRepeat = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJComboBoxSendRateDigits = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJComboBoxSendRateUnits = new java.awt.GridBagConstraints();
 		java.awt.GridBagConstraints constraintJCheckBoxNoRamp = new java.awt.GridBagConstraints();
         java.awt.GridBagConstraints constraintJLabelKWReduction = new java.awt.GridBagConstraints();
         java.awt.GridBagConstraints constraintJTextFieldKWReduction = new java.awt.GridBagConstraints();
-        
-//      constraint for "(min)" label, no one knows why he is here? so we won't paint him for now.
-        
-//        consGridBagConstraints142.ipady = -14;
-//        consGridBagConstraints142.ipadx = -112;
-//        consGridBagConstraints142.gridheight = -1;
-//        consGridBagConstraints142.gridwidth = -1;
-//        consGridBagConstraints142.gridy = 1;
-//        consGridBagConstraints142.gridx = 1;
         
         constraintJCheckBoxNoRamp.insets = new java.awt.Insets(0,0,5,0);
         constraintJCheckBoxNoRamp.ipady = -3;
@@ -1386,37 +1439,46 @@ private void initialize() {
         constraintJComboBoxHowToStop.gridy = 8;
         constraintJComboBoxHowToStop.gridx = 2;
 
+        constraintJLabelStopCommandRepeat.insets = new java.awt.Insets(0,0,5,5);
+        constraintJLabelStopCommandRepeat.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJLabelStopCommandRepeat.gridy = 9;
+        constraintJLabelStopCommandRepeat.gridx = 1;
+        
+        constraintJComboBoxStopCommandRepeat.insets = new java.awt.Insets(0,0,5,5);
+        constraintJComboBoxStopCommandRepeat.anchor = java.awt.GridBagConstraints.WEST;
+        constraintJComboBoxStopCommandRepeat.gridy = 9;
+        constraintJComboBoxStopCommandRepeat.gridx = 2;
+        
         constraintJLabelPercentReduction.insets = new java.awt.Insets(0,0,5,5);
         constraintJLabelPercentReduction.anchor = java.awt.GridBagConstraints.WEST;
-        constraintJLabelPercentReduction.gridy = 9;
+        constraintJLabelPercentReduction.gridy = 10;
         constraintJLabelPercentReduction.gridx = 1;
         
 		constraintJCSpinFieldPercentReduction.insets = new java.awt.Insets(0,0,5,5);
         constraintJCSpinFieldPercentReduction.anchor = java.awt.GridBagConstraints.WEST;
-		constraintJCSpinFieldPercentReduction.gridy = 9;
+		constraintJCSpinFieldPercentReduction.gridy = 10;
 		constraintJCSpinFieldPercentReduction.gridx = 2;
          
         constraintJLabelKWReduction.insets = new java.awt.Insets(0,0,5,5);
         constraintJLabelKWReduction.anchor = java.awt.GridBagConstraints.WEST;
-        constraintJLabelKWReduction.gridy = 10;
+        constraintJLabelKWReduction.gridy = 11;
         constraintJLabelKWReduction.gridx = 1;
         
         constraintJTextFieldKWReduction.insets = new java.awt.Insets(0,0,5,5);
         constraintJTextFieldKWReduction.anchor = java.awt.GridBagConstraints.WEST;
-        constraintJTextFieldKWReduction.gridy = 10;
+        constraintJTextFieldKWReduction.gridy = 11;
         constraintJTextFieldKWReduction.gridx = 2;
         
 		constraintJPanelChangeMethod.insets = new java.awt.Insets(0,0,5,5);
         constraintJPanelChangeMethod.anchor = java.awt.GridBagConstraints.WEST;
         constraintJPanelChangeMethod.gridwidth = 3;
-		constraintJPanelChangeMethod.gridy = 11;
+		constraintJPanelChangeMethod.gridy = 12;
 		constraintJPanelChangeMethod.gridx = 1;
         
 		setLayout(new java.awt.GridBagLayout());
 		this.add(getJLabelControlPercent(), constraintJLabelControlPercent);
 		this.add(getJCSpinFieldControlPercent(), constraintJCSpinFieldControlPercent);
 		this.add(getJCSpinFieldCyclePeriod(), constraintJCSpinFieldCyclePeriod);
-		//this.add(getJLabelMin(), consGridBagConstraints142);
 		this.add(getJLabelCyclePeriod(), constraintJLabelCyclePeriod);
 		this.add(getJLabelCycleCntSndType(), constraintJLabelCycleCntSndType);
 		this.add(getJComboBoxCycleCountSndType(), constraintJComboBoxCycleCountSndType);
@@ -1428,6 +1490,8 @@ private void initialize() {
 		this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
 		this.add(getJLabelPercentReduction(), constraintJLabelPercentReduction);
 		this.add(getJLabelHowToStop(), constraintJLabelHowToStop);
+		this.add(getStopCommandRepeatLabel(), constraintJLabelStopCommandRepeat);
+		this.add(getStopCommandRepeat(), constraintJComboBoxStopCommandRepeat);
 		this.add(getJComboBoxHowToStop(), constraintJComboBoxHowToStop);
 		this.add(getJCSpinFieldPercentReduction(), constraintJCSpinFieldPercentReduction);
 		this.add(getJComboBoxSendRateDigits(), constraintJComboBoxSendRateDigits);
@@ -1458,6 +1522,7 @@ private void initialize() {
 /**
  * Comment
  */
+@Override
 public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	getJLabelChangeDuration().setVisible(false);
@@ -1504,9 +1569,9 @@ public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actio
 
 		getJLabelChangeTriggerOffset().setVisible(true);
 		getJTextFieldChangeTriggerOffset().setVisible(true);
-	}
-	else
-		throw new Error("Unknown LMProgramDirectGear control condition found, the value = " + getJComboBoxWhenChange().getSelectedItem().toString() );
+	} else {
+        throw new Error("Unknown LMProgramDirectGear control condition found, the value = " + getJComboBoxWhenChange().getSelectedItem().toString() );
+    }
 
 
 	fireInputUpdate();
@@ -1524,7 +1589,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aSmartCycleGearPanel);
 		frame.setSize(aSmartCycleGearPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -1544,8 +1610,9 @@ public static void main(java.lang.String[] args) {
  */
 private void setChangeCondition(String change) 
 {
-	if( change == null )
-		return;
+	if( change == null ) {
+        return;
+    }
 
 	if( change.equalsIgnoreCase(LMProgramDirectGear.CHANGE_NONE) )
 	{
@@ -1568,6 +1635,7 @@ private void setChangeCondition(String change)
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	LMProgramDirectGear gear = null;
@@ -1575,9 +1643,9 @@ public void setValue(Object o)
 	if( o == null )
 	{
 		return;
-	}
-	else
-		gear = (LMProgramDirectGear)o;
+	} else {
+        gear = (LMProgramDirectGear)o;
+    }
 
 	getJComboBoxHowToStop().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getMethodStopType() ) );
 
@@ -1590,6 +1658,8 @@ public void setValue(Object o)
 	getJCSpinFieldChangeTriggerNumber().setValue( gear.getChangeTriggerNumber() );	
 	getJTextFieldChangeTriggerOffset().setText( gear.getChangeTriggerOffset().toString() );
 
+	getStopCommandRepeat().setValue(gear.getStopCommandRepeat());
+	
 	com.cannontech.database.data.device.lm.SmartCycleGear s = (com.cannontech.database.data.device.lm.SmartCycleGear)gear;
 
 	getJCSpinFieldControlPercent().setValue( s.getControlPercent() );
@@ -1600,10 +1670,11 @@ public void setValue(Object o)
 
 	SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), s.getResendRate().intValue());
 
-	if( s.getMethodOptionMax().intValue() > 0 )
-		getJComboBoxMaxCycleCount().setSelectedItem( s.getMethodOptionMax() );
-	else
-		getJComboBoxMaxCycleCount().setSelectedItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
+	if( s.getMethodOptionMax().intValue() > 0 ) {
+        getJComboBoxMaxCycleCount().setSelectedItem( s.getMethodOptionMax() );
+    } else {
+        getJComboBoxMaxCycleCount().setSelectedItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
+    }
 	
 		getJComboBoxCycleCountSndType().setSelectedItem( StringUtils.addCharBetweenWords( ' ', s.getMethodOptionType() ) );
 	
@@ -1614,17 +1685,19 @@ public void setValue(Object o)
 	}
     
     if(gear instanceof TargetCycleGear) {
-        if(s.getKWReduction().doubleValue() == 0.0)
+        if(s.getKWReduction().doubleValue() == 0.0) {
             getJTextFieldKWReduction().setText("");
-        else
+        } else {
             getJTextFieldKWReduction().setText(s.getKWReduction().toString());
+        }
     }
 }
 
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	//fire this event for all JCSpinFields!!
-	this.fireInputUpdate();
+	fireInputUpdate();
 }
 	/**
 	 * This method initializes jCheckBoxNoRamp
@@ -1641,8 +1714,15 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 		return jCheckBoxNoRamp;
 	}
     
+    @Override
     public void setTargetCycle(boolean truth) {
         getJLabelKWReduction().setVisible(truth);
         getJTextFieldKWReduction().setVisible(truth);
+    }
+    
+    @Override 
+    public void setTrueOrSmartCycle(boolean isTrueOrSmartCycle) {
+        getStopCommandRepeatLabel().setVisible(isTrueOrSmartCycle);
+        getStopCommandRepeat().setVisible(isTrueOrSmartCycle);
     }
 }

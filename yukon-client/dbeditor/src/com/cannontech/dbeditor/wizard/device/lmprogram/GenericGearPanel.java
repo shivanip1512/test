@@ -32,6 +32,7 @@ public class GenericGearPanel extends com.cannontech.common.gui.util.DataInputPa
     /**
      * Invoked when an action occurs.
      */
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {}
 
 
@@ -40,6 +41,7 @@ public class GenericGearPanel extends com.cannontech.common.gui.util.DataInputPa
      *
      * @param e the caret event
      */
+    @Override
     public void caretUpdate(javax.swing.event.CaretEvent e) {}
 
     /**
@@ -129,14 +131,16 @@ public class GenericGearPanel extends com.cannontech.common.gui.util.DataInputPa
     /**
      * valueChanged method comment.
      */
+    @Override
     public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
     {
         //fire this event for all JCSpinFields!!
-        this.fireInputUpdate();
+        fireInputUpdate();
     }
     /**
      * valueChanging method comment.
      */
+    @Override
     public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) {}
     /**
      * Method getJComboBoxWhenChange.
@@ -144,8 +148,12 @@ public class GenericGearPanel extends com.cannontech.common.gui.util.DataInputPa
 
     public void setTargetCycle(boolean truth) {}
 
+    public void setTrueOrSmartCycle(boolean isTrueOrSmartCycle) {}
+    
     protected void setChangeCondition(final JComboBox box, final String change) {
-        if (change == null ) return;
+        if (change == null ) {
+            return;
+        }
 
         if (change.equalsIgnoreCase(IlmDefines.CHANGE_NONE)) {
             box.setSelectedItem("Manually Only");

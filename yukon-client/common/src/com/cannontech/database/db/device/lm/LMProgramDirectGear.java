@@ -47,6 +47,7 @@ public abstract class LMProgramDirectGear
     private String backRampOption = CtiUtilities.STRING_NONE;
     private Integer backRampTime = new Integer(0);
     private Double kWReduction = new Double(0.0);
+    private Integer stopCommandRepeat = new Integer(0);
     
 	public static final String SETTER_COLUMNS[] =
    {
@@ -76,7 +77,8 @@ public abstract class LMProgramDirectGear
         "FrontRampTime",
         "BackRampOption",
         "BackRampTime",
-        "KWReduction"
+        "KWReduction",
+        "stopCommandRepeat"
    };
 
 	public static final String CONSTRAINT_COLUMNS[] = { "GearID" };
@@ -93,10 +95,12 @@ public abstract class LMProgramDirectGear
 	/**
 	 * add method comment.
 	 */
-	public void add() throws SQLException
+	@Override
+    public void add() throws SQLException
 	{
-		if (getGearID() == null)
-			setGearID( new Integer(getNextGearID(getDbConnection())) );
+		if (getGearID() == null) {
+            setGearID( new Integer(getNextGearID(getDbConnection())) );
+        }
 
 		Object addValues[] =
 		{ 
@@ -108,7 +112,7 @@ public abstract class LMProgramDirectGear
 			getMethodOptionType(), getMethodOptionMax(), getGearID(), getRampInInterval(),
 			getRampInPercent(), getRampOutInterval(), getRampOutPercent(),
             getFrontRampOption(), getFrontRampTime(), getBackRampOption(),
-            getBackRampTime(), getKWReduction()
+            getBackRampTime(), getKWReduction(), getStopCommandRepeat()
 		};
 
 		add(TABLE_NAME, addValues);
@@ -117,7 +121,8 @@ public abstract class LMProgramDirectGear
 	/**
 	 * delete method comment.
 	 */
-	public void delete() throws SQLException
+	@Override
+    public void delete() throws SQLException
 	{
 		delete(TABLE_NAME, "GearID", getGearID());
 	}
@@ -136,8 +141,9 @@ public abstract class LMProgramDirectGear
 
 		String dGear = "DELETE FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID;
 
-		if (conn == null)
-			throw new IllegalArgumentException("Received a (null) database connection");
+		if (conn == null) {
+            throw new IllegalArgumentException("Received a (null) database connection");
+        }
 
 		Statement stmt = null;
 
@@ -160,7 +166,7 @@ public abstract class LMProgramDirectGear
 	 */
 	public static final Vector<LMProgramDirectGear> getAllDirectGears( Integer deviceID, java.sql.Connection conn)
 	{
-		Vector<LMProgramDirectGear> gearList = new Vector<LMProgramDirectGear>();
+		Vector<LMProgramDirectGear> gearList = new Vector<>();
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 
@@ -174,12 +180,14 @@ public abstract class LMProgramDirectGear
 					+ ", " + SETTER_COLUMNS[16] + ", " + SETTER_COLUMNS[17] + ", " + SETTER_COLUMNS[18]
 					+ ", " + SETTER_COLUMNS[19] + ", " + SETTER_COLUMNS[20] + ", " + SETTER_COLUMNS[21]
                     + ", " + SETTER_COLUMNS[22] + ", " + SETTER_COLUMNS[24] + ", " + SETTER_COLUMNS[26]
+                    + ", " + SETTER_COLUMNS[27]
                     + " from " + TABLE_NAME +
 				" where deviceid=? order by GearNumber";
 		try
 		{
-			if (conn == null)
-				throw new IllegalArgumentException("Received a (null) database connection");
+			if (conn == null) {
+                throw new IllegalArgumentException("Received a (null) database connection");
+            }
 
 			pstmt = conn.prepareStatement(sql.toString());
 			pstmt.setInt(1, deviceID.intValue());
@@ -229,6 +237,7 @@ public abstract class LMProgramDirectGear
 					gear.setRampOutPercent(new Integer(rset.getInt(22)));
                     gear.setFrontRampOption(rset.getString(23));
                     gear.setBackRampOption(rset.getString(24));
+                    gear.setStopCommandRepeat(rset.getInt(26));
                     /*
                      * Other ramp fields not used
                      */
@@ -254,10 +263,11 @@ public static final Vector<Integer> getTheGearIDs(
 {
 		String sql = "SELECT GearID FROM " + TABLE_NAME + " WHERE deviceID=" + deviceID;
 
-	Vector<Integer> someIDs = new Vector<Integer>();
+	Vector<Integer> someIDs = new Vector<>();
 		
-	if (conn == null)
-		throw new IllegalArgumentException("Received a (null) database connection");
+	if (conn == null) {
+        throw new IllegalArgumentException("Received a (null) database connection");
+    }
 
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
@@ -293,8 +303,9 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
       
 	try
 	  {
-		 if (conn == null)
-			throw new IllegalArgumentException("Received a (null) database connection");
+		 if (conn == null) {
+            throw new IllegalArgumentException("Received a (null) database connection");
+        }
 
 		 pstmt = conn.prepareStatement(sql.toString());
 
@@ -380,7 +391,8 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
 	 */
-	public Integer getDeviceID()
+	@Override
+    public Integer getDeviceID()
 	{
 		return deviceID;
 	}
@@ -514,10 +526,16 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
     {
         return backRampTime;
     }
+    
+    public Integer getStopCommandRepeat() {
+        return stopCommandRepeat;
+    }
+    
 	/**
 	 * retrieve method comment.
 	 */
-	public void retrieve() throws SQLException
+	@Override
+    public void retrieve() throws SQLException
 	{
 		Object constraintValues[] = { getGearID() };
 		Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
@@ -552,6 +570,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			setRampOutPercent((Integer) results[21]);
             setFrontRampOption((String) results[22]);
             setBackRampOption((String) results[24]);
+            setStopCommandRepeat((Integer) results[27]);
             /*
              * Front ramp time/back ramp time unused
              */
@@ -629,9 +648,10 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * This method was created in VisualAge.
 	 * @param newValue java.lang.Integer
 	 */
-	public void setDeviceID(Integer newValue)
+	@Override
+    public void setDeviceID(Integer newValue)
 	{
-		this.deviceID = newValue;
+		deviceID = newValue;
 	}
 	/**
 	 * Insert the method's description here.
@@ -754,19 +774,26 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
     {
         backRampOption = newOption;
     }
+    
+    public void setStopCommandRepeat(Integer stopCommandRepeat) {
+        this.stopCommandRepeat = stopCommandRepeat;
+    }
+    
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (2/11/2002 3:34:44 PM)
 	 * @return java.lang.String
 	 */
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return getGearName() + " (" + getGearNumber() + ")";
 	}
 	/**
 	 * update method comment.
 	 */
-	public void update() throws SQLException
+	@Override
+    public void update() throws SQLException
 	{
 		Object setValues[] =
 		{ 
@@ -778,7 +805,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			getMethodOptionType(), getMethodOptionMax(), getRampInInterval(),
 			getRampInPercent(), getRampOutInterval(), getRampOutPercent(),
             getFrontRampOption(), getFrontRampTime(), getBackRampOption(),
-            getBackRampTime(), getKWReduction()
+            getBackRampTime(), getKWReduction(), getStopCommandRepeat()
 		};
 
 		Object constraintValues[] = { getGearID() };
@@ -824,8 +851,9 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
       
       try
       {
-         if (conn == null)
+         if (conn == null) {
             throw new IllegalArgumentException("Received a (null) database connection");
+        }
 
          pstmt = conn.prepareStatement(sql.toString());
 

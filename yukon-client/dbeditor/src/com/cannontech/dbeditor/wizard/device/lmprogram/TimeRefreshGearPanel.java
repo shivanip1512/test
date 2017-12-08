@@ -6,11 +6,19 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * @author: 
  */
 
+import java.awt.GridBagConstraints;
+
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
+import com.klg.jclass.field.DataProperties;
+import com.klg.jclass.field.JCInvalidInfo;
+import com.klg.jclass.field.JCSpinField;
+import com.klg.jclass.field.validate.JCIntegerValidator;
+import com.klg.jclass.util.value.MutableValueModel;
  
 public class TimeRefreshGearPanel extends GenericGearPanel {
 	private javax.swing.JComboBox ivjJComboBoxGroupSelection = null;
@@ -21,6 +29,8 @@ public class TimeRefreshGearPanel extends GenericGearPanel {
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldChangePriority = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldChangeTriggerNumber = null;
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldPercentReduction = null;
+	private JCSpinField stopCommandRepeat;
+	private JLabel stopCommandRepeatLabel;
 	private javax.swing.JLabel ivjJLabelChangeDuration = null;
 	private javax.swing.JLabel ivjJLabelChangePriority = null;
 	private javax.swing.JLabel ivjJLabelChangeTriggerNumber = null;
@@ -61,13 +71,13 @@ public class TimeRefreshGearPanel extends GenericGearPanel {
 class IvjEventHandler implements java.awt.event.ActionListener {
 		@Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
-			if (e.getSource() == TimeRefreshGearPanel.this.getJCheckBoxRampIn()) {
+			if (e.getSource() == getJCheckBoxRampIn()) {
                 connEtoC1(e);
             }
-			if (e.getSource() == TimeRefreshGearPanel.this.getJComboBoxWhenChange()) {
+			if (e.getSource() == getJComboBoxWhenChange()) {
                 connEtoC2(e);
             }
-			if (e.getSource() == TimeRefreshGearPanel.this.getJComboBoxCycleCountSndType()) {
+			if (e.getSource() == getJComboBoxCycleCountSndType()) {
                 connEtoC3(e);
             }
 		};
@@ -123,7 +133,7 @@ private void connEtoC1(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jCheckBoxRampIn_ActionPerformed(arg1);
+		jCheckBoxRampIn_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -143,7 +153,7 @@ private void connEtoC10(java.awt.event.ActionEvent arg1) {
 		rampItOut(getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Time In") == 0
 			|| getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Restore") == 0);
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -156,7 +166,7 @@ private void connEtoC11(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -174,7 +184,7 @@ private void connEtoC2(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jComboBoxWhenChange_ActionPerformed(arg1);
+		jComboBoxWhenChange_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -192,7 +202,7 @@ private void connEtoC3(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.jComboBoxCycleCountSndType_ActionPerformed(arg1);
+		jComboBoxCycleCountSndType_ActionPerformed(arg1);
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -210,7 +220,7 @@ private void connEtoC4(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -228,7 +238,7 @@ private void connEtoC5(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -246,7 +256,7 @@ private void connEtoC7(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -264,7 +274,7 @@ private void connEtoC8(java.awt.event.ActionEvent arg1) {
 	try {
 		// user code begin {1}
 		// user code end
-		this.fireInputUpdate();
+		fireInputUpdate();
 		// user code begin {2}
 		// user code end
 	} catch (java.lang.Throwable ivjExc) {
@@ -725,6 +735,27 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldPercentReduction() {
 	}
 	return ivjJCSpinFieldPercentReduction;
 }
+
+private JCSpinField getStopCommandRepeat() {
+    if (stopCommandRepeat == null) {
+        stopCommandRepeat = new JCSpinField();
+        stopCommandRepeat.setName("JCSpinFieldStopCommandRepeat");
+        stopCommandRepeat.setToolTipText("Number of additional times to send the stop command (at minute intervals) after the program ends.");
+        stopCommandRepeat.setPreferredSize(new java.awt.Dimension(88, 20));
+        stopCommandRepeat.setMaximumSize(new java.awt.Dimension(88, 20));
+        stopCommandRepeat.setMinimumSize(new java.awt.Dimension(88, 20));
+        stopCommandRepeat.setDataProperties(
+            new DataProperties(
+                new JCIntegerValidator(null, 0, 5, null, true, null, 1, "#", false, false, false, null, 5),
+                new MutableValueModel(Integer.class, 0),
+                new JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))
+            )
+        );
+        stopCommandRepeat.setValue(0);
+    }
+    return stopCommandRepeat;
+}
+
 /**
  * Return the JCSpinFieldRampInPercent property value.
  * @return com.klg.jclass.field.JCSpinField
@@ -791,6 +822,18 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldRampOutPercent() {
 	}
 	return ivjJCSpinFieldRampOutPercent;
 }
+
+private JLabel getStopCommandRepeatLabel() {
+    if (stopCommandRepeatLabel == null) {
+        stopCommandRepeatLabel = new javax.swing.JLabel();
+        stopCommandRepeatLabel.setName("JLabelStopCommandRepeat");
+        stopCommandRepeatLabel.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+        stopCommandRepeatLabel.setText("Stop Command Repeat:");
+        stopCommandRepeatLabel.setFont(new java.awt.Font("dialog", 0, 12));
+    }
+    return stopCommandRepeatLabel;
+}
+
 /**
  * Return the JLabelChangeDuration property value.
  * @return javax.swing.JLabel
@@ -1571,6 +1614,8 @@ public Object getValue(Object o)
 	
 	gear.setPercentReduction( new Integer( ((Number)getJCSpinFieldPercentReduction().getValue()).intValue() ) );
 	
+	gear.setStopCommandRepeat(((Number)getStopCommandRepeat().getValue()).intValue());
+	
 	gear.setChangeCondition( getChangeCondition(getJComboBoxWhenChange().getSelectedItem().toString()) );
 
 	gear.setChangeDuration( new Integer( ((Number)getJCSpinFieldChangeDuration().getValue()).intValue() * 60 ) );
@@ -1620,6 +1665,7 @@ private void initConnections() throws java.lang.Exception {
 	getJCSpinFieldChangePriority().addValueListener(this);
 	getJCSpinFieldChangeTriggerNumber().addValueListener(this);
 	getJCSpinFieldPercentReduction().addValueListener(this);
+	getStopCommandRepeat().addValueListener(this);
 	getJCSpinFieldRampOutPercent().addValueListener(this);
 	getJCSpinFieldRampInPercent().addValueListener(this);
 	getJComboBoxWhenChange().addActionListener(this);
@@ -1705,9 +1751,8 @@ private void initialize() {
 		add(getJLabelHowToStop(), constraintsJLabelHowToStop);
 
 		java.awt.GridBagConstraints constraintsJLabelPercentReduction = new java.awt.GridBagConstraints();
-		constraintsJLabelPercentReduction.gridx = 1; constraintsJLabelPercentReduction.gridy = 13;
-		constraintsJLabelPercentReduction.ipadx = 4;
-		constraintsJLabelPercentReduction.insets = new java.awt.Insets(9, 10, 1, 1);
+		constraintsJLabelPercentReduction.gridx = 1; constraintsJLabelPercentReduction.gridy = 14;
+		constraintsJLabelPercentReduction.insets = new java.awt.Insets(5, 20, 1, 1);
 		add(getJLabelPercentReduction(), constraintsJLabelPercentReduction);
 
 		java.awt.GridBagConstraints constraintsJComboBoxHowToStop = new java.awt.GridBagConstraints();
@@ -1720,7 +1765,7 @@ private void initialize() {
 		add(getJComboBoxHowToStop(), constraintsJComboBoxHowToStop);
 
 		java.awt.GridBagConstraints constraintsJCSpinFieldPercentReduction = new java.awt.GridBagConstraints();
-		constraintsJCSpinFieldPercentReduction.gridx = 2; constraintsJCSpinFieldPercentReduction.gridy = 13;
+		constraintsJCSpinFieldPercentReduction.gridx = 2; constraintsJCSpinFieldPercentReduction.gridy = 14;
 		constraintsJCSpinFieldPercentReduction.fill = java.awt.GridBagConstraints.HORIZONTAL;
 		constraintsJCSpinFieldPercentReduction.weightx = 1.0;
 		constraintsJCSpinFieldPercentReduction.gridwidth = 2;
@@ -1728,8 +1773,24 @@ private void initialize() {
 		constraintsJCSpinFieldPercentReduction.insets = new java.awt.Insets(4, 1, 1, 58);
 		add(getJCSpinFieldPercentReduction(), constraintsJCSpinFieldPercentReduction);
 
+		GridBagConstraints constraintsStopCommandRepeatLabel = new GridBagConstraints();
+		constraintsStopCommandRepeatLabel.gridx = 1; 
+		constraintsStopCommandRepeatLabel.gridy = 13;
+		constraintsStopCommandRepeatLabel.insets = new java.awt.Insets(4, 0, 0, 5);
+        add(getStopCommandRepeatLabel(), constraintsStopCommandRepeatLabel);
+		
+		GridBagConstraints constraintsStopCommandRepeat = new GridBagConstraints();
+		constraintsStopCommandRepeat.gridx = 2; 
+		constraintsStopCommandRepeat.gridy = 13;
+        constraintsStopCommandRepeat.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        constraintsStopCommandRepeat.weightx = 1.0;
+        constraintsStopCommandRepeat.gridwidth = 2;
+        constraintsStopCommandRepeat.ipadx = 2;
+        constraintsStopCommandRepeat.insets = new java.awt.Insets(4, 1, 1, 58);
+        add(getStopCommandRepeat(), constraintsStopCommandRepeat);
+
 		java.awt.GridBagConstraints constraintsJPanelChangeMethod = new java.awt.GridBagConstraints();
-		constraintsJPanelChangeMethod.gridx = 1; constraintsJPanelChangeMethod.gridy = 14;
+		constraintsJPanelChangeMethod.gridx = 1; constraintsJPanelChangeMethod.gridy = 15;
 		constraintsJPanelChangeMethod.gridwidth = 3;
 		constraintsJPanelChangeMethod.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJPanelChangeMethod.weightx = 1.0;
@@ -1913,7 +1974,7 @@ private void initialize() {
  */
 public void jCheckBoxRampIn_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	rampItIn(getJCheckBoxRampIn().isSelected());
-	this.fireInputUpdate();
+	fireInputUpdate();
 	return;
 }
 /**
@@ -2133,6 +2194,8 @@ public void setValue(Object o)
 
 	getJCSpinFieldPercentReduction().setValue( gear.getPercentReduction() );
 	
+	getStopCommandRepeat().setValue(gear.getStopCommandRepeat());
+	
 	setChangeCondition( gear.getChangeCondition() );
 	getJCSpinFieldChangeDuration().setValue( new Integer( gear.getChangeDuration().intValue() / 60 ) );
 	getJCSpinFieldChangePriority().setValue( gear.getChangePriority() );
@@ -2177,7 +2240,7 @@ public void setValue(Object o)
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	//fire this event for all JCSpinFields!!
-	this.fireInputUpdate();
+	fireInputUpdate();
 }
 /**
  * valueChanging method comment.

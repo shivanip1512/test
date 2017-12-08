@@ -72,18 +72,22 @@ public DirectModifyGearPanel(PaoType programType) {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(ActionEvent e) {
-    if (e.getSource() == getJComboBoxGearType()) 
+    if (e.getSource() == getJComboBoxGearType()) {
         connEtoC2(e);
+    }
 }
 
 /**
  * Method to handle events for the CaretListener interface.
  * @param e javax.swing.event.CaretEvent
  */
+@Override
 public void caretUpdate(CaretEvent e) {
-    if (e.getSource() == getJTextFieldGearName()) 
+    if (e.getSource() == getJTextFieldGearName()) {
         connEtoC3(e);
+    }
 }
 
 /**
@@ -92,7 +96,7 @@ public void caretUpdate(CaretEvent e) {
  */
 private void connEtoC10(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -105,7 +109,7 @@ private void connEtoC10(ActionEvent arg1) {
  */
 private void connEtoC11(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -118,7 +122,7 @@ private void connEtoC11(ActionEvent arg1) {
  */
 private void connEtoC12(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -131,7 +135,7 @@ private void connEtoC12(ActionEvent arg1) {
  */
 private void connEtoC13(CaretEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -144,7 +148,7 @@ private void connEtoC13(CaretEvent arg1) {
  */
 private void connEtoC2(ActionEvent arg1) {
     try {
-        this.jComboBoxGearType_ActionPerformed(arg1);
+        jComboBoxGearType_ActionPerformed(arg1);
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -157,7 +161,7 @@ private void connEtoC2(ActionEvent arg1) {
  */
 private void connEtoC3(CaretEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -170,7 +174,7 @@ private void connEtoC3(CaretEvent arg1) {
  */
 private void connEtoC4(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -183,7 +187,7 @@ private void connEtoC4(ActionEvent arg1) {
  */
 private void connEtoC5(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -196,7 +200,7 @@ private void connEtoC5(ActionEvent arg1) {
  */
 private void connEtoC6(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -209,7 +213,7 @@ private void connEtoC6(ActionEvent arg1) {
  */
 private void connEtoC7(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -222,7 +226,7 @@ private void connEtoC7(ActionEvent arg1) {
  */
 private void connEtoC8(ActionEvent arg1) {
     try {
-        this.fireInputUpdate();
+        fireInputUpdate();
     } catch (java.lang.Throwable ivjExc) {
         handleException(ivjExc);
     }
@@ -263,7 +267,7 @@ private GenericGearPanel getGenericGearPanel1() {
 private JComboBox<GearControlMethod> getJComboBoxGearType() {
     if (ivjJComboBoxGearType == null) {
         try {
-            ivjJComboBoxGearType = new JComboBox<GearControlMethod>();
+            ivjJComboBoxGearType = new JComboBox<>();
             ivjJComboBoxGearType.setName("JComboBoxGearType");
             ivjJComboBoxGearType.setAlignmentX(LEFT_ALIGNMENT);
             ivjJComboBoxGearType.setAlignmentY(TOP_ALIGNMENT);
@@ -564,6 +568,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
     if( getJTextFieldGearName().getText() == null
@@ -604,8 +609,9 @@ private void setGearType(GearControlMethod method)
 {
     gearControlMethod = method;
 
-    if( getGearType() == null )
+    if( getGearType() == null ) {
         return;
+    }
 
     switch (method) {
     case Latching:
@@ -620,12 +626,17 @@ private void setGearType(GearControlMethod method)
     	
     case SmartCycle:
     case TrueCycle:
+        getJScrollPane1().setViewportView(getIvjSmartGearPanel1());
+        getIvjSmartGearPanel1().setTrueOrSmartCycle(true);
+        getIvjSmartGearPanel1().setTargetCycle(false);
+        break;
     case MagnitudeCycle:
     case TargetCycle:
         getJScrollPane1().setViewportView(getIvjSmartGearPanel1());
+        getIvjSmartGearPanel1().setTrueOrSmartCycle(false);
         getIvjSmartGearPanel1().setTargetCycle(method == GearControlMethod.TargetCycle);
     	break;
-    
+
     case EcobeeCycle:
         getJScrollPane1().setViewportView(getEcobeeCycleGearPanel());
         break;
@@ -675,6 +686,7 @@ public void setIvjGenericGearPanel1(GenericGearPanel newIvjGenericGearPanel1) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) {
     LMProgramDirectGear gear = null;
     
@@ -724,9 +736,10 @@ public void setValue(Object o) {
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
-    this.fireInputUpdate();
+    fireInputUpdate();
 }
 
 
@@ -734,6 +747,7 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
  * Method to handle events for the JCValueListener interface.
  * @param arg1 com.klg.jclass.util.value.JCValueEvent
  */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }
@@ -742,8 +756,9 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      * @return LatchingGearPanel
      */
     public LatchingGearPanel getIvjLatchingGearPanel1() {
-        if(ivjLatchingGearPanel1 == null)
+        if(ivjLatchingGearPanel1 == null) {
             ivjLatchingGearPanel1 = new LatchingGearPanel();
+        }
         return ivjLatchingGearPanel1;
     }
 
@@ -752,8 +767,9 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      * @return MasterCycleGearPanel
      */
     public MasterCycleGearPanel getIvjMasterGearPanel1() {
-        if(ivjMasterGearPanel1 == null)
+        if(ivjMasterGearPanel1 == null) {
             ivjMasterGearPanel1 = new MasterCycleGearPanel();
+        }
         return ivjMasterGearPanel1;
     }
 
@@ -762,8 +778,9 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      * @return RotationGearPanel
      */
     public RotationGearPanel getIvjRotationGearPanel1() {
-        if(ivjRotationGearPanel1 == null)
+        if(ivjRotationGearPanel1 == null) {
             ivjRotationGearPanel1 = new RotationGearPanel();
+        }
         return ivjRotationGearPanel1;
     }
 
@@ -772,8 +789,9 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      * @return SmartCycleGearPanel
      */
     public SmartCycleGearPanel getIvjSmartGearPanel1() {
-        if(ivjSmartGearPanel1 == null)
+        if(ivjSmartGearPanel1 == null) {
             ivjSmartGearPanel1 = new SmartCycleGearPanel();
+        }
         return ivjSmartGearPanel1;
     }
 
@@ -792,14 +810,16 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
     }
     
     public SepCycleGearPanel getSepCycleGearPanel() {
-        if(sepCycleGearPanel == null)
+        if(sepCycleGearPanel == null) {
             sepCycleGearPanel = new SepCycleGearPanel();
+        }
         return sepCycleGearPanel;
     }
     
     public SepTemperatureOffsetGearPanel getSepTemperatureOffsetGearPanel() {
-        if(sepTemperatureOffsetGearPanel == null)
+        if(sepTemperatureOffsetGearPanel == null) {
             sepTemperatureOffsetGearPanel = new SepTemperatureOffsetGearPanel();
+        }
         return sepTemperatureOffsetGearPanel;
     }
 
@@ -808,26 +828,30 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      * @return ThermostatSetbackGearPanel
      */
     public ThermostatSetbackGearPanel getIvjThermoSetbackGearPanel1() {
-        if(ivjThermoSetbackGearPanel1 == null)
+        if(ivjThermoSetbackGearPanel1 == null) {
             ivjThermoSetbackGearPanel1 = new ThermostatSetbackGearPanel();
+        }
         return ivjThermoSetbackGearPanel1;
     }
     
     public SimpleThermostatSetbackGearPanel getIvjSimpleThermoSetbackGearPanel1() {
-        if(ivjSimpleThermoSetbackGearPanel1 == null)
+        if(ivjSimpleThermoSetbackGearPanel1 == null) {
             ivjSimpleThermoSetbackGearPanel1 = new SimpleThermostatSetbackGearPanel();
+        }
         return ivjSimpleThermoSetbackGearPanel1;
     }
 
     public BeatThePeakGearPanel getIvjBeatThePeakGearPanel1() {
-        if(ivjBeatThePeakGearPanel1 == null)
+        if(ivjBeatThePeakGearPanel1 == null) {
             ivjBeatThePeakGearPanel1 = new BeatThePeakGearPanel();
+        }
         return ivjBeatThePeakGearPanel1;
     }
     
     public NoControlGearPanel getNoControlGearPanel() {
-        if(ivjNoControlGearPanel1 == null)
+        if(ivjNoControlGearPanel1 == null) {
             ivjNoControlGearPanel1 = new NoControlGearPanel();
+        }
         return ivjNoControlGearPanel1;
     }
     /**
@@ -835,8 +859,9 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
      * @return TimeRefreshGearPanel
      */
     public TimeRefreshGearPanel getIvjTimeGearPanel1() {
-        if(ivjTimeGearPanel1 == null)
+        if(ivjTimeGearPanel1 == null) {
             ivjTimeGearPanel1 = new TimeRefreshGearPanel();
+        }
         return ivjTimeGearPanel1;
     }
 
@@ -911,6 +936,7 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
     /* (non-Javadoc)
      * @see com.cannontech.common.gui.util.DataInputPanelListener#inputUpdate(com.cannontech.common.editor.PropertyPanelEvent)
      */
+    @Override
     public void inputUpdate(PropertyPanelEvent event) {
         fireInputUpdate();      
     }
