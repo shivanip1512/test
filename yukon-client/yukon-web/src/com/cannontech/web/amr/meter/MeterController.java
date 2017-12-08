@@ -241,6 +241,7 @@ public class MeterController {
         /** Device Category */
         boolean mct4xxDevice = DeviceTypesFuncs.isMCT4XX(type);
         boolean rfDevice = type.isRfn();
+        boolean showMapNetwork = rfDevice || type.isPlc();
         
         /** Device Tags */
         boolean commanderDevice = paoDefDao.isTagSupported(type, PaoTag.COMMANDER_REQUESTS);
@@ -309,7 +310,7 @@ public class MeterController {
         model.addAttribute("showMoveInOut", moveDevice && moveUser);
         model.addAttribute("showProfile", loadProfileDevice || peakReportDevice || voltageProfileDevice);
         model.addAttribute("showVoltageAndTou", voltageAndTouDevice);
-        model.addAttribute("showMapNetwork", rfDevice);
+        model.addAttribute("showMapNetwork", showMapNetwork);
         
         model.addAttribute("hasActions", hasActions);
         

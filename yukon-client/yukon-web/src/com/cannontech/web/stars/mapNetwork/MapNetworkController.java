@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -27,9 +28,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.model.DistanceUnit;
+import com.cannontech.common.pao.model.PaoDistance;
+import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -49,6 +57,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.LocationValidator;
+import com.cannontech.web.tools.mapping.model.NearbyDevice;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
@@ -57,6 +66,7 @@ import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
+import com.google.common.collect.Lists;
 @RequestMapping("/mapNetwork/*")
 @Controller
 public class MapNetworkController {
@@ -72,6 +82,9 @@ public class MapNetworkController {
     @Autowired private RfnDeviceMetadataService metadataService;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private LocationValidator locationValidator;
+    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private LocationService locationService;
+    @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId, @RequestParam(value = "inventoryId", required = false) Integer inventoryId,
@@ -98,42 +111,47 @@ public class MapNetworkController {
             model.addAttribute("inventoryId", inventoryId);
         }
         
-        boolean displayNeighborsLayer = !device.getDeviceType().isWaterMeter();
-        boolean displayParentNodeLayer = device.getDeviceType().isWaterMeter();
-        boolean displayPrimaryRouteLayer = !isGateway;
+        boolean isPlc = device.getDeviceType().isPlc();
+        boolean displayNeighborsLayer = !isPlc && !device.getDeviceType().isWaterMeter();
+        boolean displayParentNodeLayer = !isPlc && device.getDeviceType().isWaterMeter();
+        boolean displayPrimaryRouteLayer = !isPlc && !isGateway;
+        boolean displayNearbyLayer = isPlc;
         model.addAttribute("displayNeighborsLayer", displayNeighborsLayer);
         model.addAttribute("displayParentNodeLayer", displayParentNodeLayer);
         model.addAttribute("displayPrimaryRouteLayer", displayPrimaryRouteLayer);
+        model.addAttribute("displayNearbyLayer", displayNearbyLayer);
         
         int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
         model.addAttribute("numLayers", numLayers);
         
         // try to get commstatus for device
-        try {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(deviceId);
-            Object commStatus = null;
-            if (rfnDevice.getPaoIdentifier().getPaoType().isRfGateway()) {
-                RfnGatewayData gateway = gatewayDataCache.get(rfnDevice.getPaoIdentifier());
-                String statusString = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + gateway.getConnectionStatus().toString());
-                model.addAttribute("deviceStatus", statusString);
-            } else {
-                Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
-                commStatus = metadata.get(RfnMetadata.COMM_STATUS);
-                if (commStatus != null) {
-                    CommStatusType status = CommStatusType.valueOf(commStatus.toString());
-                    String statusString = accessor.getMessage(nameKey + "status." + status);
+        if (device.getDeviceType().isRfn()) {
+            try {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(deviceId);
+                Object commStatus = null;
+                if (rfnDevice.getPaoIdentifier().getPaoType().isRfGateway()) {
+                    RfnGatewayData gateway = gatewayDataCache.get(rfnDevice.getPaoIdentifier());
+                    String statusString = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + gateway.getConnectionStatus().toString());
                     model.addAttribute("deviceStatus", statusString);
                 } else {
-                    // ignore, status will be set to "UNKNOWN"
-                    log.error("NM didn't return communication status for " + deviceId);
+                    Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
+                    commStatus = metadata.get(RfnMetadata.COMM_STATUS);
+                    if (commStatus != null) {
+                        CommStatusType status = CommStatusType.valueOf(commStatus.toString());
+                        String statusString = accessor.getMessage(nameKey + "status." + status);
+                        model.addAttribute("deviceStatus", statusString);
+                    } else {
+                        // ignore, status will be set to "UNKNOWN"
+                        log.error("NM didn't return communication status for " + deviceId);
+                    }
                 }
+            } catch (NmCommunicationException e) {
+                // ignore, status will be set to "UNKNOWN"
+                log.error("Failed to get meta-data for " + deviceId, e);
+            } catch (NotFoundException e) {
+                log.error(e);
             }
-        } catch (NmCommunicationException e) {
-            // ignore, status will be set to "UNKNOWN"
-            log.error("Failed to get meta-data for " + deviceId, e);
-        } catch (NotFoundException e) {
-            log.error(e);
         }
 
         return "mapNetwork/home.jsp";
@@ -224,6 +242,37 @@ public class MapNetworkController {
         } catch (NmNetworkException e) {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
+        return json;
+    }
+    
+    @RequestMapping("nearby")
+    public @ResponseBody Map<String, Object> nearby(@RequestParam("deviceId") int deviceId, @RequestParam("miles") double miles, YukonUserContext userContext) {
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        List<NearbyDevice> devices = new ArrayList<>();
+        PaoLocation location = paoLocationDao.getLocation(deviceId);
+        if (location != null) {
+            int maxDevices = 100;
+            List<PaoDistance> nearby = locationService.getNearbyLocations(location, miles, DistanceUnit.MILES, Lists.newArrayList(PaoTag.COMMANDER_REQUESTS));
+            if (nearby.size() > maxDevices) { 
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.TOO_MANY_NEARBY_DEVICES", nearby.size(), maxDevices));
+                nearby = nearby.subList(0, maxDevices);
+            } 
+            for (PaoDistance distance : nearby) {
+                NearbyDevice device = new NearbyDevice();
+                device.setDistance(distance);
+                FeatureCollection features = paoLocationService.getLocationsAsGeoJson(new ArrayList<>(Arrays.asList(distance.getPao())));
+                device.setLocation(features);
+                devices.add(device);
+            }
+            
+            if (devices.size() == 0) {
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.NO_NEARBY_DEVICES"));
+            }
+
+            json.put("nearby", devices);
+        }
+
         return json;
     }
     

@@ -29,6 +29,7 @@
     <c:if test="${showAddressOrSerial}">
         <tags:nameValue2 nameKey=".serialOrAddress">${fn:escapeXml(pao.meter.serialOrAddress)}</tags:nameValue2>
     </c:if>
+    <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span><i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>
 
 <c:forEach items="${attributes}" var="attr">

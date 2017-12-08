@@ -37,7 +37,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
     private void init() {
         icons = new HashMap<>();
         for (PaoType type : PaoType.getMctTypes()) {
-            icons.put(type, Icon.METER_ELECTRIC);
+            icons.put(type,  Icon.METER_PLC_ELECTRIC);
         }
         for (PaoType type : PaoType.getRfMeterTypes()) {
             icons.put(type, Icon.METER_ELECTRIC);

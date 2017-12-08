@@ -84,6 +84,19 @@
                             <c:if test="${displayPrimaryRouteLayer}">
                                 <tags:check name="primary" key=".primary" classes="js-primary-route" />
                             </c:if>
+                            <c:if test="${displayNearbyLayer}">
+                                <span class="fl" style="text-transform:capitalize">
+                                    <i:inline key=".distance.miles"/>:&nbsp;
+                                    <select id="miles" class="js-miles">
+                                        <option>0.25</option>
+                                        <option>0.5</option>
+                                        <option>1</option>
+                                        <option>5</option>
+                                        <option>10</option>
+                                    </select>
+                                </span>
+                                <tags:check name="nearby" key=".nearby" classes="js-nearby" />
+                            </c:if>
                         </div>
                         <div id="map-tiles" class="fr button-group">
                             <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
