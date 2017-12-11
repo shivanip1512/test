@@ -12,6 +12,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
 /**
@@ -20,23 +21,23 @@ import com.google.common.collect.Sets;
 public class MaintenanceHelper {
 
     @Autowired private GlobalSettingDao globalSettingDao;
-    public DateTime getNextScheduledRunTime(TimeZone timeZone) throws Exception {
+    public DateTime getNextScheduledRunTime() throws Exception {
         DateTime nextScheduledRunTime = null;
         try {
             // Get Start-Stop time for business hour
-            DateTime businessHourStart = getNextStartTime(timeZone, GlobalSettingType.BUSINESS_HOURS_DAYS);
-            DateTime businessHourStop = getNextStopTime(timeZone, GlobalSettingType.BUSINESS_HOURS_DAYS);
-            // Get Start-Stop time for maintenance hour
-            DateTime maintenanceHourStart = getNextStartTime(timeZone, GlobalSettingType.MAINTENANCE_DAYS);
-            DateTime maintenanceHourStop = getNextStopTime(timeZone, GlobalSettingType.MAINTENANCE_DAYS);
-            // Non-overlapping condition of business and maintenance hour
-            if ((maintenanceHourStart.isAfter(businessHourStop) && (maintenanceHourStop.isAfter(maintenanceHourStart))) 
-                    || (businessHourStart.isAfter(maintenanceHourStop) && businessHourStop.isAfter(businessHourStart))) {
+            DateTime businessHourStart = getNextStartTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
+            DateTime businessHourStop = getNextStopTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
+            // Get Start-Stop time for external maintenance hour
+            DateTime extMaintenanceHourStart = getNextStartTime(GlobalSettingType.MAINTENANCE_DAYS);
+            DateTime extMaintenanceHourStop = getNextStopTime( GlobalSettingType.MAINTENANCE_DAYS);
+            // Non-overlapping condition of business and external maintenance hour
+            if ((extMaintenanceHourStart.isAfter(businessHourStop) && (extMaintenanceHourStop.isAfter(extMaintenanceHourStart))) 
+                    || (businessHourStart.isAfter(extMaintenanceHourStop) && businessHourStop.isAfter(businessHourStart))) {
                 // Select whichever ends first
-                nextScheduledRunTime = businessHourStop.isAfter(maintenanceHourStop) ? maintenanceHourStop : businessHourStop;
+                nextScheduledRunTime = businessHourStop.isAfter(extMaintenanceHourStop) ? extMaintenanceHourStop : businessHourStop;
             } else {
-                // Business and maintenance hour overlapped. Select whichever ends last 
-                nextScheduledRunTime = businessHourStop.isAfter(maintenanceHourStop) ? businessHourStop : maintenanceHourStop;
+                // Business and external maintenance hour overlapped. Select whichever ends last 
+                nextScheduledRunTime = businessHourStop.isAfter(extMaintenanceHourStop) ? businessHourStop : extMaintenanceHourStop;
             }
         } catch (Exception e) {
             throw e;
@@ -58,21 +59,22 @@ public class MaintenanceHelper {
     /**
      * Return next scheduled start time for Business/Maintenance hour based on globalSettingType.
      */
-    public DateTime getNextStartTime(TimeZone timeZone, GlobalSettingType globalSettingType) throws Exception {
-        return getNextScheduledTime(timeZone, globalSettingType, true);
+    public DateTime getNextStartTime(GlobalSettingType globalSettingType) throws Exception {
+        return getNextScheduledTime(globalSettingType, true);
     }
 
     /**
      * Return next scheduled stop time for Business/Maintenance hour based on globalSettingType.
      */
-    public DateTime getNextStopTime(TimeZone timeZone, GlobalSettingType globalSettingType) throws Exception {
-        return getNextScheduledTime(timeZone, globalSettingType, false);
+    public DateTime getNextStopTime(GlobalSettingType globalSettingType) throws Exception {
+        return getNextScheduledTime(globalSettingType, false);
     }
 
     /**
      * Return next scheduled start time if isStartTime is true else return next scheduled stop time.
      */
-    private DateTime getNextScheduledTime(TimeZone timeZone, GlobalSettingType globalSettingType, boolean isStartTime) throws Exception {
+    private DateTime getNextScheduledTime(GlobalSettingType globalSettingType, boolean isStartTime) throws Exception {
+        TimeZone timeZone = YukonUserContext.system.getTimeZone();
         GlobalSetting daysSetting ;
         GlobalSetting hourStartStopSetting ;
         if (globalSettingType == GlobalSettingType.BUSINESS_HOURS_DAYS) {

@@ -330,15 +330,15 @@ public class MaintenanceController {
         MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskType);
         List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskDetails.getTaskName());
         
-        DateTime nextRunDataPruning = null;
+        DateTime nextMaintenanceRunTime = null;
         try {
-            nextRunDataPruning = maintenanceHelper.getNextScheduledRunTime(userContext.getTimeZone());
+            nextMaintenanceRunTime = maintenanceHelper.getNextScheduledRunTime();
         } catch (Exception e) {
             MessageSourceResolvable invalidCronMsg = new YukonMessageSourceResolvable("yukon.common.invalidCron");
             flashScope.setError(invalidCronMsg);
             return "maintenance/editTask.jsp";
         }
-        String dateStr = dateFormattingService.format(nextRunDataPruning, DateFormatEnum.DATEHM, userContext);
+        String dateStr = dateFormattingService.format(nextMaintenanceRunTime, DateFormatEnum.DATEHM, userContext);
         MaintenanceEditorBean maintenanceEditorBean = new MaintenanceEditorBean();
         maintenanceEditorBean.setTaskDetails(taskDetails);
         maintenanceEditorBean.setSettings(settings);

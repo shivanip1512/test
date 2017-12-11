@@ -3,7 +3,6 @@ package com.cannontech.maintenance.service.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -20,7 +19,6 @@ import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.maintenance.task.MaintenanceTask;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.MaintenanceSetting;
-import com.cannontech.user.YukonUserContext;
 
 public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     private final static Logger log = YukonLogManager.getLogger(MaintenanceTaskServiceImpl.class);
@@ -40,14 +38,13 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
 
     @Override
     public Instant getEndOfRunWindow() {
-        TimeZone timeZone = YukonUserContext.system.getTimeZone();
         Instant instant = null;
         try {
-            DateTime businessHourStartTime = maintenanceHelper.getNextStartTime(timeZone, GlobalSettingType.BUSINESS_HOURS_DAYS);
-            DateTime maintenanceHourStartTime = maintenanceHelper.getNextStopTime(timeZone, GlobalSettingType.MAINTENANCE_DAYS);
-            // select next businessHourStartTime or maintenanceHourStartTime, whichever start first
-            boolean isMaintenanceFirst = businessHourStartTime.isAfter(maintenanceHourStartTime);
-            DateTime endOfRunWindow = isMaintenanceFirst ? maintenanceHourStartTime : businessHourStartTime;
+            DateTime businessHourStartTime = maintenanceHelper.getNextStartTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
+            DateTime extMaintenanceHourStartTime = maintenanceHelper.getNextStopTime(GlobalSettingType.MAINTENANCE_DAYS);
+            // select next businessHourStartTime or externalMaintenanceHourStartTime, whichever start first
+            boolean isExtMaintenanceFirst = businessHourStartTime.isAfter(extMaintenanceHourStartTime);
+            DateTime endOfRunWindow = isExtMaintenanceFirst ? extMaintenanceHourStartTime : businessHourStartTime;
             instant = endOfRunWindow.toInstant();
         } catch (Exception e) {
             log.error("Parsing exception for end time", e);
@@ -57,10 +54,9 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
 
     @Override
     public long getSecondsUntilRun() {
-        TimeZone timeZone = YukonUserContext.system.getTimeZone();
         DateTime nextMaintenanceRunTime = null;
         try {
-            nextMaintenanceRunTime = maintenanceHelper.getNextScheduledRunTime(timeZone);
+            nextMaintenanceRunTime = maintenanceHelper.getNextScheduledRunTime();
         } catch (Exception e) {
             log.error("Parsing exception for next run time", e);
         }
