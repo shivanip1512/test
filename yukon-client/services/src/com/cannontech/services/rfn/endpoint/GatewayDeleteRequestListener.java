@@ -27,10 +27,7 @@ public class GatewayDeleteRequestListener {
         if ("_EMPTY_".equals(rfnIdentifier.getSensorSerialNumber())
             || "_EMPTY_".equals(rfnIdentifier.getSensorManufacturer())
             || "_EMPTY_".equals(rfnIdentifier.getSensorModel())) {
-            if (log.isInfoEnabled()) {
-                log.info("Serial Number:" + rfnIdentifier.getSensorSerialNumber() + " Sensor Manufacturer:"
-                    + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
-            }
+            log.warn("Received a gateway delete request with empty identifier field. Unable to process. " + rfnIdentifier);
             return;
         }
         RfnDevice rfnDevice;
