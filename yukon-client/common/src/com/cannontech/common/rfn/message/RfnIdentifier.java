@@ -65,6 +65,15 @@ public final class RfnIdentifier implements Serializable {
         return new RfnIdentifier(null, null, null);
     }
 
+    /**
+     * Returns true if any of the fields are _EMPTY_
+     */
+    public boolean is_Empty_() {
+        return ("_EMPTY_".equals(getSensorSerialNumber()) 
+                || "_EMPTY_".equals(getSensorManufacturer())
+                || "_EMPTY_".equals(getSensorModel()));
+    }
+
     @Override
     public String toString() {
         return String.format("RfnIdentifier [sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s]",

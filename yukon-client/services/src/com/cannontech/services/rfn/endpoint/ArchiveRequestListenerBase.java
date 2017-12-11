@@ -123,9 +123,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
         protected void processRequest(T request) {
             RfnIdentifier rfnIdentifier = request.getRfnIdentifier();
-            if ("_EMPTY_".equals(rfnIdentifier.getSensorSerialNumber())
-                || "_EMPTY_".equals(rfnIdentifier.getSensorManufacturer())
-                || "_EMPTY_".equals(rfnIdentifier.getSensorModel())) {
+            if (rfnIdentifier.is_Empty_()) {
                 if (log.isInfoEnabled()) {
                     log.info("Serial Number:" + rfnIdentifier.getSensorSerialNumber() + " Sensor Manufacturer:"
                              + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
