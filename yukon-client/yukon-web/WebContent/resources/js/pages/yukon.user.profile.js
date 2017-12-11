@@ -118,7 +118,7 @@ yukon.userProfile = (function () {
             maxPriority = Number($('#commandPriority').attr('max'));
         
         if (isNaN(value) || ((value % 1) !== 0) || value < minPriority || value > maxPriority) {
-            $('#commandPriority').val(minPriority);
+            $('#commandPriority').val(maxPriority);
         }
         
         var params = {

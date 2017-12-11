@@ -731,13 +731,13 @@ yukon.tools.commander = (function () {
                 _promptForInput();
             });
             
-            $('#commandPriority').bind('keyup mouseup', function () {
+            $(document).on('keyup mouseup', '#commandPriority', function() {
                 var value = Number($('#commandPriority').val()),
                     minPriority = Number($('#commandPriority').attr('min')),
                     maxPriority = Number($('#commandPriority').attr('max'));
                 
                 if (isNaN(value) || value < minPriority || value > maxPriority) {
-                    $('#commandPriority').val(minPriority);
+                    $('#commandPriority').val(maxPriority);
                 }
             });
             
