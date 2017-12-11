@@ -41,8 +41,8 @@ public class UserPreferencesHelper {
             }
         } catch (NumberFormatException e) {
             log.warn("Could not parse commander priority." + " : " + e.getMessage());
-            log.warn("Setting commander priority to " + CommandPriority.minPriority);
-            priority = CommandPriority.minPriority;
+            log.warn("Setting commander priority to " + CommandPriority.maxPriority);
+            priority = CommandPriority.maxPriority;
         }
         
         model.addAttribute("priority", priority);
