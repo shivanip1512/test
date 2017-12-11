@@ -12,6 +12,21 @@ UPDATE state SET foregroundcolor = 9 WHERE stategroupid = -28 AND rawstate = 2;
 ALTER TABLE MSPInterface
 DROP CONSTRAINT PK_MSPINTERFACE;
 
+/* @start-block */
+DECLARE
+    v_indexCount NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_indexCount
+    FROM USER_INDEXES
+    WHERE INDEX_NAME = 'PK_MSPINTERFACE';
+
+    IF v_indexCount > 0 THEN
+        EXECUTE IMMEDIATE 'DROP INDEX PK_MSPINTERFACE';
+    END IF;
+END;
+/
+/* @end-block */
+
 ALTER TABLE MSPInterface
 ADD Version VARCHAR2(12);
 
@@ -1287,6 +1302,21 @@ INSERT INTO YukonServices VALUES (24, 'InfrastructureWarnings', 'classpath:com/c
 /* Start YUK-16722 */
 ALTER TABLE UserDashboard
 DROP CONSTRAINT PK_UserDashboard;
+
+/* @start-block */
+DECLARE
+    v_indexCount NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_indexCount
+    FROM USER_INDEXES
+    WHERE INDEX_NAME = 'PK_UserDashboard';
+
+    IF v_indexCount > 0 THEN
+        EXECUTE IMMEDIATE 'DROP INDEX PK_UserDashboard';
+    END IF;
+END;
+/
+/* @end-block */
 
 ALTER TABLE UserDashboard
 ADD CONSTRAINT PK_UserDashboard PRIMARY KEY (UserId, DashboardId, PageAssignment);
