@@ -37,7 +37,7 @@ public class UserPreferencesHelper {
         try {
             priority = Integer.valueOf(prefService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
             if (priority == null || !CommandPriority.isCommandPriorityValid(priority)) {
-                priority = CommandPriority.minPriority;
+                priority = CommandPriority.maxPriority;
             }
         } catch (NumberFormatException e) {
             log.warn("Could not parse commander priority." + " : " + e.getMessage());
