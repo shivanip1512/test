@@ -55,7 +55,7 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
             }
             //The available version has to be greater than the current version to allow upgrade
             GatewayFirmwareVersion availableVersion = GatewayFirmwareVersion.parse(upgradeVersion);
-            return (currentVersion.compareTo(availableVersion) < 0);
+            return (currentVersion.compareTo(availableVersion) <= 0);
         } catch (Exception e) {
             return false;
         }
