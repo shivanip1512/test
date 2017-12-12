@@ -245,15 +245,9 @@ public class DeviceConfigurationSummaryController {
     }
     
     @RequestMapping(value="download", method=RequestMethod.GET)
-    public String download(HttpServletResponse response, ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext,
-                           @RequestParam String startDate, @RequestParam String endDate) throws IOException {
+    public String download(HttpServletResponse response, ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) throws IOException {
         setFilterValues(filter, deviceSubGroups);
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
-        Instant start = startDate.isEmpty() ? null : formatter.parseDateTime(startDate).toInstant();
-        Instant end = endDate.isEmpty() ? null : formatter.parseDateTime(endDate).toInstant();
-        if (start != null && end != null) {
-            filter.setRange(new Range<Instant>(start, true, end, true));
-        }
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         SearchResults<DeviceConfigSummaryDetail> details = deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<String> headerRow = getHeader(accessor);

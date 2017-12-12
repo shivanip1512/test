@@ -48,11 +48,8 @@ yukon.deviceConfig.summary = (function () {
 
             /** Download CSV */
             $(document).on('click', '.js-config-download', function () {
-                var startDate = $('input[name=startDate]').val(),
-                    endDate = $('input[name=endDate]').val(),
-                    form = $('#filter-form'),
-                    data = form.serialize() + '&startDate=' + startDate 
-                            + '&endDate=' + endDate;
+                var form = $('#filter-form'),
+                    data = form.serialize();
                 window.location = yukon.url('/deviceConfiguration/summary/download?' + data);
             });
             
