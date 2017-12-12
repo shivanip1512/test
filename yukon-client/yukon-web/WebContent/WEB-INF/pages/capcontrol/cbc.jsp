@@ -319,9 +319,11 @@
                     <cti:msg2 var="newName" key="yukon.common.copyof" argument="${cbc.name}"/>
                     <input name="newName" value="${newName}">
                 </tags:nameValue>
-                <tags:nameValue name="Copy Points">
-                    <tags:switchButton name="copyPoints" offNameKey=".no.label" onNameKey=".yes.label" checked="${true}"/>
-                </tags:nameValue>
+                <c:if test="${!cbc.isLogical()}">
+                    <tags:nameValue name="Copy Points">
+                        <tags:switchButton name="copyPoints" offNameKey=".no.label" onNameKey=".yes.label" checked="${true}"/>
+                    </tags:nameValue>
+                </c:if>
             </tags:nameValueContainer>
         </form>
     </div>

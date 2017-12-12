@@ -14,8 +14,8 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
+import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.capcontrol.ICapBankController;
-import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
@@ -83,10 +83,27 @@ public class CBCCopyUtils {
 			return handleCBC702x((CapBankController702x) controller);
         if (controller instanceof CapBankControllerDNP)
             return handleCBCDNP((CapBankControllerDNP) controller);
+        if (controller instanceof CapBankControllerLogical)
+            return handleCBCLogical((CapBankControllerLogical) controller);
         if (controller instanceof CapBankController)
 			return handleCBC((CapBankController) controller);
 		return null;
 	}
+
+   private static CapBankController handleCBCLogical(CapBankControllerLogical controller) {
+        CapBankControllerLogical cbcLogical = null;
+        PaoType paoType = controller.getPaoType();
+        cbcLogical = (CapBankControllerLogical) DeviceFactory.createDevice(paoType);
+        cbcLogical.setAddress(0);
+        cbcLogical.setCommID(controller.getCommID());
+        cbcLogical.setSchedules(controller.getSchedules());
+        cbcLogical.setDisabled(controller.isDisabled());
+        cbcLogical.setPAOName(controller.getPAOName());
+        cbcLogical.setParentDeviceId(controller.getParentDeviceId());
+        cbcLogical.setDeviceParent(controller.getDeviceParent());
+        
+        return cbcLogical;
+    }
 
 	private static CapBankController handleCBC(CapBankController controller) {
 		CapBankController cbc = null;
