@@ -180,9 +180,9 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     //Data Point Pruning
     BUSINESS_HOURS_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("BUSINESS_HOURS_DAYS"), "NYYYYYN"),
-    MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("MAINTENANCE_DAYS"), "YNNNNNN"),
-    BUSINESS_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("BUSINESS_HOURS_START_STOP_TIME"), "420,1020"),
-    MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("MAINTENANCE_HOURS_START_STOP_TIME"), "60,180")
+    EXTERNAL_MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("EXTERNAL_MAINTENANCE_DAYS"), "YNNNNNN"),
+    BUSINESS_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("BUSINESS_HOURS_START_STOP_TIME", 24), "420,1020"),
+    EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME", 48), "60,180")
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;

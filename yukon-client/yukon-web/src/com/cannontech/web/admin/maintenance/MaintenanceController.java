@@ -291,7 +291,7 @@ public class MaintenanceController {
                 public GlobalSetting apply(MappableProperty<GlobalSetting, ?> input) {
                     GlobalSetting setting = input.getExtra();
                     if (setting.getType() == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME
-                        || (setting.getType() == GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME)) {
+                        || (setting.getType() == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME)) {
                         String[] values = (String[]) command.getValues().get(setting.getType());
                         setting.setValue(StringUtils.join(values, ","));
                     } else {
@@ -330,15 +330,15 @@ public class MaintenanceController {
         MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskType);
         List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskDetails.getTaskName());
         
-        DateTime nextMaintenanceRunTime = null;
+        DateTime nextExtMaintenanceRunTime = null;
         try {
-            nextMaintenanceRunTime = maintenanceHelper.getNextScheduledRunTime();
+            nextExtMaintenanceRunTime = maintenanceHelper.getNextScheduledRunTime();
         } catch (Exception e) {
             MessageSourceResolvable invalidCronMsg = new YukonMessageSourceResolvable("yukon.common.invalidCron");
             flashScope.setError(invalidCronMsg);
             return "maintenance/editTask.jsp";
         }
-        String dateStr = dateFormattingService.format(nextMaintenanceRunTime, DateFormatEnum.DATEHM, userContext);
+        String dateStr = dateFormattingService.format(nextExtMaintenanceRunTime, DateFormatEnum.DATEHM, userContext);
         MaintenanceEditorBean maintenanceEditorBean = new MaintenanceEditorBean();
         maintenanceEditorBean.setTaskDetails(taskDetails);
         maintenanceEditorBean.setSettings(settings);

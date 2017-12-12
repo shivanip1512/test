@@ -8,7 +8,7 @@
     <div class="stacked">
         <em><i:inline key=".tasksInfo"/></em>
     </div>
-    <div class="column-11-13 clearfix">
+    <div class="column-10-14 clearfix">
         <div class="column one">
             <table class="compact-results-table has-alerts">
                 <thead>
@@ -52,7 +52,7 @@
                     <cti:url var="saveUrl" value="/admin/maintenance/updateMaintenanceSettings"/>
                     <form:form action="${saveUrl}" id="settingsForm" method="post">
                         <cti:csrfToken/>
-                        <tags:nameValueContainer2>
+                        <tags:nameValueContainer2 naturalWidth="false">
                             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="setting" 
                                        varStatus="loopStatus">
                                 <tags:nameValue2 nameKey="yukon.common.setting.${setting.extra.type}">

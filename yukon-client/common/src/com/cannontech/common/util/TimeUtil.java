@@ -386,7 +386,12 @@ public static int differenceMinutes(Date from, Date to) {
         String[] parts = new String[] { "*", "*", "*", "*", "*", "*" };
 
         // time
+        boolean isNextDay = false;
         parts[0] = "0";
+        if (time > 1440) {
+            time = time - 1440;
+            isNextDay = true;
+        }
         parts[1] = String.valueOf(time % 60);
         parts[2] = (time / 60) != 24 ? String.valueOf(time / 60) : "0";
 
@@ -400,6 +405,10 @@ public static int differenceMinutes(Date from, Date to) {
 
             for (int i = 0; i < days.length(); i++) {
                 if (days.charAt(i) == checkChar) {
+                    // Check if the time exceeds 1440 (possible only in case of 48 hours slider)
+                    if (isNextDay) {
+                        i = i + 1;
+                    }
                     selectedDays.add(String.valueOf(i + 1));
                 }
             }

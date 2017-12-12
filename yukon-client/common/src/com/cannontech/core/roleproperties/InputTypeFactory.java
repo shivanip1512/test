@@ -107,8 +107,8 @@ public class InputTypeFactory {
         return new WeekDaysType(setting);
     }
 
-    public static InputType<String> sliderType(String setting) {
-        return new SliderType(setting);
+    public static InputType<String> sliderType(String setting, int hours) {
+        return new SliderType(setting, hours);
     }
 
     public static Object convertPropertyValue(InputType<?> type, String value) {

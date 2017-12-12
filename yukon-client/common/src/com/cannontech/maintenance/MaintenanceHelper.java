@@ -28,8 +28,8 @@ public class MaintenanceHelper {
             DateTime businessHourStart = getNextStartTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
             DateTime businessHourStop = getNextStopTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
             // Get Start-Stop time for external maintenance hour
-            DateTime extMaintenanceHourStart = getNextStartTime(GlobalSettingType.MAINTENANCE_DAYS);
-            DateTime extMaintenanceHourStop = getNextStopTime( GlobalSettingType.MAINTENANCE_DAYS);
+            DateTime extMaintenanceHourStart = getNextStartTime(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);
+            DateTime extMaintenanceHourStop = getNextStopTime( GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);
             // Non-overlapping condition of business and external maintenance hour
             if ((extMaintenanceHourStart.isAfter(businessHourStop) && (extMaintenanceHourStop.isAfter(extMaintenanceHourStart))) 
                     || (businessHourStart.isAfter(extMaintenanceHourStop) && businessHourStop.isAfter(businessHourStart))) {
@@ -51,9 +51,9 @@ public class MaintenanceHelper {
     public Set<GlobalSettingType> getGlobalSettingsForMaintenance(){
         return Sets.newHashSet(
             GlobalSettingType.BUSINESS_HOURS_DAYS,
-            GlobalSettingType.MAINTENANCE_DAYS,
+            GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS,
             GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME,
-            GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME);
+            GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME);
     }
 
     /**
@@ -81,8 +81,8 @@ public class MaintenanceHelper {
             daysSetting = globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_DAYS);
             hourStartStopSetting = globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME);
         } else {
-            daysSetting = globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_DAYS);
-            hourStartStopSetting = globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME);
+            daysSetting = globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);
+            hourStartStopSetting = globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME);
         }
         String timeSettings[] = ((String) hourStartStopSetting.getValue()).split(",");
         Date nextScheduledTime = null;
@@ -91,9 +91,8 @@ public class MaintenanceHelper {
             if (isStartTime) {
                 timeInMinute = Integer.parseInt(timeSettings[0]);
             } else {
-                // stopTime = startTime + duration
-                // We are storing duration in seconds hence dividing with 60.
-                timeInMinute = Integer.parseInt(timeSettings[0]) + Integer.parseInt(timeSettings[1]) / 60;
+                // Use stop time
+                timeInMinute = Integer.parseInt(timeSettings[1]);
             }
             String cronFornextScheduledDay = TimeUtil.buildCronExpression(CronExprOption.WEEKDAYS,
                                                                           timeInMinute,

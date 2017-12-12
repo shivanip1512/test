@@ -14,10 +14,12 @@ public class SliderType extends BaseEnumeratedType<String> {
 
     private String renderer = "slider.jsp";
     private String setting;
+    private int hours = 24; // Default will be 24 hours slider
 
-    public SliderType(String setting) {
+    public SliderType(String setting, int hours) {
         super.setRenderer(renderer);
         this.setting = setting;
+        this.hours = hours;
     }
 
     public List<InputOptionProvider> getOptionList() {
@@ -35,6 +37,10 @@ public class SliderType extends BaseEnumeratedType<String> {
 
     public Class<String> getTypeClass() {
         return String.class;
+    }
+
+    public int getHours() {
+        return hours;
     }
 
     public PropertyEditor getPropertyEditor() {

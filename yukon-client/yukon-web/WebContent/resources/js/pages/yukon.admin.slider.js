@@ -12,21 +12,37 @@ yukon.admin.slider = (function () {
 
         init : function () {
             $(document).ready(function() {
-                $('div.slider-range').slider({
-                    min: 0,
-                    max: 1439,
-                    values: [540, 1020],
-                    step:15,
-                    slide: function(event, ui) {
-                        var inputs= $(this).prevAll('.sliderValue');
-                        var i=1;
-                        inputs.each(function(index) {
-                            $(this).val(ui.values[i--]);
-                        });
-                        var startTime = getTime(parseInt(ui.values[0] / 60 % 24, 10), parseInt(ui.values[0] % 60, 10));
-                            endTime = getTime(parseInt(ui.values[1] / 60 % 24, 10), parseInt(ui.values[1] % 60, 10));
-                        $(this).prevAll('.js-time-label').text(startTime + ' - ' + endTime);
+                $('div.slider-range').each(function(idx, elm) {
+                    var hrs = $(this).attr('data-hours');
+                    var maxVal = 1439;
+                    if(hrs == '48'){
+                        maxVal = 2878;
                     }
+                    $(this).slider({
+                        min: 0,
+                        max: maxVal,
+                        values: [540, 1020],
+                        step:15,
+                        range:true,
+                        slide: function(event, ui) {
+                            var inputs = $(this).prevAll('.sliderValue');
+                            var i=1;
+                            inputs.each(function(index) {
+                                $(this).val(ui.values[i--]);
+                            });
+                            var startTime = getTime(parseInt(ui.values[0] / 60 % 24, 10), parseInt(ui.values[0] % 60, 10));
+                                endTime = getTime(parseInt(ui.values[1] / 60 % 24, 10), parseInt(ui.values[1] % 60, 10));
+                                if ((((parseInt(ui.values[1]) - parseInt(ui.values[0])) / 60) > 24)
+                                        || (parseInt(ui.values[0]) >= 1440)
+                                        || ((parseInt(ui.values[1]) - parseInt(ui.values[0])) < 15)) {
+                                    return false;
+                                }
+                            $(this).prevAll('.js-time-label').text(startTime + ' - ' + endTime);
+                        }
+                    });
+                    $(this).find('.ui-slider-range').css('background', '#38c');
+                    $(this).find('.ui-slider-range').css('height', '12px');
+                    $(this).find('.ui-slider-range').css('padding', '0');
                 });
 
                 function getTime(hours, minutes) {

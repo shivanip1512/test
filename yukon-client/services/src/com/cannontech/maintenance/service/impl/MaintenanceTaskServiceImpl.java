@@ -41,7 +41,7 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
         Instant instant = null;
         try {
             DateTime businessHourStartTime = maintenanceHelper.getNextStartTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
-            DateTime extMaintenanceHourStartTime = maintenanceHelper.getNextStopTime(GlobalSettingType.MAINTENANCE_DAYS);
+            DateTime extMaintenanceHourStartTime = maintenanceHelper.getNextStopTime(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);
             // select next businessHourStartTime or externalMaintenanceHourStartTime, whichever start first
             boolean isExtMaintenanceFirst = businessHourStartTime.isAfter(extMaintenanceHourStartTime);
             DateTime endOfRunWindow = isExtMaintenanceFirst ? extMaintenanceHourStartTime : businessHourStartTime;

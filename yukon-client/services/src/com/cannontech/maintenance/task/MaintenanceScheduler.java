@@ -41,9 +41,9 @@ public class MaintenanceScheduler {
                 || primaryKeyId ==
                     globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId().intValue()
                 || primaryKeyId == 
-                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_DAYS).getId().intValue()
+                    globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId().intValue()
                 || primaryKeyId ==
-                    globalSettingDao.getSetting(GlobalSettingType.MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue())) {
+                    globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue())) {
                 reschedule();
             }
         });
