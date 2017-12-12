@@ -33,7 +33,6 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.dao.PaoLocationDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -66,7 +65,7 @@ import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
-import com.google.common.collect.Lists;
+
 @RequestMapping("/mapNetwork/*")
 @Controller
 public class MapNetworkController {
@@ -252,8 +251,8 @@ public class MapNetworkController {
         List<NearbyDevice> devices = new ArrayList<>();
         PaoLocation location = paoLocationDao.getLocation(deviceId);
         if (location != null) {
-            int maxDevices = 100;
-            List<PaoDistance> nearby = locationService.getNearbyLocations(location, miles, DistanceUnit.MILES, Lists.newArrayList(PaoTag.COMMANDER_REQUESTS));
+            int maxDevices = 1000;
+            List<PaoDistance> nearby = locationService.getNearbyLocations(location, miles, DistanceUnit.MILES, null);
             if (nearby.size() > maxDevices) { 
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.TOO_MANY_NEARBY_DEVICES", nearby.size(), maxDevices));
                 nearby = nearby.subList(0, maxDevices);
