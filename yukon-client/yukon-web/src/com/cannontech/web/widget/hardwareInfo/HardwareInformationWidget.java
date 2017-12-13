@@ -10,7 +10,6 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
@@ -29,12 +28,8 @@ public class HardwareInformationWidget extends AdvancedWidgetControllerBase {
     public HardwareInformationWidget(@Qualifier("widgetInput.inventoryId")
             SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-        
-        //TODO: What roles should we look for?
-        String checkRole = YukonRole.METERING.name();
         addInput(simpleWidgetInput);
         setIdentityPath("common/deviceIdentity.jsp");
-        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
     @RequestMapping("render")
@@ -65,20 +60,6 @@ public class HardwareInformationWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("showMacAddress", true);
             model.addAttribute("showDeviceVendorUserId", true);
         }
-
-        boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();
-        model.addAttribute("showVoltage", showVoltage);
-
-        if (type.showRoute()) {
-            model.addAttribute("showRoute", true);
-        }
-
-        // Show two way device row for non-ZigBee two way LCRs
-        if (type == HardwareType.LCR_3102) {
-            model.addAttribute("showTwoWay", true);
-        }
-
-        model.addAttribute("showInstallNotes", true);
         
         return "hardwareInformationWidget/render.jsp";
     }
