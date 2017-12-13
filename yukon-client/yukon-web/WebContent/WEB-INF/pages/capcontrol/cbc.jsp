@@ -74,9 +74,9 @@
                             <tags:input path="deviceCBC.serialNumber"
                                 size="25" />
                         </tags:nameValue2>
-                        <c:set var="twoWayClass" value="${cbc.twoWay? '' : 'dn'} js-two-way"/>
-                        <c:set var="oneWayClass" value="${cbc.oneWay? '' : 'dn'} js-one-way"/>
-                        <c:set var="logicalClass" value="${cbc.logical? '' : 'dn'} js-logical"/>
+                        <c:set var="twoWayClass" value="${cbc.twoWay ? '' : 'dn'} js-two-way"/>
+                        <c:set var="oneWayClass" value="${cbc.oneWay ? '' : 'dn'} js-one-way"/>
+                        <c:set var="logicalClass" value="${cbc.logical ? '' : 'dn'} js-logical"/>
                         <tags:nameValue2 nameKey=".masterAddr" rowClass="${twoWayClass}">
                             <tags:input path="deviceAddress.masterAddress" />
                         </tags:nameValue2>
