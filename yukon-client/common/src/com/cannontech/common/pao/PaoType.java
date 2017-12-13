@@ -810,6 +810,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return twoWayLcrTypes.contains(this);
     }
     
+    public boolean isRfLcr() {
+        return rfLcrTypes.contains(this);
+    }
+    
     public boolean isTransmitter() {
         return PaoClass.TRANSMITTER == paoClass;
     }
