@@ -78,19 +78,19 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         lcrInMultipleGroups.keySet().forEach(lcr -> {
             ArrayList<Integer> groups = new ArrayList<Integer>(lcrInMultipleGroups.get(lcr));
             ExpressComAddressView tempGroup = new ExpressComAddressView();
+            ExpressComAddressView combinedGroup = new ExpressComAddressView();
             for (int group : groups) {
-                if (!groupConflictingLCR.contains(lcr)) {
                     ExpressComAddressView lmGroupAddressing = lmGroupDaoImpl.getExpressComAddressing(group);
-                    ExpressComAddressView addressing = findGroupConflicts(tempGroup, lmGroupAddressing);
+                    boolean couldCombineAddress = combineLoadGroups(tempGroup, lmGroupAddressing, combinedGroup);
 
-                    // Return null when there is a mismatch and no further checking is required.
-                    if (addressing != null) {
-                        tempGroup = addressing;
+                    // If false there is a mismatch and no further checking is required.
+                    if (couldCombineAddress) {
+                        tempGroup = combinedGroup;
                     } else {
                         // Mismatch, we can not fix it do not send message
                         groupConflictingLCR.add(lcr);
+                        break;
                     }
-                }
             }
         });
         conflictingLCR.removeAll(groupConflictingLCR);
@@ -185,44 +185,46 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         return incorrectAddressingLCR;
     }
 
-    private ExpressComAddressView findGroupConflicts(ExpressComAddressView tempGroup, ExpressComAddressView group) {
-
+    private boolean combineLoadGroups(ExpressComAddressView tempGroup, ExpressComAddressView group,
+            ExpressComAddressView combinedGroup) {
+        
         if (tempGroup.getSpid() == 0 && group.getSpid() != 0) {
-            tempGroup.setSpid(group.getSpid());
+            combinedGroup.setSpid(group.getSpid());
         } else if (tempGroup.getSpid() != 0 && group.getSpid() != 0 && tempGroup.getSpid() != group.getSpid()) {
-            return null;
+            return false;
         }
 
         if (tempGroup.getGeo() == 0 && group.getGeo() != 0) {
-            tempGroup.setGeo(group.getGeo());
+            combinedGroup.setGeo(group.getGeo());
         } else if (tempGroup.getGeo() != 0 && group.getGeo() != 0 && tempGroup.getGeo() != group.getGeo()) {
-            return null;
+            return false;
         }
 
         if (tempGroup.getSubstation() == 0 && group.getSubstation() != 0) {
-            tempGroup.setSubstation(group.getSubstation());
-        } else if (tempGroup.getSubstation() != 0 && group.getSubstation() != 0 && tempGroup.getGeo() != group.getSubstation()) {
-            return null;
+            combinedGroup.setSubstation(group.getSubstation());
+        } else if (tempGroup.getSubstation() != 0 && group.getSubstation() != 0 && tempGroup.getSubstation() != group.getSubstation()) {
+            return false;
         }
 
         if (tempGroup.getFeeder() == 0 && group.getFeeder() != 0) {
-            tempGroup.setFeeder(group.getFeeder());
-        } else if ((tempGroup.getFeeder() != 0 && group.getFeeder() != 0 && (tempGroup.getFeeder() & group.getFeeder()) < 0)) {
-            return null;
+            combinedGroup.setFeeder(group.getFeeder());
+         // If both groups specify feeder, they must have at least 1 overlapping feeder value
+        } else if ((tempGroup.getFeeder() != 0 && group.getFeeder() != 0 && (tempGroup.getFeeder() & group.getFeeder()) == 0)) {
+            return false;
         }
 
         if (tempGroup.getZip() == 0 && group.getZip() != 0) {
-            tempGroup.setZip(group.getZip());
+            combinedGroup.setZip(group.getZip());
         } else if (tempGroup.getZip() != 0 && group.getZip() != 0 && tempGroup.getZip() != group.getZip()) {
-            return null;
+            return false;
         }
 
         if (tempGroup.getUser() == 0 && group.getUser() != 0) {
-            tempGroup.setUser(group.getUser());
+            combinedGroup.setUser(group.getUser());
         } else if (tempGroup.getUser() != 0 && group.getUser() != 0 && tempGroup.getUser() != group.getUser()) {
-            return null;
+            return false;
         }
-        return tempGroup;
+        return true;
     }
 
     private boolean isSuppressMessage() {

@@ -42,6 +42,14 @@ public class DrReconciliationServiceTest {
             groups.add(1);
             groups.add(2);
             groups.add(3);
+            groups.add(4);
+            groups.add(5);
+            groups.add(6);
+            groups.add(7);
+            groups.add(8);
+            groups.add(9);
+            groups.add(10);
+            groups.add(11);
             return groups;
         }).anyTimes();
 
@@ -81,17 +89,74 @@ public class DrReconciliationServiceTest {
                     return lmGroupAddressing;
                 } else if ((Integer) getCurrentArguments()[0] == 3) {
                     ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
-                    lmGroupAddressing.setGroupId(2);
-                    lmGroupAddressing.setUsage("SGBFZUPRL");
+                    lmGroupAddressing.setGroupId(3);
+                    lmGroupAddressing.setUsage("S");
+                    lmGroupAddressing.setSpid(3);
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 4) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(4);
+                    lmGroupAddressing.setUsage("SG");
+                    lmGroupAddressing.setSpid(3);
+                    lmGroupAddressing.setGeo(4);
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 5) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(5);
+                    lmGroupAddressing.setUsage("SGB");
+                    lmGroupAddressing.setSpid(3);
+                    lmGroupAddressing.setGeo(4);
+                    lmGroupAddressing.setSubstation(9);
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 6) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(6);
+                    lmGroupAddressing.setUsage("SGBF");
+                    lmGroupAddressing.setSpid(3);
+                    lmGroupAddressing.setGeo(4);
+                    lmGroupAddressing.setSubstation(9);
+                    lmGroupAddressing.setFeeder(1);
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 7) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(7);
+                    lmGroupAddressing.setUsage("SGBFZ");
                     lmGroupAddressing.setSpid(3);
                     lmGroupAddressing.setGeo(4);
                     lmGroupAddressing.setSubstation(9);
                     lmGroupAddressing.setFeeder(1);
                     lmGroupAddressing.setZip(7);
-                    lmGroupAddressing.setUser(8);
-                    lmGroupAddressing.setProgram(9);
-                    lmGroupAddressing.setSplinter(10);
-                    lmGroupAddressing.setRelay("167");
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 8) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(8);
+                    lmGroupAddressing.setUsage("SGBFZ");
+                    lmGroupAddressing.setSpid(3);
+                    lmGroupAddressing.setGeo(4);
+                    lmGroupAddressing.setSubstation(9);
+                    lmGroupAddressing.setFeeder(1);
+                    lmGroupAddressing.setZip(8); 
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 9) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(9);
+                    lmGroupAddressing.setUsage("SF");
+                    lmGroupAddressing.setSpid(3);
+                    lmGroupAddressing.setFeeder(1);
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 10) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(10);
+                    lmGroupAddressing.setUsage("SF");
+                    lmGroupAddressing.setSpid(3);
+                    lmGroupAddressing.setFeeder(2);
+                    return lmGroupAddressing;
+                } else if ((Integer) getCurrentArguments()[0] == 11) {
+                    ExpressComAddressView lmGroupAddressing = new ExpressComAddressView();
+                    lmGroupAddressing.setGroupId(11);
+                    lmGroupAddressing.setUsage("SF");
+                    lmGroupAddressing.setSpid(3);
+                    lmGroupAddressing.setFeeder(3);
                     return lmGroupAddressing;
                 } 
                 return null;
@@ -112,7 +177,34 @@ public class DrReconciliationServiceTest {
                 } else if  ((Integer) getCurrentArguments()[0] == 3) {
                     lcrs.add(3);
                     return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 4) {
+                    lcrs.add(3);
+                    return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 5) {
+                    lcrs.add(3);
+                    return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 6) {
+                    lcrs.add(3);
+                    lcrs.add(4);
+                    return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 7) {
+                    lcrs.add(4);
+                    return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 8) {
+                    lcrs.add(4);
+                    return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 9) {
+                    lcrs.add(5);
+                    lcrs.add(6);
+                    return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 10) {
+                    lcrs.add(5);
+                    return lcrs;
+                } else if  ((Integer) getCurrentArguments()[0] == 11) {
+                    lcrs.add(6);
+                    return lcrs;
                 }
+                
                 return null;
             }
         }).anyTimes();
@@ -120,8 +212,18 @@ public class DrReconciliationServiceTest {
         drReconciliationDao.getLcrEnrolledInMultipleGroup(EasyMock.<Set<Integer>> anyObject());
         expectLastCall().andAnswer(() -> {
             Multimap<Integer, Integer> lcrs = HashMultimap.create();
-            lcrs.put(3, 1);
             lcrs.put(3, 3);
+            lcrs.put(3, 4);
+            lcrs.put(3, 5);
+            lcrs.put(3, 6);
+            lcrs.put(4, 5);
+            lcrs.put(4, 6);
+            lcrs.put(4, 7);
+            lcrs.put(4, 8);
+            lcrs.put(5, 9);
+            lcrs.put(5, 10);
+            lcrs.put(6, 9);
+            lcrs.put(6, 11);
             return lcrs;
         }).anyTimes();
 
@@ -143,7 +245,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
         Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
-        assertTrue("LCR correct address ", conflictingLCR.size() == 0);
+        assertTrue("LCR correct address ", conflictingLCR.size() == 1);
     }
 
     // Incorrect Program Set on one relay
@@ -300,6 +402,7 @@ public class DrReconciliationServiceTest {
         expectLastCall().andAnswer(() -> {
             @SuppressWarnings("unchecked")
             List<ExpressComReportedAddress> lcrAddressing = getDefaultLCRAddressing((List<Integer>) EasyMock.getCurrentArguments()[0]);
+            lcrAddressing.stream().filter(e -> e.getDeviceId() != 3);
             return lcrAddressing;
             
         }).anyTimes();
@@ -308,8 +411,81 @@ public class DrReconciliationServiceTest {
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
 
         Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
-        assertTrue("Group did not match ", conflictingLCR.size() == 0);
+        assertTrue("Group did not match ", conflictingLCR.size() == 1);
     }
+    
+    // Multiple LCR in single group, group addressing incorrect - Group 7 and 8 have different zip code
+    @Test
+    public void inCorrectGroupAddressing() {
+        ExpressComReportedAddressDaoImpl expressComDaoImpl = createNiceMock(ExpressComReportedAddressDaoImpl.class);
+
+        expressComDaoImpl.getCurrentAddresses(EasyMock.<List<Integer>> anyObject());
+        expectLastCall().andAnswer(() -> {
+            @SuppressWarnings("unchecked")
+            List<ExpressComReportedAddress> lcrAddressing = getDefaultLCRAddressing((List<Integer>) EasyMock.getCurrentArguments()[0]);
+            lcrAddressing.stream().filter(e -> e.getDeviceId() != 4);
+            return lcrAddressing;
+            
+        }).anyTimes();
+
+        replay(expressComDaoImpl);
+        ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
+
+        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+      
+        assertTrue("Group did not match ", !conflictingLCR.contains(4));
+    }
+
+    // Two groups with correct feeders
+    @Test
+    public void correctFeederInGroupAddressing() {
+        ExpressComReportedAddressDaoImpl expressComDaoImpl = createNiceMock(ExpressComReportedAddressDaoImpl.class);
+
+        expressComDaoImpl.getCurrentAddresses(EasyMock.<List<Integer>> anyObject());
+        expectLastCall().andAnswer(() -> {
+            @SuppressWarnings("unchecked")
+            List<ExpressComReportedAddress> lcrAddressing = getDefaultLCRAddressing((List<Integer>) EasyMock.getCurrentArguments()[0]);
+            lcrAddressing.stream().forEach( e -> {
+                if (e.getDeviceId() == 6) {
+                    e.setSpid(100);
+                }
+            }); 
+            return lcrAddressing;
+            
+        }).anyTimes();
+
+        replay(expressComDaoImpl);
+        ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
+
+        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        assertTrue("Group did not match ", conflictingLCR.contains(6));
+    }
+    
+    // Two groups with incorrect feeders
+    @Test
+    public void inCorrectFeederInGroupAddressing() {
+        ExpressComReportedAddressDaoImpl expressComDaoImpl = createNiceMock(ExpressComReportedAddressDaoImpl.class);
+
+        expressComDaoImpl.getCurrentAddresses(EasyMock.<List<Integer>> anyObject());
+        expectLastCall().andAnswer(() -> {
+            @SuppressWarnings("unchecked")
+            List<ExpressComReportedAddress> lcrAddressing = getDefaultLCRAddressing((List<Integer>) EasyMock.getCurrentArguments()[0]);
+            lcrAddressing.stream().forEach( e -> {
+                if (e.getDeviceId() == 5) {
+                    e.setSpid(100);
+                }
+            }); 
+                 return lcrAddressing;
+            
+        }).anyTimes();
+
+        replay(expressComDaoImpl);
+        ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
+
+        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        assertTrue("Group did not match ", !conflictingLCR.contains(5));
+    }
+    
 
     private List<ExpressComReportedAddress> getDefaultLCRAddressing(List<Integer> lcrs) {
         
