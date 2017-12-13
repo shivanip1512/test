@@ -81,7 +81,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             ExpressComAddressView combinedGroup = new ExpressComAddressView();
             for (int group : groups) {
                     ExpressComAddressView lmGroupAddressing = lmGroupDaoImpl.getExpressComAddressing(group);
-                    boolean couldCombineAddress = combineLoadGroups(tempGroup, lmGroupAddressing, combinedGroup);
+                    boolean couldCombineAddress = combineGroupAddressing(tempGroup, lmGroupAddressing, combinedGroup);
 
                     // If false there is a mismatch and no further checking is required.
                     if (couldCombineAddress) {
@@ -185,7 +185,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         return incorrectAddressingLCR;
     }
 
-    private boolean combineLoadGroups(ExpressComAddressView tempGroup, ExpressComAddressView group,
+    private boolean combineGroupAddressing(ExpressComAddressView tempGroup, ExpressComAddressView group,
             ExpressComAddressView combinedGroup) {
         
         if (tempGroup.getSpid() == 0 && group.getSpid() != 0) {
