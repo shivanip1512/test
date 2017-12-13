@@ -90,7 +90,7 @@
                                     <select id="miles" class="js-miles">
                                         <option>0.25</option>
                                         <option>0.5</option>
-                                        <option>1</option>
+                                        <option selected="selected">1</option>
                                         <option>5</option>
                                         <option>10</option>
                                     </select>
