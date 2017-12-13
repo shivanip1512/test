@@ -7,12 +7,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.joda.time.Instant;
 
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.util.InstantRangeLogHelper;
-import com.cannontech.common.util.Range;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 
@@ -55,7 +52,6 @@ public class DeviceConfigSummaryFilter {
     //has all ids if "ALL" selected.
     private List<Integer> configurationIds;
     private boolean displayUnassigned;
-    private Range<Instant> range;
 
     public List<DeviceGroup> getGroups() {
         return groups;
@@ -109,15 +105,7 @@ public class DeviceConfigSummaryFilter {
     public boolean contains(LastActionStatus option) {
         return statuses == null ? false : statuses.contains(option);
     }
-      
-    public Range<Instant> getRange() {
-        return range;
-    }
-    
-    public void setRange(Range<Instant> range) {
-        this.range = range;
-    }
-        
+   
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
@@ -136,9 +124,6 @@ public class DeviceConfigSummaryFilter {
         }
         if (configurationIds != null) {
             tsb.append("configurationIds", Joiner.on(",").join(configurationIds));
-        }
-        if (range != null) {
-            tsb.append("range" + InstantRangeLogHelper.getLogString(range));
         }
         return tsb.toString();
     }

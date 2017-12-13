@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -181,27 +180,6 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
             }
         }
         sql.append(") results");
-        if(filter.getRange() != null){
-            sql.append("WHERE");  
-            String and = "";
-            Instant startDate = filter.getRange().getMin();
-            if (startDate != null) {
-                and = "AND";
-                if (filter.getRange().isIncludesMinValue()) {
-                    sql.append("results.StartTime").gte(startDate);
-                } else {
-                    sql.append("results.StartTime").gt(startDate);
-                }
-            }
-            Instant stopDate = filter.getRange().getMax();
-            if (stopDate != null) {
-                if (filter.getRange().isIncludesMaxValue()) {
-                    sql.append(and).append("results.StopTime").lte(stopDate);
-                } else {
-                    sql.append(and).append("results.StopTime").lt(stopDate);
-                }
-            }
-        }
         if (sortBy != null) {
             sql.append("ORDER BY");
             sql.append(sortBy.getDbString());
