@@ -41,7 +41,11 @@ YukonError_t DnpChildDevice::executeRequestOnParent(const std::string& command, 
     newRequest->setConnectionHandle(req.getConnectionHandle());
     newRequest->setOptionsField(getID());
 
-    CTILOG_INFO(dout, "Submitting request to logical CBC parent device" << *newRequest);
+    CTILOG_INFO(dout, "Submitting request to parent device" << FormattedList::of(
+        "Child device ID", getID(),
+        "Child device name", getName(),
+        "Parent device ID", _parentDeviceId)
+        << *newRequest);
 
     retList.push_back(newRequest.release());
 

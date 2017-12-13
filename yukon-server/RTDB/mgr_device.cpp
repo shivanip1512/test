@@ -672,7 +672,6 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
                 rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
 
                 //  prevent the LMI from being loaded twice
-                rowFound |= loadDeviceType(paoid_subset, "DNP RTU devices",        Devices::DnpRtuDevice(), "RTU-LMI", false);
                 rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DnpDevice(),          "RTU-LMI", false);
                 rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
                 rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
