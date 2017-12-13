@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -45,7 +42,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
@@ -247,7 +243,6 @@ public class DeviceConfigurationSummaryController {
     @RequestMapping(value="download", method=RequestMethod.GET)
     public String download(HttpServletResponse response, ModelMap model, @ModelAttribute DeviceConfigSummaryFilter filter, String[] deviceSubGroups, YukonUserContext userContext) throws IOException {
         setFilterValues(filter, deviceSubGroups);
-        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         SearchResults<DeviceConfigSummaryDetail> details = deviceConfigSummaryDao.getSummary(filter, PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
         List<String> headerRow = getHeader(accessor);
@@ -276,31 +271,33 @@ public class DeviceConfigurationSummaryController {
             ArrayList<String> row = new ArrayList<>();
             row.add(d.getDevice().getName());
             row.add(d.getDevice().getPaoIdentifier().getPaoType().getPaoTypeName());
-            row.add(d.getDeviceConfig().getName());
+            if (d.getDeviceConfig() != null) {
+                row.add(d.getDeviceConfig().getName());
+            }
             if (d.getAction() != null) {
-                row.add(d.getAction().toString());
+                row.add(accessor.getMessage(baseKey + "actionType." + d.getAction()));
             } else {
                 row.add("");
             }
             if (d.getStatus() != null) {
-                row.add(d.getStatus().toString());
+                row.add(accessor.getMessage(baseKey + "statusType." + d.getStatus()));
             } else {
-                row.add(accessor.getMessage(baseKey+"statusType.NA"));
+                row.add(accessor.getMessage(baseKey + "statusType.NA"));
             }
             if (d.getInSync() != null) {
-                row.add(d.getInSync().toString());
+                row.add(accessor.getMessage(baseKey + "syncType." + d.getInSync()));
             } else {
-                row.add(accessor.getMessage(baseKey+"syncType.NA"));
+                row.add(accessor.getMessage(baseKey + "syncType.NA"));
             }
             if (d.getActionStart() != null) {
                 String start = dateFormattingService.format(d.getActionStart(), DateFormatEnum.BOTH, userContext);
-                row.add(start.toString());
+                row.add(start);
             } else {
                 row.add("N/A");
             }
             if (d.getAction() != null) {
                 String end = dateFormattingService.format(d.getActionEnd(), DateFormatEnum.BOTH, userContext);
-                row.add(end.toString());
+                row.add(end);
             } else {
                 row.add("N/A");
             }
