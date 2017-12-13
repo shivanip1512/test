@@ -73,8 +73,8 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
                             rfnLogger.info("<<< " + requestPayload.toString());
                         }
                     } else {
-                        if (log.isInfoEnabled()) {
-                            log.info("<<< " + requestPayload.toString());
+                        if (log.isDebugEnabled()) {
+                            log.debug("<<< " + requestPayload.toString());
                         }
                     }
                     if (log.isTraceEnabled()) {
