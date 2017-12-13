@@ -37,10 +37,6 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     }
     
     public boolean isUpgradeAvailable () {
-        //If this is a legacy gateway, firmware update is not supported
-        if (getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY) {
-            return false;
-        }
         //If the current or available version is null, we can't upgrade
         String currentVersionString = getData().getReleaseVersion();
         if (currentVersionString == null || upgradeVersion == null) {
@@ -48,9 +44,12 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         }
         
         try {
-            //If the current version is < 6.1.0, the upgrade has to be done manually
+            //If the current version is < 6.1.0 and Gateway is 2.0, the upgrade has to be done manually
             GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(currentVersionString);
-            if (currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 0)) < 0) {
+            if (getPaoIdentifier().getPaoType() == PaoType.GWY800 && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 0)) < 0) {
+                return false;
+            //If the current version is < 6.1.1 and Gateway is 1.5, the upgrade has to be done manually
+            } else if (getPaoIdentifier().getPaoType() == PaoType.RFN_RELAY && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 1)) < 0) {
                 return false;
             }
             //The available version has to be greater than or equal to the current version to allow upgrade

@@ -43,7 +43,7 @@ public class DefaultGatewaySimulatorData {
     private static final LastCommStatus lastCommStatus = LastCommStatus.SUCCESSFUL;
     private static final String upperStackVersion = "1.0";
     private static final String softwareVersion = "2.0";
-    private static final String releaseVersion = "6.1.0";
+    private static final String releaseVersion = "6.1.1";
     private static final String radioVersion = "4.0";
     private static final String hardwareVersion = "5.0";
     private static final Set<ConflictType> versionConflicts = new HashSet<>();

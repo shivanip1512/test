@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.model.GatewayFirmwareVersion;
@@ -210,14 +211,21 @@ public class GatewayUpdateServerController {
     }
 
     private boolean isGatewayUpgradeable(RfnGateway gateway) {
+        GatewayFirmwareVersion firmwareVersion = null;
         if (gateway.getData() == null) {
             return false;
         }
         String versionString = gateway.getData().getReleaseVersion();
-        //Make sure firmware version is >= 6.1.0 or the feature is not supported
         try {
             GatewayFirmwareVersion version = GatewayFirmwareVersion.parse(versionString);
-            int compare = version.compareTo(new GatewayFirmwareVersion(6, 1, 0));
+            if (gateway.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
+                // For Gateway 2.0, make sure firmware version is >= 6.1.0 or the feature is not supported
+                firmwareVersion = new GatewayFirmwareVersion(6, 1, 0);
+            } else if (gateway.getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY) {
+                // For Gateway 1.5, make sure firmware version is >= 6.1.1 or the feature is not supported
+                firmwareVersion = new GatewayFirmwareVersion(6, 1, 1);
+            }
+            int compare = version.compareTo(firmwareVersion);
             return compare >= 0;
         } catch (IllegalArgumentException e) {
             log.trace(e);
