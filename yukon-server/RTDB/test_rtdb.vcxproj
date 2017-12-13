@@ -398,6 +398,7 @@
     </ClCompile>
     <ClCompile Include="test_dev_dnp.cpp">
     </ClCompile>
+    <ClCompile Include="test_dev_dnprtu.cpp" />
     <ClCompile Include="test_dev_grp.cpp">
     </ClCompile>
     <ClCompile Include="test_dev_lcr3102.cpp">

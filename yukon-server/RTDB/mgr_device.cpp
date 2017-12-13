@@ -12,6 +12,7 @@
 #include "dev_cbc.h"
 #include "dev_cbclogical.h"
 #include "dev_dnp.h"
+#include "dev_dnprtu.h"
 #include "dev_ion.h"
 #include "dev_remote.h"
 #include "dev_meter.h"
@@ -671,6 +672,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
                 rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
 
                 //  prevent the LMI from being loaded twice
+                rowFound |= loadDeviceType(paoid_subset, "DNP RTU devices",        Devices::DnpRtuDevice(), "RTU-LMI", false);
                 rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DnpDevice(),          "RTU-LMI", false);
                 rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
                 rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
@@ -695,7 +697,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
                 rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
 
                 rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
-                rowFound |= loadDeviceType(paoid_subset, "Logical CBC devices",    Devices::CbcLogicalDevice(),  "CBC Logical");
+                rowFound |= loadDeviceType(paoid_subset, "Logical CBC devices",    Devices::CbcLogicalDevice());
                 rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
                 rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
@@ -854,17 +856,17 @@ void CtiDeviceManager::removeAssociations(const CtiDeviceBase &evictedDevice)
     _portDevices[evictedDevice.getPortID()].erase(evictedDevice.getID());
     _typeDevices[evictedDevice.getType()  ].erase(evictedDevice.getID());
 
-    if( evictedDevice.getDeviceType() == TYPE_CBCLOGICAL )
+    if( isDnpChild(evictedDevice.getType()) )
     {
-        const auto& cbc = static_cast<const Devices::CbcLogicalDevice&>(evictedDevice);
+        const auto& child = static_cast<const Devices::DnpChildDevice&>(evictedDevice);
 
-        if( auto parent = getDeviceByID(cbc.getParentDeviceId()) )
+        if( auto parent = getDeviceByID(child.getParentDeviceId()) )
         {
             if( parent->getDeviceType() == TYPE_DNPRTU )
             {
-                auto& dnp = static_cast<Devices::DnpDevice&>(*parent);
+                auto& dnp = static_cast<Devices::DnpRtuDevice&>(*parent);
 
-                dnp.removeChildDevice(cbc.getID());
+                dnp.removeChildDevice(child.getID());
             }
         }
     }
@@ -1119,7 +1121,7 @@ void CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
 }
 
 
-bool CtiDeviceManager::isMct(int type)
+bool CtiDeviceManager::isMct(const int type)
 {
     switch(type)
     {
@@ -1166,7 +1168,7 @@ bool CtiDeviceManager::isMct(int type)
     return false;
 }
 
-bool CtiDeviceManager::isIon(int type)
+bool CtiDeviceManager::isIon(const int type)
 {
     switch(type)
     {
@@ -1181,7 +1183,7 @@ bool CtiDeviceManager::isIon(int type)
     return false;
 }
 
-bool CtiDeviceManager::isDnpChild(int type)
+bool CtiDeviceManager::isDnpChild(const int type)
 {
     return type == TYPE_CBCLOGICAL;
 }
@@ -1547,7 +1549,7 @@ void CtiDeviceManager::refreshDnpChildDevices(Cti::Database::id_set &paoids)
                 }
             }
 
-            static_cast<Cti::Devices::DnpDevice&>(*dev).addChildDevice(itr->second);
+            static_cast<Cti::Devices::DnpRtuDevice&>(*dev).addChildDevice(itr->second);
 
             ++itr;
         }

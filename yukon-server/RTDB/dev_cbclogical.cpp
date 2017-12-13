@@ -23,8 +23,7 @@ namespace Cti {
 namespace Devices {
 
 CbcLogicalDevice::CbcLogicalDevice()
-    :   _attributeMapping { [this](const std::string& name) { return getDevicePointByName(name); } },
-        _parentDeviceId {}
+    :   _attributeMapping { [this](const std::string& name) { return getDevicePointByName(name); } }
 {
 }
 
@@ -45,23 +44,6 @@ std::string CbcLogicalDevice::getSQLCoreStatement() const
     return sqlCore;
 }
 
-void CbcLogicalDevice::DecodeDatabaseReader(RowReader& rdr)
-{
-    Inherited::DecodeDatabaseReader(rdr);
-
-    rdr["ParentID"] >> _parentDeviceId;
-}
-
-long CbcLogicalDevice::getParentDeviceId() const
-{
-    return _parentDeviceId;
-}
-
-void CbcLogicalDevice::setParentDeviceId(const long parentDeviceId, Test::use_in_unit_tests_only&)
-{
-    _parentDeviceId = parentDeviceId;
-}
-
 auto CbcLogicalDevice::getMappableAttributes() const -> AttributeMapping::AttributeList
 {
     return {
@@ -71,27 +53,6 @@ auto CbcLogicalDevice::getMappableAttributes() const -> AttributeMapping::Attrib
         Attribute::EnableTimeControl,
         Attribute::EnableVarControl,
     };
-}
-
-YukonError_t CbcLogicalDevice::executeRequestOnParent(const std::string& command, const CtiRequestMsg& req, CtiMessageList& retList)
-{
-    if( ! _parentDeviceId )
-    {
-        throw YukonErrorException(ClientErrors::MissingConfig, "Parent device ID not set");
-    }
-
-    auto newRequest = std::make_unique<CtiRequestMsg>(req);
-
-    newRequest->setDeviceId(_parentDeviceId);
-    newRequest->setCommandString(command);
-    newRequest->setConnectionHandle(req.getConnectionHandle());
-    newRequest->setOptionsField(getID());
-
-    CTILOG_INFO(dout, "Submitting request to logical CBC parent device" << *newRequest);
-
-    retList.push_back(newRequest.release());
-
-    return ClientErrors::None;
 }
 
 YukonError_t CbcLogicalDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)

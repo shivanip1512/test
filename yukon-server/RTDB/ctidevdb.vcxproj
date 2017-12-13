@@ -445,6 +445,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="dev_dnp.cpp">
     </ClCompile>
+    <ClCompile Include="dev_dnpchild.cpp" />
+    <ClCompile Include="dev_dnprtu.cpp" />
     <ClCompile Include="dev_dr87.cpp">
     </ClCompile>
     <ClCompile Include="dev_exclusion.cpp">
@@ -684,6 +686,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_dct501.h" />
     <ClInclude Include="include\dev_dlcbase.h" />
     <ClInclude Include="include\dev_dnp.h" />
+    <ClInclude Include="include\dev_dnpchild.h" />
+    <ClInclude Include="include\dev_dnprtu.h" />
     <ClInclude Include="include\dev_dr87.h" />
     <ClInclude Include="include\dev_exclusion.h" />
     <ClInclude Include="include\dev_focus.h" />

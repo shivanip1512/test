@@ -174,8 +174,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceILEX")
         ("class CtiDeviceWelco")
         ("class CtiDeviceRemote")
-        ("class Cti::Devices::DnpDevice")
-        ("class Cti::Devices::DnpDevice")
+        ("class Cti::Devices::DnpRtuDevice")
+        ("class Cti::Devices::DnpRtuDevice")
         ("class CtiDeviceION")
         ("class CtiDeviceION")
         ("class CtiDeviceION")
@@ -375,8 +375,8 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "rfn-530s4erx",                   "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-530s4erxr",                  "class Cti::Devices::RfnCommercialDevice" },
 
-        { "rtu-dart",                       "class Cti::Devices::DnpDevice" },
-        { "rtu-dnp",                        "class Cti::Devices::DnpDevice" },
+        { "rtu-dart",                       "class Cti::Devices::DnpRtuDevice" },
+        { "rtu-dnp",                        "class Cti::Devices::DnpRtuDevice" },
         { "rtu-ilex",                       "class CtiDeviceILEX" },
         { "rtu-lmi",                        "class CtiDeviceLMI" },
         //  100

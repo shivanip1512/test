@@ -10,6 +10,7 @@
 #include "dev_cbclogical.h"
 #include "dev_ccu.h"
 #include "dev_ccu721.h"
+#include "dev_dnprtu.h"
 #include "dev_welco.h"
 #include "dev_ilex.h"
 #include "dev_seriesv.h"
@@ -157,8 +158,8 @@ const DeviceLookup deviceFactory {
     //  RTUs
     { TYPE_WELCORTU,     MakeDeviceFunc(makeDevice<CtiDeviceWelco>) },
     { TYPE_ILEXRTU,      MakeDeviceFunc(makeDevice<CtiDeviceILEX>) },
-    { TYPE_DARTRTU,      MakeDeviceFunc(makeDevice<DnpDevice>) },
-    { TYPE_DNPRTU,       MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPE_DARTRTU,      MakeDeviceFunc(makeDevice<DnpRtuDevice>) },
+    { TYPE_DNPRTU,       MakeDeviceFunc(makeDevice<DnpRtuDevice>) },
     { TYPE_SERIESVRTU,   MakeDeviceFunc(makeDevice<CtiDeviceSeriesV>) },
     { TYPE_SERIESVLMIRTU,MakeDeviceFunc(makeDevice<CtiDeviceLMI>) },
     { TYPE_ION7330,      MakeDeviceFunc(makeDevice<CtiDeviceION>) },

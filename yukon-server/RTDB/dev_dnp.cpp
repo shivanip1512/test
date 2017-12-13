@@ -25,8 +25,6 @@
 using namespace std;
 using namespace Cti::Config;
 
-using Cti::Logging::Set::operator<<;
-
 namespace Cti {
 namespace Devices {
 
@@ -155,54 +153,6 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     DnpProtocol::output_point controlout;
     pseudo_info p_i = {false, -1, -1};
 
-    std::function<CtiPointSPtr(long)> getRequestDevicePointById;
-    std::function<CtiPointSPtr(long)> getRequestDevicePointByControlOffset;
-
-    //  Does the message specify a child device ID?
-    if( pReq->OptionsField() )
-    {
-        const auto childDeviceId = pReq->OptionsField();
-
-        if( ! _childDevices.count(childDeviceId) )
-        {
-            CTILOG_ERROR(dout, "Received a request message that is not from a child device:" << FormattedList::of(
-                "Device ID", getID(),
-                "Device name", getName(),
-                "Request device ID", childDeviceId,
-                "Child devices", _childDevices));
-
-            std::string errorMessage = "Unknown child device ID " + std::to_string(pReq->OptionsField());
-            insertReturnMsg(ClientErrors::ChildDeviceUnknown, OutMessage, retList, errorMessage);
-
-            return ClientErrors::ChildDeviceUnknown;
-        }
-
-        //  override which device we get the points from
-        getRequestDevicePointById = [this, childDeviceId](const long pointId)
-        {
-            return _pointMgr
-                ? _pointMgr->getPoint(pointId, childDeviceId)
-                : CtiPointManager::ptr_type{};
-        };
-        getRequestDevicePointByControlOffset = [this, childDeviceId](const long controlOffset)
-        {
-            return _pointMgr
-                ? _pointMgr->getControlOffsetEqual(childDeviceId, controlOffset)
-                : CtiPointManager::ptr_type{};
-        };
-    }
-    else
-    {
-        getRequestDevicePointById = [this](const long pointId)
-        {
-            return getDevicePointByID(pointId);
-        };
-        getRequestDevicePointByControlOffset = [this](const long controlOffset)
-        {
-            return getDeviceControlPointOffsetEqual(controlOffset);
-        };
-    }
-
     switch( parse.getCommand() )
     {
         case LoopbackRequest:
@@ -227,7 +177,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
             if( pointid > 0 )
             {
                 //  select by raw pointid
-                CtiPointSPtr point = getRequestDevicePointById(pointid);
+                CtiPointSPtr point = getDevicePointByID(pointid);
 
                 if ( ! point )
                 {
@@ -247,7 +197,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 //  select by a control point on the device
                 offset  = parse.getiValue("offset");
 
-                pStatus = boost::static_pointer_cast<CtiPointStatus>(getRequestDevicePointByControlOffset(offset));
+                pStatus = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual(offset));
             }
 
             if( pStatus )
@@ -493,7 +443,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 {
                     const long pointid = parse.getiValue("point");
 
-                    const CtiPointSPtr point = getRequestDevicePointById(pointid);
+                    const CtiPointSPtr point = getDevicePointByID(pointid);
 
                     if ( ! point )
                     {
@@ -921,6 +871,22 @@ std::unique_ptr<CtiPointDataMsg> DnpDevice::calculateDemandAccumulator(const Cti
     return nullptr;
 }
 
+auto DnpDevice::getDevicePointsByType() const -> PointsByType
+{
+    std::vector<CtiPointSPtr> devicePoints;
+
+    getDevicePoints(devicePoints);
+
+    PointsByType points;
+
+    for( auto& pt : devicePoints )
+    {
+        points[pt->getType()].emplace(pt->getPointOffset(), pt);
+    }
+
+    return points;
+}
+
 void DnpDevice::processPoints( Protocols::Interface::pointlist_t &pointdata )
 {
     if( ! _pointMgr )
@@ -933,39 +899,7 @@ void DnpDevice::processPoints( Protocols::Interface::pointlist_t &pointdata )
         return;
     }
 
-    std::map<CtiPointType_t, std::map<int, CtiPointSPtr>> devicePointsByType;
-
-    std::vector<CtiPointSPtr> hierarchyPoints;
-
-    getDevicePoints(hierarchyPoints);
-
-    for( auto childDeviceId : _childDevices )
-    {
-        _pointMgr->getEqualByPAO(childDeviceId, hierarchyPoints);
-    }
-
-    for( auto& pt : hierarchyPoints )
-    {
-        if( ! pt->isPseudoPoint() )
-        {
-            auto result = devicePointsByType[pt->getType()].emplace(pt->getPointOffset(), pt);
-
-            if( !result.second )
-            {
-                auto& existingPoint = *result.first->second;
-
-                CTILOG_WARN(dout, "Hierarchy point collision, keeping first encountered point:" + FormattedList::of(
-                    "Device ID", getID(),
-                    "Device name", getName(),
-                    "Point type", pt->getType(),
-                    "Point offset", pt->getPointOffset(),
-                    "Retained point ID", existingPoint.getPointID(),
-                    "Retained device ID", existingPoint.getDeviceID(),
-                    "Rejected point ID", pt->getPointID(),
-                    "Rejected device ID", pt->getDeviceID()));
-            }
-        }
-    }
+    auto devicePointsByType = getDevicePointsByType();
 
     Protocols::Interface::pointlist_t demand_pointdata;
 
@@ -1209,16 +1143,6 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
    {
        _dnp.setDatalinkConfirm();
    }
-}
-
-void DnpDevice::addChildDevice(const long childDeviceId)
-{
-    _childDevices.insert(childDeviceId);
-}
-
-void DnpDevice::removeChildDevice(const long childDeviceId)
-{
-    _childDevices.erase(childDeviceId);
 }
 
 }
