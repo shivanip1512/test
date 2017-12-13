@@ -6,7 +6,7 @@
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DEVICE_CONFIGURATION"/>
-        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DEVICE_ICON_TYPE" option="plc_electric_meter"/>
         <tag name="DISCONNECT_410"/>
         <tag name="DISCONNECT_COLLAR_COMPATIBLE"/>
         <tag name="DLC_ADDRESS_RANGE" option="310000-313555,313600-314499,314500-499999,590001-592000,592001-594000,594001-610000,810001-1000000,2897700-3597700"/>

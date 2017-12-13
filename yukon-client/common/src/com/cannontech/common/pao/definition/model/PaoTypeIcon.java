@@ -3,6 +3,7 @@ package com.cannontech.common.pao.definition.model;
 public enum PaoTypeIcon {
     
     ELECTRIC_METER("icon-electric-meter"),
+    PLC_ELECTRIC_METER("icon-electric-plc-meter"),
     WATER_METER("icon-water-meter"),
     GAS_METER("icon-gas-meter"),
     TRANSMITTER("icon-transmitter"),

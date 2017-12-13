@@ -6,7 +6,7 @@
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DEVICE_CONFIGURATION"/>
-        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DEVICE_ICON_TYPE" option="plc_electric_meter"/>
         <tag name="DLC_ADDRESS_RANGE" option="620000-620199,620200-700000,700001-700356,701001-799999"/>
         <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
         <tag name="LOAD_PROFILE"/>
