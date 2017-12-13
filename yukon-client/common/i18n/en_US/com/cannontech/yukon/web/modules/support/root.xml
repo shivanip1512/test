@@ -338,12 +338,11 @@
     <entry key="yukon.web.modules.support.systemHealth.porterQueueStatistics.helpText">
         <![CDATA[
             <h3>Comm Channel</h3>
-            Comm Channels are used for communication between devices and Yukon.
+            Communication channels are used for the exchange of data between the Yukon application and field devices (not inclusive of RF Meters).
             
             <h3>Metrics</h3>
-            These metrics shows information about the current state of comm channels.
             <ul>
-                <li><b>Queue Size:</b> The number of work entries currently on the comm channel.</li>
+                <li><b>Queue Size:</b> The number of work entries to be processed on the communication channel.</li>
             </ul>
         ]]>
     </entry>

@@ -15,6 +15,7 @@ import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.stream.StreamUtils;
@@ -102,7 +103,9 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     
     @Override
     public Map<Integer, LiteYukonPAObject> getPointIdToPaoMapForAllPorts() {
-        return makeAndGetPointIdToPaoMap(serverDatabaseCache.getAllPorts());
+        List<LiteYukonPAObject> paos = serverDatabaseCache.getAllPorts();
+        paos.removeIf(pao -> pao.getPaoType() == PaoType.RFN_1200);
+        return makeAndGetPointIdToPaoMap(paos);
     }
-    
+
 }
