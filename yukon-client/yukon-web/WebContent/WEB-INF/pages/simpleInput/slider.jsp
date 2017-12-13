@@ -25,7 +25,7 @@
             <span style="padding-left:22%"><i:inline key="yukon.web.modules.adminSetup.config.slider.elevenFiftyNinePm"/></span>
         </c:when>
         <c:otherwise>
-            <span>12:00AM</span>
+            <span><i:inline key="yukon.web.modules.adminSetup.config.slider.twelveAm"/></span>
             <span style="padding-left:4%;"><i:inline key="yukon.web.modules.adminSetup.config.slider.eightAm"/></span>
             <span style="padding-left:7%;"><i:inline key="yukon.web.modules.adminSetup.config.slider.fourPm"/></span>
             <span style="padding-left:7%"><i:inline key="yukon.web.modules.adminSetup.config.slider.twelveAm"/></span>
