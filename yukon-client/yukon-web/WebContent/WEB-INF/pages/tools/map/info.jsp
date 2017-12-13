@@ -18,6 +18,9 @@
     <c:if test="${!empty macAddress}">
         <tags:nameValue2 nameKey=".macAddress">${fn:escapeXml(macAddress)}</tags:nameValue2>
     </c:if>
+    <c:if test="${!empty serialNumber}">
+        <tags:nameValue2 nameKey=".serialNbr">${fn:escapeXml(serialNumber)}</tags:nameValue2>
+    </c:if>
     <c:if test="${!empty primaryGateway}">
         <tags:nameValue2 nameKey=".primaryGateway">${fn:escapeXml(primaryGateway)}</tags:nameValue2>
     </c:if>
@@ -29,6 +32,7 @@
     <c:if test="${showAddressOrSerial}">
         <tags:nameValue2 nameKey=".serialOrAddress">${fn:escapeXml(pao.meter.serialOrAddress)}</tags:nameValue2>
     </c:if>
+
     <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span><i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>
 
