@@ -698,7 +698,7 @@
             </ul>
             The resulting devices will display in the table.<br/>
             There are options to Download the results, Assign Config, Send Config, Read Config and Verify Config on the resulting collection of devices.<br/>
-            There are also options to View the History, Send, Ready and Verify for each individual device.
+            There are also options to View the History, Send, Read and Verify for each individual device.
     
         ]]>
     </entry>
