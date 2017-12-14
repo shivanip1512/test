@@ -49,6 +49,8 @@ import com.cannontech.common.rfn.message.gateway.GatewayDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayScheduleDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayScheduleRequest;
+import com.cannontech.common.rfn.message.gateway.GatewaySetConfigRequest;
+import com.cannontech.common.rfn.message.gateway.GatewaySetConfigResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateRequest;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateResponse;
@@ -942,6 +944,19 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static JmsApi<GatewaySetConfigRequest,?,GatewaySetConfigResponse> RF_GATEWAY_SET_CONFIG =
+            JmsApi.builder(GatewaySetConfigRequest.class, GatewaySetConfigResponse.class)
+                  .name("Gateway Set Config")
+                  .description("Sends gateway config update request to NM.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("yukon.qr.obj.common.rfn.GatewaySetConfigRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(GatewaySetConfigRequest.class)
+                  .responseMessage(GatewaySetConfigResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(NETWORK_MANAGER)
+                  .build();
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -994,6 +1009,7 @@ public final class JmsApiDirectory {
             .put(RF_GATEWAY, RF_GATEWAY_SCHEDULE_DELETE)
             .put(RF_GATEWAY, RF_GATEWAY_SCHEDULE_REQUEST)
             .put(RF_GATEWAY, RF_UPDATE_SERVER_AVAILABLE_VERSION)
+            .put(RF_GATEWAY, RF_GATEWAY_SET_CONFIG)
             
             .put(RF_NETWORK, NETWORK_NEIGHBOR)
             .put(RF_NETWORK, NETWORK_PARENT)

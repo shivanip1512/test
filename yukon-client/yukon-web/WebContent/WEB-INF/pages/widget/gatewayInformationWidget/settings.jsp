@@ -42,7 +42,7 @@
                     <%-- TODO change name to ipv6 path value --%>
         <tags:nameValue2 nameKey=".ipv6prefix">
             <div class="column-6-6-6-6 clearfix">
-                <tags:input id="ipv6prefix" path="ipv6" inputClass="dn"/>
+                <tags:input id="ipv6prefix" path="ipv6Prefix" inputClass="dn"/>
                 <input id="ipv6-1" type="text" class="column one js-ipv6-update" maxlength="4"/>
                 <input id="ipv6-2" type="text" class="column two js-ipv6-update" maxlength="4"/>
                 <input id="ipv6-3" type="text" class="column three js-ipv6-update" maxlength="4"/>

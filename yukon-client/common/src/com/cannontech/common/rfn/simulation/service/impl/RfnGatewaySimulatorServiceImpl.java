@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
+import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayCreateRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
@@ -28,6 +30,8 @@ import com.cannontech.common.rfn.message.gateway.GatewayDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
+import com.cannontech.common.rfn.message.gateway.GatewaySetConfigRequest;
+import com.cannontech.common.rfn.message.gateway.GatewaySetConfigResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateRequest;
@@ -50,6 +54,7 @@ import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySetting
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
@@ -125,6 +130,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         if (autoDataReplyActive) {
             autoDataReplyStopping = true;
             gatewayDataSettings = null;
+            gatewayDataCache.clear();
         }
     }
     
@@ -378,16 +384,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 log.info("Auto update reply thread starting up.");
                 while (!autoUpdateReplyStopping) {
                     try {
-                        Object message = jmsTemplate.receive(gatewayUpdateQueue);
-                        if (message != null && message instanceof ObjectMessage) {
-                            log.info("Processing gateway update message.");
-                            ObjectMessage requestMessage = (ObjectMessage) message;
-                            Serializable request = requestMessage.getObject();
-                            
-                            GatewayUpdateResponse response = setUpUpdateResponse(request, settings);
-                            
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
-                        }
+                        processGatewayUpdateMsg(settings);
+                        processIpv6PrefixUpdateMsg(settings);
                     } catch (Exception e) {
                         log.error("Error occurred in update reply.", e);
                     }
@@ -399,6 +397,39 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             }
         };
         return autoUpdateRunner;
+    }
+    
+    private void processGatewayUpdateMsg(SimulatedUpdateReplySettings settings) throws JMSException {
+        Object message = jmsTemplate.receive(gatewayUpdateQueue);
+        if (message != null && message instanceof ObjectMessage) {
+            log.info("Processing gateway update message.");
+            ObjectMessage requestMessage = (ObjectMessage) message;
+            Serializable request = requestMessage.getObject();
+            
+            GatewayUpdateResponse response = setUpUpdateResponse(request, settings);
+            
+            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
+        }
+    }
+    
+    private void processIpv6PrefixUpdateMsg(SimulatedUpdateReplySettings settings) throws JMSException {
+        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_SET_CONFIG.getQueue().getName());
+        if (message != null && message instanceof ObjectMessage) {
+            log.info("Processing Ipv6 prefix update message.");
+            ObjectMessage requestMessage = (ObjectMessage) message;
+            
+            GatewaySetConfigResponse response = new GatewaySetConfigResponse();
+            GatewaySetConfigRequest request = (GatewaySetConfigRequest) requestMessage.getObject();
+            response.setRfnIdentifier(request.getRfnIdentifier());
+            response.setIpv6PrefixResult(settings.getIpv6PrefixUpdateResult());
+            if(settings.getIpv6PrefixUpdateResult() == GatewayConfigResult.SUCCESSFUL) {
+                gatewayDataCache.get(request.getRfnIdentifier()).setIpv6Prefix(request.getIpv6Prefix());
+                jmsTemplate.convertAndSend(dataAndUpgradeResponseQueue,
+                    setUpDataResponse(request.getRfnIdentifier(), getGatewayDataSettings()));
+            }
+            
+            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
+        }
     }
     
     /**
@@ -419,7 +450,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                             GatewayDataRequest request = (GatewayDataRequest) requestMessage.getObject();
                             
                             GatewayDataResponse response = setUpDataResponse(request.getRfnIdentifier(), settings);
-                            
+
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
                         }
                     } catch (Exception e) {
@@ -599,8 +630,10 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                                       RfnDeviceCreationService.GATEWAY_2_MODEL_STRING);
         }
         
-        // Check the cache - if any edits have been made to the data for this gateway, return the edited data instead
-        // of the default values.
+        if (gatewayDataCache.get(rfnId) == null) {
+            gatewayDataCache.put(rfnId, DefaultGatewaySimulatorData.getDefaultGatewayData());
+        }
+
         GatewaySaveData cachedData = gatewayDataCache.get(rfnId);
         GatewayDataResponse response = 
                 DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, settings);
@@ -703,6 +736,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_READY_NODES, settings.getNumberOfReadyNodes());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FAILSAFE_MODE, settings.isFailsafeMode());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_CONNECTION_STATUS, settings.getConnectionStatus());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_GENERATE_IPV6_PREFIX, settings.isGenerateIpv6Prefix());
     }
     
     public void saveSettings(SimulatedUpdateReplySettings settings) {
@@ -710,6 +744,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_CREATE_RESULT, settings.getCreateResult());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_EDIT_RESULT, settings.getEditResult());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_DELETE_RESULT, settings.getDeleteResult());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_IPV6_PREFIX_UPDATE_RESULT, settings.getIpv6PrefixUpdateResult());
     }
     
     public void saveSettings(SimulatedCertificateReplySettings settings) {
@@ -740,6 +775,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             settings.setNumberOfReadyNodes(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_READY_NODES));
             settings.setFailsafeMode(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FAILSAFE_MODE));
             settings.setConnectionStatus(ConnectionStatus.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_CONNECTION_STATUS)));
+            settings.setGenerateIpv6Prefix(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_GENERATE_IPV6_PREFIX));
             gatewayDataSettings = settings;
         }
         return gatewayDataSettings;
@@ -753,6 +789,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             settings.setCreateResult(GatewayUpdateResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_CREATE_RESULT)));
             settings.setEditResult(GatewayUpdateResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_EDIT_RESULT)));
             settings.setDeleteResult(GatewayUpdateResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_DELETE_RESULT)));
+            settings.setIpv6PrefixUpdateResult(GatewayConfigResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_IPV6_PREFIX_UPDATE_RESULT)));
             updateReplySettings = settings;
         }
         return updateReplySettings;

@@ -8,12 +8,14 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.DataType;
+import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Multimap;
@@ -247,5 +249,16 @@ public interface RfnGatewayService {
      * @param tagsPointMustArchive - sets Pointdata.setTagsPointMustArchive to true or false.
      */
     void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value, boolean tagsPointMustArchive);
+
+    /**
+     * Sends Ipv6 prefix to NM.
+     * 
+     * @throws NmCommunicationException - didn't receive reply from NM
+     * @throws DuplicateException - Ipv6 prefix already exists
+     * @throws IllegalArgumentException - Ipv6 prefix is not in HEX format
+     */
+    GatewayConfigResult updateIpv6Prefix(RfnGateway gateway, String newIpv6Prefix)
+            throws NmCommunicationException, DuplicateException, IllegalArgumentException;
+    
 
 }

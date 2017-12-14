@@ -29,10 +29,12 @@ public enum YukonSimulatorSettingsKey {
     GATEWAY_SIMULATOR_NUM_READY_NODES(1000, InputTypeFactory.integerType(), SimulatorType.GATEWAY),
     GATEWAY_SIMULATOR_FAILSAFE_MODE(false, InputTypeFactory.booleanType(), SimulatorType.GATEWAY),
     GATEWAY_SIMULATOR_CONNECTION_STATUS("CONNECTED", InputTypeFactory.stringType(), SimulatorType.GATEWAY),
+    GATEWAY_SIMULATOR_GENERATE_IPV6_PREFIX(true, InputTypeFactory.booleanType(), SimulatorType.GATEWAY),
     //SimulatedUpdateReplySettings
     GATEWAY_SIMULATOR_UPDATE_CREATE_RESULT("SUCCESSFUL", InputTypeFactory.stringType(), SimulatorType.GATEWAY),
     GATEWAY_SIMULATOR_UPDATE_EDIT_RESULT("SUCCESSFUL", InputTypeFactory.stringType(), SimulatorType.GATEWAY),
     GATEWAY_SIMULATOR_UPDATE_DELETE_RESULT("SUCCESSFUL", InputTypeFactory.stringType(), SimulatorType.GATEWAY),
+    GATEWAY_SIMULATOR_IPV6_PREFIX_UPDATE_RESULT("SUCCESSFUL", InputTypeFactory.stringType(), SimulatorType.GATEWAY),
     //SimulatedCertificateReplySettings
     GATEWAY_SIMULATOR_UPDATE_ACK_TYPE("ACCEPTED_FULLY", InputTypeFactory.stringType(), SimulatorType.GATEWAY),
     GATEWAY_SIMULATOR_UPDATE_STATUS_TYPE("REQUEST_ACCEPTED", InputTypeFactory.stringType(), SimulatorType.GATEWAY),

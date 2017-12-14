@@ -1,5 +1,4 @@
 package com.cannontech.common.rfn.message.gateway;
-
 import java.io.Serializable;
 import java.util.Set;
 
@@ -33,6 +32,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private long lastCommStatusTimestamp;
     private Set<Radio> radios;
     private short routeColor;
+    private String ipv6Prefix;
+    private String ipv6PrefixSuggested;  // value suggested by NM only when ipv6Prefix is null or empty
     
     private Authentication superAdmin;
     private Authentication admin;
@@ -44,14 +45,14 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     
     //Data Streaming Information
     private double maxDataStreamingCapacity;
-    private double currentDataStreamingLoading;
-    
+    private double currentDataStreamingLoading;  
     private int gwTotalNodes;
     private int gwTotalReadyNodes;
     private int gwTotalNotReadyNodes;
     private int gwTotalNodesWithSN;
     private int gwTotalNodesWithInfo;
     private int gwTotalNodesNoInfo;
+
 
     @Override
     public RfnIdentifier getRfnIdentifier() {
@@ -109,6 +110,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public void setGwTotalNodesNoInfo(int gwTotalNodesNoInfo) {
         this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
     }
+
     
     public String getHardwareVersion() {
         return hardwareVersion;
@@ -294,21 +296,48 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.currentDataStreamingLoading = currentDataStreamingLoading;
     }
 
+    public String getIpv6Prefix() {
+        return ipv6Prefix;
+    }
+
+    public void setIpv6Prefix(String ipv6Prefix) {
+        this.ipv6Prefix = ipv6Prefix;
+    }
+
+    public String getIpv6PrefixSuggested() {
+        return ipv6PrefixSuggested;
+    }
+
+    public void setSuggestedIpv6Prefix(String ipv6PrefixSuggested) {
+        this.ipv6PrefixSuggested = ipv6PrefixSuggested;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((admin == null) ? 0 : admin.hashCode());
-        result = prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
+        result =
+            prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
         long temp;
         temp = Double.doubleToLongBits(currentDataStreamingLoading);
         result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + gwTotalNodes;
+        result = prime * result + gwTotalNodesNoInfo;
+        result = prime * result + gwTotalNodesWithInfo;
+        result = prime * result + gwTotalNodesWithSN;
+        result = prime * result + gwTotalNotReadyNodes;
+        result = prime * result + gwTotalReadyNodes;
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + ((ipv6Prefix == null) ? 0 : ipv6Prefix.hashCode());
+        result =
+            prime * result + ((ipv6PrefixSuggested == null) ? 0 : ipv6PrefixSuggested.hashCode());
         result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
-        result = prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        result =
+            prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
         temp = Double.doubleToLongBits(maxDataStreamingCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
@@ -325,14 +354,9 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
-        result = prime * result + gwTotalNodes;
-        result = prime * result + gwTotalReadyNodes;
-        result = prime * result + gwTotalNotReadyNodes;
-        result = prime * result + gwTotalNodesWithSN;
-        result = prime * result + gwTotalNodesWithInfo;
-        result = prime * result + gwTotalNodesNoInfo;        
         return result;
     }
+    
 
     @Override
     public boolean equals(Object obj) {
@@ -370,6 +394,24 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
             .doubleToLongBits(other.currentDataStreamingLoading)) {
             return false;
         }
+        if (gwTotalNodes != other.gwTotalNodes) {
+            return false;
+        }
+        if (gwTotalNodesNoInfo != other.gwTotalNodesNoInfo) {
+            return false;
+        }
+        if (gwTotalNodesWithInfo != other.gwTotalNodesWithInfo) {
+            return false;
+        }
+        if (gwTotalNodesWithSN != other.gwTotalNodesWithSN) {
+            return false;
+        }
+        if (gwTotalNotReadyNodes != other.gwTotalNotReadyNodes) {
+            return false;
+        }
+        if (gwTotalReadyNodes != other.gwTotalReadyNodes) {
+            return false;
+        }
         if (hardwareVersion == null) {
             if (other.hardwareVersion != null) {
                 return false;
@@ -382,6 +424,20 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                 return false;
             }
         } else if (!ipAddress.equals(other.ipAddress)) {
+            return false;
+        }
+        if (ipv6Prefix == null) {
+            if (other.ipv6Prefix != null) {
+                return false;
+            }
+        } else if (!ipv6Prefix.equals(other.ipv6Prefix)) {
+            return false;
+        }
+        if (ipv6PrefixSuggested == null) {
+            if (other.ipv6PrefixSuggested != null) {
+                return false;
+            }
+        } else if (!ipv6PrefixSuggested.equals(other.ipv6PrefixSuggested)) {
             return false;
         }
         if (lastCommStatus != other.lastCommStatus) {
@@ -484,53 +540,28 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         } else if (!versionConflicts.equals(other.versionConflicts)) {
             return false;
         }
-
-        if (gwTotalNodes != other.gwTotalNodes) {
-            return false;
-        }
-        if (gwTotalReadyNodes != other.gwTotalReadyNodes) {
-            return false;
-        }
-        if (gwTotalNotReadyNodes != other.gwTotalNotReadyNodes) {
-            return false;
-        }
-        if (gwTotalNodesWithSN != other.gwTotalNodesWithSN) {
-            return false;
-        }
-        if (gwTotalNodesWithInfo != other.gwTotalNodesWithInfo) {
-            return false;
-        }
-        if (gwTotalNodesNoInfo != other.gwTotalNodesNoInfo) {
-            return false;
-        }
-
         return true;
     }
 
     @Override
     public String toString() {
-        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier
-            + ", hardwareVersion=" + hardwareVersion + ", softwareVersion="
-            + softwareVersion + ", upperStackVersion=" + upperStackVersion
-            + ", radioVersion=" + radioVersion + ", releaseVersion="
-            + releaseVersion + ", versionConflicts=" + versionConflicts
-            + ", mode=" + mode + ", connectionType=" + connectionType
-            + ", ipAddress=" + ipAddress + ", port=" + port
-            + ", connectionStatus=" + connectionStatus + ", lastCommStatus="
-            + lastCommStatus + ", lastCommStatusTimestamp="
-            + lastCommStatusTimestamp + ", radios=" + radios + ", routeColor="
-            + routeColor + ", superAdmin=" + superAdmin + ", admin=" + admin
-            + ", collectionSchedule=" + collectionSchedule + ", sequences="
-            + sequences + ", updateServerUrl=" + updateServerUrl
-            + ", updateServerLogin=" + updateServerLogin
-            + ", maxGatewayDataStreamingCapacity=" + maxDataStreamingCapacity
-            + ", currentGatewayDataStreamingLoading="
-            + currentDataStreamingLoading + ", gwTotalNodes=" + gwTotalNodes
-            + ", gwTotalReadyNodes=" + gwTotalReadyNodes
-            + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes
-            + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN
-            + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
-            + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
+        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", hardwareVersion="
+               + hardwareVersion + ", softwareVersion=" + softwareVersion + ", upperStackVersion="
+               + upperStackVersion + ", radioVersion=" + radioVersion + ", releaseVersion="
+               + releaseVersion + ", versionConflicts=" + versionConflicts + ", mode=" + mode
+               + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port="
+               + port + ", connectionStatus=" + connectionStatus + ", lastCommStatus="
+               + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp
+               + ", radios=" + radios + ", routeColor=" + routeColor + ", ipv6Prefix=" + ipv6Prefix
+               + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + ", superAdmin=" + superAdmin
+               + ", admin=" + admin + ", collectionSchedule=" + collectionSchedule + ", sequences="
+               + sequences + ", updateServerUrl=" + updateServerUrl + ", updateServerLogin="
+               + updateServerLogin + ", maxDataStreamingCapacity=" + maxDataStreamingCapacity
+               + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes="
+               + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
+               + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN="
+               + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
+               + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
     }
     
 }

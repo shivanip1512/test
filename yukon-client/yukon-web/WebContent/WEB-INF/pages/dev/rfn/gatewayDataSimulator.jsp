@@ -28,6 +28,11 @@
             <tags:nameValue name="Connection Status">
                 Report all gateways as either being Connected, Disconnected.
             </tags:nameValue>
+            <tags:nameValue name="Generate Ipv6 Prefix">
+                If checked generated Ipv6Prefix (8 bytes) will be added to all gateways. 
+                If unchecked suggested prefix (6 bytes) will be generated. Ipv6Prefix will be empty. 
+                2 bytes will be generated and added to suggested prefix when user attempts to edit the gateway.
+            </tags:nameValue>
         </tags:nameValueContainer>
     </div>
     
@@ -41,6 +46,9 @@
             </tags:nameValue>
             <tags:nameValue name="Update Result for Delete">
                 The result to return for gateway delete operations.
+            </tags:nameValue>
+            <tags:nameValue name="Update Result for Ipv6 Prefix">
+                The result to return for ipv6 prefix update operation.
             </tags:nameValue>
         </tags:nameValueContainer>
     </div>
@@ -153,6 +161,11 @@
                                             </select>                                        
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Generate Ipv6 Prefix">
+                                            <tags:checkbox path="dataSettings.generateIpv6Prefix" disabled="true"/>
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoDataReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
@@ -191,6 +204,11 @@
                                                     <option value="${connectionType}" ${selected}>${connectionType}</option>
                                                 </c:forEach>
                                             </select>                                        
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Generate Ipv6 Prefix">
+                                            <tags:checkbox path="dataSettings.generateIpv6Prefix"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
@@ -236,6 +254,10 @@
                                             <tags:selectWithItems path="updateSettings.deleteResult"
                                                 items="${gatewayUpdateResultTypes}" disabled="true"/>
                                         </tags:nameValue>
+                                        <tags:nameValue name="Update Result for Ipv6 Prefix">
+                                            <tags:selectWithItems path="updateSettings.ipv6PrefixUpdateResult"
+                                                items="${gatewayConfigResultTypes}" disabled="true"/>
+                                        </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoUpdateReplyActive}">
@@ -251,6 +273,10 @@
                                         <tags:nameValue name="Update Result for Delete">
                                             <tags:selectWithItems path="updateSettings.deleteResult"
                                                 items="${gatewayUpdateResultTypes}"/>
+                                        </tags:nameValue>
+                                        <tags:nameValue name="Update Result for Ipv6 Prefix">
+                                            <tags:selectWithItems path="updateSettings.ipv6PrefixUpdateResult"
+                                                items="${gatewayConfigResultTypes}"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>

@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.model;
 
+import java.util.Random;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.gateway.AppMode;
@@ -47,6 +48,8 @@ public final class RfnGatewayData {
     private final int gwTotalNodesWithSN;
     private final int gwTotalNodesWithInfo;
     private final int gwTotalNodesNoInfo;
+    private final String ipv6Prefix;
+    private final String ipv6PrefixSuggested;
     
     public RfnGatewayData(GatewayDataResponse dataResponse) {
         
@@ -81,6 +84,8 @@ public final class RfnGatewayData {
         gwTotalNodesWithSN = dataResponse.getGwTotalNodesWithSN();
         gwTotalNodesWithInfo = dataResponse.getGwTotalNodesWithInfo();
         gwTotalNodesNoInfo = dataResponse.getGwTotalNodesNoInfo();
+        ipv6Prefix = dataResponse.getIpv6Prefix();
+        ipv6PrefixSuggested = dataResponse.getIpv6PrefixSuggested();
     }
     
     /** Private constructor for builder */
@@ -93,7 +98,7 @@ public final class RfnGatewayData {
                            short routeColor, String updateServerUrl, Authentication updateServerLogin,
                            double currentDataStreamingLoading, double maxDataStreamingLoading, int gwTotalNodes,
                            int gwTotalReadyNodes, int gwTotalNotReadyNodes, int gwTotalNodesWithSN, 
-                           int gwTotalNodesWithInfo, int gwTotalNodesNoInfo) {
+                           int gwTotalNodesWithInfo, int gwTotalNodesNoInfo, String ipv6Prefix, String ipv6PrefixSuggested) {
         this.name = name;
         this.hardwareVersion = hardwareVersion;
         this.softwareVersion = softwareVersion;
@@ -124,6 +129,8 @@ public final class RfnGatewayData {
         this.gwTotalNodesWithSN = gwTotalNodesWithSN;
         this.gwTotalNodesWithInfo = gwTotalNodesWithInfo;
         this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
+        this.ipv6Prefix = ipv6Prefix;
+        this.ipv6PrefixSuggested = ipv6PrefixSuggested;
     }
     
     public String getName() {
@@ -270,6 +277,23 @@ public final class RfnGatewayData {
         return gwTotalNodesNoInfo;
     }
 
+    public String getIpv6Prefix() {
+        return ipv6Prefix;
+    }
+
+    public String getIpv6PrefixSuggested() {
+        return ipv6PrefixSuggested;
+    }
+
+    public String generateNewIpv6Prefix() {
+        Random r = new Random();
+        StringBuffer sb = new StringBuffer();
+        while (sb.length() < 4) {
+            sb.append(Integer.toHexString(r.nextInt()));
+        }
+        return ipv6PrefixSuggested + sb.toString().substring(0, 4);
+    }
+
     @Override
     public String toString() {
         return "RfnGatewayData [name=" + name + ", hardwareVersion=" + hardwareVersion + ", softwareVersion="
@@ -284,7 +308,8 @@ public final class RfnGatewayData {
                + currentDataStreamingLoading + ", maxDataStreamingLoading=" + maxDataStreamingLoading
                + ", gwTotalNodes=" + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
                + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN
-               + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
+               + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo
+               + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + "]";
     }
 
     @Override
@@ -324,6 +349,8 @@ public final class RfnGatewayData {
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
+        result = prime * result + ((ipv6Prefix == null) ? 0 : ipv6Prefix.hashCode());
+        result = prime * result + ((ipv6PrefixSuggested == null) ? 0 : ipv6PrefixSuggested.hashCode());
         return result;
     }
 
@@ -494,6 +521,20 @@ public final class RfnGatewayData {
         } else if (!versionConflicts.equals(other.versionConflicts)) {
             return false;
         }
+        if (ipv6Prefix == null) {
+            if (other.ipv6Prefix != null) {
+                return false;
+            }
+        } else if (!ipv6Prefix.equals(other.ipv6Prefix)) {
+            return false;
+        }
+        if (ipv6PrefixSuggested == null) {
+            if (other.ipv6PrefixSuggested != null) {
+                return false;
+            }
+        } else if (!ipv6PrefixSuggested.equals(other.ipv6PrefixSuggested)) {
+            return false;
+        }
         return true;
     }
 
@@ -529,6 +570,8 @@ public final class RfnGatewayData {
         private int gwTotalNodesWithSN;
         private int gwTotalNodesWithInfo;
         private int gwTotalNodesNoInfo;
+        private String ipv6Prefix;
+        private String ipv6PrefixSuggested;
         
         public RfnGatewayData build() {
             
@@ -538,7 +581,7 @@ public final class RfnGatewayData {
                                       superAdmin, collectionSchedule, sequences, routeColor,updateServerUrl,
                                       updateServerLogin, currentDataStreamingLoading, maxDataStreamingLoading,
                                       gwTotalNodes, gwTotalReadyNodes, gwTotalNotReadyNodes, gwTotalNodesWithSN,
-                                      gwTotalNodesWithInfo, gwTotalNodesNoInfo);
+                                      gwTotalNodesWithInfo, gwTotalNodesNoInfo, ipv6Prefix, ipv6PrefixSuggested);
             
         }
         
@@ -574,6 +617,8 @@ public final class RfnGatewayData {
             gwTotalNodesWithSN = oldData.gwTotalNodes;
             gwTotalNodesWithInfo = oldData.gwTotalNodes;
             gwTotalNodesNoInfo = oldData.gwTotalNodes;
+            ipv6Prefix = oldData.getIpv6Prefix();
+            ipv6PrefixSuggested = oldData.getIpv6PrefixSuggested();
             return this;
         }
         

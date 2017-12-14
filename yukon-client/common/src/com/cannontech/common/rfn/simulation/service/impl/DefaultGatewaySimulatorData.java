@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import org.joda.time.Duration;
@@ -58,7 +59,7 @@ public class DefaultGatewaySimulatorData {
     
     private static final int gwTotalNotReadyNodes = 500;
     private static final int gwTotalReadyNodes = 1000;
-    
+      
     static {
         admin.setUsername(adminUser);
         admin.setPassword(adminPass);
@@ -78,33 +79,19 @@ public class DefaultGatewaySimulatorData {
         GatewayDataResponse response = new GatewayDataResponse();
         response.setRfnIdentifier(rfnId);
         
-        boolean hasCustomData = customData != null;
-        
-        if (hasCustomData && customData.getAdmin() != null) {
-            response.setAdmin(customData.getAdmin());
-        } else {
-            response.setAdmin(admin);
+        if (settings.isGenerateIpv6Prefix() && customData.getIpv6Prefix() == null) {
+            customData.setIpv6Prefix(getRandomHexString(16));
         }
-        if (hasCustomData && customData.getIpAddress() != null) {
-            response.setIpAddress(customData.getIpAddress());
-        } else {
-            response.setIpAddress(ipAddress);
-        }
-        if (hasCustomData && customData.getSuperAdmin() != null) {
-            response.setSuperAdmin(customData.getSuperAdmin());
-        } else {
-            response.setSuperAdmin(superAdmin);
-        }
-        if (hasCustomData && customData.getUpdateServerLogin() != null) {
-            response.setUpdateServerLogin(customData.getUpdateServerLogin());
-        } else {
-            response.setUpdateServerLogin(updateServerAdmin);
-        }
-        if (hasCustomData && customData.getUpdateServerUrl() != null) {
-            response.setUpdateServerUrl(customData.getUpdateServerUrl());
-        } else {
-            response.setUpdateServerUrl(updateServerUrl);
-        }
+
+        response.setIpv6Prefix(customData.getIpv6Prefix());
+        response.setSuggestedIpv6Prefix(response.getIpv6Prefix() == null ? getRandomHexString(12)
+            : response.getIpv6Prefix().toString().substring(0, 12));
+
+        response.setAdmin(customData.getAdmin());
+        response.setIpAddress(customData.getIpAddress());
+        response.setSuperAdmin(customData.getSuperAdmin());
+        response.setUpdateServerLogin(customData.getUpdateServerLogin());
+        response.setUpdateServerUrl(customData.getUpdateServerUrl());
         
         response.setPort(port);
         response.setConnectionType(connectionType);
@@ -174,6 +161,16 @@ public class DefaultGatewaySimulatorData {
         return response;
     }
     
+    public static GatewaySaveData getDefaultGatewayData() {
+        GatewaySaveData data = new GatewaySaveData();
+        data.setAdmin(admin);
+        data.setIpAddress(ipAddress);
+        data.setSuperAdmin(superAdmin);
+        data.setUpdateServerLogin(updateServerAdmin);
+        data.setUpdateServerUrl(updateServerUrl);
+        return data;
+    }
+    
     private static DataSequence buildDataSequence(DataType dataType) {
         DataSequence dataSequence = new DataSequence();
         dataSequence.setType(dataType);
@@ -186,5 +183,15 @@ public class DefaultGatewaySimulatorData {
         dataSequence.setBlocks(Sets.newHashSet(sequenceBlock));
         
         return dataSequence;
+    }
+    
+    private static String getRandomHexString(int numchars){
+        Random r = new Random();
+        StringBuffer sb = new StringBuffer();
+        while(sb.length() < numchars){
+            sb.append(Integer.toHexString(r.nextInt()));
+        }
+
+        return sb.toString().substring(0, numchars);
     }
 }

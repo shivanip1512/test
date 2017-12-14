@@ -22,6 +22,8 @@ public class GatewaySaveData implements Serializable {
     private String updateServerUrl;
     private Authentication updateServerLogin;
     
+    private String ipv6Prefix;
+    
     public String getIpAddress() {
         return ipAddress;
     }
@@ -85,40 +87,54 @@ public class GatewaySaveData implements Serializable {
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         GatewaySaveData other = (GatewaySaveData) obj;
         if (admin == null) {
-            if (other.admin != null)
+            if (other.admin != null) {
                 return false;
-        } else if (!admin.equals(other.admin))
+            }
+        } else if (!admin.equals(other.admin)) {
             return false;
-        if (defaultAccessLevel != other.defaultAccessLevel)
+        }
+        if (defaultAccessLevel != other.defaultAccessLevel) {
             return false;
+        }
         if (ipAddress == null) {
-            if (other.ipAddress != null)
+            if (other.ipAddress != null) {
                 return false;
-        } else if (!ipAddress.equals(other.ipAddress))
+            }
+        } else if (!ipAddress.equals(other.ipAddress)) {
             return false;
+        }
         if (superAdmin == null) {
-            if (other.superAdmin != null)
+            if (other.superAdmin != null) {
                 return false;
-        } else if (!superAdmin.equals(other.superAdmin))
+            }
+        } else if (!superAdmin.equals(other.superAdmin)) {
             return false;
+        }
         if (updateServerUrl == null) {
-            if (other.updateServerUrl != null)
+            if (other.updateServerUrl != null) {
                 return false;
-        } else if (!updateServerUrl.equals(other.updateServerUrl))
+            }
+        } else if (!updateServerUrl.equals(other.updateServerUrl)) {
             return false;
+        }
         if (updateServerLogin == null) {
-            if (other.updateServerLogin != null)
+            if (other.updateServerLogin != null) {
                 return false;
-        } else if (!updateServerLogin.equals(other.updateServerLogin))
+            }
+        } else if (!updateServerLogin.equals(other.updateServerLogin)) {
             return false;
+        }
         return true;
     }
     
@@ -131,6 +147,14 @@ public class GatewaySaveData implements Serializable {
                              defaultAccessLevel,
                              updateServerUrl,
                              updateServerLogin);
+    }
+
+    public String getIpv6Prefix() {
+        return ipv6Prefix;
+    }
+
+    public void setIpv6Prefix(String ipv6Prefix) {
+        this.ipv6Prefix = ipv6Prefix;
     }
     
 }

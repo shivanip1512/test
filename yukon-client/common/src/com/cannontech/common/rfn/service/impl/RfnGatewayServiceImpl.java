@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -34,6 +35,7 @@ import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayActionResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayActionResult;
 import com.cannontech.common.rfn.message.gateway.GatewayCollectionRequest;
+import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestResponse;
@@ -44,6 +46,8 @@ import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
 import com.cannontech.common.rfn.message.gateway.GatewayScheduleDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayScheduleRequest;
+import com.cannontech.common.rfn.message.gateway.GatewaySetConfigRequest;
+import com.cannontech.common.rfn.message.gateway.GatewaySetConfigResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
@@ -60,7 +64,9 @@ import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -101,6 +107,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
     private RequestReplyTemplate<GatewayActionResponse> actionRequestTemplate;
     private RequestReplyTemplate<GatewayConnectionTestResponse> connectionTestRequestTemplate;
+    private RequestReplyTemplate<GatewaySetConfigResponse> configRequestTemplate;
+    
+    Pattern hex = Pattern.compile("^[0-9a-fA-F]+$");
     
     @Autowired
     public RfnGatewayServiceImpl(
@@ -134,6 +143,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         connectionTestRequestTemplate = 
                 new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, 
                 configSource, connectionFactory, gatewayActionRequestQueue, false);
+        configRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.RF_GATEWAY_SET_CONFIG.getName(),
+                configSource, connectionFactory, JmsApiDirectory.RF_GATEWAY_SET_CONFIG.getQueue().getName(), false);
     }
     
     @Override
@@ -650,6 +661,16 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         settings.setUpdateServerUrl(updateServerUrl);
         settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
 
+        settings.setIpv6Prefix(gateway.getData().getIpv6Prefix());
+
+        while (settings.getIpv6Prefix() == null) {
+            String newPrefix = gateway.getData().generateNewIpv6Prefix();
+            if (!isDuplicateIpv6Prefix(newPrefix)) {
+                settings.setIpv6Prefix(newPrefix);
+                break;
+            }
+        }
+        
         if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
             settings.setUseDefault(true);
         }
@@ -710,5 +731,36 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             + tagsPointMustArchive);
 
         dataSource.putValue(pointData);
+    }
+    
+    @Override
+    public GatewayConfigResult updateIpv6Prefix(RfnGateway gateway, String newIpv6Prefix)
+            throws NmCommunicationException, DuplicateException, IllegalArgumentException {
+        if (isDuplicateIpv6Prefix(newIpv6Prefix)) {
+            throw new DuplicateException("Ipv6Prefix:" + newIpv6Prefix + " already exists.");
+        }
+
+        if (!hex.matcher(newIpv6Prefix).matches()) {
+            throw new IllegalArgumentException("Ipv6Prefix:" + newIpv6Prefix + " is not in hex format.");
+        }
+        
+        BlockingJmsReplyHandler<GatewaySetConfigResponse> reply =
+            new BlockingJmsReplyHandler<>(GatewaySetConfigResponse.class);
+        GatewaySetConfigRequest request = new GatewaySetConfigRequest();
+        request.setRfnIdentifier(gateway.getRfnIdentifier());
+        request.setIpv6Prefix(newIpv6Prefix);
+        configRequestTemplate.send(request, reply);
+        try {
+            GatewaySetConfigResponse response = reply.waitForCompletion();
+            return response.getIpv6PrefixResult();
+        } catch (ExecutionException e) {
+            throw new NmCommunicationException(
+                "Undate Ipv6 prefix failed due to a communication error with Network Manager.", e);
+        }
+    }
+    
+    private boolean isDuplicateIpv6Prefix(String previx) {
+        return dataCache.getCache().asMap().values().stream().filter(
+            d ->  d.getIpv6Prefix() != null && d.getIpv6Prefix().equals(previx)).findFirst().isPresent();
     }
 }

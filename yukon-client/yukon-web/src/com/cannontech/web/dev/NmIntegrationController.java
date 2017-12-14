@@ -42,6 +42,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
+import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
@@ -128,6 +129,7 @@ public class NmIntegrationController {
         model.addAttribute("firmwareVersionReplyTypes", RfnUpdateServerAvailableVersionResult.values());
         model.addAttribute("firmwareUpdateResultTypes", GatewayFirmwareUpdateRequestResult.values());
         model.addAttribute("gatewayUpdateResultTypes", GatewayUpdateResult.values());
+        model.addAttribute("gatewayConfigResultTypes", GatewayConfigResult.values());
         model.addAttribute("connectionTypes", ConnectionStatus.values());
         
         try {

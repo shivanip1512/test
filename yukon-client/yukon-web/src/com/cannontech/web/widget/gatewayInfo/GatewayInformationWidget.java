@@ -21,6 +21,7 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.Authentication;
+import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -30,6 +31,7 @@ import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -162,6 +164,18 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             gateway.setData(data);
             
             GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
+
+            //validate settings.getIpv6Prefix().size() = 16
+            if (gateway.getData().getIpv6Prefix() == null
+                || !gateway.getData().getIpv6Prefix().equals(settings.getIpv6Prefix())) {
+                try {
+                    GatewayConfigResult configResult = rfnGatewayService.updateIpv6Prefix(gateway, settings.getIpv6Prefix());
+                } catch (DuplicateException e) {
+
+                } catch (IllegalArgumentException e) {
+
+                }
+            }
             
             if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
                 log.info("Gateway updated: " + gateway);
