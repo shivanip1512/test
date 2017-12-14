@@ -24,9 +24,10 @@ public abstract class DNPBase extends AddressBase {
     @Override
     public void add() throws java.sql.SQLException {
         super.add();
-
-        Object[] configValues = { getPAObjectID(), getDnpConfiguration().getConfigurationId() };
-        add("DeviceConfigurationDeviceMap", configValues);
+        if (getDnpConfiguration() != null) {
+            Object[] configValues = { getPAObjectID(), getDnpConfiguration().getConfigurationId() };
+            add("DeviceConfigurationDeviceMap", configValues);
+        }
     }
     
     @Override

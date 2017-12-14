@@ -2001,7 +2001,8 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
                 selectInTree = !(newItem instanceof TOUSchedule) || (newItem instanceof TOUSchedule && currentDatabase == DatabaseTypes.SYSTEM_DB);
 
                 // DNP devices need to be assigned the default DNP configuration on creation!
-                if (newItem instanceof DNPBase) {
+                // If the device is of type RTU_MODBUS, it should not be assigned DNP configuration.
+                if (newItem instanceof DNPBase && ((DNPBase) newItem).getPaoType() != PaoType.RTU_MODBUS) {
                     DeviceConfigurationDao configurationDao = YukonSpringHook.getBean("deviceConfigurationDao",
                                                                                       DeviceConfigurationDao.class);
 
