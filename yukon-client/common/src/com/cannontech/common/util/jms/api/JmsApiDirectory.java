@@ -388,6 +388,20 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
+    //TODO: use this in RfnGatewaySimulatorServiceImpl
+    public static JmsApi<GatewayDeleteRequest,?,?> RF_GATEWAY_DELETE_FROM_NM =
+            JmsApi.builder(GatewayDeleteRequest.class)
+                  .name("RF Gateway Delete from NM")
+                  .description("Sent by Network Manager when deleting an RF Gateway, to tell Yukon to also delete the "
+                          + "Gateway object on its side.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.qr.obj.common.rfn.GatewayDeleteRequest"))
+                  .requestMessage(GatewayDeleteRequest.class)
+                  .sender(NETWORK_MANAGER)
+                  .sender(YUKON_SIMULATORS)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     //TODO: use this in RfnGatewayServiceImpl
     //TODO: Split out a new RequestReplyTemplate
     public static JmsApi<GatewayScheduleDeleteRequest,?,GatewayActionResponse> RF_GATEWAY_SCHEDULE_DELETE =
@@ -1004,6 +1018,7 @@ public final class JmsApiDirectory {
             .put(RF_GATEWAY, RF_GATEWAY_DATA_INTERNAL)
             .put(RF_GATEWAY, RF_GATEWAY_DATA_UNSOLICITED)
             .put(RF_GATEWAY, RF_GATEWAY_DELETE)
+            .put(RF_GATEWAY, RF_GATEWAY_DELETE_FROM_NM)
             .put(RF_GATEWAY, RF_GATEWAY_EDIT)
             .put(RF_GATEWAY, RF_GATEWAY_FIRMWARE_UPGRADE)
             .put(RF_GATEWAY, RF_GATEWAY_SCHEDULE_DELETE)
