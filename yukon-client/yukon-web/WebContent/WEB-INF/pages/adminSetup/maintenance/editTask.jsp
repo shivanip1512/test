@@ -25,16 +25,6 @@
                         <form:hidden path="settings[${indexValue}].taskPropertyId" />
                     </tags:nameValue2>
                 </c:forEach>
-                <tags:nameValue2 nameKey=".nextRun">
-                    <c:choose>
-                        <c:when test="${maintenanceEditorBean.nextRun != null}">
-                            <span>${maintenanceEditorBean.nextRun}</span>
-                        </c:when>
-                        <c:otherwise>
-                            <span class="empty-list"><i:inline key="yukon.common.na"/></span>
-                        </c:otherwise>
-                    </c:choose>
-                </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         <cti:button nameKey="update" type="submit" classes="primary action" busy="true"/>

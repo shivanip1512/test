@@ -27,11 +27,8 @@ import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeleti
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.DateTime;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -83,7 +80,6 @@ public class MaintenanceController {
     @Autowired private MaintenanceTaskDao maintenanceTaskDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
-    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MaintenanceHelper maintenanceHelper;
     @Autowired @Qualifier("rphDuplicateDeletion")
         private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
@@ -330,19 +326,9 @@ public class MaintenanceController {
         MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskType);
         List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskDetails.getTaskName());
         
-        DateTime nextScheduledRunTime = null;
-        try {
-            nextScheduledRunTime = maintenanceHelper.getNextScheduledRunTime();
-        } catch (Exception e) {
-            MessageSourceResolvable invalidCronMsg = new YukonMessageSourceResolvable("yukon.common.invalidCron");
-            flashScope.setError(invalidCronMsg);
-            return "maintenance/editTask.jsp";
-        }
-        String dateStr = dateFormattingService.format(nextScheduledRunTime, DateFormatEnum.DATEHM, userContext);
         MaintenanceEditorBean maintenanceEditorBean = new MaintenanceEditorBean();
         maintenanceEditorBean.setTaskDetails(taskDetails);
         maintenanceEditorBean.setSettings(settings);
-        maintenanceEditorBean.setNextRun(dateStr);
 
         model.addAttribute("maintenanceEditorBean", maintenanceEditorBean);
         String taskNameMsg = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
