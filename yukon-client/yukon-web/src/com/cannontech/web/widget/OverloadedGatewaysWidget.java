@@ -3,40 +3,43 @@ package com.cannontech.web.widget;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
-import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
 @Controller
 @RequestMapping("/overloadedGatewaysWidget/*")
-public class OverloadedGatewaysWidget extends WidgetControllerBase {
+@CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
+public class OverloadedGatewaysWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private DataStreamingService dataStreamingService;
     
-    @Override
-    @RequestMapping("render")
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
+    @Autowired
+    public OverloadedGatewaysWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         setLazyLoad(true);
-        ModelAndView mav = new ModelAndView("overloadedGatewaysWidget/render.jsp");
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED.name()));
+    }
+    
+    @RequestMapping("render")
+    public String render(ModelMap model) {
 
         List<RfnGateway> overloadedGateways = new ArrayList<>();
         try {
             overloadedGateways = dataStreamingService.getOverloadedGateways();
         } catch (DataStreamingConfigException e) {}
         
-        mav.addObject("overloadedGateways", overloadedGateways);
+        model.addAttribute("overloadedGateways", overloadedGateways);
         
-        return mav;
+        return "overloadedGatewaysWidget/render.jsp";
     }
 }
 
