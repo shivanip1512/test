@@ -45,7 +45,7 @@
 
 <script type="text/javascript">
     var ${widgetParameters.jsWidget} = new YukonWidget("${beanInst.shortName}", ${cti:jsonString(widgetParameters)});
-    <c:if test="${beanInst.lazyLoad}">
+    <c:if test="${authorized && beanInst.lazyLoad}">
         $(function() {${widgetParameters.jsWidget}.render()});
     </c:if>
 </script>
