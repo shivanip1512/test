@@ -379,6 +379,7 @@ public:
     static const Attribute  Unconfigured;
     static const Attribute  Unprogrammed;
     static const Attribute  UserProgrammableTemperatureThresholdExceeded;
+    static const Attribute  VibrationTiltTamperDetected;
     static const Attribute  VoltageAlerts;
     static const Attribute  VoltageLoss;
     static const Attribute  VoltagePhaseAOut;

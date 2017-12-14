@@ -158,6 +158,7 @@
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
         <pointInfo name="User Programmable Temperature Threshold Exceeded" attributes="USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED"/>
+        <pointInfo name="Vibration or Tilt or Insertion - Tamper Detect" attributes="VIBRATION_TILT_TAMPER_DETECTED"/>
         <pointInfo name="Volt Degrees Phase A" init="true"/>
         <pointInfo name="Volt Degrees Phase B" init="true"/>
         <pointInfo name="Volt Degrees Phase C" init="true"/>

@@ -388,6 +388,7 @@ INIT_ATTRIBUTE( TOUScheduleError,                                   "TOU_SCHEDUL
 INIT_ATTRIBUTE( Unconfigured,                                       "UNCONFIGURED" );
 INIT_ATTRIBUTE( Unprogrammed,                                       "UNPROGRAMMED" );
 INIT_ATTRIBUTE( UserProgrammableTemperatureThresholdExceeded,       "USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED" );
+INIT_ATTRIBUTE( VibrationTiltTamperDetected,                        "VIBRATION_TILT_TAMPER_DETECTED" );
 INIT_ATTRIBUTE( VoltageAlerts,                                      "VOLTAGE_ALERTS" );
 INIT_ATTRIBUTE( VoltageLoss,                                        "VOLTAGE_LOSS" );
 INIT_ATTRIBUTE( VoltagePhaseAOut,                                   "VOLTAGE_PHASE_A_OUT" );

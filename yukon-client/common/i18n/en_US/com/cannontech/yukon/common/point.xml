@@ -321,6 +321,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.UNCONFIGURED">Unconfigured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNPROGRAMMED">Unprogrammed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED">Temperature Threshold Exceeded</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VIBRATION_TILT_TAMPER_DETECTED">Vibration or Tilt or Insertion - Tamper Detect</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_ALERTS">Voltage Alerts</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_LOSS">Voltage Loss</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_A_OUT">Voltage Phase A Out</entry>

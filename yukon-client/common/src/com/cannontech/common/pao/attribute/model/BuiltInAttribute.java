@@ -386,6 +386,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     UNCONFIGURED("Unconfigured", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     UNPROGRAMMED("Unprogrammed", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED("User Programmable Temperature Threshold Exceeded", AttributeGroup.RFN_METERING_EVENT, false),
+    VIBRATION_TILT_TAMPER_DETECTED("Vibration or Tilt or Insertion - Tamper Detect", AttributeGroup.RFN_METERING_EVENT, false),
     VOLTAGE_ALERTS("Voltage Alerts", AttributeGroup.RFN_METERING_EVENT, false),
     VOLTAGE_LOSS("Voltage Loss", AttributeGroup.RFN_VOLTAGE_EVENT, false),
     VOLTAGE_PHASE_A_OUT("Voltage Phase A Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
