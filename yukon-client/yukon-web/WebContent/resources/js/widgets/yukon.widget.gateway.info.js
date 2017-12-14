@@ -23,6 +23,14 @@ yukon.widget.gatewayInfo = (function () {
             /** Edit popup was opened, adjust test connection buttons. */
             $(document).on('yukon:assets:gateway:edit:load', function (ev) {
                 yukon.assets.gateway.shared.adjustTestConnectionButtons();
+                var ipv6 = $('#ipv6prefix').val();
+                if (ipv6 == null) {
+                    ipv6 = '0000000000000000'
+                }
+                $('#ipv6-1').val(ipv6.substring(0,4));
+                $('#ipv6-2').val(ipv6.substring(4,8));
+                $('#ipv6-3').val(ipv6.substring(8,12));
+                $('#ipv6-4').val(ipv6.substring(12,16));
             });
             
             /** Save button clicked on edit popup. */
@@ -96,6 +104,11 @@ yukon.widget.gatewayInfo = (function () {
                     otherRow.find('.js-conn-test-btn').prop('disabled', false);
                 });
                 
+            });
+            
+            $(document).on('input', '.js-ipv6-update', function (ev) {
+                var ipv6 = $('#ipv6-1').val() + $('#ipv6-2').val() + $('#ipv6-3').val() + $('#ipv6-4').val();
+                $('#ipv6prefix').val(ipv6);
             });
             
             _initialized = true;

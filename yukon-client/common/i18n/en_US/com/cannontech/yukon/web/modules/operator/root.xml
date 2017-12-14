@@ -215,6 +215,7 @@
     <entry key="yukon.web.modules.operator.gateways.lastCommStatus.MISSED">Missed</entry>
     <entry key="yukon.web.modules.operator.gateways.lastCommStatus.UNKNOWN">Unknown</entry>
     <entry key="yukon.web.modules.operator.gateways.networkManagerCommError">Unable to load gateways. There was an error communicating with Network Manager.</entry>
+    <entry key="yukon.web.modules.operator.gateways.ipv6prefix">ipv6 Prefix</entry>
     
     <!--  Keys below are for certificate update table headers -->
     <entry key="yukon.web.modules.operator.gateways.certUpdate.tableheader.TIMESTAMP">Timestamp</entry>
