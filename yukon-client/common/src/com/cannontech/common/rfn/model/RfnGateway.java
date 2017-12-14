@@ -49,7 +49,7 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
             if (getPaoIdentifier().getPaoType() == PaoType.GWY800 && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 0)) < 0) {
                 return false;
             //If the current version is < 6.1.1 and Gateway is 1.5, the upgrade has to be done manually
-            } else if (getPaoIdentifier().getPaoType() == PaoType.RFN_RELAY && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 1)) < 0) {
+            } else if (getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 1)) < 0) {
                 return false;
             }
             //The available version has to be greater than or equal to the current version to allow upgrade
