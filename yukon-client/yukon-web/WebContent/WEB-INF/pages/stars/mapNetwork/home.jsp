@@ -55,7 +55,7 @@
                     <tags:widget bean="relayInformationWidget" deviceId="${deviceId}" container="section"/>
                 </c:when>
                 <c:when test="${isRfLcr}">
-                    <tags:widget bean="hardwareInformationWidget" inventoryId="${inventoryId}" container="section"/>
+                    <tags:widget bean="lcrInformationWidget" inventoryId="${inventoryId}" container="section"/>
                 </c:when>
                 <c:otherwise>
                     <tags:widget bean="meterInformationWidget" deviceId="${deviceId}" container="section"/>

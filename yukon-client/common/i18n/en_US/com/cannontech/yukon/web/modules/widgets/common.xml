@@ -76,7 +76,7 @@
 <entry key="yukon.web.widgets.hbcTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.waterTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.waterCsrTrendWidget">Trend</entry>
-<entry key="yukon.web.widgets.hardwareInformationWidget">Device Information</entry>
+<entry key="yukon.web.widgets.lcrInformationWidget">LCR Information</entry>
 
 <entry key="yukon.web.widgets.validationMonitorsWidget.widgetIdentity">Validation Monitors {0}</entry>
 <entry key="yukon.web.widgets.meterSearchWidget.widgetIdentity">Meter Search {0}</entry>
