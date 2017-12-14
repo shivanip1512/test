@@ -709,6 +709,7 @@
     <entry key="yukon.web.modules.tools.configs.summary.deviceConfiguration">Device Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastAction">Last Action</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionStatus">Last Action Status</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.lastVerificationStatus">Last Verification Status</entry>
     <entry key="yukon.web.modules.tools.configs.summary.inSync">In Sync</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionStart">Last Action Start</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionEnd">Last Action End</entry>
