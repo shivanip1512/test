@@ -103,9 +103,10 @@ public class PorterQueueCountsWidgetServiceImpl implements PorterQueueCountsWidg
     
     @Override
     public Map<Integer, LiteYukonPAObject> getPointIdToPaoMapForAllPorts() {
-        List<LiteYukonPAObject> paos = serverDatabaseCache.getAllPorts();
-        paos.removeIf(pao -> pao.getPaoType() == PaoType.RFN_1200);
-        return makeAndGetPointIdToPaoMap(paos);
+        List<LiteYukonPAObject> paos = serverDatabaseCache.getAllPorts().stream()
+                                                                        .filter(pao -> pao.getPaoType() != PaoType.RFN_1200)
+                                                                        .collect(Collectors.toList());
+        return makeAndGetPointIdToPaoMap(paos); 
     }
 
 }
