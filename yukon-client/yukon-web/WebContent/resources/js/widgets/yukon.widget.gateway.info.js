@@ -10,6 +10,13 @@ yukon.widget.gatewayInfo = (function () {
     
     'use strict';
     
+    function pad_with_zeroes(string, length) {
+        while (string.length < length) {
+            string = '0' + string;
+        }
+        return string;
+    }
+    
     var
     _initialized = false,
     _text,
@@ -106,11 +113,23 @@ yukon.widget.gatewayInfo = (function () {
                 
             });
             
+            $(document).on('keypress', '.js-ipv6-update', function (ev) {
+                var regex = new RegExp("^[a-fA-F0-9]+$");
+                var key = String.fromCharCode(!ev.charCode ? ev.which : ev.charCode);
+                if (!regex.test(key)) {
+                   ev.preventDefault();
+                   return false;
+                }
+            });
             $(document).on('input', '.js-ipv6-update', function (ev) {
-                var ipv6 = $('#ipv6-1').val() + $('#ipv6-2').val() + $('#ipv6-3').val() + $('#ipv6-4').val();
+                var ipv6one = pad_with_zeroes($('#ipv6-1').val(), 4),
+                    ipv6two = pad_with_zeroes($('#ipv6-2').val(), 4),
+                    ipv6three = pad_with_zeroes($('#ipv6-3').val(), 4),
+                    ipv6four = pad_with_zeroes($('#ipv6-4').val(), 4);
+                
+                var ipv6 = ipv6one + ipv6two + ipv6three + ipv6four;
                 $('#ipv6prefix').val(ipv6);
             });
-            
             _initialized = true;
         },
     

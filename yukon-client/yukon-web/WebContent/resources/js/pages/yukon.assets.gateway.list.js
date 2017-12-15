@@ -95,6 +95,7 @@ yukon.assets.gateway.list = (function () {
                     .toggleClass('progress-bar-danger', data.collectionDanger);
                     if (percent == 100) percent = 100;
                     row.find('.js-gw-data-collection-percent').text(percent + '%');
+                    row.find('.js-gw-ipv6').text(data.ipv6Prefix)
                 }
             });
             

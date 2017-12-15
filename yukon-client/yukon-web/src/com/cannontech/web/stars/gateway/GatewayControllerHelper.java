@@ -92,6 +92,7 @@ public class GatewayControllerHelper {
             dataJson.put("releaseVersion", data.getReleaseVersion());
             dataJson.put("hasUpdateVersion", gateway.isUpgradeAvailable());
             dataJson.put("versionConflict", !data.getVersionConflicts().isEmpty());
+            dataJson.put("ipv6Prefix", data.getIpv6Prefix());
             if (!data.getVersionConflicts().isEmpty()) {
                 List<String> conflicts = new ArrayList<>();
                 for (ConflictType type : data.getVersionConflicts()) {
