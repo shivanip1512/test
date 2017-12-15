@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -57,7 +58,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
-import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -149,7 +149,6 @@ public class OptOutServiceImpl implements OptOutService {
     @Autowired private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
     @Autowired private ProgramService programService;
     @Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;  
-    @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
@@ -549,16 +548,61 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 
 	/**
+     * This method will filter ExpressCom and non-ExpressCom devices and send broadcast 
+     * messages for broadcast supported (ExpressCom) devices and handle other (non-ExpressCom)
+     * individually.
+     */
+    private void broadcastCancelAllOptOuts(LiteYukonUser user, int broadcastSpid, YukonEnergyCompany energyCompany,
+            List<OptOutEvent> currentOptOuts) {
+        // Get all InventoryIdentifier based on currentOptOut
+        List<Integer> inventoryIds = currentOptOuts.stream()
+                                                   .map(currentOptOut -> currentOptOut.getInventoryId())
+                                                   .collect(Collectors.toList());
+        // InventoryIds for ExpressCom devices 
+        List<Integer> filteredExpresscomInventoryIds = inventoryDao.getYukonInventory(inventoryIds)
+                                                                   .stream()
+                                                                   .filter(idetifier -> (idetifier.getHardwareType().isExpressCom()))
+                                                                   .map(idetifier -> idetifier.getInventoryId())
+                                                                   .collect(Collectors.toList());
+        // List of OptOutEvents for ExpressCom devices
+        List<OptOutEvent> currentOptOutsForExpresscom = currentOptOuts.stream()
+                                                                      .filter(currentOptOut -> filteredExpresscomInventoryIds
+                                                                                               .contains(currentOptOut.getInventoryId()))
+                                                                      .collect(Collectors.toList());
+        // List of OptOutEvents for non-ExpressCom devices
+        List<OptOutEvent> currentOptOutsForNonExpresscom = currentOptOuts.stream()
+                                                                         .filter(currentOptOut -> !filteredExpresscomInventoryIds
+                                                                                                  .contains(currentOptOut.getInventoryId()))
+                                                                         .collect(Collectors.toList());
+
+        // Use broadcast messages for broadcast supported devices other will be handled individually.
+        broadcastCancelAllOptOutsForExpresscom(user, broadcastSpid, energyCompany, currentOptOutsForExpresscom);
+        broadcastCancelAllOptOutsForNonExpresscom(user, energyCompany, currentOptOutsForNonExpresscom);
+    }
+
+    /**
+     * This method cancels all active opt outs for non-ExpressCom devices.  
+     * non-ExpressCom devices do not accept broadcast messages.
+     * This method will cancel all active opt outs individually.
+     */
+    private void broadcastCancelAllOptOutsForNonExpresscom(LiteYukonUser user, YukonEnergyCompany energyCompany,
+            List<OptOutEvent> ooeForNonExpresscomInv) {
+        for (OptOutEvent ooe : ooeForNonExpresscomInv) {
+            cancelOptOutEvent(ooe, energyCompany, user);
+        }
+
+    }
+	/**
 	 * This method cancels all active opt outs using broadcast messaging.  
 	 * One message is generated per communication protocol and is sent to
-	 * all devices on the network using SPID addressing.  
+	 * all ExpressCom devices on the network using SPID addressing.  
 	 * 
 	 * @param user The user performing the broadcast cancel override.
 	 * @param spid The SPID address to use in the ExpressCom messages.
 	 * @param energyCompany The energy company used when looking up the SPID role property.
 	 */
-    private void broadcastCancelAllOptOuts(LiteYukonUser user, int spid, 
-            YukonEnergyCompany energyCompany, List<OptOutEvent> currentOptOuts) {
+    private void broadcastCancelAllOptOutsForExpresscom(LiteYukonUser user, int spid, 
+            YukonEnergyCompany energyCompany, List<OptOutEvent> currentOptOutsForExpresscom) {
         logger.debug("Using broadcast messaging for cancel all opt outs command.");
         LmCommand command = new LmCommand();
 
@@ -568,12 +612,11 @@ public class OptOutServiceImpl implements OptOutService {
         
         // Send the broadcast command via all available strategies.
         lmHardwareCommandService.sendBroadcastCommand(command);
-        
         // Perform logging.
         starsEventLogService.cancelCurrentOptOuts(user);
         Instant momentCancelled = new Instant();
         
-        for (OptOutEvent ooe : currentOptOuts) {
+        for (OptOutEvent ooe : currentOptOutsForExpresscom) {
             lmHardwareControlInformationService.stopOptOut(ooe.getInventoryId(), user, momentCancelled);
 
             LiteLmHardwareBase inventory = null;
