@@ -9,7 +9,9 @@ public class PortCriteria extends YukonObjectCriteriaHelper {
     public PortCriteria() {
         super();
         PaoType.getPortTypes().stream().forEach(portType -> {
-            addCriteria("type", portType.getDbString(), BooleanClause.Occur.SHOULD);
+            if (portType != PaoType.RFN_1200) {
+                addCriteria("type", portType.getDbString(), BooleanClause.Occur.SHOULD);
+            }
         });
     }
 }
