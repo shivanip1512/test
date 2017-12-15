@@ -49,7 +49,7 @@ public enum ContentSecurityPolicyFilterType {
         + "http://www.google.com ; "),          // Recaptcha
     FRAME_ANCESTORS("frame-ancestors 'self' ;"),
     FORM_ACTION("form-action 'self' "
-        + "https://export.highcharts.com ; "),
+        + "https://export.highcharts.com "),
     ;
 
     private final String value;
