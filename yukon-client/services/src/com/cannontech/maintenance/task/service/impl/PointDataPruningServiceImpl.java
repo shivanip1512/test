@@ -16,18 +16,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private MaintenanceTaskService maintenanceTaskService;
 
-    private long minimumExecutionTime = 5;
-
-    @Override
-    public int deletePointDataSql(Instant processEndTime) {
-        DurationType noOfMonths = (DurationType) maintenanceTaskService.getMaintenanceSettings(MaintenanceTaskType.POINT_DATA_PRUNING, MaintenanceSettingType.NO_OF_MONTHS);
-        Instant start = new Instant();
-        Instant deleteUpto = Instant.now().toDateTime().minusMonths(noOfMonths.getDuration()).toInstant();
-        int numDeleted = pointDataPruningDao.deletePointData(processEndTime.minus(minimumExecutionTime), deleteUpto);
-        Instant finish = new Instant();
-        systemEventLogService.deletePointDataEntries(numDeleted, start, finish);
-        return numDeleted;
-    }
+    private long minimumExecutionTime = 300000;
 
     @Override
     public int deletePointData(Instant processEndTime) {
