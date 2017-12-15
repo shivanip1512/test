@@ -1,5 +1,8 @@
 package com.cannontech.web.filter;
 
+import com.cannontech.common.util.WebserverUrlResolver;
+import com.cannontech.spring.YukonSpringHook;
+
 public enum ContentSecurityPolicyFilterType {
     DEFAULT_SRC("default-src 'self' 'unsafe-inline' " 
         + "http://java.sun.com " 
@@ -56,6 +59,9 @@ public enum ContentSecurityPolicyFilterType {
     }
 
     public String getValue() {
+        if (this == FORM_ACTION) {
+            return value + YukonSpringHook.getBean(WebserverUrlResolver.class).getUrlBase() + " ; ";
+        }
         return value;
     }
 }

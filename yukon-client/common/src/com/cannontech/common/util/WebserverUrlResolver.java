@@ -31,7 +31,7 @@ public class WebserverUrlResolver {
             String globalSetting = globalSettingDao.getString(GlobalSettingType.YUKON_EXTERNAL_URL);
             if (StringUtils.isEmpty(globalSetting)) {
                 String defaultToUse = StringUtils.isEmpty(customDefaultUrl) ? defaultUrl : customDefaultUrl;
-                log.error("No master.cfg entry or configuration setting was found for YUKON_EXTERNAL_URL. Defaulting to " + defaultToUse);
+                log.debug("No master.cfg entry or configuration setting was found for YUKON_EXTERNAL_URL. Defaulting to " + defaultToUse);
                 return stripTrailingSeparatorIfPresent(defaultToUse);
             }
             return stripTrailingSeparatorIfPresent(globalSetting);
