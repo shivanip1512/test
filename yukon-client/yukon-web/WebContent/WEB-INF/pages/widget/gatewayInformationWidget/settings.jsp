@@ -39,7 +39,6 @@
         <tags:nameValue2 nameKey=".ipaddress">
             <tags:input path="ipAddress" inputClass="js-gateway-edit-ip" maxlength="15" size="15" tabindex="2"/>
         </tags:nameValue2>
-                    <%-- TODO change name to ipv6 path value --%>
         <tags:nameValue2 nameKey=".ipv6prefix">
             <div class="column-6-6-6-6 clearfix">
                 <tags:input id="ipv6prefix" path="ipv6Prefix" inputClass="dn"/>
