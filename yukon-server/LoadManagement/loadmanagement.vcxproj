@@ -361,6 +361,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
+    <ClCompile Include="LMScheduledMessageHolder.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">
     </ClCompile>
     <ClCompile Include="lm_message_serialization.cpp">
@@ -510,6 +511,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\lmservice.h" />
     <ClInclude Include="include\lmutility.h" />
     <ClInclude Include="include\loadmanager.h" />
+    <ClInclude Include="include\LMScheduledMessageHolder.h" />
     <ClInclude Include="include\SEPControlInterface.h" />
     <ClInclude Include="include\sepcyclegear.h" />
     <ClInclude Include="include\septempoffsetgear.h" />

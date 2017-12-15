@@ -43,6 +43,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
     const std::string& getFrontRampOption() const;
     const std::string& getBackRampOption() const;
     DOUBLE getKWReduction() const;
+    LONG getStopRepeatCount() const;
 
     CtiLMProgramDirectGear& setProgramPAOId(LONG paoid);
     CtiLMProgramDirectGear& setGearName(const std::string& name);
@@ -154,6 +155,7 @@ private:
     std::string _back_ramp_option;
     LONG _back_ramp_time;
     DOUBLE _kw_reduction;
+    LONG _stop_repeat_count;
 };
 
 inline bool operator==( const CtiLMProgramDirectGear & lhs, const CtiLMProgramDirectGear & rhs )

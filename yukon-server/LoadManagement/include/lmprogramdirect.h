@@ -130,8 +130,8 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
 
     void startGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
     void refreshGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
-    bool restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg);
-    bool stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period);
+    bool restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, short repeatCount = 0);
+    bool stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period, short repeatCount = 0);
 
     void scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time);
     void scheduleNotificationForTimedControl(const CtiTime& start_time, const CtiTime& stop_time);
@@ -215,6 +215,8 @@ private:
     double StartMasterCycle(CtiTime currentTime, CtiLMProgramDirectGear* lm_gear);
     bool sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, double &expectedLoadReduced, bool isRefresh);
     bool recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time);
+    void scheduleMessageForResend(CtiTime currentTime, const CtiRequestMsg & message, short count, CtiLMGroupPtr & lm_group);
+    void cancelScheduledStopsForGroup(CtiLMGroupPtr & lm_group);
     bool isAControlState(int state);
     bool isAStopState(int state);
     unsigned long getCurrentHistLogId();

@@ -30,6 +30,7 @@
 #include "database_util.h"
 #include "smartgearbase.h"
 #include "lmgroupdigisep.h"
+#include "LMScheduledMessageHolder.h"
 
 using std::string;
 using std::endl;
@@ -40,6 +41,7 @@ using Cti::MacroOffset;
 
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
+extern LMScheduledMessageHolder _SCHEDULED_STOP_MESSAGES;
 
 DEFINE_COLLECTABLE(CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID)
 
@@ -3359,13 +3361,13 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                     {
                         if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
                         {
-                            restoreGroup(currentTime, currentLMGroup, multiPilMsg);
+                            restoreGroup(currentTime, currentLMGroup, multiPilMsg, previousGearObject->getStopRepeatCount());
                         }
                         else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
                                  ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
                                  ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                         {
-                            stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod());
+                            stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod(), previousGearObject->getStopRepeatCount());
                         }
                         else
                         {
@@ -3379,7 +3381,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                     {
                         if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
                         {
-                            restoreGroup(currentTime, currentLMGroup, multiPilMsg);
+                            restoreGroup(currentTime, currentLMGroup, multiPilMsg, previousGearObject->getStopRepeatCount());
                         }
                         else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) || ciStringEqual(tempMethodStopType,"Time-In" ) )
                         {
@@ -3501,13 +3503,13 @@ BOOL CtiLMProgramDirect::stopOverControlledGroup(CtiLMProgramDirectGear* current
     string tempMethodStopType = currentGearObject->getMethodStopType();
     if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
     {
-        restoreGroup(currentTime, currentLMGroup, multiPilMsg);
+        restoreGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getStopRepeatCount());
     }
     else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
              ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
              ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
     {
-        stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod());
+        stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod(), currentGearObject->getStopRepeatCount());
     }
     else
     {
@@ -4492,13 +4494,13 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                 {
                     if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
                     {
-                        restoreGroup(currentTime, currentLMGroup, multiPilMsg);
+                        restoreGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getStopRepeatCount());
                     }
                     else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::StopCycleStopType ) ||
                              ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType ) ||
                              ciStringEqual(tempMethodStopType,"Time-In" ) )//"Time-In" is a hack to account for older versions of the DB Editor putting it in the DB that way
                     {
-                        stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod());
+                        stopCycleGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getMethodPeriod(), currentGearObject->getStopRepeatCount());
                     }
                     else
                     {
@@ -4520,7 +4522,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                            CtiLMProgramDirectGear::RampOutFIFORestoreStopType == tempMethodStopType))
                       )
                     {
-                        restoreGroup(currentTime, currentLMGroup, multiPilMsg);
+                        restoreGroup(currentTime, currentLMGroup, multiPilMsg, currentGearObject->getStopRepeatCount());
                     }
                     else if( ciStringEqual(tempMethodStopType,CtiLMProgramDirectGear::TimeInStopType) ||
                              ciStringEqual(tempMethodStopType,"Time-In") ||
@@ -4702,7 +4704,7 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
         if( lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutRandomRestoreStopType ||
             lm_gear->getMethodStopType() == CtiLMProgramDirectGear::RampOutFIFORestoreStopType )
         {
-            restoreGroup(currentTime, lm_group, multiPilMsg);
+            restoreGroup(currentTime, lm_group, multiPilMsg, lm_gear->getStopRepeatCount());
         }
     }
 
@@ -5561,6 +5563,8 @@ void CtiLMProgramDirect::startGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMs
 {
     if( req && multiPilMsg )
     {
+        cancelScheduledStopsForGroup(lm_group);
+
         lm_group->setLastControlString(req->CommandString());
         lm_group->setLastControlSent(CtiTime());
 
@@ -5604,7 +5608,58 @@ void CtiLMProgramDirect::refreshGroupControl(CtiLMGroupPtr& lm_group, CtiRequest
     lm_group->setGroupControlState(CtiLMGroupBase::ActiveState);    // This should be sent from dispatch, no lies!
 }
 
-bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg)
+// Schedule count copies of this message to be re-sent one per minute.
+// Has a sanity check limit of 10 copies.
+void CtiLMProgramDirect::scheduleMessageForResend(CtiTime currentTime, const CtiRequestMsg &message, short count, CtiLMGroupPtr &lm_group)
+{
+    // Ensure we dont double up on these somehow.
+    cancelScheduledStopsForGroup(lm_group);
+
+    if ( count > 0 && count < 10 ) 
+    {
+
+        string log = "Adding extra stop messages for group: " + lm_group->getPAOName() + ", string: " + message.CommandString();
+        
+
+        for ( int i = 0; i< count; i++) 
+        {
+            // each message is 1 minute after the previous stop, including the one sent that called this function
+            currentTime.addMinutes(1);
+            auto clonedMessage = std::unique_ptr<CtiRequestMsg>((CtiRequestMsg*)message.replicateMessage());
+            clonedMessage->setOptionsField(rand());
+            
+            log += "\r\n    " + CtiNumStr(i+1) + ": Time " + currentTime.asString() + " Unique id " + CtiNumStr(clonedMessage->OptionsField()) + " Groupid " + CtiNumStr(message.DeviceId());
+
+            _SCHEDULED_STOP_MESSAGES.addMessage(currentTime, lm_group->getPAOId(), std::move(clonedMessage));
+            
+        }
+
+        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CTILOG_INFO(dout, log);
+        }
+    }
+    else if ( count >= 10 ) 
+    {
+        CTILOG_DEBUG(dout, "Resend count requested > 10, blocking for group id " << lm_group->getPAOId());
+    }
+}
+
+// Delete all existing scheduled stop messages for this group
+void CtiLMProgramDirect::cancelScheduledStopsForGroup(CtiLMGroupPtr &lm_group)
+{
+    auto count = _SCHEDULED_STOP_MESSAGES.clearMessagesForGroup(lm_group->getPAOId());
+
+    if ( count > 0 )
+    {
+        if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CTILOG_INFO(dout, "Cancelled " << count << " future stop messages for group " << lm_group->getPAOName());
+        }
+    }
+}
+
+bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr & lm_group, CtiMultiMsg * multiPilMsg, short repeatCount)
 {
     CtiLMGroupConstraintChecker con_checker(*this, lm_group, currentTime);
     if( !(getConstraintOverride() || con_checker.checkRestore()) )
@@ -5634,6 +5689,10 @@ bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_gro
                                                              0,
                                                              priority);
 
+        if ( repeatCount > 0 )
+        {
+            scheduleMessageForResend(currentTime, *requestMsg, repeatCount, lm_group);
+        }
         lm_group->setLastControlString(requestMsg->CommandString());
         multiPilMsg->insert( requestMsg );
         setLastControlSent(CtiTime());
@@ -5648,7 +5707,7 @@ bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_gro
   Sends messages to stop the current cycling gradually. Actual behavior depends on
   the individual group and it's protocols.
   ----------------------------------------------------------------------------*/
-bool CtiLMProgramDirect::stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period)
+bool CtiLMProgramDirect::stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period, short repeatCount)
 {
     CtiLMGroupConstraintChecker con_checker(*this, lm_group, currentTime);
     if( !(getConstraintOverride() || con_checker.checkTerminate()) )
@@ -5661,7 +5720,13 @@ bool CtiLMProgramDirect::stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_g
     }
     else
     {
-        multiPilMsg->insert(lm_group->createStopCycleMsg(period, currentTime));
+        auto stopCycleMessage = lm_group->createStopCycleMsg(period, currentTime);
+
+        if ( repeatCount > 0 )
+        {
+            scheduleMessageForResend(currentTime, *stopCycleMessage, repeatCount, lm_group);
+        }
+        multiPilMsg->insert(stopCycleMessage);
         setLastControlSent(currentTime);
         return true;
     }

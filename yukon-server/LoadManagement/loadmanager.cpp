@@ -33,6 +33,7 @@
 #include "GlobalSettings.h"
 #include "win_helper.h"
 #include "MessageCounter.h"
+#include "LMScheduledMessageHolder.h"
 
 #include <time.h>
 #include <map>
@@ -47,6 +48,7 @@ extern BOOL _LM_POINT_EVENT_LOGGING;
 set<long> _CHANGED_GROUP_LIST;
 set<long> _CHANGED_CONTROL_AREA_LIST;
 set<long> _CHANGED_PROGRAM_LIST;
+LMScheduledMessageHolder _SCHEDULED_STOP_MESSAGES;
 
 unsigned int _HISTORY_PROGRAM_ID = 0;
 unsigned int _HISTORY_GROUP_ID = 0;
@@ -483,6 +485,18 @@ void CtiLoadManager::controlLoop()
                 {
                     CTILOG_DEBUG(dout, "Control area loop took: "
                          << controlAreaStop.seconds() - controlAreaStart.seconds() << " seconds " );
+                }
+
+                //Send out any scheduled stop messages that are ready to go
+                while (auto message = _SCHEDULED_STOP_MESSAGES.getAvailableMessage())
+                {
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CTILOG_INFO(dout, "Sending delayed message Unique id " << message->OptionsField() <<  " Groupid " << message.get()->DeviceId());
+                    }
+                    
+                    multiPilMsg->insert(message.get());
+                    message.release();
                 }
 
                 try

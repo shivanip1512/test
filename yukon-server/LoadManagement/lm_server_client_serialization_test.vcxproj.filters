@@ -173,6 +173,9 @@
     <ClCompile Include="honeywellCycleGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LMScheduledMessageHolder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h">

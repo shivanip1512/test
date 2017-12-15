@@ -886,7 +886,7 @@ void CtiLMControlAreaStore::reset()
                                                "PDG.changetriggeroffset, PDG.percentreduction, PDG.groupselectionmethod, "
                                                "PDG.methodoptiontype, PDG.methodoptionmax, PDG.gearid, PDG.rampininterval, "
                                                "PDG.rampinpercent, PDG.rampoutinterval, PDG.rampoutpercent, "
-                                               "PDG.kwreduction, PDG.frontrampoption, PDG.frontramptime, "
+                                               "PDG.kwreduction, PDG.stopcommandrepeat, PDG.frontrampoption, PDG.frontramptime, "
                                                "PDG.backrampoption, PDG.backramptime, TSG.settings, TSG.minvalue, "
                                                "TSG.maxvalue, TSG.valueb, TSG.valued, TSG.valuef, TSG.random, TSG.valueta, "
                                                "TSG.valuetb, TSG.valuetc, TSG.valuetd, TSG.valuete, TSG.valuetf, "

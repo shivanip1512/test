@@ -13,7 +13,7 @@
 
 struct thermostat_gear_settings_helper
 {
-    typedef Cti::Test::StringRow<42>            LMGearRow;
+    typedef Cti::Test::StringRow<43>            LMGearRow;
     typedef Cti::Test::TestReader<LMGearRow>    LMGearReader;
 
     LMGearRow   columnNames,
@@ -27,7 +27,7 @@ struct thermostat_gear_settings_helper
     std::string logMessage;
 
     thermostat_gear_settings_helper()
-        :   settingsIndex( 28 ),
+        :   settingsIndex( 29 ),
             controlMethodIndex( 3 ),
             group( new CtiLMGroupExpresscom )
     {
@@ -63,6 +63,7 @@ struct thermostat_gear_settings_helper
             "BackRampOption",
             "BackRampTime",
             "KwReduction",
+            "StopCommandRepeat",
             "Settings",
             "MinValue",
             "MaxValue",
@@ -111,6 +112,7 @@ struct thermostat_gear_settings_helper
             "(none)",
             "20",
             "3.4",
+            "2",
             "<uninitialized>",
             "1",
             "255",

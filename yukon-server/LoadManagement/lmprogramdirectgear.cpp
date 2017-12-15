@@ -40,7 +40,8 @@ _rampininterval(0),
 _rampinpercent(0),
 _rampoutinterval(0),
 _rampoutpercent(0),
-_kw_reduction(0)
+_kw_reduction(0),
+_stop_repeat_count(0)
 {
 }
 
@@ -335,6 +336,16 @@ const string& CtiLMProgramDirectGear::getBackRampOption() const
 DOUBLE CtiLMProgramDirectGear::getKWReduction() const
 {
     return _kw_reduction;
+}
+
+/*----------------------------------------------------------------------------
+  getStopCommandRepeat
+
+  Returns the number of times the stop command should be repeated, once per minute
+----------------------------------------------------------------------------*/
+LONG CtiLMProgramDirectGear::getStopRepeatCount() const
+{
+    return _stop_repeat_count;
 }
 
 /*---------------------------------------------------------------------------
@@ -664,6 +675,7 @@ void CtiLMProgramDirectGear::restore(Cti::RowReader &rdr)
     rdr["backrampoption"] >> _back_ramp_option;
     rdr["backramptime"] >> _back_ramp_time;
     rdr["kwreduction"] >> _kw_reduction;
+    rdr["stopcommandrepeat"] >> _stop_repeat_count;
 }
 
 // Static Members

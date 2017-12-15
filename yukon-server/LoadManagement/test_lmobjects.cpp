@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE( test_lmobjects_ecobee_group )
 
 BOOST_AUTO_TEST_CASE( test_lmobjects_ecobee_cycle_gear )
 {
-    typedef Cti::Test::StringRow<28>            LMGearRow;
+    typedef Cti::Test::StringRow<29>            LMGearRow;
     typedef Cti::Test::TestReader<LMGearRow>    LMGearReader;
 
     LMGearRow columnNames =
@@ -174,7 +174,8 @@ BOOST_AUTO_TEST_CASE( test_lmobjects_ecobee_cycle_gear )
         "FrontRampTime",
         "BackRampOption",
         "BackRampTime",
-        "KwReduction"
+        "KwReduction",
+        "StopCommandRepeat"
     };
 
     LMGearRow columnValues =
@@ -206,7 +207,8 @@ BOOST_AUTO_TEST_CASE( test_lmobjects_ecobee_cycle_gear )
         "19",
         "(none)",
         "20",
-        "3.4"
+        "3.4",
+        "2"
     };
 
     std::vector<LMGearRow> rowVec = boost::assign::list_of
@@ -244,6 +246,7 @@ BOOST_AUTO_TEST_CASE( test_lmobjects_ecobee_cycle_gear )
     BOOST_CHECK_EQUAL( gear->getFrontRampOption(),      "(none)" );
     BOOST_CHECK_EQUAL( gear->getBackRampOption(),       "(none)" );
     BOOST_CHECK_CLOSE( gear->getKWReduction(),          3.4,    1e-1 );
+    BOOST_CHECK_EQUAL( gear->getStopRepeatCount(),      2 );
 
     // No public access to 'FrontRampTime' or 'BackRampTime' from the reader in the gear object
 
@@ -353,7 +356,7 @@ BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_group)
 
 BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_cycle_gear)
 {
-    typedef Cti::Test::StringRow<28>            LMGearRow;
+    typedef Cti::Test::StringRow<29>            LMGearRow;
     typedef Cti::Test::TestReader<LMGearRow>    LMGearReader;
 
     LMGearRow columnNames =
@@ -385,7 +388,8 @@ BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_cycle_gear)
         "FrontRampTime",
         "BackRampOption",
         "BackRampTime",
-        "KwReduction"
+        "KwReduction",
+        "StopCommandRepeat"
     };
 
     LMGearRow columnValues =
@@ -417,7 +421,8 @@ BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_cycle_gear)
         "19",
         "(none)",
         "20",
-        "3.4"
+        "3.4",
+        "2"
     };
 
     std::vector<LMGearRow> rowVec = boost::assign::list_of
@@ -455,6 +460,7 @@ BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_cycle_gear)
     BOOST_CHECK_EQUAL(gear.getFrontRampOption(), "(none)");
     BOOST_CHECK_EQUAL(gear.getBackRampOption(), "(none)");
     BOOST_CHECK_CLOSE(gear.getKWReduction(), 3.4, 1e-1);
+    BOOST_CHECK_EQUAL(gear.getStopRepeatCount(), 2);
 
     // No public access to 'FrontRampTime' or 'BackRampTime' from the reader in the gear object
 

@@ -449,6 +449,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="loadmanager.cpp">
     </ClCompile>
+    <ClCompile Include="LMScheduledMessageHolder.cpp" />
     <ClCompile Include="sepcyclegear.cpp">
     </ClCompile>
     <ClCompile Include="septempoffsetgear.cpp">
