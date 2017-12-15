@@ -117,7 +117,7 @@
                     <tr>
                         <td>
                             <cti:paoDetailUrl paoId="${event.deviceId}" newTab="true">
-                                ${event.deviceName}
+                                ${fn:escapeXml(event.deviceName)}
                             </cti:paoDetailUrl>
                         </td>
                         <c:if test="${showTypeColumn}">

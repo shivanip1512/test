@@ -6,6 +6,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="modules.amr.usageThresholdReport.results">
 
@@ -79,7 +80,7 @@
                         <cti:msg2 var="availabilityText" key=".dataAvailability.${device.availability}"/>
                         <div class="small-circle" title="${availabilityText}" style="background-color:${device.availability.color}"></div>
                     </td>
-                    <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${device.deviceName}</cti:paoDetailUrl></td>
+                    <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
                     <td>${device.meterNumber}</td>
                     <td>${device.paoIdentifier.paoType.paoTypeName}</td>
                     <td>${device.addressSerialNumber}</td>

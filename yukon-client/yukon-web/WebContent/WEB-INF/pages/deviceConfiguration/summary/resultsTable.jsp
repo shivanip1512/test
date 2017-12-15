@@ -4,6 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
     
 <cti:msgScope paths="modules.tools.configs.summary">
     
@@ -58,7 +59,7 @@
                     <c:forEach var="detail" items="${results.resultList}">
                         <c:set var="deviceId" value="${detail.device.paoIdentifier.paoId}"/>
                         <tr>
-                            <td><cti:paoDetailUrl yukonPao="${detail.device.paoIdentifier}" newTab="true">${detail.device.name}</cti:paoDetailUrl></td>
+                            <td><cti:paoDetailUrl yukonPao="${detail.device.paoIdentifier}" newTab="true">${fn:escapeXml(detail.device.name)}</cti:paoDetailUrl></td>
                             <td class="wsnw">${detail.device.paoIdentifier.paoType.paoTypeName}</td>
                             <cti:url var="configUrl" value="/deviceConfiguration/config/view?configId=${detail.deviceConfig.configurationId}"/>
                             <td><a href="${configUrl}">${detail.deviceConfig.name}</a></td>

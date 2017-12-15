@@ -26,7 +26,7 @@
                     <cti:url var="gatewayUrl" value="/stars/gateways/${result.gateway.paoIdentifier.paoId}"/>
                     <tr>
                         <td><input class="js-select-all-item" type="checkbox" name="selectedResult" value="${result.meter.paoIdentifier.paoId}"></td>
-                        <td><cti:paoDetailUrl yukonPao="${result.meter}">${result.meter.name}</cti:paoDetailUrl></td>
+                        <td><cti:paoDetailUrl yukonPao="${result.meter}">${fn:escapeXml(result.meter.name)}</cti:paoDetailUrl></td>
                         <td>${result.meter.paoIdentifier.paoType.paoTypeName}</td>
                         <td>${result.meter.rfnIdentifier.sensorSerialNumber}</td>
                         <td>

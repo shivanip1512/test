@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="modules.amr.dataCollection.detail">
 
@@ -32,7 +33,7 @@
                 <cti:msg2 var="rangeText" key=".rangeType.${device.range}"/>
                 <div class="small-circle ${circleColor}" title="${rangeText}"></div>
             </td>
-            <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${device.deviceName}</cti:paoDetailUrl></td>
+            <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl></td>
             <td>${device.meterNumber}</td>
             <td>${device.paoIdentifier.paoType.paoTypeName}</td>
             <td>${device.addressSerialNumber}</td>

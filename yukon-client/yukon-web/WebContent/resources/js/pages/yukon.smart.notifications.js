@@ -84,7 +84,7 @@ yukon.smart.notifications = (function () {
         eventData.reverse().forEach(function (event) {
             var statusMessage = $('.js-status-' + event.eventId);
             event.id = event.eventId;
-            event.message = "<strong>" + event.deviceName + "</strong> - " + statusMessage.text();
+            event.message = "<strong>" + escape(event.deviceName) + "</strong> - " + statusMessage.text();
             event.timestamp = event.timestamp.millis;
             toAdd.push(event);
         });

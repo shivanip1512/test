@@ -8,7 +8,7 @@
 
 <cti:msgScope paths="modules.tools.map,modules.operator.mapNetwork">
 <tags:nameValueContainer2 tableClass="name-collapse">
-    <tags:nameValue2 nameKey=".device"><cti:paoDetailUrl yukonPao="${pao}" newTab="true">${pao.name}</cti:paoDetailUrl></tags:nameValue2>
+    <tags:nameValue2 nameKey=".device"><cti:paoDetailUrl yukonPao="${pao}" newTab="true">${fn:escapeXml(pao.name)}</cti:paoDetailUrl></tags:nameValue2>
     <c:if test="${showMeterNumber}">
         <tags:nameValue2 nameKey=".meterNumber">${fn:escapeXml(pao.meter.meterNumber)}</tags:nameValue2>
     </c:if>
