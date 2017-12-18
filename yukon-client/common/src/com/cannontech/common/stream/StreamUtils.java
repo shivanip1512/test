@@ -1,5 +1,7 @@
 package com.cannontech.common.stream;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -57,7 +59,7 @@ public final class StreamUtils {
      * @param valueMapper A function for mapping the objects from the stream to values in the map.
      * @return
      */
-    public static final <O,K,V> Collector<O,?,Multimap<K,V>> mappedValueToMultimap(Function<O,K> keyMapper, 
+    public static final <O,K,V> Collector<O,?,HashMultimap<K,V>> mappedValueToMultimap(Function<O,K> keyMapper, 
                                                                         Function<O,Iterable<V>> valueMapper) {
         
         return Collector.of(
@@ -92,7 +94,7 @@ public final class StreamUtils {
      * @return A Collector that collects a stream of objects into a Guava Multimap, with keys dictated by the classifier
      * function.
      */
-    public static final <O,K> Collector<O,?,Multimap<K,O>> groupingBy(Function<O,K> classifier) {
+    public static final <O,K> Collector<O,?,HashMultimap<K,O>> groupingBy(Function<O,K> classifier) {
         return Collector.of(
              () -> HashMultimap.create(), 
              (map, object) -> map.put(classifier.apply(object), object), 
