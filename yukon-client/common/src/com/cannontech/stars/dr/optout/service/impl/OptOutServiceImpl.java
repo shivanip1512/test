@@ -561,8 +561,8 @@ public class OptOutServiceImpl implements OptOutService {
         // InventoryIds for ExpressCom devices 
         List<Integer> filteredExpresscomInventoryIds = inventoryDao.getYukonInventory(inventoryIds)
                                                                    .stream()
-                                                                   .filter(idetifier -> (idetifier.getHardwareType().isExpressCom()))
-                                                                   .map(idetifier -> idetifier.getInventoryId())
+                                                                   .filter(identifier -> (identifier.getHardwareType().isExpressCom()))
+                                                                   .map(identifier -> identifier.getInventoryId())
                                                                    .collect(Collectors.toList());
         // List of OptOutEvents for ExpressCom devices
         List<OptOutEvent> currentOptOutsForExpresscom = currentOptOuts.stream()
@@ -577,15 +577,16 @@ public class OptOutServiceImpl implements OptOutService {
 
         // Use broadcast messages for broadcast supported devices other will be handled individually.
         broadcastCancelAllOptOutsForExpresscom(user, broadcastSpid, energyCompany, currentOptOutsForExpresscom);
-        broadcastCancelAllOptOutsForNonExpresscom(user, energyCompany, currentOptOutsForNonExpresscom);
+        // Cancel opt out individually for non-ExpressCom devices
+        cancelAllOptOutsForNonExpresscom(user, energyCompany, currentOptOutsForNonExpresscom);
     }
 
     /**
-     * This method cancels all active opt outs for non-ExpressCom devices.  
+     * This method cancels all active opt outs for non-ExpressCom devices.
      * non-ExpressCom devices do not accept broadcast messages.
      * This method will cancel all active opt outs individually.
      */
-    private void broadcastCancelAllOptOutsForNonExpresscom(LiteYukonUser user, YukonEnergyCompany energyCompany,
+    private void cancelAllOptOutsForNonExpresscom(LiteYukonUser user, YukonEnergyCompany energyCompany,
             List<OptOutEvent> ooeForNonExpresscomInv) {
         for (OptOutEvent ooe : ooeForNonExpresscomInv) {
             cancelOptOutEvent(ooe, energyCompany, user);
