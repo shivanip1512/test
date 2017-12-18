@@ -82,9 +82,12 @@ yukon.smart.notifications = (function () {
 
         // Reverse order to add oldest first.
         eventData.reverse().forEach(function (event) {
-            var statusMessage = $('.js-status-' + event.eventId);
+            var statusMessage = $('.js-status-' + event.eventId),
+                eventMessageSpan = $('<span />');
             event.id = event.eventId;
-            event.message = "<strong>" + escape(event.deviceName) + "</strong> - " + statusMessage.text();
+            eventMessageSpan.append('<strong></strong>');
+            eventMessageSpan.find('strong').text(event.deviceName);
+            event.message = eventMessageSpan.html() + " - " + statusMessage.text();
             event.timestamp = event.timestamp.millis;
             toAdd.push(event);
         });

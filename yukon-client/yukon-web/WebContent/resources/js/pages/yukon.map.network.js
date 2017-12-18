@@ -494,7 +494,9 @@ yukon.map.network = (function () {
                             var parentData = parent.data;
                             $('.js-device-display').toggleClass('dn', parent.device.name == null);
                             if (parent.deviceDetailUrl != null) {
-                                $('.js-device').html('<a href="' + yukon.url(parent.deviceDetailUrl) + '" target=_blank>' + escape(parent.device.name) + '</a>');
+                                var nameSpan = $('<span />');
+                                nameSpan.text(parent.device.name);
+                                $('.js-device').html('<a href="' + yukon.url(parent.deviceDetailUrl) + '" target=_blank>' + nameSpan.html() + '</a>');
                             } else {
                                 $('.js-device').text(parent.device.name);
                             }
@@ -528,7 +530,9 @@ yukon.map.network = (function () {
                             var neighborData = neighbor.data;
                             $('.js-device-display').toggleClass('dn', neighbor.device.name == null);
                             if (neighbor.deviceDetailUrl != null) {
-                                $('.js-device').html('<a href="' + yukon.url(neighbor.deviceDetailUrl) + '" target=_blank>' + escape(neighbor.device.name) + '</a>');
+                                var nameSpan = $('<span />');
+                                nameSpan.text(neighbor.device.name);
+                                $('.js-device').html('<a href="' + yukon.url(neighbor.deviceDetailUrl) + '" target=_blank>' + nameSpan.html() + '</a>');
                             } else {
                                 $('.js-device').text(neighbor.device.name);
                             }
@@ -569,7 +573,9 @@ yukon.map.network = (function () {
                         } else if (routeInfo != null) {
                             $('.js-device-display').toggleClass('dn', routeInfo.device.name == null);
                             if (routeInfo.deviceDetailUrl != null) {
-                                $('.js-device').html('<a href="' + yukon.url(routeInfo.deviceDetailUrl) + '" target=_blank>' + escape(routeInfo.device.name) + '</a>');
+                                var nameSpan = $('<span />');
+                                nameSpan.text(routeInfo.device.name);
+                                $('.js-device').html('<a href="' + yukon.url(routeInfo.deviceDetailUrl) + '" target=_blank>' + nameSpan.html() + '</a>');
                             } else {
                                 $('.js-device').text(routeInfo.device.name);
                             }
