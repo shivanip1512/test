@@ -540,7 +540,7 @@ yukon.tag.scheduledFileExportInputs = (function () {
             $(document).on('change', "#scheduleName", _nameChanged);
             $(document).on('click', "#sameAsSchedName", _sameAsNameClicked);
             /** Containers with show/hide behavior */
-            $(document).on('click', ".toggle-title, .titled-container .controls:has('.show-hide')", _toggleContainerDisplay);
+            $(document).on('click', ".toggle-title, .titled-container .js-show-hide", _toggleContainerDisplay);
             _intializeAllFields();
         }
     };

@@ -72,7 +72,7 @@
                 <cti:button renderMode="image" icon="icon-help" classes="widget-controls" data-popup="#box-container-info-popup-${thisId}"/>
             </c:if>
             <c:if test="${hideEnabled}">
-                <cti:button renderMode="image" icon="show-hide" classes="widget-controls"/>
+                <cti:button renderMode="image" icon="show-hide" classes="widget-controls js-show-hide"/>
             </c:if>
             <c:if test="${showArrows}">
                 <cti:button renderMode="image" icon="icon-bullet-go-up" classes="widget-controls js-move-up"/>
