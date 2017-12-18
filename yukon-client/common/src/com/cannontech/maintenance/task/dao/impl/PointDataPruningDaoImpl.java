@@ -5,11 +5,12 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.maintenance.task.dao.PointDataPruningDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
-import com.cannontech.maintenance.task.dao.PointDataPruningDao;
 
 public class PointDataPruningDaoImpl implements PointDataPruningDao {
 
@@ -39,7 +40,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             sql.append("    Point p JOIN yukonPaObject pao");
             sql.append("    ON p.paObjectId = pao.paObjectId)");
             sql.append("  AND ROWNUM").lt(BATCH_SIZE);
-            sql.append("  );");
+            sql.append("  )");
         } else {
             sql.append("DELETE FROM RawPointHistory");
             sql.append("WHERE ChangeId IN (");
@@ -54,6 +55,58 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             sql.append("    Point p JOIN yukonPaObject pao");
             sql.append("    ON p.paObjectId = pao.paObjectId)");
             sql.append("  )");
+        }
+        return sql;
+    }
+
+    @Override
+    public int deleteDuplicatePointData(Range<Instant> dateRange) {
+        SqlStatementBuilder deleteDuplicatePointDataQuery = buildDeleteDuplicatePointDataQuery(dateRange);
+        int rowsDeleted = jdbcTemplate.update(deleteDuplicatePointDataQuery);
+        return rowsDeleted;
+    }
+
+    private SqlStatementBuilder buildDeleteDuplicatePointDataQuery(Range<Instant> dateRange) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        if (dbVendorResolver.getDatabaseVendor().isOracle()) {
+            sql.append("DELETE");
+            sql.append("FROM RAWPOINTHISTORY");
+            sql.append("WHERE CHANGEID IN (");
+            sql.append(    "SELECT CHANGEID ");
+            sql.append(    "FROM (");
+            sql.append(        "SELECT CHANGEID, ROW_NUMBER() ");
+            sql.append(          "OVER (PARTITION BY PointId, Value, Timestamp, Quality ORDER BY ChangeId) RN ");
+            sql.append(        "FROM RAWPOINTHISTORY");
+            sql.append(        "WHERE Timestamp").gte(dateRange.getMin());
+            sql.append(          "AND Timestamp").lte(dateRange.getMax());
+            sql.append(          "AND PointId IN (");
+            sql.append(              "SELECT PointId ");
+            sql.append(              "FROM Point p ");
+            sql.append(                "JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId)");
+            sql.append(    ") ");
+            sql.append(    "WHERE RN > 1");
+            sql.append(")");
+        } else {
+            sql.append("BEGIN");
+            sql.append("BEGIN TRANSACTION;");
+            sql.append("WITH CTE AS (");
+            sql.append("SELECT CHANGEID, ROW_NUMBER() ");
+            sql.append(  "OVER (PARTITION BY PointId, Value, Timestamp, Quality ORDER BY ChangeId) RN ");
+            sql.append("FROM RAWPOINTHISTORY");
+            sql.append("WITH (NOLOCK)");
+            sql.append("WHERE Timestamp").gte(dateRange.getMin());
+            sql.append(  "AND Timestamp").lte(dateRange.getMax());
+            sql.append(  "AND PointId IN (");
+            sql.append(      "SELECT PointId ");
+            sql.append(      "FROM Point p ");
+            sql.append(        "JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId)");
+            sql.append(")");
+            sql.append("DELETE");
+            sql.append("FROM CTE");
+            sql.append("WHERE RN > 1");
+            sql.append("COMMIT TRANSACTION");
+            sql.append("END;");
         }
         return sql;
     }

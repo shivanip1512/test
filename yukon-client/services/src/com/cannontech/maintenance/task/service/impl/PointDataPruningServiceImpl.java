@@ -1,20 +1,26 @@
 package com.cannontech.maintenance.task.service.impl;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.util.Range;
 import com.cannontech.maintenance.DurationType;
 import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.maintenance.task.dao.PointDataPruningDao;
 import com.cannontech.maintenance.task.service.PointDataPruningService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class PointDataPruningServiceImpl implements PointDataPruningService {
     @Autowired private PointDataPruningDao pointDataPruningDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private MaintenanceTaskService maintenanceTaskService;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     private long minimumExecutionTime = 300000;
 
@@ -39,13 +45,22 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
 
     @Override
     public int deleteDuplicatePointData(Instant processEndTime) {
+        int totalRowsdeleted = 0;
+        int noOfMonths = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
+        Duration monthInDuration = Period.months(noOfMonths).toDurationTo(Instant.now());
+        Instant fromTimestamp = Instant.now();
+        Instant limit = Instant.now().minus(monthInDuration);
         Instant start = new Instant();
-        int numDeleted = 0;
-        // TODO : Add appropriate dao call here.
-        //int numDeleted = databaseManagementDao.deleteRphDuplicates();
+        while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
+            Duration weeklyDuration = Period.days(7).toDurationTo(fromTimestamp);
+            Instant toTimestamp = fromTimestamp.minus(weeklyDuration);
+            Range<Instant> dateRange = Range.inclusive(toTimestamp, fromTimestamp);
+            int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange);
+            totalRowsdeleted = totalRowsdeleted + rowsDeleted;
+            fromTimestamp = toTimestamp;
+        }
         Instant finish = new Instant();
-        systemEventLogService.rphDeleteDuplicates(numDeleted, start, finish);
-        return 0;
+        systemEventLogService.deleteDuplicatePointDataEntries(totalRowsdeleted, start, finish);
+        return totalRowsdeleted;
     }
-
 }
