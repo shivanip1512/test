@@ -78,11 +78,12 @@ public class SmartNotifDeviceDataMonitorDecider extends SmartNotificationDecider
         }
         SetMultimap<Integer, SmartNotificationEvent> deviceDataMonitorMap = HashMultimap.create();
         allEvents.forEach(event -> {
-            Integer monitorId = (Integer) event.getParameters().get("monitorId");
+            Integer monitorId = DeviceDataMonitorEventAssembler.getMonitorId(event.getParameters());
             deviceDataMonitorMap.put(monitorId, event);
         });
         allSubscriptions.forEach(sub -> {
-            subscriptions.putAll(sub, deviceDataMonitorMap.get((Integer)sub.getParameters().get("monitorId")));
+            Integer monitorId = DeviceDataMonitorEventAssembler.getMonitorId(sub.getParameters());
+            subscriptions.putAll(sub, deviceDataMonitorMap.get(monitorId));
         });
         return subscriptions;
     }

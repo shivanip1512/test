@@ -81,18 +81,18 @@ public class SmartNotificationDailyDigestService implements MessageListener {
         for (SmartNotificationEventType type : subscriptionsPerEventType.keySet()) {
             List<SmartNotificationMessageParameters> messageParameters =
                 getMessageParameters(getDecider(type), subscriptionsPerEventType.get(type));
-            deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, true);
+            deciderService.putMessagesOnAssemblerQueue(messageParameters, 0, false);
         }
     }
     
     private List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationDecider decider,
-            Set<SmartNotificationSubscription> subcriptions) {
+            Set<SmartNotificationSubscription> subscriptions) {
         
         Instant now = Instant.now();
         Instant oneDayAgo = now.minus(Duration.standardDays(1));
         List<SmartNotificationEvent> events = getEvents(decider, new Range<>(oneDayAgo, false, now, true)); //retrieved events correctly
         SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionsToEvents =
-            decider.mapSubscriptionsToEvents(subcriptions, events);
+            decider.mapSubscriptionsToEvents(subscriptions, events);
         List<SmartNotificationMessageParameters> messageParameters =
             MessageParametersHelper.getMessageParameters(decider.getEventType(), subscriptionsToEvents, 0);
         return messageParameters;
