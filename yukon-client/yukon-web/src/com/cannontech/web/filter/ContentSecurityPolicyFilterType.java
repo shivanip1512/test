@@ -1,8 +1,5 @@
 package com.cannontech.web.filter;
 
-import com.cannontech.common.util.WebserverUrlResolver;
-import com.cannontech.spring.YukonSpringHook;
-
 public enum ContentSecurityPolicyFilterType {
     DEFAULT_SRC("default-src 'self' 'unsafe-inline' " 
         + "http://java.sun.com " 
@@ -49,7 +46,7 @@ public enum ContentSecurityPolicyFilterType {
         + "http://www.google.com ; "),          // Recaptcha
     FRAME_ANCESTORS("frame-ancestors 'self' ;"),
     FORM_ACTION("form-action 'self' "
-        + "https://export.highcharts.com "),
+        + "https://export.highcharts.com ; "),
     ;
 
     private final String value;
@@ -59,9 +56,6 @@ public enum ContentSecurityPolicyFilterType {
     }
 
     public String getValue() {
-        if (this == FORM_ACTION) {
-            return value + YukonSpringHook.getBean(WebserverUrlResolver.class).getUrlBase() + " ; ";
-        }
         return value;
     }
 }

@@ -148,7 +148,7 @@ public class PasswordController {
         }
         
         String passwordResetUrl = 
-                passwordResetService.getPasswordResetUrl(passwordResetInfo.getUser().getUsername(), request);
+                passwordResetService.getPasswordResetUrl(passwordResetInfo.getUser().getUsername(), request, true);
         YukonUserContext passwordResetUserContext = contextResolver.resolveContext(passwordResetInfo.getUser(), request);
         
         // Send out the forgotten password email

@@ -80,7 +80,7 @@ public class YukonLoginController extends MultiActionController {
         } catch (PasswordExpiredException e) {
             CTILogger.debug("The password for " + username + " is expired.", e);
 
-            String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
+            String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request, false);
             return new ModelAndView("redirect:" + passwordResetUrl);
         }
 

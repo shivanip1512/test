@@ -79,7 +79,7 @@ public class ChangeLoginController {
             retrySeconds = e.getThrottleSeconds();
         } catch (PasswordExpiredException e) {
             CTILogger.debug("The password for "+user.getUsername()+" is expired.", e);
-            String passwordResetUrl = passwordResetService.getPasswordResetUrl(user.getUsername(), request);
+            String passwordResetUrl = passwordResetService.getPasswordResetUrl(user.getUsername(), request, false);
             return "redirect:" + passwordResetUrl;
         }
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());

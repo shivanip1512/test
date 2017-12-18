@@ -105,12 +105,18 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
     
     @Override
-    public String getPasswordResetUrl(String username, HttpServletRequest request) {
+    public String getPasswordResetUrl(String username, HttpServletRequest request, boolean useYukonExternalUrl) {
         LiteYukonUser user = yukonUserDao.findUserByUsername(username);
         String passwordResetKey = getPasswordKey(user);
 
         String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);
         String postfix = request.getContextPath() + "/login/change-password?k=" + passwordResetKey;
+        if (!useYukonExternalUrl) {
+            StringBuilder urlBuilder = new StringBuilder();
+            urlBuilder.append(defaultYukonExternalUrl);
+            urlBuilder.append(postfix);
+            return urlBuilder.toString();
+        }
         String url = webserverUrlResolver.getUrl(postfix, defaultYukonExternalUrl);
 
         return url;

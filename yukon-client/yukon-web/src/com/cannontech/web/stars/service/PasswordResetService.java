@@ -23,7 +23,7 @@ public interface PasswordResetService {
     /**
      * This method creates the url need to reset a user's password.  
      */
-    public String getPasswordResetUrl(String username, HttpServletRequest request);
+    public String getPasswordResetUrl(String username, HttpServletRequest request, boolean useYukonExternalUrl);
     
     /**
      * This method uses the supplied user and generates a password key that can be used to reset the user's password.
