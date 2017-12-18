@@ -667,7 +667,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             String newPrefix = gateway.getData().generateNewIpv6Prefix();
             if (!isDuplicateIpv6Prefix(newPrefix)) {
                 settings.setIpv6Prefix(newPrefix);
-                break;
             }
         }
         
@@ -755,12 +754,14 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             return response.getIpv6PrefixResult();
         } catch (ExecutionException e) {
             throw new NmCommunicationException(
-                "Undate Ipv6 prefix failed due to a communication error with Network Manager.", e);
+                "Update Ipv6 prefix failed due to a communication error with Network Manager.", e);
         }
     }
     
     private boolean isDuplicateIpv6Prefix(String previx) {
-        return dataCache.getCache().asMap().values().stream().filter(
-            d ->  d.getIpv6Prefix() != null && d.getIpv6Prefix().equals(previx)).findFirst().isPresent();
+        return dataCache.getCache().asMap().values().stream()
+                .filter(d -> d.getIpv6Prefix() != null && d.getIpv6Prefix().equals(previx))
+                .findFirst()
+                .isPresent();
     }
 }

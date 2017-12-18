@@ -969,6 +969,7 @@ public final class JmsApiDirectory {
                   .responseMessage(GatewaySetConfigResponse.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
+                  .receiver(YUKON_SIMULATORS)
                   .build();
     
     /*
