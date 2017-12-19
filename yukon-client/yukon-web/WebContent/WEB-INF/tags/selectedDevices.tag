@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ attribute name="id" %>
 <%@ attribute name="deviceCollection" required="true" type="java.lang.Object"%>
@@ -28,7 +29,7 @@
             	<input type="hidden" name=header value="${deviceCollection.header}" />
             </c:if>
             <c:forEach var="deviceError" items="${deviceErrors}">
-                <input type="hidden" name="deviceErrors" value="${deviceError}" />
+                <input type="hidden" name="deviceErrors" value="${fn:escapeXml(deviceError)}" />
             </c:forEach>
             <input type="hidden" name="collectionType" value="fileUpload" />
             <a href="javascript:$('#${thisId}').submit();" class="wsnw">

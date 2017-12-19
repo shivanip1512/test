@@ -61,7 +61,7 @@
             <c:if test="${not empty headersErrorResolverList}">
                 <div class="js-file-validation">
                     <c:forEach var="key" items="${headersErrorResolverList}">
-                        <div class="error"><i:inline key="${key}"/></div>
+                        <div class="error"><cti:msg2 key="${key}" htmlEscape="true" /></div>
                     </c:forEach>
                 </div>
             </c:if>
