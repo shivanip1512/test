@@ -85,7 +85,7 @@
                                 <td>
                                     <cm:dropdown icon="icon-cog">
                                         <cti:url var="editUrl" value="/notifications/subscription/${subId}/edit"/>
-                                        <div id="edit-popup-${subId}" data-dialog class="dn js-smart-notifications-popup"
+                                        <div id="edit-popup-${subId}" data-dialog class="dn js-smart-notifications-popup" data-hide-link="true"
                                             data-event="yukon:notifications:save" data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
                                             data-url="${editUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
                                         <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" data-popup="#edit-popup-${subId}"/>
@@ -118,6 +118,7 @@
     <div id="create-popup" data-dialog
             class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
             data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
+            data-hide-link="true"
             data-url="${smartNotificationsUrl}" 
             data-load-event="yukon:notifications:load"
             data-width="600"></div>

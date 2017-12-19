@@ -113,9 +113,14 @@ yukon.smart.notifications = (function () {
             
             /** Load the notifications popup. */
             $(document).on('yukon:notifications:load', function (ev) {
-                var popup = $(ev.target);
+                var popup = $(ev.target),
+                    hideLink = popup.data("hideLink");
                 initializeTimeSlider(popup);
                 updateTypeFields(popup);
+                if (hideLink) {
+                    $('.js-settings-link').addClass('dn');
+                }
+                
             });
             
             /** 'Save' button clicked on the notifications popup. */
