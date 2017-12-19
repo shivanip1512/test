@@ -409,6 +409,11 @@ ALTER TABLE LmProgramDirectGear
     MODIFY StopCommandRepeat NUMBER NOT NULL;
 /* End YUK-17588 */
 
+/* Start YUK-17634 */
+INSERT INTO YukonRoleProperty VALUES(-21405, -214, 'Manage Point Data', 'UPDATE', 'Controls the ability to edit, delete or manually add point data values.');
+INSERT INTO YukonRoleProperty VALUES(-21406, -214, 'Manage Points', 'UPDATE', 'Controls the ability to view, create, edit or delete points.');
+/* End YUK-17634 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
