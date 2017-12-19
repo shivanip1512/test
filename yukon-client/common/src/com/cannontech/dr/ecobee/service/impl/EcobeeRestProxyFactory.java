@@ -64,8 +64,7 @@ public class EcobeeRestProxyFactory {
                         addAuthorizationToken(args);
                         responseObj = method.invoke(proxiedTemplate, args);
                         if (didAuthenticationFail(responseObj)) {
-                            throw new EcobeeCommunicationException("Received an authentication exception immediately after "
-                                        + "being authenticated successfully. This should not happen.");
+                            throw new EcobeeCommunicationException("Communication error during authentication with Ecobee API.");
                         }
                     }
                     return responseObj;
