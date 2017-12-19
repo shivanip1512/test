@@ -965,7 +965,9 @@
     <module name="smartNotifications">
     <skin name="STANDARD" />
     <pages>
-      <page name="detail" type="BASIC"/>
+      <page name="detail" type="BASIC">
+        <labelArgument>${description}</labelArgument>
+      </page>
     </pages>
   </module>
 

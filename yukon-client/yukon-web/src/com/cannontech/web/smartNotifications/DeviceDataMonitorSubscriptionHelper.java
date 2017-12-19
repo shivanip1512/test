@@ -38,7 +38,9 @@ public class DeviceDataMonitorSubscriptionHelper {
         retrieveMonitorById(model, monitorId);
     }
     
-    public void retrieveMonitorById(ModelMap model, int monitorId) {
-        model.addAttribute("monitorName", monitorCacheService.getDeviceMonitor(monitorId).getName());
+    public String retrieveMonitorById(ModelMap model, int monitorId) {
+        String monitorName = monitorCacheService.getDeviceMonitor(monitorId).getName();
+        model.addAttribute("monitorName", monitorName);
+        return monitorName;
     }
 }

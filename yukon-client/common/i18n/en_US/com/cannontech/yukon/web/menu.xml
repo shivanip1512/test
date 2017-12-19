@@ -246,5 +246,6 @@
 <!-- Dashboards -->
 <entry key="yukon.web.menu.dashboard">Dashboard</entry>
 
-
+<!-- Dashboards -->
+<entry key="yukon.web.menu.smartnotifications">Notifications</entry>
 </properties>

@@ -20,6 +20,7 @@ public enum SiteMapCategory implements DisplayableEnum {
     DEVELOPMENT,
     CCURT,
     DASHBOARD,
+    SMARTNOTIFICATIONS
     ;
 
     @Override

@@ -470,7 +470,7 @@ yukon.namespace = function (ns) {
         options: {
             begin: new Date(new Date().setDate(new Date().getDate() - 1)),
             end: new Date().getTime(),
-            events: {}
+            events: []
         },
         
         /** Constructor */
@@ -488,7 +488,7 @@ yukon.namespace = function (ns) {
          * @param {string} [event.message] - html to display in the tooltip.
          */
         addEvent: function (event) {
-            this.options.events[event.id] = event;
+            this.options.events.push(event);
             this.draw();
         },
         
@@ -503,7 +503,12 @@ yukon.namespace = function (ns) {
         addEvents: function (events) {
             var _self = this;
             events.forEach(function (event) {
-                _self.options.events[event.id] = event;
+                var exists = _self.options.events.filter(function (existingEvent) { return existingEvent.id === event.id});
+                if (exists.length > 0) {
+                    exists = event;
+                } else {
+                    _self.options.events.push(event);
+                }
             });
             this.draw();
         },
@@ -570,9 +575,10 @@ yukon.namespace = function (ns) {
             
             var begin = this.options.begin;
             var end = this.options.end;
+            var events = this.options.events;
             
             // positionedEvents will only include elements between the bounds, and be sorted by time.
-            var positionedEvents = Object.values(this.options.events).filter(function (event) {
+            var positionedEvents = events.filter(function (event) {
                 return begin < event.timestamp && event.timestamp < end;
             })
             .sort(function (lhs, rhs) {
@@ -595,15 +601,11 @@ yukon.namespace = function (ns) {
             }, {});
             
             //  Create timeline event spans for each set of binned events
-            var timelineEvents = Object.entries(binnedEvents).map(function (keyval) {
-            
-                var position = keyval[0];
-                var events = keyval[1];
-
-                var firstEvent = events[0];
-                
-                var span = $('<span class="timeline-event">')
-                    .css({'left': position - 8 + 'px' });
+            var timelineEvents = Object.keys(binnedEvents).map(function (position) {                
+                var events = binnedEvents[position],
+                    firstEvent = events[0],
+                    span = $('<span class="timeline-event">')
+                        .css({'left': position - 8 + 'px' });
                 
                 if (events.length > 1) {
                     // If there is there more than one event to cluster together, use the count as the icon

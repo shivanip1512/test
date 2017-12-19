@@ -46,8 +46,9 @@ yukon.da.busview = (function () {
                 events.reverse().forEach(function (event) {
                     toAdd.push(event);
                 });
+                options.events = toAdd;
                 timeline.timeline(options);
-                timeline.timeline('addEvents', toAdd);
+                timeline.timeline('draw');
             });
 
         });

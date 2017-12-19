@@ -140,14 +140,19 @@ public class SmartNotificationsController {
     private SearchResults<SmartNotificationEventData> retrieveEventData(YukonUserContext userContext, PagingParameters paging, SmartNotificationEventType eventType, String parameter,
                                                                         SortingParameters sorting, SmartNotificationEventFilter filter, ModelMap model) {
         SearchResults<SmartNotificationEventData> eventData = new SearchResults<>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         EventSortBy sortBy = EventSortBy.valueOf(sorting.getSort());
         Range<DateTime> range = new Range<DateTime>(new DateTime(filter.getStartDate()), true, new DateTime(filter.getEndDate()), true);
         SearchResults<SmartNotificationEventData> allDetail = new SearchResults<>();
+        model.addAttribute("description", eventType);
         if (eventType.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
             int id = Integer.parseInt(parameter);
             eventData = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), paging, sortBy.value, sorting.getDirection(), range, id);
             allDetail = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range, id);
-            ddmHelper.retrieveMonitorById(model, id);
+            String monitorName = ddmHelper.retrieveMonitorById(model, id);
+            String eventTypeString = accessor.getMessage(eventType.getFormatKey());
+            String description = eventTypeString + " (" + monitorName + ")";
+            model.addAttribute("description", description);
         } else if (eventType.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
             InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
             if (filter.getCategories().isEmpty()) {
