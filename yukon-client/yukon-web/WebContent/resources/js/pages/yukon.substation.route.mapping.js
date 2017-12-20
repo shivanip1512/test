@@ -9,96 +9,105 @@ yukon.namespace('yukon.admin.substations');
  * @requires yukon.ui
  */
 yukon.admin.substations = (function () {
-	 var
-	    _initialized = false,
-	    removedRouteIds=[];
-	    mod = {
-	            
-	            /**
-	             * Initializes the module, hooking up event handlers to components.
-	             * Depends on localized text in the jsp, so only run after DOM is ready.
-	             */
-	            init: function () {
-	            	/** Move row up. */
-	                $(document).on('click','.js-up', function (ev) {
-	                    var row = $(this).closest('tr'),
-	                        prevRow = row.prev();
-	                    
-	                    row.insertBefore(prevRow);
-	                    yukon.ui.reindexInputs(row.closest('table'));
-	                    
-	                });
-	                
-	                /** Move row down. */
-	                $(document).on('click','.js-down', function (ev) {
-	                    var row = $(this).closest('tr'),
-	                        nextRow = row.next();
-	                    
-	                    row.insertAfter(nextRow);
-	                    yukon.ui.reindexInputs(row.closest('table'));
-	                    
-	                });
-	                
-	                /** Remove attribute button clicked, remove row and re-index the rest. Update any fields necessary */
-	                $(document).on('click', '#routes-table .js-remove', function (ev) {
-	                	var row = $(this).closest('tr');
-	                	//
-	                	var routeId = $(this).find("input").val();
-	                	removedRouteIds.push(routeId);
-	                	alert(removedRouteIds);
-	                	//
-	                    var table = row.closest('table');
-	                    row.remove();
-	                    yukon.ui.reindexInputs(table);
-	                });
-	                
-	                $('#b-add-route').click(function (ev) {
-	                    $('#selectedRoutes :selected').each(function(i, selected){ 
-	                    	
-	                    	var id = $(selected).val();
-	                    	
-	                    	var name = $(selected).text();
-	                    	var row = $('#route-template tr').clone(),
-	                        field = row.find('td:first-child');
-	                    	field.find('input').val(id);
-	                    	field.find('input').addClass('routeId');
-	                        field.append('<span>' + name + '</span>');
-	                        $('#routes-table tbody').append(row);
-	                        yukon.ui.reindexInputs(row.closest('table'));
-	                        selected.remove();
-	                    });
-	                    
-	                    
-	                });
-	                $('#saveAllRoutes').click(function (ev) {
-	                	var routeIds=[];
-	                	
-	                	$('#routes-table > tbody  > tr').each(function() {
-	                		
-	                		var routeId = $(this).find("input").val();
-	                		routeIds.push(routeId);
-	                		});
-	                    
-	                	var substationId=$("#substation").val();
-	                    $.ajax({
-	                        url: yukon.url('/admin/substations/routeMapping/save'),
-	                        method: 'post',
-	                        data: { routeIds: routeIds, substationId: substationId}
-	                    }).done(function () {
-	                    	window.location.reload();
-	                    });
 
-	                });
-	                submitTypeSelect = function() {
-	                	document.substationForm.action = yukon.url("/admin/substations/routeMapping/view");
-	                    document.substationForm.submit();
-	                };
-	               
-	                if (_initialized) return;
-	                _initialized = true;
-	            }
-	        };
-return mod;
+    assignRoute = function (event, ui) {
+        var selectedItem = ui.item;
+        var button = selectedItem.find('.js-add-route');
+        assignAndUnassignRoute(button, true);
+    },
+    
+    unAssignRoute = function (event, ui) {
+        var selectedItem = ui.item;
+        var button = selectedItem.find('.js-remove-route');
+        assignAndUnassignRoute(button, true);
+    },
+    
+    updateArrows = function (event, ui) {
+        ui.item
+        .closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+    },
+    
+    assignAndUnassignRoute = function (btn, skipAppend) {
+        var remove = btn.is('.js-remove-route'),
+        container = btn.closest('.select-box').find(remove ? '.select-box-available' : '.select-box-selected'),
+        item = btn.closest('.select-box-item'),
+        dataId = item.attr('data-id');
+
+        // Move item to avaliable/assigned only if item was not dragged
+        if (!skipAppend) {
+            item.remove();
+            item.appendTo(container);
+        }
+        
+        //update buttons
+        item.find('.js-remove-route, .js-add-route')
+            .toggleClass('js-remove-route js-add-route')
+            .find('.icon').toggleClass('icon-plus-green icon-cross');
+        
+        // Show/hide movers.
+        item.find('.select-box-item-movers').toggle(!remove);
+        
+        // Tell yukon's ordered list handler to update the mover buttons.
+        container.closest('.select-box')
+                 .find('.js-with-movables')
+                 .trigger('yukon:ordered-selection:added-removed');
+    };
+    
+    var _initialized = false,
+        removedRouteIds=[],
+        mod = {
+                /**
+                 * Initializes the module, hooking up event handlers to components.
+                 * Depends on localized text in the jsp, so only run after DOM is ready.
+                 */
+                init: function () {
+                    /** Assign/unassign Route */
+                    $(document).on('click', '.select-box .js-add-route, .select-box .js-remove-route', function () {
+                        var btn = $(this);
+                        assignAndUnassignRoute(btn, false);
+                    });
+
+                    $('#unassigned').sortable({
+                        connectWith: "#assigned",
+                        remove: function(event, ui) {
+                            assignRoute(event, ui);
+                        }
+                    });
+
+                    $('#assigned').sortable({
+                        connectWith: "#unassigned",
+                        stop: function(event, ui) {
+                            updateArrows(event, ui);  
+                        },
+                        remove: function(event, ui) {
+                            unAssignRoute(event, ui);
+                        }
+                    }).disableSelection();
+
+                    $('#saveAllRoutes').click(function (ev) {
+                        
+                        $('#assigned > div.select-box-item').each(function() {
+                            var routeId = $(this).attr("data-id");
+                            var route = $('<option/>').attr('selected', 'selected')
+                                                      .val(routeId);
+                            $("#selectedRoutes").append(route);
+                        });
+                        
+                        document.substationForm.action = yukon.url("/admin/substations/routeMapping/save");
+                        document.substationForm.submit();
+                        
+                    });
+                    
+                    $(document).on('change', '#substation', function () {
+                        document.substationForm.action = yukon.url("/admin/substations/routeMapping/view");
+                        document.substationForm.submit();
+                    });
+                    
+                    if (_initialized) return;
+                    _initialized = true;
+                }
+            };
+        return mod;
 }());
 
 $(function () { yukon.admin.substations.init(); });

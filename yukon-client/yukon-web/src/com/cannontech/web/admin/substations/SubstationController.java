@@ -14,7 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
@@ -81,14 +81,17 @@ public class SubstationController {
     }
 
     @RequestMapping(value = "/routeMapping/save", method = RequestMethod.POST)
-    public void saveRoutes(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
-            FlashScope flashScope, ModelMap modelMap,
-            @RequestParam(value = "routeIds[]", required = false, defaultValue = "") List<Integer> routeIds,
-            @RequestParam(value = "substationId", required = false, defaultValue = "") Integer substationId) {
-        List<Integer> routeIdList = routeIds;
-        strmDao.update(substationId, routeIdList);
+    public ModelAndView saveRoutes(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
+            FlashScope flashScope, ModelMap modelMap, SubstationRouteMapping substationRouteMapping) {
+        if(substationRouteMapping.getSelectedRoutes() != null) {
+            strmDao.update(substationRouteMapping.getSubstationId(), substationRouteMapping.getSelectedRoutes());
+        } else {
+            strmDao.update(substationRouteMapping.getSubstationId(), Collections.emptyList());
+        }
         flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "routesUpdated"));
         response.setStatus(HttpStatus.NO_CONTENT.value());
+        modelMap.addAttribute("substationId", substationRouteMapping.getSubstationId());
+        return new ModelAndView("redirect:view", modelMap);
     }
 
     @RequestMapping(value = "routeMapping/save", params = "addSubstation", method = RequestMethod.POST)

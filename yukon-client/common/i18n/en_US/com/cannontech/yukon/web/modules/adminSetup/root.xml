@@ -278,6 +278,7 @@
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.selectAllRoutes">Select All Routes</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.addSubstation">Add Substations</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.mspSubstation.label">Multispeak Substations</entry>
+    <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.chooseSubstation">Choose Substations</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.noSubstations">No Substations exist.</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.substationRouteMapping.title">Substation To Route Mapping</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.createdSubstation">Created substation {0}</entry>
