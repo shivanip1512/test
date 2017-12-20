@@ -23,7 +23,7 @@
                             <form:select multiple="true" id="gatewaysSelect" path="selectedGatewayIds" size="6" style="min-width:200px;">
                                 <form:option value="-1">Any</form:option>
                                 <c:forEach var="gateway" items="${gateways}">
-                                    <form:option value="${gateway.id}">${gateway.name}</form:option>
+                                    <form:option value="${gateway.id}">${fn:escapeXml(gateway.name)}</form:option>
                                 </c:forEach>
                             </form:select>
                         </tags:nameValue2>
@@ -46,7 +46,7 @@
                                     <c:if test="${searchFilters.selectedConfiguration == config.id}">
                                         <c:set var="selected" value="selected"/>
                                     </c:if>
-                                    <option value="${config.id}" ${selected}>${config.name}</option>
+                                    <option value="${config.id}" ${selected}>${fn:escapeXml(config.name)}</option>
                                 </c:forEach>
                             </form:select>
                         </tags:nameValue2>
