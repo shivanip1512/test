@@ -55,9 +55,16 @@ if not exist "%JRE_HOME%\bin\java.exe" goto noJavaHome
 if not exist "%JRE_HOME%\bin\javaw.exe" goto noJavaHome
 goto okJavaHome
 :gotJdkHome
-if not exist "%JAVA_HOME%\jre\bin\java.exe" goto noJavaHome
-if not exist "%JAVA_HOME%\jre\bin\javaw.exe" goto noJavaHome
 if not exist "%JAVA_HOME%\bin\javac.exe" goto noJavaHome
+rem Java 9 has a different directory structure
+if exist "%JAVA_HOME%\jre\bin\java.exe" goto preJava9Layout
+if not exist "%JAVA_HOME%\bin\java.exe" goto noJavaHome
+if not exist "%JAVA_HOME%\bin\javaw.exe" goto noJavaHome
+if not "%JRE_HOME%" == "" goto okJavaHome
+set "JRE_HOME=%JAVA_HOME%"
+goto okJavaHome
+:preJava9Layout
+if not exist "%JAVA_HOME%\jre\bin\javaw.exe" goto noJavaHome
 if not "%JRE_HOME%" == "" goto okJavaHome
 set "JRE_HOME=%JAVA_HOME%\jre"
 goto okJavaHome
@@ -75,7 +82,20 @@ set "EXECUTABLE=%CATALINA_HOME%\bin\tomcat8.exe"
 
 rem Set default Service name
 set SERVICE_NAME=Tomcat8
-set DISPLAYNAME=Apache Tomcat 8.0 %SERVICE_NAME%
+set DISPLAYNAME=Apache Tomcat 8.5 %SERVICE_NAME%
+
+rem Java 9 no longer supports the java.endorsed.dirs
+rem system property. Only try to use it if
+rem JAVA_ENDORSED_DIRS was explicitly set
+rem or CATALINA_HOME/endorsed exists.
+set ENDORSED_PROP=ignore.endorsed.dirs
+if "%JAVA_ENDORSED_DIRS%" == "" goto noEndorsedVar
+set ENDORSED_PROP=java.endorsed.dirs
+goto doneEndorsed
+:noEndorsedVar
+if not exist "%CATALINA_HOME%\endorsed" goto doneEndorsed
+set ENDORSED_PROP=java.endorsed.dirs
+:doneEndorsed
 
 if "x%1x" == "xx" goto displayUsage
 set SERVICE_CMD=%1
@@ -85,7 +105,7 @@ if "x%1x" == "xx" goto checkServiceCmd
 if "x%1x" == "x/userx" goto runAsUser
 if "x%1x" == "x--userx" goto runAsUser
 set SERVICE_NAME=%1
-set DISPLAYNAME=Apache Tomcat 8.0 %1
+set DISPLAYNAME=Apache Tomcat 8.5 %1
 shift
 if "x%1x" == "xx" goto checkServiceCmd
 goto checkUser
@@ -142,8 +162,12 @@ echo Using JVM:              "%JVM%"
 set "CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar;%CATALINA_BASE%\bin\tomcat-juli.jar"
 if not "%CATALINA_HOME%" == "%CATALINA_BASE%" set "CLASSPATH=%CLASSPATH%;%CATALINA_HOME%\bin\tomcat-juli.jar"
 
+if "%SERVICE_STARTUP_MODE%" == "" set SERVICE_STARTUP_MODE=manual
+if "%JvmMs%" == "" set JvmMs=128
+if "%JvmMx%" == "" set JvmMx=256
+
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat 8.0.27 Server - http://tomcat.apache.org/" ^
+    --Description "Apache Tomcat 8.5.24 Server - http://tomcat.apache.org/" ^
     --DisplayName "%DISPLAYNAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
@@ -159,9 +183,11 @@ if not "%CATALINA_HOME%" == "%CATALINA_BASE%" set "CLASSPATH=%CLASSPATH%;%CATALI
     --StopClass org.apache.catalina.startup.Bootstrap ^
     --StartParams start ^
     --StopParams stop ^
-    --JvmOptions "-Dcatalina.home=%CATALINA_HOME%;-Dcatalina.base=%CATALINA_BASE%;-Djava.endorsed.dirs=%CATALINA_HOME%\endorsed;-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties" ^
-    --JvmMs 128 ^
-    --JvmMx 256
+    --JvmOptions "-Dcatalina.home=%CATALINA_HOME%;-Dcatalina.base=%CATALINA_BASE%;-D%ENDORSED_PROP%=%CATALINA_HOME%\endorsed;-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties;%JvmArgs%" ^
+    --JvmOptions9 "--add-opens=java.base/java.lang=ALL-UNNAMED#--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED" ^
+    --Startup "%SERVICE_STARTUP_MODE%" ^
+    --JvmMs "%JvmMs%" ^
+    --JvmMx "%JvmMx%"
 if not errorlevel 1 goto installed
 echo Failed installing '%SERVICE_NAME%' service
 goto end
