@@ -73,27 +73,46 @@ public interface DisplayDataDao {
     void updateDisplay2Waydata(Integer displayId, List<Integer> pointIds);
 
     /**
+     * Gets the TAG Log Display Data (Allows for paging, sorting and a date selection)
      * @param sortBy nullable.
      * @param direction nullable.
+     * @param date nullable.  If null, the current date will be used
      */
     SearchResults<DisplayData> getTagLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
-                                                 SortBy sortBy, Direction direction);
+                                                 SortBy sortBy, Direction direction, DateTime date);
     
     /**
+     * Gets the SOE Log Display Data (Allows for paging, sorting and a date selection)
      * @param sortBy nullable.
      * @param direction nullable.
+     * @param date nullable.  If null, the current date will be used
      */
     SearchResults<DisplayData> getSoeLogDisplayData(DateTimeZone timeZone, PagingParameters paging,
-                                                    SortBy sortBy, Direction direction);
+                                                    SortBy sortBy, Direction direction, DateTime date);
 
     /**
+     * Gets the Event Viewer Display Data (Allows for paging, sorting and a date selection)
      * @param sortBy nullable.
      * @param direction nullable.
+     * @param date nullable.  If null, the current date will be used
      */
     SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone,
                                                          PagingParameters paging, SortBy sortBy,
                                                          Direction direction, DateTime date);
 
+    /**
+     * Gets the count of results for Event Viewer
+     */
     int getEventViewerDisplayDataCount(DateTime date);
+
+    /**
+     * Gets the count of results for SOE Log
+     */
+    int getSoeLogDisplayDataCount(DateTime date);
+
+    /**
+     * Gets the count of results for TAG Log
+     */
+    int getTagLogDisplayDataCount(DateTime date);
 
 }

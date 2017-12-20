@@ -11,7 +11,7 @@
 </c:url>
 <form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">
     <cti:csrfToken/>
-    <c:if test="${eventViewer}">
+    <c:if test="${displayDatePicker}">
         <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}" cssClass="js-date"/></span>
     </c:if>
 </form:form>
