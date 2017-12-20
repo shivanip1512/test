@@ -72,7 +72,7 @@
 	            </c:choose>
 	        </tags:nameValue2>
         </cti:checkRolesAndProperties>
-        <tags:nameValue2 nameKey=".ipv6" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.ipv6Prefix)}</tags:nameValue2>        
+        <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.ipv6Prefix)}</tags:nameValue2>        
     </tags:nameValueContainer2>
     
     <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">

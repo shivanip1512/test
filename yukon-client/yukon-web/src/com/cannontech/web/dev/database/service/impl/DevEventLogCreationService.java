@@ -866,11 +866,13 @@ public class DevEventLogCreationService {
                String gatewayName = "Test Gateway";
                String adminUser = "Admin";
                String superUser = "Super";
+               String ipv6Prefix = "00009999AAAAFFFF";
                
                gatewayEventLogService.createdGateway(user, paoName, serial, ipAddress, adminUser, superUser);
                gatewayEventLogService.createdGatewayAutomatically(paoName, serial);
                gatewayEventLogService.gatewayCreationFailed(user, gatewayName, ipAddress, adminUser, superUser);
                gatewayEventLogService.updatedGateway(user, paoName, serial, ipAddress, adminUser, superUser);
+               gatewayEventLogService.updatedIpv6Prefix(ipv6Prefix);
                gatewayEventLogService.deletedGateway(user, paoName, serial);
                gatewayEventLogService.sentCertificateUpdate(user, "fake.pkg.nm", "fakeCertificate", 1);
                gatewayEventLogService.sentFirmwareUpdate(user, 1);
@@ -895,7 +897,7 @@ public class DevEventLogCreationService {
         DISCONNECT(DisconnectEventLogService.class, 7),
         ECOBEE(EcobeeEventLogService.class, 3),
         ENDPOINT(EndpointEventLogService.class, 2),
-        GATEWAY(GatewayEventLogService.class, 7),
+        GATEWAY(GatewayEventLogService.class, 8),
         HARDWARE(HardwareEventLogService.class, 23),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
         METERING(MeteringEventLogService.class, 12),

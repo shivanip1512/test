@@ -170,10 +170,32 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                 || !gateway.getData().getIpv6Prefix().equals(settings.getIpv6Prefix())) {
                 try {
                     GatewayConfigResult configResult = rfnGatewayService.updateIpv6Prefix(gateway, settings.getIpv6Prefix());
+                    if (configResult != GatewayConfigResult.SUCCESSFUL) {
+                        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                        model.addAttribute("mode", PageEditMode.EDIT);
+                        String errorMsg = accessor.getMessage(baseKey + "error." + configResult.name());
+                        model.addAttribute("errorMsg", errorMsg);
+                        
+                        return "gatewayInformationWidget/settings.jsp";
+                    }
                 } catch (DuplicateException e) {
-
+                    
+                    resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                    model.addAttribute("mode", PageEditMode.EDIT);
+                    String errorMsg = accessor.getMessage(baseKey + "exception.duplicate");
+                    model.addAttribute("errorMsg", errorMsg);
+                    
+                    return "gatewayInformationWidget/settings.jsp";
+                    
                 } catch (IllegalArgumentException e) {
-
+                    
+                    resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                    model.addAttribute("mode", PageEditMode.EDIT);
+                    String errorMsg = accessor.getMessage(baseKey + "exception.illegalargument");
+                    model.addAttribute("errorMsg", errorMsg);
+                    
+                    return "gatewayInformationWidget/settings.jsp";
+                    
                 }
             }
             
@@ -184,7 +206,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                                                       settings.getIpAddress(),
                                                       settings.getAdmin().getUsername(), 
                                                       settings.getSuperAdmin().getUsername());
-                
+                gatewayEventLogService.updatedIpv6Prefix(settings.getIpv6Prefix());
                 // Success
                 model.clear();
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.update.successful", settings.getName()));
@@ -213,7 +235,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         }
     }
     
-   
     /** Test the connection, return result as json. */
     @RequestMapping("test-connection")
     public @ResponseBody Map<String, Object> testConnection(YukonUserContext userContext, 

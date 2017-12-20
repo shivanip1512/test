@@ -21,7 +21,6 @@
     <entry key="yukon.web.modules.operator.successCount">Successful</entry>
     <entry key="yukon.web.modules.operator.successful">Successful</entry>
     <entry key="yukon.web.modules.operator.unsupportedCount">Unsupported</entry>
-    <entry key="yukon.web.modules.operator.ipv6">IPv6 Prefix</entry>
     
     <entry key="yukon.web.modules.operator.create.account">Create Account</entry>
     <entry key="yukon.web.modules.operator.create.device">Create Device</entry>
@@ -120,6 +119,8 @@
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_INCORRECT_AUTH">Unable to connect to gateway with specified credentials.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_BAD_IP">Unable to connect to gateway at specified IP.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED">An internal error occurred in Network Manager.</entry>
+    <entry key="yukon.web.modules.operator.gateways.exception.duplicate">Duplicate IPv6 already exist.</entry>
+    <entry key="yukon.web.modules.operator.gateways.exception.illegalargument">An illegal argument was entered.</entry>
     <entry key="yukon.web.modules.operator.gateways.create.error">Could not create gateway.</entry>
     <entry key="yukon.web.modules.operator.gateways.name.required">Name is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.name.unique">Gateway name must be unique.</entry>
@@ -216,7 +217,7 @@
     <entry key="yukon.web.modules.operator.gateways.lastCommStatus.MISSED">Missed</entry>
     <entry key="yukon.web.modules.operator.gateways.lastCommStatus.UNKNOWN">Unknown</entry>
     <entry key="yukon.web.modules.operator.gateways.networkManagerCommError">Unable to load gateways. There was an error communicating with Network Manager.</entry>
-    <entry key="yukon.web.modules.operator.gateways.ipv6prefix">ipv6 Prefix</entry>
+    <entry key="yukon.web.modules.operator.gateways.ipv6prefix">IPv6 Prefix</entry>
     
     <!--  Keys below are for certificate update table headers -->
     <entry key="yukon.web.modules.operator.gateways.certUpdate.tableheader.TIMESTAMP">Timestamp</entry>

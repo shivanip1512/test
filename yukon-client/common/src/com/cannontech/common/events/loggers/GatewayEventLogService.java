@@ -34,6 +34,9 @@ public interface GatewayEventLogService {
                                String superAdminUser);
     
     @YukonEventLog(category="system.rfn.gateway")
+    public void updatedIpv6Prefix(String ipv6Prefix);
+    
+    @YukonEventLog(category="system.rfn.gateway")
     public void deletedGateway(@Arg(ArgEnum.username) LiteYukonUser user,
                                @Arg(ArgEnum.paoName) String paoName,
                                @Arg(ArgEnum.serialNumber) String serialNumber);

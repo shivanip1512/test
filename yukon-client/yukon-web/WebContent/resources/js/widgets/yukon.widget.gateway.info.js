@@ -17,6 +17,17 @@ yukon.widget.gatewayInfo = (function () {
         return string;
     }
     
+    function updateIPv6input() {
+        var ipv6 = $('#ipv6prefix').val();
+        if (ipv6 == null) {
+            ipv6 = '0000000000000000'
+        }
+        $('#ipv6-1').val(ipv6.substring(0,4));
+        $('#ipv6-2').val(ipv6.substring(4,8));
+        $('#ipv6-3').val(ipv6.substring(8,12));
+        $('#ipv6-4').val(ipv6.substring(12,16));
+    }
+    
     var
     _initialized = false,
     _text,
@@ -30,14 +41,7 @@ yukon.widget.gatewayInfo = (function () {
             /** Edit popup was opened, adjust test connection buttons. */
             $(document).on('yukon:assets:gateway:edit:load', function (ev) {
                 yukon.assets.gateway.shared.adjustTestConnectionButtons();
-                var ipv6 = $('#ipv6prefix').val();
-                if (ipv6 == null) {
-                    ipv6 = '0000000000000000'
-                }
-                $('#ipv6-1').val(ipv6.substring(0,4));
-                $('#ipv6-2').val(ipv6.substring(4,8));
-                $('#ipv6-3').val(ipv6.substring(8,12));
-                $('#ipv6-4').val(ipv6.substring(12,16));
+                updateIPv6input();
             });
             
             /** Save button clicked on edit popup. */
@@ -64,6 +68,7 @@ yukon.widget.gatewayInfo = (function () {
                         popup.html(xhr.responseText);
                         yukon.ui.initContent(popup);
                         yukon.assets.gateway.shared.adjustTestConnectionButtons();
+                        updateIPv6input();
                     },
                     complete: function () {
                         yukon.ui.unbusy(primary);
@@ -113,15 +118,12 @@ yukon.widget.gatewayInfo = (function () {
                 
             });
             
-            $(document).on('keypress', '.js-ipv6-update', function (ev) {
-                var regex = new RegExp("^[a-fA-F0-9]+$");
-                var key = String.fromCharCode(!ev.charCode ? ev.which : ev.charCode);
-                if (!regex.test(key)) {
-                   ev.preventDefault();
-                   return false;
-                }
-            });
             $(document).on('input', '.js-ipv6-update', function (ev) {
+                $('#ipv6-1').val($('#ipv6-1').val().replace(/[^a-fA-F0-9]+/g,''));
+                $('#ipv6-2').val($('#ipv6-2').val().replace(/[^a-fA-F0-9]+/g,''));
+                $('#ipv6-3').val($('#ipv6-3').val().replace(/[^a-fA-F0-9]+/g,''));
+                $('#ipv6-4').val($('#ipv6-4').val().replace(/[^a-fA-F0-9]+/g,''));
+
                 var ipv6one = pad_with_zeroes($('#ipv6-1').val(), 4),
                     ipv6two = pad_with_zeroes($('#ipv6-2').val(), 4),
                     ipv6three = pad_with_zeroes($('#ipv6-3').val(), 4),

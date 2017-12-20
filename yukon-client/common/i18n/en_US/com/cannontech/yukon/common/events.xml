@@ -265,9 +265,11 @@
     <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed.4">Admin Username</entry>
     <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed.5">Super Admin Username</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway">Gateway {2} updated with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6} by {1}.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway">Gateway {2} updated with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6}, IPv6 Prefix={7} by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.5">Admin Username</entry>
     <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.6">Super Admin Username</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.updatedIpv6Prefix">IPv6 Prefix updated to={1}</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.updatedIpv6Prefix.1">IPv6 Prefix</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.deletedGateway">Gateway {2} deleted with serial number {3} by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.deletedGatewayAutomatically">Gateway {1} deleted with serial number {2} by Network Manager.</entry>
