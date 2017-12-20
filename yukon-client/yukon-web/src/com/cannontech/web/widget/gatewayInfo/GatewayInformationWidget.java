@@ -182,7 +182,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                     
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
                     model.addAttribute("mode", PageEditMode.EDIT);
-                    String errorMsg = accessor.getMessage(baseKey + "exception.duplicate");
+                    String errorMsg = accessor.getMessage(baseKey + "error." + GatewayConfigResult.FAILED_DUPLICATE_CONFIG);
                     model.addAttribute("errorMsg", errorMsg);
                     
                     return "gatewayInformationWidget/settings.jsp";

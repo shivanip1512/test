@@ -119,7 +119,9 @@
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_INCORRECT_AUTH">Unable to connect to gateway with specified credentials.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_BAD_IP">Unable to connect to gateway at specified IP.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED">An internal error occurred in Network Manager.</entry>
-    <entry key="yukon.web.modules.operator.gateways.exception.duplicate">Duplicate IPv6 already exist.</entry>
+    <entry key="yukon.web.modules.operator.gateways.error.FAILED_DUPLICATE_CONFIG">Duplicate IPv6 already exist.</entry>
+    <entry key="yukon.web.modules.operator.gateways.error.FAILED_INVALID_VALUE">Config value is of invalid format or range.</entry>
+    <entry key="yukon.web.modules.operator.gateways.error.FAILED_NOT_SUPPORTED">Config item not supported by gateway.</entry>
     <entry key="yukon.web.modules.operator.gateways.exception.illegalargument">An illegal argument was entered.</entry>
     <entry key="yukon.web.modules.operator.gateways.create.error">Could not create gateway.</entry>
     <entry key="yukon.web.modules.operator.gateways.name.required">Name is required.</entry>
