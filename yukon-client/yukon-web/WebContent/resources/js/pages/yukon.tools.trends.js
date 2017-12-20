@@ -4,7 +4,7 @@ yukon.namespace('yukon.tools.trends');
  * Module to manage the trends page, uses highstock library to display trends
  * 
  * @require JQUERY
- * @require highstock 5.0.5
+ * @require highstock
  */
 yukon.tools.trends = (function () {
     
