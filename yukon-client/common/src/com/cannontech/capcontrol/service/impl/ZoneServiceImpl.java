@@ -119,6 +119,11 @@ public class ZoneServiceImpl implements ZoneService {
 
         zoneDao.updatePointToZoneMapping(abstractZone, pointToZoneMappings);
         ccMonitorBankListDao.updateDeviceInfo(deviceInfos);
+        dbChangeManager.processDbChange(abstractZone.getZoneId(),
+                                        DBChangeMsg.CHANGE_IVVC_ZONE,
+                                        PaoCategory.CAPCONTROL.getDbString(),
+                                        "Zone",
+                                        DbChangeType.UPDATE);
     }
 
     private VoltageLimitedDeviceInfo findDeviceInfoWithPointId(List<VoltageLimitedDeviceInfo> deviceInfos, int pointId) {
