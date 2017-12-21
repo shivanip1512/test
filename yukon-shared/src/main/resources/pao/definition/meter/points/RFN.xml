@@ -56,13 +56,13 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Daily Max Volts</name>
         <multiplier value="1"/>
         <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
+        <decimalplaces value="1"/>
     </point>
     <point offset="15" type="Analog">
         <name>Daily Min Volts</name>
         <multiplier value="1"/>
         <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
+        <decimalplaces value="1"/>
     </point>
     <point offset="20" type="Analog">
         <name>Blink Count</name>

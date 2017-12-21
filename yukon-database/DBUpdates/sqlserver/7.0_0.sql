@@ -415,6 +415,17 @@ INSERT INTO YukonRoleProperty VALUES(-21405, -214, 'Manage Point Data', 'UPDATE'
 INSERT INTO YukonRoleProperty VALUES(-21406, -214, 'Manage Points', 'UPDATE', 'Controls the ability to view, create, edit or delete points.');
 /* End YUK-17634 */
 
+/* Start YUK-17122 */
+UPDATE PU SET PU.DECIMALPLACES = 1
+FROM POINT P
+    JOIN YukonPAObject YPO ON P.PAObjectID = YPO.PAObjectID
+    JOIN POINTUNIT PU ON pu.POINTID = P.POINTID
+WHERE YPO.Type LIKE 'RFN%'
+    AND P.POINTTYPE = 'Analog'
+    AND P.POINTOFFSET IN (14, 15)
+    AND PU.DECIMALPLACES = 3;
+/* End YUK-17122 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
