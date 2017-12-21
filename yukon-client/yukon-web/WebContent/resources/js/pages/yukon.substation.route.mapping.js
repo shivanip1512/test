@@ -51,6 +51,11 @@ yukon.admin.substations = (function () {
         container.closest('.select-box')
                  .find('.js-with-movables')
                  .trigger('yukon:ordered-selection:added-removed');
+    },
+    
+    _loadSubstationRouteMappingPage = function () {
+        document.substationForm.action = yukon.url("/admin/substations/routeMapping/view");
+        document.substationForm.submit();
     };
     
     var _initialized = false,
@@ -99,8 +104,11 @@ yukon.admin.substations = (function () {
                     });
                     
                     $(document).on('change', '#substation', function () {
-                        document.substationForm.action = yukon.url("/admin/substations/routeMapping/view");
-                        document.substationForm.submit();
+                        _loadSubstationRouteMappingPage();
+                    });
+                    
+                    $(document).on('click', '#cancel', function () {
+                        _loadSubstationRouteMappingPage();
                     });
                     
                     if (_initialized) return;

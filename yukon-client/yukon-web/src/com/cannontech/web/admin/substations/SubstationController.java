@@ -29,7 +29,6 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.substations.model.SubstationRouteMapping;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -48,8 +47,7 @@ public class SubstationController {
     public final static String BASE_KEY = "yukon.web.modules.adminSetup.substationToRouteMapping.";
 
     @RequestMapping("routeMapping/view")
-    public String view(ModelMap model, HttpServletRequest request, HttpServletResponse response,
-            YukonUserContext userContext) throws Exception {
+    public String view(ModelMap model, HttpServletRequest request) throws Exception {
         Integer id = ServletRequestUtils.getIntParameter(request, "substationId");
         boolean hasVendorId = false;
         int vendorId = globalSettingDao.getInteger(GlobalSettingType.MSP_PRIMARY_CB_VENDORID);
@@ -81,9 +79,9 @@ public class SubstationController {
     }
 
     @RequestMapping(value = "/routeMapping/save", method = RequestMethod.POST)
-    public ModelAndView saveRoutes(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
-            FlashScope flashScope, ModelMap modelMap, SubstationRouteMapping substationRouteMapping) {
-        if(substationRouteMapping.getSelectedRoutes() != null) {
+    public ModelAndView saveRoutes(HttpServletResponse response, FlashScope flashScope, ModelMap modelMap,
+            SubstationRouteMapping substationRouteMapping) {
+        if (substationRouteMapping.getSelectedRoutes() != null) {
             strmDao.update(substationRouteMapping.getSubstationId(), substationRouteMapping.getSelectedRoutes());
         } else {
             strmDao.update(substationRouteMapping.getSubstationId(), Collections.emptyList());
@@ -95,8 +93,7 @@ public class SubstationController {
     }
 
     @RequestMapping(value = "routeMapping/save", params = "addSubstation", method = RequestMethod.POST)
-    public String addSubstation(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
-            FlashScope flashScope, ModelMap modelMap, SubstationRouteMapping substationRouteMapping) {
+    public String addSubstation(FlashScope flashScope, SubstationRouteMapping substationRouteMapping) {
 
         String name = substationRouteMapping.getSubstationName();
         if (!(DeviceGroupUtil.isValidName(name))) {
@@ -111,9 +108,7 @@ public class SubstationController {
     }
 
     @RequestMapping(value = "routeMapping/save", params = "removeSubstation", method = RequestMethod.POST)
-    public String removeSubstation(HttpServletRequest request, HttpServletResponse response,
-            YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap,
-            SubstationRouteMapping substationRouteMapping) {
+    public String removeSubstation(FlashScope flashScope, SubstationRouteMapping substationRouteMapping) {
         Integer removeSubstation = substationRouteMapping.getSubstationId();
         if (removeSubstation == null) {
             return "redirect:view";
@@ -138,8 +133,8 @@ public class SubstationController {
      * This method removes a route from the given energy company.
      */
     @RequestMapping(value = "/routeMapping/save", params = "removeRoute", method = RequestMethod.POST)
-    public String removeRoute(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
-            FlashScope flashScope, ModelMap modelMap, Integer removeRoute, SubstationRouteMapping substationRouteMapping,RedirectAttributes redirectAttributes) {
+    public String removeRoute(FlashScope flashScope, Integer removeRoute,
+            SubstationRouteMapping substationRouteMapping, RedirectAttributes redirectAttributes) {
         strmDao.remove(substationRouteMapping.getSubstationId(), removeRoute);
         flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "routeDeleted"));
         redirectAttributes.addAttribute("substationId", substationRouteMapping.getSubstationId());

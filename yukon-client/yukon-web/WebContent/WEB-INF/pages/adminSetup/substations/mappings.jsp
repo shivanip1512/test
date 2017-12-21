@@ -64,8 +64,30 @@
         <c:if test="${not empty list}">
             <tags:sectionContainer2 nameKey="substationRouteMapping" styleClass="select-box">
                 <div class="column-12-12 clearfix">
-                    <!-- Assigned Routes -->
+                    <!-- Available Routes -->
                     <div class="column one">
+                        <h3><i:inline key="yukon.common.available"/></h3>
+                        <div class=" bordered-div" style="overflow:auto; height:370px;">
+                            <div id="unassigned" class="select-box-available" style="min-height:150px;">
+                                <c:forEach var="item" items="${substationRouteMapping.avList}">
+                                    <div class="select-box-item clearfix cm"
+                                         data-id="${item.id}">${fn:escapeXml(item.name)}
+                                        <cti:button icon="icon-plus-green" renderMode="buttonImage" 
+                                                    classes="select-box-item-add js-add-route"/>
+                                        <div class="select-box-item-movers" style="display:none;">
+                                            <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
+                                                        classes="left select-box-item-up js-move-up"/>
+                                            <cti:button icon="icon-bullet-go-down" renderMode="buttonImage"
+                                                        classes="right select-box-item-down js-move-down"/>
+                                        </div>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Assigned Routes -->
+                    <div class="column two nogutter">
                         <h3><i:inline key="yukon.common.assigned"/></h3>
                         <div class="bordered-div" style="overflow:auto; height:370px;">
                             <div id="assigned" class="select-box-selected js-with-movables" style="min-height:150px;" 
@@ -90,33 +112,12 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Available Routes -->
-                    <div class="column two nogutter">
-                        <h3><i:inline key="yukon.common.available"/></h3>
-                        <div class=" bordered-div" style="overflow:auto; height:370px;">
-                            <div id="unassigned" class="select-box-available" style="min-height:150px;">
-                                <c:forEach var="item" items="${substationRouteMapping.avList}">
-                                    <div class="select-box-item clearfix cm"
-                                         data-id="${item.id}">${fn:escapeXml(item.name)}
-                                        <cti:button icon="icon-plus-green" renderMode="buttonImage" 
-                                                    classes="select-box-item-add js-add-route"/>
-                                        <div class="select-box-item-movers" style="display:none;">
-                                            <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
-                                                        classes="left select-box-item-up js-move-up"/>
-                                            <cti:button icon="icon-bullet-go-down" renderMode="buttonImage"
-                                                        classes="right select-box-item-down js-move-down"/>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </tags:sectionContainer2>
             <div class="page-action-area">
-                <cti:button id="saveAllRoutes" nameKey="save" busy="true" type="submit"/>
-                <cti:button id="removeSubstation" nameKey="delete" classes="delete js-delete" name="removeSubstation" type="submit"/>
+                <cti:button id="saveAllRoutes" nameKey="save" busy="true" type="submit" classes="primary action"/>
+                <cti:button id="removeSubstation" nameKey="delete" classes="delete" name="removeSubstation" type="submit"/>
+                <cti:button id="cancel" nameKey="cancel" />
             </div>
         </c:if>
     </form:form>
