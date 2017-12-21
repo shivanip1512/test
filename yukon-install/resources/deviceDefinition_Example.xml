@@ -3,22 +3,24 @@
      You can override the following:
       - add/remove (change) the attribute associated with a point definition
       - add/update point definition
-	  - create new point definition
-	  - create/remove tags and configurations
+      - create new point definition
+      - create/remove tags and configurations
 -->
 
 <overrides xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-<!-- Point update examples -->
-	<override>
+
+    <!-- Point update examples -->
+    <override>
         <paoTypes>
             <paoType>MCT430S4</paoType>
         </paoTypes>
         <pointInfos>
-			<!-- Added USAGE attribute to "Rate A kWh" for MCT430S4 -->
-            <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A,USAGE" action="UPDATE"/>
+            <!-- Added USAGE attribute to "Rate A kWh" for MCT430S4 -->
+            <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A,USAGE" action="UPDATE" />
         </pointInfos>
     </override>
-	<override>
+
+    <override>
         <paoTypes>
             <paoType>MCT430A</paoType>
             <paoType>MCT430A3</paoType>
@@ -26,15 +28,16 @@
             <paoType>MCT430SL</paoType>
         </paoTypes>
         <pointInfos>
-			<!-- Added USAGE to "Rate A kWh" for all MCT430X types -->
-            <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A,USAGE" action="UPDATE"/>
+            <!-- Added USAGE to "Rate A kWh" for all MCT430X types -->
+            <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A,USAGE" action="UPDATE" />
         </pointInfos>
     </override>
-	<override>
+
+    <override>
         <paoTypes>
             <paoType>MCT420CD</paoType>
         </paoTypes>
-		<!--Changed MCT-420cD kWh decimal places to 0 and default disconnect status point state to Connected -->
+        <!--Changed MCT-420cD kWh decimal places to 0 and default disconnect status point state to Connected -->
         <pointInfos>
             <pointInfo name="kWh" init="true" attributes="USAGE,DELIVERED_KWH" action="UPDATE">
                 <point offset="1" type="PulseAccumulator">
@@ -47,23 +50,25 @@
             <pointInfo name="Disconnect Status" init="true" attributes="DISCONNECT_STATUS" action="UPDATE">
                 <point offset="1" type="Status">
                     <name>Disconnect Status</name>
-                    <stategroup value="410 Disconnect" initialState="Connected"/> <!-- Changed default initial state from Confirmed Disconnected to Connected-->
+                    <stategroup value="410 Disconnect" initialState="Connected" /> <!-- Changed default initial state from Confirmed Disconnected to Connected -->
                 </point>
             </pointInfo>
         </pointInfos>
     </override>
-<!-- Point removal example -->
-	<override>
+    
+    <!-- Point removal example -->
+    <override>
         <paoTypes>
             <paoType>MCT430S4</paoType>
         </paoTypes>
         <pointInfos>
-			<!-- "Rate A kWh" is removed from MCT430S4-->
-            <pointInfo name="Rate A kWh" action="REMOVE"/>
+            <!-- "Rate A kWh" is removed from MCT430S4 -->
+            <pointInfo name="Rate A kWh" action="REMOVE" />
         </pointInfos>
     </override>
-<!-- New point creation example-->
-	<override>
+
+    <!-- New point creation example -->
+    <override>
         <paoTypes>
             <paoType>MCT410CL</paoType>
             <paoType>MCT410FL</paoType>
@@ -73,111 +78,116 @@
             <paoType>MCT420CL</paoType>
             <paoType>MCT420CD</paoType>
         </paoTypes>
-		<!-- Added "Over Voltage Event" and "Under Voltage Event" points to all MCT410XX and MCT420XX types -->
+        <!-- Added "Over Voltage Event" and "Under Voltage Event" points to all MCT410XX and MCT420XX types -->
         <pointInfos>
             <pointInfo name="Under Voltage Event" attributes="UNDER_VOLTAGE" action="ADD">
                 <point offset="11" type="Status">
                     <name>Under Voltage Event</name>
-                    <stategroup value="TrueFalse"/>
+                    <stategroup value="TrueFalse" />
                 </point>
             </pointInfo>
             <pointInfo name="Over Voltage Event" attributes="OVER_VOLTAGE" action="ADD">
                 <point offset="12" type="Status">
                     <name>Over Voltage Event</name>
-                    <stategroup value="TrueFalse"/>
+                    <stategroup value="TrueFalse" />
                 </point>
             </pointInfo>
         </pointInfos>
     </override>
-<!-- Tag modification example -->
-	<override>
+    
+    <!-- Tag modification example -->
+    <override>
         <paoTypes>
             <paoType>REPEATER_902</paoType>
         </paoTypes>
         <tags>
-			<!--updated the the range tag with the new values -->
+            <!--updated the the range tag with the new values -->
             <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="464-4302,4190464-4194302,6500000-6600000" action="UPDATE" />
         </tags>
     </override>
-<!-- Tag removal example -->
-	<override>
-		<paoTypes>
-			<paoType>MCT420CD</paoType>
-		</paoTypes>
-		<tags>
-			<!-- Removed DEVICE_CONFIGURATION from MCT420CD -->
-			<tag name="DEVICE_CONFIGURATION" action="REMOVE" />
-		</tags>
-	</override>
-<!-- Tag addition example -->
-	<override>
-		<paoTypes>
-			<paoType>MCT430A</paoType>
+    
+    <!-- Tag removal example -->
+    <override>
+        <paoTypes>
+            <paoType>MCT420CD</paoType>
+        </paoTypes>
+        <tags>
+            <!-- Removed DEVICE_CONFIGURATION from MCT420CD -->
+            <tag name="DEVICE_CONFIGURATION" action="REMOVE" />
+        </tags>
+    </override>
+    
+    <!-- Tag addition example -->
+    <override>
+        <paoTypes>
+            <paoType>MCT430A</paoType>
             <paoType>MCT430A3</paoType>
             <paoType>MCT430S4</paoType>
             <paoType>MCT430SL</paoType>
-		</paoTypes>
-		<tags>
-			<!-- Added HIGH_BILL to "Rate A kWh" for all MCT430X types -->
-			<tag name="HIGH_BILL" action="ADD" />
-		</tags>
-	</override>
-<!-- Configuration addition and removal example -->
-	<override>
-		<paoTypes>
-			<paoType>MCT420CD</paoType>
-			<paoType>RFN510FL</paoType>
-		</paoTypes>
-		<configurations>
-			<!-- Removed configuration -->
-			<category type="demandFreeze" action="REMOVE" />
-			<!-- Added configuration -->
-			<category type="mctDisconnectConfiguration" action="ADD" />
-		</configurations>
-	</override>
-<!-- This unrealistic example shows multiple operations performed on MCT420CD and RFN510FL-->
-	<override>
-		<paoTypes>
-			<paoType>MCT420CD</paoType>
-			<paoType>RFN510FL</paoType>
-		</paoTypes>
-		<!-- Added, removed and updated tags-->
-		<tags>
-			<tag name="COMMANDER_REQUESTS" action="ADD" />
-			<tag name="DEVICE_CONFIGURATION" action="REMOVE" />
-			<tag name="RFN_EVENTS" action="ADD" />
-			<tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-999" action="UPDATE" />
-			<tag name="RFN_DEMAND_RESET" action="REMOVE" />
-		</tags>
-		<!-- Added and removed configurations-->
-		<configurations>
-			<category type="demandFreeze" action="REMOVE" />
-			<category type="mctDisconnectConfiguration" action="ADD" />
-		</configurations>
-		<pointInfos>
-			<!-- Updated multiplier, unitofmeasure decimalplaces for "Blink Count"-->
-			<pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT" action="UPDATE">
-				<point offset="20" type="PulseAccumulator">
-					<name>Blink Count</name>
-					<multiplier value="19991"/>
-					<unitofmeasure value="COUNTS"/>
-					<decimalplaces value="1000"/>
-				</point>
-			</pointInfo>
-			<!-- Created new point -->
-			<pointInfo name="New Point" attributes="COMM_STATUS" action="ADD">
-				<point offset="1111" type="PulseAccumulator">
-					<name>New Point</name>
-					<multiplier value="1111"/>
-					<unitofmeasure value="COUNTS"/>
-					<decimalplaces value="1111"/>
-				</point>
-			</pointInfo>
-			<!-- Added, removed and updated points -->
-			<pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM" action="ADD"/>
-			<!--MCT changing init="true" -->
-			<pointInfo name="Comm Status" init="true" attributes="COMM_STATUS" action="UPDATE"/>
-			<pointInfo name="Crystal Oscillator Error" action="REMOVE"/>
-		</pointInfos>
-	</override>
+        </paoTypes>
+        <tags>
+            <!-- Added HIGH_BILL to "Rate A kWh" for all MCT430X types -->
+            <tag name="HIGH_BILL" action="ADD" />
+        </tags>
+    </override>
+    
+    <!-- Configuration addition and removal example -->
+    <override>
+        <paoTypes>
+            <paoType>MCT420CD</paoType>
+            <paoType>RFN510FL</paoType>
+        </paoTypes>
+        <configurations>
+            <!-- Removed configuration -->
+            <category type="demandFreeze" action="REMOVE" />
+            <!-- Added configuration -->
+            <category type="mctDisconnectConfiguration" action="ADD" />
+        </configurations>
+    </override>
+    
+    <!-- This unrealistic example shows multiple operations performed on MCT420CD and RFN510FL -->
+    <override>
+        <paoTypes>
+            <paoType>MCT420CD</paoType>
+            <paoType>RFN510FL</paoType>
+        </paoTypes>
+        <!-- Added, removed and updated tags -->
+        <tags>
+            <tag name="COMMANDER_REQUESTS" action="ADD" />
+            <tag name="DEVICE_CONFIGURATION" action="REMOVE" />
+            <tag name="RFN_EVENTS" action="ADD" />
+            <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-999" action="UPDATE" />
+            <tag name="RFN_DEMAND_RESET" action="REMOVE" />
+        </tags>
+        <!-- Added and removed configurations -->
+        <configurations>
+            <category type="demandFreeze" action="REMOVE" />
+            <category type="mctDisconnectConfiguration" action="ADD" />
+        </configurations>
+        <pointInfos>
+            <!-- Updated multiplier, unitofmeasure decimalplaces for "Blink Count" -->
+            <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT" action="UPDATE">
+                <point offset="20" type="PulseAccumulator">
+                    <name>Blink Count</name>
+                    <multiplier value="19991" />
+                    <unitofmeasure value="COUNTS" />
+                    <decimalplaces value="1000" />
+                </point>
+            </pointInfo>
+            <!-- Created new point -->
+            <pointInfo name="New Point" attributes="COMM_STATUS" action="ADD">
+                <point offset="1111" type="PulseAccumulator">
+                    <name>New Point</name>
+                    <multiplier value="1111" />
+                    <unitofmeasure value="COUNTS" />
+                    <decimalplaces value="1111" />
+                </point>
+            </pointInfo>
+            <!-- Added, removed and updated points -->
+            <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM" action="ADD" />
+            <!--MCT changing init="true" -->
+            <pointInfo name="Comm Status" init="true" attributes="COMM_STATUS" action="UPDATE" />
+            <pointInfo name="Crystal Oscillator Error" action="REMOVE" />
+        </pointInfos>
+    </override>
 </overrides>
