@@ -21,7 +21,15 @@ public interface PasswordResetService {
     public void sendPasswordResetEmail(String forgottenPasswordResetUrl, LiteContact liteContract, YukonUserContext userContext);
 
     /**
-     * This method creates the url need to reset a user's password.  
+     * This method creates the URL needed to reset a user's password.
+     * 
+     * @param username - the user for which the password reset URL is to be generated.
+     * @param request - the HttpServletRequest
+     * @param useYukonExternalUrl - when false, {@code request} will be used to construct the urlBase directly.<br>
+     *          Most cases will use false, such that a simple redirect to the same urlBase is sufficient.
+     *          Example: Password Reset<br>
+     *          When true, urlBase will attempt to be resolved to an externally available URL.
+     *          See {@link WebserverUrlResolver#getUrl(String)}. Example: Forgot Password (email sent with link)
      */
     public String getPasswordResetUrl(String username, HttpServletRequest request, boolean useYukonExternalUrl);
     
