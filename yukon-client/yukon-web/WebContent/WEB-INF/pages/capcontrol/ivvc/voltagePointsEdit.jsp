@@ -88,7 +88,17 @@
                                         disabled="${disabledInput}" inputClass="upperLimit" />
                             </td>
                             <td><form:checkbox cssClass="js-override-strategy" path="points[${status.index}].overrideStrategy" disabled="${!hasEditingRole}"/></td>
-                            <td><form:checkbox path="points[${status.index}].ignore" disabled="${!hasEditingRole}"/></td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${voltagePoint.ignoreSupported}">
+                                        <form:checkbox path="points[${status.index}].ignore" disabled="${!hasEditingRole}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:msg2 var="notSupported" key=".ignoreNotSupported"/>
+                                        <form:checkbox path="points[${status.index}].ignore" disabled="true" title="${notSupported}"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>

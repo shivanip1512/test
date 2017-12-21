@@ -13,6 +13,7 @@ public class VoltageLimitedDeviceInfo {
     private double upperLimit;
     private boolean overrideStrategy;
     private boolean isRegulator;
+    private boolean ignoreSupported = true;
     private boolean ignore;
 
     public PaoIdentifier getParentPaoIdentifier() {
@@ -93,6 +94,14 @@ public class VoltageLimitedDeviceInfo {
 
     public void setIgnore(boolean ignore) {
         this.ignore = ignore;
+    }
+
+    public boolean isIgnoreSupported() {
+        return ignoreSupported;
+    }
+
+    public void setIgnoreSupported(boolean ignoreSupported) {
+        this.ignoreSupported = ignoreSupported;
     }
 
 }
