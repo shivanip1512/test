@@ -217,6 +217,7 @@
         <copy todir="${install.bag}/Common Directories/Config/Example" preservelastmodified="true">
             <fileset file="${basedir}/yukon-install/resources/master.cfg"/>
             <fileset file="${basedir}/yukon-install/resources/configuration.properties"/>
+            <fileset file="${basedir}/yukon-install/resources/deviceDefinition_Example.xml"/>
             <fileset dir="${client.bag}/exampleXml"/>
         </copy>
         
