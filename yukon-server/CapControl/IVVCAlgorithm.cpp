@@ -645,7 +645,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            ValidityCheckResults    result = hasValidData( request, timeNow, subbus, strategy );
+            ValidityCheckResults    result = hasValidData( request, timeNow, subbus, *strategy );
 
             if ( result != ValidityCheckResults::Valid )
             {
@@ -3248,9 +3248,9 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
     Now the validity is on a per zone per phase basis...
 */
 IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataRequestPtr& request,
-                                                                 CtiTime timeNow,
-                                                                 CtiCCSubstationBusPtr subbus,
-                                                                 IVVCStrategy* strategy )
+                                                                 const CtiTime & timeNow,
+                                                                 const CtiCCSubstationBusPtr subbus,
+                                                                 const IVVCStrategy & strategy )
 {
     bool dataIsValid = true;
 
@@ -3282,16 +3282,16 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
 
     for( const auto & ZoneId : subbusZoneIds )
     {
-        if( strategy->getReportCommStatisticsByPhase() )
+        if( strategy.getReportCommStatisticsByPhase() )
         {
-            if( ! processZoneByPhase( request, timeNow, subbus, *strategy, ZoneId, dataIsValid ) )
+            if( ! processZoneByPhase( request, timeNow, subbus, strategy, ZoneId, dataIsValid ) )
             {
                 return ValidityCheckResults::MissingObject;
             }
         }
         else
         {
-            if( ! processZoneByAggregate( request, timeNow, subbus, *strategy, ZoneId, dataIsValid ) )
+            if( ! processZoneByAggregate( request, timeNow, subbus, strategy, ZoneId, dataIsValid ) )
             {
                 return ValidityCheckResults::MissingObject;
             }
@@ -3334,7 +3334,7 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
     // check the feeder watt and var points exist and are in the request
     //  -- iff control method is bus optimized
 
-    if ( strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder )
+    if ( strategy.getMethodType() == ControlStrategy::BusOptimizedFeeder )
     {
         for ( auto feeder : subbus->getCCFeeders() )
         {
@@ -3384,16 +3384,16 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( PointDataReques
 
 
 bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
-                                        CtiTime timeNow,
-                                        CtiCCSubstationBusPtr subbus,
-                                        IVVCStrategy& strategy,
-                                        long ZoneId,
-                                        bool dataIsValid )
+                                        const CtiTime & timeNow,
+                                        const CtiCCSubstationBusPtr subbus,
+                                        const IVVCStrategy & strategy,
+                                        const long zoneId,
+                                        bool & dataIsValid )
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     PointValueMap pointValues = request->getPointValues();
 
-    auto zone = store->getZoneManager().getZone(ZoneId);
+    auto zone = store->getZoneManager().getZone(zoneId);
 
     const Cti::CapControl::Phase phases[] =
     {
@@ -3414,6 +3414,8 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         Zone::PhaseIdMap::const_iterator    phase_ID_iterator, phase_ID_end;
 
         boost::tie( phase_ID_iterator, phase_ID_end ) = regulatorSearch.equal_range( phase );
+
+        totalPoints = missingPoints = stalePoints = 0;      // reset stats
 
         for ( ; phase_ID_iterator != phase_ID_end; ++phase_ID_iterator )
         {
@@ -3521,16 +3523,16 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
 
 
 bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
-                                            CtiTime timeNow,
-                                            CtiCCSubstationBusPtr subbus,
-                                            IVVCStrategy& strategy,
-                                            long ZoneId,
-                                            bool dataIsValid )
+                                            const CtiTime & timeNow,
+                                            const CtiCCSubstationBusPtr subbus,
+                                            const IVVCStrategy & strategy,
+                                            const long zoneId,
+                                            bool & dataIsValid )
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     PointValueMap pointValues = request->getPointValues();
 
-    auto zone = store->getZoneManager().getZone(ZoneId);
+    auto zone = store->getZoneManager().getZone(zoneId);
 
     int totalPoints = 0,
         missingPoints = 0,

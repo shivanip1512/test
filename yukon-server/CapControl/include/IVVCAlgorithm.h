@@ -51,19 +51,24 @@ class IVVCAlgorithm
             MissingObject
         };
 
-        ValidityCheckResults hasValidData( PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy );
-        bool processZoneByPhase( PointDataRequestPtr& request, 
-                                 CtiTime timeNow,
-                                 CtiCCSubstationBusPtr subbus,
-                                 IVVCStrategy& strategy, 
-                                 long ZoneId,
-                                 bool dataIsValid );
-        bool processZoneByAggregate( PointDataRequestPtr& request, 
-                                     CtiTime timeNow,
-                                     CtiCCSubstationBusPtr subbus,
-                                     IVVCStrategy& strategy, 
-                                     long ZoneId,
-                                     bool dataIsValid );
+        ValidityCheckResults hasValidData( PointDataRequestPtr & request,
+                                           const CtiTime & timeNow,
+                                           const CtiCCSubstationBusPtr subbus,
+                                           const IVVCStrategy & strategy );
+
+        bool processZoneByPhase( PointDataRequestPtr & request, 
+                                 const CtiTime & timeNow,
+                                 const CtiCCSubstationBusPtr subbus,
+                                 const IVVCStrategy & strategy, 
+                                 const long zoneId,
+                                 bool & dataIsValid );
+
+        bool processZoneByAggregate( PointDataRequestPtr & request, 
+                                     const CtiTime & timeNow,
+                                     const CtiCCSubstationBusPtr subbus,
+                                     const IVVCStrategy & strategy, 
+                                     const long zoneId,
+                                     bool & dataIsValid );
 
         virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
 
