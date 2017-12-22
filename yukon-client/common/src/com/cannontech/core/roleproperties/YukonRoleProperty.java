@@ -289,6 +289,8 @@ public enum YukonRoleProperty {
     INFRASTRUCTURE_ADMIN(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 2, booleanType()),
     INFRASTRUCTURE_VIEW(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 3, booleanType()),
     ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
+    MANAGE_POINT_DATA(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 5, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
+    MANAGE_POINTS(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 6, InputTypeFactory.enumType(HierarchyPermissionLevel.class)),
     ;
     
     private final YukonRole role;

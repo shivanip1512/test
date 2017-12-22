@@ -11,7 +11,6 @@
 
 <cti:standardPage module="tools" page="tdc.display.${mode}">
 
-    <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
     <flot:defaultIncludes />
     <div id="page-buttons" class="dn">
         <c:if test="${display.acknowledgable}">
@@ -66,4 +65,7 @@
         </c:otherwise>
     </c:choose>
     <tags:simplePopup id="tdc-popup" title=""/>
+    <tags:simplePopup id="manual-entry-popup" title=""/>
+    <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.points.js"/>
 </cti:standardPage>

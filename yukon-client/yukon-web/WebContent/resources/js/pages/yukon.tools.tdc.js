@@ -138,23 +138,7 @@ yukon.tools.tdc = (function () {
                     });
                 });
             });
-            
-            $('.js-tdc-manual-entry').click(function (ev) {
-                
-                var option = $(this),
-                    pointId = option.data('pointId'),
-                    popupTitle = option.data('popupTitle'),
-                    url = yukon.url('/tools/data-viewer/manual-entry');
-                
-                $('#tdc-popup').load(url, { pointId : pointId }, function () {
-                    $('#tdc-popup').dialog({
-                        title : popupTitle,
-                        width : 500,
-                        autoOpen : true
-                    });
-                });
-            });
-            
+
             $('.js-tdc-copy').click(function (ev) {
                 
                 var option = $(this),
@@ -265,9 +249,6 @@ yukon.tools.tdc = (function () {
                 });
             });
             
-            $(document).on('click', '.js-tdc-manual-entry-send', function (ev) {
-                submitFormViaAjax('tdc-popup', 'tdc-manual-entry-form');
-            });
             
             $(document).on('click', '.js-tdc-enable-disable-send', function (ev) {
                 

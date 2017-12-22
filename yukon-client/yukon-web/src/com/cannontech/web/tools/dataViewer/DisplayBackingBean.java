@@ -8,16 +8,14 @@ import org.joda.time.DateTime;
 import com.cannontech.common.tdc.model.AltScanRate;
 import com.cannontech.common.util.EnabledStatus;
 import com.cannontech.tags.Tag;
+import com.cannontech.web.tools.points.PointBackingBean;
 
-public class DisplayBackingBean {
+public class DisplayBackingBean extends PointBackingBean {
     private int deviceId;
-    private int pointId;
     private int displayId;
     private AltScanRate altScanRate;
     private EnabledStatus pointEnabledStatus = EnabledStatus.ENABLED;
     private EnabledStatus deviceEnabledStatus = EnabledStatus.ENABLED;
-    private Double value;
-    private int stateId;
     private List<Tag> tags = new ArrayList<>();
     private boolean deviceControlInhibited;
     private int rowIndex;
@@ -38,30 +36,6 @@ public class DisplayBackingBean {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public int getPointId() {
-        return pointId;
-    }
-
-    public void setPointId(int pointId) {
-        this.pointId = pointId;
-    }
-
-    public Double getValue() {
-        return value;
-    }
-
-    public void setValue(Double value) {
-        this.value = value;
-    }
-
-    public int getStateId() {
-        return stateId;
-    }
-
-    public void setStateId(int stateId) {
-        this.stateId = stateId;
     }
 
     public List<Tag> getTags() {

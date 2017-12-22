@@ -141,12 +141,7 @@
     <entry key="yukon.web.modules.tools.tdc.tags.description">Description</entry>
     <entry key="yukon.web.modules.tools.tdc.tags.timestamp">Timestamp</entry>
     <entry key="yukon.web.modules.tools.tdc.tags.taggedBy">Tagged By</entry>
-    
-    <entry key="yukon.web.modules.tools.tdc.manualEntry.title">Manual Entry</entry>
-    <entry key="yukon.web.modules.tools.tdc.manualEntry.state">Current State</entry>
-    <entry key="yukon.web.modules.tools.tdc.manualEntry.value">Value</entry>
     <entry key="yukon.web.modules.tools.tdc.popupTitle">{0} ({1} : {2})</entry>
-       
     <entry key="yukon.web.modules.tools.tdc.manualControl">Manual Control</entry>
     <entry key="yukon.web.modules.tools.tdc.manualControl.title">Manual Control</entry>
     <entry key="yukon.web.modules.tools.tdc.manualControl.control">Control</entry>

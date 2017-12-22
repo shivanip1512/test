@@ -559,4 +559,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_SET_POINT">Reverse Set Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_FLOW_INDICATOR">Reverse Flow Indicator</entry>
     <!-- BuiltInAttribute see note above about changing values -->
+
+    <entry key="yukon.common.point.manualEntry.title">Manual Entry</entry>
+    <entry key="yukon.common.point.manualEntry.state">Current State</entry>
+    <entry key="yukon.common.point.manualEntry.value">Value</entry>
+    <entry key="yukon.common.point.popupTitle">{0} ({1} : {2})</entry>
 </properties>

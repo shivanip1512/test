@@ -7,12 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 
 public class PointServiceImpl implements PointService {
@@ -64,4 +69,19 @@ public class PointServiceImpl implements PointService {
         }
     }
 
+    @Override
+    public void sendPointData(int pointId, double value, LiteYukonUser user) {
+        PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
+        PointData data = new PointData();
+        data.setId(pointId);
+        data.setTags(pd.getTags());
+        data.setTimeStamp(new java.util.Date());
+        data.setTime(new java.util.Date());
+        data.setType(pd.getType());
+        data.setValue(value);
+        data.setPointQuality(PointQuality.Manual);
+        data.setStr("Manual change occurred from " + CtiUtilities.getUserName() + " using TDC (Yukon)");
+        data.setUserName(user.getUsername());
+        asyncDynamicDataSource.putValue(data);
+    }
 }

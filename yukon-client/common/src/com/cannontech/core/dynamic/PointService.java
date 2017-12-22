@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.Signal;
 
 public interface PointService {
@@ -29,5 +30,10 @@ public interface PointService {
      * @return LiteState The current state of this point.
      */
     LiteState getCurrentStateForNonStatusPoint(LitePoint lp, Set<Signal> signals);
+
+    /**
+     * Sends point data.
+     */
+    void sendPointData(int pointId, double value, LiteYukonUser user);
     
 }

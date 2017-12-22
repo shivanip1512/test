@@ -30,6 +30,10 @@
         </thead>
         <tfoot></tfoot>
         <tbody>
+            <c:set var="isPointLinkVisible" value= "false" />
+            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="UPDATE">
+                <c:set var="isPointLinkVisible" value= "true" />
+            </cti:checkRolesAndProperties>
             <c:forEach var="row" items="${result.resultList}">
                 <tr id="row-${row.pointId}">
                     <td>
@@ -42,8 +46,13 @@
                     <c:forEach var="column" items="${display.columns}">
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_NAME')}">
                             <td>
-                                <cti:url var="pointEditor" value="/tools/points/${row.pointId}"/>
-                                    <a href="${pointEditor}">${fn:escapeXml(row.pointName)}</a>
+                                <c:choose>
+                                    <c:when test="${!isPointLinkVisible}">${fn:escapeXml(row.pointName)}</c:when>
+                                    <c:otherwise>
+                                        <cti:url var="pointEditor" value="/tools/points/${row.pointId}"/>
+                                        <a href="${pointEditor}">${fn:escapeXml(row.pointName)}</a>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                         </c:if>
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.DEVICE_NAME')}">

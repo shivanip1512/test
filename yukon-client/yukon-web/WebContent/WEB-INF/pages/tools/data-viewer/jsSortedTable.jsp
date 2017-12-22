@@ -53,14 +53,23 @@
                                         data-class-updater="${alarmIndicator}"></span>
                                 </c:if>
                             </td>
+                            <c:set var="isPointLinkVisible" value= "false" />
+                            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="UPDATE">
+                                <c:set var="isPointLinkVisible" value= "true" />
+                            </cti:checkRolesAndProperties>
                             <c:forEach var="column" items="${display.columns}">
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_ID')}">
                                     <td>${fn:escapeXml(row.pointId)}</td>
                                 </c:if>
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_NAME')}">
                                     <td>
-                                        <cti:url var="pointEditor" value="/tools/points/${row.pointId}"/>
-                                            <a href="${pointEditor}">${fn:escapeXml(row.pointName)}</a>
+                                        <c:choose>
+                                            <c:when test="${!isPointLinkVisible}">${fn:escapeXml(row.pointName)}</c:when>
+                                            <c:otherwise>
+                                                <cti:url var="pointEditor" value="/tools/points/${row.pointId}"/>
+                                                <a href="${pointEditor}">${fn:escapeXml(row.pointName)}</a>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
                                 </c:if>
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_TYPE')}">
@@ -175,9 +184,10 @@
                                                 <li class="divider"></li>
                                             </tags:dynamicChooseOption>
                                         </tags:dynamicChoose>
+                                        <cti:checkRolesAndProperties value="MANAGE_POINT_DATA" level="UPDATE">
                                         <tags:dynamicChoose updaterString="TDC/MAN_ENTRY/${row.pointId}/${row.pointType.pointTypeId}/${hasPointValueColumn}" 
                                                 suffix="${row.pointId}">
-                                            <cti:msg2 key=".manualEntry.title" var="title"/>
+                                            <cti:msg2 key="yukon.common.point.manualEntry.title" var="title"/>
                                             <cti:list var="arguments">
                                                 <cti:item value="${title}"/>
                                                 <cti:item value="${row.deviceName}"/>
@@ -185,12 +195,13 @@
                                             </cti:list>
                                             <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
                                             <tags:dynamicChooseOption optionId="TRUE">
-                                                <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" 
-                                                    data-point-id="${row.pointId}" data-popup-title="${popupTitle}" 
-                                                    classes="js-tdc-manual-entry" id="manualEntry-${row.pointId}"/>
+                                                <cm:dropdownOption key="yukon.common.point.manualEntry.title" icon="icon-pencil"
+                                                    data-point-id="${row.pointId}" data-popup-title="${popupTitle}"
+                                                    classes="js-manual-entry" id="manualEntry-${row.pointId}"/>
                                                 <li class="divider"></li>
                                             </tags:dynamicChooseOption>
                                         </tags:dynamicChoose>
+                                        </cti:checkRolesAndProperties>
                                         <tags:dynamicChoose updaterString="TDC/MAN_CONTROL/${row.pointId}" 
                                                 suffix="${row.pointId}">
                                             <cti:msg2 key=".tdc.manualControl.title" var="title"/>
@@ -206,7 +217,7 @@
                                                     data-point-id="${row.pointId}" 
                                                     data-popup-title="${popupTitle}" 
                                                     data-device-id="${row.device.deviceId}" 
-                                                    classes="js-tdc-manual-control" 
+                                                    classes="js-manual-control" 
                                                     id="manualControl-${row.pointId}"/>
                                             </tags:dynamicChooseOption>
                                         </tags:dynamicChoose>

@@ -42,7 +42,6 @@ import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.tdc.model.DisplayType;
 import com.cannontech.common.tdc.service.TdcService;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
@@ -65,7 +64,6 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -156,23 +154,6 @@ public class TdcServiceImpl implements TdcService {
     @Override
     public int getDisplayDataCount(int displayId, DateTime date) {
         return displayDataDao.getEventViewerDisplayDataCount(date);
-    }
-    
-    @Override
-    public void sendPointData(int pointId, double value, LiteYukonUser user){
-        PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
-        PointData data  = new PointData();
-        data.setId(pointId);
-        data.setTags(pd.getTags());
-        data.setTimeStamp(new java.util.Date());
-        data.setTime(new java.util.Date());
-        data.setType(pd.getType());
-        data.setValue(value);
-        data.setPointQuality(PointQuality.Manual);
-        data.setStr("Manual change occurred from " + CtiUtilities.getUserName()
-                  + " using TDC (Yukon)");
-        data.setUserName(user.getUsername());
-        asyncDynamicDataSource.putValue(data);
     }
     
     @Override

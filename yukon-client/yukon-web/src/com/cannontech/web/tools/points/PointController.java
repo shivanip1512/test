@@ -1,16 +1,23 @@
 package com.cannontech.web.tools.points;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,16 +32,27 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.JsonUtils;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointService;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.AccumulatorPoint;
@@ -64,6 +82,7 @@ import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -84,8 +103,21 @@ public class PointController {
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonListDao listDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointService pointService;
     
     private static final String baseKey = "yukon.web.modules.tools.point";
+
+    private final Validator validator = new SimpleValidator<PointBackingBean>(PointBackingBean.class) {
+        @Override
+        protected void doValidation(PointBackingBean bean, Errors errors) {
+            if (bean.getValue() != null) {
+                YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
+            }
+        }
+    };
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
@@ -386,6 +418,64 @@ public class PointController {
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".deleteSuccess", pointName));
 
         return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+    }
+
+    @RequestMapping(value = "/points/manual-entry", method = RequestMethod.POST)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
+    public String manualEntry(YukonUserContext userContext, ModelMap model, int pointId) {
+
+        PointBackingBean backingBean = new PointBackingBean();
+        backingBean.setPointId(pointId);
+        LitePoint litePoint = pointDao.getLitePoint(pointId);
+        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
+        if (litePoint.getPointType() == PointTypes.STATUS_POINT
+            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
+            LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
+            model.put("stateList", group.getStatesList());
+            backingBean.setStateId((int) pointValue.getValue());
+        } else {
+            backingBean.setValue(pointValue.getValue());
+        }
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+        model.put("deviceName", liteYukonPAO.getPaoName());
+        model.put("pointName", litePoint.getPointName());
+        model.addAttribute("backingBean", backingBean);
+        return "../common/pao/manualEntryPopup.jsp";
+    }
+
+    @RequestMapping(value = "/points/manualEntrySend", method = RequestMethod.POST)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
+    public String manualEntrySend(HttpServletResponse response, YukonUserContext userContext,
+            @ModelAttribute("backingBean") PointBackingBean backingBean, BindingResult bindingResult, ModelMap model,
+            FlashScope flashScope) throws IOException {
+
+        double newPointValue;
+        LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
+        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(backingBean.getPointId());
+        if (litePoint.getPointType() == PointTypes.STATUS_POINT
+            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
+            newPointValue = backingBean.getStateId();
+        } else {
+            validator.validate(backingBean, bindingResult);
+            if (bindingResult.hasErrors()) {
+                LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+                model.put("deviceName", liteYukonPAO.getPaoName());
+                model.put("pointName", litePoint.getPointName());
+                model.addAttribute("backingBean", backingBean);
+                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+                flashScope.setError(messages);
+                return "../common/pao/manualEntryPopup.jsp";
+            }
+
+            newPointValue = backingBean.getValue();
+        }
+        if (pointValue.getValue() != newPointValue) {
+            pointService.sendPointData(backingBean.getPointId(), newPointValue, userContext.getYukonUser());
+        }
+
+        response.setContentType("application/json");
+        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
+        return null;
     }
 
     /**

@@ -442,66 +442,6 @@ public class TdcDisplayController {
         return "data-viewer/trendPopup.jsp";
     }
 
-    @RequestMapping(value = "data-viewer/manual-entry", method = RequestMethod.POST)
-    public String manualEntry(YukonUserContext userContext, ModelMap model, int pointId) {
-
-        DisplayBackingBean backingBean = new DisplayBackingBean();
-        backingBean.setPointId(pointId);
-        LitePoint litePoint = pointDao.getLitePoint(pointId);
-        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
-        if (litePoint.getPointType() == PointTypes.STATUS_POINT
-            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
-            LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
-            model.put("stateList", group.getStatesList());
-            backingBean.setStateId((int) pointValue.getValue());
-        } else {
-            backingBean.setValue(pointValue.getValue());
-        }
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
-        model.put("deviceName", liteYukonPAO.getPaoName());
-        model.put("pointName", litePoint.getPointName());
-        model.addAttribute("backingBean", backingBean);
-        return "data-viewer/manualEntryPopup.jsp";
-    }
-
-    @RequestMapping(value = "data-viewer/manualEntrySend", method = RequestMethod.POST)
-    public String manualEntrySend(HttpServletResponse response, YukonUserContext userContext,
-                                  @ModelAttribute("backingBean") DisplayBackingBean backingBean,
-                                  BindingResult bindingResult, ModelMap model, FlashScope flashScope) throws IOException {
-
-        double newPointValue;
-        LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
-        PointValueQualityHolder pointValue =
-            asyncDynamicDataSource.getPointValue(backingBean.getPointId());
-        if (litePoint.getPointType() == PointTypes.STATUS_POINT
-            || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
-            newPointValue = backingBean.getStateId();
-        } else {
-            validator.validate(backingBean, bindingResult);
-            if (bindingResult.hasErrors()) {
-                LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
-                model.put("deviceName", liteYukonPAO.getPaoName());
-                model.put("pointName", litePoint.getPointName());
-                model.addAttribute("backingBean", backingBean);
-                List<MessageSourceResolvable> messages =
-                    YukonValidationUtils.errorsForBindingResult(bindingResult);
-                flashScope.setError(messages);
-                return "data-viewer/manualEntryPopup.jsp";
-            }
-
-            newPointValue = backingBean.getValue();
-        }
-        if (pointValue.getValue() != newPointValue) {
-            tdcService.sendPointData(backingBean.getPointId(),
-                                     newPointValue,
-                                     userContext.getYukonUser());
-        }
-
-        response.setContentType("application/json");
-        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
-        return null;
-    }
-
     @RequestMapping(value = "data-viewer/manual-control", method = RequestMethod.POST)
     public String manualControl(ModelMap model, int pointId, int deviceId) {
         

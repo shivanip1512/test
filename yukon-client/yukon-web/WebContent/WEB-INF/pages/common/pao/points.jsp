@@ -15,4 +15,5 @@
         <cti:url var="download" value="/common/pao/${paoId}/download"/>
         <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
     </div>
+    <tags:simplePopup id="manual-entry-popup" title=""/>
 </cti:standardPage>

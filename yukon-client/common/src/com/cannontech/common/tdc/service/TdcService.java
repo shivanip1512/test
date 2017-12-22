@@ -59,11 +59,6 @@ public interface TdcService {
     List<DisplayData> getAlarms(boolean showActive);
 
     /**
-     * Sends point data.
-     */
-    void sendPointData(int pointId, double value, LiteYukonUser user);
-
-    /**
      * Returns true if manual control is enabled
      */
     boolean isManualControlEnabled(int pointId);
