@@ -31,6 +31,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
@@ -440,7 +441,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         SqlParameterSink values = sql.insertInto("YukonUser");
         values.addValue("UserId", userId);
         values.addValue("Username", user.getUsername());
-        values.addValue("Password", user.getPassword().getPassword());
+        values.addValue("Password", SqlUtils.convertStringToDbValue(user.getPassword().getPassword()));
         LoginStatusEnum status = user.isEnabled() ? LoginStatusEnum.ENABLED : LoginStatusEnum.DISABLED;
         values.addValue("Status", status);
         values.addValue("AuthType", user.getAuthCategory().getSupportingAuthType());
