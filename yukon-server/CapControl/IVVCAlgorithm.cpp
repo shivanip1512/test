@@ -3462,13 +3462,16 @@ bool IVVCAlgorithm::processZoneByPhase( PointDataRequestPtr& request,
         {
             if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
             {
-                for ( auto point : bank->getMonitorPoint() )
+                if ( ! bank->getDisableFlag() )     // only care about enabled banks
                 {
-                    const long cbcPointID = point->getPointId();
-
-                    if ( cbcPointID > 0 && point->getPhase() == phase )
+                    for ( auto point : bank->getMonitorPoint() )
                     {
-                        findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
+                        const long cbcPointID = point->getPointId();
+
+                        if ( cbcPointID > 0 && point->getPhase() == phase )
+                        {
+                            findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
+                        }
                     }
                 }
             }
@@ -3588,13 +3591,16 @@ bool IVVCAlgorithm::processZoneByAggregate( PointDataRequestPtr& request,
     {
         if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
         {
-            for ( const auto point : bank->getMonitorPoint() )
+            if ( ! bank->getDisableFlag() )     // only care about enabled banks
             {
-                const long cbcPointID = point->getPointId();
-
-                if ( cbcPointID > 0 && point->getPhase() != Cti::CapControl::Phase_Unknown )
+                for (const auto point : bank->getMonitorPoint() )
                 {
-                    findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
+                    const long cbcPointID = point->getPointId();
+
+                    if ( cbcPointID > 0 && point->getPhase() != Cti::CapControl::Phase_Unknown )
+                    {
+                        findPointInRequest( cbcPointID, pointValues, request, timeNow, totalPoints, missingPoints, stalePoints );
+                    }
                 }
             }
         }
