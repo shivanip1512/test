@@ -35,7 +35,7 @@
 </script>
 
         <c:if test="${not empty editError}">
-            <div class="error">${editError}</div>
+            <div class="error">${fn:escapeXml(editError)}</div>
         </c:if>
     
         <%-- MISC FORMS --%>
@@ -67,7 +67,7 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <input type="text" name="name" size="50" value="${name}" onkeyup="rewriteTamperFlagGroupName(this);" onchange="rewriteTamperFlagGroupName(this);">
+                    <input type="text" name="name" size="50" value="${fn:escapeXml(name)}" onkeyup="rewriteTamperFlagGroupName(this);" onchange="rewriteTamperFlagGroupName(this);">
                 </tags:nameValue2>
                 
                 <%-- device group --%>

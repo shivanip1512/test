@@ -81,7 +81,7 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <input type="text" name="name" size="50" value="${name}" onkeyup="rewriteOutageGroupName(this);" onchange="rewriteOutageGroupName(this);">
+                    <input type="text" name="name" size="50" value="${fn:escapeXml(name)}" onkeyup="rewriteOutageGroupName(this);" onchange="rewriteOutageGroupName(this);">
                 </tags:nameValue2>
                 
                 <%-- device group --%>
@@ -173,7 +173,7 @@
                 <%-- schedule name --%>
                 <cti:msg2 var="scheduleNameText" key=".label.scheduleName"/>
                 <tags:nameValue name="${fn:escapeXml(scheduleNameText)}" id="scheduleNameTr" nameColumnWidth="250px">
-                     <input type="text" name="scheduleName" value="${scheduleName}">
+                     <input type="text" name="scheduleName" value="${fn:escapeXml(scheduleName)}">
                  </tags:nameValue>
                  
                 <%-- time / frequency --%>

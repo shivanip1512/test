@@ -4,7 +4,7 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <cti:standardPage module="amr" page="validationEditor.${mode}" >
 <style>.validation-value{text-align: right;margin-right: 5px !important;}</style>
 <script type="text/javascript">
@@ -24,7 +24,7 @@
 </script>
 
     <c:if test="${not empty editError}">
-        <div class="error">${editError}</div>
+        <div class="error">${fn:escapeXml(editError)}</div>
     </c:if>
     
     <c:if test="${saveOk}">
@@ -60,7 +60,7 @@
                 
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".name">
-                    <input type="text" name="name" value="${name}">
+                    <input type="text" name="name" value="${fn:escapeXml(name)}">
                 </tags:nameValue2>
                 
                 <%-- device group --%>

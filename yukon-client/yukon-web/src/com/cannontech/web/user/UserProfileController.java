@@ -161,7 +161,7 @@ public class UserProfileController {
     /**
      * Failure may throw exception or return success:true json
      */
-    @RequestMapping(value="/updatePreference.json")
+    @RequestMapping(value="/updatePreference.json", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Boolean> updatePreference(Integer userId, UserPreferenceName prefName,
                                                  String prefValue, LiteYukonUser user) {
