@@ -307,4 +307,6 @@
     <entry key="yukon.web.modules.amr.emailAddresses">Email Addresses</entry>
     <entry key="yukon.web.modules.amr.noReceivables">No Receivables</entry>
     <entry key="yukon.web.modules.amr.noPriorities">No Priorities</entry>
+    
+    <entry key="yukon.web.modules.amr.invalidGroupName">Group name isn't valid, must start with '/'.</entry>
 </properties>

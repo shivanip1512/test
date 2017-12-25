@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.common.validation.service.ValidationMonitorService;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -28,6 +32,7 @@ public class ValidationMonitorEditorController {
     private final static Logger log = YukonLogManager.getLogger(ValidationMonitorEditorController.class);
     @Autowired private ValidationMonitorDao validationMonitorDao;
     @Autowired private ValidationMonitorService validationMonitorService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("edit")
     public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
@@ -91,7 +96,7 @@ public class ValidationMonitorEditorController {
     
     @RequestMapping(value="update", method=RequestMethod.POST)
     public String update(ModelMap model, int validationMonitorId, String name, String deviceGroupName, Double threshold,
-                         Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable) throws Exception, ServletException {
+                         Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable, YukonUserContext userContext) throws Exception, ServletException {
         
         String editError = null;
         
@@ -121,15 +126,16 @@ public class ValidationMonitorEditorController {
             editError = "Validation Monitor with name \"" + name + "\" already exists.";
         } else if (!isNewMonitor && !validationMonitor.getName().equals(name) && validationMonitorDao.processorExistsWithName(name)) { /* Existing monitor, new name, check name. */
             editError = "Validation Monitor with name \"" + name + "\" already exists.";
-        } else if (StringUtils.isBlank(deviceGroupName)) {
-            editError = "Device group required.";
+        } else if (!YukonValidationUtils.checkIsValidGroupName(deviceGroupName)) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
         } else if (threshold == null || threshold < 0) {
             editError= "Unreasonable Threshold must be greater than or equal to 0.";
         } else if (slopeError == null || slopeError < 0) {
             editError = "Slope Error must be greater than or equal to 0.";
         } else if (peakHeightMinimum == null || peakHeightMinimum < 0) {
             editError = "Peak Height Minimum must be greater than or equal to 0.";
-        } 
+        }
         
         /* Editing error. redirect to edit page with error. */
         if (editError != null) {

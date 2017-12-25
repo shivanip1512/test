@@ -26,12 +26,15 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -49,6 +52,7 @@ public class OutageMonitorEditorController extends MultiActionController {
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private static final String CRON_TAG_ID = "outageMonitor";
     private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
@@ -135,7 +139,10 @@ public class OutageMonitorEditorController extends MultiActionController {
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);
         String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
         String expression = "";
-        
+        if (!YukonValidationUtils.checkIsValidGroupName(deviceGroupName)) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
+        }
         // new processor?
         boolean isNewMonitor = true;
         OutageMonitor outageMonitor;

@@ -109,6 +109,9 @@ public class DeviceDataMonitorController {
         public void doValidation(DeviceDataMonitor monitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", baseKey + ".empty");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 100);
+            if (!YukonValidationUtils.checkIsValidGroupName(monitor.getGroupName())) {
+                errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
+            }
         }
     };
     

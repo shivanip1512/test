@@ -101,7 +101,9 @@ public class PorterResponseMonitorController {
             
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.required");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 50);
-            
+            if (!YukonValidationUtils.checkIsValidGroupName(monitor.getGroupName())) {
+                errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
+            }
             // --- uniqueness checks ---
 
             List<Integer> orderList = Lists.newArrayList();

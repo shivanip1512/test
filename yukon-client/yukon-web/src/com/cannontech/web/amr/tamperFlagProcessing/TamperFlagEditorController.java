@@ -21,11 +21,16 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -38,6 +43,7 @@ public class TamperFlagEditorController {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private TamperFlagMonitorService tamperFlagMonitorService;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private Logger log = YukonLogManager.getLogger(TamperFlagEditorController.class);
 
@@ -116,8 +122,10 @@ public class TamperFlagEditorController {
         } else if (!isNewMonitor && !tamperFlagMonitor.getTamperFlagMonitorName().equals(name) 
                 && tamperFlagMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
             editError = "Tamper Flag Monitor with name \"" + name + "\" already exists.";
-        } else if (StringUtils.isBlank(deviceGroupName)) {
-            editError = "Device group required.";
+        } else if (!YukonValidationUtils.checkIsValidGroupName(deviceGroupName)) {
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
         }
 
         // editError. redirect to edit page with error

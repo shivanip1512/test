@@ -77,6 +77,9 @@ public class StatusPointMonitorController {
         public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
             YukonValidationUtils.checkExceedsMaxLength(errors, "statusPointMonitorName", statusPointMonitor.getStatusPointMonitorName(), 50);
+            if (!YukonValidationUtils.checkIsValidGroupName(statusPointMonitor.getGroupName())) {
+                errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
+            }
         }
     };
     
