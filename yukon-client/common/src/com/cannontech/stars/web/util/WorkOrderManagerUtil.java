@@ -20,6 +20,7 @@ import com.cannontech.stars.xml.serialize.CurrentState;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
 import com.cannontech.stars.xml.serialize.StarsSrvReq;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * @author yao
@@ -75,8 +76,8 @@ public class WorkOrderManagerUtil {
 			Date dateReported = parseDateTime(
 					req.getParameter("DateEventTimestamp"), req.getParameter("TimeEventTimestamp"), tz );
 			if (dateReported == null)
-				throw new WebClientException("Invalid report date format '" + req.getParameter("DateEventTimestamp") + " " + req.getParameter("TimeEventTimestamp") + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
-			starsOrder.setDateReported( dateReported );
+                throw new WebClientException("Invalid report date format '" + StringEscapeUtils.escapeXml11(req.getParameter("DateEventTimestamp")) + " " + req.getParameter("TimeEventTimestamp") + "', the date/time should be in the form of 'mm/dd/yy hh:mm'");
+			starsOrder.setDateReported(dateReported);
 		}
 		
 		/*if (req.getParameter("DateReported").length() > 0) {
