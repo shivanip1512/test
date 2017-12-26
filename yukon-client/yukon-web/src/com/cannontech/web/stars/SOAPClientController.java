@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -118,7 +119,7 @@ public class SOAPClientController implements Controller {
             clientAction = new DeleteServiceRequestAction();
         } else {
             CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");
-            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid action type '" + action + "'");
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid action type '" + StringEscapeUtils.escapeXml11(action) + "'");
             String location = ServletUtil.createSafeRedirectUrl(request, referer);
             response.sendRedirect(location);
             return null;

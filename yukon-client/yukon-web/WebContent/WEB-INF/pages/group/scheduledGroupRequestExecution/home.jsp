@@ -98,7 +98,7 @@
                          </tags:nameValue>
                          
                          <tags:nameValue name="${retryLabel}">
-                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}"/>
+                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${fn:escapeXml(queuedRetryCount)}" nonQueuedRetryCount="${fn:escapeXml(nonQueuedRetryCount)}" maxTotalRunTimeHours="${fn:escapeXml(maxTotalRunTimeHours)}"/>
                          </tags:nameValue>
                          
                          <cti:displayForPageEditModes modes="EDIT">
@@ -166,7 +166,7 @@
                         <tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
                             <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" 
                                 commands="${commands}" selectedSelectValue="${commandSelectValue}" 
-                                selectedCommandString="${commandString}"/>  
+                                selectedCommandString="${fn:escapeXml(commandString)}"/>  
                         </tags:nameValue>
                         
                         <tags:nameValueGap gapHeight="${take10}"/>
@@ -186,7 +186,7 @@
                         </tags:nameValue>
                         
                         <tags:nameValue name="${retryLabel}">
-                            <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}"/>
+                            <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${fn:escapeXml(queuedRetryCount)}" nonQueuedRetryCount="${fn:escapeXml(nonQueuedRetryCount)}" maxTotalRunTimeHours="${fn:escapeXml(maxTotalRunTimeHours)}"/>
                         </tags:nameValue>
                         
                         <cti:displayForPageEditModes modes="EDIT">

@@ -14,14 +14,14 @@
             <div class="column one">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".name">
-                        <input type="text" id="selectedName" name="selectedName" value="${criteria.name}">
+                        <input type="text" id="selectedName" name="selectedName" value="${fn:escapeXml(criteria.name)}">
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
             <div class="column two">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".serialNumber">
-                        <input type="text" id="selectedSerialNumber" name="selectedSerialNumber" value="${criteria.serialNumber}">
+                        <input type="text" id="selectedSerialNumber" name="selectedSerialNumber" value="${fn:escapeXml(criteria.serialNumber)}">
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>

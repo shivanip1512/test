@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%-- MODULE, MENU --%>
 <cti:standardPage page="bulk.bulkImporter" module="tools">
@@ -45,8 +46,8 @@
             <%-- IMPORT MSG --%>
             <c:if test="${not empty msgStr}">
                 <br />
-                <c:if test="${msgType == '1'}">${msgStr}</c:if>
-                <c:if test="${msgType == '0'}"><div class="error">${msgStr}</div></c:if>
+                <c:if test="${msgType == '1'}">${fn:escapeXml(msgStr)}</c:if>
+                <c:if test="${msgType == '0'}"><div class="error">${fn:escapeXml(msgStr)}</div></c:if>
             </c:if>
         </tags:nameValue>
         <%-- TOGGLE BULK IMPORTER COMMUNICATION --%>

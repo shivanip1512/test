@@ -130,7 +130,7 @@
                                     <c:if test="${not empty jobWrapper.attributes}">
                                         <i:inline key=".executions.tableHeader.attributeOrCommand.attribute" arguments="${jobWrapper.attributeDescriptions}"/>
                                     </c:if>
-                                    <c:if test="${not empty jobWrapper.command}">${jobWrapper.command}</c:if>
+                                    <c:if test="${not empty jobWrapper.command}">${fn:escapeXml(jobWrapper.command)}</c:if>
                                 </td>
                                 <td class="runSchedule">${jobWrapper.scheduleDescription}</td>
                                 <td class="nextRunDate">

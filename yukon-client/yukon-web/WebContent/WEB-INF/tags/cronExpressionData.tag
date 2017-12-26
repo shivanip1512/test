@@ -3,6 +3,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ attribute name="id" required="true" 
         description="Used to create unique names so multiple tags can be used on a single page without conflicting." %>
@@ -140,7 +141,7 @@
         <c:set var="errorClass" value="error"/>
     </c:if>
     <div>
-        <input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}" class="${errorClass}"> 
+        <input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${fn:escapeXml(state.customExpression)}" class="${errorClass}"> 
         <cti:icon icon="icon-help" data-popup="#${id}-cron-help" classes="fn vatb cp"/>
     </div>
     <c:if test="${invalidCronString}">

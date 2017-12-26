@@ -6,6 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="relayDetail">
         
@@ -24,7 +25,7 @@
         <!-- Other Collection Actions -->
         <cti:url var="url" value="/bulk/collectionActions">
             <cti:param name="collectionType" value="idList"/>
-            <cti:param name="idList.ids" value="${deviceId}"/>
+            <cti:param name="idList.ids" value="${fn:escapeXml(deviceId)}"/>
         </cti:url>
         <cm:dropdownOption key=".otherActions.label" href="${url}" icon="icon-cog-go" />
         
