@@ -25,8 +25,8 @@ public class MaintenanceHelper {
         DateTime nextScheduledRunTime = null;
         try {
             // Get Start-Stop time for business hour
-            DateTime businessHourStart = getNextStartTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
-            DateTime businessHourStop = getNextStopTime(GlobalSettingType.BUSINESS_HOURS_DAYS);
+            DateTime businessHourStart = getNextStartTime(GlobalSettingType.BUSINESS_DAYS);
+            DateTime businessHourStop = getNextStopTime(GlobalSettingType.BUSINESS_DAYS);
             // Get Start-Stop time for external maintenance hour
             DateTime extMaintenanceHourStart = getNextStartTime(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);
             DateTime extMaintenanceHourStop = getNextStopTime( GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);
@@ -50,7 +50,7 @@ public class MaintenanceHelper {
      */
     public Set<GlobalSettingType> getGlobalSettingsForMaintenance(){
         return Sets.newHashSet(
-            GlobalSettingType.BUSINESS_HOURS_DAYS,
+            GlobalSettingType.BUSINESS_DAYS,
             GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS,
             GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME,
             GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME);
@@ -77,8 +77,8 @@ public class MaintenanceHelper {
         TimeZone timeZone = YukonUserContext.system.getTimeZone();
         GlobalSetting daysSetting ;
         GlobalSetting hourStartStopSetting ;
-        if (globalSettingType == GlobalSettingType.BUSINESS_HOURS_DAYS) {
-            daysSetting = globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_DAYS);
+        if (globalSettingType == GlobalSettingType.BUSINESS_DAYS) {
+            daysSetting = globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS);
             hourStartStopSetting = globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME);
         } else {
             daysSetting = globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);

@@ -292,5 +292,4 @@
     <entry key="yukon.web.modules.adminSetup.config.slider.twelveAm">12:00AM</entry>
     <entry key="yukon.web.modules.adminSetup.config.slider.eightAm">8:00AM</entry>
     <entry key="yukon.web.modules.adminSetup.config.slider.fourPm">4:00PM</entry>
-    <entry key="yukon.web.modules.adminSetup.config.slider.elevenFiftyNinePm">11:59PM</entry>
 </properties>

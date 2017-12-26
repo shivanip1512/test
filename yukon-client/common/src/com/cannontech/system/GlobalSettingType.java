@@ -179,7 +179,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 15),
 
     //Data Point Pruning
-    BUSINESS_HOURS_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("BUSINESS_HOURS_DAYS"), "NYYYYYN"),
+    BUSINESS_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("BUSINESS_DAYS"), "NYYYYYN"),
     EXTERNAL_MAINTENANCE_DAYS(GlobalSettingSubCategory.MISC, weekDaysType("EXTERNAL_MAINTENANCE_DAYS"), "YNNNNNN"),
     BUSINESS_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("BUSINESS_HOURS_START_STOP_TIME", 24), "420,1020"),
     EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME(GlobalSettingSubCategory.MISC, sliderType("EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME", 48), "60,180")

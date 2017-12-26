@@ -577,8 +577,8 @@
     <entry key="yukon.common.durationType.THREE_YEARS">3 years</entry>
     <entry key="yukon.common.durationType.FOUR_YEARS">4 years</entry>
     <entry key="yukon.common.durationType.FIVE_YEARS">5 years</entry>
-    <entry key="yukon.common.setting.BUSINESS_HOURS_DAYS">Business Hours Days</entry>
-    <entry key="yukon.common.setting.BUSINESS_HOURS_DAYS.description">Days of the week for general business hours. During this time window, Yukon maintenance tasks will not be started.</entry>
+    <entry key="yukon.common.setting.BUSINESS_DAYS">Business Days</entry>
+    <entry key="yukon.common.setting.BUSINESS_DAYS.description">Days of the week for general business hours. During this time window, Yukon maintenance tasks will not be started.</entry>
     <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_DAYS">External Maintenance Days</entry>
     <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_DAYS.description">Days of the week when external maintenance tasks, such as database backups, are scheduled to start. During this time window, Yukon maintenance tasks will not be started.</entry>
     <entry key="yukon.common.setting.BUSINESS_HOURS_START_STOP_TIME">Business Hours</entry>

@@ -14,7 +14,7 @@ yukon.admin.slider = (function () {
             $(document).ready(function() {
                 $('div.slider-range').each(function(idx, elm) {
                     var hrs = $(this).attr('data-hours');
-                    var maxVal = 1439;
+                    var maxVal = 1440;
                     if(hrs == '48'){
                         maxVal = 2880;
                     }

@@ -37,7 +37,7 @@ public class MaintenanceScheduler {
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
             int primaryKeyId = event.getPrimaryKey();
             if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && (primaryKeyId ==
-                globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_DAYS).getId().intValue()
+                globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS).getId().intValue()
                 || primaryKeyId ==
                     globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId().intValue()
                 || primaryKeyId == 

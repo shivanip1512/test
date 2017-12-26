@@ -22,7 +22,7 @@
             <span><i:inline key="yukon.web.modules.adminSetup.config.slider.twelveAm"/></span>
             <span style="padding-left:17%;"><i:inline key="yukon.web.modules.adminSetup.config.slider.eightAm"/></span>
             <span style="padding-left:25%;"><i:inline key="yukon.web.modules.adminSetup.config.slider.fourPm"/></span>
-            <span style="padding-left:22%"><i:inline key="yukon.web.modules.adminSetup.config.slider.elevenFiftyNinePm"/></span>
+            <span style="padding-left:22%"><i:inline key="yukon.web.modules.adminSetup.config.slider.twelveAm"/></span>
         </c:when>
         <c:otherwise>
             <span><i:inline key="yukon.web.modules.adminSetup.config.slider.twelveAm"/></span>
