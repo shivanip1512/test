@@ -50,6 +50,10 @@ WHERE DCCI.DeviceConfigCategoryId IN (
     AND DCCI.ItemValue='DEMAND';
 /* End YUK-17578 */
 
+/* Start YUK-17638 */
+DELETE FROM Widget WHERE DashboardId = -2 AND WidgetType = 'GATEWAY_STREAMING_CAPACITY';
+/* End YUK-17638 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/19/2017 1:17:21 AM                        */
+/* Created on:     12/25/2017 12:29:13 AM                       */
 /*==============================================================*/
 
 
@@ -9148,7 +9148,6 @@ INSERT INTO Widget VALUES (-3, 'MONITORS', -2, 100);
 INSERT INTO Widget VALUES (-4, 'SCHEDULED_REQUESTS', -2, 101);
 INSERT INTO Widget VALUES (-5, 'METER_SEARCH', -2, 200);
 INSERT INTO Widget VALUES (-6, 'AMI_ACTIONS', -2, 201);
-INSERT INTO Widget VALUES (-7, 'GATEWAY_STREAMING_CAPACITY', -2, 202);
 
 /*==============================================================*/
 /* Table: WidgetSettings                                        */
