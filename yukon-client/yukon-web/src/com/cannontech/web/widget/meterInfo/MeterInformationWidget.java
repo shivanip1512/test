@@ -105,7 +105,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         return "meterInformationWidget/render.jsp";
     }
     
-    @RequestMapping("ping")
+    @RequestMapping(value = "ping", method = RequestMethod.POST)
     public String ping(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
         
         YukonMeter meter = meterDao.getForId(deviceId);

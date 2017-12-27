@@ -202,7 +202,7 @@ public class MultispeakController {
         return "setup/vendor_setup.jsp";
     }
 
-    @RequestMapping("pingURL/{serviceVersion}")
+    @RequestMapping(value = "pingURL/{serviceVersion}", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> pingURL(HttpServletRequest request, ModelMap map,
             @ModelAttribute MultispeakModel multispeak, @PathVariable String serviceVersion) {
@@ -254,7 +254,7 @@ public class MultispeakController {
         return json;
     }
 
-    @RequestMapping("getMethods/{serviceVersion}")
+    @RequestMapping(value = "getMethods/{serviceVersion}", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> getMethods(HttpServletRequest request, ModelMap map,
             @ModelAttribute MultispeakModel multispeak, @PathVariable String serviceVersion) {

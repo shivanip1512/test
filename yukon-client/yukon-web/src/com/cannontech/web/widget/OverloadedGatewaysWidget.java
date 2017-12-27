@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -29,7 +30,7 @@ public class OverloadedGatewaysWidget extends AdvancedWidgetControllerBase {
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED.name()));
     }
     
-    @RequestMapping("render")
+    @RequestMapping(value = "render", method = RequestMethod.GET)
     public String render(ModelMap model) {
 
         List<RfnGateway> overloadedGateways = new ArrayList<>();

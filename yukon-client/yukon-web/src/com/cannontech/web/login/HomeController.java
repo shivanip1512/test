@@ -83,7 +83,7 @@ public class HomeController {
         return Collections.singletonMap("isFavorite", isFavorite);
     }
 
-    @RequestMapping("/isFavorite")
+    @RequestMapping(value = "/isFavorite", method = RequestMethod.GET)
     public @ResponseBody Map<String, Boolean> isFavorite(String path, YukonUserContext userContext) {
         Key userPageKey = new Key(userContext.getYukonUser().getUserID(), path);
         return Collections.singletonMap("isFavorite", userPageDao.isFavorite(userPageKey));

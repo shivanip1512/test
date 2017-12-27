@@ -5,7 +5,7 @@
 <cti:url var="dataUrl" value="/widget/rfnOutagesWidget/outageData"><cti:param name="deviceId" value="${deviceId}"/></cti:url>
 <script type="text/javascript">
 var loadOutageTable = function() {
-    var extraParameters = {'deviceId': '${deviceId}'};
+    var extraParameters = {'deviceId': '${deviceId}', 'com.cannontech.yukon.request.csrf.token' : $("#ajax-csrf-token").val()};
     ${widgetParameters.jsWidget}.doActionUpdate({
         'command' : 'outageData',
         'extraParameters' : extraParameters,

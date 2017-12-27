@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -40,7 +41,7 @@ public class WaterMeterController {
     @Autowired private PaoLoadingService paoLoadingService = null;
     @Autowired private PointDao pointDao = null;
 
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
     throws ServletException {
         

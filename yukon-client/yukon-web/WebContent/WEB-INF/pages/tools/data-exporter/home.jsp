@@ -34,7 +34,7 @@
                 <div class="empty-list stacked"><i:inline key=".noFormatsCreated"/></div>
                 <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </c:if>
-            <form:form id="exporter-form" commandName="archivedValuesExporter" action="${action}">
+            <form:form id="exporter-form" commandName="archivedValuesExporter" action="${action}" method="post">
                 <cti:csrfToken/>
                 <form:hidden id="format-type" path="archivedValuesExportFormatType"/>
                 <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}"/>

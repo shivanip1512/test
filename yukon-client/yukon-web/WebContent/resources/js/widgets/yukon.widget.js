@@ -146,7 +146,8 @@ function YukonWidget(shortName, parameters) {
 
         $.ajax({
             url : url,
-            data : oldParams
+            data : oldParams,
+            method : 'POST'
         }).done(function (data) {
             $(document.getElementById(args.containerID)).html(data);
         }).always(function() {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.config.ConfigurationSource;
@@ -147,7 +148,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping("sendConfig")
+    @RequestMapping(value = "sendConfig", method = RequestMethod.POST)
     public ModelAndView sendConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
@@ -158,7 +159,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping("readConfig")
+    @RequestMapping(value = "readConfig", method = RequestMethod.POST)
     public ModelAndView readConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
@@ -168,7 +169,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping("verifyConfig")
+    @RequestMapping(value = "verifyConfig", method = RequestMethod.POST)
     public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");

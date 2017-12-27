@@ -63,7 +63,7 @@ public class GatewayCertificateController {
         return "gateways/cert.update.jsp";
     }
     
-    @RequestMapping("/gateways/cert-update/data")
+    @RequestMapping(value = "/gateways/cert-update/data", method = RequestMethod.GET)
     public @ResponseBody Map<Integer, Object> data() {
         
         Map<Integer, Object> json = new HashMap<>();

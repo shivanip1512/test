@@ -22,6 +22,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
@@ -93,7 +94,7 @@ public class DataExporterScheduleController {
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     
-    @RequestMapping("/data-exporter/scheduleReport")
+    @RequestMapping(value = "/data-exporter/scheduleReport", method = RequestMethod.POST)
     public String scheduleReport(ModelMap model, FlashScope flashScope, HttpServletRequest request, YukonUserContext userContext, Integer jobId,
             @ModelAttribute ArchivedValuesExporter archivedValuesExporter, BindingResult bindingResult) 
             throws ServletRequestBindingException {
@@ -177,7 +178,7 @@ public class DataExporterScheduleController {
     }
     
 
-    @RequestMapping("/data-exporter/doSchedule")
+    @RequestMapping(value = "/data-exporter/doSchedule", method = RequestMethod.POST)
     public String doSchedule(ModelMap model, @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
      int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
             throws ServletRequestBindingException, IllegalArgumentException, ParseException {

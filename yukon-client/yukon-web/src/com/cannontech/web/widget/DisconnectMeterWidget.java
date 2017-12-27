@@ -407,7 +407,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         return "disconnectMeterWidget/render.jsp";
     }
     
-    @RequestMapping("uploadConfig")
+    @RequestMapping(value = "uploadConfig", method = RequestMethod.POST)
     public String uploadConfig(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
 
         SimpleMeter meter = serverDatabaseCache.getAllMeters().get(deviceId);

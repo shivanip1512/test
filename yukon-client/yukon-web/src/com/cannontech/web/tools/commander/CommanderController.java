@@ -437,7 +437,7 @@ public class CommanderController {
     }
     
     /** Get commands for a non PaoType types. */
-    @RequestMapping("/commander/type-commands")
+    @RequestMapping(value = "/commander/type-commands", method = RequestMethod.GET)
     public @ResponseBody List<LiteCommand> commands(LiteYukonUser user, CommandCategory type) {
         
         List<LiteCommand> commands = commands(type.getDbString(), user);

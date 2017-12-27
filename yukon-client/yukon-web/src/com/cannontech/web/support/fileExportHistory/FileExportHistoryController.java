@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,9 +14,8 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
@@ -26,24 +24,20 @@ import com.cannontech.common.fileExportHistory.dao.FileExportHistoryDao;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
 import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.input.EnumPropertyEditor;
 import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/fileExportHistory/*")
 public class FileExportHistoryController {
     
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private FileExportHistoryService fileExportHistoryService;
     @Autowired private FileExportHistoryDao fileExportHistoryDao;
     
     private final static String baseKey = "yukon.web.modules.support.fileExportHistory";
     
-    @RequestMapping("list")
+    @RequestMapping(value = "list", method = RequestMethod.GET)
     public String list(ModelMap model, FlashScope flashScope, String name, String jobName, Integer entryId,
             @RequestParam(defaultValue="ARCHIVED_DATA_EXPORT") FileExportType exportType, Integer jobGroupId) {
 

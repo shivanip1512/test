@@ -92,7 +92,7 @@ public class ScheduledGroupRequestExecutionController {
     private JobManager jobManager;
     private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
 
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope)
             throws ServletException {
         int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);

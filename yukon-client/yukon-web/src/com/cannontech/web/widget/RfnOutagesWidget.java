@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -80,7 +81,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
         return "rfnOutagesWidget/render.jsp";
     }
     
-    @RequestMapping("outageData")
+    @RequestMapping(value = "outageData", method = RequestMethod.POST)
     public String outageData(ModelMap model, int deviceId) throws ServletRequestBindingException {
 
         YukonMeter meter = meterDao.getForId(deviceId);

@@ -76,7 +76,7 @@ public class GroupEditorController {
     private final int maxToShowImmediately = 10;
     private final int maxGetDevicesSize = 1000;
     
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
 
@@ -220,7 +220,7 @@ public class GroupEditorController {
         model.addAttribute("addGroupDataJson", getJsonForGroup(group, userContext));
     }
     
-    @RequestMapping("selectedDeviceGroup")
+    @RequestMapping(value = "selectedDeviceGroup", method = RequestMethod.GET)
     public ModelAndView selectedDeviceGroup(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
         

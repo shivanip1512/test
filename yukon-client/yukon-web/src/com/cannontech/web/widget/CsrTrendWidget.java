@@ -5,7 +5,6 @@ import static com.cannontech.core.service.DateFormattingService.DateOnlyMode.STA
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.chart.model.AttributeGraphType;
@@ -47,7 +47,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.web.widget.support.impl.CachingWidgetParameterGrabber;
 import com.google.common.collect.Sets;
@@ -107,7 +106,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
     }
 
     @Override
-    @RequestMapping("render")
+    @RequestMapping(value = "render", method = RequestMethod.GET)
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("trendWidget/render.jsp");
         

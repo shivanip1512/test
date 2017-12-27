@@ -219,7 +219,7 @@ public class MeterController {
     }
     
     @CheckRole({ YukonRole.METERING })
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(HttpServletRequest request, ModelMap model, LiteYukonUser user, int deviceId) {
         
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);

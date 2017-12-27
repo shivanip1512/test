@@ -18,6 +18,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
@@ -125,7 +126,7 @@ public class ScheduledGroupRequestExecutionResultsController {
         return Collections.singletonMap("jobEnabled", enabled);
     }
 
-    @RequestMapping("detail")
+    @RequestMapping(value = "detail", method = RequestMethod.GET)
     public String detail(int jobId, ModelMap model, YukonUserContext userContext) {
         
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
