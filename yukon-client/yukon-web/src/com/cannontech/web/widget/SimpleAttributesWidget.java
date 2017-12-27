@@ -15,13 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -41,7 +41,6 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private ObjectFormattingService objectFormattingService;
 
     @Autowired
     public SimpleAttributesWidget(@Qualifier("widgetInput.deviceId")
@@ -99,7 +98,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         return mav;
     }
 
-    @RequestMapping("read")
+    @RequestMapping(value = "read", method = RequestMethod.POST)
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // get attributes
