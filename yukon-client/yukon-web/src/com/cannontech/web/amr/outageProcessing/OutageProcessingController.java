@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -59,6 +61,7 @@ public class OutageProcessingController extends MultiActionController {
 	private final ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	
 	// PROCESS
+	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView process(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("outageProcessing/process.jsp");

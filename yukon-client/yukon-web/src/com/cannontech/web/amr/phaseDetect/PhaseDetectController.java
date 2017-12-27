@@ -106,7 +106,7 @@ public class PhaseDetectController {
         return "phaseDetect/home.jsp";
     }
     
-    @RequestMapping("routes")
+    @RequestMapping(value = "routes", method = RequestMethod.GET)
     public String routes(ModelMap model, int substationId) {
         try {
             Substation currentSubstation = substationDao.getById(substationId);

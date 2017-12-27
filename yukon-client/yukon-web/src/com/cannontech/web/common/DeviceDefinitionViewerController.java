@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -49,7 +50,7 @@ public class DeviceDefinitionViewerController {
 
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "RFMESH", "IPC", "Two Way LCR", "Demand Response", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", "Volt/Var", ""};
 	
-	@RequestMapping("/deviceDefinition.xml")
+	@RequestMapping(value = "/deviceDefinition.xml", method = RequestMethod.GET)
     public String view(HttpServletRequest request, ModelMap model, YukonUserContext context) throws Exception {
 
         // init

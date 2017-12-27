@@ -26,6 +26,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -180,13 +181,13 @@ public class DeviceConfigurationCategoryController {
         return "category.quick.view.jsp";
     }
 
-    @RequestMapping("edit")
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
     @CheckRoleProperty(YukonRoleProperty.ADMIN_EDIT_CONFIG)
     public String edit(ModelMap model, int categoryId, YukonUserContext userCOntext) {
         return viewOrEdit(model, categoryId, userCOntext, PageEditMode.EDIT);
     }
 
-    @RequestMapping("view")
+    @RequestMapping(value = "view", method = RequestMethod.GET)
     public String view(ModelMap model, int categoryId, YukonUserContext userContext) {
         return viewOrEdit(model, categoryId, userContext, PageEditMode.VIEW);
     }

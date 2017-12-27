@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.disconnect.service.DisconnectService;
-import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.model.AlertType;
@@ -43,11 +42,10 @@ public class DisconnectController {
     private static final Logger log = YukonLogManager.getLogger(DisconnectController.class);
 
     @Autowired private DisconnectService disconnectService;
-    @Autowired private MeterDao meterDao;
     @Autowired private AlertService alertService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, DeviceCollection deviceCollection) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
         if (disconnectService.supportsArm(deviceCollection)) {

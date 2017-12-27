@@ -25,8 +25,6 @@ import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.model.EventLogColumnTypeEnum;
-import com.cannontech.common.events.service.EventLogFilterFactory;
-import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -34,7 +32,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -46,7 +43,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EventLogColumnTypePropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
-import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -60,15 +56,11 @@ public class EventLogCategoryController {
     
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private EventLogCategoryValidator eventLogCategoryValidator;
-    @Autowired private EventLogFilterFactory eventLogFilterFactory;
-    @Autowired private EventLogTypeValidator eventLogTypeValidator;
     @Autowired private EventLogDao eventLogDao;
-    @Autowired private EventLogService eventLogService;
     @Autowired private EventLogUIService eventLogUIService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private DateFormattingService dateFormattingService;
 
-    @RequestMapping(value="viewByCategory", params="!export")
+    @RequestMapping(value="viewByCategory", params="!export", method = RequestMethod.GET)
     public void viewByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter, 
                                BindingResult bindingResult,
                                FlashScope flashScope,

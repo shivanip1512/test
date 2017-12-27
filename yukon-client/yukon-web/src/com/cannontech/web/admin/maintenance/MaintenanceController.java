@@ -135,7 +135,7 @@ public class MaintenanceController {
         return "maintenance/home.jsp";
     }
 
-    @RequestMapping("edit")
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
     public String edit(ModelMap model, YukonUserContext userContext, int jobId) {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         CronExpressionTagState expressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -91,7 +92,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
         shedTimeOptions.put(60 * 60 * 8, "8 hours");
     }
 
-    @RequestMapping("/loadGroup/list")
+    @RequestMapping(value = "/loadGroup/list", method = RequestMethod.GET)
     public String list(ModelMap model,
             @ModelAttribute("filter") LoadGroupHelper.LoadGroupFilter filter,
             BindingResult bindingResult, YukonUserContext userContext,
@@ -108,7 +109,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
         return "dr/loadGroup/list.jsp";
     }    
 
-    @RequestMapping("/loadGroup/detail")
+    @RequestMapping(value = "/loadGroup/detail", method = RequestMethod.GET)
     public String detail(int loadGroupId, ModelMap model, LiteYukonUser user,
             @ModelAttribute("filter") LoadGroupHelper.LoadGroupFilter filter,
             BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext,

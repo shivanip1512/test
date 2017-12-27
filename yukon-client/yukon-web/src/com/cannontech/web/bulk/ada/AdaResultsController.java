@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.device.ArchiveDataAnalysisCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -26,7 +27,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.ada.model.ArchiveAnalysisResult;
 import com.cannontech.web.bulk.ada.service.AdaResultsHelper;
@@ -58,10 +58,9 @@ public class AdaResultsController {
     @Autowired private ArchiveDataAnalysisDao adaDao;
     @Autowired private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
-    @RequestMapping("view")
+    @RequestMapping(value = "view", method = RequestMethod.GET)
     public String view(ModelMap model, int analysisId, @DefaultItemsPerPage(10) PagingParameters paging,
             @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting, YukonUserContext userContext,
             FlashScope flash) {

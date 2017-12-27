@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -37,7 +38,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     @Autowired private UpdatePointsProcessorFactory updatePointsProcessorFactory;
 
     // HOME
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -167,7 +168,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
         model.addAttribute(field.name(), col);
     }
     
-    @RequestMapping("/controlArea/list")
+    @RequestMapping(value = "/controlArea/list", method = RequestMethod.GET)
     public String list(ModelMap model,
             @ModelAttribute("filter") ControlAreaFilter filter,
             BindingResult bindingResult,
@@ -255,7 +256,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
         return "dr/controlArea/list.jsp";
     }
 
-    @RequestMapping("/controlArea/detail")
+    @RequestMapping(value = "/controlArea/detail", method = RequestMethod.GET)
     public String detail(int controlAreaId, ModelMap model,YukonUserContext userContext,
             @ModelAttribute("filter") ProgramsHelper.ProgramFilter filter,
             BindingResult bindingResult,

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -78,7 +79,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
 
-    @RequestMapping("/program/list")
+    @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("filter") ProgramFilter filter, BindingResult bindingResult,
             @DefaultItemsPerPage(25) PagingParameters paging,
@@ -94,7 +95,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/list.jsp";
     }
 
-    @RequestMapping("/program/detail")
+    @RequestMapping(value = "/program/detail", method = RequestMethod.GET)
     public String detail(int programId, ModelMap model, LiteYukonUser user,
             @ModelAttribute("filter") LoadGroupFilter filter,
             BindingResult bindingResult, YukonUserContext userContext,

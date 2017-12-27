@@ -34,7 +34,7 @@ public class ValidationMonitorEditorController {
     @Autowired private ValidationMonitorService validationMonitorService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    @RequestMapping("edit")
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
     public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
                        Double threshold, Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable){
         if(validationMonitorId == null) {

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
@@ -48,7 +49,7 @@ public class TamperFlagEditorController {
     private Logger log = YukonLogManager.getLogger(TamperFlagEditorController.class);
 
     // EDIT
-    @RequestMapping("edit")
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
     public void edit(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
 
         // pass through due to error

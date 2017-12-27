@@ -103,7 +103,7 @@ public class YukonConfigurationController {
         return result;
     }
     
-    @RequestMapping("/config/view")
+    @RequestMapping(value = "/config/view", method = RequestMethod.GET)
     public String view(ModelMap model, final YukonUserContext context) {
         
         final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);

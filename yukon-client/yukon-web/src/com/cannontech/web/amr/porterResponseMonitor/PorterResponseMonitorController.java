@@ -144,7 +144,7 @@ public class PorterResponseMonitorController {
         return false;
     }
 
-    @RequestMapping("viewPage")
+    @RequestMapping(value = "viewPage", method = RequestMethod.GET)
     public String viewPage(int monitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
 
         setupViewPageModelMap(monitorId, model, userContext, flashScope);
@@ -152,7 +152,7 @@ public class PorterResponseMonitorController {
         return "porterResponseMonitor/view.jsp";
     }
 
-    @RequestMapping("editPage")
+    @RequestMapping(value = "editPage", method = RequestMethod.GET)
     public String editPage(int monitorId, ModelMap model) {
 
         PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);

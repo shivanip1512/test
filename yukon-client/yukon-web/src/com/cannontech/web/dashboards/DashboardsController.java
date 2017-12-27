@@ -303,7 +303,7 @@ public class DashboardsController {
 
     }
     
-    @RequestMapping("{id}/view")
+    @RequestMapping(value = "{id}/view", method = RequestMethod.GET)
     public String viewDashboard(@PathVariable int id, @RequestParam(value="dashboardPageType", required=false) DashboardPageType dashboardPageType, ModelMap model, 
                                 LiteYukonUser yukonUser, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);

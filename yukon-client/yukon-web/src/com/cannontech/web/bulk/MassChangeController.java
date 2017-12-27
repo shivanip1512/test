@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.MassChangeCallbackResult;
@@ -37,7 +38,7 @@ public class MassChangeController {
      * @throws DeviceCollectionCreationException 
      * @throws ServletRequestBindingException 
      */
-    @RequestMapping("massChangeSelect")
+    @RequestMapping(value = "massChangeSelect", method = RequestMethod.GET)
     public String massChangeSelect(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
         
         // pass along deviceCollection

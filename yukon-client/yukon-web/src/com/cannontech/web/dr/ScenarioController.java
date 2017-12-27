@@ -101,7 +101,7 @@ public class ScenarioController extends DemandResponseControllerBase {
         return "dr/scenario/list.jsp";
     }
 
-    @RequestMapping("/scenario/detail")
+    @RequestMapping(value = "/scenario/detail", method = RequestMethod.GET)
     public String detail(int scenarioId, ModelMap model,
             @ModelAttribute("filter") ProgramFilter filter,
             BindingResult bindingResult, YukonUserContext userContext,

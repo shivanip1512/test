@@ -116,7 +116,7 @@ public class BulkController {
     }
     
     // COLLECTION ACTIONS
-    @RequestMapping("collectionActions")
+    @RequestMapping(value = "collectionActions", method = RequestMethod.GET)
     public String collectionActions(ModelMap model, HttpServletRequest request,
             @RequestParam(defaultValue = "false") boolean isFileUpload, FlashScope flashScope)
             throws ServletRequestBindingException {

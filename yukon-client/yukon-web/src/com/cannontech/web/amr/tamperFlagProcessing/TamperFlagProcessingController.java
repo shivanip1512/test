@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
@@ -64,7 +65,7 @@ public class TamperFlagProcessingController {
 	private static final String RESET_FLAGS_COMMAND = "putstatus reset";
 	
 	// EDIT
-	@RequestMapping("process")
+	@RequestMapping(value = "process", method = RequestMethod.GET)
     public void process(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
 		
 		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
