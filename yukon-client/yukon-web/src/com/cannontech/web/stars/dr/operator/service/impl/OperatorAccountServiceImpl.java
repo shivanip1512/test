@@ -3,7 +3,6 @@ package com.cannontech.web.stars.dr.operator.service.impl;
 import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -298,7 +297,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 
         List<ContactNotificationDto> otherNotifications = contactDto.getOtherNotifications();
         for (ContactNotificationDto contactNotificationDto : otherNotifications) {
-            processNotificationForType(existingNotifications, contactNotificationDto.getContactNotificationType(), StringEscapeUtils.escapeXml11(contactNotificationDto.getNotificationValue()), contact, notificationsToSave);
+            processNotificationForType(existingNotifications, contactNotificationDto.getContactNotificationType(), contactNotificationDto.getNotificationValue(), contact, notificationsToSave);
         }
 
         // delete anything left in existing

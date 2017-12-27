@@ -52,7 +52,7 @@
                             <c:forEach var="otherNotification" items="${contact.otherNotifications}">
                                 <tr>
                                     <td class="name"><i:inline key="${otherNotification.contactNotificationType.formatKey}"/>:</td>
-                                    <td>${otherNotification.notificationValue}</td>
+                                    <td>${fn:escapeXml(otherNotification.notificationValue)}</td>
                                 </tr>
                             </c:forEach>
                         </table>
