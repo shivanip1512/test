@@ -407,11 +407,19 @@ public static int differenceMinutes(Date from, Date to) {
 
             for (int i = 0; i < days.length(); i++) {
                 if (days.charAt(i) == checkChar) {
+                    int dayIndex = i;
                     // Check if the time exceeds 1440 (possible only in case of 48 hours slider)
                     if (isNextDay) {
-                        i = i + 1;
+                        dayIndex = i + 1;
                     }
-                    selectedDays.add(String.valueOf(i + 1));
+                    // dayIndex >= days.length() , this condition will only come when Saturday is 
+                    // selected and stopTime will cross Saturday (possible only in case of 48 hours slider)
+                    if (dayIndex >= days.length() & isNextDay) {
+                        // If above condition is true i.e stopTime for Saturday will reach Sunday.
+                        // Set dayIndex = 0 i.e Sunday
+                        dayIndex = 0;
+                    }
+                    selectedDays.add(String.valueOf(dayIndex + 1));
                 }
             }
 
@@ -453,5 +461,16 @@ public static int differenceMinutes(Date from, Date to) {
             throw e;
         }
         return nextValidTimeAfter;
+    }
+
+    /**
+      * @return True , if first date is equal or coming after second date. 
+    */
+    public static boolean isDateEqualOrAfter(DateTime d1, DateTime d2) {
+        if (d1.isAfter(d2) || d1.isEqual(d2)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

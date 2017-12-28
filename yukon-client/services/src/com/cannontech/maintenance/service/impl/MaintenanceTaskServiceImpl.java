@@ -1,5 +1,6 @@
 package com.cannontech.maintenance.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,16 +40,34 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     @Override
     public Instant getEndOfRunWindow() {
         Instant instant = null;
+        DateTime nextMaintenanceRunTime = null;
+        DateTime endOfRunWindow = null;
         try {
-            DateTime businessHourStartTime = maintenanceHelper.getNextStartTime(GlobalSettingType.BUSINESS_DAYS);
-            DateTime extMaintenanceHourStartTime = maintenanceHelper.getNextStopTime(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS);
-            // select next businessHourStartTime or externalMaintenanceHourStartTime, whichever start first
-            boolean isExtMaintenanceFirst = businessHourStartTime.isAfter(extMaintenanceHourStartTime);
-            DateTime endOfRunWindow = isExtMaintenanceFirst ? extMaintenanceHourStartTime : businessHourStartTime;
-            instant = endOfRunWindow.toInstant();
+            nextMaintenanceRunTime = maintenanceHelper.getNextRunTime();
+            Date refDate = new Date(nextMaintenanceRunTime.getMillis());
+            DateTime businessHourStartTime = maintenanceHelper.getNextStartTime(GlobalSettingType.BUSINESS_DAYS, refDate);
+            DateTime extMaintenanceHourStartTime = maintenanceHelper.getNextStartTime(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS, refDate);
+            // Check if only external maintenance hour is selected
+            if (businessHourStartTime == null && extMaintenanceHourStartTime != null) {
+                // If true, start of coming external maintenance hour will be end of run window.
+                endOfRunWindow = extMaintenanceHourStartTime;
+            } else if (businessHourStartTime != null && extMaintenanceHourStartTime == null) {
+                // Check if only business hour is selected
+                // If true, start of coming business hour will be end of run window.
+                endOfRunWindow = businessHourStartTime;
+            } else if (businessHourStartTime == null && extMaintenanceHourStartTime == null) {
+                // TODO This case need to handle under YUK-17664. 
+            } else {
+                // Come here when both are selected.
+                // select next businessHourStartTime or externalMaintenanceHourStartTime, whichever start first
+                boolean isExtMaintenanceFirst = businessHourStartTime.isAfter(extMaintenanceHourStartTime);
+                endOfRunWindow = isExtMaintenanceFirst ? extMaintenanceHourStartTime : businessHourStartTime;
+                instant = endOfRunWindow.toInstant();
+            }
         } catch (Exception e) {
-            log.error("Parsing exception for end time", e);
+            log.error("Unable to find run window for maintenance task", e);
         }
+        log.info("Maintenance task will end at " + instant);
         return instant;
     }
 
@@ -56,9 +75,9 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     public long getSecondsUntilRun() {
         DateTime nextMaintenanceRunTime = null;
         try {
-            nextMaintenanceRunTime = maintenanceHelper.getNextScheduledRunTime();
+            nextMaintenanceRunTime = maintenanceHelper.getNextRunTime();
         } catch (Exception e) {
-            log.error("Parsing exception for next run time", e);
+            log.error("Unable to find run window for maintenance task", e);
         }
         long currentTimeInSec = System.currentTimeMillis() / 1000;
         long nextRunTimeInSec = nextMaintenanceRunTime.getMillis() / 1000;
