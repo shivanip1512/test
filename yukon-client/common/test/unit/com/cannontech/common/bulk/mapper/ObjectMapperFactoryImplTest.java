@@ -24,6 +24,7 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.google.common.collect.ImmutableSet;
 
 import junit.framework.TestCase;
 
@@ -336,6 +337,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public List<LiteYukonPAObject> getLiteYukonPaos(Iterable<Integer> paoIds) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public int getPaoCount(ImmutableSet<PaoType> paoTypes) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
     /**
@@ -487,6 +493,5 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
             throw new UnsupportedOperationException("Method not implemented");
         }
-
     }
 }

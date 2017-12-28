@@ -53,6 +53,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 public final class PaoDaoImpl implements PaoDao {
@@ -626,5 +627,15 @@ public final class PaoDaoImpl implements PaoDao {
         sql.append("ORDER BY Type");
         
         return jdbcTemplate.query(sql, TypeRowMapper.PAO_TYPE);
+    }
+    
+    @Override
+    public int getPaoCount(ImmutableSet<PaoType> paoTypes) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(PAObjectID)");
+        sql.append("FROM YukonPAObject");
+        sql.append("WHERE Type").in(paoTypes);
+        
+        return jdbcTemplate.queryForInt(sql);
     }
 }

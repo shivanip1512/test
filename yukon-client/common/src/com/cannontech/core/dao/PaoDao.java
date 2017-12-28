@@ -13,6 +13,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.google.common.collect.ImmutableSet;
 
 public interface PaoDao {
 
@@ -172,4 +173,9 @@ public interface PaoDao {
      * Returns a list of existing distinct PaoTypes from the database.
      */
     List<PaoType> getExistingPaoTypes();
+    
+    /**
+     * Returns count of Pao's of particular paoTypes
+     */
+    int getPaoCount(ImmutableSet<PaoType> paoTypes);
 }
