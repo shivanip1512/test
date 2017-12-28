@@ -19,6 +19,26 @@ yukon.admin.users.home = (function () {
      */
     _password_types = {},
     
+    _saveForm = function (form, dialogDiv, url) {
+        form.ajaxSubmit({
+            url: yukon.url(url),
+            type: 'post',
+            success: function (result, status, xhr, $form) {
+                dialogDiv.dialog('close');
+                var resultId;
+                if (result.hasOwnProperty('groupId')) {
+                    resultId = result.groupId;
+                } else {
+                    resultId = result.userGroupId; 
+                }
+                window.location.href = yukon.url(url + "/" + resultId);
+            },
+            error: function (xhr, status, error, $form) {
+                form.html(xhr.responseText);
+            }
+        });
+    },
+    
     /** 
      * @type {Object} _targets - A dictionary mapping picker type to object holding the identifier
      * property for the picker type and the url to navigate to when an item from the picker is chosen.
@@ -109,39 +129,26 @@ yukon.admin.users.home = (function () {
              * Submits form via ajax and shows validated form if validation failed
              * or closes popup and go to user page if validation succeded. 
              */
-            $('.js-new-user-group-dialog').on('yukon:admin:user:group:create', function (ev) {
-                
-                $('#new-user-group-form').ajaxSubmit({
-                    url: yukon.url('/admin/user-groups'),
-                    type: 'post',
-                    success: function (result, status, xhr, $form) {
-                        $('.js-new-user-group-dialog').dialog('close');
-                        window.location.href = yukon.url('/admin/user-groups/' + result.userGroupId);
-                    },
-                    error: function (xhr, status, error, $form) {
-                        $('#new-user-group-form').html(xhr.responseText);
-                    }
-                });
+            $('.js-new-user-group-dialog').on('yukon:admin:user:group:create', function () {
+                _saveForm($('#new-user-group-form'), $('.js-new-user-group-dialog'), '/admin/user-groups');
             });
             
+            $(document).on('submit', '#new-user-group-form', function (event) {
+                event.preventDefault();
+                _saveForm($('#new-user-group-form'), $('.js-new-user-group-dialog'), '/admin/user-groups');
+            });
             /** 
              * OK button on the new role group popup clicked.
              * Submits form via ajax and shows validated form if validation failed
              * or closes popup and go to user page if validation succeded. 
              */
-            $('.js-new-role-group-dialog').on('yukon:admin:role:group:create', function (ev) {
-                
-                $('#new-role-group-form').ajaxSubmit({
-                    url: yukon.url('/admin/role-groups'),
-                    type: 'post',
-                    success: function (result, status, xhr, $form) {
-                        $('.js-new-role-group-dialog').dialog('close');
-                        window.location.href = yukon.url('/admin/role-groups/' + result.groupId);
-                    },
-                    error: function (xhr, status, error, $form) {
-                        $('#new-role-group-form').html(xhr.responseText);
-                    }
-                });
+            $('.js-new-role-group-dialog').on('yukon:admin:role:group:create', function () {
+                _saveForm($('#new-role-group-form'), $('.js-new-role-group-dialog'), '/admin/role-groups');
+            });
+            
+            $(document).on('submit', '#new-role-group-form', function (event) {
+                event.preventDefault();
+                _saveForm($('#new-role-group-form'), $('.js-new-role-group-dialog'), '/admin/role-groups');
             });
             
             _initialized = true;
