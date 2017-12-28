@@ -31,6 +31,8 @@ import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jfree.report.JFreeReport;
@@ -52,7 +54,7 @@ import com.cannontech.util.ServletUtil;
 
 public class ReportGenerator extends javax.servlet.http.HttpServlet {
 
-    public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp)
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws javax.servlet.ServletException, java.io.IOException {
         HttpSession session = req.getSession(false);
         if (session == null) {
@@ -260,7 +262,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
         tempFile.delete();
     }
 
-    public void doGet(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse resp)
+    public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws javax.servlet.ServletException, java.io.IOException {
         resp.sendError(javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
