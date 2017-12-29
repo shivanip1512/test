@@ -16,16 +16,20 @@ public enum DatabaseVendor {
     MS2012   ("Microsoft SQL Server", 11), // Denali
     MS2014   ("Microsoft SQL Server", 12),
     MS2016   ("Microsoft SQL Server", 13),
+    MS_UNKNOWN("Microsoft SQL Server"),
     ORACLE9I ("Oracle", 9),
     ORACLE10G("Oracle", 10),
     ORACLE11G("Oracle", 11),
     ORACLE12C("Oracle", 12),
+    ORACLE_UNKNOWN("Oracle"),
     UNKNOWN("");
 
     private static Logger logger = YukonLogManager.getLogger(DatabaseVendor.class);
 
-    private static Set<DatabaseVendor> oracleDatabases = ImmutableSet.of(ORACLE9I, ORACLE10G, ORACLE11G, ORACLE12C);
-    private static Set<DatabaseVendor> msDatabases = ImmutableSet.of(MS2000, MS2005, MS2008, MS2012, MS2014, MS2016);
+    private static Set<DatabaseVendor> oracleDatabases =
+        ImmutableSet.of(ORACLE9I, ORACLE10G, ORACLE11G, ORACLE12C, ORACLE_UNKNOWN);
+    private static Set<DatabaseVendor> msDatabases =
+        ImmutableSet.of(MS2000, MS2005, MS2008, MS2012, MS2014, MS2016, MS_UNKNOWN);
 
     private final String vendorName;
     private final int databaseMajorVersion;
@@ -55,6 +59,12 @@ public enum DatabaseVendor {
                 && databaseVendor.getDatabaseMajorVersion() == majorVersion) {
                 return databaseVendor;
             }
+        }
+
+        if (MS_UNKNOWN.getVendorName().equalsIgnoreCase(vendorName)) {
+            return DatabaseVendor.MS_UNKNOWN;
+        } else if (ORACLE_UNKNOWN.getVendorName().equalsIgnoreCase(vendorName)) {
+            return DatabaseVendor.ORACLE_UNKNOWN;
         }
 
         logger.warn("Your database is not officially supported by Yukon: " + vendorName + " - " + productVersion);
