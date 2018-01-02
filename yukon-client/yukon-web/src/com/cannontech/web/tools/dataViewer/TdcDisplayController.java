@@ -56,7 +56,6 @@ import com.cannontech.common.tdc.model.ColumnType;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.tdc.model.DisplayType;
-import com.cannontech.common.tdc.model.IDisplay;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.util.EnabledStatus;
 import com.cannontech.common.util.JsonUtils;
@@ -275,9 +274,6 @@ public class TdcDisplayController {
         Display display = displayDao.getDisplayById(displayId);
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
-        if (display.getDisplayId() == IDisplay.EVENT_VIEWER_DISPLAY_NUMBER || display.getDisplayId() == IDisplay.SOE_LOG_DISPLAY_NUMBER || display.getDisplayId() == IDisplay.TAG_LOG_DISPLAY_NUMBER) {
-            model.addAttribute("displayDatePicker", true);
-        }
         DisplayBackingBean backingBean = new DisplayBackingBean();
 
         backingBean.setDate(dateTime);

@@ -7,13 +7,9 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
-<c:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/page">
-</c:url>
+<cti:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/page"/>
 <form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">
-    <cti:csrfToken/>
-    <c:if test="${displayDatePicker}">
-        <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}" cssClass="js-date"/></span>
-    </c:if>
+    <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}" cssClass="js-date"/></span>
 </form:form>
 <c:url var="url" value="/tools/data-viewer/${display.displayId}/page">
     <cti:param name="date" value="${backingBean.date}"/>
