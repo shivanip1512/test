@@ -246,7 +246,7 @@ public class SupportController {
         return "supportBundle/viewProgress.jsp";
     }
 
-    @RequestMapping(value="bundleInProgress", method = RequestMethod.GET)
+    @RequestMapping(value = "bundleInProgress", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> bundleInProgress(YukonUserContext userContext) {
         rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
         Map<String, Object> json = new HashMap<>();

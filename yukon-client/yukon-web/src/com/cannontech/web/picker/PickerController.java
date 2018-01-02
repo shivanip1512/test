@@ -15,6 +15,7 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -60,7 +61,7 @@ public class PickerController {
         return Collections.singletonMap("hits", searchResult);
     }
 
-    @RequestMapping("search")
+    @RequestMapping(value = "search", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,
             Integer count, String extraArgs, YukonUserContext context) {
