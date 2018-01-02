@@ -83,7 +83,7 @@ public class GroupMeterReadController {
 		return mav;
 	}
 	
-	@RequestMapping(value="homeCollection", method=RequestMethod.GET)
+    @RequestMapping(value = "homeCollection", method = RequestMethod.GET)
 	public ModelAndView homeCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
