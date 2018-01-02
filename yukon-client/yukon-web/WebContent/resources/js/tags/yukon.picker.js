@@ -582,6 +582,7 @@ yukon.protoPicker = function (okText,
             if ('undefined' !== typeof data) {
                 errString += ": '" + data + "'";
             }
+            console.log(errString);
             return;
         }
         this.ssInput = document.getElementById('picker-' + this.pickerId + '-ss');
