@@ -28,9 +28,11 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -54,8 +56,7 @@ import com.cannontech.util.ServletUtil;
 
 public class ReportGenerator extends javax.servlet.http.HttpServlet {
 
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) 
-            throws javax.servlet.ServletException, java.io.IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null) {
             resp.sendRedirect(req.getContextPath() + "/login.jsp");
@@ -262,8 +263,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet {
         tempFile.delete();
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws javax.servlet.ServletException, java.io.IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.sendError(javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
 }
