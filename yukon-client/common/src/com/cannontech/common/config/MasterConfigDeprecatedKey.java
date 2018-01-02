@@ -27,6 +27,9 @@ public enum MasterConfigDeprecatedKey {
     YUKON_SMTP_SERVER, // used when dispatch sent notifications and it no longer does
     CALC_LOGIC_RUN_HISTORICAL, //see YUK-14245
     NM_COMPATIBILITY, //See YUK-16074
+    CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO,  // see yuk-17611
+    CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO,  // see yuk-17611
+    CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO,  // see yuk-17611
 
     /* The following YUKON_DNP_* keys were intended to be deprecated but have been commented out of this enum.
      * This was done to prevent the 5.5.2 update script from throwing an exception when
