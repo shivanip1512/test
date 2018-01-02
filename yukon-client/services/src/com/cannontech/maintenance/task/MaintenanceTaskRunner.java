@@ -16,17 +16,23 @@ public class MaintenanceTaskRunner {
     private Set<MaintenanceTaskType> completedMaintenanceTask = new HashSet<>();
 
     // This method is run at the start of a run window
-    public synchronized void run(List<MaintenanceTask> tasks, Instant endOfRunWindow) {
+    public synchronized boolean run(List<MaintenanceTask> tasks, Instant endOfRunWindow) {
         Duration timeSliceLength = getTimeSliceLength(tasks.size(), endOfRunWindow);
         while (Instant.now().isBefore(endOfRunWindow) && completedMaintenanceTask.size() != tasks.size()) {
             runTasks(tasks, timeSliceLength);
-            timeSliceLength = getTimeSliceLength(tasks.size(), endOfRunWindow);
+            int remainingTasks = tasks.size() - completedMaintenanceTask.size();
+            if (remainingTasks == 0) {
+                return true;
+            } else {
+                timeSliceLength = getTimeSliceLength(remainingTasks, endOfRunWindow);
+            }
             // minimumExecutionTime can be different for other tasks
             if (timeSliceLength.getStandardMinutes() < minimumExecutionTime) {
                 break;
             }
         }
         completedMaintenanceTask.clear();
+        return false;
     }
 
     private void runTasks(List<MaintenanceTask> tasks, Duration timeSliceLength) {

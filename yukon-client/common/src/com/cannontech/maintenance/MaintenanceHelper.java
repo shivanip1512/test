@@ -76,7 +76,6 @@ public class MaintenanceHelper {
         // Check if no business and external maintenance hour selected
         if ((businessHourStart == null) && (extMaintenanceHourStart == null)) {
             // Best time for maintenance.Return current time
-            // TODO This case might be changed while handling YUK-17664
             return currentTime;
         } else if (businessHourStart == null) {// Check if no business hour selected i.e only external maintenance hour selected
             // Check if external maintenance is running

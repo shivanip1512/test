@@ -30,6 +30,11 @@ public class MaintenanceScheduler {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     private ScheduledFuture<?> future;
+    // Four hours
+    private static final long fourHourWindow = 14400;
+    // One hour
+    private static final long minimumRunWindow = 3600;
+    private boolean allTasksCompleted = false;
 
     // Update the schedule on startup and on maintenance Global Setting change
     @PostConstruct
@@ -66,16 +71,37 @@ public class MaintenanceScheduler {
         if (future != null) {
             future.cancel(true);
         }
-        long secondsUntilRun = maintenanceService.getSecondsUntilRun();
+        long secondsUntilRun = getSecondsUntilNextRun();
+
         // Schedule the runner
         future = scheduledExecutorService.schedule(() -> {
             Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
 
             List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
-            taskRunner.run(tasks, endOfRunWindow);
+            allTasksCompleted = taskRunner.run(tasks, endOfRunWindow);
             // At the end of the run window, schedule this to run again at the start of the next window
             reschedule();
         }, secondsUntilRun, TimeUnit.SECONDS);
+    }
+    
+    private long getSecondsUntilNextRun() {
+        long secondsUntilRun = 0;
+
+        // Different rules of rescheduling when all tasks are completed.
+        if (allTasksCompleted) {
+            Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
+            if ((endOfRunWindow.getMillis() - Instant.now().getMillis() - (fourHourWindow *1000)) >= (minimumRunWindow)) {
+                secondsUntilRun = maintenanceService.getSecondsUntilRun();
+                if (secondsUntilRun == 0 || secondsUntilRun > fourHourWindow) {
+                    secondsUntilRun = fourHourWindow;
+                }
+            } else {
+                secondsUntilRun = maintenanceService.getEndOfRunWindow().getMillis();
+            }
+        } else {
+            secondsUntilRun = maintenanceService.getSecondsUntilRun();
+        }
+        return secondsUntilRun;
     }
     
     // Stop schedules Task

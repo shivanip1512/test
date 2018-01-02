@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,7 +57,7 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
                 // If true, start of coming business hour will be end of run window.
                 endOfRunWindow = businessHourStartTime;
             } else if (businessHourStartTime == null && extMaintenanceHourStartTime == null) {
-                // TODO This case need to handle under YUK-17664. 
+                endOfRunWindow = DateTime.now().plus(Duration.standardDays(1));
             } else {
                 // Come here when both are selected.
                 // select next businessHourStartTime or externalMaintenanceHourStartTime, whichever start first
@@ -66,6 +67,7 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
             }
         } catch (Exception e) {
             log.error("Unable to find run window for maintenance task", e);
+            return Instant.now();
         }
         log.info("Maintenance task will end at " + instant);
         return instant;
@@ -78,6 +80,8 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
             nextMaintenanceRunTime = maintenanceHelper.getNextRunTime();
         } catch (Exception e) {
             log.error("Unable to find run window for maintenance task", e);
+            // If now time window found, sleep for 24hrs and then recheck.
+            nextMaintenanceRunTime = DateTime.now().plus(Duration.standardDays(1));
         }
         long currentTimeInSec = System.currentTimeMillis() / 1000;
         long nextRunTimeInSec = nextMaintenanceRunTime.getMillis() / 1000;
