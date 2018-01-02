@@ -31,6 +31,7 @@
 #include "smartgearbase.h"
 #include "lmgroupdigisep.h"
 #include "LMScheduledMessageHolder.h"
+#include "random_generator.h"
 
 using std::string;
 using std::endl;
@@ -5626,7 +5627,8 @@ void CtiLMProgramDirect::scheduleMessageForResend(CtiTime currentTime, const Cti
             // each message is 1 minute after the previous stop, including the one sent that called this function
             currentTime.addMinutes(1);
             auto clonedMessage = std::unique_ptr<CtiRequestMsg>((CtiRequestMsg*)message.replicateMessage());
-            clonedMessage->setOptionsField(rand());
+            static Cti::RandomGenerator<long> optionsFieldIdGenerator;
+            clonedMessage->setOptionsField(optionsFieldIdGenerator());
             
             log += "\r\n    " + CtiNumStr(i+1) + ": Time " + currentTime.asString() + " Unique id " + CtiNumStr(clonedMessage->OptionsField()) + " Groupid " + CtiNumStr(message.DeviceId());
 
