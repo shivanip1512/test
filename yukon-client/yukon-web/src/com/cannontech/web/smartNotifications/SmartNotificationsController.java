@@ -151,8 +151,12 @@ public class SmartNotificationsController {
             allDetail = eventDao.getDeviceDataMonitorEventData(userContext.getJodaTimeZone(), PagingParameters.EVERYTHING, sortBy.value, sorting.getDirection(), range, id);
             String monitorName = ddmHelper.retrieveMonitorById(model, id);
             String eventTypeString = accessor.getMessage(eventType.getFormatKey());
-            String description = eventTypeString + " (" + monitorName + ")";
-            model.addAttribute("description", description);
+            final StringBuilder sb = new StringBuilder();
+            sb.append(eventTypeString);
+            sb.append(" (");
+            sb.append(monitorName);
+            sb.append(")");
+            model.addAttribute("description", sb.toString());
         } else if (eventType.equals(SmartNotificationEventType.INFRASTRUCTURE_WARNING)) {
             InfrastructureWarningDeviceCategory[] categories = InfrastructureWarningDeviceCategory.values();   
             if (filter.getCategories().isEmpty()) {
