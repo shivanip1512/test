@@ -1587,6 +1587,22 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
             pointValues.erase(pointId);
         }//At this point we have removed the var and watt points. Only volt points remain.
 
+        // remove the feeder watt and var point iff our strategy is BusOptimizedFeeder
+        if ( strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder )
+        {
+            for ( CtiCCFeederPtr feeder : subbus->getCCFeeders() )
+            {
+                // watt point
+                pointValues.erase( feeder->getCurrentWattLoadPointId() );
+
+                // var point(s)
+                for ( long varPointID : feeder->getCurrentVarLoadPoints() )
+                {
+                    pointValues.erase( varPointID );
+                }
+            }
+        }
+
         state->_estimated[currentBank->getPaoId()].capbank = currentBank;
         // record preoperation voltage values for the feeder our capbank is on
         for each (PointValueMap::value_type pointValuePair in pointValues)
