@@ -144,7 +144,7 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
                                         DBChangeMsg.CHANGE_CONFIG_DB,
                                         DBChangeMsg.CAT_DEVICE_CONFIG,
                                         CONFIG_OBJECT_TYPE,
-                                        DbChangeType.DELETE);
+                                        DbChangeType.UPDATE);
     }
     
     @Override
