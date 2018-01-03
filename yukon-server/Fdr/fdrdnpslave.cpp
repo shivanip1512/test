@@ -288,6 +288,10 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
             { "an unsupported DNP request",
                 [&] { return processUnsupportedRequest(connection); }}},
 
+        { Cmd::DelayMeasurement,
+            { "an unsupported DNP delay measurement request",
+                [&] { return processUnsupportedRequest(connection); }}},
+
         { Cmd::LinkStatus,
             { "a DNP data link status request",
                 [&] { return processDataLinkConfirmationRequest(connection); }}},

@@ -346,12 +346,25 @@ int TimeDelay::restore(const unsigned char *buf, int len)
 
 int TimeDelay::serialize(unsigned char *buf) const
 {
-    return 0;
+    int pos = 0;
+
+    switch( getVariation() )
+    {
+        case TD_Coarse:
+        case TD_Fine:
+        {
+            buf[pos++] = _delay;
+            buf[pos++] = _delay >> 8;
+            break;
+        }
+    }
+
+    return pos;
 }
 
 int TimeDelay::getSerializedLen(void) const
 {
-    return 0;
+    return 2;
 }
 
 }

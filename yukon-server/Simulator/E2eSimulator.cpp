@@ -387,28 +387,36 @@ std::vector<unsigned char> E2eSimulator::buildDnp3Response(const std::vector<uns
         }
 
         prot.setScanCommand(std::move(points));
+    }
+    else if( requestId.first == Protocols::DnpSlaveProtocol::Commands::DelayMeasurement )
+    {
+        prot.setDelayMeasurementCommand();
+    }
+    else
+    {
+        return response;
+    }
 
-        CtiXfer xfer;
+    CtiXfer xfer;
 
-        while( ! prot.isTransactionComplete() )
+    while( ! prot.isTransactionComplete() )
+    {
+        if( prot.generate(xfer) == ClientErrors::None )
         {
-            if( prot.generate(xfer) == ClientErrors::None )
+            if( xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0 )
             {
-                if( xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0 )
-                {
-                    auto packet = arrayToRange(xfer.getOutBuffer(), xfer.getOutCount());
+                auto packet = arrayToRange(xfer.getOutBuffer(), xfer.getOutCount());
 
-                    CTILOG_INFO(dout, "Generated DNP3 packet:" << packet);
+                CTILOG_INFO(dout, "Generated DNP3 packet:" << packet);
 
-                    response.insert(response.end(), packet.begin(), packet.end());
-                }
-
-                prot.decode(xfer);
+                response.insert(response.end(), packet.begin(), packet.end());
             }
-            else 
-            {
-                CTILOG_WARN(dout, "Was not able to generate scan response.");
-            }
+
+            prot.decode(xfer);
+        }
+        else 
+        {
+            CTILOG_WARN(dout, "Was not able to generate scan response.");
         }
     }
 

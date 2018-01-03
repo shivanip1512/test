@@ -31,6 +31,7 @@ public:
         SetDigitalOut_Select,
         SetDigitalOut_Operate,
         SetDigitalOut_Direct,
+        DelayMeasurement,
         UnsolicitedEnable,
         UnsolicitedDisable,
         LinkStatus,
@@ -47,6 +48,7 @@ public:
     void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
     void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
+    void setDelayMeasurementCommand();
     void setUnsupportedCommand();
     void setUnsolicitedDisableCommand();
     void setUnsolicitedEnableCommand();

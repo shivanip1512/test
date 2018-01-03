@@ -121,6 +121,10 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
         {
             return { Commands::UnsolicitedDisable, nullptr };
         }
+        case ApplicationLayer::RequestDelayMeasurement:
+        {
+            return { Commands::DelayMeasurement, nullptr };
+        }
         case ApplicationLayer::RequestEnableUnsolicited:
         {
             return { Commands::UnsolicitedEnable, nullptr };
@@ -368,6 +372,20 @@ void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_req
                     analog.offset));
 
     //  finalize the request
+    _application.initForSlaveOutput();
+}
+
+
+void DnpSlaveProtocol::setDelayMeasurementCommand()
+{
+    _command = Commands::DelayMeasurement;
+
+    _application.setCommand(
+            ApplicationLayer::ResponseResponse,
+            ObjectBlock::makeRangedBlock(
+                std::make_unique<TimeDelay>(TimeDelay::TD_Fine),  //  default to 0 milliseconds processing
+                0));
+
     _application.initForSlaveOutput();
 }
 
