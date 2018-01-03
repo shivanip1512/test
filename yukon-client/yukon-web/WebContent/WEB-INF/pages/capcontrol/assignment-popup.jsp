@@ -42,8 +42,8 @@ $(function() {
 
 });
 </script>
-<cti:msgScope paths="modules.capcontrol">
 
+<cti:msgScope paths="modules.capcontrol">
     <div class="column-12-12 clearfix select-box">
 
         <c:if test="${not empty createUrl}">
@@ -55,38 +55,42 @@ $(function() {
             </div>
         </c:if>
 
-        <div id="unassigned" class="column one select-box-available" style="min-height:150px;">
+        <div class="column one">
             <h3><i:inline key="yukon.common.available"/></h3>
-            <c:forEach var="item" items="${unassigned}">
-                <div class="select-box-item clearfix cm"
-                     data-id="${item.id}">${fn:escapeXml(item.name)}
-                    <cti:button icon="icon-plus-green" renderMode="buttonImage" classes="select-box-item-add js-add"/>
-                    <div class="select-box-item-movers" style="display:none;">
-                        <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
-                                    classes="left select-box-item-up js-move-up"/>
-                        <cti:button icon="icon-bullet-go-down" renderMode="buttonImage"
-                                    classes="right select-box-item-down js-move-down"/>
+            <div id="unassigned" class="select-box-available" style="min-height:150px;">
+                <c:forEach var="item" items="${unassigned}">
+                    <div class="select-box-item clearfix cm"
+                         data-id="${item.id}">${fn:escapeXml(item.name)}
+                        <cti:button icon="icon-plus-green" renderMode="buttonImage" classes="select-box-item-add js-add"/>
+                        <div class="select-box-item-movers" style="display:none;">
+                            <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
+                                        classes="left select-box-item-up js-move-up"/>
+                            <cti:button icon="icon-bullet-go-down" renderMode="buttonImage"
+                                        classes="right select-box-item-down js-move-down"/>
+                        </div>
                     </div>
-                </div>
-            </c:forEach>
+                </c:forEach>
+            </div>
         </div>
-        <div id="assigned" class="column two nogutter select-box-selected js-with-movables" data-item-selector=".select-box-item" style="min-height:150px;">
+        
+        <div class="column two nogutter">
             <h3><i:inline key="yukon.common.assigned"/></h3>
-            <c:forEach var="item" items="${assigned}" varStatus="status">
-                <div class="select-box-item cm"
-                     data-id="${item.id}">${fn:escapeXml(item.name)}
-                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
-                    <div class="select-box-item-movers">
-                        <c:set var="disabled" value="${status.first}"/>
-                        <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
-                                    classes="left select-box-item-up js-move-up" disabled="${disabled}"/>
-                        <c:set var="disabled" value="${status.last}"/>
-                        <cti:button icon="icon-bullet-go-down" renderMode="buttonImage"
-                                    classes="right select-box-item-down js-move-down" disabled="${disabled}"/>
+            <div id="assigned" class="select-box-selected js-with-movables" data-item-selector=".select-box-item" style="min-height:150px;">
+                <c:forEach var="item" items="${assigned}" varStatus="status">
+                    <div class="select-box-item cm" data-id="${item.id}">${fn:escapeXml(item.name)}
+                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
+                        <div class="select-box-item-movers">
+                            <c:set var="disabled" value="${status.first}"/>
+                            <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
+                                        classes="left select-box-item-up js-move-up" disabled="${disabled}"/>
+                            <c:set var="disabled" value="${status.last}"/>
+                            <cti:button icon="icon-bullet-go-down" renderMode="buttonImage"
+                                        classes="right select-box-item-down js-move-down" disabled="${disabled}"/>
+                        </div>
                     </div>
-                </div>
-            </c:forEach>
+                </c:forEach>
+            </div>
         </div>
+        
     </div>
-
 </cti:msgScope>
