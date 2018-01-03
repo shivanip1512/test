@@ -289,9 +289,22 @@ int TimeCTO::getSerializedLen(void) const
 
 TimeDelay::TimeDelay(int variation) :
     Object(Group, variation),
-    _delay(0.0)
+    _delay { 0UL }
 {
+}
 
+
+TimeDelay::TimeDelay(std::chrono::milliseconds fineDelay) :
+    Object(Group, TD_Fine),
+    _delay { static_cast<unsigned long>(fineDelay.count()) }
+{
+}
+
+
+TimeDelay::TimeDelay(std::chrono::seconds coarseDelay) :
+    Object(Group, TD_Coarse),
+    _delay { static_cast<unsigned long>(coarseDelay.count()) }
+{
 }
 
 

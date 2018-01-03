@@ -48,7 +48,7 @@ public:
     void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
     void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
-    void setDelayMeasurementCommand();
+    void setDelayMeasurementCommand( const std::chrono::milliseconds delay );
     void setUnsupportedCommand();
     void setUnsolicitedDisableCommand();
     void setUnsolicitedEnableCommand();

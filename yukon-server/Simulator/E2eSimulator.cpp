@@ -34,6 +34,7 @@ extern "C" {
 
 using namespace Cti::Messaging::ActiveMQ;
 using namespace Cti::Messaging::Rfn;
+using namespace std::chrono_literals;
 
 using Cti::Messaging::Serialization::MessageFactory;
 using Cti::Messaging::Serialization::MessagePtr;
@@ -390,7 +391,7 @@ std::vector<unsigned char> E2eSimulator::buildDnp3Response(const std::vector<uns
     }
     else if( requestId.first == Protocols::DnpSlaveProtocol::Commands::DelayMeasurement )
     {
-        prot.setDelayMeasurementCommand();
+        prot.setDelayMeasurementCommand( 0ms );
     }
     else
     {

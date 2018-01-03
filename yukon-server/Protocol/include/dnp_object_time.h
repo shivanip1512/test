@@ -74,6 +74,8 @@ class IM_EX_PROT TimeDelay : public Object
 
 public:
     TimeDelay(int variation);
+    TimeDelay(std::chrono::milliseconds fineDelay);
+    TimeDelay(std::chrono::seconds coarseDelay);
 
     enum Variation
     {

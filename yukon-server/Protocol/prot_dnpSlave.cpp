@@ -17,6 +17,7 @@ namespace Cti {
 namespace Protocols {
 
 using namespace Cti::Protocols::DNP;
+using namespace std::chrono_literals;
 
 YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 {
@@ -376,15 +377,21 @@ void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_req
 }
 
 
-void DnpSlaveProtocol::setDelayMeasurementCommand()
+void DnpSlaveProtocol::setDelayMeasurementCommand( const std::chrono::milliseconds delay )
 {
+    using std::chrono::seconds;
+    using std::chrono::duration_cast;
+
     _command = Commands::DelayMeasurement;
 
+    //  If delay is less than 65 seconds, use Fine with millis, otherwise use Coarse with seconds
+    auto td = (delay < 65s)
+        ? std::make_unique<TimeDelay>(delay)
+        : std::make_unique<TimeDelay>(duration_cast<seconds>(delay));
+    
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
-            ObjectBlock::makeRangedBlock(
-                std::make_unique<TimeDelay>(TimeDelay::TD_Fine),  //  default to 0 milliseconds processing
-                0));
+            ObjectBlock::makeRangedBlock(std::move(td), 0));
 
     _application.initForSlaveOutput();
 }
