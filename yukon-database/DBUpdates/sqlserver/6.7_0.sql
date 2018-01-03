@@ -592,7 +592,10 @@ BEGIN
         WHERE p.PointType = 'Analog' 
         AND p.POINTOFFSET = 100
         AND ypo.Type LIKE 'RFN%')
-    AND VALUE > 2147483647; /* This is the max value of a signed int */
+    AND (
+        VALUE > 2147483647 /* This is the max value of a signed int */
+        OR VALUE < 0
+        OR TIMESTAMP < '1970-01-01' );
 
     UPDATE RAWPOINTHISTORY 
     SET TIMESTAMP = DATEADD(SECOND, -VALUE, TIMESTAMP)
