@@ -709,4 +709,31 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_prot_dnp_object_time_delay)
+{
+    using Cti::Protocols::DNP::TimeDelay;
+
+    const unsigned char buf[] =
+    { 77, 99 };
+
+    {
+        TimeDelay td(TimeDelay::TD_Coarse);
+
+        BOOST_CHECK_EQUAL(td.restore(buf, 2), 2);
+
+        BOOST_CHECK(td.isValid());
+        BOOST_CHECK_EQUAL(td.getSeconds(),      25421);
+        BOOST_CHECK_EQUAL(td.getMilliseconds(), 0);
+    }
+    {
+        TimeDelay td(TimeDelay::TD_Fine);
+
+        BOOST_CHECK_EQUAL(td.restore(buf, 2), 2);
+
+        BOOST_CHECK(td.isValid());
+        BOOST_CHECK_CLOSE(td.getSeconds(), 25.421, 0.00001);
+        BOOST_CHECK_EQUAL(td.getMilliseconds(), 421);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

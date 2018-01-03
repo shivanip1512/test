@@ -366,6 +366,136 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
             "\n");
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_dnp_ping)
+{
+    test_DnpDevice dev;
+
+    dev._name = "Test DNP device";
+    dev._dnp.setAddresses(1234, 1);
+    dev._dnp.setName("Test DNP device");
+
+    //  set up the config
+    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    config.insertValue(Cti::Config::DNPStrings::internalRetries, "3");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset, "LOCAL");
+    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs, "true");
+    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest, "false");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
+    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "false");
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("ping");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK(vgList.empty());
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    //  Outbound
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+            "05 64 08 C4 D2 04 01 00 A6 7C "
+            "C0 C1 17 8C 0C");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+    }
+
+    //  Inbounds
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                "05 64 10 44 01 00 D2 04 04 38");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+        BOOST_CHECK_EQUAL(13, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                "DA CF 81 00 00 34 02 07 01 00 00 75 AA");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dev.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+    }
+
+    INMESS inmess;
+
+    dev.sendCommResult(inmess);
+
+    dev.ResultDecode(inmess, CtiTime(), vgList, retList, outList);
+
+    BOOST_CHECK(vgList.empty());
+    BOOST_CHECK(outList.empty());
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+    BOOST_REQUIRE(retMsg);
+
+    BOOST_CHECK_EQUAL(retMsg->Status(), ClientErrors::None);
+
+    BOOST_CHECK_EQUAL(
+        retMsg->ResultString(),
+        "Test DNP device / Loopback successful"
+        "\nTest DNP device / "
+        "\n");
+}
+
 BOOST_AUTO_TEST_CASE(test_integrity_scan)
 {
     test_DnpDevice dev;

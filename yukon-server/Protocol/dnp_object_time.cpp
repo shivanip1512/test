@@ -337,6 +337,8 @@ int TimeDelay::restore(const unsigned char *buf, int len)
     {
         _delay  = buf[pos++];
         _delay |= buf[pos++] << 8;
+
+        _valid = true;
     }
 
     return pos;

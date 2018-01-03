@@ -68,7 +68,7 @@ public:
 };
 
 
-class TimeDelay : public Object
+class IM_EX_PROT TimeDelay : public Object
 {
     unsigned long _delay;
 

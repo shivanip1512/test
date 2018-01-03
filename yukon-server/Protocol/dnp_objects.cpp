@@ -688,7 +688,8 @@ const std::map<int, std::function<unique_ptr<Object>(unsigned char)>> GroupLooku
         { CounterFrozen::Group,          &make_object<CounterFrozen>           },
         { CounterFrozenEvent::Group,     &make_object<CounterFrozenEvent>      },
         { Time::Group,                   &make_object<Time>                    },
-        { TimeCTO::Group,                &make_object<TimeCTO>                 }};
+        { TimeCTO::Group,                &make_object<TimeCTO>                 },
+        { TimeDelay::Group,              &make_object<TimeDelay>               }};
 
 ObjectBlock::RestoredObject ObjectBlock::restoreObject( const unsigned char *buf, int len )
 {
