@@ -204,6 +204,7 @@
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td><cti:icon icon="icon-loading-bars"/></td>
+                        <td></td>
                     </c:otherwise>
                 </c:choose>
             </tr>
