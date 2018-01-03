@@ -49,6 +49,7 @@ public class MaintenanceScheduler {
                     globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId().intValue()
                 || primaryKeyId ==
                     globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue())) {
+                allTasksCompleted = false;
                 reschedule();
             }
         });
@@ -84,6 +85,14 @@ public class MaintenanceScheduler {
         }, secondsUntilRun, TimeUnit.SECONDS);
     }
     
+    /**
+     * This method gets the next run time. There are 2 cases here.
+     * Case 1: When all task have not completed. This will return next run based on the business hour and maintenance hour settings
+     * Case 2: When all the task have completed before completion time, then rule is:
+     *  If the difference in the completion time (endOfRunWindow) and four hour window is more than minimum run window then next run time will
+     *  be four hours from now otherwise it will be the what ever the next run time is. 
+     *  case 2 is required so that we do not keep on running the scheduler when there is nothing much to process.
+     */
     private long getSecondsUntilNextRun() {
         long secondsUntilRun = 0;
 
@@ -96,7 +105,7 @@ public class MaintenanceScheduler {
                     secondsUntilRun = fourHourWindow;
                 }
             } else {
-                secondsUntilRun = maintenanceService.getEndOfRunWindow().getMillis();
+                secondsUntilRun = (endOfRunWindow.getMillis() - Instant.now().getMillis())/1000;
             }
         } else {
             secondsUntilRun = maintenanceService.getSecondsUntilRun();
