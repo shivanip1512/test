@@ -953,7 +953,7 @@
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
         <point name="Received kVAh">
@@ -961,8 +961,8 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
         <point name="Power Factor">
