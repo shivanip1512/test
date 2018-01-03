@@ -213,8 +213,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             }
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
-                                                       PaoCategory.PORT, PaoClass.PORT);
+            commChannel = paoDao.findPort(cbcImportData.getCommChannel());
             if (commChannel != null) {
                 cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
             } else {
@@ -317,8 +316,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)template;
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
-                                                       PaoCategory.PORT, PaoClass.PORT);
+            YukonPao commChannel = paoDao.findPort(cbcImportData.getCommChannel());
             if (commChannel != null) {
                 cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
             } else {
@@ -453,8 +451,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             }
             
             if (cbcImportData.getCommChannel() != null) {
-                YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
-                                                           PaoCategory.PORT, PaoClass.PORT);
+                YukonPao commChannel = paoDao.findPort(cbcImportData.getCommChannel());
                 if (commChannel != null) {
                     cbc.setPortId(commChannel.getPaoIdentifier().getPaoId());
                 } else {

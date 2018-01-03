@@ -178,4 +178,14 @@ public interface PaoDao {
      * Returns count of Pao's of particular paoTypes
      */
     int getPaoCount(ImmutableSet<PaoType> paoTypes);
+
+    /**
+     * Checks for existence of a port with the given name .
+     * 
+     * @param paoName The name of the Pao.
+     * @return A PaoIdentifier representing the PaoId and
+     * PaoType of the unique Pao if it exists or <code>null</code> if the object
+     * doesn't exist.
+     */
+    YukonPao findPort(String paoName);
 }

@@ -638,4 +638,15 @@ public final class PaoDaoImpl implements PaoDao {
         
         return jdbcTemplate.queryForInt(sql);
     }
+
+    @Override
+    public YukonPao findPort(String paoName) {
+        YukonPao pao = findYukonPao(paoName, PaoCategory.PORT, PaoClass.PORT);
+        if (pao == null) {
+            return findYukonPao(paoName, PaoType.RFN_1200);
+        } else {
+            return pao;
+        }
+    };
+
 }
