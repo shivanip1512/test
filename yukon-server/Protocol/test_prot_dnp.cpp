@@ -1062,6 +1062,285 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_empty_time_block)
+{
+    Cti::Test::set_to_central_timezone();
+
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(1234, 1);
+    dnp.setName("Test DNP device");
+    dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
+
+    dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false, false );
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str request(
+                "05 64 17 c4 d2 04 01 00 85 40 "
+                "c0 c1 01 32 01 06 3c 02 06 3c "
+                "03 06 3c 04 06 3c fe e0 01 06 "
+                "75 e1");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+        const std::vector<int> expected(request.begin(), request.end());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "05 64 2b 44 01 00 d2 04 cb b8");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(44, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "c0 ca 81 0f 00 32 01 07 00 1e 01 18 01 00 03 00 e5 aa "
+                    "3f 01 00 00 01 02 18 01 00 01 00 14 01 18 01 00 83 35 "
+                    "00 00 13 00 00 00 99 52");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(), 
+                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(ClientErrors::Abnormal, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+        pointlist_t point_list;
+
+        dnp.getInboundPoints(point_list);
+
+        BOOST_REQUIRE_EQUAL(4, point_list.size());
+
+        {
+            CtiPointDataMsg *pd = point_list[0];
+            BOOST_CHECK_EQUAL(pd->getValue(), 319);
+            BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 4);
+            BOOST_CHECK_EQUAL(pd->getTags(), 0);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[1];
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 2);
+            BOOST_CHECK_EQUAL(pd->getTags(), 0);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[2];
+            BOOST_CHECK_EQUAL(pd->getValue(), 19);
+            BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 1);
+            BOOST_CHECK_EQUAL(pd->getTags(), 0);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getTags(), 0);
+        }
+
+        auto string_list = dnp.getInboundStrings();
+
+        BOOST_CHECK_EQUAL(3, string_list.size());
+
+        BOOST_CHECK_EQUAL(string_list[0],
+            "Device returned an empty time object block");
+        BOOST_CHECK_EQUAL(string_list[1],
+            "Internal indications:\n"
+            "Broadcast message received\n"
+            "Class 1 data available\n"
+            "Class 2 data available\n"
+            "Class 3 data available\n");
+        BOOST_CHECK_EQUAL(string_list[2],
+            "Point data report:\n"
+            "AI:     1; AO:     0; DI:     1; DO:     0; Counters:     1; \n"
+            "First/Last 5 points of each type returned:\n"
+            "Analog inputs:\n"
+            "[4:319]\n"
+            "Binary inputs:\n"
+            "[2:0]\n"
+            "Counters:\n"
+            "[1:19]\n");
+
+        delete_container(point_list);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_invalid_time_object)
+{
+    Cti::Test::set_to_central_timezone();
+
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(1234, 1);
+    dnp.setName("Test DNP device");
+    dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
+
+    dnp.setConfigData(2, DNP::TimeOffset::Utc, false, false, false, false, false, false);
+
+    CtiXfer xfer;
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str request(
+            "05 64 17 c4 d2 04 01 00 85 40 "
+            "c0 c1 01 32 01 06 3c 02 06 3c "
+            "03 06 3c 04 06 3c fe e0 01 06 "
+            "75 e1");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+        const std::vector<int> expected(request.begin(), request.end());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+    {
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                "05 64 12 44 01 00 d2 04 b3 1e");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        BOOST_CHECK_EQUAL(15, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                "c0 ca 81 0f 00 32 01 07 01 de ad be ef 64 2c");
+
+            //  make sure we don't copy more than they expect
+            std::copy(response.begin(), response.end(),
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(ClientErrors::Abnormal, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+        pointlist_t point_list;
+
+        dnp.getInboundPoints(point_list);
+
+        BOOST_REQUIRE_EQUAL(1, point_list.size());
+
+        {
+            CtiPointDataMsg *pd = point_list[0];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getTags(), 0);
+        }
+
+        auto string_list = dnp.getInboundStrings();
+
+        BOOST_REQUIRE_EQUAL(3, string_list.size());
+
+        BOOST_CHECK_EQUAL(string_list[0],
+            "Device returned an empty time object block");
+        BOOST_CHECK_EQUAL(string_list[1],
+            "Internal indications:\n"
+            "Broadcast message received\n"
+            "Class 1 data available\n"
+            "Class 2 data available\n"
+            "Class 3 data available\n");
+        BOOST_CHECK_EQUAL(string_list[2],
+            "Point data report:\n"
+            "AI:     0; AO:     0; DI:     0; DO:     0; Counters:     0; \n"
+            "(No points returned)\n");
+
+        delete_container(point_list);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 {
     DnpProtocol dnp;

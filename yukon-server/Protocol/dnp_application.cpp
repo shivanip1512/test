@@ -140,12 +140,15 @@ void ApplicationLayer::processResponse( void )
 
     for( auto &ob : restoreObjectBlocks(_response.buf, _response.buf_len) )
     {
-        if( _response.func_code == ResponseUnsolicited )
+        if( ob )
         {
-            ob->setUnsolicited();
-        }
+            if( _response.func_code == ResponseUnsolicited )
+            {
+                ob->setUnsolicited();
+            }
 
-        _in_object_blocks.push_back(std::move(ob));
+            _in_object_blocks.push_back(std::move(ob));
+        }
     }
 }
 

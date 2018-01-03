@@ -559,59 +559,83 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
         }
     }
 
-    scoped_ptr<TimeCTO> cto;
-    scoped_ptr<Time>    absoluteTime;
+    std::unique_ptr<TimeCTO> cto;
+    std::unique_ptr<Time>    absoluteTime;
 
     // Scan through the queue and see if there are any timestamps
-    for (const auto &ob : _object_blocks)
+    for( const auto &ob : _object_blocks )
     {
-        if (ob->getGroup() == TimeCTO::Group)
+        if( ob->getGroup() == TimeCTO::Group )
         {
-            cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
-
-            CtiTime t = convertFromDeviceTimeOffset(*cto);
-
-            cto->setSeconds(t.seconds());
-
-            CTILOG_WARN(dout, "found CTO object in stream for device \"" << _name << "\" (" << t << "." << cto->getMilliseconds() << ")");
-        }
-        else if (ob->getGroup() == DNP::Time::Group &&
-            ob->getVariation() == DNP::Time::T_TimeAndDate)
-        {
-            ObjectBlock::object_descriptor od = ob->at(0);
-
-            if (od.object)
+            if( ! ob->empty() )
             {
-                absoluteTime.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
+                ObjectBlock::object_descriptor od = ob->at(0);
 
-                CtiTime t = convertFromDeviceTimeOffset(*absoluteTime);
-
-                absoluteTime->setSeconds(t.seconds());
-
-                string s = "Device time: ";
-                s.append(t.asString());
-                s.append(".");
-                s.append(CtiNumStr((int)absoluteTime->getMilliseconds()).zpad(3));
-
-                const int TimeDifferential = 60;
-                const int ComplaintInterval = 3600;
-
-                CtiTime now;
-
-                if (_nextTimeComplaint <= now
-                    && ((t - TimeDifferential) > now || (t + TimeDifferential) < now))
+                if( od.object )
                 {
-                    _nextTimeComplaint = nextScheduledTimeAlignedOnRate(now, ComplaintInterval);
+                    cto = std::make_unique<TimeCTO>(*(reinterpret_cast<const TimeCTO *>(od.object)));
 
-                    CTILOG_WARN(dout, "large time differential for device \"" << _name << "\" (" << t << "); "
-                        "will not complain again until " << _nextTimeComplaint);
+                    CtiTime t = convertFromDeviceTimeOffset(*cto);
+
+                    cto->setSeconds(t.seconds());
+
+                    CTILOG_DEBUG(dout, "found CTO object in stream for device \"" << _name << "\" (" << t << "." << cto->getMilliseconds() << ")");
                 }
-
-                _string_results.push_back(s);
+                else
+                {
+                    CTILOG_WARN(dout, "CTO object empty for device \"" << _name << "\"");
+                }
             }
             else
             {
-                _string_results.push_back("Device did not return a time result");
+                CTILOG_WARN(dout, "CTO object block empty for device \"" << _name << "\"");
+            }
+        }
+        else if( ob->getGroup() == DNP::Time::Group &&
+             ob->getVariation() == DNP::Time::T_TimeAndDate )
+        {
+            if( ! ob->empty() )
+            {
+                ObjectBlock::object_descriptor od = ob->at(0);
+
+                if( od.object )
+                {
+                    absoluteTime = std::make_unique<Time>(*(reinterpret_cast<const DNP::Time *>(od.object)));
+
+                    CtiTime t = convertFromDeviceTimeOffset(*absoluteTime);
+
+                    absoluteTime->setSeconds(t.seconds());
+
+                    string s = "Device time: ";
+                    s.append(t.asString());
+                    s.append(".");
+                    s.append(CtiNumStr((int)absoluteTime->getMilliseconds()).zpad(3));
+
+                    const int TimeDifferential = 60;
+                    const int ComplaintInterval = 3600;
+
+                    CtiTime now;
+
+                    if (_nextTimeComplaint <= now
+                        && ((t - TimeDifferential) > now || (t + TimeDifferential) < now))
+                    {
+                        _nextTimeComplaint = nextScheduledTimeAlignedOnRate(now, ComplaintInterval);
+
+                        CTILOG_WARN(dout, "large time differential for device \"" << _name << "\" (" << t << "); "
+                            "will not complain again until " << _nextTimeComplaint);
+                    }
+
+                    _string_results.push_back(s);
+                }
+                else
+                {
+                    _string_results.push_back("Device returned an invalid time object");
+                    retVal = ClientErrors::Abnormal;
+                }
+            }
+            else
+            {
+                _string_results.push_back("Device returned an empty time object block");
                 retVal = ClientErrors::Abnormal;
             }
         }
