@@ -42,7 +42,7 @@ using Cti::MacroOffset;
 
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
-extern LMScheduledMessageHolder _SCHEDULED_STOP_MESSAGES;
+extern LMScheduledMessageHolder gScheduledStopMessages;
 
 DEFINE_COLLECTABLE(CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID)
 
@@ -5632,7 +5632,7 @@ void CtiLMProgramDirect::scheduleMessageForResend(CtiTime currentTime, const Cti
             
             log += "\r\n    " + CtiNumStr(i+1) + ": Time " + currentTime.asString() + " Unique id " + CtiNumStr(clonedMessage->OptionsField()) + " Groupid " + CtiNumStr(message.DeviceId());
 
-            _SCHEDULED_STOP_MESSAGES.addMessage(currentTime, lm_group->getPAOId(), std::move(clonedMessage));
+            gScheduledStopMessages.addMessage(currentTime, lm_group->getPAOId(), std::move(clonedMessage));
             
         }
 
@@ -5650,7 +5650,7 @@ void CtiLMProgramDirect::scheduleMessageForResend(CtiTime currentTime, const Cti
 // Delete all existing scheduled stop messages for this group
 void CtiLMProgramDirect::cancelScheduledStopsForGroup(CtiLMGroupPtr &lm_group)
 {
-    auto count = _SCHEDULED_STOP_MESSAGES.clearMessagesForGroup(lm_group->getPAOId());
+    auto count = gScheduledStopMessages.clearMessagesForGroup(lm_group->getPAOId());
 
     if ( count > 0 )
     {
@@ -5661,7 +5661,7 @@ void CtiLMProgramDirect::cancelScheduledStopsForGroup(CtiLMGroupPtr &lm_group)
     }
 }
 
-bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr & lm_group, CtiMultiMsg * multiPilMsg, short repeatCount)
+bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr & lm_group, CtiMultiMsg * multiPilMsg, unsigned repeatCount)
 {
     CtiLMGroupConstraintChecker con_checker(*this, lm_group, currentTime);
     if( !(getConstraintOverride() || con_checker.checkRestore()) )
@@ -5709,7 +5709,7 @@ bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr & lm_gr
   Sends messages to stop the current cycling gradually. Actual behavior depends on
   the individual group and it's protocols.
   ----------------------------------------------------------------------------*/
-bool CtiLMProgramDirect::stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period, short repeatCount)
+bool CtiLMProgramDirect::stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period, unsigned repeatCount)
 {
     CtiLMGroupConstraintChecker con_checker(*this, lm_group, currentTime);
     if( !(getConstraintOverride() || con_checker.checkTerminate()) )

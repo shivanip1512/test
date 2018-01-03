@@ -9,21 +9,22 @@ BOOST_AUTO_TEST_SUITE(test_lmscheduledmessageholder)
 BOOST_AUTO_TEST_CASE( test_messageholder )
 {
     LMScheduledMessageHolder testHolder;
-    std::unique_ptr<CtiRequestMsg> testMessage (new CtiRequestMsg(2, "test"));
+    CtiTime currentTime = CtiTime::now();
+    std::unique_ptr<CtiRequestMsg> pastMessage (new CtiRequestMsg(2, "test"));
     std::unique_ptr<CtiRequestMsg> futureMessage (new CtiRequestMsg(3, "test"));
-    testHolder.addMessage(CtiTime::now() - 20, 2, std::move(testMessage));
-    testHolder.addMessage(CtiTime::now() + 500, 3, std::move(futureMessage));
-    BOOST_CHECK(!testMessage.get());
+    testHolder.addMessage(currentTime - 20, 2, std::move(pastMessage));
+    testHolder.addMessage(currentTime + 500, 3, std::move(futureMessage));
+    BOOST_CHECK(!pastMessage.get());
 
     BOOST_CHECK(testHolder.containsMessageForGroup(2));
     BOOST_CHECK(testHolder.containsMessageForGroup(3));
     BOOST_CHECK(!testHolder.containsMessageForGroup(4));
     BOOST_CHECK(!testHolder.containsMessageForGroup(0));
 
-    testMessage = testHolder.getAvailableMessage();
-    BOOST_CHECK(testMessage.get());
-    testMessage = testHolder.getAvailableMessage();
-    BOOST_CHECK(!testMessage.get());
+    std::unique_ptr<CtiRequestMsg> message = testHolder.getAvailableMessage(currentTime);
+    BOOST_CHECK(message.get());
+    message = testHolder.getAvailableMessage(currentTime);
+    BOOST_CHECK(!message.get());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -48,7 +48,7 @@ extern BOOL _LM_POINT_EVENT_LOGGING;
 set<long> _CHANGED_GROUP_LIST;
 set<long> _CHANGED_CONTROL_AREA_LIST;
 set<long> _CHANGED_PROGRAM_LIST;
-LMScheduledMessageHolder _SCHEDULED_STOP_MESSAGES;
+LMScheduledMessageHolder gScheduledStopMessages;
 
 unsigned int _HISTORY_PROGRAM_ID = 0;
 unsigned int _HISTORY_GROUP_ID = 0;
@@ -488,15 +488,14 @@ void CtiLoadManager::controlLoop()
                 }
 
                 //Send out any scheduled stop messages that are ready to go
-                while (auto message = _SCHEDULED_STOP_MESSAGES.getAvailableMessage())
+                while( auto message = gScheduledStopMessages.getAvailableMessage(CtiTime::now()) )
                 {
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
                         CTILOG_INFO(dout, "Sending delayed message Unique id " << message->OptionsField() <<  " Groupid " << message.get()->DeviceId());
                     }
                     
-                    multiPilMsg->insert(message.get());
-                    message.release();
+                    multiPilMsg->insert(message.release());
                 }
 
                 try

@@ -14,8 +14,8 @@ using namespace boost::multi_index;
 class LMScheduledMessageHolder
 {
 public:
-    std::unique_ptr<CtiRequestMsg> getAvailableMessage();
-    void addMessage(CtiTime time, long groupId, std::unique_ptr<CtiRequestMsg> message);
+    std::unique_ptr<CtiRequestMsg> getAvailableMessage(const CtiTime &currentTime);
+    void addMessage(const CtiTime &time, long groupId, std::unique_ptr<CtiRequestMsg> message);
     bool containsMessageForGroup(long groupId);
     int clearMessagesForGroup(long groupId);
 private:
