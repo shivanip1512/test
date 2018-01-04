@@ -20,6 +20,8 @@ namespace Cti {
 namespace Test {
 namespace {
 
+using std::to_string;
+    
 struct test_DeviceConfig : public Config::DeviceConfig
 {
     using DeviceConfig::insertValue;
@@ -124,7 +126,7 @@ Test_CtiPointAccumulator *makePulseAccumulatorPoint(long deviceid, long pointid,
         "alarminhibit", "pseudoflag",   "archivetype",  "archiveinterval",  "uomid",        "decimalplaces", "decimaldigits",
         "calctype",     "multiplier",   "dataoffset"};
     AccumRow values = {
-        CtiNumStr(pointid), desolvePointType(PulseAccumulatorPointType) + CtiNumStr(offset), desolvePointType(PulseAccumulatorPointType), CtiNumStr(deviceid), "0", CtiNumStr(offset), "N",
+        to_string(pointid), desolvePointType(PulseAccumulatorPointType) + to_string(offset), desolvePointType(PulseAccumulatorPointType), to_string(deviceid), "0", to_string(offset), "N",
         "N", "N", "R", "None", "0", "3", "0",
         "0", "0", "0.1", "0"};
 
@@ -157,7 +159,7 @@ Test_CtiPointAccumulator *makeDemandAccumulatorPoint(long deviceid, long pointid
         "alarminhibit", "pseudoflag",   "archivetype",  "archiveinterval",  "uomid",        "decimalplaces", "decimaldigits",
         "calctype",     "multiplier",   "dataoffset"};
     AccumRow values = {
-        CtiNumStr(pointid), desolvePointType(DemandAccumulatorPointType) + CtiNumStr(offset), desolvePointType(DemandAccumulatorPointType), CtiNumStr(deviceid), "0", CtiNumStr(offset), "N",
+        to_string(pointid), desolvePointType(DemandAccumulatorPointType) + to_string(offset), desolvePointType(DemandAccumulatorPointType), to_string(deviceid), "0", to_string(offset), "N",
         "N", "N", "R", "None", "0", "3", "0",
         "0", "0", "0.1", "0"};
 
@@ -190,12 +192,45 @@ Test_CtiPointAnalog *makeAnalogPoint(long deviceid, long pointid, int offset)
         "alarminhibit", "pseudoflag",   "archivetype",  "archiveinterval",  "uomid",        "decimalplaces","decimaldigits",
         "calctype",     "multiplier",   "dataoffset",   "deadband",         "controloffset", "controlinhibit"};
     AnalogRow values = {
-        CtiNumStr(pointid), desolvePointType(AnalogPointType) + CtiNumStr(offset), desolvePointType(AnalogPointType), CtiNumStr(deviceid), "-1", CtiNumStr(offset), "N",
+        to_string(pointid), desolvePointType(AnalogPointType) + to_string(offset), desolvePointType(AnalogPointType), to_string(deviceid), "-1", to_string(offset), "N",
         "N", "R", "None", "300", "0", "0", "0",
         "0", "1", "0", "-1", "aR4nd0MNullStR1ng", "aR4nd0MNullStR1ng"};
 
     std::vector<AnalogRow> rows;
     rows.push_back( values );
+
+    AnalogReader reader(keys, rows);
+
+    Test_CtiPointAnalog *analog = new Test_CtiPointAnalog;
+
+    if( reader() )
+    {
+        analog->DecodeDatabaseReader(reader);
+    }
+
+    return analog;
+}
+
+Test_CtiPointAnalog *makeAnalogOutputPoint(long deviceid, long pointid, int offset, int controlOffset, bool controlInhibited)
+{
+    typedef Cti::Test::StringRow<20> AnalogRow;
+    typedef Cti::Test::TestReader<AnalogRow> AnalogReader;
+
+    //  Sample rows
+    //"6106", "CONTROL COUNTDOWN",                "Analog", "5718", "-1", "2505", "N", "N", "R", "None",   "0", "9", "3", "0", "0", "1", "0", "-1", "NULL", "NULL"
+    //"7995", "ARL Alt Config Timer (Heartbeat)", "Analog", "6469", "-1", "0",    "N", "N", "P", "None", "300", "0", "0", "0", "0", "1", "0", "-1", "1776", "N"
+
+    AnalogRow keys = {
+        "pointid",      "pointname",    "pointtype",    "paobjectid",       "stategroupid", "pointoffset",  "serviceflag",
+        "alarminhibit", "pseudoflag",   "archivetype",  "archiveinterval",  "uomid",        "decimalplaces","decimaldigits",
+        "calctype",     "multiplier",   "dataoffset",   "deadband",         "controloffset", "controlinhibit" };
+    AnalogRow values = {
+        to_string(pointid), desolvePointType(AnalogPointType) + to_string(offset), desolvePointType(AnalogPointType), to_string(deviceid), "-1", to_string(offset), "N",
+        "N", "R", "None", "300", "0", "0", "0",
+        "0", "1", "0", "-1", to_string(controlOffset), controlInhibited ? "Y" : "N" };
+
+    std::vector<AnalogRow> rows;
+    rows.push_back(values);
 
     AnalogReader reader(keys, rows);
 
@@ -222,7 +257,7 @@ CtiPointStatus *makeStatusPoint(long deviceid, long pointid, int offset)
         "alarminhibit", "pseudoflag",       "archivetype",      "archiveinterval",  "initialstate",     "controltype", "closetime1",
         "closetime2",   "statezerocontrol", "stateonecontrol",  "commandtimeout",   "controlinhibit",   "controloffset"};
     StatusRow values = {
-        CtiNumStr(pointid), desolvePointType(StatusPointType) + CtiNumStr(offset), desolvePointType(StatusPointType), CtiNumStr(deviceid), "4", CtiNumStr(offset), "N",
+        to_string(pointid), desolvePointType(StatusPointType) + to_string(offset), desolvePointType(StatusPointType), to_string(deviceid), "4", to_string(offset), "N",
         "N", "R", "None", "0", "0", "aR4nd0MNullStR1ng", "aR4nd0MNullStR1ng",
         "aR4nd0MNullStR1ng", "aR4nd0MNullStR1ng", "aR4nd0MNullStR1ng", "aR4nd0MNullStR1ng", "aR4nd0MNullStR1ng", "aR4nd0MNullStR1ng"};
 
@@ -254,9 +289,9 @@ CtiPointStatus *makeControlPoint(long deviceid, long pointid, int offset, int co
         "alarminhibit", "pseudoflag",       "archivetype",      "archiveinterval",  "initialstate",     "controltype", "closetime1",
         "closetime2",   "statezerocontrol", "stateonecontrol",  "commandtimeout",   "controlinhibit",   "controloffset"};
     StatusRow values = {
-        CtiNumStr(pointid), desolvePointType(StatusPointType) + CtiNumStr(offset), desolvePointType(StatusPointType), CtiNumStr(deviceid), "4", CtiNumStr(offset), "N",
+        to_string(pointid), desolvePointType(StatusPointType) + to_string(offset), desolvePointType(StatusPointType), to_string(deviceid), "4", to_string(offset), "N",
         "N", "R", "None", "0", "0", desolveControlType(controlType), "123",
-        "456", "control open", "control close", "0", "N", CtiNumStr(controlOffset) };
+        "456", "control open", "control close", "0", "N", to_string(controlOffset) };
 
     std::vector<StatusRow> rows;
     rows.push_back( values );

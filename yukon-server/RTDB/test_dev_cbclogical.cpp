@@ -21,10 +21,19 @@ struct TestCbcLogicalDevice : Cti::Devices::CbcLogicalDevice
 
     CtiPointSPtr logicalPoint;
     std::string requestedPointName;
+    int requestedPointId;
 
     CtiPointSPtr getDevicePointByName(const std::string& pointName) override
     {
         requestedPointName = pointName;
+        requestedPointId = 0;
+
+        return logicalPoint;
+    }
+    CtiPointSPtr getDevicePointByID(int id) override
+    {
+        requestedPointName = "";
+        requestedPointId = id;
 
         return logicalPoint;
     }
@@ -96,8 +105,6 @@ BOOST_AUTO_TEST_CASE(test_command_success)
 
     dev.logicalPoint.reset(Cti::Test::makeControlPoint(1729, 17, 172, 3458, ControlType_Normal));
     dev.setParentDeviceId(1729, test_tag);
-
-    using P = CtiCommandParser;
 
     //  control open
     {
@@ -381,6 +388,80 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     }
     delete_container(retList);
     retList.clear();
+
+    //  putvalue analog with offset
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog 117 17.5"));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog 117 17.500000");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    dev.logicalPoint.reset(Cti::Test::makeAnalogPoint(1729, 17, 10099));
+
+    //  putvalue analog with pointid, using analog output offset
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog value 37 select pointid 11235"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog 99 37");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    dev.logicalPoint.reset(Cti::Test::makeAnalogOutputPoint(1729, 17, 10099, 1999, false));
+
+    //  putvalue analog with pointid, using control offset override
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog value 37 select pointid 11235"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog 1999 37");
+    }
+    delete_container(retList);
+    retList.clear();
 }
 
 BOOST_AUTO_TEST_CASE(test_command_fail)
@@ -607,6 +688,76 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
             "\nOverride device ID      : 2"
             "\nOverride control offset : -17"
             "\nAttribute               : CONTROL_POINT");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  putvalue analog with pointid, point not found
+    {
+        dev.logicalPoint.reset();
+
+        BOOST_CHECK_EQUAL(ClientErrors::PointLookupFailed, execute(dev, "putvalue analog value 37 select pointid 11235"));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / The specified point is not on the device"
+            "\nPoint ID : 11235");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  putvalue analog with pointid, not a control offset
+    {
+        dev.logicalPoint.reset(Cti::Test::makeAnalogPoint(1729, 17, 99));
+
+        BOOST_CHECK_EQUAL(ClientErrors::NoMethod, execute(dev, "putvalue analog value 37 select pointid 11235"));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_CHECK(retList.empty());
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  putvalue analog with pointid, control inhibited
+    {
+        dev.logicalPoint.reset(Cti::Test::makeAnalogOutputPoint(1729, 17, 99, 1999, true));
+
+        BOOST_CHECK_EQUAL(ClientErrors::ControlInhibitedOnPoint, execute(dev, "putvalue analog value 37 select pointid 11235"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / Control is inhibited for the specified analog point"
+            "\nPoint ID   : 11235"
+            "\nPoint name : Analog99");
     }
     delete_container(retList);
     retList.clear();

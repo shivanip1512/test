@@ -2,6 +2,8 @@
 
 #include "dev_cbclogical.h"
 #include "pt_status.h"
+#include "pt_analog.h"
+#include "dnp_object_analogoutput.h"
 
 #include "msg_pcrequest.h"
 
@@ -60,80 +62,161 @@ try
 {
     _attributeMapping.refresh(getDeviceConfig(), getMappableAttributes());
 
-    if( parse.getCommand() == LoopbackRequest ||
-        parse.getCommand() == ScanRequest )
+    switch( parse.getCommand() )
     {
-        return executeRequestOnParent(pReq->CommandString(), *pReq, retList);
-    }
-    if( parse.getCommand() == PutConfigRequest )
-    {
-        if ( parse.isKeyValid( "local_control_type" ) && parse.isKeyValid( "local_control_state" ) )
+        case LoopbackRequest:   
+        case ScanRequest:
         {
-            static const std::map<std::string, Attribute> _offsetLookup
+            return executeRequestOnParent(pReq->CommandString(), *pReq, retList);
+        }
+        case PutConfigRequest:
+        {
+            if ( parse.isKeyValid( "local_control_type" ) && parse.isKeyValid( "local_control_state" ) )
             {
-                { "ovuv", Attribute::EnableOvuvControl        },
-                { "temp", Attribute::EnableTemperatureControl },
-                { "time", Attribute::EnableTimeControl        },
-                { "var",  Attribute::EnableVarControl         },
-            };
+                static const std::map<std::string, Attribute> _offsetLookup
+                {
+                    { "ovuv", Attribute::EnableOvuvControl        },
+                    { "temp", Attribute::EnableTemperatureControl },
+                    { "time", Attribute::EnableTimeControl        },
+                    { "var",  Attribute::EnableVarControl         },
+                };
 
-            const std::string controlType   = parse.getsValue("local_control_type");
-            const std::string controlAction = parse.getsValue("local_control_state") == "enable" ? "close" : "open";
+                const std::string controlType   = parse.getsValue("local_control_type");
+                const std::string controlAction = parse.getsValue("local_control_state") == "enable" ? "close" : "open";
 
-            if ( auto attrib = Cti::mapFind( _offsetLookup, controlType ) )
+                if ( auto attrib = Cti::mapFind( _offsetLookup, controlType ) )
+                {
+                    const auto controlOffset = _attributeMapping.getControlOffset(*attrib);
+
+                    const std::string command = "control " + controlAction + " offset " + std::to_string(controlOffset);
+
+                    return executeRequestOnParent(command, *pReq, retList);
+                }
+            }
+            break;
+        }
+        case ControlRequest:
+        {
+            const int pointid = parse.getiValue("point");
+
+            if( pointid > 0 )
             {
-                const auto controlOffset = _attributeMapping.getControlOffset(*attrib);
+                //  select by raw pointid
+                CtiPointSPtr point = getDevicePointByID(pointid);
 
-                const std::string command = "control " + controlAction + " offset " + std::to_string(controlOffset);
+                if( ! point )
+                {
+                    throw YukonErrorException {
+                        ClientErrors::PointLookupFailed,
+                        "The point ID is not a valid logical point for device " + getName() + FormattedList::of(
+                            "Point ID", pointid) };
+                }
+
+                if( point->isStatus() )
+                {
+                    CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+
+                    if( const auto controlParameters = pStatus->getControlParameters() )
+                    {
+                        if( controlParameters->isControlInhibited() )
+                        {
+                            CTILOG_WARN(dout, "control inhibited for device \"" << getName() << "\" point \"" << pStatus->getName());
+
+                            std::string temp = "Control is inhibited for the specified status point on device " + getName();
+
+                            insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
+
+                            return ClientErrors::ControlInhibitedOnPoint;
+                        }
+                        if( controlParameters->getControlOffset() > 0 )
+                        {
+                            const auto command = pReq->CommandString() + " offset " + std::to_string(controlParameters->getControlOffset());
+
+                            return executeRequestOnParent(command, *pReq, retList);
+                        }
+                    }
+                }
+            }
+            else if( !(parse.getFlags() & CMD_FLAG_OFFSET) && (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
+            {
+                const auto controlOffset = _attributeMapping.getControlOffset(Attribute::ControlPoint);
+            
+                const auto command = 
+                    "control"s 
+                        + (parse.getFlags() & CMD_FLAG_CTL_OPEN 
+                            ? " open"
+                            : " close")
+                        + " offset " + std::to_string(controlOffset);
 
                 return executeRequestOnParent(command, *pReq, retList);
             }
         }
-    }
-    if( parse.getCommand() == ControlRequest )
-    {
-        const int pointid = parse.getiValue("point");
-
-        if( pointid > 0 )
+        case PutValueRequest:
         {
-            //  select by raw pointid
-            CtiPointSPtr point = getDevicePointByID(pointid);
+            int offset;
 
-            if( ! point )
+            long control_offset = 0;
+
+            if( parse.isKeyValid("analog") )
             {
-                throw YukonErrorException {
-                    ClientErrors::PointLookupFailed,
-                    "The point ID is not a valid logical point for device " + getName() + FormattedList::of(
-                        "Point ID", pointid) };
-            }
-
-            if( point->isStatus() )
-            {
-                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
-
-                if( const auto controlParameters = pStatus->getControlParameters() )
+                if( parse.isKeyValid("analogoffset") )
                 {
-                    if( controlParameters->getControlOffset() > 0 )
-                    {
-                        const auto command = pReq->CommandString() + " offset " + std::to_string(controlParameters->getControlOffset());
+                    control_offset = parse.getiValue("analogoffset");
+                }
+                else if( parse.isKeyValid("point") )
+                {
+                    const long pointid = parse.getiValue("point");
 
-                        return executeRequestOnParent(command, *pReq, retList);
+                    const CtiPointSPtr point = getDevicePointByID(pointid);
+
+                    if( ! point )
+                    {
+                        insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, "The specified point is not on the device" + FormattedList::of(
+                            "Point ID", pointid));
+
+                        return ClientErrors::PointLookupFailed;
+                    }
+
+                    if( point->getType() == AnalogPointType )
+                    {
+                        CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
+
+                        if( const CtiTablePointControl *control = pAnalog->getControl() )
+                        {
+                            if( control->isControlInhibited() )
+                            {
+                                CTILOG_WARN(dout, "control inhibited for device \"" << getName() << "\" point \"" << pAnalog->getName());
+
+                                insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, "Control is inhibited for the specified analog point" + FormattedList::of(
+                                    "Point ID", pointid,
+                                    "Point name", pAnalog->getName()));
+
+                                return ClientErrors::ControlInhibitedOnPoint;
+                            }
+
+                            control_offset = control->getControlOffset();
+                        }
+                        else if( pAnalog->getPointOffset() > Protocols::DNP::AnalogOutputStatus::AnalogOutputOffset )
+                        {
+                            control_offset = point->getPointOffset() % Protocols::DNP::AnalogOutputStatus::AnalogOutputOffset;
+                        }
                     }
                 }
-            }
-        }
-        else if( !(parse.getFlags() & CMD_FLAG_OFFSET) && (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
-        {
-            const auto controlOffset = _attributeMapping.getControlOffset(Attribute::ControlPoint);
-            
-            const auto command = 
-                "control"s 
-                    + (parse.getFlags() & CMD_FLAG_CTL_OPEN 
-                        ? " open"
-                        : " close")
-                    + " offset " + std::to_string(controlOffset);
 
-            return executeRequestOnParent(command, *pReq, retList);
+                if( control_offset > 0 )
+                {
+                    const auto analogValueStr =
+                            parse.isKeyValid("analogfloatvalue")
+                                ? std::to_string(parse.getdValue("analogvalue"))
+                                : std::to_string(parse.getiValue("analogvalue"));
+
+                    const auto command = "putvalue analog " + std::to_string(control_offset) + " " + analogValueStr;
+
+                    return executeRequestOnParent(command, *pReq, retList);
+                }
+            }
+
+            break;
         }
     }
 
