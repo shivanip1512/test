@@ -1,6 +1,9 @@
 package com.cannontech.web.capcontrol;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.Validate;
@@ -10,12 +13,16 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.capcontrol.BankOpState;
-import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -37,6 +44,7 @@ import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/menu/*")
@@ -46,7 +54,7 @@ public class MenuController {
     @Autowired private PaoDao paoDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CapControlCommentService ccCommentService;
-    @Autowired private VoltageRegulatorService voltageRegulatorService;
+    @Autowired private AttributeService attributeService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private final static BankOpState[] allowedOperationStates =
@@ -219,6 +227,7 @@ public class MenuController {
 
     @RequestMapping("localControl")
     public String localControl(ModelMap model, int id) {
+        YukonPao pao  = null;
         StreamableCapObject capObject = cache.getCapControlPao(id);
         
         Validate.notNull(capObject);
@@ -227,17 +236,42 @@ public class MenuController {
         String paoName = capObject.getCcName();
         model.addAttribute("paoName", paoName);
         
-        List<CommandType> commands = Lists.newArrayList();
-        commands.add(CommandType.SEND_ENABLE_OVUV);
-        commands.add(CommandType.SEND_DISABLE_OVUV);
-        commands.add(CommandType.SEND_ENABLE_TEMPCONTROL);
-        commands.add(CommandType.SEND_DISABLE_TEMPCONTROL);
-        commands.add(CommandType.SEND_ENABLE_VARCONTROL);
-        commands.add(CommandType.SEND_DISABLE_VARCONTROL);
-        commands.add(CommandType.SEND_ENABLE_TIMECONTROL);
-        commands.add(CommandType.SEND_DISABLE_TIMECONTROL);
-        
-        model.addAttribute("commands", commands);
+        CapControlType ccType = CapControlType.getCapControlType(capObject.getCcType());
+        if (ccType == CapControlType.CAPBANK) {
+            CapBankDevice capBankDevice = (CapBankDevice) capObject;
+            pao = paoDao.getYukonPao(capBankDevice.getControlDeviceID());
+        }
+        if (pao != null && (pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8020
+            || pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8024)) {
+            Map<CommandType, Boolean> commands = Maps.newLinkedHashMap();
+            Set<Attribute> attributes = new HashSet<Attribute>();
+            attributes.add(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL);
+            attributes.add(BuiltInAttribute.ENABLE_VAR_CONTROL);
+            attributes.add(BuiltInAttribute.ENABLE_OVUV_CONTROL);
+            attributes.add(BuiltInAttribute.ENABLE_TIME_CONTROL);
+            Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(pao, attributes);
+            commands.put(CommandType.SEND_ENABLE_OVUV, allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL));
+            commands.put(CommandType.SEND_DISABLE_OVUV, allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL));
+            commands.put(CommandType.SEND_ENABLE_TEMPCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL));
+            commands.put(CommandType.SEND_DISABLE_TEMPCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL));
+            commands.put(CommandType.SEND_ENABLE_VARCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_VAR_CONTROL));
+            commands.put(CommandType.SEND_DISABLE_VARCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_VAR_CONTROL));
+            commands.put(CommandType.SEND_ENABLE_TIMECONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TIME_CONTROL));
+            commands.put(CommandType.SEND_DISABLE_TIMECONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TIME_CONTROL));
+            model.addAttribute("isBasedOnPoints", true);
+            model.addAttribute("commands", commands);
+        } else {
+            List<CommandType> commands = Lists.newArrayList();
+            commands.add(CommandType.SEND_ENABLE_OVUV);
+            commands.add(CommandType.SEND_DISABLE_OVUV);
+            commands.add(CommandType.SEND_ENABLE_TEMPCONTROL);
+            commands.add(CommandType.SEND_DISABLE_TEMPCONTROL);
+            commands.add(CommandType.SEND_ENABLE_VARCONTROL);
+            commands.add(CommandType.SEND_DISABLE_VARCONTROL);
+            commands.add(CommandType.SEND_ENABLE_TIMECONTROL);
+            commands.add(CommandType.SEND_DISABLE_TIMECONTROL);
+            model.addAttribute("commands", commands);
+        }
         model.addAttribute("showRecentCommands", false);
         model.addAttribute("showComments", false);
         
