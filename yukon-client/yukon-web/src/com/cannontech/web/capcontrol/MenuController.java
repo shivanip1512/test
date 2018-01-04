@@ -1,6 +1,5 @@
 package com.cannontech.web.capcontrol;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +44,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/menu/*")
@@ -244,11 +244,9 @@ public class MenuController {
         if (pao != null && (pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8020
             || pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8024)) {
             Map<CommandType, Boolean> commands = Maps.newLinkedHashMap();
-            Set<Attribute> attributes = new HashSet<Attribute>();
-            attributes.add(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL);
-            attributes.add(BuiltInAttribute.ENABLE_VAR_CONTROL);
-            attributes.add(BuiltInAttribute.ENABLE_OVUV_CONTROL);
-            attributes.add(BuiltInAttribute.ENABLE_TIME_CONTROL);
+            Set<Attribute> attributes =
+                Sets.newHashSet(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL, BuiltInAttribute.ENABLE_VAR_CONTROL,
+                    BuiltInAttribute.ENABLE_OVUV_CONTROL, BuiltInAttribute.ENABLE_TIME_CONTROL);
             Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(pao, attributes);
             commands.put(CommandType.SEND_ENABLE_OVUV, allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL));
             commands.put(CommandType.SEND_DISABLE_OVUV, allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL));
