@@ -415,16 +415,16 @@
         <name>Enable SCADA Override</name>
         <controlType value="NORMAL"/>
         <controlOffset value="49"/>
-        <stateZeroControl value="PULSE"/>
-        <stateOneControl value="PULSE"/>
+        <stateZeroControl value="CONTROL_OPEN_DIRECT"/>
+        <stateOneControl value="CONTROL_CLOSE_DIRECT"/>
         <stategroup value="YesNo"/>
     </point>
     <point offset="0" type="Status">
         <name>SCADA Override Clear</name>
         <controlType value="NORMAL"/>
         <controlOffset value="12"/>
-        <stateZeroControl value="PULSE"/>
-        <stateOneControl value="PULSE"/>
+        <stateZeroControl value="CONTROL_OPEN_DIRECT"/>
+        <stateOneControl value="CONTROL_CLOSE_DIRECT"/>
         <stategroup value="NoYes"/>
     </point>
     <point offset="1" type="Status">
