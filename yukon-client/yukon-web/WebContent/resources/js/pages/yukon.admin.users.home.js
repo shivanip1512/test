@@ -19,6 +19,14 @@ yukon.admin.users.home = (function () {
      */
     _password_types = {},
     
+    /**
+     * This method saves the form passed as a parameter to this method. It calls the URL passed as a parameter to save 
+     * the form.
+     * @private
+     * @param form {Object} The form to be saved.
+     * @param dialogDiv {Object} The dialog that contains the form to be saved.
+     * @param url {String} The url to be called to save the form.  
+     */
     _saveForm = function (form, dialogDiv, url) {
         form.ajaxSubmit({
             url: yukon.url(url),
