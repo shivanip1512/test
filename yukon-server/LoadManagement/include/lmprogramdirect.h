@@ -131,7 +131,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     void startGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
     void refreshGroupControl(CtiLMGroupPtr& lm_group, CtiRequestMsg* req, CtiMultiMsg* multiPilMsg);
     bool restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, unsigned repeatCount);
-    bool stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period, unsigned repeatCount = 0);
+    bool stopCycleGroup(CtiTime currentTime, CtiLMGroupPtr& lm_group, CtiMultiMsg* multiPilMsg, LONG period, unsigned repeatCount);
 
     void scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time);
     void scheduleNotificationForTimedControl(const CtiTime& start_time, const CtiTime& stop_time);

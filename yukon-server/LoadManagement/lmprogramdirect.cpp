@@ -3070,7 +3070,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime
                 for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *i;
-                    stopCycleGroup(currentTime, currentLMGroup,  multiPilMsg, currentGearObject->getMethodPeriod());
+                    stopCycleGroup(currentTime, currentLMGroup,  multiPilMsg, currentGearObject->getMethodPeriod(), 0);
                 }
             }
 
