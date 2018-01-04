@@ -136,7 +136,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         List<DisplayData> displayData = yukonJdbcTemplate.query(sql, createCustomRowMapper);
         Set<Integer> pointIds = displayData.stream().map(DisplayData::getPointId).collect(Collectors.toSet());
         Map<Integer, LitePoint> pointMap = Maps.uniqueIndex(pointDao.getLitePoints(pointIds), p -> p.getLiteID());
-        Iterable<Integer> deviceIds = displayData.stream().map(DisplayData::getDeviceId).collect(Collectors.toList());
+        Iterable<Integer> deviceIds = displayData.stream().map(DisplayData::getDeviceId).collect(Collectors.toSet());
         Map<Integer, SimpleDevice> deviceMap = Maps.uniqueIndex(deviceDao.getYukonDeviceObjectByIds(deviceIds), d -> d.getDeviceId());
         Map<Integer, PointValueQualityTagHolder> pointValues = Maps.uniqueIndex(Lists.newArrayList(asyncDynamicDataSource.getPointValuesAndTags(pointIds)), p -> p.getId());
    
