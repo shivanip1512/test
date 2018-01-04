@@ -254,17 +254,17 @@
                                     </c:if>
                                 </tags:nameValueContainer2>
                                 <c:if test="${not empty cbc}">
-                                    <tags:nameValueContainer2 tableClass="fl">
-                                           <tags:nameValue2 nameKey=".cbc.integrityScanRate" rowClass="${twoWayClass}">
+                                    <tags:nameValueContainer2 tableClass="fl ${twoWayClass}">
+                                           <tags:nameValue2 nameKey=".cbc.integrityScanRate">
                                                 <tags:switchButton name="integ" toggleGroup="integrity" toggleAction="hide" checked="${cbc.editingIntegrity}" disabled="true" />
                                             </tags:nameValue2>
-                                            <tags:nameValue2 nameKey=".cbc.interval" data-toggle-group="integrity" rowClass="${twoWayClass}">
+                                            <tags:nameValue2 nameKey=".cbc.interval" data-toggle-group="integrity">
                                                  <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Integrity'].intervalRate * 1000}"/>
                                             </tags:nameValue2>
-                                            <tags:nameValue2 nameKey=".cbc.altInterval" data-toggle-group="integrity" rowClass="${twoWayClass}">
+                                            <tags:nameValue2 nameKey=".cbc.altInterval" data-toggle-group="integrity">
                                                  <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Integrity'].alternateRate * 1000}"/>
                                             </tags:nameValue2>
-                                            <tags:nameValue2 nameKey=".cbc.scanGroup" data-toggle-group="integrity" rowClass="${twoWayClass}">
+                                            <tags:nameValue2 nameKey=".cbc.scanGroup" data-toggle-group="integrity">
                                                 <c:forEach var="scanGroup" items="${scanGroups}">
                                                     <c:if test="${cbc.deviceScanRateMap['Integrity'].scanGroup == scanGroup.dbValue}">
                                                         <i:inline key=".cbc.scanGroup.${scanGroup}"/>                                       
@@ -272,17 +272,17 @@
                                                 </c:forEach>                                    
                                            </tags:nameValue2>
                                        </tags:nameValueContainer2>
-                                       <tags:nameValueContainer2 tableClass="fr">
-                                           <tags:nameValue2 nameKey=".cbc.exceptionScanRate" rowClass="${twoWayClass}">
+                                       <tags:nameValueContainer2 tableClass="fr ${twoWayClass}">
+                                           <tags:nameValue2 nameKey=".cbc.exceptionScanRate">
                                                 <tags:switchButton name="excep" toggleGroup="exception" toggleAction="hide" checked="${cbc.editingException}" disabled="true" />
                                             </tags:nameValue2>
-                                            <tags:nameValue2 nameKey=".cbc.interval" data-toggle-group="exception" rowClass="${twoWayClass}">
+                                            <tags:nameValue2 nameKey=".cbc.interval" data-toggle-group="exception">
                                                  <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Exception'].intervalRate * 1000}"/>
                                             </tags:nameValue2>
-                                            <tags:nameValue2 nameKey=".cbc.altInterval" data-toggle-group="exception" rowClass="${twoWayClass}">
+                                            <tags:nameValue2 nameKey=".cbc.altInterval" data-toggle-group="exception">
                                                  <cti:formatDuration type="${format}" value="${cbc.deviceScanRateMap['Exception'].alternateRate * 1000}"/>
                                             </tags:nameValue2>
-                                            <tags:nameValue2 nameKey=".cbc.scanGroup" data-toggle-group="exception" rowClass="${twoWayClass}">
+                                            <tags:nameValue2 nameKey=".cbc.scanGroup" data-toggle-group="exception">
                                                 <c:forEach var="scanGroup" items="${scanGroups}">
                                                     <c:if test="${cbc.deviceScanRateMap['Exception'].scanGroup == scanGroup.dbValue}">
                                                         <i:inline key=".cbc.scanGroup.${scanGroup}"/>                                       
