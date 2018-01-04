@@ -6,6 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <c:set var="pageName" value="capbank.${mode}"/>
 <c:if test="${orphan}">
@@ -100,6 +101,15 @@
                                             items="${availablePorts}"
                                             itemValue="liteID" itemLabel="paoName"
                                             inputClass="with-option-hiding" />                                    
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".cbc.parentRtu" rowClass="js-logical-cbc dn">
+                                        <spring:bind path="parentRtuId">
+                                            <form:hidden id="parent-rtu-input" path="parentRtuId" />
+                                            <tags:pickerDialog id="rtuDnpPicker" type="dnpRTUPicker"
+                                                linkType="selectionLabel" selectionProperty="paoName"
+                                                destinationFieldId="parent-rtu-input"/>
+                                            <c:if test="${status.error}"><br><form:errors path="parentRtuId" cssClass="error"/></c:if>
+                                        </spring:bind>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
                             </tags:sectionContainer2>
@@ -210,6 +220,11 @@
                                         <tags:nameValue2 nameKey=".cbc.serialNumber">
                                             ${fn:escapeXml(cbc.deviceCBC.serialNumber)}
                                         </tags:nameValue2>
+                                        <c:if test="${not empty cbc.parentRtu}">
+                                            <tags:nameValue2 nameKey=".cbc.parentRtu">
+                                                ${fn:escapeXml(cbc.parentRtu.paoName)}
+                                            </tags:nameValue2>
+                                        </c:if>
                                         <c:set var="twoWayClass" value="${cbc.twoWay? '' : 'dn'} js-two-way"/>
                                         <c:set var="oneWayClass" value="${cbc.twoWay? 'dn' : ''} js-one-way"/>
                                         <tags:nameValue2 nameKey=".cbc.controlRoute" rowClass="${oneWayClass}">
@@ -475,6 +490,7 @@
         <cti:csrfToken/>
     </form:form>
     <cti:toJson id="two-way-types" object="${twoWayTypes}"/>
+    <cti:toJson id="logical-types" object="${logicalTypes}"/>
     <cti:toJson id="tcp-comm-ports" object="${tcpCommPorts}"/>
     <cti:includeScript link="/resources/js/pages/yukon.da.capbank.js" />
     <%-- EDIT POINTS POPUP --%>

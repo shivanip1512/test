@@ -32,6 +32,9 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
         validateName(capbank, errors);
         if (capbank.getCreateCBC()) {
             validateCBCName(capbank, errors);
+            if (capbank.getCbcType().isLogicalCBC()) {
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "parentRtuId", "yukon.web.modules.capcontrol.cbc.error.parentRTURequired");
+            }
         }
         
         if (!capbank.getCcMonitorBankList().isEmpty()) {

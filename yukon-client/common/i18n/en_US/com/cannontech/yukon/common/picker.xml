@@ -198,4 +198,7 @@
 <!-- Cap Control CBC Orphan Picker -->
 <entry key="yukon.web.picker.capControlCBCOrphanPicker.dialogTitle">Select Orphan CBC</entry>
 
+<!-- DNP RTU Picker -->
+<entry key="yukon.web.picker.dnpRTUPicker.dialogTitle">Select Parent RTU</entry>
+
 </properties>

@@ -29,6 +29,7 @@ public class CapControlCBC implements YukonPao {
     private boolean disableFlag;
     private LiteYukonPAObject parent;
     private LiteYukonPAObject parentRtu;
+    private Integer parentRtuId;
     private Map<PointType, List<String>> points;
     private Device device;
     private DeviceCBC deviceCBC;
@@ -240,6 +241,14 @@ public class CapControlCBC implements YukonPao {
         if(!editingException){
             this.deviceScanRateMap.remove(DeviceScanRate.TYPE_EXCEPTION);
         }
+    }
+
+    public Integer getParentRtuId() {
+        return parentRtuId;
+    }
+
+    public void setParentRtuId(Integer parentRtuId) {
+        this.parentRtuId = parentRtuId;
     }
 
     public static enum ScanGroup implements DisplayableEnum {

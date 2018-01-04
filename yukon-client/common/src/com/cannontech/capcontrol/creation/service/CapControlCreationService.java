@@ -22,8 +22,9 @@ public interface CapControlCreationService {
 	 * @param disabled whether or not the new CBC will be disabled
 	 * @param portId for the comm channel the CBC will be operating on
 	 * @param config the dnp configuration the CBC will be assigned to
+	 * @param parentRtuId the parent RTU the CBC will be assigned to
 	 * @return the PaoIdentifier representing the newly created CBC.
 	 */
 	public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, 
-	                               LightDeviceConfiguration configId);
+	                               LightDeviceConfiguration configId, Integer parentRtuId);
 }

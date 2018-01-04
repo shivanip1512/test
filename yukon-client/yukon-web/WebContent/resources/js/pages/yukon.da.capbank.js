@@ -15,9 +15,10 @@ yukon.da.capbank = (function () {
      * @type Array.string
      *
      * Filled out in yukon.da.capbank.init().
-     * Array of strings of paoTypes that represent 2 way cbcs
+     * Array of strings of paoTypes that represent 2 way cbcs and logical cbcs
      */
-    var twoWayTypes = [];
+    var twoWayTypes = [],
+        logicalTypes = [];
 
     var updatePaoTypeFields = function () {
          var isCreateCBC = $('.js-createCBC').prop('checked');
@@ -26,16 +27,19 @@ yukon.da.capbank = (function () {
              $('.js-cbcControllerName').val("");
              $('.js-cbcControllerName').removeClass("error");
              $("[id='cbcControllerName.errors']").remove();
+             $('.js-logical-cbc').addClass('dn');
          }
         $('#comm-port').attr("disabled", true); 
         var paoTypeField = $('#pao-type');
         
         if(paoTypeField.is(":visible")) {
             var paoType = paoTypeField.val();
-            var isTwoWay = twoWayTypes.indexOf(paoType) !== -1;
+            var isTwoWay = twoWayTypes.indexOf(paoType) !== -1,
+                isLogical = logicalTypes.indexOf(paoType) !== -1;
             if (isTwoWay) {
                $('#comm-port').removeAttr("disabled"); 
             } 
+            $('.js-logical-cbc').toggleClass('dn', !isLogical);
         }
     };
     
@@ -103,6 +107,7 @@ yukon.da.capbank = (function () {
 
             if (initialized) return;
             twoWayTypes = yukon.fromJson('#two-way-types');
+            logicalTypes = yukon.fromJson('#logical-types');
 
             setCustomCommunicationMedium();
             setCustomBankSize();

@@ -452,7 +452,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
 
             if (paoType.isCbc()) {
                 DeviceConfiguration config = deviceConfigurationDao.getDefaultDNPConfiguration();
-                paoIdentifier = capControlCreationService.createCbc(paoType, name, disabled, portId, config);
+                paoIdentifier = capControlCreationService.createCbc(paoType, name, disabled, portId, config, null);
             } else {
                 paoIdentifier = capControlCreationService.createCapControlObject(paoType, name, false);
             }

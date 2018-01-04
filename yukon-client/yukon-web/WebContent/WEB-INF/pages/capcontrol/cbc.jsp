@@ -94,12 +94,23 @@
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".parentRtu" rowClass="${logicalClass}">
-                            <c:choose>
-                                <c:when test="${empty parentRtuId || parentRtuId == 0}">
-                                    <span class="empty-list"><i:inline key="yukon.common.none"/></span>
-                                </c:when>
-                                <c:otherwise>${fn:escapeXml(parentRtuName)}</c:otherwise>
-                           </c:choose>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <c:choose>
+                                    <c:when test="${empty cbc.parentRtuId || cbc.parentRtuId == 0}">
+                                        <span class="empty-list"><i:inline key="yukon.common.none" /></span>
+                                    </c:when>
+                                    <c:otherwise>${fn:escapeXml(cbc.parentRtu.paoName)}</c:otherwise>
+                                </c:choose>
+                            </cti:displayForPageEditModes>
+                            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                <spring:bind path="parentRtuId">
+                                    <form:hidden id="parent-rtu-input" path="parentRtuId" />
+                                    <tags:pickerDialog id="rtuDnpPicker" type="dnpRTUPicker"
+                                        linkType="selectionLabel" selectionProperty="paoName"
+                                        destinationFieldId="parent-rtu-input"/>
+                                    <c:if test="${status.error}"><br><form:errors path="parentRtuId" cssClass="error"/></c:if>
+                                </spring:bind>
+                            </cti:displayForPageEditModes>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey="yukon.common.ipaddress" rowClass="${twoWayClass}" data-tcp-port="true">

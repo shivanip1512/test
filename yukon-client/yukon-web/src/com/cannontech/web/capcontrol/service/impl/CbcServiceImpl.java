@@ -90,8 +90,11 @@ public class CbcServiceImpl implements CbcService {
 
         if (dbPersistent instanceof CapBankControllerLogical) {
             CapBankControllerLogical logicalCbc = (CapBankControllerLogical) dbPersistent;
-            LiteYukonPAObject rtu = dbCache.getAllPaosMap().get(logicalCbc.getParentDeviceId());
-            cbc.setParentRtu(rtu);
+            if (logicalCbc.getParentDeviceId() != null) {
+                LiteYukonPAObject rtu = dbCache.getAllPaosMap().get(logicalCbc.getParentDeviceId());
+                cbc.setParentRtu(rtu);
+                cbc.setParentRtuId(rtu.getLiteID());
+            }
             
         } else if (dbPersistent instanceof TwoWayDevice) {
             DNPBase dnpBase = (DNPBase) dbPersistent;
@@ -315,6 +318,7 @@ public class CbcServiceImpl implements CbcService {
         device.setDisableFlag(cbc.isDisableFlag() ? 'Y' : 'N');
 
         DeviceCBC deviceCbc = null;
+
         if (dbPersistent instanceof CapBankController) {
             deviceCbc = ((CapBankController) dbPersistent).getDeviceCBC();
         } else if (dbPersistent instanceof CapBankController702x) {
@@ -326,6 +330,14 @@ public class CbcServiceImpl implements CbcService {
         if (deviceCbc != null) {
             deviceCbc.setSerialNumber(cbc.getDeviceCBC().getSerialNumber());
             deviceCbc.setRouteID(cbc.getDeviceCBC().getRouteID());
+        }
+        
+        if (dbPersistent instanceof CapBankControllerLogical) {
+            CapBankControllerLogical logicalDeviceCbc = ((CapBankControllerLogical) dbPersistent);
+            if (cbc.getParentRtuId() != null) {
+                LiteYukonPAObject rtu = dbCache.getAllPaosMap().get(cbc.getParentRtuId());
+                logicalDeviceCbc.setParentDeviceId(rtu.getLiteID());
+            }
         }
     }
 
@@ -369,7 +381,7 @@ public class CbcServiceImpl implements CbcService {
         CompleteCbcBase completeCbc = null;
         if (cbc.isLogical()) {
             CompleteCbcLogical completeLogical = new CompleteCbcLogical();
-
+            completeLogical.setParentDeviceId(cbc.getParentRtuId());
             //  TODO - assign parent RTU
 
             completeCbc = completeLogical;

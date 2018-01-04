@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
-import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
@@ -133,6 +132,7 @@ public class CbcController {
             }
             return bindAndForward(cbc, result, redirectAttributes);
         }
+
         cbcService.save(cbc);
 
         // Success
@@ -268,13 +268,7 @@ public class CbcController {
             HeartbeatConfiguration heartbeat = cbcService.getCBCHeartbeatConfigForDevice(cbc);
             model.addAttribute("heartbeatConfig", heartbeat);
         }
-        if (cbc.isLogical()) {
-            LiteYukonPAObject parentRtu = cbc.getParentRtu();
-            if (parentRtu != null) {
-                model.addAttribute("parentRtuId", parentRtu.getLiteID());
-                model.addAttribute("parentRtuName", parentRtu.getPaoName());
-            }
-        }
+
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
         model.addAttribute("logicalTypes", CapControlCBC.getLogicalTypes());
 

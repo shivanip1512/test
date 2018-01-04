@@ -127,7 +127,7 @@ public class CapBankServiceImpl implements CapBankService {
                 DeviceConfiguration configuration = deviceConfigurationDao.getDefaultDNPConfiguration();
 
                 int portId = capbank.getCbcCommChannel() != null ? capbank.getCbcCommChannel() : 0;
-                PaoIdentifier cbcId = ccCreationService.createCbc(capbank.getCbcType(), capbank.getCbcControllerName(), false, portId, configuration);
+                PaoIdentifier cbcId = ccCreationService.createCbc(capbank.getCbcType(), capbank.getCbcControllerName(), false, portId, configuration, capbank.getParentRtuId());
                 capbank.getCapBank().setControlDeviceID(cbcId.getPaoId());
                 LitePoint point = attributeService.findPointForAttribute(cbcId, BuiltInAttribute.CONTROL_POINT);
                 if (point != null) {

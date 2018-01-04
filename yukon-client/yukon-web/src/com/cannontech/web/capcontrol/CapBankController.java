@@ -243,6 +243,7 @@ public class CapBankController {
         model.addAttribute("cbcTypes", cbcTypes);
         model.addAttribute("availablePorts", dbCache.getAllPorts());
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
+        model.addAttribute("logicalTypes", CapControlCBC.getLogicalTypes());
         
         Set<Integer> tcpPorts = dbCache.getAllPorts().stream()
                 .filter(new Predicate<LiteYukonPAObject> () {

@@ -17,6 +17,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.model.CompleteCbcLogical;
+import com.cannontech.common.pao.model.CompleteDeviceParent;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
@@ -34,13 +36,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	
     @Override
     @Transactional
-    public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, LightDeviceConfiguration config) {
+    public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, LightDeviceConfiguration config, Integer parentRtuId) {
         CompleteYukonPao pao;
-        
-        // TODO
-        if (paoType.isLogicalCBC()) {
-            throw new IllegalArgumentException("Import of " + name + " failed. Cannot create Logical CBC without parent RTU");
-        }
         
         if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
             pao = new CompleteOneWayCbc();
@@ -50,6 +47,16 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             twoWayCbc.setPortId(portId);
         } else {
             throw new IllegalArgumentException("Import of " + name + " failed. Unknown CBC Type: " + paoType.getDbString());
+        }
+        
+        if (paoType.isLogicalCBC()) {
+            CompleteCbcLogical cbcLogical = new CompleteCbcLogical();
+            if (parentRtuId != null) {
+                CompleteDeviceParent parent = new CompleteDeviceParent();
+                parent.setParentId(parentRtuId);
+                cbcLogical.setCompleteDeviceParent(parent);
+            }
+            pao = cbcLogical;
         }
         
         pao.setDisabled(disabled);

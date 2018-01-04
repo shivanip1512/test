@@ -372,4 +372,10 @@
             <bean class="com.cannontech.web.search.lucene.criteria.PortCriteria"/>
         </property>
     </bean>
+    
+    <bean name="dnpRTUPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.DnpRtuCriteria"/>
+        </property>
+    </bean>
 </beans>

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -26,7 +25,6 @@ import com.google.common.collect.Sets.SetView;
 @Service
 public class CbcValidator extends SimpleValidator<CapControlCBC> {
 
-    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDao paoDao;
@@ -46,6 +44,9 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
 
         if (cbc.isTwoWay()) {
             validateCommPort(cbc, errors);
+        }
+        if (cbc.isLogical()) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "parentRtuId", basekey + ".parentRTURequired");
         }
 
     }
