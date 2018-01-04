@@ -17,10 +17,10 @@
             <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.point">${fn:escapeXml(pointName)}</tags:nameValue2>
             <c:if test="${stateList == null}">
-                <tags:inputNameValue nameKey=".manualEntry.value" path="value" />
+                <tags:inputNameValue nameKey=".manualControl.value" path="value" />
             </c:if>
             <c:if test="${stateList != null}">
-                <tags:nameValue2 nameKey=".manualEntry.state">
+                <tags:nameValue2 nameKey=".manualControl.state">
                     <cti:pointValue pointId="${backingBean.pointId}" format="{value}" />
                 </tags:nameValue2>
                 <tags:selectNameValue emptyValueKey="true" nameKey=".manualControl.control" path="stateId" items="${stateList}" itemValue="liteID" itemLabel="stateText" />

@@ -145,6 +145,8 @@
     <entry key="yukon.web.modules.tools.tdc.manualControl">Manual Control</entry>
     <entry key="yukon.web.modules.tools.tdc.manualControl.title">Manual Control</entry>
     <entry key="yukon.web.modules.tools.tdc.manualControl.control">Control</entry>
+    <entry key="yukon.web.modules.tools.tdc.manualControl.state">Current State</entry>
+    <entry key="yukon.web.modules.tools.tdc.manualControl.value">Value</entry>
 
     <entry key="yukon.web.modules.tools.tdc.enableDisable.title">Enable/Disable</entry>
     <entry key="yukon.web.modules.tools.tdc.enableDisable.pointStatus">Point Status</entry>
