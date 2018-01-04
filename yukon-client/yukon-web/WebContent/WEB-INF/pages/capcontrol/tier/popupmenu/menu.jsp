@@ -82,7 +82,7 @@ $('#viewCommentsOption').click(function(event) {
                         </c:when>
                         <c:otherwise>
                             <li style="margin: 0.4em 0;" title="<i:inline key=".pointNotFound"/>">
-                                <span>&nbsp;&nbsp;&nbsp;&nbsp;${commandName}</span>
+                                <span style="margin-left:1.2em;">${commandName}</span>
                             </li>
                         </c:otherwise>
                     </c:choose>
