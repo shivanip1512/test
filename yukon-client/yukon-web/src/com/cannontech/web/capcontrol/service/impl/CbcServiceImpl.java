@@ -382,8 +382,6 @@ public class CbcServiceImpl implements CbcService {
         if (cbc.isLogical()) {
             CompleteCbcLogical completeLogical = new CompleteCbcLogical();
             completeLogical.setParentDeviceId(cbc.getParentRtuId());
-            //  TODO - assign parent RTU
-
             completeCbc = completeLogical;
         } else if (cbc.isTwoWay()) {
             CompleteTwoWayCbc completeTwoWay = new CompleteTwoWayCbc();
