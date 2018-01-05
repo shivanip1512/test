@@ -86,57 +86,41 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_changes)
     const int control1_offset = 42,
               control2_offset = 49;
 
+    CtiPointStatus* point_status1;
+    
     //  configure and add one status point with a control offset
-    CtiPointStatus  *point_status1 = Cti::Test::makeControlPoint(device1_id, status1_id, point1_offset, control1_offset, ControlType_Normal);
+    point_status1 = Cti::Test::makeControlPoint(device1_id, status1_id, point1_offset, control1_offset, ControlType_Normal);
 
     manager.addPoint(point_status1);
-    //  we need to replace the following tests with point replacements from addPoint on the same pointid
-/*
+
     //  make sure everything's still copasetic
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device1_id, control1_offset).get(),                point_status1);
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device1_id, point1_offset, StatusPointType).get(), point_status1);
 
-    point_status1->setPointOffset(point2_offset);
-
-    manager.updatePointMaps(*point_status1, device1_id, StatusPointType, point1_offset, control1_offset);
+    point_status1 = Cti::Test::makeControlPoint(device1_id, status1_id, point2_offset, control1_offset, ControlType_Normal);
+    manager.addPoint(point_status1);
 
     //  make sure everything's still copasetic
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device1_id, control1_offset).get(),                point_status1);
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device1_id, point1_offset, StatusPointType).get(), (CtiPointBase *)0);
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device1_id, point2_offset, StatusPointType).get(), point_status1);
 
-    point_status1->setControlOffset(control2_offset);
-
-    manager.updatePointMaps(*point_status1, device1_id, StatusPointType, point2_offset, control1_offset);
+    point_status1 = Cti::Test::makeControlPoint(device1_id, status1_id, point2_offset, control2_offset, ControlType_Normal);
+    manager.addPoint(point_status1);
 
     //  make sure everything's still copasetic
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device1_id, control1_offset).get(),                (CtiPointBase *)0);
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device1_id, control2_offset).get(),                point_status1);
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device1_id, point2_offset, StatusPointType).get(), point_status1);
 
-    point_status1->setDeviceID(device2_id);
-
-    manager.updatePointMaps(*point_status1, device1_id, StatusPointType, point2_offset, control2_offset);
+    point_status1 = Cti::Test::makeControlPoint(device2_id, status1_id, point2_offset, control2_offset, ControlType_Normal);
+    manager.addPoint(point_status1);
 
     //  make sure everything's still copasetic
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device1_id, control2_offset).get(),                (CtiPointBase *)0);
     BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device2_id, control2_offset).get(),                point_status1);
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device1_id, point2_offset, StatusPointType).get(), (CtiPointBase *)0);
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device2_id, point2_offset, StatusPointType).get(), point_status1);
-
-    //  this is a little weird - it's still a status point, but it will be treated as an analog
-    //    this points to a problem in the code structure - you shouldn't be able to set the type
-    //    of a point, it should be defined by its class
-    point_status1->setType(AnalogPointType);
-    point_status1->setControlOffset(0);
-
-    manager.updatePointMaps(*point_status1, device2_id, StatusPointType, point2_offset, control2_offset);
-
-    //  make sure everything's still copasetic
-    BOOST_CHECK_EQUAL(manager.getControlOffsetEqual(device2_id, control2_offset).get(),                (CtiPointBase *)0);
-    BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device2_id, point2_offset, StatusPointType).get(), (CtiPointBase *)0);
-    BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual   (device2_id, point2_offset, AnalogPointType).get(), point_status1);
-*/
 }
 
 
@@ -163,30 +147,80 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_type_offset)
     BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device2_id, point1_offset, AnalogPointType).get(), point_analog3);
 }
 
-/*
 BOOST_AUTO_TEST_CASE(test_mgr_point_get_equal_by_pao)
 {
     Test_CtiPointManager manager;
 
-    CtiPointStatus *point_status1 = Cti::Test::makeStatusPoint(device1_id, status1_id, 1);
-    CtiPointStatus *point_status2 = Cti::Test::makeStatusPoint(device1_id, status2_id, 2);
-    CtiPointAnalog *point_analog1 = Cti::Test::makeAnalogPoint(device1_id, analog1_id, 1);
-    CtiPointAnalog *point_analog2 = Cti::Test::makeAnalogPoint(device1_id, analog2_id, 2);
-    CtiPointAnalog *point_analog3 = Cti::Test::makeAnalogPoint(device2_id, analog3_id, 1);
+    manager.addPoint(Cti::Test::makeStatusPoint(device1_id, status1_id, 1));
+    manager.addPoint(Cti::Test::makeStatusPoint(device1_id, status2_id, 2));
+    manager.addPoint(Cti::Test::makeAnalogPoint(device1_id, analog1_id, 1));
+    manager.addPoint(Cti::Test::makeAnalogPoint(device1_id, analog2_id, 2));
+    manager.addPoint(Cti::Test::makeAnalogPoint(device2_id, analog3_id, 1));
 
-    manager.addPoint(point_status1);
-    manager.addPoint(point_status2);
-    manager.addPoint(point_analog1);
-    manager.addPoint(point_analog2);
-    manager.addPoint(point_analog3);
+    std::vector<CtiPointSPtr> points;
 
-    BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device1_id, 1, StatusPointType).get(), point_status1);
-    BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device1_id, 2, StatusPointType).get(), point_status2);
-    BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device1_id, 1, AnalogPointType).get(), point_analog1);
-    BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device1_id, 2, AnalogPointType).get(), point_analog2);
-    BOOST_CHECK_EQUAL(manager.getOffsetTypeEqual(device2_id, 1, AnalogPointType).get(), point_analog3);
+    manager.getEqualByPAO(device1_id, points);
+
+    BOOST_REQUIRE_EQUAL(points.size(), 4);
+
+    BOOST_CHECK_EQUAL(points[0]->getDeviceID(), device1_id);
+    BOOST_CHECK_EQUAL(points[1]->getDeviceID(), device1_id);
+    BOOST_CHECK_EQUAL(points[2]->getDeviceID(), device1_id);
+    BOOST_CHECK_EQUAL(points[3]->getDeviceID(), device1_id);
+
+    points.clear();
+
+    manager.getEqualByPAO(device2_id, points);
+
+    BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+    BOOST_CHECK_EQUAL(points[0]->getDeviceID(), device2_id);
 }
-*/
+
+BOOST_AUTO_TEST_CASE(test_mgr_point_get_equal_by_name)
+{
+    Test_CtiPointManager manager;
+
+    manager.addPoint(Cti::Test::makeStatusPoint(device1_id, status1_id, 1));
+    manager.addPoint(Cti::Test::makeStatusPoint(device1_id, status2_id, 2));
+    manager.addPoint(Cti::Test::makeStatusPoint(device2_id, status3_id, 1));
+
+    {
+        auto pt = manager.getEqualByName(device1_id, "Status1");
+
+        BOOST_REQUIRE(pt);
+
+        BOOST_CHECK_EQUAL(pt->getDeviceID(), device1_id);
+        BOOST_CHECK_EQUAL(pt->getPointID(), status1_id);
+    }
+
+    {
+        auto pt = manager.getEqualByName(device1_id, "Status2");
+
+        BOOST_REQUIRE(pt);
+
+        BOOST_CHECK_EQUAL(pt->getDeviceID(), device1_id);
+        BOOST_CHECK_EQUAL(pt->getPointID(), status2_id);
+    }
+
+    {
+        auto pt = manager.getEqualByName(device2_id, "Status1");
+
+        BOOST_REQUIRE(pt);
+
+        BOOST_CHECK_EQUAL(pt->getDeviceID(), device1_id);  //  BUG!
+        BOOST_CHECK_EQUAL(pt->getPointID(), status1_id);   //  BUG!
+    }
+
+    {
+        auto pt = manager.getEqualByName(device2_id, "Status2");
+
+        BOOST_REQUIRE(pt);  //  BUG!
+
+        BOOST_CHECK_EQUAL(pt->getDeviceID(), device1_id);  //  BUG!
+        BOOST_CHECK_EQUAL(pt->getPointID(), status2_id);   //  BUG!
+    }
+}
 
 BOOST_AUTO_TEST_CASE(test_pointExpiration)
 {
