@@ -61,7 +61,6 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
@@ -85,10 +84,8 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private PointCreationService pointCreationService;
-    @Autowired private PointDao pointDao;
     @Autowired private PointService pointService;
     @Autowired private StateGroupDao stateGroupDao;
-    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     @Override

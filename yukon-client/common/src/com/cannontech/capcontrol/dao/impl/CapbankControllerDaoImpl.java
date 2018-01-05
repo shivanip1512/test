@@ -8,18 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -28,7 +26,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDao paoDao;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private AttributeService attributeService;
+    @Autowired private CbcHelperService cbcHelperService;
     
     @Override
     public boolean assignController(int controllerId, String capbankName) {
@@ -40,8 +38,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     public boolean assignController(int capbankId, int controllerId) {
         YukonPao controller = paoDao.getYukonPao(controllerId);
 
-        LitePoint pointForAttribute = attributeService.getPointForAttribute(controller, BuiltInAttribute.CONTROL_POINT);
-        int pointId = pointForAttribute.getPointID();
+        int pointId = cbcHelperService.getControlPointIdForCbc(controllerId);
 
         unassignController(controllerId);
 

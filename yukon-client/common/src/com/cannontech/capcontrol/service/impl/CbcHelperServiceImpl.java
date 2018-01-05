@@ -2,10 +2,12 @@ package com.cannontech.capcontrol.service.impl;
 
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -48,12 +50,25 @@ public class CbcHelperServiceImpl implements CbcHelperService {
     }
     
     @Override
-    public int getControlPointIdForCbc(Integer controlDeviceID) {
+    public int getControlPointIdForCbc(int controlDeviceID) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
 
         CbcQueryHelper.appendDeviceControlPointQuery(controlDeviceID, builder);
         
-        return jdbcTemplate.queryForInt(builder);
+        try {
+            return jdbcTemplate.queryForInt(builder);
+        } catch(IncorrectResultSizeDataAccessException ex) {
+            throw new NotFoundException("Control point not found for control device ID " + controlDeviceID, ex);
+        }
+    }
+    
+    @Override
+    public Integer findControlPointIdForCbc(int controlDeviceID) {
+        try {
+            return getControlPointIdForCbc(controlDeviceID);
+        } catch(NotFoundException ex) {
+            return null;
+        }
     }
     
     @Override

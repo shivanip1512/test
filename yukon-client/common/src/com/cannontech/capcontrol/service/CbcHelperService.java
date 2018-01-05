@@ -13,8 +13,14 @@ public interface CbcHelperService {
 
     /** 
      * Returns the point ID of the CONTROL_POINT attribute on the specified CBC.
+     * @throws NotFoundException if not found.
      */
-    public int getControlPointIdForCbc(Integer controlDeviceID);
+    public int getControlPointIdForCbc(int controlDeviceID);
+
+    /** 
+     * @return the point ID of the CONTROL_POINT attribute on the specified CBC, or null if it does not exist.
+     */
+    public Integer findControlPointIdForCbc(int controlDeviceID);
 
     /**
      * Returns an SQL statement that finds all CBCs with a CONTROL_POINT that are not assigned to a Cap Bank.

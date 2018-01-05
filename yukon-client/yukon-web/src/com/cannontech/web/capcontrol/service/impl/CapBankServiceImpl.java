@@ -19,8 +19,6 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.CompleteCapBank;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
@@ -51,7 +49,6 @@ public class CapBankServiceImpl implements CapBankService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PointDao pointDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
-    @Autowired private AttributeService attributeService;
     @Autowired private CbcHelperService cbcHelperService;
     
     private Logger log = YukonLogManager.getLogger(getClass());
@@ -129,9 +126,9 @@ public class CapBankServiceImpl implements CapBankService {
                 int portId = capbank.getCbcCommChannel() != null ? capbank.getCbcCommChannel() : 0;
                 PaoIdentifier cbcId = ccCreationService.createCbc(capbank.getCbcType(), capbank.getCbcControllerName(), false, portId, configuration, capbank.getParentRtuId());
                 capbank.getCapBank().setControlDeviceID(cbcId.getPaoId());
-                LitePoint point = attributeService.findPointForAttribute(cbcId, BuiltInAttribute.CONTROL_POINT);
-                if (point != null) {
-                    capbank.getCapBank().setControlPointID(point.getPointID());
+                Integer controlPointId = cbcHelperService.findControlPointIdForCbc(cbcId.getPaoId());
+                if (controlPointId != null) {
+                    capbank.getCapBank().setControlPointID(controlPointId);
                 }
             }
             create(capbank);
