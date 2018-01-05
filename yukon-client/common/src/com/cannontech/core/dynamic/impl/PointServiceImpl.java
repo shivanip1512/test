@@ -80,7 +80,7 @@ public class PointServiceImpl implements PointService {
         data.setType(pd.getType());
         data.setValue(value);
         data.setPointQuality(PointQuality.Manual);
-        data.setStr("Manual change occurred from " + CtiUtilities.getUserName() + " using TDC (Yukon)");
+        data.setStr("Manual change occurred from " + CtiUtilities.getUserName());
         data.setUserName(user.getUsername());
         asyncDynamicDataSource.putValue(data);
     }
