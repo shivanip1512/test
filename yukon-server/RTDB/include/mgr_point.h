@@ -86,7 +86,7 @@ public:
     virtual ptr_type getPoint(LONG Pt, LONG pao = 0);
     virtual ptr_type getControlOffsetEqual(LONG pao, INT Offset);
     virtual ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
-    ptr_type getEqualByName(LONG pao, std::string pname);
+    ptr_type getEqualByName(LONG pao, const std::string& pname);
     virtual void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
     boost::optional<long> getIdForOffsetAndType(long pao, int offset, CtiPointType_t Type);

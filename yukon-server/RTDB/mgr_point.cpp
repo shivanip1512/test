@@ -772,48 +772,28 @@ CtiPointManager::ptr_type CtiPointManager::getPoint (LONG Pt, LONG pao)
     return retVal;
 }
 
-CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname)
+CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, const string& pname)
 {
-    ptr_type p, pRet;
-
-    std::transform(pname.begin(), pname.end(), pname.begin(), tolower);
-
     if(_smartMap.entries() == 0)
     {
         CTILOG_ERROR(dout, "There are no entries in the point manager list");
     }
 
-    loadPao(pao, CALLSITE);
+    vector<ptr_type> paoPoints;
 
+    getEqualByPAO(pao, paoPoints);
+
+    for( auto& p : paoPoints )
     {
-        coll_type::reader_lock_guard_t guard(getLock());
-        spiterator itr = begin(), itr_end = end();
-
-        for( ; itr != itr_end; itr++ )
+        if( ciStringEqual(p->getName(), pname) )
         {
-            p = (itr->second);
+            updateAccess(p->getPointID());
 
-            string ptname = p->getName();
-            std::transform(ptname.begin(), ptname.end(), ptname.begin(), ::tolower);
-
-            if(ptname == pname)
-            {
-                if(p->getUpdatedFlag())
-                {
-                    updateAccess(p->getPointID());
-
-                    pRet = p;
-                    break;
-                }
-                else
-                {
-                    CTILOG_WARN(dout, "Device ID: "<< p->getDeviceID() <<" : "<< p->getName()<<" point is non-updated");
-                }
-            }
+            return p;
         }
     }
 
-    return pRet;
+    return nullptr;
 }
 
 

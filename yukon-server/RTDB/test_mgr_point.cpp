@@ -208,17 +208,14 @@ BOOST_AUTO_TEST_CASE(test_mgr_point_get_equal_by_name)
 
         BOOST_REQUIRE(pt);
 
-        BOOST_CHECK_EQUAL(pt->getDeviceID(), device1_id);  //  BUG!
-        BOOST_CHECK_EQUAL(pt->getPointID(), status1_id);   //  BUG!
+        BOOST_CHECK_EQUAL(pt->getDeviceID(), device2_id);
+        BOOST_CHECK_EQUAL(pt->getPointID(), status3_id);
     }
 
     {
         auto pt = manager.getEqualByName(device2_id, "Status2");
 
-        BOOST_REQUIRE(pt);  //  BUG!
-
-        BOOST_CHECK_EQUAL(pt->getDeviceID(), device1_id);  //  BUG!
-        BOOST_CHECK_EQUAL(pt->getPointID(), status2_id);   //  BUG!
+        BOOST_REQUIRE( ! pt);
     }
 }
 
