@@ -61,13 +61,13 @@ public enum DatabaseVendor {
             }
         }
 
+        logger.warn("Your database is not officially supported by Yukon: " + vendorName + " - " + productVersion);
         if (MS_UNKNOWN.getVendorName().equalsIgnoreCase(vendorName)) {
             return DatabaseVendor.MS_UNKNOWN;
         } else if (ORACLE_UNKNOWN.getVendorName().equalsIgnoreCase(vendorName)) {
             return DatabaseVendor.ORACLE_UNKNOWN;
         }
 
-        logger.warn("Your database is not officially supported by Yukon: " + vendorName + " - " + productVersion);
         return DatabaseVendor.UNKNOWN;
     }
 
