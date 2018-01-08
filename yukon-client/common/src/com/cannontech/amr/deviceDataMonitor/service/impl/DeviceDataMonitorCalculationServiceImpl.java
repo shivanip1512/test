@@ -125,7 +125,11 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                 boolean isWorkingOnObject = pending.containsKey(monitor.getId());
                 if (!isWorkingOnObject) {
                     pending.put(monitor.getId(), monitor);
-                    recalculateViolations(monitor);
+                    try {
+                        recalculateViolations(monitor);
+                    } catch (Exception e) {
+                        log.error("Failed to recalculate violations", e);
+                    }
                     Iterator<DeviceDataMonitor> iterator = pending.values().iterator();
                     while (iterator.hasNext()) {
                         DeviceDataMonitor ddm = iterator.next();
