@@ -383,6 +383,8 @@ public class CbcServiceImpl implements CbcService {
             CompleteCbcLogical completeLogical = new CompleteCbcLogical();
             completeLogical.setParentDeviceId(cbc.getParentRtuId());
             completeCbc = completeLogical;
+            //Logical CBCs should not be assigned to default dnp config
+            cbc.setDnpConfigId(null);
         } else if (cbc.isTwoWay()) {
             CompleteTwoWayCbc completeTwoWay = new CompleteTwoWayCbc();
             completeTwoWay.setPortId(cbc.getDeviceDirectCommSettings().getPortID());
