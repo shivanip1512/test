@@ -436,7 +436,7 @@ public class PointController {
         } else {
             backingBean.setValue(pointValue.getValue());
         }
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+        LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(litePoint.getPaobjectID());
         model.put("deviceName", liteYukonPAO.getPaoName());
         model.put("pointName", litePoint.getPointName());
         model.addAttribute("backingBean", backingBean);
@@ -458,7 +458,7 @@ public class PointController {
         } else {
             validator.validate(backingBean, bindingResult);
             if (bindingResult.hasErrors()) {
-                LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+                LiteYukonPAObject liteYukonPAO = dbCache.getAllPaosMap().get(litePoint.getPaobjectID());
                 model.put("deviceName", liteYukonPAO.getPaoName());
                 model.put("pointName", litePoint.getPointName());
                 model.addAttribute("backingBean", backingBean);
