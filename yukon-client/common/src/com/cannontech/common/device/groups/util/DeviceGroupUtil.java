@@ -44,6 +44,11 @@ public class DeviceGroupUtil {
         return result;
     }
 
+    /**
+     * Returns true if the selected group exists false otherwise. 
+     * @param string
+     * @return
+     */
     public static boolean checkIsValidGroupName(String groupName) {
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
         return deviceGroupService.findGroupName(groupName) != null;
