@@ -599,13 +599,15 @@
     <entry key="yukon.web.modules.tools.configs.categoryDetails.table.toCreate">To create a new category, click the Create button below.</entry>
 
     <!-- category entries -->
-    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageName">Category</entry>
-    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.tools.configs.category.VIEW.contextualPageName">View</entry>
-    <entry key="yukon.web.modules.tools.configs.category.EDIT.pageName">Edit Category</entry>
-    <entry key="yukon.web.modules.tools.configs.category.EDIT.contextualPageName">Edit</entry>
-    <entry key="yukon.web.modules.tools.configs.category.CREATE.pageName">Create Category</entry>
-    <entry key="yukon.web.modules.tools.configs.category.CREATE.contextualPageName">Create</entry>
+    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageTitle">Category: {0}</entry>
+    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageHeading">Category:{0}</entry>
+    <entry key="yukon.web.modules.tools.configs.category.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.tools.configs.category.EDIT.pageTitle">Category: {0} Edit</entry>
+    <entry key="yukon.web.modules.tools.configs.category.EDIT.pageHeading">Edit Category: {0}</entry>
+    <entry key="yukon.web.modules.tools.configs.category.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.tools.configs.category.CREATE.pageTitle">Create Category</entry>
+    <entry key="yukon.web.modules.tools.configs.category.CREATE.pageHeading">Create Category</entry>
+    <entry key="yukon.web.modules.tools.configs.category.CREATE.crumbTitle">Create</entry>
     <entry key="yukon.web.modules.tools.configs.category.categoryFields.title">Fields</entry>
     <entry key="yukon.web.modules.tools.configs.category.addDisplayItem">Add another display item to the list</entry>
     <entry key="yukon.web.modules.tools.configs.category.addDisplayItem.label">Add Item</entry>
@@ -628,13 +630,15 @@
     <entry key="yukon.web.modules.tools.configs.category.error.immediateDisconnect">Connect Delay cannot be 0 for Reconnect Parameter 'Immediate'</entry>
 
     <!-- configuration entries -->
-    <entry key="yukon.web.modules.tools.configs.config.VIEW.pageName">Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.config.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.tools.configs.config.VIEW.contextualPageName">View</entry>
-    <entry key="yukon.web.modules.tools.configs.config.EDIT.pageName">Edit Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.config.EDIT.contextualPageName">Edit</entry>
-    <entry key="yukon.web.modules.tools.configs.config.CREATE.pageName">Create Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.config.CREATE.contextualPageName">Create</entry>
+    <entry key="yukon.web.modules.tools.configs.config.VIEW.pageTitle">Configuration: {0}</entry>
+    <entry key="yukon.web.modules.tools.configs.config.VIEW.pageHeading">Configuration: {0}</entry>
+    <entry key="yukon.web.modules.tools.configs.config.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.tools.configs.config.EDIT.pageTitle">Configuration: {0} Edit</entry>
+    <entry key="yukon.web.modules.tools.configs.config.EDIT.pageHeading">Edit Configuration: {0}</entry>
+    <entry key="yukon.web.modules.tools.configs.config.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.tools.configs.config.CREATE.pageTitle">Create Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.config.CREATE.pageHeading">Create Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.config.CREATE.crumbTitle">Create</entry>
     <entry key="yukon.web.modules.tools.configs.config.addType.title">Add Type</entry>
     <entry key="yukon.web.modules.tools.configs.config.addTypeSuccess">{0} was successfully added as a supported device type for the device configuration.</entry>
     <entry key="yukon.web.modules.tools.configs.config.addTypeWarning">The supported device types for this configuration were updated to include {0}, but new category types were added to the configuration as a result. Please complete category selection below to allow the configuration to function correctly.</entry>
