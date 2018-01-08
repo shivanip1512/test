@@ -63,12 +63,12 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
                 // select next businessHourStartTime or externalMaintenanceHourStartTime, whichever start first
                 boolean isExtMaintenanceFirst = businessHourStartTime.isAfter(extMaintenanceHourStartTime);
                 endOfRunWindow = isExtMaintenanceFirst ? extMaintenanceHourStartTime : businessHourStartTime;
-                instant = endOfRunWindow.toInstant();
             }
         } catch (Exception e) {
             log.error("Unable to find run window for maintenance task", e);
             return Instant.now();
         }
+        instant = endOfRunWindow.toInstant();
         log.info("Maintenance task will end at " + instant);
         return instant;
     }
