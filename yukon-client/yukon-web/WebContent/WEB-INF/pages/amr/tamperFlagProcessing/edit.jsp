@@ -75,7 +75,7 @@
                     
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
                     <tags:deviceGroupNameSelector fieldName="deviceGroupName" 
-                                                  fieldValue="${deviceGroupName}" 
+                                                  fieldValue="${fn:escapeXml(deviceGroupName)}" 
                                                   dataJson="${groupDataJson}"
                                                   linkGroupName="true"/>
                     <cti:msg2 var="deviceGroupText" key=".label.deviceGroup"/>

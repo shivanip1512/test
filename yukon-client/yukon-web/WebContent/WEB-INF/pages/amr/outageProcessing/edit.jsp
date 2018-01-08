@@ -45,7 +45,7 @@
     </script>
     
     <c:if test="${not empty editError}">
-        <div class="error">${editError}</div>
+        <div class="error">${fn:escapeXml(editError)}</div>
     </c:if>
     
     <c:if test="${saveOk}">
@@ -89,7 +89,7 @@
                     
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
                     <tags:deviceGroupNameSelector fieldName="deviceGroupName" 
-                                                  fieldValue="${deviceGroupName}" 
+                                                  fieldValue="${fn:escapeXml(deviceGroupName)}" 
                                                   dataJson="${groupDataJson}"
                                                   linkGroupName="true"/>
                     <cti:msg2 var="deviceGroupText" key=".label.deviceGroup"/>
