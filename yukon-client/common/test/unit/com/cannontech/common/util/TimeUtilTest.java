@@ -2,6 +2,7 @@ package com.cannontech.common.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -106,6 +107,46 @@ public class TimeUtilTest {
         
     }
     
+    @Test
+    public void test_buildCronExpression_24Hour_everyDay() throws ParseException {
+        CronExprOption cronOption = CronExprOption.EVERYDAY;
+        int time = 420;
+        String days = "YYYYYYY"; // does not check for this if cronOption= EVERYDAY
+        assertEquals("0 0 7 ? * *", TimeUtil.buildCronExpression(cronOption, time, days, 'Y'));
+    }
+    
+    @Test
+    public void test_buildCronExpression_24Hour_selectedDays() throws ParseException {
+        CronExprOption cronOption = CronExprOption.WEEKDAYS;
+        int time = 420;
+        String days = "NYYYNYY";
+        assertEquals("0 0 7 ? * 2,3,4,6,7", TimeUtil.buildCronExpression(cronOption, time, days, 'Y'));
+    }
+
+    @Test
+    public void test_buildCronExpression_with48Hours_everyDay() throws ParseException {
+        CronExprOption cronOption = CronExprOption.EVERYDAY;
+        int time = 1860;
+        String days = "NYYYNYY"; // does not check for this if cronOption= EVERYDAY
+        assertEquals("0 0 7 ? * *", TimeUtil.buildCronExpression(cronOption, time, days, 'Y'));
+    }
+
+    @Test
+    public void test_buildCronExpression_with48Hours_selectedDays() throws ParseException {
+        CronExprOption cronOption = CronExprOption.WEEKDAYS;
+        int time = 1860;
+        String days = "NYYYNYY";
+        assertEquals("0 0 7 ? * 3,4,5,7,1", TimeUtil.buildCronExpression(cronOption, time, days, 'Y'));
+    }
+    
+    @Test(expected = ParseException.class)
+    public void test_buildCronExpression_with48Hours_selectedDays_invalidTime() throws ParseException {
+        CronExprOption cronOption = CronExprOption.WEEKDAYS;
+        int time = 5660; // Invalid time value
+        String days = "NYYYNYY";
+        TimeUtil.buildCronExpression(cronOption, time, days, 'Y');
+    }
+
     private boolean isLeapYear(final Calendar cal) {
         if (cal instanceof GregorianCalendar) {
             GregorianCalendar tempCal = (GregorianCalendar) cal;
