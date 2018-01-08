@@ -68,37 +68,24 @@ $('#viewCommentsOption').click(function(event) {
         <%--Commands --%>
         <input type="hidden" name="paoId" value="${paoId}">
         <input type="hidden" name="warnOnCommands" value="${warnOnCommands}">
-        <c:choose>
-            <c:when test="${isBasedOnPoints}">
-                <c:forEach var="command" items="${commands}">
-                    <cti:msg2 var="commandName" key="${command.key}"/>
-                    <c:choose>
-                        <c:when test="${command.value}">
-                            <li class="menuOption command" value="${command.key.commandId}">
-                                <a href="javascript:void(0);">${commandName}</a>
-                                <span class="confirmMessage dn"><i:inline key="yukon.web.modules.capcontrol.command.confirm" 
-                                      arguments="${commandName}"/></span>
-                            </li>
-                        </c:when>
-                        <c:otherwise>
-                            <li style="margin: 0.4em 0;" title="<i:inline key=".pointNotFound"/>">
-                                <span style="margin-left:1.2em;">${commandName}</span>
-                            </li>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </c:when>
-            <c:otherwise>
-                <c:forEach var="command" items="${commands}">
-                    <cti:msg2 var="commandName" key="${command}"/>
-                    <li class="menuOption command" value="${command.commandId}">
+        <c:forEach var="command" items="${commands}">
+            <cti:msg2 var="commandName" key="${isBasedOnPoints ? command.key : command}"/>
+            <c:set var="commandId" value="${isBasedOnPoints ? command.key.commandId : command.commandId}"/>
+            <c:choose>
+                <c:when test="${(isBasedOnPoints && command.value) || !isBasedOnPoints}">
+                    <li class="menuOption command" value="${commandId}">
                         <a href="javascript:void(0);">${commandName}</a>
                         <span class="confirmMessage dn"><i:inline key="yukon.web.modules.capcontrol.command.confirm" 
                               arguments="${commandName}"/></span>
                     </li>
-                </c:forEach>
-            </c:otherwise>
-        </c:choose>
+                </c:when>
+                <c:otherwise>
+                    <li class="menuOption" title="<i:inline key=".pointNotFound"/>">
+                        <a href="javascript:void(0);" class="disabled-look">${commandName}</a>
+                    </li>
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
         <%--States --%>
         <c:forEach var="state" items="${states}">
             <li class="menuOption stateChange" value="${state.stateRawState}"><a href="javascript:void(0);">${state.stateText}</a></li>

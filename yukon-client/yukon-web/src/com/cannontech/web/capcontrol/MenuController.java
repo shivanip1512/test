@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -56,6 +57,7 @@ public class MenuController {
     @Autowired private CapControlCommentService ccCommentService;
     @Autowired private AttributeService attributeService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ServerDatabaseCache dbcache;
 
     private final static BankOpState[] allowedOperationStates =
             new BankOpState[] {BankOpState.FIXED,BankOpState.STANDALONE,BankOpState.SWITCHED};
@@ -239,7 +241,7 @@ public class MenuController {
         CapControlType ccType = CapControlType.getCapControlType(capObject.getCcType());
         if (ccType == CapControlType.CAPBANK) {
             CapBankDevice capBankDevice = (CapBankDevice) capObject;
-            pao = paoDao.getYukonPao(capBankDevice.getControlDeviceID());
+            pao = dbcache.getAllPaosMap().get(capBankDevice.getControlDeviceID());
         }
         if (pao != null && (pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8020
             || pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8024)) {
