@@ -47,19 +47,6 @@ public class YukonValidationUtils extends ValidationUtils {
         return false;
     }
 
-    /**
-     * Check to ensure that the groupname is valid
-     */
-    public static boolean checkIsValidGroupName(String groupName) {
-        if (StringUtils.isBlank(groupName)) {
-            return false;
-        }
-        if (!groupName.startsWith("/")) {
-            return false;
-        }
-        return true;
-    }
-
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (fieldValue != null && fieldValue.length() > max) {
             errors.rejectValue(field, "yukon.web.error.exceedsMaximumLength", new Object[] { max },

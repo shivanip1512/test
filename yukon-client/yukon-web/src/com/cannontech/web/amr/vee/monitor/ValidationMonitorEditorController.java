@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.common.validation.service.ValidationMonitorService;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -126,7 +126,7 @@ public class ValidationMonitorEditorController {
             editError = "Validation Monitor with name \"" + name + "\" already exists.";
         } else if (!isNewMonitor && !validationMonitor.getName().equals(name) && validationMonitorDao.processorExistsWithName(name)) { /* Existing monitor, new name, check name. */
             editError = "Validation Monitor with name \"" + name + "\" already exists.";
-        } else if (!YukonValidationUtils.checkIsValidGroupName(deviceGroupName)) {
+        } else if (!DeviceGroupUtil.checkIsValidGroupName(deviceGroupName)) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
         } else if (threshold == null || threshold < 0) {

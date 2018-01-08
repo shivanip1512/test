@@ -29,6 +29,7 @@ import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorStateType;
 import com.cannontech.amr.statusPointMonitoring.service.StatusPointMonitorService;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -77,7 +78,7 @@ public class StatusPointMonitorController {
         public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
             YukonValidationUtils.checkExceedsMaxLength(errors, "statusPointMonitorName", statusPointMonitor.getStatusPointMonitorName(), 50);
-            if (!YukonValidationUtils.checkIsValidGroupName(statusPointMonitor.getGroupName())) {
+            if (!DeviceGroupUtil.checkIsValidGroupName(statusPointMonitor.getGroupName())) {
                 errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
             }
         }

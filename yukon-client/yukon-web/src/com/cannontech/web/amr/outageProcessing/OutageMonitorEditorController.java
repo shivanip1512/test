@@ -31,7 +31,6 @@ import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -142,7 +141,7 @@ public class OutageMonitorEditorController extends MultiActionController {
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);
         String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
         String expression = "";
-        if (!YukonValidationUtils.checkIsValidGroupName(deviceGroupName)) {
+        if (!DeviceGroupUtil.checkIsValidGroupName(deviceGroupName)) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
         }

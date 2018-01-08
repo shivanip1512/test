@@ -23,7 +23,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
@@ -123,7 +122,7 @@ public class TamperFlagEditorController {
         } else if (!isNewMonitor && !tamperFlagMonitor.getTamperFlagMonitorName().equals(name) 
                 && tamperFlagMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
             editError = "Tamper Flag Monitor with name \"" + name + "\" already exists.";
-        } else if (!YukonValidationUtils.checkIsValidGroupName(deviceGroupName)) {
+        } else if (!DeviceGroupUtil.checkIsValidGroupName(deviceGroupName)) {
             YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");

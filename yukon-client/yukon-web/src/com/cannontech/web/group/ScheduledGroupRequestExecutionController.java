@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,6 +36,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -277,8 +277,8 @@ public class ScheduledGroupRequestExecutionController {
                 editJobId);
         }
         
-        if (StringUtils.isBlank(deviceGroupName)) {
-            errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.deviceGroup.blank");
+        if (!DeviceGroupUtil.checkIsValidGroupName(deviceGroupName)) {
+            errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.invalidGroupName");
         } else if (StringUtils.isBlank(scheduleName)) { 
             errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.name.blank");
         } else if (StringUtils.length(scheduleName) > 200) {
