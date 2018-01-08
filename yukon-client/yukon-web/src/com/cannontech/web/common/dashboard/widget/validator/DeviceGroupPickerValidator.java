@@ -22,8 +22,8 @@ public class DeviceGroupPickerValidator implements WidgetInputValidator {
             throws WidgetParameterValidationException, WidgetMissingParameterException {
 
         if (!DeviceGroupUtil.checkIsValidGroupName(inputValue.toString())) {
-            String message = "Device Group selection required.";
-            throw new WidgetParameterValidationException(message, inputName, "deviceGroup.invalid", inputName);
+            String message = "Valid Device group selection is required.";
+            throw new WidgetParameterValidationException(message, inputName, "deviceGroup.required", inputName);
         }
     }
 
