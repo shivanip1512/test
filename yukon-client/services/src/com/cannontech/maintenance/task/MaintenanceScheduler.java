@@ -71,7 +71,7 @@ public class MaintenanceScheduler {
         // Schedule the runner
         future = scheduledExecutorService.schedule(() -> {
             Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
-                log.info("Maintenance task is starting at "+  Instant.now() +" and will end at " + endOfRunWindow);
+            log.info("Maintenance task is starting at " + Instant.now() + " and will end at " + endOfRunWindow);
             List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
             if (tasks.size() == 0) {
                 allTasksCompleted = true;
