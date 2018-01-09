@@ -61,11 +61,6 @@ public class MaintenanceScheduler {
         // TODO calculate unprocessed remaining tasks and save into database. probably can consider in future
     }
 
-    // Call this when the user updates the run windows
-    public void scheduleUpdated() {
-        reschedule();
-    }
-
     // Schedule the task runner to run at the start of the next run window
     // In the future, when we want to run things in parallel, this would need to change
     private synchronized void reschedule() {
@@ -73,13 +68,16 @@ public class MaintenanceScheduler {
             future.cancel(true);
         }
         long secondsUntilRun = getSecondsUntilNextRun();
-
         // Schedule the runner
         future = scheduledExecutorService.schedule(() -> {
             Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
-
+                log.info("Maintenance task is starting at "+  Instant.now() +" and will end at " + endOfRunWindow);
             List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
-            allTasksCompleted = taskRunner.run(tasks, endOfRunWindow);
+            if (tasks.size() == 0) {
+                allTasksCompleted = true;
+            } else {
+                allTasksCompleted = taskRunner.run(tasks, endOfRunWindow);
+            }
             // At the end of the run window, schedule this to run again at the start of the next window
             reschedule();
         }, secondsUntilRun, TimeUnit.SECONDS);
@@ -107,9 +105,11 @@ public class MaintenanceScheduler {
             } else {
                 secondsUntilRun = (endOfRunWindow.getMillis() - Instant.now().getMillis())/1000;
             }
+            log.info("All maintenance task are completed before end of run window. Rescheduling task runner.");
         } else {
             secondsUntilRun = maintenanceService.getSecondsUntilRun();
         }
+        log.info("Maintenance task will start after " + secondsUntilRun + " seconds");
         return secondsUntilRun;
     }
     

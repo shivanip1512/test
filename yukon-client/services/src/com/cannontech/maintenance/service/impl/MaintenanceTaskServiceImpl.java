@@ -69,7 +69,6 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
             return Instant.now();
         }
         instant = endOfRunWindow.toInstant();
-        log.info("Maintenance task will end at " + instant);
         return instant;
     }
 

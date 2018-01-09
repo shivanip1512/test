@@ -4,14 +4,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.maintenance.MaintenanceTaskType;
 
 public class MaintenanceTaskRunner {
+    private static final Logger log = YukonLogManager.getLogger(MaintenanceTaskRunner.class);
     // TODO will remove after discussion on this
-    private long minimumExecutionTime = 5;
+    private long minimumExecutionTime = 300000; // Time in ms i.e. 5 minute
     // Store completed Tasks
     private Set<MaintenanceTaskType> completedMaintenanceTask = new HashSet<>();
 
@@ -26,12 +29,13 @@ public class MaintenanceTaskRunner {
             runTasks(tasks, timeSliceLength);
             int remainingTasks = tasks.size() - completedMaintenanceTask.size();
             if (remainingTasks == 0) {
+                log.info("All scheduled maintenance task are completed.");
                 return true;
             } else {
                 timeSliceLength = getTimeSliceLength(remainingTasks, endOfRunWindow);
             }
             // minimumExecutionTime can be different for other tasks
-            if (timeSliceLength.getStandardMinutes() < minimumExecutionTime) {
+            if (timeSliceLength.getMillis() < minimumExecutionTime) {
                 break;
             }
         }
@@ -40,16 +44,17 @@ public class MaintenanceTaskRunner {
     }
 
     private void runTasks(List<MaintenanceTask> tasks, Duration timeSliceLength) {
-
         for (MaintenanceTask task : tasks) {
+            log.info("Running " + task.getMaintenanceTaskType().name() + " maintenance task");
             Instant endOfTimeSlice = Instant.now().plus(timeSliceLength);
             // The task runs repeatedly, until it's out of work, or the allotted time is up
             boolean taskIsDone = false;
             if (!completedMaintenanceTask.contains(task.getMaintenanceTaskType())) {
-                while (!taskIsDone && Instant.now().isBefore(endOfTimeSlice)) {
+                while (!taskIsDone && Instant.now().isBefore(endOfTimeSlice.minus(minimumExecutionTime))) {
                     taskIsDone = task.doTask(endOfTimeSlice);
                     if (taskIsDone) {
                         completedMaintenanceTask.add(task.getMaintenanceTaskType());
+                        log.info("Maintenance task " + task.getMaintenanceTaskType().name() + " is completed.");
                     }
                 }
             }
