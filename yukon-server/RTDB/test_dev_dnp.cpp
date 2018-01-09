@@ -522,6 +522,68 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_control_inhibited)
         "Test DNP device / Control is inhibited for the specified analog point");
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_dnp_control_fail_no_control_information)
+{
+    //  set up the control point
+    dev.selectedPoint.reset(Cti::Test::makeStatusPoint(-1, 112358, 1997));
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("control close select pointid 112358");
+
+    BOOST_CHECK_EQUAL(ClientErrors::NoPointControlConfiguration, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_CHECK(outList.empty());
+    BOOST_CHECK(vgList.empty());
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    const auto msg = retList.front();
+
+    BOOST_REQUIRE(msg);
+
+    const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+    BOOST_REQUIRE(ret);
+
+    BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+    BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::NoPointControlConfiguration);
+    BOOST_CHECK_EQUAL(ret->DeviceId(), -1);
+    BOOST_CHECK_EQUAL(ret->ResultString(),
+        "Test DNP device / The specified point has no control information");
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_control_fail_not_status_point)
+{
+    //  set up the control point
+    dev.selectedPoint.reset(Cti::Test::makeAnalogPoint(-1, 112358, 1997));
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("control close select pointid 112358");
+
+    BOOST_CHECK_EQUAL(ClientErrors::PointLookupFailed, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_CHECK(outList.empty());
+    BOOST_CHECK(vgList.empty());
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    const auto msg = retList.front();
+
+    BOOST_REQUIRE(msg);
+
+    const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+    BOOST_REQUIRE(ret);
+
+    BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+    BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::PointLookupFailed);
+    BOOST_CHECK_EQUAL(ret->DeviceId(), -1);
+    BOOST_CHECK_EQUAL(ret->ResultString(),
+        "Test DNP device / The specified point is not Status type");
+}
+
 BOOST_AUTO_TEST_CASE(test_dev_dnp_ping)
 {
     //  start the request

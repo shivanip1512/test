@@ -108,36 +108,26 @@ try
                 {
                     throw YukonErrorException {
                         ClientErrors::PointLookupFailed,
-                        "The point ID is not a valid logical point for device " + getName() + FormattedList::of(
-                            "Point ID", pointid) };
+                        "The specified point is not on the device" };
                 }
 
-                if( point->isStatus() )
-                {
-                    CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
-
-                    if( const auto controlParameters = pStatus->getControlParameters() )
-                    {
-                        if( controlParameters->isControlInhibited() )
-                        {
-                            CTILOG_WARN(dout, "control inhibited for device \"" << getName() << "\" point \"" << pStatus->getName());
-
-                            std::string temp = "Control is inhibited for the specified status point on device " + getName();
-
-                            insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
-
-                            return ClientErrors::ControlInhibitedOnPoint;
-                        }
-                        if( controlParameters->getControlOffset() > 0 )
-                        {
-                            const auto command = pReq->CommandString() + " offset " + std::to_string(controlParameters->getControlOffset());
-
-                            return executeRequestOnParent(command, *pReq, retList);
-                        }
-                    }
-                }
+                return executeRequestOnParent(pReq->CommandString(), *pReq, retList);
             }
-            else if( !(parse.getFlags() & CMD_FLAG_OFFSET) && (parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE) )
+            else if( parse.getFlags() & CMD_FLAG_OFFSET )
+            {
+                const auto controlOffset = parse.getiValue("offset");
+
+                //  make sure the control offset is on the device to prevent sending a command to another Logical device on the same RTU
+                if( ! getDeviceControlPointOffsetEqual(controlOffset) )
+                {
+                    throw YukonErrorException {
+                        ClientErrors::PointLookupFailed,
+                        "The control offset is not associated with any points on the device" };
+                }
+
+                return executeRequestOnParent(pReq->CommandString(), *pReq, retList);
+            }
+            else if( parse.getFlags() & CMD_FLAG_CTL_OPEN || parse.getFlags() & CMD_FLAG_CTL_CLOSE )
             {
                 const auto controlOffset = _attributeMapping.getControlOffset(Attribute::ControlPoint);
             

@@ -21,12 +21,13 @@ struct TestCbcLogicalDevice : Cti::Devices::CbcLogicalDevice
 
     CtiPointSPtr logicalPoint;
     std::string requestedPointName;
-    int requestedPointId;
+    int requestedPointId, requestedControlOffset;
 
     CtiPointSPtr getDevicePointByName(const std::string& pointName) override
     {
         requestedPointName = pointName;
         requestedPointId = 0;
+        requestedControlOffset = 0;
 
         return logicalPoint;
     }
@@ -34,6 +35,15 @@ struct TestCbcLogicalDevice : Cti::Devices::CbcLogicalDevice
     {
         requestedPointName = "";
         requestedPointId = id;
+        requestedControlOffset = 0;
+
+        return logicalPoint;
+    }
+    CtiPointSPtr getDeviceControlPointOffsetEqual(int offset) override
+    {
+        requestedPointName = "";
+        requestedPointId = 0;
+        requestedControlOffset = offset;
 
         return logicalPoint;
     }
@@ -413,6 +423,102 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     }
     delete_container(retList);
     retList.clear();
+
+    //  control point required for control with offset or pointid
+    dev.logicalPoint.reset(Cti::Test::makeControlPoint(1729, 17, 172, 3458, ControlType_Normal));
+
+    //  control open offset
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open offset 42"));
+
+        BOOST_CHECK_EQUAL(dev.requestedControlOffset, 42);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "control open offset 42");
+    }
+    delete_container(retList);
+    retList.clear();
+    //  control elephant offset
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control elephant offset 42"));
+
+        BOOST_CHECK_EQUAL(dev.requestedControlOffset, 42);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "control elephant offset 42");
+    }
+    delete_container(retList);
+    retList.clear();
+    //  control open select pointid
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open select pointid 11235"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "control open select pointid 11235");
+    }
+    delete_container(retList);
+    retList.clear();
+    //  control close select pointid
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control close select pointid 11235"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "control close select pointid 11235");
+    }
+    delete_container(retList);
+    retList.clear();
 }
 
 BOOST_AUTO_TEST_CASE(test_command_fail)
@@ -531,6 +637,60 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
             "George Washington / Parent device ID not set");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  No point for the control offset
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open offset 42"));
+
+        BOOST_CHECK_EQUAL(dev.requestedControlOffset, 42);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::PointLookupFailed);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / The control offset is not associated with any points on the device");
+    }
+    delete_container(retList);
+    retList.clear();
+
+    //  No point for the pointid
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open select pointid 112358"));
+
+        BOOST_CHECK_EQUAL(dev.requestedPointId, 112358);
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+        BOOST_REQUIRE(ret);
+
+        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::PointLookupFailed);
+        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
+        BOOST_CHECK_EQUAL(ret->ResultString(),
+            "George Washington / The specified point is not on the device");
     }
     delete_container(retList);
     retList.clear();

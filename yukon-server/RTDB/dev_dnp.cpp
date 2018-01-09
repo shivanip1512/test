@@ -181,16 +181,21 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                 if ( ! point )
                 {
-                    std::string errorMessage = "The specified point is not on device " + getName();
+                    std::string errorMessage = "The specified point is not on the device";
                     insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
                     return ClientErrors::PointLookupFailed;
                 }
 
-                if( point->isStatus() )
+                if( ! point->isStatus() )
                 {
-                    pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+                    std::string errorMessage = "The specified point is not Status type";
+                    insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
+
+                    return ClientErrors::PointLookupFailed;
                 }
+
+                pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
             }
             else if( parse.getFlags() & CMD_FLAG_OFFSET )
             {
@@ -280,10 +285,10 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 }
                 else
                 {
-                    CTILOG_ERROR(dout, "status point \""<< pStatus->getName() <<"\" on device \""<< getName() <<"\" does not have control");
+                    std::string errorMessage = "The specified point has no control information";
+                    insertReturnMsg(ClientErrors::NoPointControlConfiguration, OutMessage, retList, errorMessage);
 
-                    pStatus.reset();
-                    offset  = 0;
+                    return ClientErrors::NoPointControlConfiguration;
                 }
             }
             else if( offset )

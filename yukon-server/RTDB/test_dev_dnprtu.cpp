@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_child_device_fail)
 
         BOOST_CHECK_EQUAL(
             retMsg->ResultString(),
-            "Test DNP device / The specified point is not on device Test DNP device");
+            "Test DNP device / The specified point is not on the device");
     }
 }
 
