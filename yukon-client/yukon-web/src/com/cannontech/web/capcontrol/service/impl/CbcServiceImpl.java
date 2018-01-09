@@ -229,6 +229,7 @@ public class CbcServiceImpl implements CbcService {
         } catch (PersistenceException e) {
             // TODO Auto-generated catch block
         } catch (InvalidDeviceTypeException e) {
+            log.error(e.getMessage());
         }
         if (copyPoints) {
             CBCCopyUtils.copyAllPointsForPAO(originalId, copy.getPAObjectID());
@@ -404,4 +405,5 @@ public class CbcServiceImpl implements CbcService {
         cbc.setId(completeCbc.getPaObjectId());
         return cbc.getId();
     }
+    
 }
