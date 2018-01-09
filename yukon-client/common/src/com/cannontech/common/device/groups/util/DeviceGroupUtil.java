@@ -3,8 +3,6 @@ package com.cannontech.common.device.groups.util;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.device.groups.IllegalGroupNameException;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.spring.YukonSpringHook;
 
 public class DeviceGroupUtil {
     public final static char[] ILLEGAL_NAME_CHARS = {'\\', '/'};
@@ -44,13 +42,4 @@ public class DeviceGroupUtil {
         return result;
     }
 
-    /**
-     * Returns true if the selected group exists false otherwise. 
-     * @param string
-     * @return
-     */
-    public static boolean checkIsValidGroupName(String groupName) {
-        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-        return deviceGroupService.findGroupName(groupName) != null;
-    }
 }

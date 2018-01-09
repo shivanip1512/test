@@ -141,10 +141,6 @@ public class OutageMonitorEditorController extends MultiActionController {
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);
         String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
         String expression = "";
-        if (!DeviceGroupUtil.checkIsValidGroupName(deviceGroupName)) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
-        }
         // new processor?
         boolean isNewMonitor = true;
         OutageMonitor outageMonitor;
@@ -184,8 +180,9 @@ public class OutageMonitorEditorController extends MultiActionController {
             editError = "Outage Monitor with name \"" + name + "\" already exists.";
         } else if (!isNewMonitor && !outageMonitor.getOutageMonitorName().equals(name) && outageMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
             editError = "Outage Monitor with name \"" + name + "\" already exists.";
-        } else if (StringUtils.isBlank(deviceGroupName)) {
-            editError = "Device group required.";
+        } else if (deviceGroupService.findGroupName(deviceGroupName) == null) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
         } else if (numberOfOutages < 1) {
             editError= "Number of outages must be greater than or equal to 1.";
         } else if (timePeriod < 0) {

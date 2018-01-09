@@ -1,6 +1,7 @@
 package com.cannontech.web.common.dashboard.widget.validator;
 
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.WidgetInputType;
@@ -20,8 +21,8 @@ public class DeviceGroupPickerValidator implements WidgetInputValidator {
     @Override
     public void validate(String inputName, Object inputValue, WidgetInputType type)
             throws WidgetParameterValidationException, WidgetMissingParameterException {
-
-        if (!DeviceGroupUtil.checkIsValidGroupName(inputValue.toString())) {
+        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        if (deviceGroupService.findGroupName(inputValue.toString()) == null) {
             String message = "Valid Device group selection is required.";
             throw new WidgetParameterValidationException(message, inputName, "deviceGroup.required", inputName);
         }

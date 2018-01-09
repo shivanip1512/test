@@ -29,7 +29,7 @@ import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorStateType;
 import com.cannontech.amr.statusPointMonitoring.service.StatusPointMonitorService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -64,6 +64,7 @@ public class StatusPointMonitorController {
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private OutageEventLogService outageEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DeviceGroupService deviceGroupService;
     
     private final Validator createValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
         @Override
@@ -78,7 +79,7 @@ public class StatusPointMonitorController {
         public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
             YukonValidationUtils.checkExceedsMaxLength(errors, "statusPointMonitorName", statusPointMonitor.getStatusPointMonitorName(), 50);
-            if (!DeviceGroupUtil.checkIsValidGroupName(statusPointMonitor.getGroupName())) {
+            if (deviceGroupService.findGroupName(statusPointMonitor.getGroupName()) == null) {
                 errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
             }
         }

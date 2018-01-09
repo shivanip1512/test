@@ -122,7 +122,7 @@ public class TamperFlagEditorController {
         } else if (!isNewMonitor && !tamperFlagMonitor.getTamperFlagMonitorName().equals(name) 
                 && tamperFlagMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
             editError = "Tamper Flag Monitor with name \"" + name + "\" already exists.";
-        } else if (!DeviceGroupUtil.checkIsValidGroupName(deviceGroupName)) {
+        } else if (deviceGroupService.findGroupName(deviceGroupName) == null) {
             YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");

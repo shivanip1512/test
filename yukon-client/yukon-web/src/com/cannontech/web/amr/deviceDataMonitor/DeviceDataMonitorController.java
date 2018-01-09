@@ -47,7 +47,6 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
@@ -110,7 +109,7 @@ public class DeviceDataMonitorController {
         public void doValidation(DeviceDataMonitor monitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", baseKey + ".empty");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 100);
-            if (!DeviceGroupUtil.checkIsValidGroupName(monitor.getGroupName())) {
+            if (deviceGroupService.findGroupName(monitor.getGroupName()) == null) {
                 errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
             }
         }
