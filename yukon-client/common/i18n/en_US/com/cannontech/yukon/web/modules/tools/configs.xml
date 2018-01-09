@@ -600,7 +600,7 @@
 
     <!-- category entries -->
     <entry key="yukon.web.modules.tools.configs.category.VIEW.pageTitle">Category: {0}</entry>
-    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageHeading">Category:{0}</entry>
+    <entry key="yukon.web.modules.tools.configs.category.VIEW.pageHeading">Category: {0}</entry>
     <entry key="yukon.web.modules.tools.configs.category.VIEW.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.tools.configs.category.EDIT.pageTitle">Category: {0} Edit</entry>
     <entry key="yukon.web.modules.tools.configs.category.EDIT.pageHeading">Edit Category: {0}</entry>
