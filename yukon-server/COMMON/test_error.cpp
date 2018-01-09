@@ -165,7 +165,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Macro Offset refers to a macro sub-rte")
     ("Device is control disabled")
     ("Point is control disabled")
-    ("Unknown Error Code (227)")
+    ("Point has no control configuration")
     ("Requested operation expired due to time")
     ("Unknown Error Code (229)")
     //  230

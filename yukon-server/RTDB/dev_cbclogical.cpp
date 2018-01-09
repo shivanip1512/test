@@ -161,58 +161,14 @@ try
             {
                 if( parse.isKeyValid("analogoffset") )
                 {
-                    control_offset = parse.getiValue("analogoffset");
+                    throw YukonErrorException {
+                        ClientErrors::PointLookupFailed,
+                        "Analog outputs to CBC Logical must be sent to point IDs" };
                 }
-                else if( parse.isKeyValid("point") )
+                if( parse.isKeyValid("point") )
                 {
-                    const long pointid = parse.getiValue("point");
-
-                    const CtiPointSPtr point = getDevicePointByID(pointid);
-
-                    if( ! point )
-                    {
-                        insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, "The specified point is not on the device" + FormattedList::of(
-                            "Point ID", pointid));
-
-                        return ClientErrors::PointLookupFailed;
-                    }
-
-                    if( point->getType() == AnalogPointType )
-                    {
-                        CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
-
-                        if( const CtiTablePointControl *control = pAnalog->getControl() )
-                        {
-                            if( control->isControlInhibited() )
-                            {
-                                CTILOG_WARN(dout, "control inhibited for device \"" << getName() << "\" point \"" << pAnalog->getName());
-
-                                insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, "Control is inhibited for the specified analog point" + FormattedList::of(
-                                    "Point ID", pointid,
-                                    "Point name", pAnalog->getName()));
-
-                                return ClientErrors::ControlInhibitedOnPoint;
-                            }
-
-                            control_offset = control->getControlOffset();
-                        }
-                        else if( pAnalog->getPointOffset() > Protocols::DNP::AnalogOutputStatus::AnalogOutputOffset )
-                        {
-                            control_offset = point->getPointOffset() % Protocols::DNP::AnalogOutputStatus::AnalogOutputOffset;
-                        }
-                    }
-                }
-
-                if( control_offset > 0 )
-                {
-                    const auto analogValueStr =
-                            parse.isKeyValid("analogfloatvalue")
-                                ? std::to_string(parse.getdValue("analogvalue"))
-                                : std::to_string(parse.getiValue("analogvalue"));
-
-                    const auto command = "putvalue analog " + std::to_string(control_offset) + " " + analogValueStr;
-
-                    return executeRequestOnParent(command, *pReq, retList);
+                    //  parent device will do point ID validation
+                    return executeRequestOnParent(pReq->CommandString(), *pReq, retList);
                 }
             }
 
@@ -220,7 +176,7 @@ try
         }
     }
 
-    return ClientErrors::NoMethod;
+    throw YukonErrorException(ClientErrors::NoMethod, "Invalid command");
 }
 catch( const YukonErrorException& ex )
 {

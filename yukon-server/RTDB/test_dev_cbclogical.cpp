@@ -345,6 +345,9 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     delete_container(retList);
     retList.clear();
 
+    //  No point required for the next few commands
+    dev.logicalPoint.reset();
+
     //  ping
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "ping"));
@@ -389,36 +392,10 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     delete_container(retList);
     retList.clear();
 
-    //  putvalue analog with offset
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog 117 17.5"));
-
-        BOOST_CHECK(outList.empty());
-        BOOST_CHECK(vgList.empty());
-        BOOST_REQUIRE_EQUAL(retList.size(), 1);
-
-        const auto msg = retList.front();
-
-        BOOST_REQUIRE(msg);
-
-        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
-
-        BOOST_REQUIRE(req);
-
-        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
-        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog 117 17.500000");
-    }
-    delete_container(retList);
-    retList.clear();
-
-    dev.logicalPoint.reset(Cti::Test::makeAnalogPoint(1729, 17, 10099));
-
-    //  putvalue analog with pointid, using analog output offset
+    //  putvalue analog with pointid
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog value 37 select pointid 11235"));
 
-        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
-
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
         BOOST_REQUIRE_EQUAL(retList.size(), 1);
@@ -432,33 +409,7 @@ BOOST_AUTO_TEST_CASE(test_command_success)
         BOOST_REQUIRE(req);
 
         BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
-        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog 99 37");
-    }
-    delete_container(retList);
-    retList.clear();
-
-    dev.logicalPoint.reset(Cti::Test::makeAnalogOutputPoint(1729, 17, 10099, 1999, false));
-
-    //  putvalue analog with pointid, using control offset override
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog value 37 select pointid 11235"));
-
-        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
-
-        BOOST_CHECK(outList.empty());
-        BOOST_CHECK(vgList.empty());
-        BOOST_REQUIRE_EQUAL(retList.size(), 1);
-
-        const auto msg = retList.front();
-
-        BOOST_REQUIRE(msg);
-
-        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
-
-        BOOST_REQUIRE(req);
-
-        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
-        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog 1999 37");
+        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog value 37 select pointid 11235");
     }
     delete_container(retList);
     retList.clear();
@@ -485,9 +436,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
 
     //  Missing control point mapping
     {
-        CtiCommandParser parse("putconfig ovuv enable");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putconfig ovuv enable"));
 
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
@@ -502,6 +451,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::NoConfigData);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(), 
             "George Washington / No control offset name"
@@ -512,9 +462,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
     
     //  Missing control point
     {
-        CtiCommandParser parse("control open");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open"));
 
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
@@ -529,6 +477,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::NoConfigData);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
             "George Washington / Override point not found"
@@ -540,9 +489,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
 
     //  parent device ID not set
     {
-        CtiCommandParser parse("ping");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "ping"));
 
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
@@ -557,6 +504,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::MissingConfig);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
             "George Washington / Parent device ID not set");
@@ -564,9 +512,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
     delete_container(retList);
     retList.clear();
     {
-        CtiCommandParser parse("scan integrity");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "scan integrity"));
 
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
@@ -581,6 +527,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::MissingConfig);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
             "George Washington / Parent device ID not set");
@@ -592,9 +539,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
     {
         dev.logicalPoint.reset(Cti::Test::makeAnalogPoint(2, 22, 221));
 
-        CtiCommandParser parse("control open");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open"));
 
         BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
 
@@ -611,6 +556,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::NoConfigData);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(), 
             "George Washington / Control offset override point not Status type"
@@ -627,9 +573,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
     {
         dev.logicalPoint.reset(Cti::Test::makeStatusPoint(2, 22, 221));
 
-        CtiCommandParser parse("control open");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open"));
 
         BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
 
@@ -646,6 +590,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::NoConfigData);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(), 
             "George Washington / Control offset override point does not have control parameters"
@@ -661,9 +606,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
     {
         dev.logicalPoint.reset(Cti::Test::makeControlPoint(2, 22, 221, -17, ControlType_Normal));
 
-        CtiCommandParser parse("control open");
-
-        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "control open"));
 
         BOOST_CHECK_EQUAL(dev.requestedPointName, "Banana");
 
@@ -680,6 +623,7 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::NoConfigData);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
             "George Washington / Control offset override not valid"
@@ -692,11 +636,9 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
     delete_container(retList);
     retList.clear();
 
-    //  putvalue analog with pointid, point not found
+    //  putvalue analog with offset
     {
-        dev.logicalPoint.reset();
-
-        BOOST_CHECK_EQUAL(ClientErrors::PointLookupFailed, execute(dev, "putvalue analog value 37 select pointid 11235"));
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog 117 17.5"));
 
         BOOST_CHECK(outList.empty());
         BOOST_CHECK(vgList.empty());
@@ -711,56 +653,14 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
         BOOST_REQUIRE(ret);
 
         BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::PointLookupFailed);
         BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
         BOOST_CHECK_EQUAL(ret->ResultString(),
-            "George Washington / The specified point is not on the device"
-            "\nPoint ID : 11235");
+            "George Washington / Analog outputs to CBC Logical must be sent to point IDs");
     }
     delete_container(retList);
     retList.clear();
 
-    //  putvalue analog with pointid, not a control offset
-    {
-        dev.logicalPoint.reset(Cti::Test::makeAnalogPoint(1729, 17, 99));
-
-        BOOST_CHECK_EQUAL(ClientErrors::NoMethod, execute(dev, "putvalue analog value 37 select pointid 11235"));
-
-        BOOST_CHECK(outList.empty());
-        BOOST_CHECK(vgList.empty());
-        BOOST_CHECK(retList.empty());
-    }
-    delete_container(retList);
-    retList.clear();
-
-    //  putvalue analog with pointid, control inhibited
-    {
-        dev.logicalPoint.reset(Cti::Test::makeAnalogOutputPoint(1729, 17, 99, 1999, true));
-
-        BOOST_CHECK_EQUAL(ClientErrors::ControlInhibitedOnPoint, execute(dev, "putvalue analog value 37 select pointid 11235"));
-
-        BOOST_CHECK_EQUAL(dev.requestedPointId, 11235);
-
-        BOOST_CHECK(outList.empty());
-        BOOST_CHECK(vgList.empty());
-        BOOST_REQUIRE_EQUAL(retList.size(), 1);
-
-        const auto msg = retList.front();
-
-        BOOST_REQUIRE(msg);
-
-        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
-
-        BOOST_REQUIRE(ret);
-
-        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
-        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
-        BOOST_CHECK_EQUAL(ret->ResultString(),
-            "George Washington / Control is inhibited for the specified analog point"
-            "\nPoint ID   : 11235"
-            "\nPoint name : Analog99");
-    }
-    delete_container(retList);
-    retList.clear();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

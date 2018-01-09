@@ -103,6 +103,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::SubRouteIsMacro,             ei{ ERRTYPESYSTEM,   "Macro Offset refers to a macro sub-rte"      } },
         { ClientErrors::ControlInhibitedOnDevice,    ei{ ERRTYPESYSTEM,   "Device is control disabled"                  } },
         { ClientErrors::ControlInhibitedOnPoint,     ei{ ERRTYPESYSTEM,   "Point is control disabled"                   } },
+        { ClientErrors::NoPointControlConfiguration, ei{ ERRTYPESYSTEM,   "Point has no control configuration" } },
         { ClientErrors::RequestExpired,              ei{ ERRTYPESYSTEM,   "Requested operation expired due to time"     } },
         { ClientErrors::DialupConnectPort,           ei{ ERRTYPECOMM,     "Dialup connection failed. Port in error"     } },
         { ClientErrors::DialupConnectDevice,         ei{ ERRTYPESYSTEM,   "Dialup connection failed. Device in error"   } },

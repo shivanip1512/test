@@ -18,6 +18,8 @@ struct test_DnpDevice : Cti::Devices::DnpDevice
 
     Cti::Test::DevicePointHelper pointHelper;
 
+    CtiPointSPtr selectedPoint;
+
     CtiPointSPtr getDevicePointOffsetTypeEqual(int offset, CtiPointType_t type) override
     {
         return pointHelper.getCachedPoint(offset, type);
@@ -31,6 +33,11 @@ struct test_DnpDevice : Cti::Devices::DnpDevice
     void initControlPointOffset(int offset, CtiControlType_t controlType)
     {
         pointHelper.getCachedStatusPointByControlOffset(offset, controlType);
+    }
+
+    CtiPointSPtr getDevicePointByID(int pointId) override
+    {
+        return selectedPoint;
     }
 };
 
@@ -141,6 +148,8 @@ struct beginExecuteRequest_helper
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;
 
+    test_DnpDevice dev;
+
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
 
@@ -148,6 +157,19 @@ struct beginExecuteRequest_helper
         fixtureConfig(new Cti::Test::test_DeviceConfig),
         overrideConfigManager(fixtureConfig)
     {
+        dev._name = "Test DNP device";
+        dev._dnp.setAddresses(1234, 1);
+        dev._dnp.setName("Test DNP device");
+
+        //  set up the config
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::internalRetries,              "3");
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::timeOffset,                   "UTC");
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,           "true");
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::omitTimeRequest,              "true");
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1,      "true");
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2,      "true");
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3,      "true");
+        fixtureConfig->insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "false");
     }
 
     ~beginExecuteRequest_helper()
@@ -163,24 +185,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
 BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
 {
-    test_DnpDevice dev;
-
-    dev._name = "Test DNP device";
-    dev._dnp.setAddresses(1234, 1);
-    dev._dnp.setName("Test DNP device");
-
-    //  set up the config
-    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-    config.insertValue(Cti::Config::DNPStrings::internalRetries,              "3");
-    config.insertValue(Cti::Config::DNPStrings::timeOffset,                   "LOCAL");
-    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,           "true");
-    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest,              "false");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1,      "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2,      "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3,      "true");
-    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "false");
-
     //  set up the control point
     dev.initControlPointOffset(10, ControlType_SBOPulse);
 
@@ -366,26 +370,160 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_control_sbo)
             "\n");
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_pointid_pointoffset)
+{
+    //  set up the control point - rely on the analog output's offset
+    dev.selectedPoint.reset(Cti::Test::makeAnalogPoint(-1, 112358, 10099));
+
+    //  start the request
+    BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+    CtiCommandParser parse("putvalue analog value 182 select pointid 112358");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK(vgList.empty());
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.recvCommRequest(outList.front()) );
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList .clear();
+
+    CtiXfer xfer;
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+    BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+    BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+    const byte_str expected(
+        "05 64 12 C4 D2 04 01 00 0c B8 "
+        "C0 C1 05 29 02 28 01 00 62 00 B6 00 00 9D FE");
+
+    //  copy them into int vectors so they display nicely
+    const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+    BOOST_CHECK_EQUAL_RANGES(expected, output);
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_pointid_controloffset)
+{
+    //  set up the control point - rely on the analog's control offset
+    dev.selectedPoint.reset(Cti::Test::makeAnalogOutputPoint(-1, 112358, 13, 99, false));
+
+    CtiCommandParser parse("putvalue analog value 182 select pointid 112358");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK(vgList .empty());
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.recvCommRequest(outList.front()) );
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList .clear();
+
+    CtiXfer xfer;
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+    BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+    BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+    const byte_str expected(
+        "05 64 12 C4 D2 04 01 00 0c B8 "
+        "C0 C1 05 29 02 28 01 00 62 00 B6 00 00 9D FE");
+
+    //  copy them into int vectors so they display nicely
+    const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+    BOOST_CHECK_EQUAL_RANGES(expected, output);
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_point_lookup_failed)
+{
+    CtiCommandParser parse("putvalue analog value 1776 select pointid 112358");
+
+    BOOST_CHECK_EQUAL(ClientErrors::PointLookupFailed, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_CHECK(outList.empty());
+    BOOST_CHECK(vgList.empty());
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    const auto msg = retList.front();
+
+    BOOST_REQUIRE(msg);
+
+    const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+    BOOST_REQUIRE(ret);
+
+    BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+    BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::PointLookupFailed);
+    BOOST_CHECK_EQUAL(ret->DeviceId(), -1);
+    BOOST_CHECK_EQUAL(ret->ResultString(),
+        "Test DNP device / The specified point is not on the device");
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_no_control_information)
+{
+    CtiCommandParser parse("putvalue analog value 1776 select pointid 112358");
+
+    dev.selectedPoint.reset(Cti::Test::makeAnalogPoint(-1, 112358, 15));
+
+    BOOST_CHECK_EQUAL(ClientErrors::NoPointControlConfiguration, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_CHECK(outList.empty());
+    BOOST_CHECK(vgList.empty());
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    const auto msg = retList.front();
+
+    BOOST_REQUIRE(msg);
+
+    const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+    BOOST_REQUIRE(ret);
+
+    BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+    BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::NoPointControlConfiguration);
+    BOOST_CHECK_EQUAL(ret->DeviceId(), -1);
+    BOOST_CHECK_EQUAL(ret->ResultString(),
+        "Test DNP device / Analog point has no control offset");
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_control_inhibited)
+{
+    CtiCommandParser parse("putvalue analog value 1776 select pointid 112358");
+
+    dev.selectedPoint.reset(Cti::Test::makeAnalogOutputPoint(-1, 112358, 15, 15, true));
+
+    BOOST_CHECK_EQUAL(ClientErrors::ControlInhibitedOnPoint, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_CHECK(outList.empty());
+    BOOST_CHECK(vgList.empty());
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    const auto msg = retList.front();
+
+    BOOST_REQUIRE(msg);
+
+    const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+    BOOST_REQUIRE(ret);
+
+    BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+    BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::ControlInhibitedOnPoint);
+    BOOST_CHECK_EQUAL(ret->DeviceId(), -1);
+    BOOST_CHECK_EQUAL(ret->ResultString(),
+        "Test DNP device / Control is inhibited for the specified analog point");
+}
+
 BOOST_AUTO_TEST_CASE(test_dev_dnp_ping)
 {
-    test_DnpDevice dev;
-
-    dev._name = "Test DNP device";
-    dev._dnp.setAddresses(1234, 1);
-    dev._dnp.setName("Test DNP device");
-
-    //  set up the config
-    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-    config.insertValue(Cti::Config::DNPStrings::internalRetries, "3");
-    config.insertValue(Cti::Config::DNPStrings::timeOffset, "LOCAL");
-    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs, "true");
-    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest, "false");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1, "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2, "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3, "true");
-    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "false");
-
     //  start the request
     BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
 
@@ -498,23 +636,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_ping)
 
 BOOST_AUTO_TEST_CASE(test_integrity_scan)
 {
-    test_DnpDevice dev;
-
-    dev._name = "Test DNP device";
     dev._dnp.setAddresses(39, 1020);
-    dev._dnp.setName("Test DNP device");
-
-    //  set up the config
-    Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
-
-    config.insertValue(Cti::Config::DNPStrings::internalRetries,              "3");
-    config.insertValue(Cti::Config::DNPStrings::timeOffset,                   "UTC");
-    config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,           "true");
-    config.insertValue(Cti::Config::DNPStrings::omitTimeRequest,              "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1,      "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass2,      "true");
-    config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass3,      "true");
-    config.insertValue(Cti::Config::DNPStrings::enableNonUpdatedOnFailedScan, "true");
 
     //  start the request
     BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
@@ -628,6 +750,8 @@ BOOST_AUTO_TEST_CASE(test_integrity_scan)
         "\n");
 }
 
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_AUTO_TEST_CASE(test_processPoints)
 {
     CtiPointDataMsg msg1, msg2;
@@ -668,8 +792,6 @@ BOOST_AUTO_TEST_CASE(test_processPoints)
     BOOST_CHECK_EQUAL(points[1]->getType(), AnalogPointType);
     BOOST_CHECK_EQUAL(points[1]->getId(), 1919);
 }
-
-BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_SUITE_END()
 

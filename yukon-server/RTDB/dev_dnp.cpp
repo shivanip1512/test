@@ -447,7 +447,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                     if ( ! point )
                     {
-                        std::string errorMessage = "The specified point is not on device " + getName();
+                        std::string errorMessage = "The specified point is not on the device";
                         insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
                         return ClientErrors::PointLookupFailed;
@@ -457,28 +457,29 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                     {
                         CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
 
-                        if( pAnalog &&
-                            pAnalog->getControl() &&
-                            pAnalog->getControl()->isControlInhibited() )
+                        if( const CtiTablePointControl *control = pAnalog->getControl() )
                         {
-                            CTILOG_WARN(dout, "control inhibited for device \""<< getName() <<"\" point \""<< pAnalog->getName());
+                            if( control->isControlInhibited() )
+                            {
+                                CTILOG_WARN(dout, "control inhibited for device \""<< getName() <<"\" point \""<< pAnalog->getName());
 
-                            std::string temp = "Control is inhibited for the specified analog point on device " + getName();
+                                std::string temp = "Control is inhibited for the specified analog point";
 
-                            insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
+                                insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
 
-                            return ClientErrors::ControlInhibitedOnPoint;
+                                return ClientErrors::ControlInhibitedOnPoint;
+                            }
+                            control_offset = control->getControlOffset();
+                        }
+                        else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
+                        {
+                            control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
                         }
                         else
                         {
-                            if( const CtiTablePointControl *control = pAnalog->getControl() )
-                            {
-                                control_offset = control->getControlOffset();
-                            }
-                            else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
-                            {
-                                control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
-                            }
+                            insertReturnMsg(ClientErrors::NoPointControlConfiguration, OutMessage, retList, "Analog point has no control offset");
+
+                            return ClientErrors::NoPointControlConfiguration;
                         }
                     }
                 }
