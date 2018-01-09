@@ -388,7 +388,7 @@ public static int differenceMinutes(Date from, Date to) {
         // time
         boolean isNextDay = false;
         parts[0] = "0";
-        if (time == 1440) { // If time is 1440(which is 24) use 11:59
+        if (time == 1440) { // If time is 1440(which is 24) use 11:59PM
             time--;
         } else if (time > 1440) {
             time = time - 1440;
