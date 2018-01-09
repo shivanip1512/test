@@ -213,4 +213,9 @@ public class UpdateLine
         getMetaProps().put( DBMSDefines.META_ERROR, DBMSDefines.OPTIONS_ERROR[6] );
     }
 
+
+    public void setIgnoreEnd() {
+        getMetaProps().put( DBMSDefines.META_ERROR, DBMSDefines.OPTIONS_ERROR[5] );
+    }
+
 }
