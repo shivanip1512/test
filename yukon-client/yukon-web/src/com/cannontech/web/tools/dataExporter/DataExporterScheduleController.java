@@ -94,7 +94,7 @@ public class DataExporterScheduleController {
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     
-    @RequestMapping(value = "/data-exporter/scheduleReport", method = RequestMethod.POST)
+    @RequestMapping("/data-exporter/scheduleReport")
     public String scheduleReport(ModelMap model, FlashScope flashScope, HttpServletRequest request, YukonUserContext userContext, Integer jobId,
             @ModelAttribute ArchivedValuesExporter archivedValuesExporter, BindingResult bindingResult) 
             throws ServletRequestBindingException {
