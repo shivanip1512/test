@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol.service;
 
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.CapControlCBC;
 
 public interface CbcService {
@@ -33,7 +34,7 @@ public interface CbcService {
      * @return id of the new name
      * @throws IllegalArgumentException If the new name is already taken.
      */
-    int copy(int originalId, String newName, boolean copyPoints) throws IllegalArgumentException;
+    int copy(int originalId, String newName, boolean copyPoints, YukonUserContext userContext) throws IllegalArgumentException;
 
     /**
      * Looks up the DNP Configuration used by the device.

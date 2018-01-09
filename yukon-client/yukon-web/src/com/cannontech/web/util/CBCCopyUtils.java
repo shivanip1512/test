@@ -101,7 +101,6 @@ public class CBCCopyUtils {
         cbcLogical.setPAOName(controller.getPAOName());
         cbcLogical.setParentDeviceId(controller.getParentDeviceId());
         cbcLogical.setDeviceParent(controller.getDeviceParent());
-        cbcLogical.setDeviceConfiguration(controller.getDeviceConfiguration());
         
         return cbcLogical;
     }

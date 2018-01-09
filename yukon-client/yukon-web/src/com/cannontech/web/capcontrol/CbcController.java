@@ -146,9 +146,10 @@ public class CbcController {
             FlashScope flash,
             @PathVariable int id,
             String newName,
-            boolean copyPoints) {
+            boolean copyPoints,
+            YukonUserContext userContext) {
         try {
-            int newId = cbcService.copy(id, newName, copyPoints);
+            int newId = cbcService.copy(id, newName, copyPoints, userContext);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".copy.success"));
             return "redirect:/capcontrol/cbc/" + newId;
         } catch (IllegalArgumentException e) {

@@ -210,7 +210,7 @@ public class CbcServiceImpl implements CbcService {
     }
 
     @Override
-    public int copy(int originalId, String newName, boolean copyPoints) {
+    public int copy(int originalId, String newName, boolean copyPoints, YukonUserContext userContext) {
 
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(originalId);
         DBPersistent original = dbPersistentDao.retrieveDBPersistent(litePao);
@@ -222,8 +222,13 @@ public class CbcServiceImpl implements CbcService {
         copy.setPAOName(newName);
         try {
             dbPersistentDao.performDBChange(copy, TransactionType.INSERT);
+            LightDeviceConfiguration originalConfiguration = configurationDao.findConfigurationForDevice(new SimpleDevice(originalId, litePao.getPaoType()));
+            if (originalConfiguration != null) {
+                deviceConfigService.assignConfigToDevice(originalConfiguration, new SimpleDevice(copy.getPAObjectID(), copy.getPaoType()), userContext.getYukonUser(), copy.getPAOName());
+            }
         } catch (PersistenceException e) {
             // TODO Auto-generated catch block
+        } catch (InvalidDeviceTypeException e) {
         }
         if (copyPoints) {
             CBCCopyUtils.copyAllPointsForPAO(originalId, copy.getPAObjectID());
