@@ -46,7 +46,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     private static final Logger log = YukonLogManager.getLogger(DrReconciliationServiceImpl.class);
 
     private long minimumExecutionTime = 300000;
-    private static final int calculationCycleTime = 12;
+    private static final int calculationCycleMinutes = 12;
     private static final int perMinuteScheduling = 1;
     
     /**
@@ -71,8 +71,10 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         return Collections.emptyList();
     }
 
-    @Override
-    public Set<Integer> getLCRWithConflictingAddressing() {
+    /**
+     * Give a list of LCR which have conflicting addresses and messages have to be send for them.
+     */
+    private Set<Integer> getLCRWithConflictingAddressing() {
 
         Set<Integer> conflictingLCR = new HashSet<>();
 
@@ -300,7 +302,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             return false;
         }
         // Have to send 1 message per gateway every 12 c
-        int noOfMessagePerMin = (noOfGateways / calculationCycleTime == 0) ? 1 : noOfGateways / calculationCycleTime;
+        int noOfMessagePerMin = (noOfGateways / calculationCycleMinutes == 0) ? 1 : noOfGateways / calculationCycleMinutes;
 
         // This scheduler will run initially (0 minute) and then after every 12 minute.
         // It will find and add in queue the list of LCR for which message have to be send in the next 12
@@ -308,10 +310,10 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         futureSchdTwelveMin = executor.scheduleAtFixedRate(() -> {
             int noOfLCRToSendMessage = noOfGateways;
 
-            // This query should return top LCR for which message have to be send. noOfGateways is the number
+            // This query should return top LCR for which message have to be send. noOfLCRToSendMessage is the number
             // of message to send in next 12 min
             Map<Integer, Integer> sendMessageToLcr =
-                drReconciliationDao.getLCRWithLatestEvent(allLcrs, noOfLCRToSendMessage);
+                drReconciliationDao.getLcrWithLatestEvent(allLcrs, noOfLCRToSendMessage);
 
             // Queue the messages to send
             sendMessageToLcr.entrySet().stream().forEach(lcr -> {
@@ -333,7 +335,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             });
             log.debug("Will send message to " + sendMessageToLcr.size() + " LCR in next 12 min");
 
-        }, 0, calculationCycleTime, TimeUnit.MINUTES);
+        }, 0, calculationCycleMinutes, TimeUnit.MINUTES);
 
         // It will send only that number of messages which have to be send per minute.
         futureSchdOneMin = executor.scheduleAtFixedRate(() -> {

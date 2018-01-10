@@ -2,15 +2,20 @@ package com.cannontech.maintenance.task.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -18,7 +23,9 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.maintenance.task.dao.DrReconciliationDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.google.common.base.Functions;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DrReconciliationDaoImpl implements DrReconciliationDao {
@@ -194,38 +201,73 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
     }
     
     @Override
-    public Map<Integer, Integer> getLCRWithLatestEvent(Set<Integer> allLcrs, int noOfLcrs) {
+    public Map<Integer, Integer> getLcrWithLatestEvent(Set<Integer> allLcrs, int noOfLcrs) {
+        final ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
         final Map<Integer, Integer> sendMessageForLcrs = new HashMap<>();
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT TOP ");
-        sql.append(noOfLcrs);
-        sql.append(" deviceId, inventoryId FROM (");
-        sql.append("    SELECT ib.deviceId as deviceId, ib.InventoryID, MAX(EventDateTime) AS MaxEventTime,");
-        sql.append("    CASE WHEN (MAX(LastCommunication)) > (MAX(EventDateTime) +1) THEN 1 ELSE 0 END as lastCommunicated");
-        sql.append("    FROM LMHardwareEvent he");
-        sql.append("        JOIN LMCustomerEventBase heb ON he.EventID = heb.EventID");
-        sql.append("        JOIN InventoryBase ib ON he.InventoryID = ib.InventoryID");
-        sql.append("        JOIN DynamicLcrCommunications dylcr ON dylcr.DeviceId = ib.DeviceID");
-        sql.append("        JOIN ECToLMCustomerEventMapping map ON map.EventID = heb.EventID");
-        sql.append("        JOIN YukonListEntry yle ON yle.EntryID = heb.ActionID");
-        sql.append("    WHERE ib.deviceId").in(allLcrs);
-        sql.append("    AND yle.YukonDefinitionID IN (");
-        sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).append(",");
-        sql.append(       YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).append(",");
-        sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).append(",");
-        sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).append(")");
-        sql.append("    GROUP BY ib.deviceId, ib.InventoryID");
-        sql.append("    ) innerTable ");
-        sql.append("    WHERE lastCommunicated = 1");
-        sql.append("    ORDER BY MaxEventTime DESC");
-
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                sendMessageForLcrs.put(rs.getInt("deviceId"), rs.getInt("inventoryId"));
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ");
+                sql.append( "deviceId, inventoryId, MaxEventTime FROM (");
+                sql.append(    "SELECT ib.deviceId as deviceId, ib.InventoryID, MAX(EventDateTime) AS MaxEventTime,");
+                sql.append(    "CASE WHEN (MAX(LastCommunication)) > (MAX(EventDateTime) +1) THEN 1 ELSE 0 END AS lastCommunicated");
+                sql.append(    "FROM LMHardwareEvent he");
+                sql.append(        "JOIN LMCustomerEventBase ceb ON he.EventID = ceb.EventID");
+                sql.append(        "JOIN InventoryBase ib ON he.InventoryID = ib.InventoryID");
+                sql.append(        "JOIN DynamicLcrCommunications dylcr ON dylcr.DeviceId = ib.DeviceID");
+                sql.append(        "JOIN ECToLMCustomerEventMapping map ON map.EventID = ceb.EventID");
+                sql.append(        "JOIN YukonListEntry yle ON yle.EntryID = ceb.ActionID");
+                sql.append(    "WHERE ib.deviceId").in(subList);
+                sql.append(    "AND yle.YukonDefinitionID IN (");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).append(",");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).append(",");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).append(",");
+                sql.append(       YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).append(")");
+                sql.append(    "GROUP BY ib.deviceId, ib.InventoryID");
+                sql.append(    " ) innerTable ");
+                sql.append(    "WHERE lastCommunicated = 1");
+                return sql;
+            }
+        };
+        
+        Multimap<Integer, IdEventTimeMapping> selectedLcrDetails = template.multimappedQuery(sqlGenerator, allLcrs, rs -> {
+            Integer deviceId = rs.getInt("deviceId");
+            Integer name = rs.getInt("inventoryId");
+            Instant maxEventTime = rs.getInstant("MaxEventTime");
+            return Maps.immutableEntry(deviceId, new IdEventTimeMapping(name, maxEventTime));
+        }, Functions.identity());
+     
+        
+        List<IdEventTimeMapping> idEventMapping = new ArrayList<IdEventTimeMapping>(selectedLcrDetails.values());
+        idEventMapping.sort(Comparator.comparing(IdEventTimeMapping::getMaxEventTime));
+        List<IdEventTimeMapping> limitedList = idEventMapping.stream().sequential().limit(noOfLcrs).collect(Collectors.toList());
+
+        selectedLcrDetails.entries().forEach(e -> {
+            IdEventTimeMapping idEventTime = e.getValue();
+            if (limitedList.contains(idEventTime)) {
+                sendMessageForLcrs.put(e.getKey(), idEventTime.getInventoryId());
             }
         });
         return sendMessageForLcrs;
+    }
+    
+    private final static class IdEventTimeMapping {
+        public IdEventTimeMapping(Integer inventoryId, Instant maxEventTime) {
+            this.inventoryId = inventoryId;
+            this.maxEventTime = maxEventTime;
+        }
+
+        Integer inventoryId;
+        Instant maxEventTime;
+
+        public Integer getInventoryId() {
+            return inventoryId;
+        }
+
+        public Instant getMaxEventTime() {
+            return maxEventTime;
+        }
     }
 }

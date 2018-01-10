@@ -2,6 +2,7 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.DisplayablePao;
@@ -13,7 +14,6 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.google.common.collect.ImmutableSet;
 
 public interface PaoDao {
 
@@ -177,7 +177,7 @@ public interface PaoDao {
     /**
      * Returns count of Pao's of particular paoTypes
      */
-    int getPaoCount(ImmutableSet<PaoType> paoTypes);
+    int getPaoCount(Set<PaoType> paoTypes);
 
     /**
      * Checks for existence of a port with the given name .

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
@@ -24,7 +25,6 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.google.common.collect.ImmutableSet;
 
 import junit.framework.TestCase;
 
@@ -339,7 +339,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
-        public int getPaoCount(ImmutableSet<PaoType> paoTypes) {
+        public int getPaoCount(Set<PaoType> paoTypes) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

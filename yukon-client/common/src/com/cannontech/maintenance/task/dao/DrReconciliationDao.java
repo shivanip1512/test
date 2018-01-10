@@ -40,5 +40,5 @@ public interface DrReconciliationDao {
     /**
      * Get LCR which have communicated back 1 day after message (IN, OOS, Config) was send to them
      */
-    Map<Integer, Integer> getLCRWithLatestEvent(Set<Integer> allLcrs, int noOfLcrs);
+    Map<Integer, Integer> getLcrWithLatestEvent(Set<Integer> allLcrs, int noOfLcrs);
 }

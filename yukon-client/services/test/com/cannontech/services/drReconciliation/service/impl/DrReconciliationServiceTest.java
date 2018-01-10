@@ -244,7 +244,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertTrue("LCR correct address ", conflictingLCR.size() == 1);
     }
 
@@ -264,7 +264,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
@@ -282,7 +282,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
@@ -300,7 +300,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
@@ -318,7 +318,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
@@ -336,7 +336,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
@@ -354,7 +354,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
@@ -372,7 +372,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
     // Incorrect Uda Set in addressing
@@ -389,7 +389,7 @@ public class DrReconciliationServiceTest {
         }).anyTimes();
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertFalse("LCR correct address ", conflictingLCR.size() == 0);
     }
 
@@ -410,7 +410,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
 
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertTrue("Group did not match ", conflictingLCR.size() == 1);
     }
     
@@ -431,8 +431,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
 
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
-      
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertTrue("Group did not match ", !conflictingLCR.contains(4));
     }
 
@@ -457,7 +456,7 @@ public class DrReconciliationServiceTest {
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
 
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertTrue("Group did not match ", conflictingLCR.contains(6));
     }
     
@@ -481,8 +480,7 @@ public class DrReconciliationServiceTest {
 
         replay(expressComDaoImpl);
         ReflectionTestUtils.setField(dr, "expressComDaoImpl", expressComDaoImpl);
-
-        Set<Integer> conflictingLCR = dr.getLCRWithConflictingAddressing();
+        Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertTrue("Group did not match ", !conflictingLCR.contains(5));
     }
     
