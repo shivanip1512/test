@@ -54,23 +54,22 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
 
         for (Class<?> klass : allPaoClasses) {
             CompletePaoMetaData paoMetaData = makeMetaData(metaDataByClass, klass);
+            log.debug("Generated paoMetaData: " + paoMetaData);
             metaDataByClass.put(klass, paoMetaData);
         }
 
         // Build the maps required for later use in the DAO methods.
         buildPaoTypeMaps(metaDataByClass);
-       
-		for (CompletePaoMetaData mapping : metaDataByClass.values()) {
-			Iterable<PaoFieldMetaData> iter = mapping.getFields();
-			Iterables.removeIf(iter, new Predicate<PaoFieldMetaData>() {
-				@Override
-				public boolean apply(PaoFieldMetaData input) {
-		            Class<?> propertyType = input.getPropertyDescriptor().getPropertyType();
-		            return propertyType.getAnnotation(YukonPaoPart.class) != null;
-				}
-			});
 
-		}
+        log.debug("Generated paoTypeToTableMapping: " + paoTypeToTableMapping);
+
+        for (CompletePaoMetaData mapping : metaDataByClass.values()) {
+            Iterable<PaoFieldMetaData> iter = mapping.getFields();
+            Iterables.removeIf(iter, input -> {
+                Class<?> propertyType = input.getPropertyDescriptor().getPropertyType();
+                return propertyType.getAnnotation(YukonPaoPart.class) != null;
+            });
+        }
     }
 
     /**
@@ -220,7 +219,10 @@ public class PaoPersistenceTypeHelperImpl implements PaoPersistenceTypeHelper {
                 for (PaoType paoType : supportedPaoTypes) {
                     @SuppressWarnings("unchecked")
                     Class<? extends CompleteYukonPao> completeYukonPaoClass = (Class<? extends CompleteYukonPao>) klass;
-                    classByPaoType.put(paoType, completeYukonPaoClass);
+                    Class<?> previousPaoClass = classByPaoType.putIfAbsent(paoType, completeYukonPaoClass);
+                    if (previousPaoClass != null) {
+                        throw new RuntimeException(paoType + " has conflicting CompleteYukonPao mappings: " + previousPaoClass + ", " + completeYukonPaoClass);
+                    }
                 }
             }
         }
