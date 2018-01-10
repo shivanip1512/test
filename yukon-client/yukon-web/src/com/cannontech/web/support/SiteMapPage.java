@@ -154,6 +154,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MasterConfigBoolean.RF_DATA_STREAMING_ENABLED),
     DEVICE_CONFIGURATION(SiteMapCategory.TOOLS, "yukon.web.menu.tools.deviceConfiguration", "/deviceConfiguration/home",
             MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
+    DEVICE_CONFIGURATION_SUMMARY(SiteMapCategory.TOOLS, "yukon.web.menu.tools.deviceConfigurationSummary", "/deviceConfiguration/summary/view",
+            MatchStyle.all, YukonRoleProperty.ADMIN_VIEW_CONFIG),
     DEVICE_GROUPS(SiteMapCategory.TOOLS, "yukon.web.menu.config.amr.devicegroups", "/group/editor/home",
             MatchStyle.all, YukonRole.DEVICE_ACTIONS),
     DEVICE_UPLOAD(SiteMapCategory.TOOLS, "yukon.web.menu.tools.deviceGroupUpload", "/group/updater/upload",

@@ -14,9 +14,13 @@
         <c:when test="${results.hitCount > 0}">
             <span class="js-cog-menu">
                 <cm:dropdown icon="icon-cog">
-                    <cm:dropdownOption key=".assignConfig" classes="js-collection-action" icon="icon-page-edit" data-collection-action="assignConfig"/> 
-                    <cm:dropdownOption key=".sendConfig" classes="js-collection-action" icon="icon-ping" data-collection-action="sendConfig"/> 
-                    <cm:dropdownOption key=".readConfig" classes="js-collection-action" icon="icon-read" data-collection-action="readConfig"/> 
+                    <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+                        <cm:dropdownOption key=".assignConfig" classes="js-collection-action" icon="icon-page-edit" data-collection-action="assignConfig"/> 
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
+                        <cm:dropdownOption key=".sendConfig" classes="js-collection-action" icon="icon-ping" data-collection-action="sendConfig"/> 
+                        <cm:dropdownOption key=".readConfig" classes="js-collection-action" icon="icon-read" data-collection-action="readConfig"/> 
+                    </cti:checkRolesAndProperties>
                     <cm:dropdownOption key=".verifyConfig" classes="js-collection-action" icon="icon-accept" data-collection-action="verifyConfig"/> 
                     <cm:dropdownOption key=".download" classes="js-config-download" icon="icon-page-white-excel"/>
                 </cm:dropdown>
@@ -102,12 +106,14 @@
                                     data-width="600" data-load-event="yukon:config:viewHistory"
                                     data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/viewHistory"/>"></div>
                                     <cm:dropdownOption key=".viewHistory" data-popup=".js-view-history-${deviceId}" icon="icon-application-view-columns"/>
-                                    <c:set var="sendClass" value="${detail.displaySend ? 'js-device-action' : ''}"/>
-                                    <cm:dropdownOption key=".send" icon="icon-ping" classes="${sendClass}" data-device-id="${deviceId}" 
-                                        data-action="sendConfig" disabled="${!detail.displaySend}"/>
-                                    <c:set var="readClass" value="${detail.displayRead ? 'js-device-action' : ''}"/>
-                                    <cm:dropdownOption key=".read" icon="icon-read" classes="${readClass}" data-device-id="${deviceId}" 
-                                        data-action="readConfig" disabled="${!detail.displayRead}"/>
+                                    <cti:checkRolesAndProperties value="SEND_READ_CONFIG">                    
+                                        <c:set var="sendClass" value="${detail.displaySend ? 'js-device-action' : ''}"/> 
+                                        <cm:dropdownOption key=".send" icon="icon-ping" classes="${sendClass}" data-device-id="${deviceId}" 
+                                            data-action="sendConfig" disabled="${!detail.displaySend}"/>
+                                        <c:set var="readClass" value="${detail.displayRead ? 'js-device-action' : ''}"/>
+                                        <cm:dropdownOption key=".read" icon="icon-read" classes="${readClass}" data-device-id="${deviceId}" 
+                                            data-action="readConfig" disabled="${!detail.displayRead}"/>
+                                    </cti:checkRolesAndProperties>
                                     <c:set var="verifyClass" value="${detail.displayVerify ? 'js-device-action' : ''}"/>
                                     <cm:dropdownOption key=".verify" icon="icon-accept" classes="${verifyClass}" data-device-id="${deviceId}" 
                                         data-action="verifyConfig" disabled="${!detail.displayVerify}"/>

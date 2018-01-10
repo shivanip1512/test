@@ -157,6 +157,7 @@ public class DeviceConfigurationSummaryController {
     }
        
     @RequestMapping(value="{id}/sendConfig", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public void sendConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
@@ -167,6 +168,7 @@ public class DeviceConfigurationSummaryController {
     }
     
     @RequestMapping(value="{id}/readConfig", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public void readConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
         YukonDevice device = deviceDao.getYukonDevice(id);
