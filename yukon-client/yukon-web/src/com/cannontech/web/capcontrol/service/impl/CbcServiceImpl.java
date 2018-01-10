@@ -41,6 +41,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
@@ -210,7 +211,7 @@ public class CbcServiceImpl implements CbcService {
     }
 
     @Override
-    public int copy(int originalId, String newName, boolean copyPoints, YukonUserContext userContext) {
+    public int copy(int originalId, String newName, boolean copyPoints, LiteYukonUser user) {
 
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(originalId);
         DBPersistent original = dbPersistentDao.retrieveDBPersistent(litePao);
@@ -224,11 +225,9 @@ public class CbcServiceImpl implements CbcService {
             dbPersistentDao.performDBChange(copy, TransactionType.INSERT);
             LightDeviceConfiguration originalConfiguration = configurationDao.findConfigurationForDevice(new SimpleDevice(originalId, litePao.getPaoType()));
             if (originalConfiguration != null) {
-                deviceConfigService.assignConfigToDevice(originalConfiguration, new SimpleDevice(copy.getPAObjectID(), copy.getPaoType()), userContext.getYukonUser(), copy.getPAOName());
+                deviceConfigService.assignConfigToDevice(originalConfiguration, new SimpleDevice(copy.getPAObjectID(), copy.getPaoType()), user, copy.getPAOName());
             }
-        } catch (PersistenceException e) {
-            // TODO Auto-generated catch block
-        } catch (InvalidDeviceTypeException e) {
+        } catch (PersistenceException | InvalidDeviceTypeException e) {
             log.error(e.getMessage());
         }
         if (copyPoints) {

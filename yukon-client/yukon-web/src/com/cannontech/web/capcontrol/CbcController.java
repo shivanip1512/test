@@ -149,7 +149,7 @@ public class CbcController {
             boolean copyPoints,
             YukonUserContext userContext) {
         try {
-            int newId = cbcService.copy(id, newName, copyPoints, userContext);
+            int newId = cbcService.copy(id, newName, copyPoints, userContext.getYukonUser());
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".copy.success"));
             return "redirect:/capcontrol/cbc/" + newId;
         } catch (IllegalArgumentException e) {
