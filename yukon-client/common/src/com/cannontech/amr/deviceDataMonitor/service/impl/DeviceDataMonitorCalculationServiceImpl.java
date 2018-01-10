@@ -129,7 +129,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
                         recalculateViolations(monitor);
                     } catch (Exception e) {
                         // If error occurred during calculation monitor will be removed from pending so that
-                        // calculation can re-run in 5 minutes and hopefully success on the second run.
+                        // calculation can re-run in 5 minutes and hopefully succeed on the second run.
                         log.error(monitor + " failed to recalculate violations", e);
                     }
                     Iterator<DeviceDataMonitor> iterator = pending.values().iterator();
