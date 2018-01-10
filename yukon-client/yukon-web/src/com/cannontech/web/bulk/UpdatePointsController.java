@@ -38,7 +38,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     @Autowired private UpdatePointsProcessorFactory updatePointsProcessorFactory;
 
     // HOME
-    @RequestMapping(value = "home", method = RequestMethod.GET)
+    @RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection

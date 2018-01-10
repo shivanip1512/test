@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
@@ -44,7 +43,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
 	
 	// HOME
 	@Override
-	@RequestMapping(value = "home", method = RequestMethod.GET)
+	@RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection
