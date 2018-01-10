@@ -36,12 +36,12 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         
         int numDeleted = 1;
         Instant start = new Instant();
-        log.info("Point data deletion started at " + start);
+        log.info("Point data deletion started at " + start.toDate());
         while (isEnoughTimeAvailable(processEndTime) && numDeleted != 0) {
             numDeleted = pointDataPruningDao.deletePointData(deleteUpto);
         }
         Instant finish = new Instant();
-        log.info("Point data deletion finished at " + finish);
+        log.info("Point data deletion finished at " + finish.toDate());
         systemEventLogService.deletePointDataEntries(numDeleted, start, finish);
         return numDeleted;
     }
@@ -58,7 +58,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant fromTimestamp = Instant.now();
         Instant limit = Instant.now().minus(monthInDuration);
         Instant start = new Instant();
-        log.info("Duplicate point data deletion started at " + start);
+        log.info("Duplicate point data deletion started at " + start.toDate());
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
             Duration weeklyDuration = Period.days(7).toDurationTo(fromTimestamp);
             Instant toTimestamp = fromTimestamp.minus(weeklyDuration);
@@ -68,7 +68,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             fromTimestamp = toTimestamp;
         }
         Instant finish = new Instant();
-        log.info("Duplicate point data deletion finished at " + finish);
+        log.info("Duplicate point data deletion finished at " + finish.toDate());
         systemEventLogService.deleteDuplicatePointDataEntries(totalRowsdeleted, start, finish);
         return totalRowsdeleted;
     }
