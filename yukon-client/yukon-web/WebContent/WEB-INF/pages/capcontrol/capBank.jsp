@@ -105,7 +105,7 @@
                                     <tags:nameValue2 nameKey=".cbc.parentRtu" rowClass="js-logical-cbc dn">
                                         <spring:bind path="parentRtuId">
                                             <form:hidden id="parent-rtu-input" path="parentRtuId" />
-                                            <tags:pickerDialog id="rtuDnpPicker" type="dnpRTUPicker"
+                                            <tags:pickerDialog id="rtuDnpPicker" type="dnpRtuPicker"
                                                 linkType="selectionLabel" selectionProperty="paoName"
                                                 destinationFieldId="parent-rtu-input"/>
                                             <c:if test="${status.error}"><br><form:errors path="parentRtuId" cssClass="error"/></c:if>

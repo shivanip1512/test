@@ -18,7 +18,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.CompleteCbcLogical;
-import com.cannontech.common.pao.model.CompleteDeviceParent;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
@@ -51,11 +50,10 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         
         if (paoType.isLogicalCBC()) {
             CompleteCbcLogical cbcLogical = new CompleteCbcLogical();
-            if (parentRtuId != null) {
-                CompleteDeviceParent parent = new CompleteDeviceParent();
-                parent.setParentId(parentRtuId);
-                cbcLogical.setCompleteDeviceParent(parent);
+            if (parentRtuId == null) {
+                throw new IllegalArgumentException("Import of " + name + " failed. Cannot create Logical CBC without parent RTU");
             }
+            cbcLogical.setParentDeviceId(parentRtuId);
             pao = cbcLogical;
         }
         
