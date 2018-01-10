@@ -17,6 +17,7 @@ import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
@@ -256,6 +257,21 @@ public final class DeviceDaoImpl implements DeviceDao {
         sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(").appendArgument(meterNumber).append(")");
 
         List<LiteYukonPAObject> paos = jdbcTemplate.query(sqlBuilder, new LitePaoRowMapper());
+
+        return paos;
+    }
+    
+    @Override
+    public List<DisplayableDevice> getChildDevices(int parentId) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT PAObjectID, Type, PAOName");
+        sqlBuilder.append("FROM YukonPaObject Y");
+        sqlBuilder.append("   JOIN DeviceParent DP ON Y.PaObjectId = DP.DeviceId");
+        sqlBuilder.append("WHERE DP.ParentId").eq(parentId);
+
+        List<DisplayableDevice> paos = jdbcTemplate.query(sqlBuilder, (YukonRowMapper<DisplayableDevice>) rs -> {
+            return new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PAOName"));
+        });
 
         return paos;
     }

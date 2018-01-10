@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoCategory;
@@ -496,6 +497,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public List<DisplayableDevice> getChildDevices(int parentId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }

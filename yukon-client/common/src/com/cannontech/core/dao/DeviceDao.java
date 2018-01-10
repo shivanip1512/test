@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -151,5 +152,10 @@ public interface DeviceDao {
      * Returns a list of {@link SimpleDevice} objects for a list of pao types.
      */
     List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types);
+
+    /**
+     * Returns list of child devices by parent id
+     */
+    List<DisplayableDevice> getChildDevices(int parentId);
 
 }

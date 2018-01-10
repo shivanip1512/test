@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
+import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -156,6 +157,11 @@ public class MockDeviceDao implements DeviceDao {
 
     @Override
     public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<DisplayableDevice> getChildDevices(int parentId) {
         throw new MethodNotImplementedException();
     }
 }
