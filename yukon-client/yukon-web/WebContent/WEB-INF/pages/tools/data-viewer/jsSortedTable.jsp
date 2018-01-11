@@ -54,7 +54,7 @@
                                 </c:if>
                             </td>
                             <c:set var="isPointLinkVisible" value= "false" />
-                            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="UPDATE">
+                            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="LIMITED">
                                 <c:set var="isPointLinkVisible" value= "true" />
                             </cti:checkRolesAndProperties>
                             <c:forEach var="column" items="${display.columns}">

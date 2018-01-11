@@ -37,7 +37,6 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -46,7 +45,6 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -105,7 +103,6 @@ public class PointController {
     @Autowired private YukonListDao listDao;
     @Autowired private PointDao pointDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private PaoDao paoDao;
     @Autowired private PointService pointService;
     
     private static final String baseKey = "yukon.web.modules.tools.point";
@@ -121,6 +118,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
+        verifyRoles(userContext.getYukonUser());
         model.addAttribute("mode", PageEditMode.VIEW);
         return retrievePointAndModel(model, userContext, flashScope, id);
     }
@@ -148,6 +146,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}/edit", method = RequestMethod.GET)
     public String edit(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
+        verifyRoles(userContext.getYukonUser());
         model.addAttribute("mode", PageEditMode.EDIT);
         return retrievePointAndModel(model, userContext, flashScope, id);
     }
@@ -485,9 +484,9 @@ public class PointController {
      */
     private void verifyRoles(LiteYukonUser user) throws NotAuthorizedException {
         boolean capControlEditor = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        boolean dbEditor = rolePropertyDao.checkRole(YukonRole.DATABASE_EDITOR, user);
+        boolean isPointEditor = rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_POINTS, HierarchyPermissionLevel.LIMITED, user);
 
-        if (!capControlEditor && !dbEditor) {
+        if (!capControlEditor && !isPointEditor) {
             throw new NotAuthorizedException("User not allowed to edit points");
         }
     }

@@ -670,12 +670,21 @@
         </cti:tabs>
 
         <div class="page-action-area">
+            <c:set var="isEditAllowed" value="${false}" />
+            <c:set var="isDeleteAllowed" value="${false}" />
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <c:set var="isEditAllowed" value="${true}" />
+                <c:set var="isDeleteAllowed" value="${true}" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="UPDATE">
+                <c:set var="isEditAllowed" value="${true}" />
+            </cti:checkRolesAndProperties>
 
             <cti:displayForPageEditModes modes="VIEW">
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                <cti:url var="editUrl" value="/tools/points/${pointModel.id}/edit" />
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
-            </cti:checkRolesAndProperties>
+                <c:if test="${isEditAllowed}">
+                     <cti:url var="editUrl" value="/tools/points/${pointModel.id}/edit" />
+                     <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+                </c:if>
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT,CREATE">
@@ -683,11 +692,15 @@
             </cti:displayForPageEditModes>
 
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:msg2 var="attachmentMsg" key="${attachment}"/>
-                <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:point:delete" 
-                    disabled="${!attachment.deletable}" title="${attachmentMsg}"/>
-                <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${pointModel.pointBase.point.pointName}"/>
-
+                <cti:checkRolesAndProperties value="MANAGE_POINTS" level="OWNER">
+                    <c:set var="isDeleteAllowed" value="${true}" />
+                </cti:checkRolesAndProperties>
+                <c:if test="${isDeleteAllowed}">
+                    <cti:msg2 var="attachmentMsg" key="${attachment}"/>
+                    <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:point:delete" 
+                                disabled="${!attachment.deletable}" title="${attachmentMsg}"/>
+                    <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${pointModel.pointBase.point.pointName}"/>
+                </c:if>
                 <cti:url var="viewUrl" value="/tools/points/${pointModel.id}" />
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
 

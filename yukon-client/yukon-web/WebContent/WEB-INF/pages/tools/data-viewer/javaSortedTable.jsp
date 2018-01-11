@@ -27,7 +27,7 @@
         <tfoot></tfoot>
         <tbody>
             <c:set var="isPointLinkVisible" value= "false" />
-            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="UPDATE">
+            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="LIMITED">
                 <c:set var="isPointLinkVisible" value= "true" />
             </cti:checkRolesAndProperties>
             <c:forEach var="row" items="${result.resultList}">
