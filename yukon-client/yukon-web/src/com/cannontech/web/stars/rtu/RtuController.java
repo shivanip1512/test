@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
+import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.PageEditMode;
@@ -42,10 +44,21 @@ public class RtuController {
         return rtu;
     }
     
-    private DNPConfiguration getDnpConfiguration(SimpleDevice device) {
-        LightDeviceConfiguration configuration = configurationDao.findConfigurationForDevice(device);
+    private DNPConfiguration getDnpConfiguration(YukonPao device) {
+        LightDeviceConfiguration configuration =
+            configurationDao.findConfigurationForDevice(new SimpleDevice(device.getPaoIdentifier()));
         DeviceConfiguration deviceConfiguration =
             configurationDao.getDeviceConfiguration(configuration.getConfigurationId());
         return configurationDao.getDnpConfiguration(deviceConfiguration);
     }
+
+    private HeartbeatConfiguration getHeartbeatConfiguration(YukonPao device) {
+        LightDeviceConfiguration configuration =
+                configurationDao.findConfigurationForDevice(new SimpleDevice(device.getPaoIdentifier()));
+        DeviceConfiguration deviceConfiguration =
+            configurationDao.getDeviceConfiguration(configuration.getConfigurationId());
+        return configurationDao.getHeartbeatConfiguration(deviceConfiguration);
+    }
+    
+    //get points - CbcController line 240
 }
