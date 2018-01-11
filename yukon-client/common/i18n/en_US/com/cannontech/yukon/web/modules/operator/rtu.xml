@@ -24,6 +24,12 @@
     <entry key="yukon.web.modules.operator.rtuDetail.interval">Interval</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.altInterval">Alt. Interval</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.scanGroup">Scan Group</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.scanWindow">Scan Window</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.scanType">Type</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.winOpen">Open</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.winClose">Close</entry>
+    
+    <entry key="yukon.web.modules.operator.rtuDetail.points.title">RTU Points</entry>
     
     <entry key="yukon.web.modules.operator.rtuDetail.dnpConfiguration.title">DNP Configuration</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.heartbeatConfiguration.title">Heartbeat Configuration</entry>
@@ -38,5 +44,8 @@
     <entry key="yukon.web.modules.operator.rtuDetail.unsolicit2">Unsolicited Class 2</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.unsolicit3">Unsolicited Class 3</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.nonUpdated">NonUpdated on Failed Scan</entry>
+    
+    <entry key="yukon.web.modules.operator.rtuDetail.childrenTab">Child Hierarchy</entry>
+    
 
 </properties>

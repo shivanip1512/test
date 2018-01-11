@@ -65,7 +65,7 @@
                             </div>
                         </tags:nameValue2>
                         
-                        <tags:nameValue2 nameKey=".exceptionScanRate" rowClass="${twoWayClass}">
+                        <tags:nameValue2 nameKey=".exceptionScanRate">
                             <tags:switchButton path="editingException" toggleGroup="exception" toggleAction="hide"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".interval" data-toggle-group="exception">
@@ -85,11 +85,39 @@
                                 </c:forEach>
                             </div>
                         </tags:nameValue2>
+                        
+                        <tags:nameValue2 nameKey=".scanWindow">
+                            <tags:switchButton path="scanWindow" toggleGroup="scanWindow" toggleAction="hide"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".scanType">
+                            <tags:input path="deviceWindow.type" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".winOpen">
+                            <tags:input path="deviceWindow.winOpen" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".winClose">
+                            <tags:input path="deviceWindow.winClose" />
+                        </tags:nameValue2>
+                        
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </div>
             
             <div class="column two nogutter">
+            
+                <tags:sectionContainer2 nameKey="points"
+                    styleClass="stacked-lg">
+                    <div class="scroll-md">
+                        <%@ include file="/WEB-INF/pages/capcontrol/pointsTable.jsp" %>
+                    </div>
+                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                        <div class="action-area">
+                            <tags:pointCreation paoId="${rtu.id}" />
+                        </div>
+                    </cti:checkRolesAndProperties>
+                </tags:sectionContainer2>
+                
+                <c:set var="dnpConfig" value="${rtu.dnpConfig}"/>
                 <c:if test="${not empty dnpConfig}">
                     <tags:sectionContainer2 nameKey="dnpConfiguration" styleClass="stacked-lg">
                         <tags:nameValueContainer2 tableClass="natural-width">
@@ -125,6 +153,7 @@
                         </tags:nameValueContainer2>
                     </tags:sectionContainer2>
                 </c:if>
+                <c:set var="heartbeatConfig" value="${rtu.heartbeatConfig}"/>
                 <c:if test="${not empty heartbeatConfig}">
                     <tags:sectionContainer2 nameKey="heartbeatConfiguration" styleClass="stacked-lg">
                         <tags:nameValueContainer2 tableClass="natural-width js-heartbeat-fields">
@@ -164,4 +193,22 @@
 
     </form:form>
     
+    
+    <cti:tabs>
+        <cti:msg2 var="childrenTab" key=".childrenTab"/>
+        <cti:tab title="${childrenTab}">
+            <c:forEach var="child" items="${rtu.childDevices}">
+                <c:set var="paoId" value="${child.paoIdentifier.paoId}"/>
+                <cti:button renderMode="image" icon="icon-expand" classes="js-show-hide" data-paoId="${paoId}"/>
+                <cti:paoDetailUrl yukonPao="${child}">
+                    ${fn:escapeXml(child.name)}
+                </cti:paoDetailUrl>
+                <div class="js-points-${paoId} scroll-md"></div>
+            </c:forEach>
+        
+        </cti:tab>
+        
+    </cti:tabs>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.assets.rtu.js" />
 </cti:standardPage>

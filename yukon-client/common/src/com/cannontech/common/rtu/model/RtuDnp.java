@@ -130,4 +130,15 @@ public class RtuDnp implements YukonPao {
     public void setHeartbeatConfig(HeartbeatConfiguration heartbeatConfig) {
         this.heartbeatConfig = heartbeatConfig;
     }
+    
+    public boolean isScanWindow() {
+        return this.deviceWindow.getWinClose() != 0 || this.deviceWindow.getWinOpen() != 0;
+    }
+    
+    public void setScanWindow(boolean scanWindow) {
+        if(!scanWindow){
+            this.deviceWindow.setWinClose(0);
+            this.deviceWindow.setWinOpen(0);
+        }
+    }
 }
