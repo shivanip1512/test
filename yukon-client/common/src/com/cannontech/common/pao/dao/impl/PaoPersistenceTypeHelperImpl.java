@@ -19,7 +19,6 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.cannontech.common.pao.annotation.YukonPaoPart;
 import com.cannontech.common.pao.dao.PaoPersistenceTypeHelper;
 import com.cannontech.common.pao.model.CompleteYukonPao;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Iterables;
