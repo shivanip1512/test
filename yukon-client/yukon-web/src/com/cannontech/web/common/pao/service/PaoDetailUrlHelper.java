@@ -49,6 +49,14 @@ public class PaoDetailUrlHelper {
             }
         });
         pageNameBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, "relayDetail");
+        
+        urlBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/stars/rtu/" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        pageNameBuilder.put(PaoTag.RTU_DETAIL_DISPLAYABLE, "rtuDetail");
 
         urlBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             @Override

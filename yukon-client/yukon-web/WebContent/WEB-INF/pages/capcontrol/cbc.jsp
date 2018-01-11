@@ -99,7 +99,11 @@
                                     <c:when test="${empty cbc.parentRtuId || cbc.parentRtuId == 0}">
                                         <span class="empty-list"><i:inline key="yukon.common.none" /></span>
                                     </c:when>
-                                    <c:otherwise>${fn:escapeXml(cbc.parentRtu.paoName)}</c:otherwise>
+                                    <c:otherwise>
+                                        <cti:paoDetailUrl yukonPao="${cbc.parentRtu}">
+                                            ${fn:escapeXml(cbc.parentRtu.paoName)}
+                                        </cti:paoDetailUrl>
+                                    </c:otherwise>
                                 </c:choose>
                             </cti:displayForPageEditModes>
                             <cti:displayForPageEditModes modes="EDIT,CREATE">

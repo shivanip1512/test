@@ -222,7 +222,9 @@
                                         </tags:nameValue2>
                                         <c:if test="${not empty cbc.parentRtu}">
                                             <tags:nameValue2 nameKey=".cbc.parentRtu">
-                                                ${fn:escapeXml(cbc.parentRtu.paoName)}
+                                                <cti:paoDetailUrl yukonPao="${cbc.parentRtu}">
+                                                    ${fn:escapeXml(cbc.parentRtu.paoName)}
+                                                </cti:paoDetailUrl>
                                             </tags:nameValue2>
                                         </c:if>
                                         <c:set var="twoWayClass" value="${cbc.twoWay? '' : 'dn'} js-two-way"/>

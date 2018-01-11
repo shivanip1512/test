@@ -6,6 +6,7 @@
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="RTU_DETAIL_DISPLAYABLE"/>
     </tags>
     <configuration>
         <category type="dnp"/>

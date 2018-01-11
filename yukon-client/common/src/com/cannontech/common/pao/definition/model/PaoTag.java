@@ -58,6 +58,7 @@ public enum PaoTag {
     HONEYWELL_PROGRAM_ENROLLMENT("Honeywell Program Enrollment"),
     ASSET_DETAIL_DISPLAYABLE("Asset Detail Displayable"),
     RELAY_DETAIL_DISPLAYABLE("Relay Detail Displayable"),
+    RTU_DETAIL_DISPLAYABLE("RTU Detail Displayable"),
     ;
 
     private final String description;

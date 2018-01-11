@@ -1320,6 +1320,14 @@
                     </page>
                 </pages>
             </page>
+            <page name="rtuList" type="BASIC" hideSearch="true">
+                <pages>
+                    <page name="rtuDetail" type="DETAIL">
+                        <link>/stars/rtu/{id}</link>
+                        <labelArgument>${rtu.name}</labelArgument>
+                    </page>
+                </pages>
+            </page>
             <page name="infrastructureWarnings" type="BASIC" hideSearch="true">
                 <link>/stars/infrastructureWarnings/detail</link>
             </page>
