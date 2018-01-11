@@ -15,6 +15,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.ControlStateType;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 
 public class StatusPointImportProcessor extends PointImportProcessor {
@@ -38,11 +39,17 @@ public class StatusPointImportProcessor extends PointImportProcessor {
         
         builder.setStateGroup(row.getValue(STATE_GROUP.NAME));
         builder.setInitialState(row.getValue(INITIAL_STATE.NAME));
-        
-        if(row.hasValue(POINT_OFFSET.NAME)) {
-            builder.setPointOffset(Integer.valueOf(row.getValue(POINT_OFFSET.NAME)));
+
+        if (row.hasValue(POINT_OFFSET.NAME)) {
+            int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
+            if (pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.STATUS_POINT)) {
+                String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse",
+                    pointOffset, deviceName);
+                throw new ProcessingException(error, "pointOffsetInUse");
+            }
+            builder.setPointOffset(pointOffset);
         }
-        
+
         if(row.hasValue(ARCHIVE_DATA.NAME)) {
             builder.setArchive(StrictBoolean.valueOf(row.getValue(ARCHIVE_DATA.NAME)));
         }
