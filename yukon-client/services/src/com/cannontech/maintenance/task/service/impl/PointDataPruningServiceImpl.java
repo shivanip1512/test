@@ -7,6 +7,8 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.MasterConfigInteger;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.util.Range;
 import com.cannontech.maintenance.DurationType;
@@ -26,6 +28,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private MaintenanceTaskService maintenanceTaskService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private ConfigurationSource configurationSource;
 
     private long minimumExecutionTime = 300000; // Time in ms i.e. 5 minute
 
@@ -60,8 +63,10 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant start = new Instant();
         log.info("Duplicate point data deletion started at " + start.toDate());
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
-            Duration weeklyDuration = Period.days(7).toDurationTo(fromTimestamp);
-            Instant toTimestamp = fromTimestamp.minus(weeklyDuration);
+            Integer daysInDuration =
+                    configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 7);
+                Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
+            Instant toTimestamp = fromTimestamp.minus(deletionDuration);
             Range<Instant> dateRange = Range.inclusive(toTimestamp, fromTimestamp);
             int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange);
             totalRowsdeleted = totalRowsdeleted + rowsDeleted;
