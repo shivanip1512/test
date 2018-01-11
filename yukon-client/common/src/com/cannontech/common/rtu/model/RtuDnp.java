@@ -93,6 +93,10 @@ public class RtuDnp implements YukonPao {
         this.dnpConfigId = dnpConfiguration;
     }
     
+    public boolean isEditingIntegrity() {
+        return this.deviceScanRateMap.containsKey(DeviceScanRate.TYPE_INTEGRITY);
+    }
+    
     public void setEditingIntegrity(boolean editingIntegrity) {
         if(!editingIntegrity){
             this.deviceScanRateMap.remove(DeviceScanRate.TYPE_INTEGRITY);
