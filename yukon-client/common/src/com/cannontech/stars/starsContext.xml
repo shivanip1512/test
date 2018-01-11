@@ -294,5 +294,6 @@
 
     <bean class="com.cannontech.common.tdc.service.impl.TdcServiceImpl"/>
     <bean class="com.cannontech.common.tag.service.impl.TagServiceImpl"/>   
+    <bean class="com.cannontech.common.rtu.service.impl.RtuDnpServiceImpl"/>
     
 </beans>
