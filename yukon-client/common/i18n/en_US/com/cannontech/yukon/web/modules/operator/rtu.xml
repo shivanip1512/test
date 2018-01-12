@@ -31,6 +31,8 @@
     <entry key="yukon.web.modules.operator.rtuDetail.winClose">Close</entry>
     
     <entry key="yukon.web.modules.operator.rtuDetail.points.title">RTU Points</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.childPoints">Points</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.noChildPoints">No points were found on this child device.</entry>
     
     <entry key="yukon.web.modules.operator.rtuDetail.dnpConfiguration.title">DNP Configuration</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.heartbeatConfiguration.title">Heartbeat Configuration</entry>

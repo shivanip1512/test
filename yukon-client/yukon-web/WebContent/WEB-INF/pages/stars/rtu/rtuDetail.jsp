@@ -205,7 +205,7 @@
                 <cti:paoDetailUrl yukonPao="${child}">
                     ${fn:escapeXml(child.name)}
                 </cti:paoDetailUrl>
-                <div class="js-points-${paoId} scroll-md"></div>
+                <div class="js-points-${paoId}" style="margin:10px 0px 10px 30px;"></div>
             </c:forEach>
         
         </cti:tab>

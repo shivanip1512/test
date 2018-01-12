@@ -61,7 +61,7 @@ public class RtuController {
     @RequestMapping(value = "rtu/child/{id}/points", method = RequestMethod.GET)
     public String getPoints(ModelMap model, @PathVariable int id) {
         getPointsForModel(id, model);
-        return "../capcontrol/pointsTable.jsp";
+        return "/rtu/childPoints.jsp";
     }
     
     private void getPointsForModel(int paoId, ModelMap model) {
