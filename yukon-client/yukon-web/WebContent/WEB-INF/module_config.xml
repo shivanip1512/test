@@ -257,9 +257,9 @@
               <labelArgument>${categoryEditBean.categoryName}</labelArgument>
               </page>
               <page name="configs.setup" type="BASIC"/>
-              <page name="configs.summary" type="BASIC"/>
             </pages>
           </page>
+          <page name="configs.summary" type="BASIC"/>
         </pages>
       </page>
       <page name="bulk.home" type="BASIC">
