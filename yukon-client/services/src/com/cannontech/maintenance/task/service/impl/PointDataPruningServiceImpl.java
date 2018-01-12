@@ -64,8 +64,8 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         log.info("Duplicate point data deletion started at " + start.toDate());
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
             Integer daysInDuration =
-                    configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 7);
-                Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
+                configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 7);
+            Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
             Instant toTimestamp = fromTimestamp.minus(deletionDuration);
             Range<Instant> dateRange = Range.inclusive(toTimestamp, fromTimestamp);
             int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange);
