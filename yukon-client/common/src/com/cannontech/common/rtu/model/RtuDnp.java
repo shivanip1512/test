@@ -3,6 +3,8 @@ package com.cannontech.common.rtu.model;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.LocalTime;
+
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -140,5 +142,13 @@ public class RtuDnp implements YukonPao {
             this.deviceWindow.setWinClose(0);
             this.deviceWindow.setWinOpen(0);
         }
+    }
+    
+    public LocalTime getWinOpenTime() {
+        return LocalTime.fromMillisOfDay(this.deviceWindow.getWinOpen() * 1000);
+    }
+    
+    public LocalTime getWinCloseTime() {
+        return LocalTime.fromMillisOfDay(this.deviceWindow.getWinClose() * 1000);
     }
 }

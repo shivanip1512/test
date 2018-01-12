@@ -89,14 +89,14 @@
                         <tags:nameValue2 nameKey=".scanWindow">
                             <tags:switchButton path="scanWindow" toggleGroup="scanWindow" toggleAction="hide"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".scanType">
+                        <tags:nameValue2 nameKey=".scanType" data-toggle-group="scanWindow">
                             <tags:input path="deviceWindow.type" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".winOpen">
-                            <tags:input path="deviceWindow.winOpen" />
+                        <tags:nameValue2 nameKey=".winOpen" data-toggle-group="scanWindow">
+                            <tags:input path="winOpenTime" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".winClose">
-                            <tags:input path="deviceWindow.winClose" />
+                        <tags:nameValue2 nameKey=".winClose" data-toggle-group="scanWindow">
+                            <tags:input path="winCloseTime" />
                         </tags:nameValue2>
                         
                     </tags:nameValueContainer2>
@@ -156,16 +156,10 @@
                 <c:set var="heartbeatConfig" value="${rtu.heartbeatConfig}"/>
                 <c:if test="${not empty heartbeatConfig}">
                     <tags:sectionContainer2 nameKey="heartbeatConfiguration" styleClass="stacked-lg">
-                        <tags:nameValueContainer2 tableClass="natural-width js-heartbeat-fields">
+                        <tags:nameValueContainer2>
                             <c:if test="${empty dnpConfig}">
                                 <tags:nameValue2 nameKey=".heartbeatConfig">
-                                    <cti:displayForPageEditModes modes="VIEW,EDIT">
-                                        <tags:selectWithItems id="dnp-config"
-                                            items="${configs}"
-                                            path="dnpConfigId"
-                                            itemLabel="name"
-                                            itemValue="configurationId" defaultItemLabel="(none)"/>
-                                    </cti:displayForPageEditModes>
+                                    ${fn:escapeXml(heartbeatConfig.name)}
                                 </tags:nameValue2>
                             </c:if>
                             <c:set var="heartbeatClass" value="${dnpConfig == null ? 'dn' : ''}"/>
