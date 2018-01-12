@@ -42,9 +42,9 @@ private:
     int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
 
-    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const = 0;
-
 protected:
+
+    virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const = 0;
 
     static const std::map<std::string, long> scheduleMap;
     static const std::map<std::string, long> timezoneMap;

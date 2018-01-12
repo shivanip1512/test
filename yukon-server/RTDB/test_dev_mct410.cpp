@@ -79,6 +79,7 @@ public:
     using Mct410Device::decodeDisconnectCyclingConfig;
     using Mct410Device::decodeGetValueDailyRead;
     using Mct410Device::decodeGetValueOutage;
+    using Mct410Device::decodeGetValuePeakDemand;
 
     using Mct410Device::isDailyReadVulnerableToAliasing;
 
@@ -1039,6 +1040,158 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                     BOOST_CHECK_EQUAL( pdata->getQuality(), NormalQuality );
                     BOOST_CHECK_EQUAL( pdata->getTime(), CtiTime(CtiDate(18,  7, 2012), 14, 01, 29) );
                     BOOST_CHECK_EQUAL( pdata->getString(), "Test MCT-410iL / Outage 2 : 07/18/2012 14:01:29 for 00:42:51");
+                }
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_peak_frozen_scheduled_freeze)
+    {
+        CtiTime configTime(CtiDate(1, 10, 2009), 1, 2, 3);
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay, 21);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, configTime);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, configTime);
+
+        {
+            CtiCommandParser parse("getvalue peak frozen");
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.executeGetValue(&request, parse, om, vgList, retList, outList));
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 0x94);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 10);
+
+            BOOST_CHECK(outList.empty());
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            std::vector<unsigned char> buf{ 0x31, 0x02, 0x4b, 0x00, 0x4d, 0x9c, 0x01, 0x02, 0x04, 0x63 };
+
+            std::copy(buf.begin(), buf.end(), im.Buffer.DSt.Message);
+
+            im.Buffer.DSt.Length = buf.size();
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            strcpy_s(im.Return.CommandStr, "getvalue peak frozen");
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.decodeGetValuePeakDemand(im, timeNow, vgList, retList, outList));
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            const auto& points = retMsg->PointData();
+
+            {
+                BOOST_REQUIRE_EQUAL(points.size(), 2);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE(pdata);
+
+                    BOOST_CHECK_CLOSE(pdata->getValue(), 0.258, 0.0001);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getString(), "Test MCT-410iL / DemandAccumulator11 = 0.258 @ 11/15/2009 12:51:08");
+                    BOOST_CHECK_EQUAL(pdata->getId(), 1);
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[1]);
+
+                    BOOST_REQUIRE(pdata);
+
+                    BOOST_CHECK_EQUAL(pdata->getValue(), 66052);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getString(), "Test MCT-410iL / PulseAccumulator1 = 66052.000 @ 12/22/2009 00:00:00");
+                    BOOST_CHECK_EQUAL(pdata->getId(), 2);
+                }
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_peak_frozen_scheduled_freeze_invalid_peak_time)
+    {
+        CtiTime configTime(CtiDate(1, 10, 2009), 1, 2, 3);
+        CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay, 21);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, configTime);
+        mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, configTime);
+        
+        {
+            CtiCommandParser parse("getvalue peak frozen");
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.executeGetValue(&request, parse, om, vgList, retList, outList));
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, Cti::Protocols::EmetconProtocol::IO_Function_Read);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 0x94);
+            BOOST_CHECK_EQUAL(om->Buffer.BSt.Length, 10);
+
+            BOOST_CHECK(outList.empty());
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            INMESS im;
+
+            std::vector<unsigned char> buf { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x04, 0x63 };
+
+            std::copy(buf.begin(), buf.end(), im.Buffer.DSt.Message);
+
+            im.Buffer.DSt.Length = buf.size();
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            strcpy_s(im.Return.CommandStr, "getvalue peak frozen");
+
+            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.decodeGetValuePeakDemand(im, timeNow, vgList, retList, outList));
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            const auto& points = retMsg->PointData();
+
+            {
+                BOOST_REQUIRE_EQUAL(points.size(), 1);
+
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
+
+                    BOOST_REQUIRE(pdata);
+
+                    BOOST_CHECK_EQUAL(pdata->getValue(), 66052);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getString(), "Test MCT-410iL / PulseAccumulator1 = 66052.000 @ 12/22/2009 00:00:00");
+                    BOOST_CHECK_EQUAL(pdata->getId(), 2);
                 }
             }
         }

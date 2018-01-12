@@ -3172,7 +3172,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
     {
         //  just a normal peak read, no freeze-related work needed
 
-        kwh_time  = CtiTime::now();
+        kwh_time  = TimeNow;
     }
 
     string peak_demand_str   = "Peak Demand",
