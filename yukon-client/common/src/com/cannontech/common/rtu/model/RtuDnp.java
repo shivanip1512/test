@@ -12,6 +12,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
 
@@ -24,6 +25,7 @@ public class RtuDnp implements YukonPao {
     private Map<String, DeviceScanRate> deviceScanRateMap;
     private DeviceAddress deviceAddress;
     private DeviceWindow deviceWindow;
+    private DeviceDirectCommSettings deviceDirectCommSettings;
     private List<DisplayableDevice> childDevices;
     private DNPConfiguration dnpConfig;
     private HeartbeatConfiguration heartbeatConfig;
@@ -150,5 +152,13 @@ public class RtuDnp implements YukonPao {
     
     public LocalTime getWinCloseTime() {
         return LocalTime.fromMillisOfDay(this.deviceWindow.getWinClose() * 1000);
+    }
+
+    public DeviceDirectCommSettings getDeviceDirectCommSettings() {
+        return deviceDirectCommSettings;
+    }
+
+    public void setDeviceDirectCommSettings(DeviceDirectCommSettings deviceDirectCommSettings) {
+        this.deviceDirectCommSettings = deviceDirectCommSettings;
     }
 }

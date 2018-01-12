@@ -51,6 +51,7 @@ public class RtuController {
         model.addAttribute("mode", PageEditMode.VIEW);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
+        model.addAttribute("availablePorts", cache.getAllPorts());
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
         model.addAttribute("rtu", rtu);
         getPointsForModel(id, model);

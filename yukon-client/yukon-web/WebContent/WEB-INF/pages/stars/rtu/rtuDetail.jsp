@@ -36,6 +36,14 @@
                         <tags:nameValue2 nameKey=".slaveAddress">
                             <tags:input path="deviceAddress.slaveAddress" />
                          </tags:nameValue2>
+                         <tags:nameValue2 nameKey=".commChannel">
+                            <tags:selectWithItems
+                                id="comm-port"
+                                path="deviceDirectCommSettings.portID"
+                                items="${availablePorts}"
+                                itemValue="liteID" itemLabel="paoName"
+                                inputClass="with-option-hiding" />
+                        </tags:nameValue2>
                          <tags:nameValue2 nameKey=".postCommWait">
                             <tags:input path="deviceAddress.postCommWait" />
                         </tags:nameValue2>

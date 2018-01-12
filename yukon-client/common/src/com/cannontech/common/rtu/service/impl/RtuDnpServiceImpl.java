@@ -1,7 +1,6 @@
 package com.cannontech.common.rtu.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
@@ -38,6 +37,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         rtu.setDeviceScanRateMap(dnpBase.getDeviceScanRateMap());
         rtu.setDeviceWindow(dnpBase.getDeviceWindow());
         rtu.setDeviceAddress(dnpBase.getDeviceAddress());
+        rtu.setDeviceDirectCommSettings(dnpBase.getDeviceDirectCommSettings());
         LightDeviceConfiguration config =
             configurationDao.findConfigurationForDevice(new SimpleDevice(pao.getPaoIdentifier()));
         DeviceConfiguration deviceConfig =
