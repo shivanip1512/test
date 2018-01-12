@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
@@ -61,7 +62,7 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
         // try update
         SqlStatementBuilder sqlUpdate = new SqlStatementBuilder();
         sqlUpdate.update("YukonSimulatorSettings");
-        sqlUpdate.append("Value").eq(asText);
+        sqlUpdate.append("Value").eq(SqlUtils.convertStringToDbValue(asText));
         sqlUpdate.append("WHERE Name").eq_k(property);
         int rows = yukonJdbcTemplate.update(sqlUpdate);
         if (rows == 1) {
@@ -70,7 +71,7 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
         // try insert
         SqlStatementBuilder sqlInsert = new SqlStatementBuilder();
         sqlInsert.append("INSERT INTO YukonSimulatorSettings");
-        sqlInsert.values(property, asText);
+        sqlInsert.values(property, SqlUtils.convertStringToDbValue(asText));
         yukonJdbcTemplate.update(sqlInsert);
     }
 
