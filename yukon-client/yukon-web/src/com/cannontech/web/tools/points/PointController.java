@@ -450,7 +450,6 @@ public class PointController {
 
         double newPointValue;
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
-        PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(backingBean.getPointId());
         if (litePoint.getPointType() == PointTypes.STATUS_POINT
             || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
             newPointValue = backingBean.getStateId();
@@ -468,9 +467,7 @@ public class PointController {
 
             newPointValue = backingBean.getValue();
         }
-        if (pointValue.getValue() != newPointValue) {
-            pointService.sendPointData(backingBean.getPointId(), newPointValue, userContext.getYukonUser());
-        }
+        pointService.sendPointData(backingBean.getPointId(), newPointValue, userContext.getYukonUser());
 
         response.setContentType("application/json");
         response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
