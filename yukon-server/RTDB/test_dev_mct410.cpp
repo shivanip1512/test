@@ -1168,7 +1168,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
             strcpy_s(im.Return.CommandStr, "getvalue peak frozen");
 
-            BOOST_CHECK_EQUAL(ClientErrors::None, mct410.decodeGetValuePeakDemand(im, timeNow, vgList, retList, outList));
+            BOOST_CHECK_EQUAL(ClientErrors::InvalidFrozenPeakTimestamp, mct410.decodeGetValuePeakDemand(im, timeNow, vgList, retList, outList));
         }
 
         {
@@ -1178,22 +1178,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_REQUIRE(retMsg);
 
-            const auto& points = retMsg->PointData();
+            BOOST_CHECK(retMsg->PointData().empty());
 
-            {
-                BOOST_REQUIRE_EQUAL(points.size(), 1);
-
-                {
-                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
-
-                    BOOST_REQUIRE(pdata);
-
-                    BOOST_CHECK_EQUAL(pdata->getValue(), 66052);
-                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
-                    BOOST_CHECK_EQUAL(pdata->getString(), "Test MCT-410iL / PulseAccumulator1 = 66052.000 @ 12/22/2009 00:00:00");
-                    BOOST_CHECK_EQUAL(pdata->getId(), 2);
-                }
-            }
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / DemandAccumulator11 = (invalid data) [Invalid peak timestamp]");
         }
     }
 

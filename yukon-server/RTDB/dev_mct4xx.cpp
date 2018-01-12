@@ -3127,6 +3127,12 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
 
         if( kw_time.is_special() )
         {
+            //  defer to the kWh errors
+            if( !status )
+            {
+                status = ClientErrors::InvalidFrozenPeakTimestamp;
+            }
+
             pi_kw.description = "Invalid peak timestamp";
             pi_kw.quality = InvalidQuality;
             pi_kw.value = 0;
