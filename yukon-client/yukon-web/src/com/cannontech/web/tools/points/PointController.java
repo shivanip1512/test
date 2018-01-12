@@ -118,7 +118,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.LIMITED);
         model.addAttribute("mode", PageEditMode.VIEW);
         return retrievePointAndModel(model, userContext, flashScope, id);
     }
@@ -146,7 +146,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}/edit", method = RequestMethod.GET)
     public String edit(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.LIMITED);
         model.addAttribute("mode", PageEditMode.EDIT);
         return retrievePointAndModel(model, userContext, flashScope, id);
     }
@@ -154,7 +154,7 @@ public class PointController {
     @RequestMapping("/points/{type}/create")
     public String create(@PathVariable String type, @RequestParam int parentId, YukonUserContext userContext) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
 
         int pointType = PointTypes.getType(type);
 
@@ -312,7 +312,7 @@ public class PointController {
     public String saveAnalog(@ModelAttribute("pointModel") AnalogPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash);
     }
 
@@ -320,7 +320,7 @@ public class PointController {
     public String saveAccumulator(AccumulatorPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash);
     }
     
@@ -328,7 +328,7 @@ public class PointController {
     public String saveDemandAccumulator(AccumulatorPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash);
     }
 
@@ -336,7 +336,7 @@ public class PointController {
     public String saveCalcAnalog(@ModelAttribute("pointModel") CalculatedPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash);
     }
 
@@ -344,7 +344,7 @@ public class PointController {
     public String saveStatusAnalog(@ModelAttribute("pointModel") StatusPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash);
     }
 
@@ -352,7 +352,7 @@ public class PointController {
     public String saveCalcStatusAnalog(@ModelAttribute("pointModel") CalcStatusPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
 
         return save(pointModel, result, redirectAttributes, flash);
     }
@@ -361,7 +361,7 @@ public class PointController {
     public String saveSystem(@ModelAttribute("pointModel") SystemPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash);
     }
 
@@ -392,7 +392,7 @@ public class PointController {
     @RequestMapping(value = "/points/{id}", method = RequestMethod.POST)
     public String delete(@PathVariable int id, FlashScope flashScope, YukonUserContext userContext) {
 
-        verifyRoles(userContext.getYukonUser());
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.OWNER);
 
         PointModel pointModel = pointEditorService.getModelForId(id);
         int paoId = pointModel.getPointBase().getPoint().getPaoID();
@@ -482,9 +482,9 @@ public class PointController {
      *
      * @throws NotAuthorizedException if user doesn't have required permissions
      */
-    private void verifyRoles(LiteYukonUser user) throws NotAuthorizedException {
+    private void verifyRoles(LiteYukonUser user, HierarchyPermissionLevel hierarchyPermissionLevel) throws NotAuthorizedException {
         boolean capControlEditor = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        boolean isPointEditor = rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_POINTS, HierarchyPermissionLevel.LIMITED, user);
+        boolean isPointEditor = rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_POINTS, hierarchyPermissionLevel, user);
 
         if (!capControlEditor && !isPointEditor) {
             throw new NotAuthorizedException("User not allowed to edit points");
