@@ -273,6 +273,7 @@ public:
     static const Attribute  SumkWhperInterval;
     static const Attribute  NetkWhperInterval;
     static const Attribute  SumkVAhperInterval;
+    static const Attribute  DeliveredkVArhperInterval;
     static const Attribute  SumkVArhperInterval;
     static const Attribute  WaterUsageperInterval;
     static const Attribute  ForwardInductivekVArhperInterval;

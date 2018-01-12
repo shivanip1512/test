@@ -277,6 +277,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KWH_PER_INTERVAL("Sum kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     NET_KWH_PER_INTERVAL("Net kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     SUM_KVAH_PER_INTERVAL("Sum kVAh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
+    DELIVERED_KVARH_PER_INTERVAL("Delivered kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
     SUM_KVARH_PER_INTERVAL("Sum kVArh per Interval", AttributeGroup.REACTIVE, false),   //calculated, not readable
     WATER_USAGE_PER_INTERVAL("Water Usage per Interval", AttributeGroup.USAGE, false),   //calculated, water not readable
     FORWARD_INDUCTIVE_KVARH_PER_INTERVAL("Forward Inductive kVArh per Interval", AttributeGroup.REACTIVE, false),   //440 types only

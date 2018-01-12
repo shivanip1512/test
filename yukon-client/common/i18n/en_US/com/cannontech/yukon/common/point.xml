@@ -394,6 +394,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_PER_INTERVAL">Sum kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_KWH_PER_INTERVAL">Net kWh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH_PER_INTERVAL">Sum kVAh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KVARH_PER_INTERVAL">Delivered kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH_PER_INTERVAL">Sum kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_PER_INTERVAL">Usage per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.WATER_USAGE_PER_INTERVAL">Water Usage per Interval</entry>

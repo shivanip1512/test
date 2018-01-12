@@ -282,6 +282,7 @@ INIT_ATTRIBUTE( ReceivedkWhperInterval,                             "RECEIVED_KW
 INIT_ATTRIBUTE( SumkWhperInterval,                                  "SUM_KWH_PER_INTERVAL" );
 INIT_ATTRIBUTE( NetkWhperInterval,                                  "NET_KWH_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkVAhperInterval,                                 "SUM_KVAH_PER_INTERVAL" );
+INIT_ATTRIBUTE( DeliveredkVArhperInterval,                          "DELIVERED_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( SumkVArhperInterval,                                "SUM_KVARH_PER_INTERVAL" );
 INIT_ATTRIBUTE( WaterUsageperInterval,                              "WATER_USAGE_PER_INTERVAL" );
 INIT_ATTRIBUTE( ForwardInductivekVArhperInterval,                   "FORWARD_INDUCTIVE_KVARH_PER_INTERVAL" );
