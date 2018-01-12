@@ -1,6 +1,6 @@
 (function() {
   var SELECTOR, addEventListener, clickEvents, numberRegExp, sortable, touchDevice, trimRegExp;
-
+  var firstClick = true;
   SELECTOR = 'table[data-sortable]';
 
   numberRegExp = /^-?[£$¤]?[\d,.]+%?$/;
@@ -61,7 +61,16 @@
     setupClickableTH: function(table, th, i) {
       var eventName, onClick, type, _i, _len, _results;
       type = sortable.getColumnType(table, i);
+
       onClick = function(e) {
+          if (firstClick) {
+              var elementArray;
+              elementArray = document.querySelectorAll("tr.vh");
+              for (i = 0; i < elementArray.length; i++) {
+                  elementArray[i].remove();
+              }
+              firstClick = false;
+          }
         var compare, item, newSortedDirection, position, row, rowArray, sorted, sortedDirection, tBody, ths, value, _compare, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
         if (e.handled !== true) {
           e.handled = true;
@@ -130,12 +139,6 @@
           }
         }
         
-        var elementArray;
-        elementArray = document.querySelectorAll("tr.vh");
-        for (i = 0; i < elementArray.length; i++) {
-            elementArray[i].className = "dn";
-        }
-        
         if (typeof window['CustomEvent'] === 'function') {
           return typeof table.dispatchEvent === "function" ? table.dispatchEvent(new CustomEvent('Sortable.sorted', {
             bubbles: true
@@ -179,6 +182,7 @@
         return dataValue;
       }
       if (typeof node.innerText !== 'undefined') {
+//          alert(node.innerText);
         return node.innerText.replace(trimRegExp, '');
       }
       return node.textContent.replace(trimRegExp, '');
