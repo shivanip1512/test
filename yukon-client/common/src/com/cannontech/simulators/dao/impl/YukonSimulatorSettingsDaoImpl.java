@@ -77,44 +77,37 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
 
     @Override
     public boolean getBooleanValue(YukonSimulatorSettingsKey property) {
-        Boolean convertedValue = getConvertedValue(property, Boolean.class);
-        return convertedValue.booleanValue();
+        return getConvertedValue(property, Boolean.class);
     }
 
     @Override
     public double getDoubleValue(YukonSimulatorSettingsKey property) {
-        Number convertedValue = getConvertedValue(property, Number.class);
-        return convertedValue.doubleValue();
+        return getConvertedValue(property, Double.class);
     }
 
     @Override
     public float getFloatValue(YukonSimulatorSettingsKey property) {
-        Number convertedValue = getConvertedValue(property, Number.class);
-        return convertedValue.floatValue();
+        return getConvertedValue(property, Float.class);
     }
 
     @Override
     public int getIntegerValue(YukonSimulatorSettingsKey property) {
-        Number convertedValue = getConvertedValue(property, Number.class);
-        return convertedValue.intValue();
+        return getConvertedValue(property, Integer.class);
     }
 
     @Override
     public long getLongValue(YukonSimulatorSettingsKey property) {
-        Number convertedValue = getConvertedValue(property, Number.class);
-        return convertedValue.longValue();
+        return getConvertedValue(property, Long.class);
     }
 
     @Override
     public String getStringValue(YukonSimulatorSettingsKey property) {
-        Object convertedValue = getConvertedValue(property, Object.class);
-        return convertedValue.toString();
+        return getConvertedValue(property, String.class);
     }
 
     @Override
     public Instant getInstantValue(YukonSimulatorSettingsKey property) {
-        Instant convertedValue = getConvertedValue(property, Instant.class);
-        return convertedValue;
+        return getConvertedValue(property, Instant.class);
     }
 
     private <T> T getConvertedValue(YukonSimulatorSettingsKey property, Class<T> returnType) throws BadSimulatorSettingTypeException {
