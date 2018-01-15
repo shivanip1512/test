@@ -146,7 +146,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}/edit", method = RequestMethod.GET)
     public String edit(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
-        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.LIMITED);
+        verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         model.addAttribute("mode", PageEditMode.EDIT);
         return retrievePointAndModel(model, userContext, flashScope, id);
     }
