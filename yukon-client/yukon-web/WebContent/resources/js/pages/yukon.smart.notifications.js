@@ -158,7 +158,7 @@ yukon.smart.notifications = (function () {
             });
             
             $(document).on('change', '.js-type', function (ev) {
-                updateTypeFields($(this.closest('#notification-details')));
+                updateTypeFields($(this).closest('#notification-details'));
             });
             
             $(document).on('click', '.js-single-notification', function (ev) {
