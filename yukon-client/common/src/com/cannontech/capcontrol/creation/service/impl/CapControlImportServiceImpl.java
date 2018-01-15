@@ -294,9 +294,6 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         Integer parentId = getParentCapBankId(cbcImportData);
         
         PaoIdentifier templateIdentifier = templatePao.getPaoIdentifier();
-        // Get a copy of the points from the template to copy to the new CBC.
-        int templatePaoId = templateIdentifier.getPaoId();
-        List<PointBase> copyPoints = pointDao.getPointsForPao(templatePaoId);
         
         CompleteCbcBase template;
         if (templateIdentifier.getPaoType().isLogicalCBC()) {
@@ -361,7 +358,15 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         template.setSerialNumber(cbcImportData.getCbcSerialNumber());
         template.setPaoName(cbcImportData.getCbcName());
 
-        paoPersistenceService.createPaoWithCustomPoints(template, template.getPaoType(), copyPoints);
+        if (cbcImportData.getCbcType().isLogicalCBC()) {
+            //  Do not copy points for Logical CBCs
+            paoPersistenceService.createPaoWithDefaultPoints(template, template.getPaoType());
+        } else {
+            // Get a copy of the points from the template to copy to the new CBC.
+            int templatePaoId = templateIdentifier.getPaoId();
+            List<PointBase> copyPoints = pointDao.getPointsForPao(templatePaoId);
+            paoPersistenceService.createPaoWithCustomPoints(template, template.getPaoType(), copyPoints);
+        }
         
         /*
          * Some CBCs need to have a device config assigned. In the future, this config may
