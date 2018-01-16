@@ -151,12 +151,14 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                 substationPointHolder.setPaoName("Sim RTU "  + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex));
                 paoPersistenceService.createPaoWithDefaultPoints(substationPointHolder, PaoType.VIRTUAL_SYSTEM);
                         
-                int simRtuPointOffset = 1;
+                int pointToSubBusSimRtuPointOffset = 1;
+                int pointToFeederSimRtuPointOffset = 1;
+                int pointToRegulatorSimRtuPointOffset = 1;
                 
                 for (int subBusIndex = 0; subBusIndex < devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
                     
                     PaoIdentifier subBusPao =  createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, substationPao , subBusIndex, strategyId);
-                    attachPointsToSubBus(simRtuPointOffset, subBusPao, substationPointHolder.getPaoIdentifier());
+                    pointToSubBusSimRtuPointOffset = attachPointsToSubBus(pointToSubBusSimRtuPointOffset, subBusPao, substationPointHolder.getPaoIdentifier());
                     
                     Integer parentZoneId = null;
                     
@@ -165,7 +167,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                     for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
                         List<ZoneAssignmentCapBankRow> bankAssignments = new ArrayList<>();
                         PaoIdentifier feederPao = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusPao, feederIndex);
-                        attachPointsToFeeder(simRtuPointOffset, feederPao, substationPointHolder.getPaoIdentifier());
+                        pointToFeederSimRtuPointOffset = attachPointsToFeeder(pointToFeederSimRtuPointOffset, feederPao, substationPointHolder.getPaoIdentifier());
                         
                         double graphPosition = graphPositionOffset; // each bank is relative to the start of the zone it is assigned to
                         for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
@@ -179,7 +181,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                             List<PaoIdentifier> regulatorsForZone = new ArrayList<>();
                             for (int regulatorIndex = 0; regulatorIndex < 3; regulatorIndex++) {
                                 PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, regulatorIndex);
-                                attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier(), subIndex, setPointRegulatorConfigId, devCapControl.getRegulatorVoltageControlMode());
+                                pointToRegulatorSimRtuPointOffset = attachPointsToRegulator(pointToRegulatorSimRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier(), subIndex, setPointRegulatorConfigId, devCapControl.getRegulatorVoltageControlMode());
                                 regulatorsForZone.add(regulatorPao);
                             }
                             
@@ -199,7 +201,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         }
     }
 
-    private void attachPointsToSubBus(int pointOffset, PaoIdentifier subBusPao, PaoIdentifier rtuPao) {
+    private int attachPointsToSubBus(int pointOffset, PaoIdentifier subBusPao, PaoIdentifier rtuPao) {
         CapControlSubBus capControlSubBus = busService.get(subBusPao.getPaoId());
         
         PointBase voltLoadPoint = createAnalogPoint(capControlSubBus.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
@@ -219,9 +221,10 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         // capControlSubBus.getCapControlSubstationBus().setDisableBusPointId(busDisablePoint.getPoint().getPointID());
 
         busService.save(capControlSubBus);
+        return pointOffset;
     }
     
-    private void attachPointsToFeeder(int pointOffset, PaoIdentifier feederBusPao, PaoIdentifier rtuPao) {
+    private int attachPointsToFeeder(int pointOffset, PaoIdentifier feederBusPao, PaoIdentifier rtuPao) {
         CapControlFeeder capControlFeeder = feederService.get(feederBusPao.getPaoId());
         
         PointBase voltLoadPoint = createAnalogPoint(capControlFeeder.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
@@ -233,9 +236,10 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         capControlFeeder.getCapControlFeeder().setCurrentVarLoadPointID(kvarPoint.getPoint().getPointID());
 
         feederService.save(capControlFeeder);
+        return pointOffset;
     }
     
-    private void attachPointsToRegulator(int pointOffset, PaoIdentifier regulatorPao, PaoIdentifier rtuPao,
+    private int attachPointsToRegulator(int pointOffset, PaoIdentifier regulatorPao, PaoIdentifier rtuPao,
             int subIndex, int setPointRegulatorConfigId, RegulatorVoltageControlMode controlMode) {
         Regulator regulator = voltageRegulatorService.getRegulatorById(regulatorPao.getPaoId());
 
@@ -291,6 +295,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         } catch (InvalidDeviceTypeException e) {
             log.warn("caught exception in attachPointsToRegulator", e);
         }
+        return pointOffset;
     }
     
     private PointBase createAnalogPoint(String name, UnitOfMeasure unitOfMeasure, int pointOffset, PaoIdentifier pao) {
