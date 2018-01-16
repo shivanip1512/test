@@ -34,7 +34,7 @@ public class MaintenanceScheduler {
     private static final long fourHourWindow = 14400;
     // One hour
     private static final long minimumRunWindow = 3600;
-    private boolean allTasksCompleted = false;
+    private boolean rescheduleScheduler = false;
 
     // Update the schedule on startup and on maintenance Global Setting change
     @PostConstruct
@@ -49,7 +49,7 @@ public class MaintenanceScheduler {
                     globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId().intValue()
                 || primaryKeyId ==
                     globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue())) {
-                allTasksCompleted = false;
+                rescheduleScheduler = false;
                 reschedule();
             }
         });
@@ -71,12 +71,18 @@ public class MaintenanceScheduler {
         // Schedule the runner
         future = scheduledExecutorService.schedule(() -> {
             Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
-            log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
-            List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
-            if (tasks.size() == 0) {
-                allTasksCompleted = true;
+            if (endOfRunWindow.getMillis() - Instant.now().getMillis() <= minimumRunWindow) {
+                log.info("Not enough time to run maintenance tasks. Rescheduling");
+                rescheduleScheduler = true;
             } else {
-                allTasksCompleted = taskRunner.run(tasks, endOfRunWindow);
+                log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
+                List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
+                if (tasks.size() == 0) {
+                    rescheduleScheduler = true;
+                } else {
+                    // All task completed before time, reschedule
+                    rescheduleScheduler = taskRunner.run(tasks, endOfRunWindow);
+                }
             }
             // At the end of the run window, schedule this to run again at the start of the next window
             reschedule();
@@ -86,16 +92,16 @@ public class MaintenanceScheduler {
     /**
      * This method gets the next run time. There are 2 cases here.
      * Case 1: When all task have not completed. This will return next run based on the business hour and maintenance hour settings
-     * Case 2: When all the task have completed before completion time, then rule is:
+     * Case 2: When all the task have completed before completion time or or no tasks to run or no time to run scheduler, then rule is:
      *  If the difference in the completion time (endOfRunWindow) and four hour window is more than minimum run window then next run time will
      *  be four hours from now otherwise it will be the what ever the next run time is. 
-     *  case 2 is required so that we do not keep on running the scheduler when there is nothing much to process.
+     *  case 2 is required so that we do not keep on running the scheduler when there is nothing much to process or not much time (< 1hr) to process.
      */
     private long getSecondsUntilNextRun() {
         long secondsUntilRun = 0;
 
-        // Different rules of rescheduling when all tasks are completed.
-        if (allTasksCompleted) {
+        // Different rules of rescheduling when all tasks are completed or no task to run or no time window to run.
+        if (rescheduleScheduler) {
             Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
             if ((endOfRunWindow.getMillis() - Instant.now().getMillis() - (fourHourWindow *1000)) >= (minimumRunWindow)) {
                 secondsUntilRun = maintenanceService.getSecondsUntilRun();
