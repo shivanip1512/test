@@ -528,7 +528,7 @@ YukonError_t CtiConnection::WriteConnQue(CtiMessage *QEnt, ::Cti::CallSite cs, u
  * @param timeout timeout in millisec, if the queue is full
  * @return NORMAL if the message is queued, QUEUE_WRITE if there was a timeout
  */
-YukonError_t CtiConnection::WriteConnQue(std::unique_ptr<CtiMessage>&& msg, ::Cti::CallSite cs, unsigned timeoutMillis)
+YukonError_t CtiConnection::WriteConnQue(std::unique_ptr<CtiMessage> msg, ::Cti::CallSite cs, unsigned timeoutMillis)
 {
     if( ! msg )
     {

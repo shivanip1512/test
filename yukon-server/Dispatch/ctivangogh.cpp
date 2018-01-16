@@ -3466,7 +3466,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
 
     group_ids.push_back(grp.getGroupID());
 
-    CtiNotifAlarmMsg* alarm_msg = new CtiNotifAlarmMsg( group_ids,
+    auto alarm_msg = std::make_unique<CtiNotifAlarmMsg>(group_ids,
                                                         sig.getSignalCategory(),
                                                         sig.getId(),
                                                         sig.getCondition(),
@@ -3487,7 +3487,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
         CTILOG_WARN(dout, "Connection to notification server is not valid - Alarm notification has been queued");
     }
 
-    getNotificationConnection()->WriteConnQue(alarm_msg, CALLSITE);
+    getNotificationConnection()->WriteConnQue(std::move(alarm_msg), CALLSITE);
 
     return status;
 }
@@ -5041,6 +5041,7 @@ void CtiVanGogh::checkNumericReasonability(CtiPointDataMsg &pData, CtiMultiWrapp
                         const CtiTablePointAlarming alarming = PointMgr.getAlarming(pointNumeric);
 
                         pSig = new CtiSignalMsg(pointNumeric.getID(), pData.getSOE(), text, getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::highReasonability) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::highReasonability), pData.getUser());
+                        pSig->setPointValue(pData.getValue());
                     }
                     else if(!_signalManager.isAlarmActive(pointNumeric.getID(), alarm))
                     {
@@ -5239,7 +5240,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiW
     }
 }
 
-INT CtiVanGogh::getNumericLimitFromHighLow(INT numericAlarmOffset, INT alarm)
+INT CtiVanGogh::getNumericLimitFromHighLow(int numericAlarmOffset, int alarm)
 {
     INT retVal = numericAlarmOffset;
     if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
