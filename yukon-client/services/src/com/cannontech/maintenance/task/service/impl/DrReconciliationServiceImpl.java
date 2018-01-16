@@ -405,7 +405,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                 commandService.sendOutOfServiceCommand(command);
                 log.debug("Success - inventory id =" + inventoryId + " 'Out of Service' Command was sent");
             } else if (lmHardwareCommandType == LmHardwareCommandType.IN_SERVICE) {
-                log.debug("Sending IN message for LCR " + inventoryId);
+                log.debug("Sending In Service message for LCR " + inventoryId);
                 commandService.sendInServiceCommand(command);
                 log.debug("Success - inventory id =" + inventoryId + " 'In Service' Command was sent");
             } else if (lmHardwareCommandType == LmHardwareCommandType.CONFIG) {
@@ -415,7 +415,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             }
         } catch (CommandCompletionException e) {
             success = false;
-            log.error("Failed - Unable to send config command " + lmHardwareCommandType + "to inventory id=" + inventoryId, e);
+            log.error("Failed - Unable to send command " + lmHardwareCommandType + "to inventory id=" + inventoryId, e);
         }
         return success;
     }
