@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -33,6 +34,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
         // update dto with cust fields
         setCustFieldsOnDto(acctDto, custFields);
         acct.setAccountDto(acctDto);
+        acctDto.setForcePasswordReset(YNBoolean.YES);
 
         return acct;
     }
@@ -53,6 +55,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
         // update dto with cust fields
         setCustFieldsOnDto(acctDto, custFields);
         acct.setAccountDto(acctDto);
+        acctDto.setForcePasswordReset(YNBoolean.YES);
 
         return acct;
     }

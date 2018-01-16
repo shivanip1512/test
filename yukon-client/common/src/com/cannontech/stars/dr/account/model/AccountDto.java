@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.account.model;
 
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.SiteInformation;
+import com.cannontech.database.YNBoolean;
 
 public class AccountDto {
 
@@ -30,6 +31,7 @@ public class AccountDto {
     private Boolean isCustAtHome;
     private String propertyNotes;
     private String accountNotes;
+    private YNBoolean forcePasswordReset = YNBoolean.NO;
 
     public String getAccountNumber() {
 		return accountNumber;
@@ -225,5 +227,13 @@ public class AccountDto {
     }
     public void setPropertyNotes(String propertyNotes) {
         this.propertyNotes = propertyNotes;
+    }
+
+    public YNBoolean getForcePasswordReset() {
+        return forcePasswordReset;
+    }
+
+    public void setForcePasswordReset(YNBoolean forcePasswordReset) {
+        this.forcePasswordReset = forcePasswordReset;
     }
 }

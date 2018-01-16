@@ -19,6 +19,7 @@ import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.AddressValidator;
+import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AddressDao;
@@ -35,6 +36,7 @@ import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -120,6 +122,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserContextService userContextService;
     @Autowired private YukonUserDao userDao;
+    @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
     
     @Override
     @Transactional
@@ -194,6 +197,13 @@ public class AccountServiceImpl implements AccountService {
             if (!StringUtils.isBlank(password)) {
                 authenticationService.setPassword(user, authenticationService.getDefaultAuthenticationCategory(),
                     password);
+                /*
+                 * This is to force password reset if the user is created during the account creation from
+                 * Account Importer in Bulk Operations
+                 */
+                if (accountDto.getForcePasswordReset().equals(YNBoolean.YES)) {
+                    yukonUserPasswordDao.setForceResetForUser(user, YNBoolean.YES);
+                }
             }
 
             dbChangeManager.processDbChange(user.getLiteID(), DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -618,6 +628,13 @@ public class AccountServiceImpl implements AccountService {
                     if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory)) {
                         authenticationService.setPassword(login, defaultAuthenticationCategory,
                             SqlUtils.convertStringToDbValue(password));
+                        /*
+                         * This is to force password reset if the user is updated during the account update from
+                         * Account Importer in Bulk Operations
+                         */
+                        if (accountDto.getForcePasswordReset().equals(YNBoolean.YES)) {
+                            yukonUserPasswordDao.setForceResetForUser(login, YNBoolean.YES);
+                        }
                     } else {
                         authenticationService.setAuthenticationCategory(login, defaultAuthenticationCategory);
                     }
