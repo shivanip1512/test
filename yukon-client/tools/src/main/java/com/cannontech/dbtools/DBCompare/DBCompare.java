@@ -117,7 +117,7 @@ public class DBCompare extends MessageFrameAdaptor
   
     public static void main(String[] args) throws java.io.IOException 
     {
-        CtiUtilities.setCtiAppName(ApplicationId.DB_COMPARE);
+        CtiUtilities.setClientAppName(ApplicationId.DB_COMPARE);
 
         if( args.length < 1 )  // the user did not enter any params
         {

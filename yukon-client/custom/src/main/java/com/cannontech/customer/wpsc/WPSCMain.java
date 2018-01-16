@@ -114,7 +114,7 @@ public class WPSCMain implements Runnable {
     }
 
     public static void main(String[] args) {
-        CtiUtilities.setCtiAppName(ApplicationId.CUSTOM);
+        CtiUtilities.setClientAppName(ApplicationId.CUSTOM);
 
         String cfDataDir;
         String cfDataFileExt;

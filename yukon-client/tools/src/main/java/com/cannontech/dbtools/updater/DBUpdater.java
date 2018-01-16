@@ -159,7 +159,7 @@ public class DBUpdater extends MessageFrameAdaptor {
      * Main entry point
      */
     public static void main(String[] args) {
-        CtiUtilities.setCtiAppName(ApplicationId.DB_UPDATER);
+        CtiUtilities.setClientAppName(ApplicationId.DB_UPDATER);
         DBUpdater updater = new DBUpdater();
 
         if (args.length < 1) // the user did not enter any params
@@ -349,6 +349,7 @@ public class DBUpdater extends MessageFrameAdaptor {
         }
     }
 
+    // Gets the update commands from the file system, and re-formats and writes to the Valids files if needed
     private void getUpdateCommands() {
         final String srcPath = System.getProperty(CMD_LINE_PARAM_NAMES[0]);
         // "d:/eclipse/head/yukon-database/DBUpdates/oracle" );
@@ -373,7 +374,7 @@ public class DBUpdater extends MessageFrameAdaptor {
 
             getIMessageFrame().addOutput("Done reading file");
 
-            // find out if we need to right the valid file for this version
+            // find out if we need to write the valids file for this version
             if (!UpdateDB.isValidUpdateFile(sqlFile))
                 printUpdateLines(validLines, new File(CtiUtilities.getClientLogDir() + filesVers[i].getVersion() + "_"
                         + filesVers[i].getBuild() + DBMSDefines.NAME_VALID));

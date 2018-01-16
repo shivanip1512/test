@@ -785,6 +785,12 @@ public final class CtiUtilities {
     public static void setCtiAppName(ApplicationId appName) {
         System.setProperty(CTI_APP_NAME_PROPERTY, appName.getApplicationName());
     }
+    
+    // Mark this application as a client, and give it a name.
+    public static void setClientAppName(ApplicationId appName) {
+        setCtiAppName(appName);
+        setRunningAsClient();
+    }
 
     public final static Function<Instant, Date> DATE_FROM_INSTANT = new Function<Instant, Date>() {
         @Override

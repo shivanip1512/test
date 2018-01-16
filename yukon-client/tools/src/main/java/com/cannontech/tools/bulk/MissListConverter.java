@@ -23,7 +23,7 @@ public class MissListConverter {
 		if (session == null)
 			System.exit(-1);
 
-		CtiUtilities.setCtiAppName(ApplicationId.MISSED_LIST_CONVERTER);
+		CtiUtilities.setClientAppName(ApplicationId.MISSED_LIST_CONVERTER);
 
 		if (args.length >= 2 && args.length <= 4) {
 			MissListConverterService missListConverterService = new MissListConverterServiceImpl();

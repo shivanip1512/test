@@ -610,7 +610,7 @@ private void initialize() {
 public static void main(java.lang.String[] args) {
 	try {
 	    ApplicationId appName = ApplicationId.POINT_IMPORT_UTILITY_TOOL;
-        CtiUtilities.setCtiAppName(appName);
+        CtiUtilities.setClientAppName(appName);
         CTILogger.info(appName + " starting...");
 		PointImportUtilityPanel aPointImportUtilityPanel;
 		aPointImportUtilityPanel = new PointImportUtilityPanel();

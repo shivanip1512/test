@@ -849,7 +849,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
      */
     public static void main(String[] args) {
         try {
-            CtiUtilities.setCtiAppName(ApplicationId.DB_TOOLS_FRAME);
+            CtiUtilities.setClientAppName(ApplicationId.DB_TOOLS_FRAME);
 
             DBToolsFrame aConverterFrame;
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

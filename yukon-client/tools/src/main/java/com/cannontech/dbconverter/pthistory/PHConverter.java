@@ -256,7 +256,7 @@ public static void main(String[] args) throws Exception {
 		System.exit(1);
 	}
 
-	CtiUtilities.setCtiAppName(ApplicationId.POINT_HISTORY_CONVERTER);
+	CtiUtilities.setClientAppName(ApplicationId.POINT_HISTORY_CONVERTER);
 	PHConverter p = new PHConverter();
 	p.convert(args[0]);
 	

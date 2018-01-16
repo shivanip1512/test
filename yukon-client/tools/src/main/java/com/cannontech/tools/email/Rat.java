@@ -509,7 +509,7 @@ public boolean isEmailSent() {
  */
 public static void main(String[] args) 
 {
-	CtiUtilities.setCtiAppName(ApplicationId.LOG_RAT);
+	CtiUtilities.setClientAppName(ApplicationId.LOG_RAT);
 	
 	try
 	{

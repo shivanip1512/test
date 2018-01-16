@@ -29,7 +29,7 @@ public class BillingFile extends java.util.Observable implements Runnable {
      */
     public static void main(String[] args) {
         try {
-            CtiUtilities.setCtiAppName(ApplicationId.BILLING_FILE);
+            CtiUtilities.setClientAppName(ApplicationId.BILLING_FILE);
             CTILogger.info("BillingFile starting...");
             YukonSpringHook.setDefaultContext("com.cannontech.context.billing");
 

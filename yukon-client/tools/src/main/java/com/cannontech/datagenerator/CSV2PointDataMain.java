@@ -28,7 +28,7 @@ public class CSV2PointDataMain {
             System.exit(0);
         }
         ApplicationId appName = ApplicationId.CSV_TO_POINT_DATA;
-        CtiUtilities.setCtiAppName(appName);
+        CtiUtilities.setClientAppName(appName);
         CTILogger.info(appName + " starting...");
         YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
         CSV2PointData cpd = YukonSpringHook.getBean("csv2PointData", CSV2PointData.class);

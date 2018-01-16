@@ -267,7 +267,7 @@ public class WebGraph implements Runnable {
         CTILogger.info("WebGraph - Yukon Version: " + com.cannontech.common.version.VersionTools.getYUKON_VERSION()
             + " - Yukon Database Version: " + com.cannontech.common.version.VersionTools.getDatabaseVersion());
 
-        CtiUtilities.setCtiAppName(ApplicationId.WEB_GRAPH);
+        CtiUtilities.setClientAppName(ApplicationId.WEB_GRAPH);
         WebGraph webGraph = new WebGraph();
 
         // start the process

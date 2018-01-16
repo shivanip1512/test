@@ -182,7 +182,7 @@ public class BulkMeterDeleter {
         
     public static void main(String[] args) {
 
-        CtiUtilities.setCtiAppName(ApplicationId.BULK_METER_DELETER);
+        CtiUtilities.setClientAppName(ApplicationId.BULK_METER_DELETER);
         
         // get an instance of BMD
         // call some "main" method, pass args

@@ -916,7 +916,7 @@ public class BillingFileFormatPanel extends JPanel implements ActionListener, Fo
      */
     public static void main(String[] args) {
         try {
-            CtiUtilities.setCtiAppName(ApplicationId.BILLING);
+            CtiUtilities.setClientAppName(ApplicationId.BILLING);
             CTILogger.info("Billing starting...");
             YukonSpringHook.setDefaultContext("com.cannontech.context.billing");
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

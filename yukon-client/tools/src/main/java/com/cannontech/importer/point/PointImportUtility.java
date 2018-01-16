@@ -2077,7 +2077,7 @@ public class PointImportUtility
      */
     public static void main(java.lang.String[] args) {
         ApplicationId appName = ApplicationId.POINT_IMPORT_UTILITY;
-        CtiUtilities.setCtiAppName(appName);
+        CtiUtilities.setClientAppName(appName);
         CTILogger.info(appName + " starting...");
         if( args.length < 2 ){
             System.out.println("Input Format: number filename ");

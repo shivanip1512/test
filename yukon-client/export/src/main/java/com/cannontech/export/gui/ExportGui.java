@@ -1334,7 +1334,7 @@ private javax.swing.JCheckBox getUninstallServiceCheckBox() {
     {
         try
         {
-            CtiUtilities.setCtiAppName(ApplicationId.EXPORT);
+            CtiUtilities.setClientAppName(ApplicationId.EXPORT);
             javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());       
             ExportGui aExportGui;
             aExportGui = new ExportGui();

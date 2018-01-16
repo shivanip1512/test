@@ -195,7 +195,7 @@ public class GraphBean extends Graph {
      * @param args java.lang.String[]
      */
     public static void main(String[] args) {
-        CtiUtilities.setCtiAppName(ApplicationId.TRENDING);
+        CtiUtilities.setClientAppName(ApplicationId.TRENDING);
         GraphBean gb = new GraphBean();
     }
 
