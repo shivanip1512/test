@@ -20,15 +20,15 @@
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-                    <c:set var="showDuplicateDataPruning" value="${false}"/>
+                    <c:set var="showDuplicatePointDataPruning" value="${false}"/>
                         <c:forEach var="task" items="${tasks}">
                           <cti:msg2 var="taskNameMsg" key=".${task.taskName}.title"/>
                             <c:if test="${task.taskName=='DUPLICATE_POINT_DATA_PRUNING'}">
                               <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                                <c:set var="showDuplicateDataPruning" value="${true}"/>
+                                <c:set var="showDuplicatePointDataPruning" value="${true}"/>
                               </cti:checkGlobalRolesAndProperties>
                             </c:if>
-                            <c:if test="${showDuplicateDataPruning=='true'|| 
+                            <c:if test="${showDuplicatePointDataPruning=='true'|| 
                                           task.taskName!='DUPLICATE_POINT_DATA_PRUNING'}" >
                               <tr>
                                 <cti:url var="editTaskDetailsUrl" value="/admin/maintenance/editTask" >
