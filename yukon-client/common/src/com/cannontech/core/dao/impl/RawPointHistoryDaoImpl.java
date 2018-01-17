@@ -1091,4 +1091,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
         return yukonTemplate.query(sql, new LiteRPHQualityRowMapper());
     }
+    
+    @Override
+    public void deletePointData(int pointId, double value, Instant timestamp) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM RawPointHistory");
+        sql.append("WHERE pointId").eq(pointId);
+        sql.append("   AND value").eq(value);
+        sql.append("   AND timestamp").eq(timestamp);  
+        yukonTemplate.update(sql);
+    }
 }

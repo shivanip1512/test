@@ -2,6 +2,8 @@ package com.cannontech.core.dynamic;
 
 import java.util.Set;
 
+import org.joda.time.Instant;
+
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -35,5 +37,18 @@ public interface PointService {
      * Sends point data.
      */
     void sendPointData(int pointId, double value, LiteYukonUser user);
+
+    /**
+     * Finds and deletes point data by pointId, value and timestamp.
+     */
+    void deletePointData(int pointId, double value, Instant timestamp, LiteYukonUser user);
+
+    /**
+     * Updates point data with the new point value.
+     * 
+     * - Finds and deletes point data by pointId, value and timestamp.
+     * - Sends new point data to dispatch. The new point data contains new value and original timestamp. 
+     */
+    void updatePointData(int pointId, double oldValue, double newValue, Instant timestamp, LiteYukonUser user);
     
 }

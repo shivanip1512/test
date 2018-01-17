@@ -390,4 +390,9 @@ public interface RawPointHistoryDao {
      * @return List of values for the point
      */
     List<PointValueHolder> getPointDataWithDisabledPaos(int pointId, Date startDate, Date stopDate);
+
+    /**
+     * Deletes an entry from RPH by point id, value and timestamp.
+     */
+    void deletePointData(int pointId, double value, Instant timestamp);
 }

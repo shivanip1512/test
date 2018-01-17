@@ -15,10 +15,10 @@
     </thead>
     <tfoot></tfoot>
     <tbody>
-        <c:forEach var="row" items="${points}">
+        <c:forEach var="point" items="${points}">
             <tr>
-                <td>${fn:escapeXml(row[0])}</td>
-                <td>${fn:escapeXml(row[1])}</td>
+                <td><cti:pointValueFormatter format="DATE" value="${point}" /></td>
+                <td><cti:pointValueFormatter format="SHORT" value="${point}" /></td>
             </tr>
         </c:forEach>
     </tbody>

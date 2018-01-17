@@ -1,9 +1,12 @@
 package com.cannontech.web.tools.points;
 
+import org.joda.time.Instant;
+
 public class PointBackingBean {
     private int pointId;
     private Double value;
     private int stateId;
+    private Instant timestamp;
 
     public int getPointId() {
         return pointId;
@@ -27,5 +30,13 @@ public class PointBackingBean {
 
     public void setStateId(int stateId) {
         this.stateId = stateId;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
     }
 }
