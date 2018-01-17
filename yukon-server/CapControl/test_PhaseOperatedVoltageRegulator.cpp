@@ -1354,7 +1354,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_LowerSetPoint_Cogenerati
 
     const std::vector<CtiPointDataMsg>    incomingPointData
     {
-        { 7450,   6.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
+        { 7450,   5.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
         { 7400,   0.0,  NormalQuality,  AnalogPointType },      // Forward Flow
         { 7000, 120.0,  NormalQuality,  AnalogPointType },      // Forward SetPoint is 120 volts
         { 3500,   3.0,  NormalQuality,  AnalogPointType }       // Tap is in position +3
@@ -1415,7 +1415,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_LowerSetPoint_Cogenerati
 
     const std::vector<CtiPointDataMsg>    incomingPointData
     {
-        { 7450,   6.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
+        { 7450,   5.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
         { 7400,   1.0,  NormalQuality,  AnalogPointType },      // Reverse Flow
         { 7200, 121.5,  NormalQuality,  AnalogPointType },      // Reverse SetPoint is 121.5 volts
         { 3500,   4.0,  NormalQuality,  AnalogPointType }       // Tap is in position +4

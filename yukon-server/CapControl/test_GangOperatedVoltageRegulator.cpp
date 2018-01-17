@@ -839,7 +839,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Cogeneratio
 
     const std::vector<CtiPointDataMsg>    incomingPointData
     {
-        { 7450,   6.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
+        { 7450,   5.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
         { 7400,   0.0,  NormalQuality,  AnalogPointType },      // Forward Flow
         { 7000, 120.0,  NormalQuality,  AnalogPointType },      // Forward SetPoint is 120 volts
         { 3500,   3.0,  NormalQuality,  AnalogPointType }       // Tap is in position +3
@@ -900,7 +900,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Cogeneratio
 
     const std::vector<CtiPointDataMsg>    incomingPointData
     {
-        { 7450,   6.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
+        { 7450,   5.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
         { 7400,   1.0,  NormalQuality,  AnalogPointType },      // Reverse Flow
         { 7200, 121.5,  NormalQuality,  AnalogPointType },      // Reverse SetPoint is 121.5 volts
         { 3500,   4.0,  NormalQuality,  AnalogPointType }       // Tap is in position +4
@@ -963,15 +963,15 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_Mode_Documentation)
     {
         {   -1.0,   ControlPolicy::LockedForward            },
         {    0.0,   ControlPolicy::LockedForward            },
-        {    1.0,   ControlPolicy::LockedForward            },
-        {    2.0,   ControlPolicy::LockedReverse            },
-        {    3.0,   ControlPolicy::ReverseIdle              },
+        {    1.0,   ControlPolicy::LockedReverse            },
+        {    2.0,   ControlPolicy::ReverseIdle              },
+        {    3.0,   ControlPolicy::Bidirectional            },
         {    4.0,   ControlPolicy::NeutralIdle              },
-        {    5.0,   ControlPolicy::Bidirectional            },
-        {    6.0,   ControlPolicy::Cogeneration             },
-        {    7.0,   ControlPolicy::ReactiveBidirectional    },
-        {    8.0,   ControlPolicy::BiasBidirectional        },
-        {    9.0,   ControlPolicy::LockedForward            },
+        {    5.0,   ControlPolicy::Cogeneration             },
+        {    6.0,   ControlPolicy::ReactiveBidirectional    },
+        {    7.0,   ControlPolicy::BiasBidirectional        },
+        {    8.0,   ControlPolicy::BiasCogeneration         },
+        {    9.0,   ControlPolicy::ReverseCogeneration      },
         {   10.0,   ControlPolicy::LockedForward            }
     };
 

@@ -10,15 +10,16 @@ struct ControlPolicy : Policy
 {
     enum ControlModes
     {
-        Unknown             = -1,
-        LockedForward       =  1,
+        LockedForward,
         LockedReverse,
         ReverseIdle,
-        NeutralIdle,
         Bidirectional,
+        NeutralIdle,
         Cogeneration,
         ReactiveBidirectional,
-        BiasBidirectional       // AutoDetermination ?? -- info in EASPRO-504 about these modes
+        BiasBidirectional,
+        BiasCogeneration,
+        ReverseCogeneration
     };
 
     virtual Action TapUp() = 0;

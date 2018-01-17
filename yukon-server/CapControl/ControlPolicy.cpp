@@ -15,11 +15,13 @@ std::string resolveControlMode( ControlPolicy::ControlModes mode )
         { ControlPolicy::ControlModes::LockedForward,         "LockedForward"         },
         { ControlPolicy::ControlModes::LockedReverse,         "LockedReverse"         },
         { ControlPolicy::ControlModes::ReverseIdle,           "ReverseIdle"           },
-        { ControlPolicy::ControlModes::NeutralIdle,           "NeutralIdle"           },
         { ControlPolicy::ControlModes::Bidirectional,         "Bidirectional"         },
+        { ControlPolicy::ControlModes::NeutralIdle,           "NeutralIdle"           },
         { ControlPolicy::ControlModes::Cogeneration,          "Cogeneration"          },
         { ControlPolicy::ControlModes::ReactiveBidirectional, "ReactiveBidirectional" },
-        { ControlPolicy::ControlModes::BiasBidirectional,     "BiasBidirectional"     }
+        { ControlPolicy::ControlModes::BiasBidirectional,     "BiasBidirectional"     },
+        { ControlPolicy::ControlModes::BiasCogeneration,      "BiasCogeneration"      },
+        { ControlPolicy::ControlModes::ReverseCogeneration,   "ReverseCogeneration"   }
     };
 
     return mapFindOrDefault( modeLookup, mode, "Unknown" );
@@ -34,14 +36,16 @@ try
 {
     static const std::map<long, ControlModes>   modeLookup
     {
-        {   1, LockedForward            },
-        {   2, LockedReverse            },
-        {   3, ReverseIdle              },
-        {   4, NeutralIdle              },
-        {   5, Bidirectional            },
-        {   6, Cogeneration             },
-        {   7, ReactiveBidirectional    },
-        {   8, BiasBidirectional        }
+        {   0, LockedForward                    },
+        {   1, LockedReverse                    },
+        {   2, ReverseIdle                      },
+        {   3, Bidirectional                    },
+        {   4, NeutralIdle                      },
+        {   5, Cogeneration                     },
+        {   6, ReactiveBidirectional            },
+        {   7, BiasBidirectional                },
+        {   8, BiasCogeneration                 },
+        {   9, ReverseCogeneration              },
     };
 
     const long key = static_cast<long>( getValueByAttribute( Attribute::ControlMode ) );
