@@ -30,10 +30,10 @@ public class MaintenanceScheduler {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     private ScheduledFuture<?> future;
-    // Four hours
+    // Four hours in seconds
     private static final long fourHourWindow = 14400;
-    // One hour
-    private static final long minimumRunWindow = 3600;
+    // One hour in milliseconds
+    private static final long minimumRunWindow = 3600000;
     private boolean rescheduleScheduler = false;
 
     // Update the schedule on startup and on maintenance Global Setting change
@@ -80,7 +80,7 @@ public class MaintenanceScheduler {
                 if (tasks.size() == 0) {
                     rescheduleScheduler = true;
                 } else {
-                    // All task completed before time, reschedule
+                    // rescheduleScheduler will be true when all task completed before time, else it will be false
                     rescheduleScheduler = taskRunner.run(tasks, endOfRunWindow);
                 }
             }
