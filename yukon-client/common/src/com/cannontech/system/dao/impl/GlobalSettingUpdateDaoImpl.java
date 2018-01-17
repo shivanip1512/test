@@ -178,7 +178,9 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
             if (StringUtils.isBlank(setting.getComments())) {
                 setting.setComments(null);
             }
-
+            if (currentSetting.getId() != null) {
+                setting.setId(currentSetting.getId());
+            }
             if (insertTemplate.saveWillUpdate(setting)) {
                 insertTemplate.save(setting);
                 dbChangeManager.processDbChange(DbChangeType.UPDATE,
