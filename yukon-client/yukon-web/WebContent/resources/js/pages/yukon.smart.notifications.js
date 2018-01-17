@@ -77,9 +77,10 @@ yukon.smart.notifications = (function () {
             options = {},
             startDate = $('#startDateFilter').val(),
             endDate = $('#endDateFilter').val();
-        options.begin = new Date(startDate).getTime();
-        options.end = new Date(endDate).getTime();
-
+        
+        var timeZone = $('#startDateFilter').data('timeZoneShort');
+        options.begin = new Date(startDate + ' ' + timeZone).getTime();
+        options.end = new Date(endDate + ' ' + timeZone).getTime();
         // Reverse order to add oldest first.
         eventData.reverse().forEach(function (event) {
             var statusMessage = $('.js-status-' + event.eventId),
@@ -94,6 +95,12 @@ yukon.smart.notifications = (function () {
         options.events = toAdd;
         timeline.timeline(options);
         timeline.timeline('draw');
+        //update timestamps in table
+        $('.js-timestamp').each(function () {
+            var timeText = moment($(this).html()).tz(yg.timezone).format(yg.formats.date.full);
+            $(this).text(timeText);
+        });
+        
     },
     
     mod = {

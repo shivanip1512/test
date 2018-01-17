@@ -6,6 +6,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <cti:standardPage module="smartNotifications" page="detail">
 
@@ -137,7 +138,7 @@
                                 </c:otherwise>
                             </c:choose>
                         </td>
-                        <td><cti:formatDate value="${event.timestamp}" type="BOTH"/></td>
+                        <td class="js-timestamp"><cti:formatDate value="${event.timestamp}" type="FULL"/></td>
                     </tr>
                 </c:forEach>
             </tbody>
