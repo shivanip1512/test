@@ -14,6 +14,7 @@
 using Cti::CapControl::VoltageRegulator;
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::GangOperatedVoltageRegulator;
+using Cti::CapControl::ControlPolicy;
 
 // Exceptions
 using Cti::CapControl::MissingAttribute;
@@ -951,6 +952,38 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Cogeneratio
         BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
         BOOST_CHECK_CLOSE( 120.75,                                           *event.setPointValue,     1e-6 );
         BOOST_CHECK_EQUAL( 4,                                                *event.tapPosition );
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_Mode_Documentation)
+{
+    regulator->loadAttributes( &attributes );
+
+    const std::map<double, ControlPolicy::ControlModes> testCases
+    {
+        {   -1.0,   ControlPolicy::LockedForward            },
+        {    0.0,   ControlPolicy::LockedForward            },
+        {    1.0,   ControlPolicy::LockedForward            },
+        {    2.0,   ControlPolicy::LockedReverse            },
+        {    3.0,   ControlPolicy::ReverseIdle              },
+        {    4.0,   ControlPolicy::NeutralIdle              },
+        {    5.0,   ControlPolicy::Bidirectional            },
+        {    6.0,   ControlPolicy::Cogeneration             },
+        {    7.0,   ControlPolicy::ReactiveBidirectional    },
+        {    8.0,   ControlPolicy::BiasBidirectional        },
+        {    9.0,   ControlPolicy::LockedForward            },
+        {   10.0,   ControlPolicy::LockedForward            }
+    };
+
+    CtiPointDataMsg message { 7450,  0.0,  NormalQuality,  AnalogPointType };
+
+    for ( auto testCase : testCases )
+    {
+        message.setValue( testCase.first );
+
+        regulator->handlePointData( message );
+
+        BOOST_CHECK_EQUAL( regulator->getConfigurationMode(), testCase.second );
     }
 }
 
