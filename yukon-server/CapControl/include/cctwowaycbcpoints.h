@@ -98,7 +98,8 @@ public:
     const LitePoint & getPointByAttribute( const Attribute & attribute ) const;
     const LitePoint & getPointById( long pointId ) const;
     long getPointIdByAttribute( const Attribute & attribute ) const;
-    double getPointValueByAttribute( const Attribute & attribute, const double sentinel = 0 ) const;
+    double getPointValueByAttribute(const Attribute & attribute, const double sentinel = 0) const;
+    boost::optional<double> findPointValueByAttribute(const Attribute & attribute) const;
 
     bool setTwoWayStatusPointValue( const long pointID, const long value, const CtiTime & timestamp );
     bool setTwoWayAnalogPointValue( const long pointID, const double value, const CtiTime & timestamp );

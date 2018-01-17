@@ -245,6 +245,9 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
     BOOST_CHECK_EQUAL(  711, lp.getPointId() );
     BOOST_CHECK_EQUAL(    1, lp.getPointOffset() );
 
+    // Check for a non-existent point value
+    BOOST_CHECK( ! points->findPointValueByAttribute( Attribute::LastControlReasonLocal ) );
+
 /// ----------- last control reason testing
 
     // Initialize all LastControl... attributes to 0
@@ -341,6 +344,14 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
     BOOST_CHECK( points->setTwoWayStatusPointValue(
                     points->getPointIdByAttribute( Attribute::LastControlReasonAnalog ),        1, now ) );
     BOOST_CHECK_EQUAL( "Unknown State. Value = 192", points->getLastControlText() );
+
+    // Make sure LastControlReasonLocal is set
+    {
+        auto lcrl = points->findPointValueByAttribute( Attribute::LastControlReasonLocal );
+
+        BOOST_REQUIRE( lcrl );
+        BOOST_CHECK_EQUAL( 0, *lcrl );
+    }
 
 /// ----------- ignored control reason testing
 

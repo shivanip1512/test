@@ -63,7 +63,7 @@ _performingVerificationFlag(false),
 _verificationDoneFlag(false),
 _retryOpenFailedFlag(false),
 _retryCloseFailedFlag(false),
-_ovUvDisabledFlag(false),
+_ovUvDisabledFlag(true),  //  OVUV disabled by default
 _maxDailyOpsHitFlag(false),
 _controlStatusPartialFlag(false),
 _controlStatusSignificantFlag(false),
@@ -121,7 +121,7 @@ CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
         _verificationDoneFlag( false ),
         _retryOpenFailedFlag( false ),
         _retryCloseFailedFlag( false ),
-        _ovUvDisabledFlag( false ),
+        _ovUvDisabledFlag( true ),  //  OVUV disabled by default
         _maxDailyOpsHitFlag( false ),
         _controlStatusPartialFlag( false ),
         _controlStatusSignificantFlag( false ),

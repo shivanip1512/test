@@ -3378,20 +3378,23 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 CTILOG_DEBUG(dout, "Set a cbc 2 way status point... pointID ("<<pointID<<") = "<<value);
                             }
-                            if (twoWayPts.getPointValueByAttribute( Attribute::AutoVoltageControl ))
+                            if (const auto avc = twoWayPts.findPointValueByAttribute( Attribute::AutoVoltageControl ))
                             {
-                                if (currentCapBank->getOvUvDisabledFlag())
+                                if (*avc)
                                 {
-                                    currentCapBank->setOvUvDisabledFlag(false);
-                                    currentSubstationBus->setBusUpdatedFlag(true);
+                                    if (currentCapBank->getOvUvDisabledFlag())
+                                    {
+                                        currentCapBank->setOvUvDisabledFlag(false);
+                                        currentSubstationBus->setBusUpdatedFlag(true);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (!currentCapBank->getOvUvDisabledFlag())
+                                else
                                 {
-                                    currentCapBank->setOvUvDisabledFlag(true);
-                                    currentSubstationBus->setBusUpdatedFlag(true);
+                                    if (!currentCapBank->getOvUvDisabledFlag())
+                                    {
+                                        currentCapBank->setOvUvDisabledFlag(true);
+                                        currentSubstationBus->setBusUpdatedFlag(true);
+                                    }
                                 }
                             }
                             if (twoWayPts.getPointValueByAttribute( Attribute::LastControlReasonOvUv ) > 0)

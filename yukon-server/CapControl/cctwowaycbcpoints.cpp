@@ -342,6 +342,16 @@ long CtiCCTwoWayPoints::getPointIdByAttribute( const Attribute & attribute ) con
     return  Cti::mapFindOrDefault( _attributeIds, attribute, 0 );
 }
 
+boost::optional<double> CtiCCTwoWayPoints::findPointValueByAttribute(const Attribute & attribute) const
+{
+    double value;
+    if( _pointValues.getPointValue(getPointIdByAttribute(attribute), value) )
+    {
+        return value;
+    }
+    return boost::none;
+}
+
 double CtiCCTwoWayPoints::getPointValueByAttribute( const Attribute & attribute, const double sentinel ) const
 {
     double value = sentinel;
