@@ -63,6 +63,12 @@
       type = sortable.getColumnType(table, i);
 
       onClick = function(e) {
+          /*
+           * The first time a header is clicked this will check to see if any of the rows are blank.
+           * If the row is blank the row will be removed.
+           * The firstClick boolean is there since if this code is ran more than once issues occur
+           * when trying to sort a column a second time.
+           */
           if (firstClick) {
               var elementArray;
               elementArray = document.querySelectorAll("tr.vh");
@@ -71,6 +77,7 @@
               }
               firstClick = false;
           }
+          
         var compare, item, newSortedDirection, position, row, rowArray, sorted, sortedDirection, tBody, ths, value, _compare, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1;
         if (e.handled !== true) {
           e.handled = true;
