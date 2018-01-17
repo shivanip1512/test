@@ -3880,7 +3880,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             }
 
                             //Check other monitor point responses using this potential capbank
-                            if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Close))
+                            if ( ! parentBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                                 areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Close))
                             {
                                 double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
                                                            ? getCurrentVoltLoadPointValue()
@@ -3942,7 +3943,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                         CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Close");
                                     }
                                     //Check other monitor point responses using this potential capbank
-                                    if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Close))
+                                    if ( ! currentCapBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                                         areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Close))
                                     {
                                         double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
                                                                    ? getCurrentVoltLoadPointValue()
@@ -4001,7 +4003,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                 CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Open");
                             }
                             //Check other monitor point responses using this potential capbank
-                            if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Open))
+                            if ( ! parentBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                                 areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Open))
                             {
                                 double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
                                                            ? getCurrentVoltLoadPointValue()
@@ -4063,7 +4066,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                         CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Open");
                                     }
                                     //Check other monitor point responses using this potential capbank
-                                    if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Open))
+                                    if ( ! currentCapBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                                         areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Open))
                                     {
                                         double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
                                                                    ? getCurrentVoltLoadPointValue()
