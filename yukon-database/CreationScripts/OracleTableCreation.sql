@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/25/2017 12:29:13 AM                       */
+/* Created on:     1/18/2018 3:00:20 PM                         */
 /*==============================================================*/
 
 
@@ -2576,6 +2576,56 @@ insert into displaycolumns values(51, 'Description', 12, 4, 180 );
 insert into displaycolumns values(51, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
 insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
+
+/*==============================================================*/
+/* Table: DMVMeasurementData                                    */
+/*==============================================================*/
+create table DMVMeasurementData  (
+   ExecutionID          NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   TimeStamp            DATE                            not null,
+   Quality              NUMBER                          not null,
+   Value                FLOAT                           not null,
+   constraint PK_DMVMeasurementData primary key (ExecutionID, PointID, TimeStamp)
+);
+
+/*==============================================================*/
+/* Index: INDX_DMVMeasurementData_TStamp                        */
+/*==============================================================*/
+create index INDX_DMVMeasurementData_TStamp on DMVMeasurementData (
+   TimeStamp DESC
+);
+
+/*==============================================================*/
+/* Table: DMVTest                                               */
+/*==============================================================*/
+create table DMVTest  (
+   DMVTestID            NUMBER                          not null,
+   DMVTestName          VARCHAR2(60)                    not null,
+   PollingInterval      NUMBER                          not null,
+   DataGatheringDuration NUMBER                          not null,
+   StepSize             FLOAT                           not null,
+   CommSuccessPercentage NUMBER                          not null,
+   constraint PK_DMVTest primary key (DMVTestID)
+);
+
+alter table DMVTest
+   add constraint AK_DMVTest_DMVTestName unique (DMVTestName);
+
+/*==============================================================*/
+/* Table: DMVTestExecution                                      */
+/*==============================================================*/
+create table DMVTestExecution  (
+   ExecutionID          NUMBER                          not null,
+   DMVTestId            NUMBER                          not null,
+   AreaID               NUMBER                          not null,
+   SubstationID         NUMBER                          not null,
+   BusID                NUMBER                          not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE,
+   TestStatus           VARCHAR2(30),
+   constraint PK_DMVTestExecution primary key (ExecutionID)
+);
 
 /*==============================================================*/
 /* Table: DYNAMICACCUMULATOR                                    */
@@ -11727,6 +11777,16 @@ alter table DISPLAYCOLUMNS
 alter table DISPLAYCOLUMNS
    add constraint FK_DisplayColumns_Display foreign key (DISPLAYNUM)
       references DISPLAY (DISPLAYNUM)
+      on delete cascade;
+
+alter table DMVMeasurementData
+   add constraint FK_DMVTestExec_DMVMData foreign key (ExecutionID)
+      references DMVTestExecution (ExecutionID)
+      on delete cascade;
+
+alter table DMVTestExecution
+   add constraint FK_DMVTestExec_DMVTest foreign key (DMVTestId)
+      references DMVTest (DMVTestID)
       on delete cascade;
 
 alter table DYNAMICACCUMULATOR

@@ -426,6 +426,59 @@ WHERE YPO.Type LIKE 'RFN%'
     AND PU.DECIMALPLACES = 3;
 /* End YUK-17122 */
 
+/* Start YUK-17764 */
+CREATE TABLE DMVTest (
+   DMVTestID             NUMERIC              NOT NULL,
+   DMVTestName           VARCHAR(60)          NOT NULL,
+   PollingInterval       NUMERIC              NOT NULL,
+   DataGatheringDuration NUMERIC              NOT NULL,
+   StepSize              FLOAT                NOT NULL,
+   CommSuccessPercentage NUMERIC              NOT NULL,
+   CONSTRAINT PK_DMVTest PRIMARY KEY (DMVTestID)
+);
+
+CREATE TABLE DMVTestExecution (
+   ExecutionID          NUMERIC              NOT NULL,
+   DMVTestId            NUMERIC              NOT NULL,
+   AreaID               NUMERIC              NOT NULL,
+   SubstationID         NUMERIC              NOT NULL,
+   BusID                NUMERIC              NOT NULL,
+   StartTime            DATETIME             NOT NULL,
+   StopTime             DATETIME             NULL,
+   TestStatus           VARCHAR(30)          NULL,
+   CONSTRAINT PK_DMVTestExecution PRIMARY KEY (ExecutionID)
+);
+
+CREATE TABLE DMVMeasurementData (
+   ExecutionID          NUMERIC              NOT NULL,
+   PointID              NUMERIC              NOT NULL,
+   TimeStamp            DATETIME             NOT NULL,
+   Quality              NUMERIC              NOT NULL,
+   Value                FLOAT                NOT NULL,
+   CONSTRAINT PK_DMVMeasurementData PRIMARY KEY (ExecutionID, PointID, TimeStamp)
+);
+GO
+
+CREATE INDEX INDX_DMVMeasurementData_TStamp ON DMVMeasurementData (
+    TimeStamp DESC
+);
+
+ALTER TABLE DMVTest
+   ADD CONSTRAINT AK_DMVTest_DMVTestName UNIQUE (DMVTestName);
+GO
+
+ALTER TABLE DMVMeasurementData
+   ADD CONSTRAINT FK_DMVTestExec_DMVMData FOREIGN KEY (ExecutionID)
+      REFERENCES DMVTestExecution (ExecutionID)
+         ON DELETE CASCADE;
+
+ALTER TABLE DMVTestExecution
+   ADD CONSTRAINT FK_DMVTestExec_DMVTest FOREIGN KEY (DMVTestId)
+      REFERENCES DMVTest (DMVTestID)
+         ON DELETE CASCADE;
+GO
+/* End YUK-17764 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

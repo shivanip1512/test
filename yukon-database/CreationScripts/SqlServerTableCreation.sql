@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/25/2017 12:30:37 AM                       */
+/* Created on:     1/18/2018 2:59:31 PM                         */
 /*==============================================================*/
 
 
@@ -2744,6 +2744,61 @@ insert into displaycolumns values(51, 'Description', 12, 4, 180 );
 insert into displaycolumns values(51, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
 insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
+
+/*==============================================================*/
+/* Table: DMVMeasurementData                                    */
+/*==============================================================*/
+create table DMVMeasurementData (
+   ExecutionID          numeric              not null,
+   PointID              numeric              not null,
+   TimeStamp            datetime             not null,
+   Quality              numeric              not null,
+   Value                float                not null,
+   constraint PK_DMVMeasurementData primary key (ExecutionID, PointID, TimeStamp)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_DMVMeasurementData_TStamp                        */
+/*==============================================================*/
+create index INDX_DMVMeasurementData_TStamp on DMVMeasurementData (
+TimeStamp DESC
+)
+go
+
+/*==============================================================*/
+/* Table: DMVTest                                               */
+/*==============================================================*/
+create table DMVTest (
+   DMVTestID            numeric              not null,
+   DMVTestName          varchar(60)          not null,
+   PollingInterval      numeric              not null,
+   DataGatheringDuration numeric              not null,
+   StepSize             float                not null,
+   CommSuccessPercentage numeric              not null,
+   constraint PK_DMVTest primary key (DMVTestID)
+)
+go
+
+alter table DMVTest
+   add constraint AK_DMVTest_DMVTestName unique (DMVTestName)
+go
+
+/*==============================================================*/
+/* Table: DMVTestExecution                                      */
+/*==============================================================*/
+create table DMVTestExecution (
+   ExecutionID          numeric              not null,
+   DMVTestId            numeric              not null,
+   AreaID               numeric              not null,
+   SubstationID         numeric              not null,
+   BusID                numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             null,
+   TestStatus           varchar(30)          null,
+   constraint PK_DMVTestExecution primary key (ExecutionID)
+)
+go
 
 /*==============================================================*/
 /* Table: DYNAMICACCUMULATOR                                    */
@@ -12558,6 +12613,18 @@ go
 alter table DISPLAYCOLUMNS
    add constraint FK_DisplayColumns_Display foreign key (DISPLAYNUM)
       references DISPLAY (DISPLAYNUM)
+         on delete cascade
+go
+
+alter table DMVMeasurementData
+   add constraint FK_DMVTestExec_DMVMData foreign key (ExecutionID)
+      references DMVTestExecution (ExecutionID)
+         on delete cascade
+go
+
+alter table DMVTestExecution
+   add constraint FK_DMVTestExec_DMVTest foreign key (DMVTestId)
+      references DMVTest (DMVTestID)
          on delete cascade
 go
 

@@ -426,6 +426,56 @@ WHERE YPO.Type LIKE 'RFN%'
 SET t.decimalplaces = 1;
 /* End YUK-17122 */
 
+/* Start YUK-17764 */
+CREATE TABLE DMVTest  (
+   DMVTestID             NUMBER                          NOT NULL,
+   DMVTestName           VARCHAR2(60)                    NOT NULL,
+   PollingInterval       NUMBER                          NOT NULL,
+   DataGatheringDuration NUMBER                          NOT NULL,
+   StepSize              FLOAT                           NOT NULL,
+   CommSuccessPercentage NUMBER                          NOT NULL,
+   CONSTRAINT PK_DMVTest PRIMARY KEY (DMVTestID)
+);
+
+CREATE TABLE DMVTestExecution  (
+   ExecutionID          NUMBER                          NOT NULL,
+   DMVTestId            NUMBER                          NOT NULL,
+   AreaID               NUMBER                          NOT NULL,
+   SubstationID         NUMBER                          NOT NULL,
+   BusID                NUMBER                          NOT NULL,
+   StartTime            DATE                            NOT NULL,
+   StopTime             DATE,
+   TestStatus           VARCHAR2(30),
+   CONSTRAINT PK_DMVTestExecution PRIMARY KEY (ExecutionID)
+);
+
+CREATE TABLE DMVMeasurementData  (
+   ExecutionID          NUMBER                          NOT NULL,
+   PointID              NUMBER                          NOT NULL,
+   TimeStamp            DATE                            NOT NULL,
+   Quality              NUMBER                          NOT NULL,
+   Value                FLOAT                           NOT NULL,
+   CONSTRAINT PK_DMVMeasurementData PRIMARY KEY (ExecutionID, PointID, TimeStamp)
+);
+
+CREATE INDEX INDX_DMVMeasurementData_TStamp ON DMVMeasurementData (
+   TimeStamp DESC
+);
+
+ALTER TABLE DMVTest
+   ADD CONSTRAINT AK_DMVTest_DMVTestName UNIQUE (DMVTestName);
+
+ALTER TABLE DMVMeasurementData
+   ADD CONSTRAINT FK_DMVTestExec_DMVMData FOREIGN KEY (ExecutionID)
+      REFERENCES DMVTestExecution (ExecutionID)
+      ON DELETE CASCADE;
+
+ALTER TABLE DMVTestExecution
+   ADD CONSTRAINT FK_DMVTestExec_DMVTest FOREIGN KEY (DMVTestId)
+      REFERENCES DMVTest (DMVTestID)
+      ON DELETE CASCADE;
+/* End YUK-17764 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
