@@ -9,11 +9,13 @@ class IM_EX_DEVDB CtiDeviceGroupRipple : public CtiDeviceGroupBase
     typedef CtiDeviceGroupBase Inherited;
 
     bool matchRippleDoubleOrders(std::string parentDO, std::string childDO) const;
+    int _isShed;
 
 protected:
 
     CtiTableRippleLoadGroup _rippleTable;
     CtiMessage *_rsvp;
+    LONG getShedTime();
 
 public:
 
@@ -37,4 +39,6 @@ public:
     void setRsvpToDispatch(CtiMessage *&rsvp);
 
     void contributeToBitPattern(BYTE *bptr, bool shed) const;
+    void setShed( int shed );
+    int getShed();
 };

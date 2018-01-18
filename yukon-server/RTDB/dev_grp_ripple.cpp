@@ -35,7 +35,8 @@ using std::endl;
 using std::list;
 
 CtiDeviceGroupRipple::CtiDeviceGroupRipple() :
-_rsvp(0)
+_rsvp(0),
+_isShed(UNCONTROLLED)
 {
 }
 
@@ -48,6 +49,12 @@ LONG CtiDeviceGroupRipple::getRouteID()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
     return _rippleTable.getRouteID();
+}
+
+LONG CtiDeviceGroupRipple::getShedTime()
+{
+    CtiLockGuard<CtiMutex> guard(_classMutex);
+    return _rippleTable.getShedTime();
 }
 
 string CtiDeviceGroupRipple::getDescription(const CtiCommandParser & parse) const
@@ -97,7 +104,7 @@ YukonError_t CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiComman
 
         if(OutMessage->Buffer.RSt.Message[0] == (BYTE)0)        // If not, we will assume a higher power has set it for us!
         {
-            _rippleTable.copyMessage( OutMessage->Buffer.RSt.Message, _isShed == CONTROLLED );
+            _rippleTable.copyMessage( OutMessage->Buffer.RSt.Message, getShed() == CONTROLLED );
         }
 
         /*
@@ -227,24 +234,28 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, CtiMessageList  &vgList )
             }
         }
 
-        if(_isShed == CONTROLLED || _isShed == UNCONTROLLED)
         {
+            // This checks isShed, then later on uses it, and changes it. It appears this can be
+            // called in a multi-threaded way which causes issues. Using Mutex to prevent threading issues.
             CtiLockGuard<CtiMutex> guard(_classMutex);
-
-            LONG shedtime = _rippleTable.getShedTime();
-            int controlpercent = 100;
-            if(_isShed == UNCONTROLLED)
+            int shed = getShed();
+            if ( shed == CONTROLLED || shed == UNCONTROLLED )
             {
-                shedtime = RESTORE_DURATION;
-                controlpercent = 0;
-            }
+                LONG shedtime = getShedTime();
+                int controlpercent = 100;
+                if ( shed == UNCONTROLLED )
+                {
+                    shedtime = RESTORE_DURATION;
+                    controlpercent = 0;
+                }
 
-            reportControlStart( _isShed, shedtime, controlpercent, vgList, getLastCommand() );
-            setShed( STATE_INVALID );   // This keeps me from sending this multiple times for a single control.
-        }
-        else if( erdb )
-        {
-            CTILOG_WARN(dout, getName() <<" is probably setShed(INVALID)");
+                reportControlStart(shed, shedtime, controlpercent, vgList, getLastCommand());
+                setShed(STATE_INVALID);   // This keeps me from sending this multiple times for a single control.
+            }
+            else if ( erdb )
+            {
+                CTILOG_WARN(dout, getName() << " is probably setShed(INVALID)");
+            }
         }
     }
     else if(erdb)
@@ -262,7 +273,7 @@ INT CtiDeviceGroupRipple::initTrxID( int trx, CtiCommandParser &parse, CtiMessag
     setResponsesOnTrxID(0);
     setTrxID(trx);
 
-    _isShed = parse.getControlled();
+    setShed(parse.getControlled());
     if(parse.getActionItems().size() > 0 )
     {
         _lastCommand = *(parse.getActionItems().begin());    // This might just suck!  I guess I am expecting only one (today) and building for the future..?
@@ -330,9 +341,9 @@ bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
             {
                 CtiMessageList vgList;
 
-                CtiLockGuard<CtiMutex> guard(otherGroup->_classMutex);
+                int otherGroupShedTime = otherGroup->getShedTime();
 
-                otherGroup->reportControlStart( true, otherGroup->_rippleTable.getShedTime(), 100, vgList, "control shed" );
+                otherGroup->reportControlStart( true, otherGroupShedTime, 100, vgList, "control shed" );
                 if(vgList.size())
                 {
                     CtiMessage *pMsg = vgList.back();
@@ -399,6 +410,18 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
     }
 
     return bstatus;
+}
+
+void CtiDeviceGroupRipple::setShed( INT shed )
+{
+    CtiLockGuard<CtiMutex> guard(_classMutex);
+    _isShed = shed;
+}
+
+int CtiDeviceGroupRipple::getShed() 
+{
+    CtiLockGuard<CtiMutex> guard(_classMutex);
+    return _isShed;
 }
 
 void CtiDeviceGroupRipple::setRsvpToDispatch(CtiMessage *&rsvp)

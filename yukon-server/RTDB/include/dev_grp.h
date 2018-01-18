@@ -27,13 +27,11 @@ class CtiDeviceGroupBase : public CtiDeviceBase
 
 protected:
 
-    INT _isShed;
     std::string _lastCommand;
 
 public:
 
-    CtiDeviceGroupBase()  :
-        _isShed(UNCONTROLLED)
+    CtiDeviceGroupBase()
     {}
 
     virtual LONG getRouteID() = 0;      // Must be defined!
@@ -117,12 +115,6 @@ public:
     std::string getLastCommand() const
     {
         return _lastCommand;
-    }
-
-    CtiDeviceGroupBase& setShed( INT shed )
-    {
-        _isShed = shed;
-        return *this;
     }
 
     // Takes in a command string and removes the data from it that can change (countdown, ect..)
