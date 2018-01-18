@@ -11,10 +11,12 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CCU711;
 import com.cannontech.database.data.device.DeviceBase;
@@ -23,11 +25,13 @@ import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.port.TerminalServerSharedPort;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteFactory;
+import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
 import com.cannontech.database.db.port.PortTiming;
@@ -38,6 +42,7 @@ import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevMeter;
 import com.cannontech.development.model.DevPaoType;
 import com.cannontech.development.service.DevAmrCreationService;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
 public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements DevAmrCreationService {
@@ -125,8 +130,26 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
         terminalServerSharedPort.setPortName(commChannel.getName());
         terminalServerSharedPort.setPortTiming(new PortTiming(portTerminalServer.getPortID(),commChannel.getPortTimingPreTxWait(),0,0,0,0));
 
-        dbPersistentDao.performDBChange(terminalServerSharedPort, TransactionType.INSERT);
-        log.info("Comm Channel with name " + commChannel.getName() + " created.");
+        // Create the default points for the port
+        SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
+        smartDB.addOwnerDBPersistent(terminalServerSharedPort);
+        PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
+        YukonPAObject ypo = new YukonPAObject();
+        ypo.setPaObjectID(terminalServerSharedPort.getPAObjectID());
+        ypo.setPaoName(terminalServerSharedPort.getPAOName());
+        ypo.setPaoType(terminalServerSharedPort.getPaoType());
+        List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(ypo);
+        for (PointBase point : defaultPoints) {
+            smartDB.addDBPersistent(point);
+        }
+        
+        // Insert the port and points into the database
+        try {
+            dbPersistentDao.performDBChange(smartDB, TransactionType.INSERT);
+            log.info("Comm Channel with name " + commChannel.getName() + " created.");
+        } catch(PersistenceException e) {
+            log.warn("Caught PersistenceException while inserting Dev Port", e);
+        }
     }
 
     private void createAllCCUs(DevAmr devAmr) {
