@@ -66,7 +66,7 @@
                 <%-- device group --%>
                 <tags:nameValue2 nameKey=".deviceGroup">
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" />
-                    <tags:deviceGroupNameSelector fieldName="deviceGroupName" fieldValue="${fn:escapeXml(deviceGroupName)}" dataJson="${groupDataJson}" linkGroupName="true"/>
+                    <tags:deviceGroupNameSelector fieldName="deviceGroupName" fieldValue="${deviceGroupName}" dataJson="${groupDataJson}" linkGroupName="true"/>
                     <cti:msg2 key=".deviceGroup" var="popupTitle"/>
                     <tags:helpInfoPopup title="${popupTitle}" classes="show-on-hover" width="600"><i:inline key=".deviceGroup.helpText" /></tags:helpInfoPopup>
                 </tags:nameValue2>

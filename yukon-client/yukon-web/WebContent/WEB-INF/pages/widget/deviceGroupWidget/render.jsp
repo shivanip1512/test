@@ -23,9 +23,15 @@
          }
         $('#deviceGroupWidgetTree').on('yukon.ui.widget.DeviceGroupWidget.save', function() {
             var groupIds = $('#groupIds').val();
-            ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
+            
+            var widget = $('#groupIds').closest('.widgetWrapper');
+            var id = widget.attr('id');
+            id = id.substring(id.indexOf("_") + 1);
+
+            var widget = yukon.widgets[id];
+            widget.setParameter('groupIds', groupIds);
             yukon.ui.block('#currentGroups');
-            ${widgetParameters.jsWidget}.doDirectActionRefresh('update');
+            widget.doDirectActionRefresh('update');
         })
     });
     

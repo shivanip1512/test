@@ -141,7 +141,7 @@
 <cti:msg2 var="pickerTitleText" key="yukon.web.deviceGroups.deviceGroupPicker.title"/>
 <jsTree:nodeValueSelectingPopupTree fieldId="${fieldId}"
                                 fieldName="${fieldName}"
-                                fieldValue="${pageScope.fieldValue}"
+                                fieldValue="${fn:escapeXml(pageScope.fieldValue)}"
                                 nodeValueName="groupName"
                                 submitButtonText="${selectButtonText}"
                                 cancelButtonText="${cancelButtonText}"
