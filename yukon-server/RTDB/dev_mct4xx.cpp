@@ -1788,6 +1788,8 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                                            bool readsOnly)
 {
     int ret = ClientErrors::NoMethod;
+    int notCurrent = ClientErrors::None;
+    string nonCurrentConfigParts;
 
     if (getDeviceConfig())
     {
@@ -1801,7 +1803,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
             OutMessage->Sequence = Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
             OutMessage->Request.RouteID   = getRouteID();
 
-            for each( const char *configPart in partsList)
+            for( const auto configPart : partsList )
             {
                 if( configPart != PutConfigPart_all)  //  preventing infinite loop
                 {
@@ -1819,7 +1821,20 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                     tempReq.setConnectionHandle(pReq->getConnectionHandle());
 
                     CtiCommandParser parseSingle(tempReq.CommandString());
-                    executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly);
+                    notCurrent = executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly);
+                    if( notCurrent )
+                    {
+                        if( nonCurrentConfigParts.empty() )
+                        {
+                            nonCurrentConfigParts = configPart;
+                        }
+                        else
+                        {
+                            nonCurrentConfigParts.append( ", " + std::string( configPart ) );
+                        }
+
+                        ret = ClientErrors::ConfigNotCurrent;
+                    }
                 }
             }
         }
@@ -1832,6 +1847,26 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                                 string(OutMessage->Request.CommandStr),
                                 "ERROR: Device not assigned to a config.",
                                 ClientErrors::NoConfigData,
+                                OutMessage->Request.RouteID,
+                                OutMessage->Request.RetryMacroOffset,
+                                OutMessage->Request.Attempt,
+                                OutMessage->Request.GrpMsgID,
+                                OutMessage->Request.UserID,
+                                OutMessage->Request.SOE,
+                                CtiMultiMsg_vec( ));
+
+        retList.push_back( retMsg );
+    }
+
+    // Can only be ClientErrors::ConfigNotCurrent for now.
+    if( ret )
+    {
+        CTILOG_ERROR(dout, "Device " << getName() << " has non-current configuration.");
+
+        CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
+                                string(OutMessage->Request.CommandStr),
+                                "ERROR: Config Part(s) " + nonCurrentConfigParts + " not current.",
+                                ClientErrors::ConfigNotCurrent,
                                 OutMessage->Request.RouteID,
                                 OutMessage->Request.RetryMacroOffset,
                                 OutMessage->Request.Attempt,

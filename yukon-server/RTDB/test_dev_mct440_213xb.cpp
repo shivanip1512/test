@@ -4275,13 +4275,13 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 0 );
-            BOOST_CHECK_EQUAL( retList.size(), 6 );
+            BOOST_CHECK_EQUAL( retList.size(), 7 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(false); // 6 error messages
+                    (true)(true)(true)(true)(true)(true)(false); // 7 error messages
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4340,13 +4340,13 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 4 );
-            BOOST_CHECK_EQUAL( retList.size(), 9 );
+            BOOST_CHECK_EQUAL( retList.size(), 10 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 5 error messages + 4 message sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 5 error messages + 4 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4368,13 +4368,13 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 5 );
-            BOOST_CHECK_EQUAL( retList.size(), 9 );
+            BOOST_CHECK_EQUAL( retList.size(), 10 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 4 error messages + 5 message sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 4 error messages + 5 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4396,13 +4396,13 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 7 );
-            BOOST_CHECK_EQUAL( retList.size(), 10 );
+            BOOST_CHECK_EQUAL( retList.size(), 11 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 3 error messages + 7 message sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 3 error messages + 7 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4424,13 +4424,13 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 8 );
-            BOOST_CHECK_EQUAL( retList.size(), 10 );
+            BOOST_CHECK_EQUAL( retList.size(), 11 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 2 error messages + 8 messages sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 2 error messages + 8 messages sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4455,13 +4455,13 @@ BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 9 );
-            BOOST_CHECK_EQUAL( retList.size(), 10 );
+            BOOST_CHECK_EQUAL( retList.size(), 11 );
 
             std::vector<bool> expectMoreRcv;
             boost::range::transform(retList, std::back_inserter(expectMoreRcv), [](const CtiMessage *msg) { return static_cast<const CtiReturnMsg *>(msg)->ExpectMore(); });
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 1 error messages + 9 message sent on route
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true)(true)(true); // 1 error messages + 9 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );

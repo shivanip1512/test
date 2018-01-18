@@ -151,7 +151,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 /**
  * Called by executeConfigInstall() to execute a putconfig/getconfig install for one config part
  */
-void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod )
+YukonError_t RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod )
 {
     YukonError_t nRet = ClientErrors::NoMethod;
     std::string error_description;
@@ -221,6 +221,8 @@ void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser
 
         returnMsgs.push_back( retMsg );
     }
+
+    return nRet;
 }
 
 YukonError_t RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)

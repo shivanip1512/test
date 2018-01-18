@@ -2629,7 +2629,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct410.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_CHECK( outList.empty() );
 
         CtiDeviceBase::CtiMessageList::const_iterator retList_itr = retList.begin();

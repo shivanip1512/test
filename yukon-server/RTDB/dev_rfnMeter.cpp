@@ -330,6 +330,9 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
  */
 YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, InstallType installType )
 {
+    bool notCurrent = FALSE;
+    std::string nonCurrentConfigParts;
+
     boost::optional<std::string> configPart = parse.findStringForKey("installvalue");
     if( ! configPart )
     {
@@ -346,7 +349,24 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiComman
     {
         for each( const ConfigMap::value_type & p in configMethods )
         {
-            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, p.first, p.second );
+            if( executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, p.first, p.second ) == ClientErrors::ConfigNotCurrent )
+            {
+                if ( nonCurrentConfigParts.empty( ) )
+                {
+                    nonCurrentConfigParts = p.first;
+                }
+                else
+                {
+                    nonCurrentConfigParts.append(", " + std::string( p.first ) );
+                }
+
+                notCurrent = TRUE;
+            }
+        }
+        
+        if( notCurrent )
+        {
+            return ClientErrors::ConfigNotCurrent;
         }
     }
     else
