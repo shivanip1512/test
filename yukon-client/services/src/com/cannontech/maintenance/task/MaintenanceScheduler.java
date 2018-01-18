@@ -41,14 +41,15 @@ public class MaintenanceScheduler {
     public void init() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
             int primaryKeyId = event.getPrimaryKey();
-            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING) && (primaryKeyId ==
-                globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS).getId().intValue()
-                || primaryKeyId ==
-                    globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId().intValue()
-                || primaryKeyId == 
-                    globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId().intValue()
-                || primaryKeyId ==
-                    globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue())) {
+            if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING)
+                && ((globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS).getId() != null
+                     && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS).getId().intValue())
+                    || (globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId() != null
+                        && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId().intValue())
+                    || (globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId() != null
+                        && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId().intValue())
+                    || (globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId() != null 
+                        && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue()))) {
                 rescheduleScheduler = false;
                 reschedule();
             }
