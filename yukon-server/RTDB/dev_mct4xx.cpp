@@ -1788,8 +1788,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                                            bool readsOnly)
 {
     int ret = ClientErrors::NoMethod;
-    int notCurrent = ClientErrors::None;
-    string nonCurrentConfigParts;
+    std::vector<std::string> nonCurrentConfigParts;
 
     if (getDeviceConfig())
     {
@@ -1821,18 +1820,9 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                     tempReq.setConnectionHandle(pReq->getConnectionHandle());
 
                     CtiCommandParser parseSingle(tempReq.CommandString());
-                    notCurrent = executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly);
-                    if( notCurrent )
+                    if( executePutConfigSingle(&tempReq, parseSingle, OutMessage, vgList, retList, outList, readsOnly ) )
                     {
-                        if( nonCurrentConfigParts.empty() )
-                        {
-                            nonCurrentConfigParts = configPart;
-                        }
-                        else
-                        {
-                            nonCurrentConfigParts.append( ", " + std::string( configPart ) );
-                        }
-
+                        nonCurrentConfigParts.push_back(configPart);
                         ret = ClientErrors::ConfigNotCurrent;
                     }
                 }
@@ -1865,7 +1855,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
 
         CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
                                 string(OutMessage->Request.CommandStr),
-                                "ERROR: Config Part(s) " + nonCurrentConfigParts + " not current.",
+                                "ERROR: Config Part(s) " + boost::join(nonCurrentConfigParts, ", ") + " not current.",
                                 ClientErrors::ConfigNotCurrent,
                                 OutMessage->Request.RouteID,
                                 OutMessage->Request.RetryMacroOffset,

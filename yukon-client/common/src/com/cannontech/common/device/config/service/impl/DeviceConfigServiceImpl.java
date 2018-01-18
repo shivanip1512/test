@@ -222,7 +222,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                     SimpleDevice device = command.getDevice();
                     String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
-                    // This was commented out to prevent unwanted messages to be added to the verification out of sync parts list
+                    // This was commented out to prevent adding the final summary result status message to the out-of-sync parts list
                     //result.addError(device, error.getPorter());
                     result.handleFailure(device);
                     eventLogService.verifyConfigFromDeviceCompleted(deviceName, 0);
