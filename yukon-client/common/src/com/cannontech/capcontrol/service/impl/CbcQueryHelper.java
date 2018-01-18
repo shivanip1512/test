@@ -129,15 +129,15 @@ final class CbcQueryHelper {
             builder.append(    "YukonPAObject y"); 
             builder.append(    "LEFT JOIN POINT p"); 
             builder.append(        "ON y.PAObjectID=p.PAObjectID");
+            builder.append(        "AND p.PointOffset").eq_k(1);
+            builder.append(        "AND p.PointType").eq_k(PointType.Status);
             builder.append(    "LEFT JOIN OverridePointName opn"); 
             builder.append(        "ON opn.PAObjectID=y.PAObjectID");
             builder.append(    "LEFT JOIN POINT op");
             builder.append(        "ON y.PAObjectID=op.PAObjectID");
             builder.append(        "AND opn.POINTNAME=op.POINTNAME");
             builder.append("WHERE");
-            builder.append(    "y.Type").in(isLogicalCbc.get(false));
-            builder.append(    "AND p.PointOffset").eq_k(1);
-            builder.append(    "AND p.PointType").eq_k(PointType.Status);
+            builder.append(    "y.Type").in_k(isLogicalCbc.get(false));
             builder.append(    "AND (op.POINTNAME IS NOT NULL OR p.POINTNAME IS NOT NULL)");
         }
     }

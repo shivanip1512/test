@@ -30,15 +30,12 @@ public class CapControlCBCOrphanRowMapperTest {
             + " UNION"
             + " SELECT y.PAOName, y.PAObjectID, y.Type, COALESCE(op.POINTNAME, p.POINTNAME) AS PointName"
             + " FROM YukonPAObject y"
-            + " LEFT JOIN POINT p ON y.PAObjectID=p.PAObjectID"
+            + " LEFT JOIN POINT p ON y.PAObjectID=p.PAObjectID AND p.PointOffset = 1 AND p.PointType = 'Status'"
             + " LEFT JOIN OverridePointName opn ON opn.PAObjectID=y.PAObjectID"
             + " LEFT JOIN POINT op ON y.PAObjectID=op.PAObjectID AND opn.POINTNAME=op.POINTNAME"
-            + " WHERE y.Type in (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
-            + " AND p.PointOffset = 1"
-            + " AND p.PointType = 'Status'"
+            + " WHERE y.Type in ( 'CBC Expresscom' , 'CBC Versacom' , 'CBC 7010' , 'CBC 7011' , 'CBC 7012' , 'CBC 7020' , 'CBC 7022' , 'CBC 7023' , 'CBC 7024' , 'CBC 8020' , 'CBC 8024' , 'CBC DNP' , 'CBC FP-2800' )"
             + " AND (op.POINTNAME IS NOT NULL OR p.POINTNAME IS NOT NULL) ) results "
-            + " Arguments: [cbcAttributeMapping, attributeMappings., attribute, attributeMappings., pointName,"
-            + " CONTROL_POINT, CBC Expresscom, CBC Versacom, CBC 7010, CBC 7011, CBC 7012, CBC 7020, CBC 7022, CBC 7023, CBC 7024, CBC 8020, CBC 8024, CBC DNP, CBC FP-2800]";
+            + " Arguments: [cbcAttributeMapping, attributeMappings., attribute, attributeMappings., pointName, CONTROL_POINT]";
     
     private CapControlCBCOrphanRowMapper createMapper(DatabaseVendor dbVendor) throws Exception {
         VendorSpecificSqlBuilderFactory vssbf = new VendorSpecificSqlBuilderFactory();
