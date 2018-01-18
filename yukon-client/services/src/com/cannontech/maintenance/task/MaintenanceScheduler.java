@@ -35,6 +35,7 @@ public class MaintenanceScheduler {
     // One hour in milliseconds
     private static final long minimumRunWindow = 3600000;
     private boolean rescheduleScheduler = false;
+    private boolean forceReschedule = false;
 
     // Update the schedule on startup and on maintenance Global Setting change
     @PostConstruct
@@ -51,6 +52,7 @@ public class MaintenanceScheduler {
                     || (globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId() != null 
                         && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue()))) {
                 rescheduleScheduler = false;
+                forceReschedule = false;
                 reschedule();
             }
         });
@@ -71,22 +73,30 @@ public class MaintenanceScheduler {
         long secondsUntilRun = getSecondsUntilNextRun();
         // Schedule the runner
         future = scheduledExecutorService.schedule(() -> {
-            Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
-            if (endOfRunWindow.getMillis() - Instant.now().getMillis() <= minimumRunWindow) {
-                log.info("Not enough time to run maintenance tasks. Rescheduling");
-                rescheduleScheduler = true;
+            if (forceReschedule) {
+                // When scheduler start at end of run window, we want it freshly reschedule every thing to get next run time.
+                forceReschedule = false;
+                rescheduleScheduler = false;
+                log.info("Force Rescheduling");
+                reschedule();
             } else {
-                log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
-                List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
-                if (tasks.size() == 0) {
+                Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
+                if (endOfRunWindow.getMillis() - Instant.now().getMillis() <= minimumRunWindow) {
+                    log.info("Not enough time to run maintenance tasks. Rescheduling");
                     rescheduleScheduler = true;
                 } else {
-                    // rescheduleScheduler will be true when all task completed before time, else it will be false
-                    rescheduleScheduler = taskRunner.run(tasks, endOfRunWindow);
+                    log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
+                    List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
+                    if (tasks.size() == 0) {
+                        rescheduleScheduler = true;
+                    } else {
+                        // rescheduleScheduler will be true when all task completed before time, else it will be false
+                        rescheduleScheduler = taskRunner.run(tasks, endOfRunWindow);
+                    }
                 }
+                // At the end of the run window, schedule this to run again at the start of the next window
+                reschedule();
             }
-            // At the end of the run window, schedule this to run again at the start of the next window
-            reschedule();
         }, secondsUntilRun, TimeUnit.SECONDS);
     }
     
@@ -111,8 +121,9 @@ public class MaintenanceScheduler {
                 }
             } else {
                 secondsUntilRun = (endOfRunWindow.getMillis() - Instant.now().getMillis())/1000;
+                forceReschedule = true;
             }
-            log.info("All maintenance task are completed before end of run window. Rescheduling task runner.");
+            log.info("No task or no time window to run. Rescheduling task runner.");
         } else {
             secondsUntilRun = maintenanceService.getSecondsUntilRun();
         }
