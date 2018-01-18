@@ -33,7 +33,6 @@ import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
-import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
@@ -399,9 +398,8 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     private boolean sendCommand(LCRCommandHolder lcrCommandHolder) {
         int inventoryId = lcrCommandHolder.getInventoryId();
         LiteLmHardwareBase lmhb = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
-        CustomerAccount account = customerAccountDao.getAccountByInventoryId(inventoryId);
+        String accountNumber = customerAccountDao.getAccountByInventoryId(inventoryId).getAccountNumber();
         String serialNumber = lmhb.getManufacturerSerialNumber();
-        String accountNumber = account.getAccountNumber();
         LiteYukonUser user = UserUtils.getYukonUser();
         LmHardwareCommand command = new LmHardwareCommand();
         command.setDevice(lmhb);
