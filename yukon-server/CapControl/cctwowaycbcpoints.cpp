@@ -344,10 +344,10 @@ long CtiCCTwoWayPoints::getPointIdByAttribute( const Attribute & attribute ) con
 
 boost::optional<double> CtiCCTwoWayPoints::findPointValueByAttribute(const Attribute & attribute) const
 {
-    if ( const auto pointId = getPointIdByAttribute(attribute) )
+    if ( const auto pointId = getPointIdByAttribute( attribute ) )
     {
         double value;
-        if ( _pointValues.getPointValue(pointId, value) )
+        if ( _pointValues.getPointValue( pointId, value ) )
         {
             return value;
         }
@@ -358,7 +358,7 @@ boost::optional<double> CtiCCTwoWayPoints::findPointValueByAttribute(const Attri
 double CtiCCTwoWayPoints::getPointValueByAttribute( const Attribute & attribute, const double sentinel ) const
 {
     double value = sentinel;
-    if ( const auto pointId = getPointIdByAttribute(attribute) )
+    if ( const auto pointId = getPointIdByAttribute( attribute ) )
     {
         _pointValues.getPointValue( pointId, value );
     }
