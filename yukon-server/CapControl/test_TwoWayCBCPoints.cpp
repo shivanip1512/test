@@ -8,6 +8,7 @@
 #include "ctidate.h"
 #include "std_helper.h"
 
+#include <boost/optional/optional_io.hpp>
 
 class test_LastControlReasonCbc802x : public LastControlReasonCbc802x
 {
@@ -95,18 +96,27 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 {
     std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 575, "CBC DNP" ) );
 
-    std::vector<LitePoint>  databaseInput =
+    std::vector<LitePoint>  databaseInput
     {
-        LitePoint( 761, StatusPointType, "foobar", 0, 1, "", "", 1.0, 0 )
+        // This type/offset is defined in the paoDefinition XML files for CBC DNP devices
+        LitePoint( 761, StatusPointType, "foobar",   0, 1, "", "", 1.0, 0 ),
+        // The following are not...
+        LitePoint( 762, StatusPointType, "bazquux",  0, 2, "", "", 1.0, 0 ),
+        LitePoint( 763, StatusPointType, "flimflam", 0, 3, "", "", 1.0, 0 )
     };
 
-    points->assignTwoWayPointsAndAttributes( databaseInput, {}, boost::none, boost::none );
+    const std::map<Attribute, std::string> attributeMapping 
+    {
+        { Attribute::AutoVoltageControl, "bazquux" }
+    };
+
+    points->assignTwoWayPointsAndAttributes( databaseInput, attributeMapping, boost::none, boost::none );
 
     std::set<long>
         registrationPoints,
         expected
         {
-            761
+            761, 762
         };
 
     points->addAllCBCPointsToRegMsg( registrationPoints );
@@ -119,15 +129,109 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
     BOOST_CHECK_EQUAL( false, points->isControlAccepted() );
+
+    CtiTime now( CtiDate( 22, 8, 2014 ), 9, 0, 0 );
+
+    //  Check attribute mappings
+    BOOST_CHECK_EQUAL( 761, points->getPointIdByAttribute( Attribute::ControlPoint ) );
+    BOOST_CHECK_EQUAL( 762, points->getPointIdByAttribute( Attribute::AutoVoltageControl ) );
+    BOOST_CHECK_EQUAL(   0, points->getPointIdByAttribute( Attribute::TotalOperationCount ) );
+
+    //  No point values available yet
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::AutoVoltageControl,  -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::ControlPoint        ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::AutoVoltageControl  ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
+
+    //  Update ControlPoint
+    points->setTwoWayStatusPointValue( 761, 1, now );
+
+    BOOST_CHECK_EQUAL(     1, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::AutoVoltageControl,  -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
+    BOOST_CHECK_EQUAL(         1.0, points->findPointValueByAttribute( Attribute::ControlPoint        ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::AutoVoltageControl  ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
+
+    //  Update AutoVoltageControl
+    points->setTwoWayStatusPointValue( 762, 2, now );
+
+    BOOST_CHECK_EQUAL(     1, points->getPointValueByAttribute( Attribute::ControlPoint,       -1776 ) );
+    BOOST_CHECK_EQUAL(     2, points->getPointValueByAttribute( Attribute::AutoVoltageControl,  -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
+    BOOST_CHECK_EQUAL(         1.0, points->findPointValueByAttribute( Attribute::ControlPoint        ) );
+    BOOST_CHECK_EQUAL(         2.0, points->findPointValueByAttribute( Attribute::AutoVoltageControl  ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP_control_point_override )
+{
+    std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 575, "CBC DNP" ) );
+
+    std::vector<LitePoint>  databaseInput
+    {
+        // This type/offset is defined in the paoDefinition XML files for CBC DNP devices
+        LitePoint( 761, StatusPointType, "foobar",   0, 1, "", "", 1.0, 0 ),
+        // The following is not...
+        LitePoint( 762, StatusPointType, "bazquux",  0, 2, "", "", 1.0, 0 )
+    };
+
+    const std::map<Attribute, std::string> attributeMapping 
+    {
+        { Attribute::ControlPoint, "bazquux" }
+    };
+
+    points->assignTwoWayPointsAndAttributes( databaseInput, attributeMapping, boost::none, boost::none );
+
+    std::set<long>
+        registrationPoints,
+        expected
+        {
+            762
+        };
+
+    points->addAllCBCPointsToRegMsg( registrationPoints );
+
+    BOOST_CHECK_EQUAL_RANGES( registrationPoints, expected );
+
+    CtiTime now( CtiDate( 22, 8, 2014 ), 9, 0, 0 );
+
+    //  Check attribute mappings
+    BOOST_CHECK_EQUAL( 762, points->getPointIdByAttribute( Attribute::ControlPoint ) );
+    BOOST_CHECK_EQUAL(   0, points->getPointIdByAttribute( Attribute::TotalOperationCount ) );
+
+    //  No point values available yet
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::ControlPoint        ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
+
+    //  Update the point formerly known as ControlPoint, confirm no change occurs for ControlPoint
+    points->setTwoWayStatusPointValue( 761, 1, now );
+
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::ControlPoint        ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
+
+    //  Update ControlPoint
+    points->setTwoWayStatusPointValue( 762, 1, now );
+
+    BOOST_CHECK_EQUAL(     1, points->getPointValueByAttribute( Attribute::ControlPoint,        -1776 ) );
+    BOOST_CHECK_EQUAL( -1776, points->getPointValueByAttribute( Attribute::TotalOperationCount, -1776 ) );
+    BOOST_CHECK_EQUAL(         1.0, points->findPointValueByAttribute( Attribute::ControlPoint        ) );
+    BOOST_CHECK_EQUAL( boost::none, points->findPointValueByAttribute( Attribute::TotalOperationCount ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 {
     std::unique_ptr<CtiCCTwoWayPoints>     points( CtiCCTwoWayPointsFactory::Create( 545, "CBC 7022" ) );
 
-    std::vector<LitePoint>  databaseInput =
+    std::vector<LitePoint>  databaseInput
     {
-        // These type/offsets are defined in the 2-way point code for CBC 702X devices
+        // These type/offsets are defined in the paoDefinition XML files for CBC 702X devices
         LitePoint( 715, AnalogPointType,            "", 0,     3, "", "", 1.0, 0 ),
         LitePoint( 739, AnalogPointType,            "", 0,     5, "", "", 1.0, 0 ),
         LitePoint( 691, AnalogPointType,            "", 0,     6, "", "", 1.0, 0 ),
@@ -574,9 +678,9 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
             std::make_unique<test_LastControlReasonCbc802x>(),
             std::make_unique<test_IgnoredControlReasonCbc802x>() );
 
-    std::vector<LitePoint>  databaseInput =
+    std::vector<LitePoint>  databaseInput
     {
-        // These type/offsets are defined in the 2-way point code for CBC 802X devices
+        // These type/offsets are defined in the paoDefinition XML files for CBC 802X devices
         LitePoint( 342, AnalogPointType,            "", 0,     1, "", "", 1.0, -17 ),
         LitePoint( 335, AnalogPointType,            "", 0,     2, "", "", 1.0, -17 ),
         LitePoint( 340, AnalogPointType,            "", 0,    12, "", "", 1.0, -17 ),
