@@ -99,6 +99,26 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void smartIndexMaintenance(@Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
 
+    /* DR Reconciliation */
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance.dr")
+    public void outOfServiceMessageSent(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber, @Arg(ArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance.dr")
+    public void inServiceMessageSent(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber, @Arg(ArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance.dr")
+    public void messageSendingFailed(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber, @Arg(ArgEnum.message) String error);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance.dr")
+    public void configMessageSent(@Arg(ArgEnum.username) LiteYukonUser yukonUser,
+            @Arg(ArgEnum.serialNumber) String serialNumber, @Arg(ArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance.dr")
+    public void groupConflictLCRDetected(@Arg(ArgEnum.serialNumber) String serialNumber);
+    
     /* System Admin */
     /* Configuration */
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.core.dao.PaoDao;
@@ -31,6 +32,8 @@ import com.cannontech.maintenance.task.service.DrReconciliationService;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
@@ -51,6 +54,8 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private SystemEventLogService systemEventLogService;
     
     private static final Logger log = YukonLogManager.getLogger(DrReconciliationServiceImpl.class);
 
@@ -116,17 +121,19 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             ExpressComAddressView tempGroup = new ExpressComAddressView();
             ExpressComAddressView combinedGroup = new ExpressComAddressView();
             for (int group : groups) {
-                    ExpressComAddressView lmGroupAddressing = lmGroupDaoImpl.getExpressComAddressing(group);
-                    boolean couldCombineAddress = combineGroupAddressing(tempGroup, lmGroupAddressing, combinedGroup);
+                ExpressComAddressView lmGroupAddressing = lmGroupDaoImpl.getExpressComAddressing(group);
+                boolean couldCombineAddress = combineGroupAddressing(tempGroup, lmGroupAddressing, combinedGroup);
 
-                    // If false there is a mismatch and no further checking is required.
-                    if (couldCombineAddress) {
-                        tempGroup = combinedGroup;
-                    } else {
-                        // Mismatch, we can not fix it do not send message
-                        groupConflictingLCR.add(lcr);
-                        break;
-                    }
+                // If false there is a mismatch and no further checking is required.
+                if (couldCombineAddress) {
+                    tempGroup = combinedGroup;
+                } else {
+                    // Mismatch, we can not fix it do not send message
+                    groupConflictingLCR.add(lcr);
+                    LiteLmHardwareBase lmhb = (LiteLmHardwareBase) inventoryBaseDao.getHardwareByDeviceId(lcr);
+                    systemEventLogService.groupConflictLCRDetected(lmhb.getManufacturerSerialNumber());
+                    break;
+                }
             }
         });
         conflictingLCR.removeAll(groupConflictingLCR);
@@ -392,6 +399,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     private boolean sendCommand(LCRCommandHolder lcrCommandHolder) {
         int inventoryId = lcrCommandHolder.getInventoryId();
         LiteLmHardwareBase lmhb = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
+        CustomerAccount account = customerAccountDao.getAccountByInventoryId(inventoryId);
+        String serialNumber = lmhb.getManufacturerSerialNumber();
+        String accountNumber = account.getAccountNumber();
         LiteYukonUser user = UserUtils.getYukonUser();
         LmHardwareCommand command = new LmHardwareCommand();
         command.setDevice(lmhb);
@@ -403,19 +413,23 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             if (lmHardwareCommandType == LmHardwareCommandType.OUT_OF_SERVICE) {
                 log.debug("Sending OOS message for LCR " + inventoryId);
                 commandService.sendOutOfServiceCommand(command);
+                systemEventLogService.outOfServiceMessageSent(user, serialNumber, accountNumber);
                 log.debug("Success - inventory id =" + inventoryId + " 'Out of Service' Command was sent");
             } else if (lmHardwareCommandType == LmHardwareCommandType.IN_SERVICE) {
                 log.debug("Sending In Service message for LCR " + inventoryId);
                 commandService.sendInServiceCommand(command);
+                systemEventLogService.inServiceMessageSent(user, serialNumber, accountNumber);
                 log.debug("Success - inventory id =" + inventoryId + " 'In Service' Command was sent");
             } else if (lmHardwareCommandType == LmHardwareCommandType.CONFIG) {
                 log.debug("Sending Config message for LCR " + inventoryId);
                 commandService.sendConfigCommand(command);
+                systemEventLogService.configMessageSent(user, serialNumber, accountNumber);
                 log.debug("Success - inventory id =" + inventoryId + " 'Config' Command was sent");
             }
         } catch (CommandCompletionException e) {
             success = false;
             log.error("Failed - Unable to send command " + lmHardwareCommandType + "to inventory id=" + inventoryId, e);
+            systemEventLogService.messageSendingFailed(user, serialNumber, e.getMessage());
         }
         return success;
     }
