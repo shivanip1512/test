@@ -344,12 +344,12 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiComman
 
     if( *configPart == ConfigPart::all )
     {
-        bool notCurrent = FALSE;
+        bool notCurrent = false;
         for each( const ConfigMap::value_type & p in configMethods )
         {
             if( executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, p.first, p.second ) == ClientErrors::ConfigNotCurrent )
             {
-                notCurrent = TRUE;
+                notCurrent = true;
             }
         }
         
