@@ -41,8 +41,11 @@
   	<level value="warn"/>
   </logger>
   
-  <logger name="org.springframework.ws.soap.server.endpoint.interceptor">
-    <level value="DEBUG"/>
+  <logger name="org.springframework.ws.client.MessageTracing">
+    <level value="TRACE"/> 
+  </logger>
+  <logger name="org.springframework.ws.server.MessageTracing">
+    <level value="TRACE"/> 
   </logger>
   
   <!-- Controls rfn comms logging to the Server\Log\Comms directory -->
