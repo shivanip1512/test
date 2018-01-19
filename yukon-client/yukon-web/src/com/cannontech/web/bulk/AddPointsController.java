@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
@@ -99,7 +100,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     }
     
     // EXECUTE ADD
-    @RequestMapping("execute")
+    @RequestMapping(value = "execute", method = RequestMethod.POST)
     public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
 
         // device collection

@@ -23,8 +23,8 @@ function fieldToModifyChanged() {
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.updatePointsHome" deviceCollection="${deviceCollection}">
         
-        <form id="executeUpdatePointsForm" action="<cti:url value="/bulk/updatePoints/execute" />">
-        
+        <form id="executeUpdatePointsForm" action="<cti:url value="/bulk/updatePoints/execute" />" method="POST">
+        <cti:csrfToken/>
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             

@@ -17,8 +17,8 @@ $(function() {
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.addPointsHome" deviceCollection="${deviceCollection}">
         
-        <form id="executeAddPointsForm" action="<cti:url value="/bulk/addPoints/execute" />">
-        
+        <form id="executeAddPointsForm" action="<cti:url value="/bulk/addPoints/execute" />" method="POST">
+        <cti:csrfToken/>
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
