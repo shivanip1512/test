@@ -52,19 +52,19 @@ yukon.historical.readings = (function () {
                     pointId = dialog.attr('data-point-id'),
                     valuesTable = $('#valuesTable_' + pointId),
                     valuesDialog = valuesTable.closest('.ui-dialog-content'),
-                    data = dialog.find('#manual-entry-form').serialize();
-                $.ajax({ 
-                    url: yukon.url('/meter/historicalReadings/edit'),
-                    data: data,
-                    method : 'POST'
-                }).done(function (details) {
-                    dialog.dialog('close');
-                    valuesTable.html(details);
-                    valuesDialog.scrollTop(0);
-                });     
+                    form = dialog.find('#manual-entry-form');
+                
+                form.ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+                        dialog.dialog('close');
+                        valuesTable.html(result);
+                        valuesDialog.scrollTop(0);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        dialog.html(xhr.responseText);
+                    }
+                });
             });
-
-            
             
             _initialized = true;
         }

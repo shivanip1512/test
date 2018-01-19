@@ -26,6 +26,7 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -214,15 +215,16 @@ public class HistoricalReadingsController {
         LiteYukonPAObject liteYukonPAO = databaseCache.getAllPaosMap().get(litePoint.getPaobjectID());
         model.put("deviceName", liteYukonPAO.getPaoName());
         model.put("pointName", litePoint.getPointName());
+        model.put("oldValue",  value);
         model.addAttribute("backingBean", backingBean);
         return "historicalReadings/editValue.jsp";
     }
     
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
     @RequestMapping(value = "edit", method=RequestMethod.POST)
-    public String editPointValueSubmit(HttpServletResponse response, YukonUserContext userContext,
-            @ModelAttribute("backingBean") PointBackingBean backingBean, Double oldValue, String editTimestamp, BindingResult bindingResult,
-            ModelMap model, FlashScope flashScope) throws IOException {
+    public String editPointValueSubmit(HttpServletResponse response, YukonUserContext userContext, 
+           @ModelAttribute("backingBean") PointBackingBean backingBean, BindingResult bindingResult, 
+           Double oldValue, String editTimestamp, ModelMap model, FlashScope flashScope) throws IOException {
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
         DateTime dateTime = formatter.parseDateTime(editTimestamp).withZone(userContext.getJodaTimeZone());
         backingBean.setTimestamp(dateTime.toInstant());
@@ -237,9 +239,11 @@ public class HistoricalReadingsController {
             if (bindingResult.hasErrors()) {
                 model.put("deviceName", liteYukonPAO.getPaoName());
                 model.put("pointName", litePoint.getPointName());
+                model.put("oldValue",  oldValue);
                 model.addAttribute("backingBean", backingBean);
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setError(messages);
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
                 return "historicalReadings/editValue.jsp";
             }
 
