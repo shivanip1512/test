@@ -50,6 +50,12 @@
     <c:if test="${authorized && beanInst.lazyLoad}">
         $(function() {${widgetParameters.jsWidget}.render()});
     </c:if>
+    $(document).ready(function() {
+        var widgetContainer = $('#widget-container-${widgetParameters.widgetId}'),
+            titleContainer = $('#widget-titled-container-${widgetParameters.widgetId}_content');
+        widgetContainer.prependTo(titleContainer);
+        widgetContainer.removeClass('dn');
+    });
 </script>
 
 <c:if test="${empty widgetParameters.width}">
@@ -70,6 +76,19 @@
     </c:if>
 
     <c:if test="${empty container or container eq 'box'}">
+        <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};" class="dn">
+            <c:choose>
+                <c:when test="${!authorized}">
+                    <cti:msg2 key="widgets.notAuthorized"/>
+                </c:when>
+                <c:when test="${beanInst.lazyLoad}">
+                    <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                </c:when>
+                <c:otherwise>
+                    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                </c:otherwise>
+            </c:choose>
+        </div>
         <tags:boxContainer title="${containerTitle}"
                 id="widget-titled-container-${widgetParameters.widgetId}" 
                 styleClass="widget-container ${classes}" 
@@ -79,19 +98,6 @@
                 helpUrl="${pageScope.helpUrl}"
                 smartNotificationsEvent="${beanInst.smartNotificationsEvent}"
                 useIdForCookie="${useId}">
-            <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
-                <c:choose>
-                    <c:when test="${!authorized}">
-                        <cti:msg2 key="widgets.notAuthorized"/>
-                    </c:when>
-                    <c:when test="${beanInst.lazyLoad}">
-                        <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
-                    </c:when>
-                    <c:otherwise>
-                        <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-                    </c:otherwise>
-                </c:choose>
-            </div>
         </tags:boxContainer>
     </c:if>
     <c:if test="${container eq 'section'}">

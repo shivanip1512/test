@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,14 +19,13 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
-import com.cannontech.amr.monitors.impl.MonitorCacheServiceImpl;
 import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.search.result.UltraLightMonitor;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -122,7 +122,13 @@ public class SubscribedMonitorsWidget extends AllMonitorsWidget {
             break;
             }
         }
-        
+
+        if (CollectionUtils.isNotEmpty(deviceDataMonitors)) {
+            setSmartNotificationsEvent(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+        } else {
+            setSmartNotificationsEvent(null);
+        }
+
         sortMonitorsAndAddToModel(deviceDataMonitors, outageMonitors, tamperFlagMonitors, statusPointMonitors,
             porterResponseMonitors, validationMonitors, model);
         log.info("end");

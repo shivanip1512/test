@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,6 +17,7 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -65,6 +67,12 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         sortMonitorsAndAddToModel(monitorCacheService.getDeviceDataMonitors(), monitorCacheService.getOutageMonitors(),
             monitorCacheService.getTamperFlagMonitors(), monitorCacheService.getStatusPointMonitors(),
             monitorCacheService.getPorterResponseMonitors(), monitorCacheService.getValidationMonitors(), model);
+
+        if (CollectionUtils.isNotEmpty(monitorCacheService.getDeviceDataMonitors())) {
+            setSmartNotificationsEvent(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+        } else {
+            setSmartNotificationsEvent(null);
+        }
     }
 
     protected void sortMonitorsAndAddToModel(List<DeviceDataMonitor> deviceDataMonitors,
