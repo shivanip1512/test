@@ -32,7 +32,6 @@ import com.cannontech.maintenance.task.service.DrReconciliationService;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
@@ -53,7 +52,6 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
-    @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private SystemEventLogService systemEventLogService;
     
     private static final Logger log = YukonLogManager.getLogger(DrReconciliationServiceImpl.class);
@@ -398,7 +396,6 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     private boolean sendCommand(LCRCommandHolder lcrCommandHolder) {
         int inventoryId = lcrCommandHolder.getInventoryId();
         LiteLmHardwareBase lmhb = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
-        String accountNumber = customerAccountDao.getAccountByInventoryId(inventoryId).getAccountNumber();
         String serialNumber = lmhb.getManufacturerSerialNumber();
         LiteYukonUser user = UserUtils.getYukonUser();
         LmHardwareCommand command = new LmHardwareCommand();
@@ -411,23 +408,23 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             if (lmHardwareCommandType == LmHardwareCommandType.OUT_OF_SERVICE) {
                 log.debug("Sending OOS message for LCR " + inventoryId);
                 commandService.sendOutOfServiceCommand(command);
-                systemEventLogService.outOfServiceMessageSent(user, serialNumber, accountNumber);
+                systemEventLogService.outOfServiceMessageSent(serialNumber);
                 log.debug("Success - inventory id =" + inventoryId + " 'Out of Service' Command was sent");
             } else if (lmHardwareCommandType == LmHardwareCommandType.IN_SERVICE) {
                 log.debug("Sending In Service message for LCR " + inventoryId);
                 commandService.sendInServiceCommand(command);
-                systemEventLogService.inServiceMessageSent(user, serialNumber, accountNumber);
+                systemEventLogService.inServiceMessageSent(serialNumber);
                 log.debug("Success - inventory id =" + inventoryId + " 'In Service' Command was sent");
             } else if (lmHardwareCommandType == LmHardwareCommandType.CONFIG) {
                 log.debug("Sending Config message for LCR " + inventoryId);
                 commandService.sendConfigCommand(command);
-                systemEventLogService.configMessageSent(user, serialNumber, accountNumber);
+                systemEventLogService.configMessageSent(serialNumber);
                 log.debug("Success - inventory id =" + inventoryId + " 'Config' Command was sent");
             }
         } catch (CommandCompletionException e) {
             success = false;
             log.error("Failed - Unable to send command " + lmHardwareCommandType + "to inventory id=" + inventoryId, e);
-            systemEventLogService.messageSendingFailed(user, serialNumber, e.getMessage());
+            systemEventLogService.messageSendingFailed(serialNumber, e.getMessage());
         }
         return success;
     }
