@@ -106,7 +106,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
     }
 
     @Override
-    @RequestMapping(value = "render", method = RequestMethod.GET)
+    @RequestMapping(value = "render", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("trendWidget/render.jsp");
         

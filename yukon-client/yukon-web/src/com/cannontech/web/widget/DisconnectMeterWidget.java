@@ -150,7 +150,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         }
     };
 
-    @RequestMapping("query")
+    @RequestMapping(value = "query", method = RequestMethod.POST)
     public String query(ModelMap model, YukonUserContext userContext, Integer deviceId) {
     	
     	RfnMeter meter = (RfnMeter) meterDao.getForId(deviceId);
@@ -221,7 +221,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         return "disconnectMeterWidget/render.jsp";
     }
 
-    @RequestMapping("read")
+    @RequestMapping(value = "read", method = RequestMethod.POST)
     public String read(ModelMap model, YukonUserContext userContext, Integer deviceId) {
     	
         YukonMeter meter = meterDao.getForId(deviceId);
@@ -249,7 +249,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         return "disconnectMeterWidget/helpInfo.jsp";
     }
 
-    @RequestMapping("connect")
+    @RequestMapping(value = "connect", method = RequestMethod.POST)
     public String connect(ModelMap model, YukonUserContext userContext, int deviceId) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
@@ -265,7 +265,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         return "disconnectMeterWidget/render.jsp";
     }
 
-    @RequestMapping("disconnect")
+    @RequestMapping(value = "disconnect", method = RequestMethod.POST)
     public String disconnect(ModelMap model, YukonUserContext userContext, int deviceId) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
@@ -280,7 +280,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         return "disconnectMeterWidget/render.jsp";
     }
 
-    @RequestMapping("arm")
+    @RequestMapping(value = "arm", method = RequestMethod.POST)
     public String arm(ModelMap model, YukonUserContext userContext, int deviceId) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());

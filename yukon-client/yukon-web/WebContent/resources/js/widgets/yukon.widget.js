@@ -127,7 +127,8 @@ function YukonWidget(shortName, parameters) {
 
         $.ajax({
             url : url,
-            data : oldParams
+            data : oldParams,
+            method : 'POST'
         }).done(function (data, status, xhr) {
             localSuccess(xhr);
             $(document.getElementById(_self.container)).html(data);

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
@@ -145,7 +146,7 @@ public class MeterOutagesWidget extends AdvancedWidgetControllerBase {
         return "meterOutagesWidget/render.jsp";
     }
 
-    @RequestMapping("read")
+    @RequestMapping(value = "read", method = RequestMethod.POST)
     public String read(ModelMap model, YukonUserContext userContext, Integer deviceId){
   
     	YukonMeter meter = meterDao.getForId(deviceId);

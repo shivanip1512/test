@@ -119,7 +119,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return deviceDao.getYukonDevice(deviceId);
     }
     
-    @RequestMapping("assignConfig")
+    @RequestMapping(value = "assignConfig", method = RequestMethod.POST)
     public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, InvalidDeviceTypeException {
         YukonDevice device = getYukonDevice(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -137,7 +137,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping("unassignConfig")
+    @RequestMapping(value = "unassignConfig", method = RequestMethod.POST)
     public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonDevice device = getYukonDevice(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);

@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.device.ProfileAttributeChannel;
@@ -313,7 +314,7 @@ public class ProfileWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping("initiateLoadProfile")
+    @RequestMapping(value = "initiateLoadProfile", method = RequestMethod.POST)
     public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
@@ -643,7 +644,7 @@ public class ProfileWidget extends WidgetControllerBase {
         return mav;
     }
 
-    @RequestMapping("viewDailyUsageReport")
+    @RequestMapping(value = "viewDailyUsageReport", method = RequestMethod.POST)
     public ModelAndView viewDailyUsageReport(HttpServletRequest request,
                                              HttpServletResponse response) throws Exception {
         ModelAndView mav = render(request, response);
