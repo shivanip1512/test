@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -45,7 +47,6 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -58,12 +59,15 @@ import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVWriter;
@@ -93,6 +97,7 @@ public class HistoricalReadingsController {
     @Autowired private CachedPointDataCorrelationService cachedPointDataCorrelationService;
     @Autowired private PointService pointService;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private DateFormattingService dateFormattingService;
     
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     private Logger log = YukonLogManager.getLogger(HistoricalReadingsController.class);
@@ -177,19 +182,26 @@ public class HistoricalReadingsController {
         return "historicalReadings/values.jsp";
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.OWNER)
+    @RequestMapping(value = "delete", method=RequestMethod.POST)
     public String deletePointValue(YukonUserContext userContext, int pointId, double value,
-            Instant timestamp) {
-        pointService.deletePointData(pointId, value, timestamp, userContext.getYukonUser());
-        return "historicalReadings/values.jsp";
+            String timestamp, FlashScope flash, ModelMap model) {
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
+        DateTime dateTime = formatter.parseDateTime(timestamp).withZone(userContext.getJodaTimeZone());
+        pointService.deletePointData(pointId, value, dateTime.toInstant(), userContext.getYukonUser());
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "value.deleteConfirmation", timestamp));
+        return values(model, pointId, null, userContext);
     }
     
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
+    @RequestMapping(value = "edit", method=RequestMethod.GET)
     public String editPointValue(YukonUserContext userContext, ModelMap model, int pointId, double value,
-            Instant timestamp) {
-
+            String timestamp) {
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
+        DateTime dateTime = formatter.parseDateTime(timestamp).withZone(userContext.getJodaTimeZone());
         PointBackingBean backingBean = new PointBackingBean();
         backingBean.setPointId(pointId);
+        backingBean.setTimestamp(dateTime.toInstant());
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         if (litePoint.getPointType() == PointTypes.STATUS_POINT
             || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
@@ -203,29 +215,32 @@ public class HistoricalReadingsController {
         model.put("deviceName", liteYukonPAO.getPaoName());
         model.put("pointName", litePoint.getPointName());
         model.addAttribute("backingBean", backingBean);
-        return "newPopup.jsp";
+        return "historicalReadings/editValue.jsp";
     }
     
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINT_DATA, level = HierarchyPermissionLevel.UPDATE)
+    @RequestMapping(value = "edit", method=RequestMethod.POST)
     public String editPointValueSubmit(HttpServletResponse response, YukonUserContext userContext,
-            @ModelAttribute("backingBean") PointBackingBean backingBean, int oldValue, BindingResult bindingResult,
+            @ModelAttribute("backingBean") PointBackingBean backingBean, Double oldValue, String editTimestamp, BindingResult bindingResult,
             ModelMap model, FlashScope flashScope) throws IOException {
-
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
+        DateTime dateTime = formatter.parseDateTime(editTimestamp).withZone(userContext.getJodaTimeZone());
+        backingBean.setTimestamp(dateTime.toInstant());
         double newValue;
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
+        LiteYukonPAObject liteYukonPAO = databaseCache.getAllPaosMap().get(litePoint.getPaobjectID());
         if (litePoint.getPointType() == PointTypes.STATUS_POINT
             || litePoint.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
             newValue = backingBean.getStateId();
         } else {
             validator.validate(backingBean, bindingResult);
             if (bindingResult.hasErrors()) {
-                LiteYukonPAObject liteYukonPAO = databaseCache.getAllPaosMap().get(litePoint.getPaobjectID());
                 model.put("deviceName", liteYukonPAO.getPaoName());
                 model.put("pointName", litePoint.getPointName());
                 model.addAttribute("backingBean", backingBean);
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setError(messages);
-                return "newPopup.jsp";
+                return "historicalReadings/editValue.jsp";
             }
 
             newValue = backingBean.getValue();
@@ -233,10 +248,9 @@ public class HistoricalReadingsController {
 
         pointService.updatePointData(backingBean.getPointId(), oldValue, newValue, backingBean.getTimestamp(),
             userContext.getYukonUser());
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "value.editConfirmation", editTimestamp));
 
-        response.setContentType("application/json");
-        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
-        return null;
+        return values(model, litePoint.getPointID(), null, userContext);
     }
     
     @RequestMapping("download")
@@ -319,7 +333,7 @@ public class HistoricalReadingsController {
     private void setupTable(ModelMap model, YukonUserContext context, Order order, OrderBy orderBy, int pointId) {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        
+        model.addAttribute("pointId", pointId);
         model.addAttribute("points", getLimitedPointData(context, order, orderBy, pointId));
         
         String timestampHeader = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");

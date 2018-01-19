@@ -122,6 +122,7 @@ public class LayoutController {
         b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath(dev));
         b.add(JsLibrary.YUKON_PICKER.getPath(dev));
         b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath(dev));
+        b.add(JsLibrary.YUKON_HISTORICAL_READINGS.getPath(dev));
         yukonScriptFiles = b.build();
         
         /** CSS ORDER MATTERS! **/
