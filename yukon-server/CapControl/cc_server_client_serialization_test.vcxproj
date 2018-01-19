@@ -478,6 +478,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="MsgSystemStatus.cpp">
     </ClCompile>
+    <ClCompile Include="MsgTriggerDmvTest.cpp" />
     <ClCompile Include="MsgVerifyBanks.cpp">
     </ClCompile>
     <ClCompile Include="MsgVerifyInactiveBanks.cpp">
@@ -613,6 +614,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\MsgSubstationBus.h" />
     <ClInclude Include="include\MsgSubstations.h" />
     <ClInclude Include="include\MsgSystemStatus.h" />
+    <ClInclude Include="include\MsgTriggerDmvTest.h" />
     <ClInclude Include="include\MsgVerifyBanks.h" />
     <ClInclude Include="include\MsgVerifyInactiveBanks.h" />
     <ClInclude Include="include\MsgVerifySelectedBank.h" />

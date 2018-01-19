@@ -39,6 +39,7 @@ class CtiTime;
 #define SYSTEM_STATUS_MSG_ID         534
 #define DELETE_ITEM_MSG_ID           535
 #define VERIFY_SELECTED_BANK_MSG_ID  536
+#define TRIGGER_DMV_TEST_MSG_ID      537
 
 
 

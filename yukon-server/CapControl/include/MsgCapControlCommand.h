@@ -89,7 +89,9 @@ class CapControlCommand : public CtiMessage
             VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE,
             VOLTAGE_REGULATOR_REMOTE_CONTROL_DISABLE,
             VOLTAGE_REGULATOR_TAP_POSITION_RAISE,
-            VOLTAGE_REGULATOR_TAP_POSITION_LOWER
+            VOLTAGE_REGULATOR_TAP_POSITION_LOWER,
+
+            SCHEDULE_BUMP_TEST
         };
 
         CapControlCommand();

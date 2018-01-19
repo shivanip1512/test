@@ -29,6 +29,7 @@
 #include "MsgSystemStatus.h"
 #include "MsgCapControlServerResponse.h"
 #include "MsgCapControlShutdown.h"
+#include "MsgTriggerDmvTest.h"
 
 namespace Cti
 {

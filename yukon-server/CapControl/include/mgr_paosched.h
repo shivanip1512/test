@@ -30,6 +30,7 @@ public:
         CapControlVerification = 0,
         ConfirmSubstationBus = 1,
         SendTimeSync = 2,
+        DmvTestExecution = 3,
         SomethingElse
     };
 

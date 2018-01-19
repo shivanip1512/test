@@ -6133,3 +6133,33 @@ void DeleteItemExecutor::execute()
     CtiCCClientListener::getInstance().BroadcastMessage(_deleteItem);
 }
 
+
+/* 
+    Preps the bus to run the associated Bump Test
+*/
+void TriggerDmvTestExecutor::execute()
+{
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+    const long        busID    = _message->getBusID();
+    const std::string testName = _message->getDmvTestName();
+
+    if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID ) )
+    {
+        CTILOG_INFO( dout, "Preparing to execute DMV Test: '" << testName << "' on Substation Bus: " << bus->getPaoName() );
+
+        /*         
+            Look up the Bump Test info and stuff it into the bus, trigger the bus to execute the test.
+        */
+
+    }
+    else
+    {
+        if (_CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Substation Bus with ID: " << busID << " was not found." );
+        }
+    }
+}
+

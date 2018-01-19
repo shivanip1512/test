@@ -484,6 +484,7 @@
     </ClCompile>
     <ClCompile Include="MsgSystemStatus.cpp">
     </ClCompile>
+    <ClCompile Include="MsgTriggerDmvTest.cpp" />
     <ClCompile Include="MsgVerifyBanks.cpp">
     </ClCompile>
     <ClCompile Include="MsgVerifyInactiveBanks.cpp">
@@ -590,6 +591,7 @@
   <ItemGroup>
     <ClInclude Include="include\capcontrol_test_helpers.h" />
     <ClInclude Include="include\cbcHeartbeatPolicy.h" />
+    <ClInclude Include="include\MsgTriggerDmvTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -248,3 +248,24 @@ class NoOpExecutor : public CtiCCExecutor
 
         virtual void execute(){};
 };
+
+class TriggerDmvTestExecutor : public CtiCCExecutor
+{
+public:
+
+    TriggerDmvTestExecutor( MsgTriggerDmvTest * msg)
+        : _message( msg )
+    {   }
+
+    virtual ~TriggerDmvTestExecutor()
+    { 
+        delete _message;
+    }
+
+    virtual void execute();
+
+private:
+
+    MsgTriggerDmvTest * _message;
+};
+

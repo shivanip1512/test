@@ -89,6 +89,10 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
             ret_val.reset(new SystemStatusExecutor((SystemStatus*)message));
             break;
 
+        case TRIGGER_DMV_TEST_MSG_ID:
+            ret_val.reset(new TriggerDmvTestExecutor((MsgTriggerDmvTest*)message));
+            break;
+
         default:
         {
             CTILOG_WARN(dout, "unknown classId: " << classId);

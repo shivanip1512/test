@@ -13,6 +13,9 @@
 #include "ExecutorFactory.h"
 #include "MsgVerifyBanks.h"
 #include "MsgVerifyInactiveBanks.h"
+#include "MsgTriggerDmvTest.h"
+
+#include <regex>
 
 extern unsigned long _CC_DEBUG;
 extern bool CC_TERMINATE_THREAD_TEST;
@@ -379,6 +382,22 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *paoEvent)
             CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::SEND_TIME_SYNC, paoEvent->getPAOId()))->execute();
             break;
         }
+        case DmvTestExecution:
+        {
+            // regex away the "DMV Test: " at the front...
+            std::smatch results;
+
+            if ( std::regex_search( paoEvent->getEventCommand(), results, std::regex { "^DMV Test: (.*)$" } ) )
+            {
+                CtiCCExecutorFactory::createExecutor(
+                    new MsgTriggerDmvTest( paoEvent->getPAOId(), results[ 1 ].str() ) )->execute();
+            }
+            else
+            {
+                CTILOG_ERROR( dout, " Invalid DMV Test Execution Command: " << paoEvent->getEventCommand() );
+            }
+            break;
+        }
         default:
         {
             break;
@@ -471,6 +490,13 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     else if (findStringIgnoreCase(command,"Send Time Syncs"))
     {
         retVal = SendTimeSync;
+    }
+    else if (stringContainsIgnoreCase(command,"DMV Test: "))
+    {
+        if ( gConfigParms.isTrue( "ENABLE_DMV_TEST_FUTURE_FUNCTIONALITY", false ) )
+        {
+            retVal = DmvTestExecution;
+        }
     }
 
     return retVal;

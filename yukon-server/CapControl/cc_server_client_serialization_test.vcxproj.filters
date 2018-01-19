@@ -302,6 +302,9 @@
     <ClCompile Include="ControlPolicy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MsgTriggerDmvTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CapControlDispatchConnection.h">
@@ -617,6 +620,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\cbcHeartbeatPolicy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MsgTriggerDmvTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
