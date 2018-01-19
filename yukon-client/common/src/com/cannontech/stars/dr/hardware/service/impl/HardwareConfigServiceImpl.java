@@ -104,7 +104,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService{
         }
 
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-        hardwareEventLog.hardwareDisabled(context.getYukonUser(), liteHw.getManufacturerSerialNumber(),
+        hardwareEventLog.hardwareEnabled(context.getYukonUser(), liteHw.getManufacturerSerialNumber(),
             customerAccount.getAccountNumber());
     }
 
