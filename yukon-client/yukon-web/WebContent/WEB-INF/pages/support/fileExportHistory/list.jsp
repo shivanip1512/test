@@ -47,6 +47,7 @@
                             <th><i:inline key=".columns.type"/></th>
                             <th><i:inline key=".columns.jobName"/></th>
                             <th><i:inline key=".columns.date"/></th>
+                            <th><i:inline key=".columns.exported"/></th>
                         </thead>
                         <tfoot></tfoot>
                         <tbody>
@@ -76,6 +77,16 @@
                                     <td><cti:msg2 key="${exportHistoryEntry.type}"/></td>
                                     <td>${exportHistoryEntry.jobName}</td>
                                     <td><cti:formatDate value="${exportHistoryEntry.date}" type="DATEHM"/></td>
+                                    <td>
+                                    <c:choose>
+                                        <c:when test="${exportHistoryEntry.exportPath == null}">
+                                            <cti:msg2 key="yukon.common.dashes"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg2 key="yukon.common.yes"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    </td>
                                 </tr>
                             </c:forEach>
                         </tbody>
