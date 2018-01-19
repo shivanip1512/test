@@ -1,16 +1,11 @@
 package com.cannontech.database.data.device;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
-import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.port.TerminalServerSharedPortBase;
-import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * DBPersistent for IPC meters.
@@ -33,19 +28,6 @@ public abstract class IPCMeter extends IEDMeter {
         comms.getCommPort().setCommonProtocol("None");
         comms.add();
         
-        // Since ports have a PAO definition xml file now, we need to add the default points 
-        // to the DB when a port is created.
-        YukonPAObject ypo = new YukonPAObject();
-        ypo.setPaObjectID(comms.getPAObjectID());
-        ypo.setPaoName(comms.getPAOName());
-        ypo.setPaoType(comms.getPaoType());
-        PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
-        List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(ypo);
-        for (PointBase point : defaultPoints) {
-            point.setDbConnection(getDbConnection());
-            point.add();
-        }
-        
         //add meter
         getDeviceDirectCommSettings().setPortID(comms.getPortSettings().getPortID());
         getDeviceDialupSettings().setBaudRate(comms.getPortSettings().getBaudRate());
@@ -62,5 +44,9 @@ public abstract class IPCMeter extends IEDMeter {
     
     public void setCommChannel(TerminalServerSharedPortBase comms) {
         this.comms = comms;
+    }
+    
+    public TerminalServerSharedPortBase getCommChannel() {
+        return comms;
     }
 }

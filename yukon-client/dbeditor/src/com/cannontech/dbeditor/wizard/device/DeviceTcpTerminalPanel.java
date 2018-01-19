@@ -25,6 +25,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IPCMeter;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 import com.cannontech.spring.YukonSpringHook;
 
 public class DeviceTcpTerminalPanel extends DataInputPanel implements ActionListener, CaretListener{
@@ -205,13 +206,23 @@ public class DeviceTcpTerminalPanel extends DataInputPanel implements ActionList
         SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
         smartDB.addOwnerDBPersistent(deviceBase);
     
-        PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
-        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
+        PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean(PaoDefinitionService.class);
+        DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean(DeviceDao.class);
         SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(deviceBase);
         List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
     
         for (PointBase point : defaultPoints) {
             smartDB.addDBPersistent(point);
+        }
+        
+        if (deviceBase instanceof IPCMeter) {
+            TerminalServerSharedPortBase terminalServerSharedPort = ((IPCMeter) deviceBase).getCommChannel();
+            SimpleDevice terminalServer = new SimpleDevice(terminalServerSharedPort.getPAObjectID(), terminalServerSharedPort.getPaoType());
+            List<PointBase> terminalServerdefaultPoints = paoDefinitionService.createDefaultPointsForPao(terminalServer);
+
+            for (PointBase point : terminalServerdefaultPoints) {
+                smartDB.addDBPersistent(point);
+            }
         }
     
         return smartDB; 

@@ -31,7 +31,6 @@ import com.cannontech.database.data.port.PortFactory;
 import com.cannontech.database.data.port.TerminalServerSharedPort;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteFactory;
-import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
 import com.cannontech.database.db.port.PortTiming;
@@ -134,11 +133,8 @@ public class DevAmrCreationServiceImpl extends DevObjectCreationBase implements 
         SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
         smartDB.addOwnerDBPersistent(terminalServerSharedPort);
         PaoDefinitionService paoDefinitionService = YukonSpringHook.getBean(PaoDefinitionService.class);
-        YukonPAObject ypo = new YukonPAObject();
-        ypo.setPaObjectID(terminalServerSharedPort.getPAObjectID());
-        ypo.setPaoName(terminalServerSharedPort.getPAOName());
-        ypo.setPaoType(terminalServerSharedPort.getPaoType());
-        List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(ypo);
+        SimpleDevice terminalServer = new SimpleDevice(terminalServerSharedPort.getPAObjectID(), terminalServerSharedPort.getPaoType());
+        List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(terminalServer);
         for (PointBase point : defaultPoints) {
             smartDB.addDBPersistent(point);
         }
