@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/18/2018 2:59:31 PM                         */
+/* Created on:     1/19/2018 10:34:17 AM                        */
 /*==============================================================*/
 
 
@@ -2746,61 +2746,6 @@ insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
 insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
 
 /*==============================================================*/
-/* Table: DMVMeasurementData                                    */
-/*==============================================================*/
-create table DMVMeasurementData (
-   ExecutionID          numeric              not null,
-   PointID              numeric              not null,
-   TimeStamp            datetime             not null,
-   Quality              numeric              not null,
-   Value                float                not null,
-   constraint PK_DMVMeasurementData primary key (ExecutionID, PointID, TimeStamp)
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_DMVMeasurementData_TStamp                        */
-/*==============================================================*/
-create index INDX_DMVMeasurementData_TStamp on DMVMeasurementData (
-TimeStamp DESC
-)
-go
-
-/*==============================================================*/
-/* Table: DMVTest                                               */
-/*==============================================================*/
-create table DMVTest (
-   DMVTestID            numeric              not null,
-   DMVTestName          varchar(60)          not null,
-   PollingInterval      numeric              not null,
-   DataGatheringDuration numeric              not null,
-   StepSize             float                not null,
-   CommSuccessPercentage numeric              not null,
-   constraint PK_DMVTest primary key (DMVTestID)
-)
-go
-
-alter table DMVTest
-   add constraint AK_DMVTest_DMVTestName unique (DMVTestName)
-go
-
-/*==============================================================*/
-/* Table: DMVTestExecution                                      */
-/*==============================================================*/
-create table DMVTestExecution (
-   ExecutionID          numeric              not null,
-   DMVTestId            numeric              not null,
-   AreaID               numeric              not null,
-   SubstationID         numeric              not null,
-   BusID                numeric              not null,
-   StartTime            datetime             not null,
-   StopTime             datetime             null,
-   TestStatus           varchar(30)          null,
-   constraint PK_DMVTestExecution primary key (ExecutionID)
-)
-go
-
-/*==============================================================*/
 /* Table: DYNAMICACCUMULATOR                                    */
 /*==============================================================*/
 create table DYNAMICACCUMULATOR (
@@ -4810,6 +4755,61 @@ create table DigiGateway (
    DeviceId             numeric              not null,
    DigiId               numeric              not null,
    constraint PK_DigiGate primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
+/* Table: DmvMeasurementData                                    */
+/*==============================================================*/
+create table DmvMeasurementData (
+   ExecutionId          numeric              not null,
+   PointId              numeric              not null,
+   Timestamp            datetime             not null,
+   Quality              numeric              not null,
+   Value                float                not null,
+   constraint PK_DmvMeasurementData primary key (ExecutionId, PointId, Timestamp)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_DmvMeasurementData_TStamp                        */
+/*==============================================================*/
+create index INDX_DmvMeasurementData_TStamp on DmvMeasurementData (
+Timestamp DESC
+)
+go
+
+/*==============================================================*/
+/* Table: DmvTest                                               */
+/*==============================================================*/
+create table DmvTest (
+   DmvTestId            numeric              not null,
+   DmvTestName          varchar(100)         not null,
+   PollingInterval      numeric              not null,
+   DataGatheringDuration numeric              not null,
+   StepSize             float                not null,
+   CommSuccessPercentage numeric              not null,
+   constraint PK_DmvTest primary key (DmvTestId)
+)
+go
+
+alter table DmvTest
+   add constraint AK_DmvTest_DmvTestName unique (DmvTestName)
+go
+
+/*==============================================================*/
+/* Table: DmvTestExecution                                      */
+/*==============================================================*/
+create table DmvTestExecution (
+   ExecutionId          numeric              not null,
+   DmvTestId            numeric              not null,
+   AreaId               numeric              not null,
+   SubstationId         numeric              not null,
+   BusId                numeric              not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             null,
+   TestStatus           varchar(30)          null,
+   constraint PK_DmvTestExecution primary key (ExecutionId)
 )
 go
 
@@ -12616,18 +12616,6 @@ alter table DISPLAYCOLUMNS
          on delete cascade
 go
 
-alter table DMVMeasurementData
-   add constraint FK_DMVTestExec_DMVMData foreign key (ExecutionID)
-      references DMVTestExecution (ExecutionID)
-         on delete cascade
-go
-
-alter table DMVTestExecution
-   add constraint FK_DMVTestExec_DMVTest foreign key (DMVTestId)
-      references DMVTest (DMVTestID)
-         on delete cascade
-go
-
 alter table DYNAMICACCUMULATOR
    add constraint FK_DynamicAccumulator_Point foreign key (POINTID)
       references POINT (POINTID)
@@ -12915,6 +12903,18 @@ go
 alter table DigiGateway
    add constraint FK_DigiGate_ZBGate foreign key (DeviceId)
       references ZBGateway (DeviceId)
+         on delete cascade
+go
+
+alter table DmvMeasurementData
+   add constraint FK_DmvTestExec_DmvMData foreign key (ExecutionId)
+      references DmvTestExecution (ExecutionId)
+         on delete cascade
+go
+
+alter table DmvTestExecution
+   add constraint FK_DmvTestExec_DmvTest foreign key (DmvTestId)
+      references DmvTest (DmvTestId)
          on delete cascade
 go
 

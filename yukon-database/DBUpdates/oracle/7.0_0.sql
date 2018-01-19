@@ -427,52 +427,52 @@ SET t.decimalplaces = 1;
 /* End YUK-17122 */
 
 /* Start YUK-17764 */
-CREATE TABLE DMVTest  (
-   DMVTestID             NUMBER                          NOT NULL,
-   DMVTestName           VARCHAR2(60)                    NOT NULL,
+CREATE TABLE DmvTest  (
+   DmvTestId             NUMBER                          NOT NULL,
+   DmvTestName           VARCHAR2(100)                   NOT NULL,
    PollingInterval       NUMBER                          NOT NULL,
    DataGatheringDuration NUMBER                          NOT NULL,
    StepSize              FLOAT                           NOT NULL,
    CommSuccessPercentage NUMBER                          NOT NULL,
-   CONSTRAINT PK_DMVTest PRIMARY KEY (DMVTestID)
+   CONSTRAINT PK_DmvTest PRIMARY KEY (DmvTestId)
 );
 
-CREATE TABLE DMVTestExecution  (
-   ExecutionID          NUMBER                          NOT NULL,
-   DMVTestId            NUMBER                          NOT NULL,
-   AreaID               NUMBER                          NOT NULL,
-   SubstationID         NUMBER                          NOT NULL,
-   BusID                NUMBER                          NOT NULL,
+CREATE TABLE DmvTestExecution  (
+   ExecutionId          NUMBER                          NOT NULL,
+   DmvTestId            NUMBER                          NOT NULL,
+   AreaId               NUMBER                          NOT NULL,
+   SubstationId         NUMBER                          NOT NULL,
+   BusId                NUMBER                          NOT NULL,
    StartTime            DATE                            NOT NULL,
    StopTime             DATE,
    TestStatus           VARCHAR2(30),
-   CONSTRAINT PK_DMVTestExecution PRIMARY KEY (ExecutionID)
+   CONSTRAINT PK_DmvTestExecution PRIMARY KEY (ExecutionId)
 );
 
-CREATE TABLE DMVMeasurementData  (
-   ExecutionID          NUMBER                          NOT NULL,
-   PointID              NUMBER                          NOT NULL,
-   TimeStamp            DATE                            NOT NULL,
+CREATE TABLE DmvMeasurementData  (
+   ExecutionId          NUMBER                          NOT NULL,
+   PointId              NUMBER                          NOT NULL,
+   Timestamp            DATE                            NOT NULL,
    Quality              NUMBER                          NOT NULL,
    Value                FLOAT                           NOT NULL,
-   CONSTRAINT PK_DMVMeasurementData PRIMARY KEY (ExecutionID, PointID, TimeStamp)
+   CONSTRAINT PK_DmvMeasurementData PRIMARY KEY (ExecutionId, PointId, Timestamp)
 );
 
-CREATE INDEX INDX_DMVMeasurementData_TStamp ON DMVMeasurementData (
+CREATE INDEX INDX_DmvMeasurementData_TStamp ON DmvMeasurementData (
    TimeStamp DESC
 );
 
-ALTER TABLE DMVTest
-   ADD CONSTRAINT AK_DMVTest_DMVTestName UNIQUE (DMVTestName);
+ALTER TABLE DmvTest
+   ADD CONSTRAINT AK_DmvTest_DmvTestName UNIQUE (DmvTestName);
 
-ALTER TABLE DMVMeasurementData
-   ADD CONSTRAINT FK_DMVTestExec_DMVMData FOREIGN KEY (ExecutionID)
-      REFERENCES DMVTestExecution (ExecutionID)
+ALTER TABLE DmvMeasurementData
+   ADD CONSTRAINT FK_DmvTestExec_DmvMData FOREIGN KEY (ExecutionId)
+      REFERENCES DmvTestExecution (ExecutionId)
       ON DELETE CASCADE;
 
-ALTER TABLE DMVTestExecution
-   ADD CONSTRAINT FK_DMVTestExec_DMVTest FOREIGN KEY (DMVTestId)
-      REFERENCES DMVTest (DMVTestID)
+ALTER TABLE DmvTestExecution
+   ADD CONSTRAINT FK_DmvTestExec_DmvTest FOREIGN KEY (DmvTestId)
+      REFERENCES DmvTest (DmvTestId)
       ON DELETE CASCADE;
 /* End YUK-17764 */
 
