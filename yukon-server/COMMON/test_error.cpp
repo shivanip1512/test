@@ -156,7 +156,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Unknown Error Code (216)")
     ("Unknown Error Code (217)")
     ("No Config Data Found")
-    ("Unknown Error Code (219)")
+    ("Config is not current")
     //  220
     ("Config is current")
     ("No Route for Group Dev.")
