@@ -127,7 +127,7 @@ public class MaintenanceScheduler {
         } else {
             secondsUntilRun = maintenanceService.getSecondsUntilRun();
         }
-        log.info("Maintenance task will start after " + secondsUntilRun + " seconds");
+        log.info("Maintenance task will start after " + secondsUntilRun / 60 + " minutes");
         return secondsUntilRun;
     }
     

@@ -38,14 +38,17 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant deleteUpto = Instant.now().toDateTime().minusMonths(noOfMonths.getDuration()).toInstant();
         
         int numDeleted = 1;
+        int totalEntriesDeleted = 0;
         Instant start = new Instant();
         log.info("Point data deletion started at " + start.toDate());
         while (isEnoughTimeAvailable(processEndTime) && numDeleted != 0) {
             numDeleted = pointDataPruningDao.deletePointData(deleteUpto);
+            // Total number of entries deleted during Point data deletion task.
+            totalEntriesDeleted += numDeleted;
         }
         Instant finish = new Instant();
         log.info("Point data deletion finished at " + finish.toDate());
-        systemEventLogService.deletePointDataEntries(numDeleted, start, finish);
+        systemEventLogService.deletePointDataEntries(totalEntriesDeleted, start, finish);
         return numDeleted;
     }
 

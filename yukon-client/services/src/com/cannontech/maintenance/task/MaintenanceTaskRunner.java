@@ -31,7 +31,11 @@ public class MaintenanceTaskRunner {
             if (remainingTasks == 0) {
                 log.info("All scheduled maintenance task are completed.");
                 return true;
-            } else {
+            } else if (!isEnoughTimeAvailable(endOfRunWindow)) {
+                log.info("Not enough time to run maintenance tasks.");
+                return true;
+            }
+            else {
                 timeSliceLength = getTimeSliceLength(remainingTasks, endOfRunWindow);
             }
             // minimumExecutionTime can be different for other tasks
@@ -50,7 +54,7 @@ public class MaintenanceTaskRunner {
             // The task runs repeatedly, until it's out of work, or the allotted time is up
             boolean taskIsDone = false;
             if (!completedMaintenanceTask.contains(task.getMaintenanceTaskType())) {
-                while (!taskIsDone && Instant.now().isBefore(endOfTimeSlice.minus(minimumExecutionTime))) {
+                while (!taskIsDone && isEnoughTimeAvailable(endOfTimeSlice)) {
                     taskIsDone = task.doTask(endOfTimeSlice);
                     if (taskIsDone) {
                         completedMaintenanceTask.add(task.getMaintenanceTaskType());
@@ -71,4 +75,7 @@ public class MaintenanceTaskRunner {
         return Duration.standardSeconds(totalTime / 1000);
     }
 
+    private boolean isEnoughTimeAvailable(Instant processEndTime) {
+        return Instant.now().isBefore(processEndTime.minus(minimumExecutionTime));
+    }
 }
