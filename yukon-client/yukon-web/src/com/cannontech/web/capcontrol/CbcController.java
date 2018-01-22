@@ -22,6 +22,7 @@ import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
@@ -269,6 +270,8 @@ public class CbcController {
             HeartbeatConfiguration heartbeat = cbcService.getCBCHeartbeatConfigForDevice(cbc);
             model.addAttribute("heartbeatConfig", heartbeat);
         }
+        DeviceConfigCategory attMapping = cbcService.getAttributeMappingForDevice(cbc);
+        model.addAttribute("attributeMapping", attMapping);
 
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
         model.addAttribute("logicalTypes", CapControlCBC.getLogicalTypes());

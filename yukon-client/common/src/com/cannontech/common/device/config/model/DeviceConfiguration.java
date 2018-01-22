@@ -57,6 +57,20 @@ public final class DeviceConfiguration extends LightDeviceConfiguration {
         
         return null;
     }
+    
+    /**
+     * Get the Attribute Mapping category of a configuration.
+     * @return Attribute Mapping category object if the configuration contains one, null otherwise.
+     */
+    public DeviceConfigCategory getAttributeMappingCategory() {
+        for (DeviceConfigCategory category : categories) {
+            if (CategoryType.CBC_ATTRIBUTE_MAPPING.value().equals(category.getCategoryType())) {
+                return category;
+            }
+        }
+        
+        return null;
+    }
 
     @Override
     public String toString() {

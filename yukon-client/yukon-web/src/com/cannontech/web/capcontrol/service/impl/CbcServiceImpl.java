@@ -12,6 +12,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
@@ -279,6 +280,20 @@ public class CbcServiceImpl implements CbcService {
         }
         
         return heartbeatConfig;
+    }
+    
+    @Override
+    public DeviceConfigCategory getAttributeMappingForDevice(CapControlCBC cbc) {
+        DeviceConfigCategory attributeMapping = null;
+        if (cbc.getDnpConfigId() != null) {
+            try {
+                DeviceConfiguration configuration = configurationDao.getDeviceConfiguration(cbc.getDnpConfigId());
+                attributeMapping = configuration.getAttributeMappingCategory();
+            } catch (EmptyResultDataAccessException e) {
+                
+            }
+        }
+        return attributeMapping;
     }
 
     private void setDnpFields(DBPersistent dbPersistent, CapControlCBC cbc) {

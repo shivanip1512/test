@@ -99,12 +99,16 @@ yukon.da.cbc = (function () {
                                 heartbeatFields.find('.js-heartbeat-' + fieldName).text(value);
                             });
                         }
+                        if(data.deviceConfiguration.attributeMappingCategory != null) {
+                            $('.js-attribute-mapping-name').text(data.deviceConfiguration.attributeMappingCategory.categoryName);
+                        }
                     }).always(function () {
                         yukon.ui.unblock(dnpFields);
                         yukon.ui.unblock(heartbeatFields);
                     });
                 } else {
                     $('.js-heartbeat-field').addClass('dn');
+                    $('.js-attribute-mapping-name').text("(none)");
                 }
 
             });

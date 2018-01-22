@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol.service;
 
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.editor.CapControlCBC;
@@ -51,4 +52,10 @@ public interface CbcService {
      * @return The full {@link HeartbeatConfiguration} for the device. If none is assigned, the default is returned.
      */
     HeartbeatConfiguration getCBCHeartbeatConfigForDevice(CapControlCBC cbc);
+    /**
+     * Looks up the Attribute Mapping used by the device.
+     * @param cbc
+     * @return The Attribute Mapping Category for the device.
+     */
+    DeviceConfigCategory getAttributeMappingForDevice(CapControlCBC cbc);
 }

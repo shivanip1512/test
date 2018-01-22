@@ -1120,6 +1120,8 @@
     <entry key="yukon.web.modules.capcontrol.cbc.config.title">Configuration</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.dnpConfiguration.title">DNP Configuration</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.heartbeatConfiguration.title">Heartbeat Configuration</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.attributeMapping.title">Attribute Mapping</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.categoryName">Category Name</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.type">Type</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.class">Class</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.parent">Parent</entry>
