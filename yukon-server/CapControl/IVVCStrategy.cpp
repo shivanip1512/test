@@ -509,24 +509,21 @@ void IVVCStrategy::execute()
 
     for (std::list<IVVCStatePtr>::iterator b = runList.begin(), e = runList.end(); b != e; ++b)
     {
-        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+        CtiCCSubstationBusPtr busPtr = store->findSubBusByPAObjectID( (*b)->getPaoId());
+        if (busPtr != NULL && busPtr->getStrategyId() == getStrategyId())
         {
-            CtiCCSubstationBusPtr busPtr = store->findSubBusByPAObjectID( (*b)->getPaoId());
-            if (busPtr != NULL && busPtr->getStrategyId() == getStrategyId())
+            try
             {
-                try
-                {
-                    _ivvcAlgorithm.execute(*b, busPtr, this, true); 
-                }
-                catch ( ... )
-                {
-                    CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
-                }
+                _ivvcAlgorithm.execute(*b, busPtr, this, true); 
             }
-            else
+            catch ( ... )
             {
-                //debug
+                CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
             }
+        }
+        else
+        {
+            //debug
         }
     }
 }
