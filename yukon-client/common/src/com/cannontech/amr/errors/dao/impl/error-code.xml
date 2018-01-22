@@ -40,6 +40,12 @@
             Correct the invalid parameter and attempt the command again.
         </troubleshooting>
     </error>
+    <error code="10">
+        <category>Yukon System</category>
+        <porter>Missing Parameter</porter>
+        <description>The command is missing a required parameter.</description>
+        <troubleshooting>Confirm the command syntax.</troubleshooting>
+    </error>
     <error code="15">
         <category>Bulk Communications</category>
         <porter>Parity Error</porter>
@@ -258,7 +264,12 @@
             </ul>
         </troubleshooting>
     </error>
-
+    <error code="26">
+        <category>Yukon System</category>
+        <porter>Bad Parameter</porter>
+        <description>An invalid parameter was specified for the command.</description>
+        <troubleshooting>Try different values in the command or Device Configuration.</troubleshooting>
+    </error>
     <error code="31">
         <category>Bulk Communications</category>
         <porter>Timeout Reading from Port</porter>
@@ -801,6 +812,18 @@
             </ul>
         </troubleshooting>
     </error>
+    <error code="218">
+        <category>Yukon System</category>
+        <porter>No Config Data Found</porter>
+        <description>The device is missing required configuration entries.</description>
+        <troubleshooting>Confirm that the Device Configuration assigned to the device has all required categories populated.</troubleshooting>
+    </error>
+    <error code="219">
+        <category>Yukon System</category>
+        <porter>Config is not current</porter>
+        <description>The configuration on the device does not match its assigned Device Configuration.</description>
+        <troubleshooting>Send the Device Configuration to the device.</troubleshooting>
+    </error>
     <error code="220">
         <category>Yukon System</category>
         <porter>Config is current</porter>
@@ -1047,6 +1070,12 @@
         <description>The action failed, the timestamp is outside of the expected range.</description>
         <troubleshooting>
         </troubleshooting>
+    </error>
+    <error code="284">
+        <category>Yukon System</category>
+        <porter>Configuration data is invalid.</porter>
+        <description>The Device Configuration has entries that are invalid or missing for the device.</description>
+        <troubleshooting>Try different values in the command or Device Configuration.</troubleshooting>
     </error>
     <error code="285">
         <category>Network Manager</category>
