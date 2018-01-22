@@ -2,6 +2,9 @@ package com.cannontech.common.rfn.model;
 
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.Locatable;
@@ -13,6 +16,7 @@ import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGateway> {
+    private static final Logger log = YukonLogManager.getLogger(RfnGateway.class);
     
     private RfnGatewayData data;
     private PaoLocation paoLocation;
@@ -37,25 +41,34 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     }
     
     public boolean isUpgradeAvailable () {
+        log.debug("Checking if upgrade is valid for " + getName());
         //If the current or available version is null, we can't upgrade
         String currentVersionString = getData().getReleaseVersion();
+        log.debug("Current version: " + currentVersionString + ", Upgrade version: " + upgradeVersion);
         if (currentVersionString == null || upgradeVersion == null) {
+            log.debug("Upgrade not valid due to null version.");
             return false;
         }
         
         try {
             //If the current version is < 6.1.0 and Gateway is 2.0, the upgrade has to be done manually
             GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(currentVersionString);
+
             if (getPaoIdentifier().getPaoType() == PaoType.GWY800 && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 0)) < 0) {
+                log.debug("Current version isn't above the minimum for GWY-800.");
                 return false;
             //If the current version is < 6.1.1 and Gateway is 1.5, the upgrade has to be done manually
             } else if (getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY && currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 1)) < 0) {
+                log.debug("Current version isn't above the minimum for Gateway 1.5.");
                 return false;
             }
             //The available version has to be greater than or equal to the current version to allow upgrade
             GatewayFirmwareVersion availableVersion = GatewayFirmwareVersion.parse(upgradeVersion);
-            return (currentVersion.compareTo(availableVersion) <= 0);
+            boolean isUpgradeValid = currentVersion.compareTo(availableVersion) <= 0;
+            log.debug("Upgrade valid: " + isUpgradeValid);
+            return isUpgradeValid;
         } catch (Exception e) {
+            log.error("Exception while testing firmware upgrade validity.", e);
             return false;
         }
     }

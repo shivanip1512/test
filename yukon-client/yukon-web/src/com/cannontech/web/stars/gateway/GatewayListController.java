@@ -133,14 +133,8 @@ public class GatewayListController {
         helper.addText(model, userContext);
         
         List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
-        firmwareUpdates.sort(new Comparator<RfnGatewayFirmwareUpdateSummary>() {
-            @Override
-            public int compare(RfnGatewayFirmwareUpdateSummary first, RfnGatewayFirmwareUpdateSummary second) {
-                return second.getSendDate().compareTo(first.getSendDate());
-            }
-        });
+        firmwareUpdates.sort((first, second) -> second.getSendDate().compareTo(first.getSendDate()));
         model.addAttribute("firmwareUpdates", firmwareUpdates);
-        
         
         return "gateways/list.jsp";
     }
@@ -167,7 +161,7 @@ public class GatewayListController {
             });
             
         } catch (NmCommunicationException e){
-            log.debug("Retrieval of firmware update server versions failed");
+            log.error("Retrieval of firmware update server versions failed", e);
         }
         return json;
     }

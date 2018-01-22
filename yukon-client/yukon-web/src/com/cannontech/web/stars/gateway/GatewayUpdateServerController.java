@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -64,8 +62,6 @@ public class GatewayUpdateServerController {
 
         private List<GatewayUpdateModel> list = LazyList.ofInstance(GatewayUpdateModel.class);
 
-        public GatewayUpdateModelList() {}
-
         public GatewayUpdateModelList(List<GatewayUpdateModel> list) {
             setList(list);
         }
@@ -92,19 +88,14 @@ public class GatewayUpdateServerController {
             allGateways = rfnGatewayService.getAllGatewaysWithUpdateServer()
                 .stream()
                 .sorted()
-                .map(new Function<RfnGateway, GatewayUpdateModel>() {
+                .map(gateway -> {
+                    GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
+                    String updateServerUrl = updateServer.getUpdateServerUrl();
+                    boolean isDefault = StringUtils.isEmpty(updateServerUrl) || defaultServer.equals(updateServerUrl);
+                    updateServer.setUseDefault(isDefault);
 
-                        @Override
-                        public GatewayUpdateModel apply(RfnGateway gateway) {
-                            GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
-                            String updateServerUrl = updateServer.getUpdateServerUrl();
-                            boolean isDefault = StringUtils.isEmpty(updateServerUrl) || 
-                                        defaultServer.equals(updateServerUrl);
-                            updateServer.setUseDefault(isDefault);
-
-                            return updateServer;
-                        }
-                    }).collect(Collectors.toList());
+                    return updateServer;
+                }).collect(Collectors.toList());
         } catch (NmCommunicationException e) {
             log.error("Failed communication with NM", e);
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -112,7 +103,6 @@ public class GatewayUpdateServerController {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
             model.addAttribute("errorMsg", errorMsg);
         }
-
 
         model.addAttribute("allSettings", new GatewayUpdateModelList(allGateways));
 
@@ -180,19 +170,12 @@ public class GatewayUpdateServerController {
     public String firmwareUpgrade(ModelMap model, YukonUserContext userContext) {
         try {
             List<GatewayUpdateModel> gateways =
-                rfnGatewayService.getAllGatewaysWithUpdateServer().stream().filter(this::isGatewayUpgradeable).sorted().map(
-                    new Function<RfnGateway, GatewayUpdateModel>() {
-
-                        @Override
-                        public GatewayUpdateModel apply(RfnGateway gateway) {
-                            GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
-                            if (StringUtils.isEmpty(updateServer.getUpdateServerUrl())) {
-                                updateServer.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
-                            }
-
-                            return updateServer;
-                        }
-                    }).collect(Collectors.toList());
+                rfnGatewayService.getAllGatewaysWithUpdateServer()
+                                 .stream()
+                                 .filter(this::isGatewayUpgradeable)
+                                 .sorted()
+                                 .map(this::getUpdateModel)
+                                 .collect(Collectors.toList());
 
             GatewayUpdateModelList springGateways = new GatewayUpdateModelList(gateways);
             model.addAttribute("gateways", springGateways);
@@ -209,26 +192,41 @@ public class GatewayUpdateServerController {
 
         return "gateways/firmware-upgrade.jsp";
     }
+    
+    private GatewayUpdateModel getUpdateModel(RfnGateway gateway) {
+        GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
+        if (StringUtils.isEmpty(updateServer.getUpdateServerUrl())) {
+            updateServer.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
+        }
+        
+        return updateServer;
+    }
 
     private boolean isGatewayUpgradeable(RfnGateway gateway) {
-        GatewayFirmwareVersion firmwareVersion = null;
+        log.debug("Checking gateway upgradeability for " + gateway.getName());
         if (gateway.getData() == null) {
+            log.debug("No data for gateway.");
             return false;
         }
         String versionString = gateway.getData().getReleaseVersion();
+        log.debug("Release version: " + versionString);
+        GatewayFirmwareVersion minimumSupportedFirmwareVersion = null;
         try {
             GatewayFirmwareVersion version = GatewayFirmwareVersion.parse(versionString);
             if (gateway.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
                 // For Gateway 2.0, make sure firmware version is >= 6.1.0 or the feature is not supported
-                firmwareVersion = new GatewayFirmwareVersion(6, 1, 0);
+                minimumSupportedFirmwareVersion = new GatewayFirmwareVersion(6, 1, 0);
             } else if (gateway.getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY) {
                 // For Gateway 1.5, make sure firmware version is >= 6.1.1 or the feature is not supported
-                firmwareVersion = new GatewayFirmwareVersion(6, 1, 1);
+                minimumSupportedFirmwareVersion = new GatewayFirmwareVersion(6, 1, 1);
             }
-            int compare = version.compareTo(firmwareVersion);
-            return compare >= 0;
+            log.debug("Minimum supported firmware version for upgrade: " + minimumSupportedFirmwareVersion);
+            int compare = version.compareTo(minimumSupportedFirmwareVersion);
+            boolean isUpgradeable = compare >= 0;
+            log.debug("Upgrade supported: " + isUpgradeable);
+            return isUpgradeable;
         } catch (IllegalArgumentException e) {
-            log.trace(e);
+            log.debug("Error parsing firmware version", e);
             return false;
         }
     }
@@ -245,21 +243,10 @@ public class GatewayUpdateServerController {
 
         List<GatewayUpdateModel> allGatewayModels = modelList.getList();
 
-        Set<Integer> idsToUpdate = 
-            allGatewayModels.stream()
-           .filter(new Predicate<GatewayUpdateModel>() {
-                @Override
-                public boolean test(GatewayUpdateModel updateModel) {
-                    return updateModel.isSendNow();
-                }
-            }).map(new Function<GatewayUpdateModel, Integer> () {
-
-                @Override
-                public Integer apply(GatewayUpdateModel updateModel) {
-                    return updateModel.getId();
-                }
-            })
-            .collect(Collectors.toSet());
+        Set<Integer> idsToUpdate = allGatewayModels.stream()
+                                                   .filter(GatewayUpdateModel::isSendNow)
+                                                   .map(GatewayUpdateModel::getId)
+                                                   .collect(Collectors.toSet());
 
         Set<RfnGateway> gateways = rfnGatewayService.getGatewaysByPaoIds(idsToUpdate);
 
