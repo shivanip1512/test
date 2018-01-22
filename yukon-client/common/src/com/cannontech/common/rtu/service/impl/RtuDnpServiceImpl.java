@@ -49,8 +49,10 @@ public class RtuDnpServiceImpl implements RtuDnpService {
             configurationDao.getDeviceConfiguration(config.getConfigurationId());
         DNPConfiguration dnp = configurationDao.getDnpConfiguration(deviceConfig);
         rtu.setDnpConfig(dnp);
-        HeartbeatConfiguration heartbeat  = configurationDao.getHeartbeatConfiguration(deviceConfig);
-        rtu.setHeartbeatConfig(heartbeat);
+        if (deviceConfig.getHeartbeatCategory() != null) {
+            HeartbeatConfiguration heartbeat = configurationDao.getHeartbeatConfiguration(deviceConfig);
+            rtu.setHeartbeatConfig(heartbeat);
+        }
         List<DisplayableDevice> devices = deviceDao.getChildDevices(id);
         Comparator<DisplayableDevice> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
         Collections.sort(devices, comparator);
