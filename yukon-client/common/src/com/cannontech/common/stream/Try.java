@@ -38,10 +38,17 @@ public abstract class Try<T> {
     }
     
     /**
-     * Create a new Try in the success state, with the specified value.
+     * Create a new Try in the success state, with the specified value. Nulls are permitted.
      */
     public static <T> Try<T> success(T value) {
         return new Success<>(value);
+    }
+    
+    /**
+     * Create a new Try in the success state, with the specified value. Nulls are permitted.
+     */
+    public static <T> Try<T> of(T value) {
+        return success(value);
     }
     
     /**
@@ -126,6 +133,12 @@ public abstract class Try<T> {
     public abstract <U> Try<U> map(Function<? super T, ? extends U> mapper);
     
     /**
+     * Attempts the specified mapping. If an exception is thrown, the mapping is retried, up to the specified number of
+     * times.
+     */
+    public abstract <U> Try<U> retry(int times, Function<? super T, ? extends U> mapper);
+    
+    /**
      * If a value is present, invoke the specified consumer with the value, otherwise do nothing.
      */
     public abstract Try<T> ifSuccess(Consumer<? super T> consumer);
@@ -139,6 +152,11 @@ public abstract class Try<T> {
      * If a value is present, return it, otherwise return other.
      */
     public abstract T orElse(T other);
+    
+    /**
+     * If a value is present, return it, otherwise invoke the supplier and return the result.
+     */
+    public abstract T orElse(Supplier<T> supplier);
     
     /**
      * Failure is a Try containing an exception.
@@ -205,6 +223,11 @@ public abstract class Try<T> {
         }
         
         @Override
+        public <U> Try<U> retry(int times, Function<? super T, ? extends U> mapper) {
+            return failure(exception);
+        }
+        
+        @Override
         public Try<T> ifSuccess(Consumer<? super T> consumer) {
             return this;
         }
@@ -218,6 +241,11 @@ public abstract class Try<T> {
         @Override
         public T orElse(T other) {
             return other;
+        }
+        
+        @Override
+        public T orElse(Supplier<T> supplier) {
+            return supplier.get();
         }
         
         @Override
@@ -328,6 +356,20 @@ public abstract class Try<T> {
         }
         
         @Override
+        public <U> Try<U> retry(int times, Function<? super T, ? extends U> mapper) {
+            for (int i = 0; i < times; i++) { //1
+                try {
+                    return success(mapper.apply(value));
+                } catch (Exception e) {
+                    if (i == times - 1) {
+                        return failure("Retry count exceeded. Tried " + times + " times.", e);
+                    }
+                }
+            }
+            throw new IllegalStateException();
+        }
+        
+        @Override
         public Try<T> ifSuccess(Consumer<? super T> consumer) {
             consumer.accept(value);
             return this;
@@ -340,6 +382,11 @@ public abstract class Try<T> {
 
         @Override
         public T orElse(T other) {
+            return value;
+        }
+        
+        @Override
+        public T orElse(Supplier<T> supplier) {
             return value;
         }
         
