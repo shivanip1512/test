@@ -250,7 +250,7 @@ public class YukonLogManager {
         if (rfnCommsLogger.getAppender("rfnCommsFileAppender") == null) {
             // set up rfnFileAppender
             DatedFileAppender rfnAppender;
-            String directory = BootstrapUtils.getServerLogDir() + "\\Comm";
+            String directory = BootstrapUtils.getServerLogDir();
             String logName = "RfnCommsLog";
             //create a DatedFileAppender to take over the actual appending, rollover, and timing issues
             rfnAppender = new DatedFileAppender(directory, logName + "_", ".log");

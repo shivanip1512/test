@@ -48,7 +48,7 @@
     <level value="TRACE"/> 
   </logger>
   
-  <!-- Controls rfn comms logging to the Server\Log\Comms directory -->
+  <!-- Controls rfn comms logging to the Server\Log directory -->
   <logger name="rfnCommsLogger">
     <level value="INFO"/>
   </logger>
