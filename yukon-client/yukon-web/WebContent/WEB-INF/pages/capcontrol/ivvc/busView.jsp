@@ -47,7 +47,7 @@
 
 <c:if test="${hasEditingRole}">
     <div class="js-page-additional-actions dn">
-        <cti:url var="editUrl" value="/capcontrol/buses/${subBusId}"/>
+        <cti:url var="editUrl" value="/capcontrol/buses/${subBusId}/edit"/>
         <c:if test="${not dividerAdded}">
             <li class="divider">
             <c:set var="dividerAdded" value="true" />
