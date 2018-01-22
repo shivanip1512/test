@@ -11,4 +11,8 @@ public class DisplayableDevice extends DisplayablePaoBase {
     public DisplayableDevice(PaoIdentifier paoIdentifier, String name) {
         super(paoIdentifier, name);
     }
+    
+    public int getId() {
+        return this.getPaoIdentifier().getPaoId();
+    }
 }

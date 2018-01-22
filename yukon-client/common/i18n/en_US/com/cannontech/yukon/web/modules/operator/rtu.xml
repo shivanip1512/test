@@ -50,5 +50,17 @@
     
     <entry key="yukon.web.modules.operator.rtuDetail.childrenTab">Child Hierarchy</entry>
     
+    <entry key="yukon.web.modules.operator.rtuDetail.allPointsTab">All Points</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.selectDevices">Select Device(s)</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.selectPoints">Select Point(s)</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.selectTypes">Select Point Type(s)</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.filter.label">Filter</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.pointName">Point Name</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.pointValue">Value</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.dateTime">Date/Time</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.offset">Offset</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.pointType">Point Type</entry>
+    
 
 </properties>

@@ -10,6 +10,7 @@
     <tags:setFormEditMode mode="${mode}" />
 
     <form:form commandName="rtu">
+        <form:hidden id="rtuId" path="id" />
     
         <div class="column-12-12 clearfix">
             <div class="column one">
@@ -207,7 +208,12 @@
                 </cti:paoDetailUrl>
                 <div class="js-points-${paoId}" style="margin:10px 0px 10px 30px;"></div>
             </c:forEach>
+        </cti:tab>
         
+        <cti:msg2 var="allPointsTab" key=".allPointsTab"/>
+        <cti:tab title="${allPointsTab}" headerClasses="js-all-points-tab">
+            <cti:url var="dataUrl" value="/stars/rtu/${rtu.id}/allPoints"/>
+            <div class="js-all-points" data-url="${dataUrl}"></div>
         </cti:tab>
         
     </cti:tabs>

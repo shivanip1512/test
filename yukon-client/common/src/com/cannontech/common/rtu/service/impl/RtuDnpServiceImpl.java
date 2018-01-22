@@ -1,5 +1,9 @@
 package com.cannontech.common.rtu.service.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -7,6 +11,7 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
+import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.rtu.service.RtuDnpService;
@@ -46,7 +51,10 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         rtu.setDnpConfig(dnp);
         HeartbeatConfiguration heartbeat  = configurationDao.getHeartbeatConfiguration(deviceConfig);
         rtu.setHeartbeatConfig(heartbeat);
-        rtu.setChildDevices(deviceDao.getChildDevices(id));
+        List<DisplayableDevice> devices = deviceDao.getChildDevices(id);
+        Comparator<DisplayableDevice> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
+        Collections.sort(devices, comparator);
+        rtu.setChildDevices(devices);
         return rtu;
     }
 }

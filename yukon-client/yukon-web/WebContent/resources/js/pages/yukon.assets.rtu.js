@@ -42,6 +42,28 @@ yukon.assets.rtu= (function () {
                 }                
             });
             
+            /** User clicked on the All Points tab */
+            $(document).on('click', '.js-all-points-tab', function () {
+                var rtuId = $('#rtuId').val();
+                $.ajax({ url: yukon.url('/stars/rtu/' + rtuId + '/allPoints') })
+                .done(function (details) {
+                    $('.js-all-points').html(details);
+                });        
+            });
+            
+            /** User filtered the All Points tab */
+            $(document).on('click', '.js-filter', function (ev) {
+                var tableContainer = $('.js-all-points'),
+                    rtuId = $('#rtuId').val(),
+                    form = $('#rtuAllPoints');
+                form.ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        tableContainer.html(data);
+                        tableContainer.data('url', yukon.url('/stars/rtu/' + rtuId + 'allPoints?' + form.serialize()));
+                    }
+                });
+            });
+            
             _initialized = true;
         }
         

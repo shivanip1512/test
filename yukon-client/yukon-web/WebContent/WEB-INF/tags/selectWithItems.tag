@@ -20,6 +20,7 @@
 <%@ attribute name="itemValue" %>
 <%@ attribute name="onchange" %>
 <%@ attribute name="path" required="true" %>
+<%@ attribute name="dataPlaceholder" %>
 
 <cti:default var="disabled" value="false"/>
 
@@ -51,7 +52,7 @@
     <c:set var="theInputClass" value="${pageScope.inputClass} error"/>
 </c:if>
 
-<form:select id="${id}" disabled="${disabled}" path="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}">
+<form:select id="${id}" disabled="${disabled}" path="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}" data-placeholder="${dataPlaceholder}">
     <c:if test="${not empty pageScope.defaultItemLabel}">
         <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
     </c:if>
