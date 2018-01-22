@@ -226,7 +226,7 @@ public class GatewayUpdateServerController {
             log.debug("Upgrade supported: " + isUpgradeable);
             return isUpgradeable;
         } catch (IllegalArgumentException e) {
-            log.debug("Error parsing firmware version", e);
+            log.error("Error parsing firmware version", e);
             return false;
         }
     }
