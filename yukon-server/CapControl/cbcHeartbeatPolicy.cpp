@@ -55,15 +55,10 @@ Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const Attribute & attribute
 {
     LitePoint point = twoWayPoints.getPointByAttribute( attribute );
 
-    const long pointOffset =
-        point.getControlOffset() ?
-            point.getControlOffset() :
-            point.getPointOffset() % 10000;
-
     return
     {
-        makeSignalTemplate( point.getPointOffset(), 0, "CBC Heartbeat" ),
-        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( pointOffset, keepAliveValue ) )
+        makeSignalTemplate( point.getPointId(), 0, "CBC Heartbeat" ),
+        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( point, keepAliveValue ) )
     };
 }
 

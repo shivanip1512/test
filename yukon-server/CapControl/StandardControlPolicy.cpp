@@ -39,10 +39,6 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
 {
     LitePoint point = getPointByAttribute( getSetPointAttribute() );
 
-    const long pointOffset = point.getControlOffset()
-                                ? point.getControlOffset()
-                                : point.getPointOffset() % 10000;
-
     const std::string description = changeAmount > 0 ? "Raise Set Point" : "Lower Set Point";
 
     const double newSetPoint = getSetPointValue() + changeAmount;
@@ -58,13 +54,13 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
             CTILOG_ERROR( dout, "Forward SetPoint Multiplier is 0.0, treating as 1.0" );
         }
 
-        commandString = putvalueAnalogCommand( pointOffset, newSetPoint );
+        commandString = putvalueAnalogCommand( point, newSetPoint );
     }
     else
     {
         const long adjustedSetPoint = std::lround( newSetPoint / pointMultiplier );
 
-        commandString = putvalueAnalogCommand( pointOffset, adjustedSetPoint );
+        commandString = putvalueAnalogCommand( point, adjustedSetPoint );
     }
 
     return 

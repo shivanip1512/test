@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_send_heartbeat, cbc_heartbeat_fi
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 10467, signalMsg->getId() );     // Offset of the 'ScadaOverrideHeartbeat' LitePoint
+    BOOST_CHECK_EQUAL( 3456, signalMsg->getId() );      // ID of the 'ScadaOverrideHeartbeat' LitePoint
     BOOST_CHECK_EQUAL( "CBC Heartbeat", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -215,7 +215,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_send_heartbeat, cbc_heartbeat_fi
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideHeartbeat' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 467 15", requestMsg->CommandString() );
+    BOOST_CHECK_EQUAL( "putvalue analog value 15 select pointid 3456", requestMsg->CommandString() );
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_stop_heartbeat_normal_mode, cbc_heartbeat_fixture_analog )
@@ -292,7 +292,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_h
 
         BOOST_REQUIRE( signalMsg );
 
-        BOOST_CHECK_EQUAL( 10466, signalMsg->getId() );     // Offset of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL( 2345, signalMsg->getId() );      // ID of the 'ScadaOverrideCountdownTimer' LitePoint
         BOOST_CHECK_EQUAL( "CBC Heartbeat", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -301,7 +301,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_h
         BOOST_REQUIRE( requestMsg );
 
         BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideCountdownTimer' LitePoint
-        BOOST_CHECK_EQUAL( "putvalue analog 466 15", requestMsg->CommandString() );
+        BOOST_CHECK_EQUAL( "putvalue analog value 15 select pointid 2345", requestMsg->CommandString() );
     }
 
     {
@@ -344,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_differing_value, 
 
         BOOST_REQUIRE( signalMsg );
 
-        BOOST_CHECK_EQUAL( 10466, signalMsg->getId() );     // Offset of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL( 2345, signalMsg->getId() );      // ID of the 'ScadaOverrideCountdownTimer' LitePoint
         BOOST_CHECK_EQUAL( "CBC Heartbeat", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -353,7 +353,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_differing_value, 
         BOOST_REQUIRE( requestMsg );
 
         BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideCountdownTimer' LitePoint
-        BOOST_CHECK_EQUAL( "putvalue analog 466 15", requestMsg->CommandString() );
+        BOOST_CHECK_EQUAL( "putvalue analog value 15 select pointid 2345", requestMsg->CommandString() );
     }
 
     {
@@ -959,7 +959,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_send_heartbeat, cbc_logica
 
     BOOST_REQUIRE(signalMsg);
 
-    BOOST_CHECK_EQUAL(10467, signalMsg->getId());     // Offset of the 'ScadaOverrideHeartbeat' LitePoint
+    BOOST_CHECK_EQUAL(3456, signalMsg->getId());      // ID of the 'ScadaOverrideHeartbeat' LitePoint
     BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
     BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
@@ -971,7 +971,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_send_heartbeat, cbc_logica
     BOOST_REQUIRE(requestMsg);
 
     BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideHeartbeat' LitePoint
-    BOOST_CHECK_EQUAL("putvalue analog 467 15", requestMsg->CommandString());
+    BOOST_CHECK_EQUAL("putvalue analog value 15 select pointid 3456", requestMsg->CommandString());
 }
 
 BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_stop_heartbeat_normal_mode, cbc_logical_heartbeat_fixture_analog)
@@ -1048,7 +1048,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_zero_value,
 
         BOOST_REQUIRE(signalMsg);
 
-        BOOST_CHECK_EQUAL(10466, signalMsg->getId());     // Offset of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL(2345, signalMsg->getId());      // ID of the 'ScadaOverrideCountdownTimer' LitePoint
         BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
         BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
@@ -1057,7 +1057,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_zero_value,
         BOOST_REQUIRE(requestMsg);
 
         BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideCountdownTimer' LitePoint
-        BOOST_CHECK_EQUAL("putvalue analog 466 15", requestMsg->CommandString());
+        BOOST_CHECK_EQUAL("putvalue analog value 15 select pointid 2345", requestMsg->CommandString());
     }
 
     {
@@ -1100,7 +1100,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_differing_v
 
         BOOST_REQUIRE(signalMsg);
 
-        BOOST_CHECK_EQUAL(10466, signalMsg->getId());     // Offset of the 'ScadaOverrideCountdownTimer' LitePoint
+        BOOST_CHECK_EQUAL(2345, signalMsg->getId());      // ID of the 'ScadaOverrideCountdownTimer' LitePoint
         BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
         BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
@@ -1109,7 +1109,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_differing_v
         BOOST_REQUIRE(requestMsg);
 
         BOOST_CHECK_EQUAL(1000, requestMsg->DeviceId());  // PaoID of the 'ScadaOverrideCountdownTimer' LitePoint
-        BOOST_CHECK_EQUAL("putvalue analog 466 15", requestMsg->CommandString());
+        BOOST_CHECK_EQUAL("putvalue analog value 15 select pointid 2345", requestMsg->CommandString());
     }
 
     {

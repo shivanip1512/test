@@ -446,7 +446,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableKeepAlive_Success)
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
+    BOOST_CHECK_EQUAL( 4200, signalMsg->getId() );          // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -459,7 +459,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableKeepAlive_Success)
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 1 123",
+    BOOST_CHECK_EQUAL( "putvalue analog value 123 select pointid 4200",
                        requestMsg->CommandString() );       // 'putvalue analog <offset> <value>'
 
 
@@ -503,7 +503,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableKeepAlive_Success)
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 1, signalMsg->getId() );             // Point Offset of the 'KeepAlive' LitePoint
+    BOOST_CHECK_EQUAL( 4200, signalMsg->getId() );          // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableKeepAlive_Success)
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 1 0",
+    BOOST_CHECK_EQUAL( "putvalue analog value 0 select pointid 4200",
                        requestMsg->CommandString() );       // 'putvalue analog <offset> <value>'
 
 
@@ -570,7 +570,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableRemoteControl_Succe
 
     BOOST_REQUIRE( signalMsg_ka );
 
-    BOOST_CHECK_EQUAL( 1, signalMsg_ka->getId() );          // Point Offset of the 'KeepAlive' LitePoint
+    BOOST_CHECK_EQUAL( 4200, signalMsg_ka->getId() );       // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg_ka->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg_ka->getAdditionalInfo() );
@@ -583,7 +583,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_EnableRemoteControl_Succe
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 1 123",
+    BOOST_CHECK_EQUAL( "putvalue analog value 123 select pointid 4200",
                        requestMsg->CommandString() );       // 'putvalue analog <offset> <value>'
 
 
@@ -647,7 +647,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableRemoteControl_Succ
 
     BOOST_REQUIRE( signalMsg_ka );
 
-    BOOST_CHECK_EQUAL( 1, signalMsg_ka->getId() );          // Point Offset of the 'KeepAlive' LitePoint
+    BOOST_CHECK_EQUAL( 4200, signalMsg_ka->getId() );       // ID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "Keep Alive", signalMsg_ka->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg_ka->getAdditionalInfo() );
@@ -660,7 +660,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_DisableRemoteControl_Succ
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 1 0",
+    BOOST_CHECK_EQUAL( "putvalue analog value 0 select pointid 4200",
                        requestMsg->CommandString() );       // 'putvalue analog <offset> <value>'
 
 
@@ -737,7 +737,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_RaiseSetPoint_Success)
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 7 120.750000",
+    BOOST_CHECK_EQUAL( "putvalue analog value 120.750000 select pointid 7000",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 
@@ -812,7 +812,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Success)
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 7 119.250000",
+    BOOST_CHECK_EQUAL( "putvalue analog value 119.250000 select pointid 7000",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 
@@ -873,7 +873,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Cogeneratio
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 7 119.250000",
+    BOOST_CHECK_EQUAL( "putvalue analog value 119.250000 select pointid 7000",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 
@@ -934,7 +934,7 @@ BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Cogeneratio
     BOOST_REQUIRE( requestMsg );
 
     BOOST_CHECK_EQUAL( 1022, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog 17 120.750000",
+    BOOST_CHECK_EQUAL( "putvalue analog value 120.750000 select pointid 7200",
                        requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
 
 

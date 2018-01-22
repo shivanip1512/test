@@ -23,15 +23,10 @@ Policy::Action KeepAlivePolicy::WriteKeepAliveValue( const long keepAliveValue )
 {
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
-    const long pointOffset =
-        point.getControlOffset() ?
-            point.getControlOffset() :
-            point.getPointOffset() % 10000;
-
     return
     {
-        makeSignalTemplate( point.getPointOffset(), 0, KeepAliveText ),
-        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( pointOffset, keepAliveValue ) )
+        makeSignalTemplate( point.getPointId(), 0, KeepAliveText ),
+        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( point, keepAliveValue ) )
     };
 }
 

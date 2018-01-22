@@ -42,9 +42,9 @@ protected:
     Action makeStandardDigitalControl( const LitePoint & point, const std::string & description );
 
     template <typename T>
-    std::string putvalueAnalogCommand( const long offset, const T value )
+    std::string putvalueAnalogCommand( const LitePoint & point, const T value )
     {
-        return "putvalue analog " + std::to_string( offset ) + " " + std::to_string( value );
+        return "putvalue analog value " + std::to_string( value ) + " select pointid " + std::to_string( point.getPointId() );
     }
 
     AttributeMap        _pointMapping;
