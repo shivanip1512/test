@@ -601,10 +601,10 @@
     <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate">Weather station {1} not updated. Error: {2}.</entry>
     <entry key="yukon.common.events.system.maintenance.systemLogWeatherDataUpdate.7">Number Updated</entry>
     <entry key="yukon.common.events.system.maintenance.smartIndexMaintenance">Executed sp_smartIndexMaintenance. Start time: {11}. Finish time: {12}.</entry>
-    <entry key="yukon.common.events.system.maintenance.reconciliation.outOfServiceMessageSent">Out Of Service Message sent for device: {1}</entry>
-    <entry key="yukon.common.events.system.maintenance.reconciliation.inServiceMessageSent">InService message sent for device: {1}</entry>
-    <entry key="yukon.common.events.system.maintenance.reconciliation.messageSendingFailed">Message sending failed for device: {1} Reason : {2}</entry>
-    <entry key="yukon.common.events.system.maintenance.reconciliation.configMessageSent">Config message sent for device: {1}</entry>
+    <entry key="yukon.common.events.system.maintenance.reconciliation.outOfServiceMessageSent">Out Of Service Message sent for device: {1}.</entry>
+    <entry key="yukon.common.events.system.maintenance.reconciliation.inServiceMessageSent">InService message sent for device: {1}.</entry>
+    <entry key="yukon.common.events.system.maintenance.reconciliation.messageSendingFailed">Message sending failed for device: {1} Reason : {2}.</entry>
+    <entry key="yukon.common.events.system.maintenance.reconciliation.configMessageSent">Config message sent for device: {1}.</entry>
     <entry key="yukon.common.events.system.maintenance.reconciliation.groupConflictLCRDetected">LCR with serial number {1} detected with multiple conflicting groups.</entry>
     
     <!--  System Administration -->
