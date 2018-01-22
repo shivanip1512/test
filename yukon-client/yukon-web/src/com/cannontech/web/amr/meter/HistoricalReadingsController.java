@@ -189,7 +189,7 @@ public class HistoricalReadingsController {
             String timestamp, FlashScope flash, ModelMap model) {
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
         DateTime dateTime = formatter.parseDateTime(timestamp).withZone(userContext.getJodaTimeZone());
-        pointService.deletePointData(pointId, value, dateTime.toInstant(), userContext.getYukonUser());
+        pointService.deletePointData(pointId, value, dateTime.toInstant(), userContext);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "value.deleteConfirmation", timestamp));
         return values(model, pointId, null, userContext);
     }
@@ -251,7 +251,7 @@ public class HistoricalReadingsController {
         }
 
         pointService.updatePointData(backingBean.getPointId(), oldValue, newValue, backingBean.getTimestamp(),
-            userContext.getYukonUser());
+            userContext);
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "value.editConfirmation", editTimestamp));
 
         return values(model, litePoint.getPointID(), null, userContext);

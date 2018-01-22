@@ -10,15 +10,15 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface PointEventLogService {
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point.data")
-    public void pointDataDeleted(@Arg(ArgEnum.deviceName) String deviceName, String pointName, Double value,
+    public void pointDataDeleted(@Arg(ArgEnum.deviceName) String deviceName, String pointName, String value,
             Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point.data")
-    public void pointDataUpdated(@Arg(ArgEnum.deviceName) String deviceName, String pointName, Double oldValue,
-            Double newValue, Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
+    public void pointDataUpdated(@Arg(ArgEnum.deviceName) String deviceName, String pointName, String oldValue,
+            String newValue, Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point.data")
-    public void pointDataAdded(@Arg(ArgEnum.deviceName) String deviceName, String pointName, Double value,
+    public void pointDataAdded(@Arg(ArgEnum.deviceName) String deviceName, String pointName, String value,
             Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
 
 }

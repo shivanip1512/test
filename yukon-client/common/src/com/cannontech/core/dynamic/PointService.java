@@ -8,6 +8,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.user.YukonUserContext;
 
 public interface PointService {
 
@@ -34,14 +35,14 @@ public interface PointService {
     LiteState getCurrentStateForNonStatusPoint(LitePoint lp, Set<Signal> signals);
 
     /**
-     * Sends point data.
+     * Sends point data to dispatch.
      */
-    void sendPointData(int pointId, double value, LiteYukonUser user);
+    void addPointData(int pointId, double value, YukonUserContext context);
 
     /**
      * Finds and deletes point data by pointId, value and timestamp.
      */
-    void deletePointData(int pointId, double value, Instant timestamp, LiteYukonUser user);
+    void deletePointData(int pointId, double value, Instant timestamp, YukonUserContext context);
 
     /**
      * Updates point data with the new point value.
@@ -49,6 +50,6 @@ public interface PointService {
      * - Finds and deletes point data by pointId, value and timestamp.
      * - Sends new point data to dispatch. The new point data contains new value and original timestamp. 
      */
-    void updatePointData(int pointId, double oldValue, double newValue, Instant timestamp, LiteYukonUser user);
+    void updatePointData(int pointId, double oldValue, double newValue, Instant timestamp, YukonUserContext context);
     
 }

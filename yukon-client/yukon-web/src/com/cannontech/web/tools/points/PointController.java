@@ -467,7 +467,7 @@ public class PointController {
 
             newPointValue = backingBean.getValue();
         }
-        pointService.sendPointData(backingBean.getPointId(), newPointValue, userContext.getYukonUser());
+        pointService.addPointData(backingBean.getPointId(), newPointValue, userContext);
 
         response.setContentType("application/json");
         response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));

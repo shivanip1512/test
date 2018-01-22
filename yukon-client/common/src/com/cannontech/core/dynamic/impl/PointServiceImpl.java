@@ -1,11 +1,14 @@
 package com.cannontech.core.dynamic.impl;
 
+import java.util.Date;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
@@ -17,15 +20,17 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityTagHolder;
+import com.cannontech.core.service.PointFormattingService;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class PointServiceImpl implements PointService {
@@ -36,6 +41,9 @@ public class PointServiceImpl implements PointService {
     @Autowired private IDatabaseCache cache;
     @Autowired private PointDao pointDao;
     @Autowired private PointEventLogService eventLog;
+    @Autowired private PointFormattingService pointFormattingService;
+    
+    private static final Logger log = YukonLogManager.getLogger(PointServiceImpl.class);
     
     @Override
     public LiteState getCurrentStateForNonStatusPoint(LitePoint lp) {
@@ -83,7 +91,7 @@ public class PointServiceImpl implements PointService {
 
     @Transactional
     @Override
-    public void sendPointData(int pointId, double value, LiteYukonUser user) {
+    public void addPointData(int pointId, double value, YukonUserContext context) {
         PointValueQualityTagHolder pd = asyncDynamicDataSource.getPointValueAndTags(pointId);
         PointData data = new PointData();
         data.setId(pointId);
@@ -94,42 +102,97 @@ public class PointServiceImpl implements PointService {
         data.setValue(value);
         data.setPointQuality(PointQuality.Manual);
         data.setStr("Manual change occurred from " + CtiUtilities.getUserName());
-        data.setUserName(user.getUsername());
-        asyncDynamicDataSource.putValue(data);
+        data.setUserName(context.getYukonUser().getUsername());
 
         LitePoint point = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPaobjectID());
-       // eventLog.pointDataAdded(pao.getPaoName(), point.getPointName(), value, data.getTimeStamp(), user);
+        String formattedValue = pointFormattingService.getValueString(data, Format.VALUE, context);
+        
+        logPointDataAction("Adding", pao, point, new Instant(data.getMillis()), formattedValue, null);
+        
+        asyncDynamicDataSource.putValue(data);
+        
+        eventLog.pointDataAdded(pao.getPaoName(), point.getPointName(), formattedValue, data.getTimeStamp(),
+            context.getYukonUser());
     }
 
     @Transactional
     @Override
-    public void updatePointData(int pointId, double oldValue, double newValue, Instant timestamp, LiteYukonUser user) {
-        rawPointHistoryDao.deletePointData(pointId, oldValue, timestamp);
-
-        PointValueQualityHolder pd = asyncDynamicDataSource.getPointValue(pointId);
+    public void updatePointData(int pointId, double oldValue, double newValue, Instant timestamp,
+            YukonUserContext context) {
+        
+        LitePoint point = pointDao.getLitePoint(pointId);
         PointData data = new PointData();
         data.setId(pointId);
         data.setTime(timestamp.toDate());
         data.setPointQuality(PointQuality.Manual);
         data.setValue(newValue);
-        data.setType(pd.getPointType().getPointTypeId());
+        data.setType(point.getPointType());
         data.setTagsPointMustArchive(true);
         data.setStr(CtiUtilities.getUserName() + " updated point data.");
-        asyncDynamicDataSource.putValue(data);
-
-        LitePoint point = pointDao.getLitePoint(pointId);
+        
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPaobjectID());
-      //  eventLog.pointDataUpdated(pao.getPaoName(), point.getPointName(), oldValue, newValue, timestamp.toDate(), user);
+        String formattedNewValue = pointFormattingService.getValueString(data, Format.VALUE, context);
+        String formattedOldValue = getFormattedValue(point, oldValue, timestamp, context);
+                
+        logPointDataAction("Updating", pao, point, timestamp, formattedNewValue, formattedOldValue);
+        
+        rawPointHistoryDao.deletePointData(pointId, oldValue, timestamp);
+        asyncDynamicDataSource.putValue(data);
+        
+        eventLog.pointDataUpdated(pao.getPaoName(), point.getPointName(), formattedOldValue, formattedNewValue,
+            timestamp.toDate(), context.getYukonUser());
     }
 
     @Transactional
     @Override
-    public void deletePointData(int pointId, double value, Instant timestamp, LiteYukonUser user) {
-        rawPointHistoryDao.deletePointData(pointId, value, timestamp);
-
+    public void deletePointData(int pointId, double value, Instant timestamp, YukonUserContext context) {
         LitePoint point = pointDao.getLitePoint(pointId);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPaobjectID());
-       // eventLog.pointDataDeleted(pao.getPaoName(), point.getPointName(), value, timestamp.toDate(), user);
+        String formattedValue = getFormattedValue(point, value, timestamp, context);
+        logPointDataAction("Deleting", pao, point, timestamp, formattedValue, null);
+        rawPointHistoryDao.deletePointData(pointId, value, timestamp);
+
+        eventLog.pointDataDeleted(pao.getPaoName(), point.getPointName(), formattedValue, timestamp.toDate(),
+            context.getYukonUser());
+    }
+    
+    private void logPointDataAction(String action, LiteYukonPAObject pao, LitePoint point, Instant timestamp,
+            String newValue, String oldValue) {
+        String pointInfo = action + " historical point data for [" + pao.getLiteID() + "] " + pao.getPaoName() + " ["
+            + point.getLiteID() + "] " + point.getPointName() + " "
+            + timestamp.toDateTime().toString("MM/dd/YYYY HH:mm:ss") + " new value=" + newValue;
+        if (oldValue != null) {
+            pointInfo += " old value=" + oldValue;
+        }
+        log.debug(pointInfo);
+    }
+    
+    /**
+     * Format point data value for event logging.
+     */
+    private String getFormattedValue(LitePoint point, double value, Instant timestamp, YukonUserContext context) {
+        return pointFormattingService.getValueString(new PointValueHolder() {
+            @Override
+            public int getId() {
+                return point.getPointID();
+            }
+
+            @Override
+            public Date getPointDataTimeStamp() {
+                return timestamp.toDate();
+            }
+
+            @Override
+            public int getType() {
+                return point.getPointType();
+            }
+
+            @Override
+            public double getValue() {
+                return value;
+            }
+
+        }, Format.VALUE, context);
     }
 }
