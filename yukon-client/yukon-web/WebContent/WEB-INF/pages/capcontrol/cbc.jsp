@@ -290,21 +290,22 @@
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </c:if>
-            <tags:sectionContainer2 nameKey="attributeMapping">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".categoryName" valueClass="js-attribute-mapping-name">
-                        <c:choose>
-                            <c:when test="${!empty attributeMapping}">
-                                ${fn:escapeXml(attributeMapping.categoryName)}
-                            </c:when>
-                            <c:otherwise>
-                                <span class="empty-list"><i:inline key="yukon.common.none.choice" /></span>
-                            </c:otherwise>
-                        </c:choose>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </tags:sectionContainer2>
-            
+            <c:if test="${supportsAttributeMapping}">
+                <tags:sectionContainer2 nameKey="attributeMapping">
+                    <tags:nameValueContainer2>
+                        <tags:nameValue2 nameKey=".categoryName" valueClass="js-attribute-mapping-name">
+                            <c:choose>
+                                <c:when test="${!empty attributeMapping}">
+                                    ${fn:escapeXml(attributeMapping.categoryName)}
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="empty-list"><i:inline key="yukon.common.none.choice" /></span>
+                                </c:otherwise>
+                            </c:choose>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </tags:sectionContainer2>
+            </c:if>
             </div>
             </cti:displayForPageEditModes>
         </div>

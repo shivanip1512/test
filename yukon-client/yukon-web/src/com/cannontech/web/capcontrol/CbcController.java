@@ -32,6 +32,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
@@ -270,8 +271,11 @@ public class CbcController {
             HeartbeatConfiguration heartbeat = cbcService.getCBCHeartbeatConfigForDevice(cbc);
             model.addAttribute("heartbeatConfig", heartbeat);
         }
-        DeviceConfigCategory attMapping = cbcService.getAttributeMappingForDevice(cbc);
-        model.addAttribute("attributeMapping", attMapping);
+        if (paoDefinitionDao.isCategoryTypeSupportedByPaoType(cbc.getPaoType(), CategoryType.CBC_ATTRIBUTE_MAPPING)) {
+            model.addAttribute("supportsAttributeMapping", true);
+            DeviceConfigCategory attMapping = cbcService.getAttributeMappingForDevice(cbc);
+            model.addAttribute("attributeMapping", attMapping);
+        }
 
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
         model.addAttribute("logicalTypes", CapControlCBC.getLogicalTypes());

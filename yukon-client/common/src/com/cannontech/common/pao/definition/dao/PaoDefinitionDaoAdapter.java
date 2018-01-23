@@ -10,6 +10,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -197,6 +198,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 
     @Override
     public void load() {
+        throw new UnsupportedOperationException("not implemented"); 
+    }
+
+    @Override
+    public boolean isCategoryTypeSupportedByPaoType(PaoType paoType, CategoryType catType) {
         throw new UnsupportedOperationException("not implemented"); 
     }
 }

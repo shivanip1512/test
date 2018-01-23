@@ -431,10 +431,15 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     @Override
     public boolean isDnpConfigurationType(PaoType paoType) {
+        return isCategoryTypeSupportedByPaoType(paoType, CategoryType.DNP);
+    }
+    
+    @Override
+    public boolean isCategoryTypeSupportedByPaoType(PaoType paoType, CategoryType catType) {
         return paoCategoryMap.get(paoType)
                 .stream()
                 .map(Category::getType)
-                .anyMatch(CategoryType.DNP::equals);
+                .anyMatch(catType::equals);
     }
     
     

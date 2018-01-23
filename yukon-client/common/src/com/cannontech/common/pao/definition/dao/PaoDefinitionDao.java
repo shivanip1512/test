@@ -11,6 +11,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -218,4 +219,12 @@ import com.google.common.collect.SetMultimap;
      * the start-up.
      */
     void load();
+
+    /**
+     * Checks whether the given category type is supported by the pao type
+     * @param paoType
+     * @param catType
+     * @return true if supported
+     */
+    boolean isCategoryTypeSupportedByPaoType(PaoType paoType, CategoryType catType);
 }
