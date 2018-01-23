@@ -441,7 +441,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromRemot
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 101 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
 
     // Validate generated RegulatorEvent messages
@@ -495,7 +495,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromRemot
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 0 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
 
     // Validate generated RegulatorEvent messages
@@ -550,7 +550,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromAutoM
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 101 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
     {   // update the keep alive
         CtiPointDataMsg keepAlive( 4200, 101.0, NormalQuality, AnalogPointType );
@@ -581,7 +581,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromAutoM
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 102 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
     {   // update the keep alive
         CtiPointDataMsg keepAlive( 4200, 102.0, NormalQuality, AnalogPointType );
@@ -628,7 +628,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromAutoM
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 103 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
     requestMsg = capController.requestMessages[3].get();
 
@@ -690,7 +690,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromAutoM
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 32767 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
     {   // update the keep alive
         CtiPointDataMsg keepAlive( 4200, 32767.0, NormalQuality, AnalogPointType );
@@ -721,7 +721,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromAutoM
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 0 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
     {   // update the keep alive
         CtiPointDataMsg keepAlive( 4200, 0.0, NormalQuality, AnalogPointType );
@@ -768,7 +768,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableKeepAliveFromAutoM
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 1 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
     requestMsg = capController.requestMessages[3].get();
 
@@ -908,7 +908,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableRemoteControlFromR
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 101 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
 
     // Validate generated RegulatorEvent messages
@@ -1005,7 +1005,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableRemoteControlFromA
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 101 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 /*
     requestMsg = capController.requestMessages[1];
 
@@ -1013,7 +1013,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_EnableRemoteControlFromA
 
     BOOST_CHECK_EQUAL( 1007, requestMsg->DeviceId() );      // PaoID of the 'KeepAlive' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 102 select pointid 4200",
-                       requestMsg->CommandString() );       // 'putvalue analog <offset % 10000> <value>'
+                       requestMsg->CommandString() );       // The new value and the ID of the 'KeepAlive' LitePoint
 
     requestMsg = capController.requestMessages[2];
 
@@ -1254,7 +1254,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_RaiseSetPoint_Success)
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 1208 select pointid 7000",
-                       requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
+                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
 
     // Validate generated RegulatorEvent messages
     {
@@ -1328,7 +1328,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_LowerSetPoint_Success)
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 1193 select pointid 7000",
-                       requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
+                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
 
 
     // Validate generated RegulatorEvent messages
@@ -1389,7 +1389,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_LowerSetPoint_Cogenerati
 
     BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 1193 select pointid 7000",
-                       requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
+                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
 
 
     // Validate generated RegulatorEvent messages
@@ -1450,7 +1450,7 @@ BOOST_AUTO_TEST_CASE(test_PhaseOperatedVoltageRegulator_LowerSetPoint_Cogenerati
 
     BOOST_CHECK_EQUAL( 1022, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
     BOOST_CHECK_EQUAL( "putvalue analog value 1208 select pointid 7200",
-                       requestMsg->CommandString() );   // Offset of the 'SetPoint' LitePoint and the new value
+                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
 
 
     // Validate generated RegulatorEvent messages
