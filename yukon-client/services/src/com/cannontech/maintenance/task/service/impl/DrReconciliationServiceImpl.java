@@ -25,8 +25,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LMGroupDaoImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
+import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
-import com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl;
 import com.cannontech.maintenance.task.dao.DrReconciliationDao;
 import com.cannontech.maintenance.task.service.DrReconciliationService;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -46,7 +46,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private DrReconciliationDao drReconciliationDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
-    @Autowired private ExpressComReportedAddressDaoImpl expressComDaoImpl;
+    @Autowired private ExpressComReportedAddressDao expressComDaoImpl;
     @Autowired private LMGroupDaoImpl lmGroupDaoImpl;
     @Autowired private PaoDao paoDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;

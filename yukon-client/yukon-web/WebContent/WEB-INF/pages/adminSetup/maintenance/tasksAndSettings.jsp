@@ -20,16 +20,18 @@
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
-                        <c:set var="showDuplicatePointDataPruning" value="${false}"/>
+                        <c:set var="developementMode" value="${false}"/>
                         <c:forEach var="task" items="${tasks}">
                             <cti:msg2 var="taskNameMsg" key=".${task.taskName}.title"/>
                             <c:if test="${task.taskName=='DUPLICATE_POINT_DATA_PRUNING'}">
                                 <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                                    <c:set var="showDuplicatePointDataPruning" value="${true}"/>
+                                    <c:set var="developementMode" value="${true}"/>
                                 </cti:checkGlobalRolesAndProperties>
                             </c:if>
-                            <c:if test="${showDuplicatePointDataPruning=='true'|| 
-                                        task.taskName!='DUPLICATE_POINT_DATA_PRUNING'}" >
+                            
+                            <!-- This check is to be removed after 7.0.0 build -->
+                            <c:if test="${developementMode || (task.taskName!='DUPLICATE_POINT_DATA_PRUNING' &&
+                                            task.taskName!='DR_RECONCILIATION')}">
                                 <tr>
                                     <cti:url var="editTaskDetailsUrl" value="/admin/maintenance/editTask" >
                                         <cti:param name="taskId" value="${task.taskId}"/>

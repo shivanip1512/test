@@ -14,7 +14,10 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
@@ -25,6 +28,7 @@ public class MaintenanceScheduler {
     private static final Logger log = YukonLogManager.getLogger(MaintenanceScheduler.class);
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired MaintenanceTaskRunner taskRunner;
     @Autowired MaintenanceTaskService maintenanceService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
@@ -87,6 +91,16 @@ public class MaintenanceScheduler {
                 } else {
                     log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
                     List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
+                    boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
+                    //TODO Remove this check after 7.0.1 build
+                    if(!devMode) {
+                        for(MaintenanceTask task : tasks) {
+                            if(MaintenanceTaskType.DR_RECONCILIATION.equals(task.getMaintenanceTaskType())) {
+                                tasks.remove(task);
+                                break;
+                            }
+                        }
+                    }
                     if (tasks.size() == 0) {
                         rescheduleScheduler = true;
                     } else {

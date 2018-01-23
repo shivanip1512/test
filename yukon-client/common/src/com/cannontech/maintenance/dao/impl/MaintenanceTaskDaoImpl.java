@@ -193,7 +193,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         @Override
         public void extractValues(MapSqlParameterSource p, MaintenanceTask maintenanceTask) {
             p.addValue("TaskName", maintenanceTask.getTaskName());
-            p.addValue("Disabled", YNBoolean.YES);
+            p.addValue("Disabled", YNBoolean.valueOf(maintenanceTask.isDisabled()));
         }
 
         @Override
@@ -230,6 +230,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
         taskTypes.forEach(taskType -> {
             MaintenanceTask task = new MaintenanceTask();
             task.setTaskName(taskType);
+            task.setDisabled(taskType.isDisabled().getBoolean());
             maintenanceTaskTemplate.save(task);
         });
     }

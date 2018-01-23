@@ -10,6 +10,8 @@
     <bean class="com.cannontech.maintenance.task.MaintenanceTaskRunner"/>
     <bean class="com.cannontech.maintenance.task.impl.DuplicatePointDataPruningTask"/>
     <bean class="com.cannontech.maintenance.task.impl.PointDataPruningTask"/>
+    <bean class="com.cannontech.maintenance.task.impl.DrReconciliationTask"/>
     <bean class="com.cannontech.maintenance.service.impl.MaintenanceTaskServiceImpl"/>
     <bean class="com.cannontech.maintenance.task.service.impl.PointDataPruningServiceImpl"/>
+    <bean class="com.cannontech.maintenance.task.service.impl.DrReconciliationServiceImpl"/>
 </beans>
