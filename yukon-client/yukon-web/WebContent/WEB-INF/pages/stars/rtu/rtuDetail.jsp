@@ -162,34 +162,6 @@
                         </tags:nameValueContainer2>
                     </tags:sectionContainer2>
                 </c:if>
-                <c:set var="heartbeatConfig" value="${rtu.heartbeatConfig}"/>
-                <c:if test="${not empty heartbeatConfig}">
-                    <tags:sectionContainer2 nameKey="heartbeatConfiguration" styleClass="stacked-lg">
-                        <tags:nameValueContainer2>
-                            <c:if test="${empty dnpConfig}">
-                                <tags:nameValue2 nameKey=".heartbeatConfig">
-                                    ${fn:escapeXml(heartbeatConfig.name)}
-                                </tags:nameValue2>
-                            </c:if>
-                            <c:set var="heartbeatClass" value="${dnpConfig == null ? 'dn' : ''}"/>
-                            <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode"
-                                rowClass="${heartbeatClass}">
-                                <c:if test="${heartbeatConfig.mode != null}">
-                                    <i:inline key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.${heartbeatConfig.mode}"/>
-                                </c:if>
-                            </tags:nameValue2>
-                            <c:set var="heartbeatModeClass" value="${heartbeatConfig.mode == null || heartbeatConfig.mode == 'DISABLED' ? 'dn' : ''}"/>
-                            <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod"
-                                rowClass="${heartbeatModeClass}">
-                                ${heartbeatConfig.period}
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue"
-                                rowClass="${heartbeatModeClass}">
-                                ${heartbeatConfig.value}
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                    </tags:sectionContainer2>
-                </c:if>
             </div>
             
         </div>

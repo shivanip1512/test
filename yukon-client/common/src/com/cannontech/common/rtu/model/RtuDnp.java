@@ -28,8 +28,7 @@ public class RtuDnp implements YukonPao {
     private DeviceDirectCommSettings deviceDirectCommSettings;
     private List<DisplayableDevice> childDevices;
     private DNPConfiguration dnpConfig;
-    private HeartbeatConfiguration heartbeatConfig;
-
+  
     public Integer getId() {
         return id;
     }
@@ -127,14 +126,6 @@ public class RtuDnp implements YukonPao {
         this.dnpConfig = dnpConfig;
     }
 
-    public HeartbeatConfiguration getHeartbeatConfig() {
-        return heartbeatConfig;
-    }
-
-    public void setHeartbeatConfig(HeartbeatConfiguration heartbeatConfig) {
-        this.heartbeatConfig = heartbeatConfig;
-    }
-    
     public boolean isScanWindow() {
         return this.deviceWindow.getWinClose() != 0 || this.deviceWindow.getWinOpen() != 0;
     }
