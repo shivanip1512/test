@@ -42,6 +42,18 @@ LitePoint Policy::getPointByAttribute( const Attribute & attribute ) const
     return *point;
 }
 
+LitePoint Policy::getPointByAttribute( const Attribute & attribute, const CtiCCTwoWayPoints & twoWayPoints ) const
+{
+    auto point = twoWayPoints.findPointByAttribute( attribute );
+
+    if ( ! point )
+    {
+        throw FailedAttributeLookup( attribute );
+    }
+
+    return *point;
+}
+
 double Policy::getValueByAttribute( const Attribute & attribute ) const
 {
     double currentValue;
@@ -52,6 +64,18 @@ double Policy::getValueByAttribute( const Attribute & attribute ) const
     }
 
     return currentValue;
+}
+
+double Policy::getValueByAttribute( const Attribute & attribute, const CtiCCTwoWayPoints & twoWayPoints ) const
+{
+    auto value = twoWayPoints.findPointValueByAttribute(attribute);
+
+    if ( ! value )
+    {
+        throw UninitializedPointValue( attribute );
+    }
+
+    return *value;
 }
 
 void Policy::updatePointData( const CtiPointDataMsg & message )

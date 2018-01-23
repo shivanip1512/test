@@ -12,7 +12,7 @@ namespace CapControl    {
 CbcHeartbeatPolicy::OperatingMode CbcHeartbeatPolicy::getOperatingMode( CtiCCTwoWayPoints & twoWayPoints )
 try
 {
-    double value = twoWayPoints.getPointValueByAttribute( Attribute::ScadaOverrideMode );
+    double value = getValueByAttribute( Attribute::ScadaOverrideMode, twoWayPoints );
 
     return ( value == 1.0 )
                 ? ScadaOverride
@@ -44,7 +44,7 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
 
     if ( getOperatingMode( twoWayPoints ) == ScadaOverride )
     {
-        actions.emplace_back( makeStandardDigitalControl( twoWayPoints.getPointByAttribute( Attribute::ScadaOverrideClear ),
+        actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideClear, twoWayPoints ),
                                                           "CBC Heartbeat Clear" ) );
     }
 
@@ -53,7 +53,7 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
 
 Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const Attribute & attribute, const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints )
 {
-    LitePoint point = twoWayPoints.getPointByAttribute( attribute );
+    LitePoint point = getPointByAttribute( attribute, twoWayPoints );
 
     return
     {
@@ -133,7 +133,7 @@ Policy::Actions PulsedCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveVal
         actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideCountdownTimer, keepAliveValue, twoWayPoints ) );
     }
     
-    actions.emplace_back( makeStandardDigitalControl( twoWayPoints.getPointByAttribute( Attribute::ScadaOverrideEnable ),
+    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideEnable, twoWayPoints ),
                                                       "CBC Heartbeat Pulse" ) );
 
     return actions;
@@ -142,7 +142,7 @@ Policy::Actions PulsedCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveVal
 long PulsedCbcHeartbeatPolicy::readCurrentValue( CtiCCTwoWayPoints & twoWayPoints )
 try
 {
-    return twoWayPoints.getPointValueByAttribute( Attribute::ScadaOverrideCountdownTimer );
+    return getValueByAttribute( Attribute::ScadaOverrideCountdownTimer, twoWayPoints );
 }
 catch ( UninitializedPointValue & )
 {

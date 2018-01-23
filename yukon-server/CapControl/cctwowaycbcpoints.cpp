@@ -337,6 +337,16 @@ const LitePoint & CtiCCTwoWayPoints::getPointById( long pointId ) const
     return invalidPoint;
 }
 
+boost::optional<LitePoint> CtiCCTwoWayPoints::findPointByAttribute(const Attribute & attribute) const
+{
+    if( const auto pointId = getPointIdByAttribute(attribute) )
+    {
+        return Cti::mapFind( _points, pointId );
+    }
+
+    return boost::none;
+}
+
 long CtiCCTwoWayPoints::getPointIdByAttribute( const Attribute & attribute ) const
 {
     return  Cti::mapFindOrDefault( _attributeIds, attribute, 0 );

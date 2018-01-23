@@ -97,6 +97,7 @@ public:
 
     const LitePoint & getPointByAttribute( const Attribute & attribute ) const;
     const LitePoint & getPointById( long pointId ) const;
+    boost::optional<LitePoint> findPointByAttribute(const Attribute & attribute) const;
     long getPointIdByAttribute( const Attribute & attribute ) const;
     double getPointValueByAttribute(const Attribute & attribute, const double sentinel = 0) const;
     boost::optional<double> findPointValueByAttribute(const Attribute & attribute) const;

@@ -8,6 +8,7 @@
 #include "msg_pcrequest.h"
 
 class CtiPointDataMsg;
+class CtiCCTwoWayPoints;
 
 
 namespace Cti           {
@@ -22,8 +23,14 @@ struct Policy
 
     void loadAttributes( AttributeService & service, const long paoID );
 
+    //  Old style point lookup that relies on the internal _pointValues map
     LitePoint getPointByAttribute( const Attribute & attribute ) const;
+    //  New style point lookup that relies on twoWayPoints
+    LitePoint getPointByAttribute( const Attribute & attribute, const CtiCCTwoWayPoints & twoWayPoints ) const;
+    //  Old style point lookup that relies on the internal _pointValues map
     double    getValueByAttribute( const Attribute & attribute ) const;
+    //  New style point lookup that relies on twoWayPoints
+    double    getValueByAttribute( const Attribute & attribute, const CtiCCTwoWayPoints & twoWayPoints ) const;
 
     void updatePointData( const CtiPointDataMsg & message );
 
