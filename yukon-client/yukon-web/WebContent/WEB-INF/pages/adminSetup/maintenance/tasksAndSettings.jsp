@@ -4,52 +4,50 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <cti:msgScope paths="modules.adminSetup.maintenance.dataPruning,yukon.web.modules.adminSetup.maintenance">
-<tags:sectionContainer2 nameKey="dataPruning" styleClass="stacked-md">
-    <div class="stacked">
-        <em><i:inline key=".tasksInfo"/></em>
-    </div>
-    <div class="column-10-14 clearfix">
-        <div class="column one">
-            <table class="compact-results-table has-alerts">
-                <thead>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th><i:inline key=".tableHeader.scheduleName"/></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tfoot></tfoot>
-                <tbody>
-                    <c:set var="showDuplicatePointDataPruning" value="${false}"/>
+    <tags:sectionContainer2 nameKey="dataPruning" styleClass="stacked-md">
+        <div class="stacked">
+            <em><i:inline key=".tasksInfo"/></em>
+        </div>
+        <div class="column-10-14 clearfix">
+            <div class="column one">
+                <table class="compact-results-table has-alerts">
+                    <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th><i:inline key=".tableHeader.scheduleName"/></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:set var="showDuplicatePointDataPruning" value="${false}"/>
                         <c:forEach var="task" items="${tasks}">
-                          <cti:msg2 var="taskNameMsg" key=".${task.taskName}.title"/>
+                            <cti:msg2 var="taskNameMsg" key=".${task.taskName}.title"/>
                             <c:if test="${task.taskName=='DUPLICATE_POINT_DATA_PRUNING'}">
-                              <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                                <c:set var="showDuplicatePointDataPruning" value="${true}"/>
-                              </cti:checkGlobalRolesAndProperties>
+                                <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+                                    <c:set var="showDuplicatePointDataPruning" value="${true}"/>
+                                </cti:checkGlobalRolesAndProperties>
                             </c:if>
                             <c:if test="${showDuplicatePointDataPruning=='true'|| 
-                                          task.taskName!='DUPLICATE_POINT_DATA_PRUNING'}" >
-                              <tr>
-                                <cti:url var="editTaskDetailsUrl" value="/admin/maintenance/editTask" >
-                                  <cti:param name="taskId" value="${task.taskId}"/>
-                                  <cti:param name="taskName" value="${task.taskName}"/>
-                                </cti:url>
-                                <td>
-                                  <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
-                                     arguments="${taskNameMsg}"/>"><i class="icon icon-script"></i></a>
-                                </td>
-                                <td>
-                                  <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
-                                     arguments="${taskNameMsg}"/>">
-                                  <i:inline key=".${task.taskName}.title"/>
-                                  </a>
-                                </td>
-                                <td class="fr">
-                                  <tags:switch checked="${not task.disabled}" name="toggle" data-task-id="${task.taskId}"
-                                               classes="js-toggleDataPruningJobEnabled toggle-sm"/>
-                                </td>
-                              </tr>
+                                        task.taskName!='DUPLICATE_POINT_DATA_PRUNING'}" >
+                                <tr>
+                                    <cti:url var="editTaskDetailsUrl" value="/admin/maintenance/editTask" >
+                                        <cti:param name="taskId" value="${task.taskId}"/>
+                                        <cti:param name="taskName" value="${task.taskName}"/>
+                                    </cti:url>
+                                    <td>
+                                        <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
+                                           arguments="${taskNameMsg}"/>"><i class="icon icon-script"></i></a>
+                                    </td>
+                                    <td>
+                                        <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
+                                           arguments="${taskNameMsg}"/>"><i:inline key=".${task.taskName}.title"/></a>
+                                    </td>
+                                    <td class="fr">
+                                        <tags:switch checked="${not task.disabled}" name="toggle" data-task-id="${task.taskId}"
+                                                     classes="js-toggleDataPruningJobEnabled toggle-sm"/>
+                                    </td>
+                                </tr>
                             </c:if>
                         </c:forEach>
                     </tbody>
@@ -77,5 +75,6 @@
                     </form:form>
                 </tags:boxContainer2>
             </div>
-</tags:sectionContainer2>
+        </div>
+    </tags:sectionContainer2>
 </cti:msgScope>
