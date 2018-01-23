@@ -199,8 +199,9 @@ public class TdcDisplayController {
     }
     
     @RequestMapping(value = "data-viewer/save", method = RequestMethod.POST)
-    public String saveCustomView(@ModelAttribute("display") Display display, ModelMap model, BindingResult result, HttpServletResponse resp,             
+    public String saveCustomView(@ModelAttribute("display") Display display, ModelMap model, BindingResult result, HttpServletResponse resp,
                                  @RequestParam(value="pointIds", required=false, defaultValue="") String pointIds, FlashScope flash) {
+        PageEditMode pageEditMode = display.getDisplayId()!= 0 ? PageEditMode.EDIT : PageEditMode.CREATE;
         List<Integer> pointList = new ArrayList<Integer>();
         if (!pointIds.isEmpty()) {
             List<String> pointIdStrings = Lists.newArrayList(pointIds.split(","));
@@ -211,7 +212,7 @@ public class TdcDisplayController {
         customDisplayValidator.validate(display, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", PageEditMode.EDIT);
+            model.addAttribute("mode", pageEditMode);
             model.addAttribute("displayData", generateDisplayDataFromPoints(pointList));
             return "data-viewer/customDisplay.jsp";
         }
@@ -229,7 +230,7 @@ public class TdcDisplayController {
         } catch (DuplicateException e) {
             result.rejectValue("name", "yukon.web.error.nameConflict");
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", PageEditMode.EDIT);
+            model.addAttribute("mode", pageEditMode);
             model.addAttribute("displayData", generateDisplayDataFromPoints(pointList));
             return "data-viewer/customDisplay.jsp";
         }
