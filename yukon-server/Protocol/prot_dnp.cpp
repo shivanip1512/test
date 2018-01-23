@@ -750,7 +750,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
             }
         }
 
-        const int IINStatusPointOffset_RestartBit = 2001;
+        const int IINStatusPointOffset_RestartBit = 9999;
 
         // Add the point message for the restart bit.
         CtiPointDataMsg* pt_msg =

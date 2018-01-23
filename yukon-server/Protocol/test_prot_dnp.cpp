@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         {
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         {
@@ -474,7 +474,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         {
@@ -484,7 +484,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -1030,7 +1030,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
 
             BOOST_CHECK_EQUAL(pd->getTags(), 0);
         }
@@ -1186,7 +1186,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_empty_time_block)
             CtiPointDataMsg *pd = point_list[3];
             BOOST_CHECK_EQUAL(pd->getValue(), 0);
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
             BOOST_CHECK_EQUAL(pd->getTags(), 0);
         }
 
@@ -1316,7 +1316,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_invalid_time_object)
 
             BOOST_CHECK_EQUAL(pd->getValue(), 0);
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
             BOOST_CHECK_EQUAL(pd->getTags(), 0);
         }
 
@@ -1470,7 +1470,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -1650,7 +1650,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -1939,7 +1939,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -2095,7 +2095,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -2251,7 +2251,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -2429,7 +2429,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -2717,7 +2717,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -2842,7 +2842,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_reversed_start_stop)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -2994,7 +2994,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();
@@ -3260,7 +3260,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         {
@@ -3270,7 +3270,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         {
@@ -3280,7 +3280,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
             BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
 
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
+            BOOST_CHECK_EQUAL(pd->getId(), 9999);
         }
 
         auto string_list = dnp.getInboundStrings();

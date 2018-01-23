@@ -373,7 +373,7 @@
         <name>Control Ignored Indicator</name>
         <stategroup value="TrueFalse"/>
     </point>
-    <point offset="2001" type="Status">
+    <point offset="9999" type="Status">
         <name>Device Reset Indicator</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="TrueFalse"/>
