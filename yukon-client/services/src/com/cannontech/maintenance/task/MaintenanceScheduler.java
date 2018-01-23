@@ -92,7 +92,7 @@ public class MaintenanceScheduler {
                     log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
                     List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
                     boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
-                    //TODO Remove this check after 7.0.1 build
+                    //TODO Remove this check after 7.0.0 build
                     if(!devMode) {
                         for(MaintenanceTask task : tasks) {
                             if(MaintenanceTaskType.DR_RECONCILIATION.equals(task.getMaintenanceTaskType())) {
