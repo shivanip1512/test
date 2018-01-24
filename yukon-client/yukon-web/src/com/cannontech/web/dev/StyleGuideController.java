@@ -97,6 +97,11 @@ public class StyleGuideController {
         return "styleguide/timelines.jsp";
     }
     
+    @RequestMapping("/styleguide/sliders")
+    public String sliders() {
+        return "styleguide/sliders.jsp";
+    }
+    
     @RequestMapping("/styleguide/steppers")
     public String steppers() {
         return "styleguide/steppers.jsp";

@@ -43,6 +43,8 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/pickers"/>">Pickers</a></li>
             <c:set var="clazz" value="${page == 'timelines' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/timelines"/>">Time Lines</a></li>
+            <c:set var="clazz" value="${page == 'sliders' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/sliders"/>">Sliders</a></li>
             <c:set var="clazz" value="${page == 'steppers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/steppers"/>">Steppers</a></li>
             <c:set var="clazz" value="${page == 'date-pickers' ? 'selected' : ''}"/>
