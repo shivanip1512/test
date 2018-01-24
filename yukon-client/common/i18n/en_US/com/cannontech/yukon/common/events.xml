@@ -784,6 +784,8 @@
     <entry key="yukon.common.events.system.notifications.subscribe">{1} subscribed to {2} {3} notifications for {4}.</entry>
     <entry key="yukon.common.events.system.notifications.update">{1} updated notification to {2} {3} notifications for {4}.</entry>
     <entry key="yukon.common.events.system.notifications.unsubscribe">{1} unsubscribed from notifications for {2}.</entry>
+    <entry key="yukon.common.events.system.notifications.subscriptionsRemoved">All notification subscriptions removed for {2} {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.notifications.subscriptionsRemoved.3">Identifier</entry>
     
 </properties>
 

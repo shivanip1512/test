@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutionException;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.user.YukonUserContext;
 
 public interface DeviceDataMonitorService {
     
@@ -34,7 +35,7 @@ public interface DeviceDataMonitorService {
      * This method should be the only way a caller should delete a DeviceDataMonitor. Do not directly call DeviceDataMonitorDao.deleteMonitor
      *  1) Deletes monitor from the database
      */
-    void delete(DeviceDataMonitor monitor);
+    void delete(DeviceDataMonitor monitor, YukonUserContext userContext);
     
     /**
      * This method should be the only way a caller should create a DeviceDataMonitor. Do not directly call DeviceDataMonitorDao.save.

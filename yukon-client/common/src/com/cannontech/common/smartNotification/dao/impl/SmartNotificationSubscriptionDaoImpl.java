@@ -89,7 +89,19 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
 
         jdbcTemplate.update(sql);
     }
-
+    
+    @Override
+    public int deleteSubscriptions(SmartNotificationEventType type, String value) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE sns");
+        sql.append("FROM SmartNotificationSub sns");
+        sql.append("JOIN SmartNotificationSubParam snsp ON sns.SubscriptionId = snsp.SubscriptionId");
+        sql.append("WHERE Type").eq_k(type);
+        sql.append("AND Value").eq(value);
+        
+        return jdbcTemplate.update(sql);
+    }
+    
     @Override
     public SmartNotificationSubscription getSubscription(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());

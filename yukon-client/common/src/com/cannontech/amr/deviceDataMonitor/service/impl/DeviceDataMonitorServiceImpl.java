@@ -23,6 +23,8 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.jms.RequestTemplateImpl;
@@ -31,15 +33,16 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.user.YukonUserContext;
 
 public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
-    
     
     @Autowired private DeviceDataMonitorDao deviceDataMonitorDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private ConfigurationSource configSource;
     @Autowired private UserSubscriptionDao userSubscriptionDao;
+    @Autowired private SmartNotificationSubscriptionService smartNotificationSubscriptionService;
 
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
     private JmsTemplate jmsTemplate;
@@ -67,9 +70,12 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     }
     
     @Override
-    public void delete(DeviceDataMonitor monitor) {
+    public void delete(DeviceDataMonitor monitor, YukonUserContext userContext) {
         userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.DEVICE_DATA_MONITOR, monitor.getId());
-        deviceDataMonitorDao.deleteMonitor(monitor.getId());
+        smartNotificationSubscriptionService.deleteSubscriptions(SmartNotificationEventType.DEVICE_DATA_MONITOR, 
+                                                                 monitor.getId().toString(), 
+                                                                 monitor.getName(), userContext);
+        deviceDataMonitorDao.deleteMonitor(monitor);
         dbChangeManager.processDbChange(DbChangeType.DELETE, DbChangeCategory.DEVICE_DATA_MONITOR, monitor.getId());
     }
     
@@ -127,7 +133,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         jmsTemplate.setDeliveryPersistent(false);
         
         statusRequestTemplate =
-            new RequestTemplateImpl<DeviceDataMonitorStatusResponse>("DEVICE_DATA_MONITOR_CALC_STATUS",
+            new RequestTemplateImpl<>("DEVICE_DATA_MONITOR_CALC_STATUS",
                 configSource, connectionFactory, statusRequestQueueName, false, true);
     }
 }

@@ -1,5 +1,6 @@
 package com.cannontech.common.smartNotification.service;
 
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.user.YukonUserContext;
 
@@ -17,6 +18,12 @@ public interface SmartNotificationSubscriptionService {
      * If id is 0 creates subscription otherwise updates subscription.
      */
     int saveSubscription(SmartNotificationSubscription subscription, YukonUserContext userContext);
+
+    /**
+     * Delete all subscriptions with the specified type and identifier. The friendly name and user are supplied for 
+     * event logging.
+     */
+    void deleteSubscriptions(SmartNotificationEventType type, String identifier, String name, YukonUserContext userContext);
     
 }
 

@@ -18,6 +18,12 @@ public interface SmartNotificationSubscriptionDao {
     void deleteSubscription(int id);
     
     /**
+     * Delete all subscriptions with the specified type and reference value.
+     * @return the number of subscriptions deleted.
+     */
+    int deleteSubscriptions(SmartNotificationEventType type, String value);
+    
+    /**
      * Returns subscription.
      */
     SmartNotificationSubscription getSubscription(int id);

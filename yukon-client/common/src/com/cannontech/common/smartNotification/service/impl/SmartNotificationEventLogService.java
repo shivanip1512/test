@@ -22,4 +22,9 @@ public interface SmartNotificationEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "system.notifications")
     public void unsubscribe(@Arg(ArgEnum.username) LiteYukonUser user,
                             @Arg(ArgEnum.eventType) String eventType);
+    
+    @YukonEventLog(category = "system.notifications")
+    public void subscriptionsRemoved(@Arg(ArgEnum.username) LiteYukonUser user,
+                                     @Arg(ArgEnum.eventType) String eventType,
+                                     String identifier);
 }

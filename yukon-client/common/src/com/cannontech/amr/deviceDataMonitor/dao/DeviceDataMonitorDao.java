@@ -20,5 +20,5 @@ public interface DeviceDataMonitorDao {
 
     public List<DeviceDataMonitor> getAllMonitors();
 
-    public boolean deleteMonitor(int monitorId);
+    public boolean deleteMonitor(DeviceDataMonitor monitor);
 }

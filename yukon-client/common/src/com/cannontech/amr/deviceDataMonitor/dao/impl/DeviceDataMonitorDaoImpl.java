@@ -21,8 +21,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.userpage.dao.UserSubscriptionDao;
-import com.cannontech.common.userpage.model.UserSubscription.SubscriptionType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -46,7 +44,6 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private UserSubscriptionDao userSubscriptionDao;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorDaoImpl.class);
     
     private SimpleTableAccessTemplate<DeviceDataMonitor> monitorTemplate;
@@ -54,12 +51,12 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
     @PostConstruct
     public void init() throws Exception {
-        monitorTemplate = new SimpleTableAccessTemplate<DeviceDataMonitor>(yukonJdbcTemplate, nextValueHelper);
+        monitorTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         monitorTemplate.setTableName("DeviceDataMonitor");
         monitorTemplate.setPrimaryKeyField("MonitorId");
         monitorTemplate.setAdvancedFieldMapper(monitorFieldMapper);
 
-        processorTemplate = new SimpleTableAccessTemplate<DeviceDataMonitorProcessor>(yukonJdbcTemplate, nextValueHelper);
+        processorTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         processorTemplate.setTableName("DeviceDataMonitorProcessor");
         processorTemplate.setPrimaryKeyField("ProcessorId");
         processorTemplate.setParentForeignKeyField("MonitorId", CascadeMode.DELETE_ALL_CHILDREN_BEFORE_UPDATE);
@@ -144,21 +141,20 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
 
     @Override
     @Transactional
-    public boolean deleteMonitor(int monitorId) {
-        DeviceDataMonitor monitor = getMonitorById(monitorId);
-        
+    public boolean deleteMonitor(DeviceDataMonitor monitor) {
         /* remove the violation device group */
         DeviceGroup monitorViolationGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName());
         StoredDeviceGroup monitorViolationStoredGroup = deviceGroupEditorDao.getStoredGroup(monitorViolationGroup);
         deviceGroupEditorDao.removeGroup(monitorViolationStoredGroup);
         log.info("Deleted device data monitor violations group: " + monitorViolationStoredGroup.getFullName());
         
+        // Remove the monitor
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM DeviceDataMonitor");
-        sql.append("WHERE MonitorId").eq(monitorId);
+        sql.append("WHERE MonitorId").eq(monitor.getId());
         int rowsAffected = yukonJdbcTemplate.update(sql);
         log.info("Deleted device data monitor: " + monitor.getName());
-        userSubscriptionDao.deleteSubscriptionsForItem(SubscriptionType.DEVICE_DATA_MONITOR, monitorId);
+        
         return rowsAffected > 0;
     }
 

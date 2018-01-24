@@ -1,17 +1,20 @@
 package com.cannontech.common.smartNotification.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class SmartNotificationSubscriptionServiceImpl implements SmartNotificationSubscriptionService {
-
+    private static final Logger log = YukonLogManager.getLogger(SmartNotificationSubscriptionServiceImpl.class);
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired private SmartNotificationEventLogService smartNotificationEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -46,5 +49,18 @@ public class SmartNotificationSubscriptionServiceImpl implements SmartNotificati
         smartNotificationEventLogService.unsubscribe(userContext.getYukonUser(),
                                                      messageSourceAccessor.getMessage(subscription.getType().getFormatKey()));
         subscriptionDao.deleteSubscription(id);
+    }
+    
+    @Transactional
+    @Override
+    public void deleteSubscriptions(SmartNotificationEventType type, String identifier, String name, YukonUserContext userContext) {
+        //All notification subscriptions removed for Device Data Monitor buggybug by ats.
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String eventTypeString = messageSourceAccessor.getMessage(type.getFormatKey());
+        log.info("Deleting all notification subscriptions for " + eventTypeString + " " + name);
+        subscriptionDao.deleteSubscriptions(type, identifier);
+        smartNotificationEventLogService.subscriptionsRemoved(userContext.getYukonUser(), 
+                                                              eventTypeString, 
+                                                              name);
     }
 }

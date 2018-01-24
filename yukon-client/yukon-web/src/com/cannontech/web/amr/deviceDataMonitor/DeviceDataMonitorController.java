@@ -1,8 +1,6 @@
 package com.cannontech.web.amr.deviceDataMonitor;
 
-import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.ATTRIBUTE;
-import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.POINT;
-import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.STATE_GROUP;
+import static com.cannontech.web.amr.deviceDataMonitor.DeviceViolationEnum.*;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
@@ -235,10 +233,10 @@ public class DeviceDataMonitorController {
     }
     
     @RequestMapping(method = RequestMethod.POST, value = "deviceDataMonitor/delete")
-    public String delete(int monitorId, FlashScope flash) {
+    public String delete(int monitorId, YukonUserContext userContext, FlashScope flash) {
         
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
-        monitorService.delete(monitor);
+        monitorService.delete(monitor, userContext);
         MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable(baseKey + ".deleted", monitor.getName());
         flash.setConfirm(deleteMessage);
         return "redirect:/meter/start";
