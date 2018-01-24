@@ -338,7 +338,8 @@ public class HistoricalReadingsController {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         model.addAttribute("pointId", pointId);
-        model.addAttribute("points", getLimitedPointData(context, order, orderBy, pointId));
+        List<PointValueHolder> points = getLimitedPointData(context, order, orderBy, pointId);
+        model.addAttribute("points", points);
         
         String timestampHeader = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
         SortableColumn timestamp = SortableColumn.of(order == Order.FORWARD ? Direction.desc : Direction.asc, 
@@ -349,6 +350,10 @@ public class HistoricalReadingsController {
         SortableColumn value = SortableColumn.of(order == Order.FORWARD ? Direction.desc : Direction.asc, 
                 orderBy != OrderBy.TIMESTAMP, valueHeader, "value");
         model.addAttribute("value", value);
+        //Find the latest timestamp
+        Date maxDate = points.stream().map(PointValueHolder::getPointDataTimeStamp).max(Date::compareTo).get();
+        model.addAttribute("maxTimestamp", maxDate);
+        
     }
     
     /**

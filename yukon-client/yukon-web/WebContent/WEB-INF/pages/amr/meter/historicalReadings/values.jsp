@@ -25,7 +25,7 @@
     </thead>
     <tfoot></tfoot>
     <tbody>
-        <c:forEach var="point" items="${points}" varStatus="status">
+        <c:forEach var="point" items="${points}">
             <cti:uniqueIdentifier var="id" />
             <tr>
                 <td><cti:pointValueFormatter format="DATE" value="${point}" /></td>
@@ -34,7 +34,7 @@
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <c:choose>
-                                <c:when test="${status.index == 0}">
+                                <c:when test="${point.pointDataTimeStamp == maxTimestamp}">
                                     <cti:msg2 var="disabledTitle" key=".editDisabled"/>
                                     <span title="${disabledTitle}"><cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" disabled="true"/></span>
                                     <span title="${disabledTitle}"><cm:dropdownOption key="components.button.delete.label" icon="icon-cross" disabled="true"/></span>
