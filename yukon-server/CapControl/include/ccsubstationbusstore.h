@@ -152,6 +152,9 @@ public:
 
     } CtiCapControlMapType;
 
+    bool testDatabaseConnectivity() const;
+    void processAnyDBChangesOrResets( const CtiTime & rightNow );
+
     CtiCCSubstationBus_vec* getCCSubstationBuses(unsigned long secondsFrom1901, bool checkReload = false);
     const CtiCCSubstation_vec& getCCSubstations();
     CtiCCState_vec* getCCCapBankStates(unsigned long secondsFrom1901);

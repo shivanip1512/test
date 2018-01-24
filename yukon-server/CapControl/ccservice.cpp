@@ -178,14 +178,15 @@ void CtiCCService::Run()
     do
     {
         if ( trouble )
+        {
             Sleep(1000);
+        }
 
         {
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
             CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-            CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds(), true);
-            if ( !store->isValid() )
+            if ( ! store->testDatabaseConnectivity() )
             {
                 trouble = true;
                 CTILOG_ERROR(dout, "Unable to obtain connection to database...will keep trying.");

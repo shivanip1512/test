@@ -525,6 +525,18 @@ void CtiCapController::controlLoop()
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
+                try
+                {
+                    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+                    //  Any DBChanges or resets to process?
+                    store->processAnyDBChangesOrResets( Now );
+                }
+                catch ( ... )
+                {
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                }
+
                 // this updates the current point registration status and sends appropriate registration messages to dispatch
                 // -- manually does the work that the CtiConnection::preWork() virtual used to do pre yukon 6.0
                 if ( getDispatchConnection()->valid() )

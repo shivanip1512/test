@@ -175,6 +175,80 @@ void CtiCCSubstationBusStore::stopThreads()
     }
 }
 
+/*
+    This function is called at startup to evaluate the connection to and the ability to read data from
+        the database.  We try to grab a count of all the Yukon PAOs, if the connection or query fails
+        we catch any exception and return false.  If we successfully read a number we make sure it's at least
+        non-zero, since the default created SYSTEM device will always be present.
+*/
+bool CtiCCSubstationBusStore::testDatabaseConnectivity() const
+{
+    try
+    {
+        static const std::string sql = "SELECT COUNT(*) AS PAOCount FROM YukonPAObject";
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader     rdr( connection, sql );
+
+        rdr.execute();
+
+        if ( rdr() )
+        {
+            const long paoCount = rdr["PAOCount"].as<long>();
+
+            return paoCount > 0;
+        }
+    }
+    catch (...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+    }
+
+    return false;
+}
+
+/* 
+    This function is the location where all the DBChange messages and global resets that need to
+        occur are actually processed and the database is hit.
+*/
+void CtiCCSubstationBusStore::processAnyDBChangesOrResets( const CtiTime & rightNow )
+{
+    CtiLockGuard<CtiCriticalSection>  guard( getMux() );
+
+    if ( ! _isvalid && rightNow >= _lastdbreloadtime + 30 )
+    {
+        // is not valid and has been at least 30 seconds from the last db reload
+        //  so we don't do this a bunch of times in a row on multiple updates
+        
+        reset();
+        clearDBReloadList();
+    }
+    else if ( rightNow >= _lastindividualdbreloadtime + _DB_RELOAD_WAIT )   // _DB_RELOAD_WAIT defaults to 5 seconds
+    {
+        if ( ! _isvalid )       // if the whole thing is invalid just reload all from scratch
+        {
+            reset();
+            clearDBReloadList();
+        }
+        else                    // else process the individual dbchange items in the list
+        {
+            checkDBReloadList();
+        }
+    }
+    else if ( _2wayFlagUpdate )
+    {
+        dumpAllDynamicData();
+        _2wayFlagUpdate = false;
+    }
+
+    if ( _reloadfromamfmsystemflag )
+    {
+        checkAMFMSystemForUpdates();
+    }
+
+    setStoreRecentlyReset( false );
+}
+
 /*---------------------------------------------------------------------------
     getSubstationBuses
 
@@ -184,37 +258,6 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(unsigned l
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
-    if (!checkReload)
-    {
-        return _ccSubstationBuses;
-    }
-
-    if( (!_isvalid) && (secondsFrom1901 >= _lastdbreloadtime.seconds()+30) )
-    {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
-        reset();
-        clearDBReloadList();
-    }
-    else if (secondsFrom1901 >= _lastindividualdbreloadtime.seconds() + _DB_RELOAD_WAIT)
-    {
-        checkDBReloadList();
-        if (!_isvalid)
-        {
-            reset();
-            clearDBReloadList();
-        }
-    }
-    else if (_2wayFlagUpdate)
-    {
-        dumpAllDynamicData();
-        _2wayFlagUpdate = false;
-    }
-
-    if( _reloadfromamfmsystemflag )
-    {
-        checkAMFMSystemForUpdates();
-    }
-
-    setStoreRecentlyReset(false);
     return _ccSubstationBuses;
 }
 
@@ -227,16 +270,6 @@ CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(unsigned long secondsFrom1
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
-    if (!checkReload)
-    {
-        return _ccGeoAreas;
-    }
-
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
-    {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
-        reset();
-    }
-
     return _ccGeoAreas;
 }
 
@@ -248,16 +281,6 @@ CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(unsigned long secondsFrom1
 CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(unsigned long secondsFrom1901, bool checkReload)
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
-
-    if (!checkReload)
-    {
-        return _ccSpecialAreas;
-    }
-
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
-    {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
-        reset();
-    }
 
     return _ccSpecialAreas;
 }
@@ -282,11 +305,6 @@ const CtiCCSubstation_vec& CtiCCSubstationBusStore::getCCSubstations()
 CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(unsigned long secondsFrom1901)
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
-
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+90 )
-    {//is not valid and has been at 1.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
-        reset();
-    }
 
     return _ccCapBankStates;
 }
