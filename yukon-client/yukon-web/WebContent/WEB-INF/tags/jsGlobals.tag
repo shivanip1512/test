@@ -75,7 +75,8 @@ var yg = {
         ajaxError: '<cti:msg2 key="yukon.web.error.genericMainMessage"/>',
         next: '<cti:msg2 key="yukon.web.components.button.next.label"/>',
         back: '<cti:msg2 key="yukon.web.components.button.back.label"/>',
-        create: '<cti:msg2 key="yukon.web.components.button.create.label"/>'
+        create: '<cti:msg2 key="yukon.web.components.button.create.label"/>',
+        noneChoice: '<cti:msg2 key="yukon.common.none.choice"/>'
 
     },
     

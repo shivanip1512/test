@@ -275,7 +275,7 @@ public class CbcServiceImpl implements CbcService {
                 configuration = configurationDao.getDeviceConfiguration(cbc.getDnpConfigId());
                 heartbeatConfig = configurationDao.getHeartbeatConfiguration(configuration);
             } catch (EmptyResultDataAccessException e) {
-                //let it remain null and get the default
+                log.error("No device configuration found with id " + cbc.getDnpConfigId());
             }
         }
         
@@ -290,7 +290,7 @@ public class CbcServiceImpl implements CbcService {
                 DeviceConfiguration configuration = configurationDao.getDeviceConfiguration(cbc.getDnpConfigId());
                 attributeMapping = configuration.getAttributeMappingCategory();
             } catch (EmptyResultDataAccessException e) {
-                
+                log.error("No device configuration found with id " + cbc.getDnpConfigId());
             }
         }
         return attributeMapping;

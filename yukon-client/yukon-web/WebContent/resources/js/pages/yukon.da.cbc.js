@@ -77,17 +77,17 @@ yukon.da.cbc = (function () {
                     yukon.ui.block(heartbeatFields, 200);
                     $.get(url)
                     .done(function (data) {
-                        if(data.deviceConfiguration.dnpCategory != null) {
+                        if (data.deviceConfiguration.dnpCategory != null) {
                             data.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
                                 var fieldName = field.fieldName;
                                 var value = field.value;
-                                if(fieldName == 'timeOffset') {
+                                if (fieldName == 'timeOffset') {
                                     value = data.timeOffsetValue;
                                 }
                                 dnpFields.find('.js-dnp-' + fieldName).text(value);
                             });
                         }
-                        if(data.deviceConfiguration.heartbeatCategory != null) {
+                        if (data.deviceConfiguration.heartbeatCategory != null) {
                             $('.js-heartbeat-field').removeClass('dn');
                             data.deviceConfiguration.heartbeatCategory.deviceConfigurationItems.forEach(function (field) {
                                 var fieldName = field.fieldName;
@@ -99,7 +99,7 @@ yukon.da.cbc = (function () {
                                 heartbeatFields.find('.js-heartbeat-' + fieldName).text(value);
                             });
                         }
-                        if(data.deviceConfiguration.attributeMappingCategory != null) {
+                        if (data.deviceConfiguration.attributeMappingCategory != null) {
                             $('.js-attribute-mapping-name').text(data.deviceConfiguration.attributeMappingCategory.categoryName);
                         }
                     }).always(function () {
@@ -108,7 +108,7 @@ yukon.da.cbc = (function () {
                     });
                 } else {
                     $('.js-heartbeat-field').addClass('dn');
-                    $('.js-attribute-mapping-name').text("(none)");
+                    $('.js-attribute-mapping-name').text(yg.text.noneChoice);
                 }
 
             });
