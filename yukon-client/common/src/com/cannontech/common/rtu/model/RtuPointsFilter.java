@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.rtu;
+package com.cannontech.common.rtu.model;
 
 import java.util.List;
 

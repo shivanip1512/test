@@ -26,59 +26,59 @@
         <tr>
             <tags:sort column="${pointName}" />
             <th></th>
-            <tags:sort column="${pointValue}" />
-            <tags:sort column="${dateTime}" />
+            <th><cti:msg key="yukon.web.modules.operator.rtuDetail.pointValue"/></th>
+            <th><cti:msg key="yukon.web.modules.operator.rtuDetail.dateTime"/></th>
             <tags:sort column="${offset}" />
             <tags:sort column="${deviceName}" />
             <tags:sort column="${pointType}" />
         </tr>
         <tbody>
-            <c:forEach var="pointMap" items="${points}">
-                <c:if test="${not empty pointMap.value}">
-                    <c:forEach var="point" items="${pointMap.value}">
-                        <tr>
-                            <td>
-                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
-                                <a href="${pointUrl}">${fn:escapeXml(point.name)}</a>
-                            </td>
-                            <td class="state-indicator">
-                                <c:choose>
-                                    <c:when test="${point.format == '{rawValue|lastControlReason}'}">
-                                        <cti:pointStatus pointId="${point.pointId}"
-                                            format="{rawValue|lastControlReasonColor}" />
-                                    </c:when>
-                                    <c:when test="${point.format == '{rawValue|ignoredControlReason}'}">
-                                        <cti:pointStatus pointId="${point.pointId}"
-                                            format="{rawValue|ignoredControlReasonColor}" />
-                                    </c:when>
-                                    <c:otherwise>
-                                        <cti:pointStatus pointId="${point.pointId}"
-                                            statusPointOnly="${true}" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td class="wsnw">
-                                <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
-                            </td>
-                            <td class="wsnw">
-                                <tags:historicalValue pao="${rtu}" pointId="${point.pointId}" />
-                            </td>
-                            <td>
-                                ${point.pointIdentifier.offset}
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                                <i:inline key="yukon.common.point.pointType.${point.type}"/>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </c:if>
-            </c:forEach>
+            <c:if test="${not empty details.resultList}">
+                <c:forEach var="point" items="${details.resultList}">
+                    <tr>
+                        <td>
+                            <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                <a href="${pointUrl}">${fn:escapeXml(point.pointName)}</a>
+                        </td>
+                        <td class="state-indicator">
+                            <c:choose>
+                                <c:when test="${point.format == '{rawValue|lastControlReason}'}">
+                                    <cti:pointStatus pointId="${point.pointId}"
+                                         format="{rawValue|lastControlReasonColor}" />
+                                </c:when>
+                                <c:when test="${point.format == '{rawValue|ignoredControlReason}'}">
+                                    <cti:pointStatus pointId="${point.pointId}"
+                                        format="{rawValue|ignoredControlReasonColor}" />
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:pointStatus pointId="${point.pointId}"
+                                        statusPointOnly="${true}" />
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td class="wsnw">
+                            <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
+                        </td>
+                        <td class="wsnw">
+                            <tags:historicalValue pao="${rtu}" pointId="${point.pointId}" />
+                        </td>
+                        <td>
+                            ${point.paoPointIdentifier.pointIdentifier.offset}
+                        </td>
+                        <td>
+                            <cti:paoDetailUrl paoId="${point.paoPointIdentifier.paoIdentifier.paoId}">
+                                <c:if test="${!empty point.deviceName}">${fn:escapeXml(point.deviceName)}</c:if>
+                            </cti:paoDetailUrl>
+                        </td>
+                        <td>
+                            <i:inline key="${point.paoPointIdentifier.pointIdentifier.pointType}"/>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:if>
         </tbody>
     </table>
-    <%-- <tags:pagingResultsControls result="${points}" adjustPageCount="true"/> --%>
-
+    <tags:pagingResultsControls result="${details}" adjustPageCount="true" thousands="true"/>
 </cti:msgScope>
 
 <script>

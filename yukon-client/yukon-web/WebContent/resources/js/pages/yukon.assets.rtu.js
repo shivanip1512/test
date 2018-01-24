@@ -59,7 +59,7 @@ yukon.assets.rtu= (function () {
                 form.ajaxSubmit({
                     success: function(data, status, xhr, $form) {
                         tableContainer.html(data);
-                        tableContainer.data('url', yukon.url('/stars/rtu/' + rtuId + 'allPoints?' + form.serialize()));
+                        tableContainer.data('url', yukon.url('/stars/rtu/' + rtuId + '/allPoints?' + form.serialize()));
                     }
                 });
             });

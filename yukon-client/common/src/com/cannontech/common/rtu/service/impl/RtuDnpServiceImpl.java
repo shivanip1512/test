@@ -3,18 +3,25 @@ package com.cannontech.common.rtu.service.impl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
-import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.rtu.dao.RtuDnpdao;
+import com.cannontech.common.rtu.dao.RtuDnpdao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
+import com.cannontech.common.rtu.model.RtuPointDetail;
+import com.cannontech.common.rtu.model.RtuPointsFilter;
 import com.cannontech.common.rtu.service.RtuDnpService;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.device.DNPBase;
@@ -28,6 +35,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DeviceConfigurationDao configurationDao;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private RtuDnpdao rtuDnpdao;
     
     @Override
     public RtuDnp getRtuDnp(int id) {
@@ -55,4 +63,30 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         rtu.setChildDevices(devices);
         return rtu;
     }
+    
+    @Override
+    public SearchResults<RtuPointDetail> getRtuPointDetail(int rtuId, RtuPointsFilter filter, Direction direction,
+            SortBy sortBy, PagingParameters paging) {
+        List<Integer> paoIds = deviceDao.getChildDevices(rtuId).stream()
+                                                            .map(p -> p.getPaoIdentifier().getPaoId())
+                                                            .collect(Collectors.toList());
+        if (filter.getDeviceIds() != null) {
+            paoIds = paoIds.stream()
+                           .filter(paoId -> filter.getDeviceIds().contains(paoId))
+                           .collect(Collectors.toList());
+        }
+
+        return rtuDnpdao.getRtuPointDetail(paoIds, filter.getPointNames(), filter.getTypes(), direction, sortBy, paging);
+    }
+    
+    @Override
+    public List<RtuPointDetail> getRtuPointDetail(int rtuId) {
+        List<Integer> paoIds = deviceDao.getChildDevices(rtuId).stream()
+                                                            .map(p -> p.getPaoIdentifier().getPaoId())
+                                                            .collect(Collectors.toList());
+
+
+        return rtuDnpdao.getRtuPointDetail(paoIds);
+    }
+    
 }
