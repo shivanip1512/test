@@ -42,7 +42,9 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant start = new Instant();
         log.info("Point data deletion started at " + start.toDate());
         while (isEnoughTimeAvailable(processEndTime) && numDeleted != 0) {
+            log.debug("Point data deletion started");
             numDeleted = pointDataPruningDao.deletePointData(deleteUpto);
+            log.debug("Point data deletion ended by deleting " + numDeleted + " records");
             // Total number of entries deleted during Point data deletion task.
             totalEntriesDeleted += numDeleted;
         }

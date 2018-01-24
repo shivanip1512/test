@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,7 +142,8 @@ public class MaintenanceScheduler {
         } else {
             secondsUntilRun = maintenanceService.getSecondsUntilRun();
         }
-        log.info("Maintenance task will start after " + secondsUntilRun / 60 + " minutes");
+        log.info("Maintenance task will start after "
+            + DurationFormatUtils.formatDuration(secondsUntilRun * 1000, "HH:mm:ss.SSS", true) + " hours");
         return secondsUntilRun;
     }
     
