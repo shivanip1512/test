@@ -175,7 +175,8 @@ public class OutageMonitorEditorController extends MultiActionController {
         if (StringUtils.isBlank(name)) {
             editError = "Name required.";
         } else if (!DeviceGroupUtil.isValidName(name)) {
-            editError = "Name may not contain slashes.";
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            editError = accessor.getMessage("yukon.web.error.deviceGroupName.containsIllegalChars");
         } else if (isNewMonitor && outageMonitorDao.processorExistsWithName(name)) { // new monitor, check name
             editError = "Outage Monitor with name \"" + name + "\" already exists.";
         } else if (!isNewMonitor && !outageMonitor.getOutageMonitorName().equals(name) && outageMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name

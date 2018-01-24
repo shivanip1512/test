@@ -92,7 +92,7 @@ public class TamperFlagEditorController {
     // UPDATE
     @RequestMapping("update")
     public String update(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws Exception, ServletException {
-
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String editError = null;
         int tamperFlagMonitorId = ServletRequestUtils.getIntParameter(request, "tamperFlagMonitorId", 0);
         String name = ServletRequestUtils.getStringParameter(request, "name", null);
@@ -116,14 +116,14 @@ public class TamperFlagEditorController {
         if (StringUtils.isBlank(name)) {
             editError = "Name required.";
         } else if (!DeviceGroupUtil.isValidName(name)) {
-            editError = "Name may not contain slashes.";
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            editError = accessor.getMessage("yukon.web.error.deviceGroupName.containsIllegalChars");
         } else if (isNewMonitor && tamperFlagMonitorDao.processorExistsWithName(name)) { // new monitor, check name
             editError = "Tamper Flag Monitor with name \"" + name + "\" already exists.";
         } else if (!isNewMonitor && !tamperFlagMonitor.getTamperFlagMonitorName().equals(name) 
                 && tamperFlagMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
             editError = "Tamper Flag Monitor with name \"" + name + "\" already exists.";
         } else if (deviceGroupService.findGroupName(deviceGroupName) == null) {
-            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
         }

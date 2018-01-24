@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
@@ -127,6 +128,9 @@ public class ValidationMonitorEditorController {
             editError = "Validation Monitor with name \"" + name + "\" already exists.";
         } else if (!isNewMonitor && !validationMonitor.getName().equals(name) && validationMonitorDao.processorExistsWithName(name)) { /* Existing monitor, new name, check name. */
             editError = "Validation Monitor with name \"" + name + "\" already exists.";
+        } else if (!DeviceGroupUtil.isValidName(name)) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            editError = accessor.getMessage("yukon.web.error.deviceGroupName.containsIllegalChars");
         } else if (deviceGroupService.findGroupName(deviceGroupName) == null) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");

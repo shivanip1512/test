@@ -39,6 +39,7 @@ import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -92,6 +93,9 @@ public class PorterResponseMonitorController {
         public void doValidation(PorterResponseMonitor monitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name","yukon.web.error.required");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 50);
+            if (!DeviceGroupUtil.isValidName(monitor.getName())) {
+                errors.rejectValue("name", "yukon.web.error.deviceGroupName.containsIllegalChars");
+            }
         }
     };
 
@@ -101,6 +105,9 @@ public class PorterResponseMonitorController {
             
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.required");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 50);
+            if (!DeviceGroupUtil.isValidName(monitor.getName())) {
+                errors.rejectValue("name", "yukon.web.error.deviceGroupName.containsIllegalChars");
+            }
             if (deviceGroupService.findGroupName(monitor.getGroupName()) == null) {
                 errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
             }
