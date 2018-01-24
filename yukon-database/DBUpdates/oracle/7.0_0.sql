@@ -476,6 +476,13 @@ ALTER TABLE DmvTestExecution
       ON DELETE CASCADE;
 /* End YUK-17764 */
 
+/* Start YUK-17815 */
+UPDATE POINT
+SET POINTOFFSET = 9999
+WHERE POINTTYPE = 'Status' 
+AND POINTNAME = 'Device Reset Indicator';
+/* End YUK-17815 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
