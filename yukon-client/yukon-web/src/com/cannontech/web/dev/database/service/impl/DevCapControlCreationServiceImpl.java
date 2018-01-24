@@ -326,7 +326,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                              .filter(item -> !threePhaseCbcTypes.contains(cbcType) ? (item.getMonitorPoint().getPointName().equalsIgnoreCase("Average Line Voltage")
                                      || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase B")
                                      || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C")) :
-                                     item.getMonitorPoint().getPointName().equalsIgnoreCase("Va Secondary")
+                                     item.getMonitorPoint().getPointName().equalsIgnoreCase("Average Line Voltage")
                                      || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vb Secondary")
                                      || item.getMonitorPoint().getPointName().equalsIgnoreCase("Vc Secondary"))
                              .map(CCMonitorBankList::getPointId)
