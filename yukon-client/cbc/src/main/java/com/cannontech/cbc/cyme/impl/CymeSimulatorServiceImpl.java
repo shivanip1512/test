@@ -246,7 +246,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
             logger.info("CYME IVVC Simulator is initializing.");
             simulationDelay = configurationSource.getDuration("CYME_SIMULATION_DELAY", new Duration(5000));
         } else {
-            logger.info("CYME IVVC Simulator is disabled and will not run.");
+            logger.debug("CYME IVVC Simulator is disabled and will not run.");
         }
     }
     
@@ -425,7 +425,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
         PaoIdentifier busIdentifier = paoDao.getYukonPao(subbusId).getPaoIdentifier();
         
         if (!isCymeCparmEnabled()) {
-            logger.warn("Cyme is not enabled. Not processing refresh request.");
+            logger.debug("Cyme is not enabled. Not processing refresh request.");
             return;
         } else if (busIdentifier.getPaoType() != PaoType.CAP_CONTROL_SUBBUS) {
             logger.warn("Received refresh system request for a non-subbus type. Canceling refresh.");
