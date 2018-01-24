@@ -227,7 +227,7 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
                 sql.append("    (SELECT MAX(ChangeId) ");
                 sql.append("    FROM ReportedAddressExpressCom RAEC2"); 
                 sql.append("    WHERE RAEC2.DeviceId = RAEC.DeviceId  AND RAEC.LatestTimestamp = RAEC2.Timestamp)");
-                sql.append("AND DeviceId").in(subList);
+                sql.append("AND RAEC.DeviceId").in(subList);
                 return sql;
             }
         };

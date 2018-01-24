@@ -40,6 +40,7 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.UserUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class DrReconciliationServiceImpl implements DrReconciliationService {
@@ -147,38 +148,32 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             if (addressUsage.contains("s")) {
                 if (lmGroupAddressing.getSpid() != lcrAddress.getSpid()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
-                    break;
                 }
             }
             if (addressUsage.contains("g")) {
                 if (lmGroupAddressing.getGeo() != lcrAddress.getGeo()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
-                    break;
                 }
             }
             if (addressUsage.contains("b")) {
                 if (lmGroupAddressing.getSubstation() != lcrAddress.getSubstation()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
-                    break;
                 }
             }
             if (addressUsage.contains("f")) {
                 if ((lmGroupAddressing.getFeeder() & lcrAddress.getFeeder()) == 0) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
-                    break;
                 }
             }
             if (addressUsage.contains("z")) {
                 if (lmGroupAddressing.getZip() != lcrAddress.getZip()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
-                    break;
                 }
             }
             if (addressUsage.contains("u")) {
                 // Is user same as uda?
                 if (lmGroupAddressing.getUser() != lcrAddress.getUda()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
-                    break;
                 }
             }
             int program = 0;
@@ -268,7 +263,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     }
 
     private boolean isSuppressMessage() {
-        List<EnergyCompany> allEnergyCompanies = (List<EnergyCompany>) energyCompanyDao.getAllEnergyCompanies();
+        List<EnergyCompany> allEnergyCompanies = Lists.newArrayList(energyCompanyDao.getAllEnergyCompanies());
         for (EnergyCompany energyCompany : allEnergyCompanies) {
             boolean isSuppressMessage = ecSettingDao.getBoolean(
                 EnergyCompanySettingType.SUPPRESS_IN_OUT_SERVICE_MESSAGES, energyCompany.getId());
