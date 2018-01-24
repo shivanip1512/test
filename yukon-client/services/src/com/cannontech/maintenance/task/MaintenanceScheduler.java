@@ -1,5 +1,6 @@
 package com.cannontech.maintenance.task;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -92,13 +93,16 @@ public class MaintenanceScheduler {
                 } else {
                     log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
                     List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
-                    boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
+                    
                     // TODO Remove this check after 7.0.0 build
+                    boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
+                    Iterator<MaintenanceTask> iterator = tasks.iterator();
                     if (!devMode) {
-                        for (MaintenanceTask task : tasks) {
-                            if (MaintenanceTaskType.DR_RECONCILIATION ==task.getMaintenanceTaskType()) {
-                                tasks.remove(task);
-                                break;
+                        while (iterator.hasNext()) {
+                            MaintenanceTask task = iterator.next();
+                            if (MaintenanceTaskType.DR_RECONCILIATION == task.getMaintenanceTaskType()
+                                || MaintenanceTaskType.DUPLICATE_POINT_DATA_PRUNING == task.getMaintenanceTaskType()) {
+                                iterator.remove();
                             }
                         }
                     }
