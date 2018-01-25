@@ -41,11 +41,14 @@
   	<level value="warn"/>
   </logger>
   
+  <!-- Spring Web Services Client XML logging (sent and received). (ex. MultiSpeak/EIM) -->
   <logger name="org.springframework.ws.client.MessageTracing">
-    <level value="TRACE"/> 
+    <level value="DEBUG"/> 
   </logger>
+  
+  <!-- Spring Web Services Server XML logging (sent and received). (ex. MultiSpeak/EIM) -->
   <logger name="org.springframework.ws.server.MessageTracing">
-    <level value="TRACE"/> 
+    <level value="DEBUG"/> 
   </logger>
   
   <!-- Controls rfn comms logging to the Server\Log directory -->
