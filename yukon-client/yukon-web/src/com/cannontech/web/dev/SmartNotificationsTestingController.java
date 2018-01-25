@@ -193,7 +193,7 @@ public class SmartNotificationsTestingController {
             subscription.setId(0);
             subscription.setUserId(id);
             if (generateTestEmailAddresses) {
-                subscription.setRecipient(id + "@eaton.com");
+                subscription.setRecipient(id + "@eaton");
             }
             subscriptionService.saveSubscription(subscription, userContext);
         });
