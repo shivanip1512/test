@@ -28,4 +28,5 @@
     <bean id="ivvcAnalysisScenarioProcessor" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisScenarioProcessor"/>
     <bean id="ivvcAnalysisMessageService" class="com.cannontech.capcontrol.service.IvvcAnalysisMessageService"/>
     
+    <bean id="dmvTestDao" class="com.cannontech.capcontrol.dao.impl.DmvTestDaoImpl"/>    
 </beans>
