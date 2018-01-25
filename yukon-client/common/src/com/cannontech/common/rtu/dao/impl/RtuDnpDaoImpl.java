@@ -10,7 +10,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.rtu.dao.RtuDnpdao;
+import com.cannontech.common.rtu.dao.RtuDnpDao;
 import com.cannontech.common.rtu.model.RtuPointDetail;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -20,7 +20,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 
-public class RtuDnpDaoImpl implements RtuDnpdao {
+public class RtuDnpDaoImpl implements RtuDnpDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
@@ -70,27 +70,26 @@ public class RtuDnpDaoImpl implements RtuDnpdao {
         PagingResultSetExtractor<RtuPointDetail> rse = new PagingResultSetExtractor<>(start, count, rtuPointDetailMapper);
         jdbcTemplate.query(sql, rse);
         SearchResults<RtuPointDetail> retVal = new SearchResults<>();
-        retVal.setBounds(start, count, getRTUPointCount(paoIds));
+        retVal.setBounds(start, count, getRTUPointCount(paoIds, pointNames, types));
         retVal.setResultList(rse.getResultList());
         return retVal;
     }
 
-    private int getRTUPointCount(List<Integer> paoIds) {
+    private int getRTUPointCount(List<Integer> paoIds, List<String> pointNames,
+            List<PointType> types) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM Point P");
         sql.append("  JOIN YukonPaobject pao ON pao.PaobjectId = p.PaobjectId");
         sql.append("WHERE P.PAObjectID").in(paoIds);
+        if (types != null) {
+            sql.append("  AND PointType").in(types);
+        }
+        if (pointNames != null) {
+            sql.append("  AND PointName").in(pointNames);
+        }
 
         return jdbcTemplate.queryForInt(sql);
-    }
-
-    @Override
-    public List<RtuPointDetail> getRtuPointDetail(List<Integer> paoIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder(baseSql.getSql());
-        sql.append("WHERE P.PAObjectID").in(paoIds);
-        List <RtuPointDetail> rtuPointDetails = jdbcTemplate.query(sql, rtuPointDetailMapper);
-        return rtuPointDetails;
     }
 
 }

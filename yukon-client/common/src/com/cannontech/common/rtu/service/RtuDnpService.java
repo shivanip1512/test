@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.rtu.dao.RtuDnpdao.SortBy;
+import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.rtu.model.RtuPointDetail;
 import com.cannontech.common.rtu.model.RtuPointsFilter;

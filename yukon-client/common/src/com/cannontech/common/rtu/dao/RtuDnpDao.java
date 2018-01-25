@@ -8,7 +8,7 @@ import com.cannontech.common.rtu.model.RtuPointDetail;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.point.PointType;
 
-public interface RtuDnpdao {
+public interface RtuDnpDao {
 
     public enum SortBy{
         DEVICE_NAME("PAOName"),
@@ -42,11 +42,4 @@ public interface RtuDnpdao {
     SearchResults<RtuPointDetail> getRtuPointDetail(List<Integer> paoIds, List<String> pointNames,
             List<PointType> types, Direction direction, SortBy sortBy, PagingParameters paging);
 
-    /**
-     * 
-     * Returns the RTU Point detail.
-     * 
-     * @param paoIds - Id of pao
-     */
-    List<RtuPointDetail> getRtuPointDetail(List<Integer> paoIds);
 }
