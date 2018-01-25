@@ -160,7 +160,7 @@ void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus
     bus->setVerificationFlag(false);
     parentStation->addCCSubId( bus->getPaoId() );
     store->addSubBusToPaoMap(bus);
-    store->getCCSubstationBuses(0, false)->push_back(bus);
+    store->getCCSubstationBuses()->push_back(bus);
     bus->setDisableFlag(false);
     bus->setVerificationFlag(false);
     bus->setPerformingVerificationFlag(false);

@@ -155,11 +155,11 @@ public:
     bool testDatabaseConnectivity() const;
     void processAnyDBChangesOrResets( const CtiTime & rightNow );
 
-    CtiCCSubstationBus_vec* getCCSubstationBuses(unsigned long secondsFrom1901, bool checkReload = false);
+    CtiCCSubstationBus_vec* getCCSubstationBuses();
     const CtiCCSubstation_vec& getCCSubstations();
-    CtiCCState_vec* getCCCapBankStates(unsigned long secondsFrom1901);
-    CtiCCArea_vec* getCCGeoAreas(unsigned long secondsFrom1901, bool checkReload = false);
-    CtiCCSpArea_vec* getCCSpecialAreas(unsigned long secondsFrom1901, bool checkReload = false);
+    CtiCCState_vec* getCCCapBankStates();
+    CtiCCArea_vec* getCCGeoAreas();
+    CtiCCSpArea_vec* getCCSpecialAreas();
 
     static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();

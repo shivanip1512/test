@@ -344,7 +344,7 @@ void CtiCapController::messageSender()
                     getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg( subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified ));
                 }
 
-                for ( CtiCCAreaPtr currentArea : *store->getCCGeoAreas( 0, false ) )
+                for ( CtiCCAreaPtr currentArea : *store->getCCGeoAreas() )
                 {
                     if (currentArea->getAreaUpdatedFlag())
                     {
@@ -559,7 +559,7 @@ void CtiCapController::controlLoop()
                             CTILOG_INFO( dout, "Controller refreshing PEAK times" );
                         }
 
-                        for ( CtiCCSubstationBusPtr bus : *store->getCCSubstationBuses( Now.seconds(), true ) )
+                        for ( CtiCCSubstationBusPtr bus : *store->getCCSubstationBuses() )
                         {
                             const bool busPeakTime        = bus->isPeakTime( Now ),
                                        isIndividualFeeder = bus->getStrategy()->getMethodType()
@@ -885,7 +885,7 @@ void CtiCapController::controlLoop()
             {
                 CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
-                for ( auto & bus : *store->getCCSubstationBuses( CtiTime().seconds() ) )
+                for ( auto & bus : *store->getCCSubstationBuses() )
                 {
                     // skip busses with no strategy assigned, handle IVVC strategies elsewhere.
                     if ( bus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar
@@ -1541,7 +1541,7 @@ void CtiCapController::updateAllPointQualities(long quality)
     CTILOG_INFO(dout, "Updating CapControl Point Qualities to " << quality);
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     for(long i=0;i<ccSubstationBuses.size();i++)
     {
@@ -2598,7 +2598,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
                 if (disabled)
                 {
                     store->setVoltReductionSystemDisabled(true);
-                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
                     for(long i=0;i<ccAreas.size();i++)
                     {
                         CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
@@ -2611,7 +2611,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
                 else
                 {
                     store->setVoltReductionSystemDisabled(false);
-                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
                     for(long i=0;i<ccAreas.size();i++)
                     {
                         CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);

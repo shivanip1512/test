@@ -380,7 +380,7 @@ void CtiCCCommandExecutor::EnableFeeder()
 
     long feederID = _itemId;
     bool found = false;
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     for(long i=0;i<ccSubstationBuses.size();i++)
     {
@@ -438,7 +438,7 @@ void CtiCCCommandExecutor::DisableFeeder()
 
     long feederID = _itemId;
     bool found = false;
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     for(long i=0;i<ccSubstationBuses.size();i++)
     {
@@ -493,7 +493,7 @@ void CtiCCCommandExecutor::EnableCapBank()
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     long capBankID = _itemId;
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     for(long i=0;i<ccSubstationBuses.size();i++)
     {
@@ -565,7 +565,7 @@ void CtiCCCommandExecutor::DisableCapBank()
 
     long capBankID = _itemId;
     bool found = false;
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     for(long i=0;i<ccSubstationBuses.size();i++)
     {
@@ -1509,8 +1509,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
-    CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
+    CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas();
     const auto& ccStations = store->getCCSubstations();
 
     //Find the object type
@@ -1661,7 +1661,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     signals.clear();
 
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas()))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(ccStations))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(modifiedSubsList,
                                                                    CtiCCSubstationBusMsg::SubBusModified))->execute();
@@ -1925,7 +1925,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
     CtiCCSubstationBus_vec updatedSubs;
 
     CtiCCSubstationPtr parentStation = NULL;
@@ -2224,7 +2224,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
     CtiCCSubstationBus_vec updatedSubs;
 
     CtiCCSubstationPtr parentStation = NULL;
@@ -2524,7 +2524,7 @@ void CtiCCCommandExecutor::EnableArea()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
     if (currentArea != NULL)
@@ -2618,7 +2618,7 @@ void CtiCCCommandExecutor::EnableArea()
         delete multi;
     }
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas()))->execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -2639,7 +2639,7 @@ void CtiCCCommandExecutor::DisableArea()
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
 
 
-    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
     if (currentArea != NULL)
@@ -2656,7 +2656,7 @@ void CtiCCCommandExecutor::DisableArea()
     }
     else
     {
-        CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
+        CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas();
 
         CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
         if (currentSpArea != NULL)
@@ -2702,7 +2702,7 @@ void CtiCCCommandExecutor::DisableArea()
         CtiCCExecutorFactory::createExecutor((CtiMessage*)capMessages[i])->execute();
     }
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(ccAreas))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas()))->execute();
 }
 void CtiCCCommandExecutor::setAutoControlOvUvFlags(CtiCCSubstationBusPtr currentSubBus, bool disableFlag)
 {
@@ -2933,7 +2933,7 @@ void CtiCCCommandExecutor::EnableSystem()
     pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
     ccEvents.push_back(EventLogEntry(0, SYS_PID_CAPCONTROL, 0, 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
     for(long i=0;i<ccAreas.size();i++)
     {
         CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
@@ -2987,7 +2987,7 @@ void CtiCCCommandExecutor::DisableSystem()
     pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
     ccEvents.push_back(EventLogEntry(0, SYS_PID_CAPCONTROL, 0, 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
     for(long i=0;i<ccAreas.size();i++)
     {
         CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
@@ -3043,7 +3043,7 @@ void CtiCCCommandExecutor::Flip7010Device()
     EventLogEntries ccEvents;
     CtiCCCapBank* currentCapBank = NULL;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
     CtiCCSubstationBus_vec updatedSubs;
 
     for(long i=0;i<ccSubstationBuses.size();i++)
@@ -3779,7 +3779,7 @@ void CtiCCCommandExecutor::ConfirmArea()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
 
@@ -3891,7 +3891,7 @@ void CtiCCCommandExecutor::ConfirmArea()
                 if (confirmMulti->getCount() > 0)
                 {
                     CtiCCExecutorFactory::createExecutor(confirmMulti)->execute();
-                    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+                    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas()))->execute();
                 }
 
                 CtiCapController::submitEventLogEntries(ccEvents);
@@ -3988,7 +3988,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
     CtiCCSubstationBus_vec updatedSubs;
 
     CtiCCCapBank* operatingCapBank = NULL;
@@ -4281,7 +4281,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
     CtiCCSubstationBus_vec updatedSubs;
 
     CtiCCCapBank* operatingCapBank = NULL;
@@ -4829,10 +4829,10 @@ void CtiCCCommandExecutor::SendAllData()
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses(CtiTime().seconds())), CtiCCSubstationBusMsg::AllSubBusesSent))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationBusMsg(*(store->getCCSubstationBuses()), CtiCCSubstationBusMsg::AllSubBusesSent))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas()))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates()))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas()))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg((store->getCCSubstations()), CtiCCSubstationsMsg::AllSubsSent))->execute();
 
     // Send all Voltage Regulators
@@ -4860,7 +4860,7 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     float closeOrder = 0.0;
     float tripOrder = 0.0;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     CtiCCSubstationBus* currentSubstationBus = NULL;
     CtiCCFeeder* currentFeeder = NULL;
@@ -4990,7 +4990,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     long paoId = _itemId;
     bool found = false;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(paoId);
     if (currentStation != NULL)
@@ -5209,9 +5209,9 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
     pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
     ccEvents.push_back(EventLogEntry(0, SYS_PID_CAPCONTROL, 0, 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
     const CtiCCSubstation_vec& ccStations = store->getCCSubstations();
-    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas();
 
     for (int i = 0; i <ccAreas.size(); i++ )
     {
@@ -5597,7 +5597,7 @@ void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedF
     CtiCCFeeder* movedFeederPtr = NULL;
 
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     bool found = false;
     bool verificationFlag = false;
@@ -5805,7 +5805,7 @@ void CtiCCPointDataMsgExecutor::execute()
     bool found = false;
     bool logToCCEvent = false;
 
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses();
 
     for(int i=0;i<ccSubstationBuses.size();i++)
     {

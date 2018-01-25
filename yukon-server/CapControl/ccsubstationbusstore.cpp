@@ -254,7 +254,7 @@ void CtiCCSubstationBusStore::processAnyDBChangesOrResets( const CtiTime & right
 
     Returns a CtiCCSubstationBus_vec of CtiCCSubstationBuses
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(unsigned long secondsFrom1901, bool checkReload)
+CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses()
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
@@ -266,7 +266,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(unsigned l
 
     Returns a CtiCCGeoArea_vec of CtiCCGeoAreas
 ---------------------------------------------------------------------------*/
-CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(unsigned long secondsFrom1901, bool checkReload)
+CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas()
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
@@ -278,7 +278,7 @@ CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(unsigned long secondsFrom1
 
     Returns a CtiCCSpecialArea_vec of CtiCCAreas
 ---------------------------------------------------------------------------*/
-CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(unsigned long secondsFrom1901, bool checkReload)
+CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas()
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
@@ -302,7 +302,7 @@ const CtiCCSubstation_vec& CtiCCSubstationBusStore::getCCSubstations()
 
     Returns a CtiCCState_vec* of CtiCCStates
 ---------------------------------------------------------------------------*/
-CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(unsigned long secondsFrom1901)
+CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates()
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
