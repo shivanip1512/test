@@ -6,83 +6,88 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.operator.rtuDetail">
-
+        
     <cti:url var="action" value="/stars/rtu/${rtuId}/allPoints"/>
     <form:form id="rtuAllPoints" commandName="filter" action="${action}" method="get">
         <i:inline key="yukon.common.filterBy"/>
         <cti:msg2 var="selectDevices" key=".selectDevices"/>
-        <tags:selectWithItems id="deviceNames" items="${devices}" path="deviceIds" itemLabel="name" itemValue="id"  dataPlaceholder="${selectDevices}"/>
+        <tags:selectWithItems items="${devices}" path="deviceIds" itemLabel="name" itemValue="id"  dataPlaceholder="${selectDevices}" inputClass="js-chosen"/>
         <cti:msg2 var="selectPoints" key=".selectPoints"/>
-        <tags:selectWithItems id="pointNames" items="${pointNames}" path="pointNames" dataPlaceholder="${selectPoints}"/>
-<%--         <select id="pointNames" multiple data-placeholder="${selectPoints}"><option>TEst</option></select> --%>
+        <tags:selectWithItems items="${pointNames}" path="pointNames" dataPlaceholder="${selectPoints}" inputClass="js-chosen"/>
         <cti:msg2 var="selectTypes" key=".selectTypes"/>
-        <tags:selectWithItems id="pointType" items="${pointTypes}" path="types" dataPlaceholder="${selectTypes}"/>
+        <tags:selectWithItems items="${pointTypes}" path="types" dataPlaceholder="${selectTypes}" inputClass="js-chosen"/>
         <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
     </form:form>
     
     <hr/>
     
-    <table class="compact-results-table row-highlighting">
-        <tr>
-            <tags:sort column="${pointName}" />
-            <th></th>
-            <th><cti:msg key="yukon.web.modules.operator.rtuDetail.pointValue"/></th>
-            <th><cti:msg key="yukon.web.modules.operator.rtuDetail.dateTime"/></th>
-            <tags:sort column="${offset}" />
-            <tags:sort column="${deviceName}" />
-            <tags:sort column="${pointType}" />
-        </tr>
-        <tbody>
-            <c:if test="${not empty details.resultList}">
-                <c:forEach var="point" items="${details.resultList}">
-                    <tr>
-                        <td>
-                            <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
-                                <a href="${pointUrl}">${fn:escapeXml(point.pointName)}</a>
-                        </td>
-                        <td class="state-indicator">
-                            <c:choose>
-                                <c:when test="${point.format == '{rawValue|lastControlReason}'}">
-                                    <cti:pointStatus pointId="${point.pointId}"
-                                         format="{rawValue|lastControlReasonColor}" />
-                                </c:when>
-                                <c:when test="${point.format == '{rawValue|ignoredControlReason}'}">
-                                    <cti:pointStatus pointId="${point.pointId}"
-                                        format="{rawValue|ignoredControlReasonColor}" />
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:pointStatus pointId="${point.pointId}"
-                                        statusPointOnly="${true}" />
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td class="wsnw">
-                            <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
-                        </td>
-                        <td class="wsnw">
-                            <tags:historicalValue pao="${rtu}" pointId="${point.pointId}" />
-                        </td>
-                        <td>
-                            ${point.paoPointIdentifier.pointIdentifier.offset}
-                        </td>
-                        <td>
-                            <cti:paoDetailUrl paoId="${point.paoPointIdentifier.paoIdentifier.paoId}">
-                                <c:if test="${!empty point.deviceName}">${fn:escapeXml(point.deviceName)}</c:if>
-                            </cti:paoDetailUrl>
-                        </td>
-                        <td>
-                            <i:inline key="${point.paoPointIdentifier.pointIdentifier.pointType}"/>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </c:if>
-        </tbody>
-    </table>
-    <tags:pagingResultsControls result="${details}" adjustPageCount="true" thousands="true"/>
+    <c:choose>
+        <c:when test="${empty details.resultList}">
+            <i:inline key=".noPoints"/>
+        </c:when>
+        <c:otherwise>
+            
+            <table class="compact-results-table row-highlighting">
+                <tr>
+                    <tags:sort column="${pointName}" />
+                    <th></th>
+                    <th><i:inline key=".pointValue"/></th>
+                    <th><i:inline key=".dateTime"/></th>
+                    <tags:sort column="${offset}" />
+                    <tags:sort column="${deviceName}" />
+                    <tags:sort column="${pointType}" />
+                </tr>
+                <tbody>
+                    <c:forEach var="point" items="${details.resultList}">
+                        <tr>
+                            <td>
+                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                                    <a href="${pointUrl}">${fn:escapeXml(point.pointName)}</a>
+                            </td>
+                            <td class="state-indicator">
+                                <c:choose>
+                                    <c:when test="${point.format == '{rawValue|lastControlReason}'}">
+                                        <cti:pointStatus pointId="${point.pointId}"
+                                             format="{rawValue|lastControlReasonColor}" />
+                                    </c:when>
+                                    <c:when test="${point.format == '{rawValue|ignoredControlReason}'}">
+                                        <cti:pointStatus pointId="${point.pointId}"
+                                            format="{rawValue|ignoredControlReasonColor}" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:pointStatus pointId="${point.pointId}"
+                                            statusPointOnly="${true}" />
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="wsnw">
+                                <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
+                            </td>
+                            <td class="wsnw">
+                                <tags:historicalValue pao="${rtu}" pointId="${point.pointId}" />
+                            </td>
+                            <td>
+                                ${point.paoPointIdentifier.pointIdentifier.offset}
+                            </td>
+                            <td>
+                                <cti:paoDetailUrl paoId="${point.paoPointIdentifier.paoIdentifier.paoId}">
+                                    <c:if test="${!empty point.deviceName}">${fn:escapeXml(point.deviceName)}</c:if>
+                                </cti:paoDetailUrl>
+                            </td>
+                            <td>
+                                <i:inline key="${point.paoPointIdentifier.pointIdentifier.pointType}"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+            <tags:pagingResultsControls result="${details}" adjustPageCount="true" thousands="true"/>
+        </c:otherwise>
+    </c:choose>
+    
+
 </cti:msgScope>
 
 <script>
-    $("#deviceNames").chosen({width: "250px"});
-    $("#pointNames").chosen({width: "250px"});
-    $("#pointType").chosen({width: "250px"});
+    $(".js-chosen").chosen({width: "250px"});
 </script>

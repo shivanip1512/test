@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -84,7 +85,7 @@ public class RtuController {
     
     @RequestMapping(value = "rtu/{id}/allPoints", method = RequestMethod.GET)
     public String getAllPoints(ModelMap model, @PathVariable int id, @ModelAttribute("filter") RtuPointsFilter filter, BindingResult bindingResult,
-           @DefaultSort(dir=Direction.asc, sort="pointName") SortingParameters sorting, PagingParameters paging, YukonUserContext userContext) {
+           @DefaultSort(dir=Direction.asc, sort="pointName") SortingParameters sorting, @DefaultItemsPerPage(value=250) PagingParameters paging, YukonUserContext userContext) {
 
         RtuPointsSortBy sortBy = RtuPointsSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();

@@ -172,6 +172,9 @@
     <cti:tabs>
         <cti:msg2 var="childrenTab" key=".childrenTab"/>
         <cti:tab title="${childrenTab}">
+            <c:if test="${empty rtu.childDevices}">
+                <i:inline key=".noChildDevices"/>
+            </c:if>
             <c:forEach var="child" items="${rtu.childDevices}">
                 <c:set var="paoId" value="${child.paoIdentifier.paoId}"/>
                 <cti:button renderMode="image" icon="icon-expand" classes="js-show-hide" data-paoId="${paoId}"/>
