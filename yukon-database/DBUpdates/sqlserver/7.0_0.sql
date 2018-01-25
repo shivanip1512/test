@@ -487,6 +487,219 @@ AND POINTOFFSET = 2001
 AND POINTNAME = 'Device Reset Indicator';
 /* End YUK-17815 */
 
+/* Start YUK-16521 */
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430A3D', 'RFN-430A3K', 'RFN-430A3R', 'RFN-430A3T', 'RFN-430KV')
+    AND PointType = 'Status'
+    AND PointOffset IN (7, 13, 16, 18, 19, 20, 21, 24, 25, 
+    60, 31, 36, 37, 38, 39, 41, 43, 44, 45, 46, 48, 49, 50, 61, 51, 52, 53, 55, 56, 57, 58, 62));
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430A3D', 'RFN-430A3K', 'RFN-430A3R', 'RFN-430A3T', 'RFN-430KV')
+    AND PointType = 'Status'
+    AND PointOffset IN (7, 13, 16, 18, 19, 20, 21, 24, 25, 
+    60, 31, 36, 37, 38, 39, 41, 43, 44, 45, 46, 48, 49, 50, 61, 51, 52, 53, 55, 56, 57, 58, 62));
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430A3D', 'RFN-430A3K', 'RFN-430A3R', 'RFN-430A3T', 'RFN-430KV')
+    AND PointType = 'Status'
+    AND PointOffset IN (7, 13, 16, 18, 19, 20, 21, 24, 25, 
+    60, 31, 36, 37, 38, 39, 41, 43, 44, 45, 46, 48, 49, 50, 61, 51, 52, 53, 55, 56, 57, 58, 62));
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-430A3D', 'RFN-430A3K', 'RFN-430A3R', 'RFN-430A3T', 'RFN-430KV')
+    AND PointType = 'Status'
+    AND PointOffset IN (7, 13, 16, 18, 19, 20, 21, 24, 25, 
+    60, 31, 36, 37, 38, 39, 41, 43, 44, 45, 46, 48, 49, 50, 61, 51, 52, 53, 55, 56, 57, 58, 62));
+
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410fD', 'RFN-410fL', 'RFN-420fD', 'RFN-420fL', 'RFN-510fL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 91, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410fD', 'RFN-410fL', 'RFN-420fD', 'RFN-420fL', 'RFN-510fL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 91, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410fD', 'RFN-410fL', 'RFN-420fD', 'RFN-420fL', 'RFN-510fL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 91, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410fD', 'RFN-410fL', 'RFN-420fD', 'RFN-420fL', 'RFN-510fL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 91, 53, 54, 55, 56, 57, 58, 62));
+
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410fX', 'RFN-420fRD', 'RFN-420fRX', 'RFN-420fX', 'RFN-520fAX', 'RFN-520fAXD', 'RFN-520fRX',
+    'RFN-520fRXD', 'RFN-530fAX', 'RFN-530fRX')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 44, 47, 53, 54, 62));
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410fX', 'RFN-420fRD', 'RFN-420fRX', 'RFN-420fX', 'RFN-520fAX', 'RFN-520fAXD', 'RFN-520fRX',
+    'RFN-520fRXD', 'RFN-530fAX', 'RFN-530fRX')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 44, 47, 53, 54, 62));
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+        WHERE Type IN ('RFN-410fX', 'RFN-420fRD', 'RFN-420fRX', 'RFN-420fX', 'RFN-520fAX', 'RFN-520fAXD', 'RFN-520fRX',
+    'RFN-520fRXD', 'RFN-530fAX', 'RFN-530fRX')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 44, 47, 53, 54, 62));
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410fX', 'RFN-420fRD', 'RFN-420fRX', 'RFN-420fX', 'RFN-520fAX', 'RFN-520fAXD', 'RFN-520fRX',
+    'RFN-520fRXD', 'RFN-530fAX', 'RFN-530fRX')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 44, 47, 53, 54, 62));
+
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-420cD', 'RFN-420cX')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 39, 40, 41, 42, 43, 45, 46, 47, 49, 50, 51, 52, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-420cD', 'RFN-420cX')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 39, 40, 41, 42, 43, 45, 46, 47, 49, 50, 51, 52, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-420cD', 'RFN-420cX')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 39, 40, 41, 42, 43, 45, 46, 47, 49, 50, 51, 52, 54, 55, 56, 57, 58, 62));
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-420cD', 'RFN-420cX')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 39, 40, 41, 42, 43, 45, 46, 47, 49, 50, 51, 52, 54, 55, 56, 57, 58, 62));
+
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410cL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58));
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410cL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58));
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410cL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58));
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-410cL')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 
+    30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58));
+
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4x')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 49, 52, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4x')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 49, 52, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4x')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 49, 52, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4x')
+    AND PointType = 'Status'
+    AND PointOffset IN (2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 49, 52, 53, 54, 55, 56, 57, 58, 62));
+
+DELETE FROM Display2WayData
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointStatus
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM PointAlarming
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 54, 55, 56, 57, 58, 62));
+DELETE FROM Point 
+WHERE PointId IN (
+    SELECT PointId FROM Point p JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+    WHERE Type IN ('RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR')
+    AND PointType = 'Status'
+    AND PointOffset IN (3, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 28, 29, 
+    30, 32, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 53, 54, 55, 56, 57, 58, 62));
+/* End YUK-16521 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

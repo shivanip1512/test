@@ -31,11 +31,8 @@
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Clock Error" attributes="CLOCK_ERROR"/>
-        <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
-        <pointInfo name="Crystal Oscillator Error" attributes="CRYSTAL_OSCILLATOR_ERROR"/>
         <pointInfo name="Current" attributes="CURRENT"/>
         <pointInfo name="Current Angle" attributes="CURRENT_ANGLE"/>
-        <pointInfo name="Current Loss" attributes="CURRENT_LOSS"/>
         <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE"/>
         <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE"/>
         <pointInfo name="Delivered kVAh" attributes="KVAH"/>
@@ -47,25 +44,11 @@
         <pointInfo name="Delivered Peak kVA" attributes="PEAK_KVA"/>
         <pointInfo name="Delivered Peak kVAr" attributes="PEAK_KVAR"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
-        <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
-        <pointInfo name="Demand Threshold Exceeded Warning" attributes="DEMAND_THRESHOLD_EXCEEDED_WARNING"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
-        <pointInfo name="Display Locked By Warning" attributes="DISPLAY_LOCKED_BY_WARNING"/>
-        <pointInfo name="Eeprom Access Error" attributes="EEPROM_ACCESS_ERROR"/>
-        <pointInfo name="Encryption Key Table Crc Error" attributes="ENCRYPTION_KEY_TABLE_CRC_ERROR"/>
-        <pointInfo name="End Of Calendar Warning" attributes="END_OF_CALENDAR_WARNING"/>
         <pointInfo name="Energy Accumulated While In Standby Mode" attributes="ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
-        <pointInfo name="Improper Meter Engine Operation Warning" attributes="IMPROPER_METER_ENGINE_OPERATION_WARNING"/>
-        <pointInfo name="Internal Communication Error" attributes="INTERNAL_COMMUNICATION_ERROR"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
-        <pointInfo name="Line Frequency Warning" attributes="LINE_FREQUENCY_WARNING"/>
-        <pointInfo name="Load Side Voltage Is Missing" attributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
-        <pointInfo name="Loss Of All Current" attributes="LOSS_OF_ALL_CURRENT"/>
-        <pointInfo name="Loss Of Phase A Current" attributes="LOSS_OF_PHASE_A_CURRENT"/>
-        <pointInfo name="Loss Of Phase C Current" attributes="LOSS_OF_PHASE_C_CURRENT"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
-        <pointInfo name="Low Loss Potential" attributes="LOW_LOSS_POTENTIAL"/>
         <pointInfo name="Max Voltage"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
         <pointInfo name="Min Voltage"/>
@@ -84,7 +67,6 @@
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Over Voltage" attributes="OVER_VOLTAGE"/>
-        <pointInfo name="Password Table Crc Error" attributes="PASSWORD_TABLE_CRC_ERROR"/>
         <pointInfo name="Peak Demand Daily" init="true" attributes="PEAK_DEMAND_DAILY"/>
         <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A"/>
@@ -96,10 +78,7 @@
         <pointInfo name="Peak kW Frozen (Rate B kW)" attributes="PEAK_DEMAND_FROZEN_RATE_B"/>
         <pointInfo name="Peak kW Frozen (Rate C kW)" attributes="PEAK_DEMAND_FROZEN_RATE_C"/>
         <pointInfo name="Peak kW Frozen (Rate D kW)" attributes="PEAK_DEMAND_FROZEN_RATE_D"/>
-        <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
-        <pointInfo name="Power Fail Data Save Error" attributes="POWER_FAIL_DATA_SAVE_ERROR"/>
         <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
-        <pointInfo name="Pqm Test Failure Warning" attributes="PQM_TEST_FAILURE_WARNING"/>
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
         <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
         <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
@@ -115,17 +94,10 @@
         <pointInfo name="Received kWh (Rate D kWh)" attributes="RECEIVED_KWH_RATE_D"/>
         <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
         <pointInfo name="Reverse Rotation" attributes="REVERSE_POWER_FLAG"/>
-        <pointInfo name="Reversed Aggregate" attributes="REVERSED_AGGREGATE"/>
-        <pointInfo name="Reversed Phase A" attributes="REVERSED_PHASE_A"/>
-        <pointInfo name="Reversed Phase C" attributes="REVERSED_PHASE_C"/>
         <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
         <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>
         <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
-        <pointInfo name="Security Configuration Error" attributes="SECURITY_CONFIGURATION_ERROR"/>
-        <pointInfo name="Self Check Error" attributes="SELF_CHECK_ERROR"/>
-        <pointInfo name="Service Current Test Failure Warning" attributes="SERVICE_CURRENT_TEST_FAILURE_WARNING"/>
         <pointInfo name="Service Disconnect Switch Error" attributes="SERVICE_DISCONNECT_SWITCH_ERROR"/>
-        <pointInfo name="Service Disconnect Switch Open" attributes="SERVICE_DISCONNECT_SWITCH_OPEN"/>
         <pointInfo name="Service Disconnect Switch Sensor Error" attributes="SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR"/>
         <pointInfo name="Stuck Switch" attributes="STUCK_SWITCH"/>
         <pointInfo name="Sum kVAh" attributes="SUM_KVAH"/>
@@ -139,7 +111,6 @@
         <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL"/>
         <pointInfo name="Sum Peak kVA" attributes="SUM_PEAK_KVA"/>
         <pointInfo name="Sum Peak kVAr" attributes="SUM_PEAK_KVAR"/>
-        <pointInfo name="Table Crc Error" attributes="TABLE_CRC_ERROR"/>
         <pointInfo name="Tamper Detect" attributes="TAMPER_FLAG"/>
         <pointInfo name="Time Adjustment" attributes="TIME_ADJUSTMENT"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
@@ -152,11 +123,9 @@
         <pointInfo name="Voltage" init="true" attributes="VOLTAGE,VOLTAGE_PROFILE"/>
         <pointInfo name="Voltage (Single Phase)" attributes="VOLTAGE_PHASE_A"/>
         <pointInfo name="Voltage Alerts" attributes="VOLTAGE_ALERTS"/>
-        <pointInfo name="Voltage Loss" attributes="VOLTAGE_LOSS"/>
         <pointInfo name="Voltage Phase A Out" attributes="VOLTAGE_PHASE_A_OUT"/>
         <pointInfo name="Voltage Phase B Out" attributes="VOLTAGE_PHASE_B_OUT"/>
         <pointInfo name="Voltage Phase C Out" attributes="VOLTAGE_PHASE_C_OUT"/>
         <pointInfo name="Voltage Phase Error" attributes="VOLTAGE_PHASE_ERROR"/>
-        <pointInfo name="Watt-Hour Pulse Failure" attributes="WATT_HOUR_PULSE_FAILURE"/>
     </pointInfos>
 </pao>
