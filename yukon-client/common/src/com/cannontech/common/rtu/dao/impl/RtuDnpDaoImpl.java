@@ -24,13 +24,6 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    SqlStatementBuilder baseSql = new SqlStatementBuilder();
-    {
-        baseSql.append("SELECT PointId, PointType, PointName, PointOffset, P.PAObjectID, pao.Type, pao.PAOName");
-        baseSql.append("FROM Point P");
-        baseSql.append("  JOIN YukonPaobject pao ON pao.PaobjectId = p.PaobjectId");
-    }
-    
     private final static YukonRowMapper<RtuPointDetail> rtuPointDetailMapper = new YukonRowMapper<RtuPointDetail>() {
         @Override
         public RtuPointDetail mapRow(YukonResultSet rs) throws SQLException {
@@ -57,28 +50,29 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
 
-        SqlStatementBuilder sql = new SqlStatementBuilder(baseSql.getSql());
-        sql.append("WHERE P.PAObjectID").in(paoIds);
-        if (types != null) {
-            sql.append("  AND PointType").in(types);
-        }
-        if (pointNames != null) {
-            sql.append("  AND PointName").in(pointNames);
-        }
-        sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        SqlStatementBuilder allRowsSql = buildSelectQuery(paoIds, pointNames, types, direction, sortBy);
+        SqlStatementBuilder countSql = buildSelectQuery(paoIds, pointNames, types, null, null);
 
         PagingResultSetExtractor<RtuPointDetail> rse = new PagingResultSetExtractor<>(start, count, rtuPointDetailMapper);
-        jdbcTemplate.query(sql, rse);
+        jdbcTemplate.query(allRowsSql, rse);
+
         SearchResults<RtuPointDetail> retVal = new SearchResults<>();
-        retVal.setBounds(start, count, getRTUPointCount(paoIds, pointNames, types));
+
+        int totalCount = jdbcTemplate.queryForInt(countSql);
+        retVal.setBounds(start, count, totalCount);
         retVal.setResultList(rse.getResultList());
         return retVal;
     }
 
-    private int getRTUPointCount(List<Integer> paoIds, List<String> pointNames,
-            List<PointType> types) {
+    private SqlStatementBuilder buildSelectQuery(List<Integer> paoIds, List<String> pointNames, List<PointType> types,
+            Direction direction, SortBy sortBy) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*)");
+
+        if (sortBy == null) {
+            sql.append("SELECT COUNT(*)");
+        } else {
+            sql.append("SELECT PointId, PointType, PointName, PointOffset, P.PAObjectID, pao.Type, pao.PAOName");
+        }
         sql.append("FROM Point P");
         sql.append("  JOIN YukonPaobject pao ON pao.PaobjectId = p.PaobjectId");
         sql.append("WHERE P.PAObjectID").in(paoIds);
@@ -88,8 +82,10 @@ public class RtuDnpDaoImpl implements RtuDnpDao {
         if (pointNames != null) {
             sql.append("  AND PointName").in(pointNames);
         }
-
-        return jdbcTemplate.queryForInt(sql);
+        if (sortBy != null) {
+            sql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
+        }
+        return sql;
     }
 
 }
