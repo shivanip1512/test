@@ -188,15 +188,20 @@ void ApplicationLayer::initForOutput( void )
 
     _request.func_code = (unsigned char)_request_function;
 
-    while( !_out_object_blocks.empty() )
+    for( const auto& ob : _out_object_blocks )
     {
-        const auto &ob = _out_object_blocks.front();
-
-        ob->serialize(_request.buf + pos);
-        pos += ob->getSerializedLen();
-
-        _out_object_blocks.pop_front();
+        if( ob )
+        {
+            ob->serialize(_request.buf + pos);
+            pos += ob->getSerializedLen();
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "ob null");
+        }
     }
+
+    _out_object_blocks.clear();
 
     _request.buf_len = pos;
 }
@@ -229,15 +234,20 @@ void ApplicationLayer::initForSlaveOutput( void )
 
     _response.func_code = DNP::ApplicationLayer::ResponseResponse;
 
-    while( !_out_object_blocks.empty() )
+    for( const auto& ob : _out_object_blocks )
     {
-        const auto &ob = _out_object_blocks.front();
-
-        ob->serialize(_response.buf + pos);
-        pos += ob->getSerializedLen();
-
-        _out_object_blocks.pop_front();
+        if( ob )
+        {
+            ob->serialize(_response.buf + pos);
+            pos += ob->getSerializedLen();
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "ob null");
+        }
     }
+
+    _out_object_blocks.clear();
 
     _response.buf_len = pos;
 }
@@ -255,13 +265,13 @@ void ApplicationLayer::completeSlave( void )
 
 void ApplicationLayer::eraseInboundObjectBlocks( void )
 {
-    std::swap(_in_object_blocks, decltype(_in_object_blocks)());
+    _in_object_blocks.clear();
 }
 
 
 void ApplicationLayer::eraseOutboundObjectBlocks( void )
 {
-    std::swap(_out_object_blocks, decltype(_out_object_blocks)());
+    _out_object_blocks.clear();
 }
 
 
