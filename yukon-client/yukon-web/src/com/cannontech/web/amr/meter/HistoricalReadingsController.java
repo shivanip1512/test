@@ -351,8 +351,10 @@ public class HistoricalReadingsController {
                 orderBy != OrderBy.TIMESTAMP, valueHeader, "value");
         model.addAttribute("value", value);
         //Find the latest timestamp
-        Date maxDate = points.stream().map(PointValueHolder::getPointDataTimeStamp).max(Date::compareTo).get();
-        model.addAttribute("maxTimestamp", maxDate);
+        if (points.size() > 0) {
+            Date maxDate = points.stream().map(PointValueHolder::getPointDataTimeStamp).max(Date::compareTo).get();
+            model.addAttribute("maxTimestamp", maxDate);
+        }
         
     }
     
