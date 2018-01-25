@@ -189,7 +189,7 @@ void CtiCCService::Run()
             if ( ! store->testDatabaseConnectivity() )
             {
                 trouble = true;
-                CTILOG_ERROR(dout, "Unable to obtain connection to database...will keep trying.");
+                CTILOG_ERROR(dout, "Failed database connectivity test, will keep trying.");
             }
             else
             {

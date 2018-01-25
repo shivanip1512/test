@@ -519,20 +519,11 @@ void CtiCapController::controlLoop()
 
                         lastDailyResetDate = Now;
                     }
-                }
-                catch(...)
-                {
-                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-                }
-
-                try
-                {
-                    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
                     //  Any DBChanges or resets to process?
                     store->processAnyDBChangesOrResets( Now );
                 }
-                catch ( ... )
+                catch(...)
                 {
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }

@@ -24,6 +24,7 @@
 #include "database_transaction.h"
 #include "database_writer.h"
 #include "database_util.h"
+#include "database_exceptions.h"
 #include "PointResponse.h"
 #include "PointResponseDao.h"
 #include "ThreadStatusKeeper.h"
@@ -183,10 +184,10 @@ void CtiCCSubstationBusStore::stopThreads()
 */
 bool CtiCCSubstationBusStore::testDatabaseConnectivity() const
 {
+    static const std::string sql = "SELECT COUNT(*) AS PAOCount FROM YukonPAObject";
+
     try
     {
-        static const std::string sql = "SELECT COUNT(*) AS PAOCount FROM YukonPAObject";
-
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader     rdr( connection, sql );
 
@@ -199,9 +200,9 @@ bool CtiCCSubstationBusStore::testDatabaseConnectivity() const
             return paoCount > 0;
         }
     }
-    catch (...)
+    catch ( Cti::Database::DatabaseException & ex )
     {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+        CTILOG_EXCEPTION_ERROR( dout, ex, "Unable to access database." );
     }
 
     return false;
