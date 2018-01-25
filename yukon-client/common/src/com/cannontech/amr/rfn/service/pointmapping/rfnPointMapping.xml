@@ -3906,19 +3906,6 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Net kVAh (Rate A kVAh)">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
-                <modifier>TOU Rate A</modifier>
-            </modifiers>
-        </point>
         <point name="Received Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -4100,19 +4087,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>TOU Rate B</modifier>
-            </modifiers>
-        </point>
-        <point name="Net kVAh (Rate B kVAh)">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
@@ -4300,19 +4274,6 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Net kVAh (Rate C kVAh)">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
-                <modifier>TOU Rate C</modifier>
-            </modifiers>
-        </point>
         <point name="Received Peak kW (Rate C kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -4481,19 +4442,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>TOU Rate D</modifier>
-            </modifiers>
-        </point>
-        <point name="Net kVAh (Rate D kVAh)">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
@@ -4674,20 +4622,6 @@
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase Neutral->Ground</modifier>
-            </modifiers>
-        </point>
-        
-        <!-- The following only applies to RFN530S4ERX and RFN530S4ERXR -->
-        <point name="Net kVAh">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
             </modifiers>
         </point>
     </pointGroup>

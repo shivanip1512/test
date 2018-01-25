@@ -38,11 +38,6 @@
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
-        <pointInfo name="Net kVAh" attributes="NET_KVAH"/>
-        <pointInfo name="Net kVAh (Rate A kVAh)" attributes="NET_KVAH_RATE_A"/>
-        <pointInfo name="Net kVAh (Rate B kVAh)" attributes="NET_KVAH_RATE_B"/>
-        <pointInfo name="Net kVAh (Rate C kVAh)" attributes="NET_KVAH_RATE_C"/>
-        <pointInfo name="Net kVAh (Rate D kVAh)" attributes="NET_KVAH_RATE_D"/>
         <pointInfo name="Net kVArh" attributes="NET_KVARH"/>
         <pointInfo name="Net kVArh (Rate A kVArh)" attributes="NET_DELIVERED_KVARH_RATE_A"/>
         <pointInfo name="Net kVArh (Rate B kVArh)" attributes="NET_DELIVERED_KVARH_RATE_B"/>
