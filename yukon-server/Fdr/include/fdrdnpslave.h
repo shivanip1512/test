@@ -92,16 +92,25 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
     private:
         DnpId ForeignToYukonId(const CtiFDRDestination &pointDestination);
         bool  YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now);
-        int processScanSlaveRequest           (ServerConnection &connection);
-        int processControlRequest             (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
-        int processAnalogOutputRequest        (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
-        int processDataLinkConfirmationRequest(ServerConnection &connection);
-        int processDataLinkReset              (ServerConnection &connection);
-        int processUnsupportedRequest         (ServerConnection &connection);
-        int processUnsolicitedDisableRequest  (ServerConnection &connection);
-        int processUnsolicitedEnableRequest   (ServerConnection &connection);
 
-        int doComms(ServerConnection &connection, const std::string& messageType);
+        struct ConnectionProtocol
+        {
+            ServerConnection& connection;
+            Protocols::DnpSlaveProtocol& dnpSlave;
+        };
+
+        ConnectionProtocol getProtocolForConnection(ServerConnection& connection);
+
+        int processScanSlaveRequest           (ConnectionProtocol cp);
+        int processControlRequest             (ConnectionProtocol cp, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
+        int processAnalogOutputRequest        (ConnectionProtocol cp, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
+        int processDataLinkConfirmationRequest(ConnectionProtocol cp);
+        int processDataLinkReset              (ConnectionProtocol cp);
+        int processUnsupportedRequest         (ConnectionProtocol cp);
+        int processUnsolicitedDisableRequest  (ConnectionProtocol cp);
+        int processUnsolicitedEnableRequest   (ConnectionProtocol cp);
+
+        int doComms(ConnectionProtocol cp, const std::string& messageType);
 
         auto tryPorterControl  (const Protocols::DnpSlave::control_request &control, const long pointId) -> Protocols::DNP::ControlStatus;
         bool tryDispatchControl(const Protocols::DnpSlave::control_request &control, const long pointId);
@@ -117,7 +126,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         /** Locks to protect map of DNP Send and Receive Translations */
         CtiMutex          _sendMux, _receiveMux;
 
-        Protocols::DnpSlaveProtocol  _dnpSlave;
+        std::mutex _connectionMux;
+        std::map<int, Protocols::DnpSlaveProtocol> _dnpSlaves;
 
         CtiClientConnection _porterConnection;
 

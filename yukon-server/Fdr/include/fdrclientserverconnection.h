@@ -43,9 +43,9 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
         void run();
         void stop();
 
-        bool queueMessage(CHAR *aBuffer,
-                          unsigned int bufferSize,
-                          int aPriority);
+        bool queueMessage(char *aBuffer, 
+                          unsigned int bufferSize, 
+                          int aPriority) override;
 
         int getPortNumber();
 
@@ -87,7 +87,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
         bool _isRegistered;
         std::string _connectionName;
         int _connectionNumber;
-        static int _nextConnectionNumber;
+        static std::atomic_int _nextConnectionNumber;
 
         HANDLE _shutdownEvent;
         HANDLE _stillAliveEvent;

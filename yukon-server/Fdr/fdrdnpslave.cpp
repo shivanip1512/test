@@ -277,7 +277,9 @@ void DnpSlave::logCommand(const std::string &description, const char *data, cons
 int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
                                          const char* data, unsigned int size)
 {
-    const auto requestType = _dnpSlave.identifyRequest(data, size);
+    auto cp = getProtocolForConnection(connection);
+
+    const auto requestType = cp.dnpSlave.identifyRequest(data, size);
 
     using Cmd = DnpSlaveProtocol::Commands;
     using Act = Protocols::DnpSlave::ControlAction;
@@ -286,55 +288,55 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
     {
         { Cmd::Unsupported,
             { "an unsupported DNP request",
-                [&] { return processUnsupportedRequest(connection); }}},
+                [&] { return processUnsupportedRequest(cp); }}},
 
         { Cmd::DelayMeasurement,
             { "an unsupported DNP delay measurement request",
-                [&] { return processUnsupportedRequest(connection); }}},
+                [&] { return processUnsupportedRequest(cp); }}},
 
         { Cmd::LinkStatus,
             { "a DNP data link status request",
-                [&] { return processDataLinkConfirmationRequest(connection); }}},
+                [&] { return processDataLinkConfirmationRequest(cp); }}},
 
         { Cmd::UnsolicitedEnable,
             { "a DNP unsolicited enable request",
-                [&] { return processUnsolicitedEnableRequest(connection); }}},
+                [&] { return processUnsolicitedEnableRequest(cp); }}},
 
         { Cmd::UnsolicitedDisable,
             { "a DNP unsolicited disable request",
-                [&] { return processUnsolicitedDisableRequest(connection); }}},
+                [&] { return processUnsolicitedDisableRequest(cp); }}},
 
         { Cmd::ResetLink,
             { "a DNP data link reset",
-                [&] { return processDataLinkReset(connection); }}},
+                [&] { return processDataLinkReset(cp); }}},
 
         { Cmd::Class1230Read,
             { "a DNP scan request",
-                [&] { return processScanSlaveRequest(connection); }}},
+                [&] { return processScanSlaveRequest(cp); }}},
 
         { Cmd::SetDigitalOut_Select,
             { "a DNP control select request",
-                [&] { return processControlRequest(connection, *requestType.second, Act::Select); }}},
+                [&] { return processControlRequest(cp, *requestType.second, Act::Select); }}},
 
         { Cmd::SetDigitalOut_Operate,
             { "a DNP control operate request",
-                [&] { return processControlRequest(connection, *requestType.second, Act::Operate); }}},
+                [&] { return processControlRequest(cp, *requestType.second, Act::Operate); }}},
 
         { Cmd::SetDigitalOut_Direct,
             { "a DNP direct control request",
-                [&] { return processControlRequest(connection, *requestType.second, Act::Direct); }}},
+                [&] { return processControlRequest(cp, *requestType.second, Act::Direct); }}},
 
         { Cmd::SetAnalogOut_Select,
             { "a DNP analog output select request",
-                [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Select); }}},
+                [&] { return processAnalogOutputRequest(cp, *requestType.second, Act::Select); }}},
 
         { Cmd::SetAnalogOut_Operate,
             { "a DNP analog output operate request",
-                [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Operate); }}},
+                [&] { return processAnalogOutputRequest(cp, *requestType.second, Act::Operate); }}},
 
         { Cmd::SetAnalogOut_Direct,
             { "a DNP direct analog output request",
-                [&] { return processAnalogOutputRequest(connection, *requestType.second, Act::Direct); }}}};
+                [&] { return processAnalogOutputRequest(cp, *requestType.second, Act::Direct); }}}};
 
     if( const auto &descFunc = mapFind(commandFunctions, requestType.first) )
     {
@@ -358,9 +360,9 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
 }
 
 
-int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection)
+int DnpSlave::processDataLinkConfirmationRequest(ConnectionProtocol cp)
 {
-    auto buf = _dnpSlave.createDatalinkConfirmation();
+    auto buf = cp.dnpSlave.createDatalinkConfirmation();
 
     char *bufForConnection = new char[buf.size()];
 
@@ -372,14 +374,14 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection)
         CTILOG_DEBUG(dout, logNow() <<" sending DNP data link acknowledgement message." << buf);
     }
 
-    connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
+    cp.connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
 
     return 0;
 }
 
-int DnpSlave::processDataLinkReset(ServerConnection& connection)
+int DnpSlave::processDataLinkReset(ConnectionProtocol cp)
 {
-    auto buf = _dnpSlave.createDatalinkAck();
+    auto buf = cp.dnpSlave.createDatalinkAck();
 
     char *bufForConnection = new char[buf.size()];
 
@@ -391,41 +393,41 @@ int DnpSlave::processDataLinkReset(ServerConnection& connection)
         CTILOG_DEBUG(dout, logNow() <<" sending DNP ack message." << buf);
     }
 
-    connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
+    cp.connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
 
     return 0;
 }
 
-int DnpSlave::processUnsupportedRequest(ServerConnection& connection)
+int DnpSlave::processUnsupportedRequest(ConnectionProtocol cp)
 {
-    _dnpSlave.setUnsupportedCommand();
+    cp.dnpSlave.setUnsupportedCommand();
 
-    return doComms(connection, "unsupported");
+    return doComms(cp, "unsupported");
 }
 
-int DnpSlave::processUnsolicitedDisableRequest(ServerConnection& connection)
+int DnpSlave::processUnsolicitedDisableRequest(ConnectionProtocol cp)
 {
-    _dnpSlave.setUnsolicitedDisableCommand();
+    cp.dnpSlave.setUnsolicitedDisableCommand();
 
-    return doComms(connection, "unsolicited disable");
+    return doComms(cp, "unsolicited disable");
 }
 
-int DnpSlave::processUnsolicitedEnableRequest(ServerConnection& connection)
+int DnpSlave::processUnsolicitedEnableRequest(ConnectionProtocol cp)
 {
-    _dnpSlave.setUnsolicitedEnableCommand();
+    cp.dnpSlave.setUnsolicitedEnableCommand();
 
-    return doComms(connection, "unsolicited enable");
+    return doComms(cp, "unsolicited enable");
 }
 
 
-int DnpSlave::doComms(ServerConnection& connection, const std::string& messageType)
+int DnpSlave::doComms(ConnectionProtocol cp, const std::string& messageType)
 {
     CtiXfer xfer;
 
     //  reply with success
-    while( !_dnpSlave.isTransactionComplete() )
+    while( ! cp.dnpSlave.isTransactionComplete() )
     {
-        if( _dnpSlave.generate(xfer) == ClientErrors::None )
+        if( cp.dnpSlave.generate(xfer) == ClientErrors::None )
         {
             if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
             {
@@ -437,10 +439,10 @@ int DnpSlave::doComms(ServerConnection& connection, const std::string& messageTy
                     CTILOG_DEBUG(dout, logNow() << " sending DNP " << messageType << " response." << std::endl <<
                         arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
                 }
-                connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
+                cp.connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
             }
 
-            _dnpSlave.decode(xfer);
+            cp.dnpSlave.decode(xfer);
         }
         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
@@ -451,7 +453,7 @@ int DnpSlave::doComms(ServerConnection& connection, const std::string& messageTy
     return 0;
 }
 
-int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
+int DnpSlave::processScanSlaveRequest (ConnectionProtocol cp)
 {
     const CtiTime Now;
 
@@ -466,8 +468,8 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
         for( const auto &kv : _sendMap )
         {
             const DnpId &dnpId = kv.second;
-            if( dnpId.SlaveId == _dnpSlave.getSrcAddr() &&
-                dnpId.MasterId == _dnpSlave.getDstAddr() )
+            if( dnpId.SlaveId == cp.dnpSlave.getSrcAddr() &&
+                dnpId.MasterId == cp.dnpSlave.getDstAddr() )
             {
                 const CtiFDRDestination &fdrdest = kv.first;
                 long fdrPointId = fdrdest.getParentPointId();
@@ -528,9 +530,9 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
         }
     }
 
-    _dnpSlave.setScanCommand(std::move(outputPoints));
+    cp.dnpSlave.setScanCommand(std::move(outputPoints));
 
-    return doComms(connection, "scan");
+    return doComms(cp, "scan");
 }
 
 
@@ -558,7 +560,7 @@ bool DnpSlave::isDnpDeviceId(const long deviceId) const
 }
 
 
-int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
+int DnpSlave::processControlRequest (ConnectionProtocol cp, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
 {
     if( ob.getGroup()     != BinaryOutputControl::Group ||
         ob.getVariation() != BinaryOutputControl::BOC_ControlRelayOutputBlock ||
@@ -603,8 +605,8 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
         {
             const DnpId &dnpId = kv.second;
             if( dnpId.PointType == StatusPointType
-                && dnpId.SlaveId == _dnpSlave.getSrcAddr()
-                && dnpId.MasterId == _dnpSlave.getDstAddr()
+                && dnpId.SlaveId == cp.dnpSlave.getSrcAddr()
+                && dnpId.MasterId == cp.dnpSlave.getDstAddr()
                 && dnpId.Offset == ( control.offset + 1 ) )  //  DnpId offsets are 1-based (Yukon is 1-based, DNP is 0-based)
             {
                 const CtiFDRDestination &fdrdest = kv.first;
@@ -672,16 +674,16 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
                         l.add("Pao ID") << fdrPoint.getPaoID();
                         l.add("Value") << statusValue;
 
-                        CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
+                        CTILOG_DEBUG(dout, "Sending status point update to Dispatch:" << l);
                     }
                 }
             }
         }
     }
 
-    _dnpSlave.setControlCommand(control);
+    cp.dnpSlave.setControlCommand(control);
 
-    return doComms(connection, "control");
+    return doComms(cp, "control");
 }
 
 
@@ -1021,7 +1023,7 @@ bool DnpSlave::tryDispatchControl(const Protocols::DnpSlave::control_request &co
 }
 
 
-int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
+int DnpSlave::processAnalogOutputRequest (ConnectionProtocol cp, const ObjectBlock &ob, const Protocols::DnpSlave::ControlAction action)
 {
     if( ob.getGroup() != AnalogOutput::Group ||
         ob.empty() )
@@ -1075,8 +1077,8 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
     {
         const DnpId &dnpId = kv.second;
 
-        if( dnpId.SlaveId      == _dnpSlave.getSrcAddr()
-            && dnpId.MasterId  == _dnpSlave.getDstAddr()
+        if( dnpId.SlaveId      == cp.dnpSlave.getSrcAddr()
+            && dnpId.MasterId  == cp.dnpSlave.getDstAddr()
             && dnpId.PointType == AnalogPointType
             && dnpId.Offset    == (analog.offset + 1) )
         {
@@ -1129,9 +1131,9 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
         }
     }
 
-    _dnpSlave.setAnalogOutputCommand(analog);
+    cp.dnpSlave.setAnalogOutputCommand(analog);
 
-    return doComms(connection, "analog output");
+    return doComms(cp, "analog output");
 }
 
 
@@ -1391,6 +1393,13 @@ bool DnpSlave::YukonToForeignQuality(const int aQuality, const CtiTime lastTimeS
     }
 
     return false;
+}
+
+auto DnpSlave::getProtocolForConnection(ServerConnection& connection) -> ConnectionProtocol
+{
+    std::lock_guard<std::mutex> guard(_connectionMux);
+
+    return { connection, _dnpSlaves[connection.getConnectionNumber()] };
 }
 
 
