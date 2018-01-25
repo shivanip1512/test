@@ -54,7 +54,6 @@ public class SmartNotificationSubscriptionServiceImpl implements SmartNotificati
     @Transactional
     @Override
     public void deleteSubscriptions(SmartNotificationEventType type, String identifier, String name, YukonUserContext userContext) {
-        //All notification subscriptions removed for Device Data Monitor buggybug by ats.
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String eventTypeString = messageSourceAccessor.getMessage(type.getFormatKey());
         log.info("Deleting all notification subscriptions for " + eventTypeString + " " + name);

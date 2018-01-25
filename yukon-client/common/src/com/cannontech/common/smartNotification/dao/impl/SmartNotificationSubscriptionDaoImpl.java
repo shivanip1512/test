@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
@@ -93,11 +94,14 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     @Override
     public int deleteSubscriptions(SmartNotificationEventType type, String value) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE sns");
-        sql.append("FROM SmartNotificationSub sns");
-        sql.append("JOIN SmartNotificationSubParam snsp ON sns.SubscriptionId = snsp.SubscriptionId");
-        sql.append("WHERE Type").eq_k(type);
-        sql.append("AND Value").eq(value);
+        sql.append("DELETE FROM SmartNotificationSub");
+        sql.append("WHERE SubscriptionId IN (");
+        sql.append(  "SELECT SubscriptionId");
+        sql.append(  "FROM SmartNotificationSubParam");
+        sql.append(  "WHERE Name").eq(DeviceDataMonitorEventAssembler.MONITOR_ID);
+        sql.append(  "AND Value").eq(value);
+        sql.append(")");
+        sql.append("AND Type").eq_k(type);
         
         return jdbcTemplate.update(sql);
     }
