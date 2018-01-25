@@ -26,6 +26,7 @@
         <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>
         <pointInfo name="CBC-8000 Hardware Type ID" init="true"/>
         <pointInfo name="Close Op Count" init="true" attributes="CLOSE_OPERATION_COUNT"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="Comms Loss OV Threshold" init="true"/>
         <pointInfo name="Comms Loss Time" init="true"/>
         <pointInfo name="Comms Loss UV Threshold" init="true"/>

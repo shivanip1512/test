@@ -23,6 +23,7 @@
         <pointInfo name="CDMA Rx Power" init="true"/>
         <pointInfo name="Close Delay Time" init="true"/>
         <pointInfo name="Com Retry Delay Time" init="true"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="Comms Loss Time" init="true"/>
         <pointInfo name="Control Ignored Indicator" init="true" attributes="IGNORED_INDICATOR"/>
         <pointInfo name="Control Ignored Reason" init="true" attributes="IGNORED_CONTROL_REASON"/>

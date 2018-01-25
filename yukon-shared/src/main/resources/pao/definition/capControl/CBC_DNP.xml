@@ -15,5 +15,7 @@
     </configuration>
     <pointInfos>
         <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="Device Reset Indicator"/>
     </pointInfos>
 </pao>

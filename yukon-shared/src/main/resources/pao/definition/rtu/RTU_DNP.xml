@@ -12,6 +12,7 @@
         <category type="dnp"/>
     </configuration>
     <pointInfos>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="Device Reset Indicator"/>
     </pointInfos>
 </pao>

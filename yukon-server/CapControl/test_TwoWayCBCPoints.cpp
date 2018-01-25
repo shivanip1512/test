@@ -745,7 +745,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         {
             325, 342, 345,
             340, 331, 359, 313, 323, 338, 362, 330, 350,
-            318, 334, 311, 352, 354, 321, 336, 335
+            318, 334, 311, 352, 354, 321, 336, 335, 552
         };
 
     points.addAllCBCPointsToRegMsg( registrationPoints );
