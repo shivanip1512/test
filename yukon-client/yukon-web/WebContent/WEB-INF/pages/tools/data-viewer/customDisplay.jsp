@@ -94,7 +94,10 @@
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" classes="primary action js-save-display" busy="true" />
                 
-                <cti:url var="viewUrl" value="/tools/data-viewer/${display.displayId}" />
+                <cti:url var="viewUrl" value="/tools/data-viewer" />
+                <c:if test="${display.displayId != 0}">
+                    <cti:url var="viewUrl" value="/tools/data-viewer/${display.displayId}" />
+                </c:if>
                 <cti:button nameKey="cancel" href="${viewUrl}" />
             </cti:displayForPageEditModes>
         </div>
