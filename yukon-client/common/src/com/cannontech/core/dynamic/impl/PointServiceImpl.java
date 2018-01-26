@@ -14,7 +14,6 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -101,7 +100,7 @@ public class PointServiceImpl implements PointService {
         data.setType(pd.getType());
         data.setValue(value);
         data.setPointQuality(PointQuality.Manual);
-        data.setStr("Manual change occurred from " + CtiUtilities.getUserName());
+        data.setStr("Manual change occurred from " + context.getYukonUser().getUsername());
         data.setUserName(context.getYukonUser().getUsername());
 
         LitePoint point = pointDao.getLitePoint(pointId);
@@ -129,7 +128,7 @@ public class PointServiceImpl implements PointService {
         data.setValue(newValue);
         data.setType(point.getPointType());
         data.setTagsPointMustArchive(true);
-        data.setStr(CtiUtilities.getUserName() + " updated point data.");
+        data.setStr(context.getYukonUser().getUsername() + " updated point data.");
         
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPaobjectID());
         String formattedNewValue = pointFormattingService.getValueString(data, Format.VALUE, context);

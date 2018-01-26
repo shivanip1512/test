@@ -66,6 +66,7 @@
     <entry key="yukon.common.events.paoType">Pao Type</entry>
     <entry key="yukon.common.events.pointDate">Point Date</entry>
     <entry key="yukon.common.events.pointId">Point Id</entry>
+    <entry key="yukon.common.events.pointName">Point Name</entry>
     <entry key="yukon.common.events.pointOffset">Point Offset</entry>
     <entry key="yukon.common.events.pointType">Point Type</entry>
     <entry key="yukon.common.events.pointValue">Point Value</entry>
@@ -755,15 +756,10 @@
     <entry key="yukon.common.events.endpoint.location.locationUpdated.2">Coordinates</entry>
     <entry key="yukon.common.events.endpoint.location.locationRemoved">Location for device {1} deleted by {2}.</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataDeleted">Device {1} - {2} point data deleted with Value={3}, Timestamp={11} by {4}.</entry>
-    <entry key="yukon.common.events.endpoint.point.data.pointDataDeleted.2">Point Name</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataDeleted.3">Value</entry>
-    <entry key="yukon.common.events.endpoint.point.data.pointDataDeleted.11">Date</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataAdded">Device {1} - {2} point data manually added with Value={3}, Timestamp={11} by {4}.</entry>
-    <entry key="yukon.common.events.endpoint.point.data.pointDataAdded.2">Point Name</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataAdded.3">Value</entry>
-    <entry key="yukon.common.events.endpoint.point.data.pointDataAdded.11">Date</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataUpdated">Device {1} - {2} point data manually changed from {3} to {4} for Timestamp={11} by {5}.</entry>
-    <entry key="yukon.common.events.endpoint.point.data.pointDataUpdated.2">Point Name</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataUpdated.3">Old Value</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataUpdated.4">New Value</entry>
     

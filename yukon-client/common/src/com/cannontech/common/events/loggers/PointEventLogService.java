@@ -8,17 +8,17 @@ import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface PointEventLogService {
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point.data")
-    public void pointDataDeleted(@Arg(ArgEnum.deviceName) String deviceName, String pointName, String value,
-            Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point.data")
-    public void pointDataUpdated(@Arg(ArgEnum.deviceName) String deviceName, String pointName, String oldValue,
-            String newValue, Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
-    
+    public void pointDataDeleted(@Arg(ArgEnum.deviceName) String deviceName, @Arg(ArgEnum.pointName) String pointName,
+            String value, @Arg(ArgEnum.pointDate) Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
+
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point.data")
-    public void pointDataAdded(@Arg(ArgEnum.deviceName) String deviceName, String pointName, String value,
-            Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
+    public void pointDataUpdated(@Arg(ArgEnum.deviceName) String deviceName, @Arg(ArgEnum.pointName) String pointName,
+            String oldValue, String newValue, @Arg(ArgEnum.pointDate) Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point.data")
+    public void pointDataAdded(@Arg(ArgEnum.deviceName) String deviceName, @Arg(ArgEnum.pointName) String pointName,
+            String value, @Arg(ArgEnum.pointDate) Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
 
 }
