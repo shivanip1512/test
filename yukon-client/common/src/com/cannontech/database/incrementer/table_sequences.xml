@@ -220,6 +220,9 @@
       <sequence name="CapControlStrategy">
         <table name="CapControlStrategy" identitycolumn="StrategyId" initsequence="true"/>
       </sequence>
+      <sequence name="DmvTest">
+        <table name="DmvTest" identitycolumn="DMVTestID" initsequence="true"/>
+      </sequence>
       <sequence name="DeviceGroupComposed">
         <table name="DeviceGroupComposed" identitycolumn="DeviceGroupComposedId"/>
         <table name="DeviceGroupComposedGroup" identitycolumn="DeviceGroupComposedGroupId"/>

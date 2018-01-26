@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.RowMapper;
 import com.cannontech.capcontrol.dao.DmvTestDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.capcontrol.DmvTest;
@@ -41,26 +40,36 @@ public class DmvTestDaoImpl implements DmvTestDao {
 
     
     @Override
-    public int createDmvTest(DmvTest dmvTest) throws DuplicateException {
+    public int updateDmvTest(DmvTest dmvTest) throws DuplicateException {
         
-        if (!isUniqueDmvTestName(dmvTest.getName())) {
+        if (!isUniqueDmvTestName(dmvTest.getName()) && dmvTest.getDmvTestId() == 0) {
             throw new DuplicateException("Demand Verification and Mangement Test with name" + dmvTest.getName() + " already exist.");
         }
         
-        int newId = dmvTest.getDmvTestId();
-        if (newId == 0) {
-            newId = nextValueHelper.getNextValue("DmvTest");
-        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink parameterSink = sql.insertInto("DmvTest");
-        parameterSink.addValue("DmvTestId", newId);
-        parameterSink.addValue("DmvTestName", dmvTest.getName());
-        parameterSink.addValue("PollingInterval", dmvTest.getPollingInterval());
-        parameterSink.addValue("DataGatheringDuration", dmvTest.getDataGatheringDuration());
-        parameterSink.addValue("StepSize", dmvTest.getStepSize());
-        parameterSink.addValue("CommSuccessPercentage", dmvTest.getCommSuccPercentage());
+        SqlParameterSink parameterSink;
+        int id = dmvTest.getDmvTestId();
+        if (id == 0) {
+            parameterSink = sql.insertInto("DmvTest");
+            id = nextValueHelper.getNextValue("DmvTest");
+            parameterSink.addValue("DmvTestId", id);
+            parameterSink.addValue("DmvTestName", dmvTest.getName());
+            parameterSink.addValue("PollingInterval", dmvTest.getPollingInterval());
+            parameterSink.addValue("DataGatheringDuration", dmvTest.getDataGatheringDuration());
+            parameterSink.addValue("StepSize", dmvTest.getStepSize());
+            parameterSink.addValue("CommSuccessPercentage", dmvTest.getCommSuccPercentage());
+        }
+        else {
+            parameterSink = sql.update("DmvTest");
+            parameterSink.addValue("DmvTestName", dmvTest.getName());
+            parameterSink.addValue("PollingInterval", dmvTest.getPollingInterval());
+            parameterSink.addValue("DataGatheringDuration", dmvTest.getDataGatheringDuration());
+            parameterSink.addValue("StepSize", dmvTest.getStepSize());
+            parameterSink.addValue("CommSuccessPercentage", dmvTest.getCommSuccPercentage());
+            sql.append("Where DmvTestId").eq(id);
+        }
         jdbcTemplate.update(sql);
-        return newId;
+        return id;
     }
     
     @Override
@@ -90,7 +99,16 @@ public class DmvTestDaoImpl implements DmvTestDao {
         sql.append("WHERE DmvTestName").eq(name);
 
         int duplicateNames =  jdbcTemplate.queryForInt(sql);
-        return duplicateNames != 0;
+        return duplicateNames == 0;
+    }
+    
+    @Override
+    public boolean delete(int id) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM DMVTEST");
+        sql.append("WHERE DmvTestId").eq(id);
+        int rowsAffected = jdbcTemplate.update(sql);
+        return rowsAffected == 1;
     }
     
     

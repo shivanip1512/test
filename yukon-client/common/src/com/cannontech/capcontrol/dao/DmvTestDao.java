@@ -6,12 +6,14 @@ import com.cannontech.database.db.capcontrol.DmvTest;
 
 public interface DmvTestDao {
 
-    int createDmvTest(DmvTest dmvTest);
+    int updateDmvTest(DmvTest dmvTest);
 
     boolean isUniqueDmvTestName(String name);
 
     List<DmvTest> getAllDmvTest();
 
     DmvTest getDmvTestById(int id);
+
+    boolean delete(int id);
 
 }
