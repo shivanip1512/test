@@ -708,4 +708,4 @@ WHERE PointId IN (
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.0', '01-AUG-2017', 'Latest Update', 0, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('7.0', '26-JAN-2018', 'Latest Update', 0, GETDATE());
