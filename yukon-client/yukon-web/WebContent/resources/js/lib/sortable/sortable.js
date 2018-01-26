@@ -72,8 +72,10 @@
           if (firstClick) {
               var elementArray;
               elementArray = document.querySelectorAll("tr.vh");
-              for (i = 0; i < elementArray.length; i++) {
-                  elementArray[i].remove();
+              if (elementArray.length > 0) {
+                  for (i = 0; i < elementArray.length; i++) {
+                      elementArray[i].remove();
+                  }
               }
               firstClick = false;
           }
