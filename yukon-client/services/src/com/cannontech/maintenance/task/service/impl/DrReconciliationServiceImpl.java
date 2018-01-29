@@ -148,32 +148,38 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             if (addressUsage.contains("s")) {
                 if (lmGroupAddressing.getSpid() != lcrAddress.getSpid()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
+                    continue;
                 }
             }
             if (addressUsage.contains("g")) {
                 if (lmGroupAddressing.getGeo() != lcrAddress.getGeo()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
+                    continue;
                 }
             }
             if (addressUsage.contains("b")) {
                 if (lmGroupAddressing.getSubstation() != lcrAddress.getSubstation()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
+                    continue;
                 }
             }
             if (addressUsage.contains("f")) {
                 if ((lmGroupAddressing.getFeeder() & lcrAddress.getFeeder()) == 0) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
+                    continue;
                 }
             }
             if (addressUsage.contains("z")) {
                 if (lmGroupAddressing.getZip() != lcrAddress.getZip()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
+                    continue;
                 }
             }
             if (addressUsage.contains("u")) {
                 // Is user same as uda?
                 if (lmGroupAddressing.getUser() != lcrAddress.getUda()) {
                     incorrectAddressingLCR.add(lcrAddress.getDeviceId());
+                    continue;
                 }
             }
             int program = 0;
@@ -262,6 +268,10 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         return true;
     }
 
+    /**
+     * Method looks through all energy company to see if any energy company have setting for
+     * SUPPRESS_IN_OUT_SERVICE_MESSAGES as true.
+     */
     private boolean isSuppressMessage() {
         List<EnergyCompany> allEnergyCompanies = Lists.newArrayList(energyCompanyDao.getAllEnergyCompanies());
         for (EnergyCompany energyCompany : allEnergyCompanies) {
