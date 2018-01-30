@@ -438,11 +438,21 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	            } else {
 	                for (CapControlImporterCbcField column : columns) {
 	                    int columnId = headerColumnMap.get(column);
-                        if (paoType != null
-                            && DeviceTypesFuncs.isCBCOneWay(paoType)
-                            && (column == CapControlImporterCbcField.SLAVE_ADDRESS || column == CapControlImporterCbcField.MASTER_ADDRESS)) {
-                            continue;
-                        } else if (column.isRequired() && StringUtils.isBlank(line[columnId])) {
+                        
+                        if (DeviceTypesFuncs.isCBCOneWay(paoType)) {
+                            if (column == CapControlImporterCbcField.SLAVE_ADDRESS 
+                             || column == CapControlImporterCbcField.MASTER_ADDRESS) {
+                                continue;
+                            }
+                        } 
+                        if (paoType.isLogicalCBC()) {
+                            if (column == CapControlImporterCbcField.SLAVE_ADDRESS
+                             || column == CapControlImporterCbcField.MASTER_ADDRESS
+                             || column == CapControlImporterCbcField.COMM_CHANNEL) {
+                               continue;
+                           }
+                        } 
+                        if (column.isRequired() && StringUtils.isBlank(line[columnId])) {
                             missingColumns.add(column);
                         }
 	                }

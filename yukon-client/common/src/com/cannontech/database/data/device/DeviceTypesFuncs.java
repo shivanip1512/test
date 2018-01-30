@@ -1,19 +1,8 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
-import com.cannontech.database.data.capcontrol.ICapBankController;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.capcontrol.DeviceCBC;
-import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceMCT400Series;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -270,7 +259,6 @@ public final class DeviceTypesFuncs {
         case CBC_7011:
         case CBC_7012:
         case CBC_EXPRESSCOM:
-        case CBC_LOGICAL:
         case CAPBANKCONTROLLER:
             return true;
 

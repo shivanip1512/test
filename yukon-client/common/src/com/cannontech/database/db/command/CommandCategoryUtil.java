@@ -76,10 +76,6 @@ public class CommandCategoryUtil {
             return getAllAlphaBaseDevTypes();
         } else if (category == CommandCategory.CBC_BASE) {
             return getAllCBCDevTypes();
-        } else if (category == CommandCategory.CBC_ONEWAY) {
-            return getAllOnewayCBCDevTypes();
-        } else if (category == CommandCategory.CBC_TWOWAY) {
-            return getAllTwowayCBCDevTypes();
         } else if (category == CommandCategory.CCU_BASE) {
             return getAllCCUDevTypes();
         } else if (category == CommandCategory.DISCONNECT_BASE) {
@@ -292,35 +288,6 @@ public class CommandCategoryUtil {
                 if (paoType.isCbc()) {
                     CAT_CBC_BASE_DEVTYPES.add(paoType);
                 }
-            }
-            CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);
-        }
-        
-        return CAT_CBC_BASE_DEVTYPES;
-    }
-    
-    public final static List<PaoType> getAllOnewayCBCDevTypes() {
-        
-        if (CAT_CBC_BASE_DEVTYPES == null) {
-            CAT_CBC_BASE_DEVTYPES = new ArrayList<>();
-            for (PaoType paoType : PaoType.values()) {
-                if (DeviceTypesFuncs.isCBCOneWay(paoType)) {
-                    CAT_CBC_BASE_DEVTYPES.add(paoType);
-                }
-            }
-            CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);
-        }
-        
-        return CAT_CBC_BASE_DEVTYPES;
-    }
-    
-    public final static List<PaoType> getAllTwowayCBCDevTypes() {
-        
-        if (CAT_CBC_BASE_DEVTYPES == null) {
-            CAT_CBC_BASE_DEVTYPES = new ArrayList<>();
-            for (PaoType paoType : PaoType.values()) {
-                if (DeviceTypesFuncs.isCBCTwoWay(paoType) )
-                    CAT_CBC_BASE_DEVTYPES.add(paoType);
             }
             CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);
         }

@@ -9,8 +9,6 @@ public enum CommandCategory {
     
     ALPHA_BASE("All Alpha Meters"),
     CBC_BASE("All CBCs"),
-    CBC_ONEWAY("Oneway CBCs"),
-    CBC_TWOWAY("Twoway CBCs"),
     CCU_BASE("All CCUs"),
     DISCONNECT_BASE("All Disconnect Meters"),
     LOAD_GROUP_BASE("All Load Group"),
