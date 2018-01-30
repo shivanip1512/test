@@ -130,8 +130,8 @@ public final class JmsApiDirectory {
     public static JmsApi<InfrastructureWarningsRefreshRequest,?,?> INFRASTRUCTURE_WARNINGS_CACHE_REFRESH = 
             JmsApi.builder(InfrastructureWarningsRefreshRequest.class)
                   .name("Infrastructure Warnings WS Cache Refresh")
-                  .description("Sent from the Infrastructure Warnings Refresh Service to the Infrastructure Warnings dao "
-                               + "to notify the dao that cached warnings can be refreshed from teh database.")
+                  .description("Sent from the Infrastructure Warnings service to the Infrastructure Warnings Widget service "
+                               + "to notify the the widget service that recalcutaion is done and the warnings and summary caches can be refreshed.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.infrastructure.InfrastructureWarningsRefreshRequest"))
                   .requestMessage(InfrastructureWarningsRefreshRequest.class)
