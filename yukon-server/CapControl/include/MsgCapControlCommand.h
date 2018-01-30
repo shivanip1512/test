@@ -91,7 +91,7 @@ class CapControlCommand : public CtiMessage
             VOLTAGE_REGULATOR_TAP_POSITION_RAISE,
             VOLTAGE_REGULATOR_TAP_POSITION_LOWER,
 
-            SCHEDULE_BUMP_TEST
+            SCHEDULE_DMV_TEST
         };
 
         CapControlCommand();

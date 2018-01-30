@@ -42,15 +42,19 @@ unsigned long   _VOLT_REDUCTION_COMMANDS;
 unsigned long   _VOLT_REDUCTION_COMMAND_DELAY;
 string  _MAXOPS_ALARM_CAT;
 long    _MAXOPS_ALARM_CATID;
+bool    _LIMIT_ONE_WAY_COMMANDS;
+
 bool    _ENABLE_IVVC;
 unsigned long   _IVVC_MIN_TAP_PERIOD_MINUTES;
 unsigned long   _IVVC_COMMS_RETRY_COUNT;
 double  _IVVC_NONWINDOW_MULTIPLIER;
 double  _IVVC_DEFAULT_DELTA;
-bool    _LIMIT_ONE_WAY_COMMANDS;
 bool    _IVVC_STATIC_DELTA_VOLTAGES;
 bool    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
+
+bool    _ENABLE_DMV_TEST;
+
 
 void refreshGlobalCParms()
 {
@@ -489,6 +493,12 @@ void refreshGlobalCParms()
         CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
+    _LIMIT_ONE_WAY_COMMANDS = gConfigParms.isTrue("CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS", false);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CTILOG_DEBUG(dout, "CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS: " << _LIMIT_ONE_WAY_COMMANDS);
+    }
+
     _ENABLE_IVVC = false;
 
     strcpy(var, "CAP_CONTROL_ENABLE_IVVC");
@@ -529,11 +539,6 @@ void refreshGlobalCParms()
     {
         CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_DEFAULT_DELTA: " << _IVVC_DEFAULT_DELTA);
     }
-    _LIMIT_ONE_WAY_COMMANDS = gConfigParms.isTrue("CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS", false);
-    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
-    {
-        CTILOG_DEBUG(dout, "CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS: " << _LIMIT_ONE_WAY_COMMANDS);
-    }
 
     _IVVC_STATIC_DELTA_VOLTAGES = gConfigParms.isTrue("CAP_CONTROL_IVVC_STATIC_DELTA_VOLTAGES");
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
@@ -551,6 +556,16 @@ void refreshGlobalCParms()
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY: " << _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY << " seconds.");
+    }
+
+    /*
+        Demand Management & Verification Test
+    */
+
+    _ENABLE_DMV_TEST = gConfigParms.isTrue("CAP_CONTROL_ENABLE_DMV_TEST");
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CTILOG_DEBUG( dout, "CAP_CONTROL_ENABLE_DMV_TEST: " << _ENABLE_DMV_TEST );
     }
 }
 

@@ -19,6 +19,7 @@
 
 extern unsigned long _CC_DEBUG;
 extern bool CC_TERMINATE_THREAD_TEST;
+extern bool _ENABLE_DMV_TEST;
 using namespace std;
 
 using Cti::ThreadStatusKeeper;
@@ -493,7 +494,7 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     }
     else if (stringContainsIgnoreCase(command,"DMV Test: "))
     {
-        if ( gConfigParms.isTrue( "ENABLE_DMV_TEST_FUTURE_FUNCTIONALITY", false ) )
+        if ( _ENABLE_DMV_TEST )
         {
             retVal = DmvTestExecution;
         }

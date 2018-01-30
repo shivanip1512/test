@@ -19,7 +19,7 @@ MsgTriggerDmvTest::MsgTriggerDmvTest()
 }
 
 MsgTriggerDmvTest::MsgTriggerDmvTest( const long busID, const std::string & dmvTestName )
-    :   ItemCommand( CapControlCommand::SCHEDULE_BUMP_TEST, busID ),
+    :   ItemCommand( CapControlCommand::SCHEDULE_DMV_TEST, busID ),
         _dmvTestName( dmvTestName )
 {
 
