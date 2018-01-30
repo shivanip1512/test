@@ -80,7 +80,7 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
         return true;
     };
 
-    bool isDnpDeviceId(const long deviceid) const override
+    bool isDnpDirectDeviceId(const long deviceid) const override
     {
         return deviceid > 100;
     }
@@ -692,7 +692,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_receive )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -909,7 +909,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_dispatch )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -1141,7 +1141,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -1359,7 +1359,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -1620,7 +1620,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_receive )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -1802,7 +1802,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_dispatch )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -1997,7 +1997,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -2185,7 +2185,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
         CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
         fdrPoint->setPointID(43);
-        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
@@ -2996,7 +2996,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 3 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 67305985 select pointid 43");  //  aka 0x04030201
     }
 
     //  Failure from device
@@ -3019,7 +3019,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 3 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 67305985 select pointid 43");  //  aka 0x04030201
     }
 }
 
@@ -3088,7 +3088,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 275954538");  //  aka floor(0x04030201 * 4.1)
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 275954538 select pointid 43");  //  aka floor(0x04030201 * 4.1)
     }
 
     //  Failure from device
@@ -3111,7 +3111,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 275954538");  //  aka floor(0x04030201 * 4.1)
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 275954538 select pointid 43");  //  aka floor(0x04030201 * 4.1)
     }
 }
 
@@ -3181,7 +3181,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 12.880530");  //  aka 3.1415926 * 4.1, to 6 digits
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 12.880530 select pointid 43");  //  aka 3.1415926 * 4.1, to 6 digits
     }
 
     //  Failure from device
@@ -3205,7 +3205,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 12.880530");  //  aka 3.1415926 * 4.1, to 6 digits
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 12.880530 select pointid 43");  //  aka 3.1415926 * 4.1, to 6 digits
     }
 }
 

@@ -80,7 +80,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         int processMessageFromForeignSystem(Cti::Fdr::ServerConnection& connection,
                                            const char* data, unsigned int size) override;
 
-        virtual bool isDnpDeviceId(const long deviceId) const;
+        virtual bool isDnpDirectDeviceId(const long deviceId) const;  //  virtual for unit test override
 
         unsigned int getHeaderLength() override;
 

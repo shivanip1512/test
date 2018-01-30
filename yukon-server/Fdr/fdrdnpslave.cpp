@@ -536,7 +536,7 @@ int DnpSlave::processScanSlaveRequest (ConnectionProtocol cp)
 }
 
 
-bool DnpSlave::isDnpDeviceId(const long deviceId) const
+bool DnpSlave::isDnpDirectDeviceId(const long deviceId) const
 {
     const std::string sql = "select type from yukonpaobject where paobjectid=?";
 
@@ -553,7 +553,9 @@ bool DnpSlave::isDnpDeviceId(const long deviceId) const
 
         rdr[0] >> paoTypeStr;
 
-        return isDnpDeviceType(resolveDeviceType(paoTypeStr));
+        auto deviceType = resolveDeviceType(paoTypeStr);
+
+        return isDnpDeviceType(deviceType) || deviceType == TYPE_CBCLOGICAL;
     }
 
     return false;
@@ -619,7 +621,7 @@ int DnpSlave::processControlRequest (ConnectionProtocol cp, const ObjectBlock &o
 
                 if( fdrPoint.isControllable() )
                 {
-                    if( isDnpDeviceId( fdrPoint.getPaoID() ) )
+                    if( isDnpDirectDeviceId( fdrPoint.getPaoID() ) )
                     {
                         control.status = tryPorterControl( control, fdrPoint.getPointID() );
                     }
@@ -1092,7 +1094,7 @@ int DnpSlave::processAnalogOutputRequest (ConnectionProtocol cp, const ObjectBlo
 
             if( fdrPoint.isControllable() )
             {
-                if( isDnpDeviceId( fdrPoint.getPaoID() ) )
+                if( isDnpDirectDeviceId( fdrPoint.getPaoID() ) )
                 {
                     analog.status = tryPorterAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier);
                 }
@@ -1172,27 +1174,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         return ControlStatus::NotSupported;
     }
 
-    unsigned analogOffset;
-
-    if( point.getControlOffset() > 0 )
-    {
-        //  if the point has a control offset, that overrides the analog output point offset...  I think this is correct
-        analogOffset = point.getControlOffset();
-    }
-    else
-    {
-        //  if there's no control offset, require the point to be an analog offset
-        if( point.getPointOffset() <= AnalogOutputStatus::AnalogOutputOffset )
-        {
-            CTILOG_WARN(dout, logNow() << " analog has no control offset and is not an analog output" << describeAnalogOutputRequest(analog, point));
-
-            return ControlStatus::FormatError;
-        }
-
-        analogOffset = point.getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
-    }
-
-    std::string commandString = "putvalue analog " + std::to_string(analogOffset) + " ";
+    std::string commandString = "putvalue analog value ";
 
     switch( analog.type )
     {
@@ -1210,6 +1192,8 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
             break;
         }
     }
+
+    commandString += " select pointid " + std::to_string(pointId);
 
     const long userMessageId = _porterUserMsgIdGenerator();
 
