@@ -443,7 +443,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	                    int columnId = headerColumnMap.get(column);
                         boolean isOneWay = paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE);
                         
-	                    if (isOneWay) {
+                        if (isOneWay) {
                             if (column == CapControlImporterCbcField.SLAVE_ADDRESS 
                              || column == CapControlImporterCbcField.MASTER_ADDRESS) {
                                 continue;
