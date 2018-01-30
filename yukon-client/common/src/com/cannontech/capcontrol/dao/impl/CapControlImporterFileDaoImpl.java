@@ -11,6 +11,7 @@ import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
@@ -36,13 +37,15 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao {
+    @Autowired private PaoDefinitionDao paoDefinitionDao; 
     private static final Logger log = YukonLogManager.getLogger(CapControlImporterFileDaoImpl.class);
 	
 	private Map<CapControlImporterCbcField, Integer> getCbcHeaderRowMap(final String[] headerRow) {
@@ -438,8 +441,9 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	            } else {
 	                for (CapControlImporterCbcField column : columns) {
 	                    int columnId = headerColumnMap.get(column);
+                        boolean isOneWay = paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE);
                         
-                        if (DeviceTypesFuncs.isCBCOneWay(paoType)) {
+	                    if (isOneWay) {
                             if (column == CapControlImporterCbcField.SLAVE_ADDRESS 
                              || column == CapControlImporterCbcField.MASTER_ADDRESS) {
                                 continue;

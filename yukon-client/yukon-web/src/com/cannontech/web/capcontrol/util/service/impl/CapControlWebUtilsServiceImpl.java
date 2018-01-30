@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.capcontrol.streamable.Area;
@@ -37,6 +39,7 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
 
     @Autowired private CapControlCache capControlCache;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     @Override
     public List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
@@ -91,9 +94,11 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
         for (CapBankDevice bank: capBanks) {
             LiteYukonPAObject cbc = allPaos.get(bank.getControlDeviceID());
             ViewableCapBank viewable = new ViewableCapBank();
+            boolean isTwoWay = paoDefinitionDao.isTagSupported(cbc.getPaoType(), PaoTag.TWO_WAY_DEVICE);
 
             viewable.setBankInfo(bank);
             viewable.setCbcInfo(cbc);
+            viewable.setTwoWayCbc(isTwoWay);
 
             viewableList.add(viewable);
         }

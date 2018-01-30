@@ -1,6 +1,5 @@
 package com.cannontech.web.capcontrol.models;
 
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 
@@ -26,7 +25,6 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
     public void setCbcInfo(LiteYukonPAObject cbc) {
         cbcId = cbc.getLiteID();
         cbcName = cbc.getPaoName();
-        twoWayCbc = DeviceTypesFuncs.isCBCTwoWay(cbc.getPaoType());
         logicalCBC = cbc.getPaoType().isLogicalCBC();
     }
 
@@ -64,6 +62,10 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
 
     public final boolean isTwoWayCbc() {
         return twoWayCbc;
+    }
+    
+    public void setTwoWayCbc(boolean twoWayCbc) {
+        this.twoWayCbc = twoWayCbc; 
     }
 
     public final boolean isBankMoved() {

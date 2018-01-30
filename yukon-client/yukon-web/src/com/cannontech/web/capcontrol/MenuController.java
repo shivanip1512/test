@@ -22,6 +22,8 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -53,6 +55,7 @@ import com.google.common.collect.Sets;
 public class MenuController {
     @Autowired private CapControlCache cache;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CapControlCommentService ccCommentService;
     @Autowired private AttributeService attributeService;
@@ -183,7 +186,7 @@ public class MenuController {
         LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
         
         boolean isClosed = CapBankDevice.isInAnyCloseState(capBank);
-        boolean isTwoWay = DeviceTypesFuncs.isCBCTwoWay(cbcPaoObject.getPaoType());
+        boolean isTwoWay = paoDefinitionDao.isTagSupported(cbcPaoObject.getPaoType(), PaoTag.TWO_WAY_DEVICE);
         boolean isLogical = cbcPaoObject.getPaoType().isLogicalCBC();
         boolean is702xDevice = DeviceTypesFuncs.is702xDevice(cbcPaoObject.getPaoType());
         boolean is701xDevice = DeviceTypesFuncs.is701xDevice(cbcPaoObject.getPaoType());
