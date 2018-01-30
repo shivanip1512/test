@@ -44,7 +44,6 @@ import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.user.service.UserPreferenceService;
-import com.cannontech.web.util.WebUtilityService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -61,7 +60,6 @@ public class BusViewController {
     @Autowired private VoltageFlatnessGraphService voltageFlatness;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FlotChartService flotChartService;
-    @Autowired private WebUtilityService webUtil;
     @Autowired private UserPreferenceService userPreferenceService;
     
     @RequestMapping(value="detail", method = RequestMethod.GET)
@@ -97,8 +95,6 @@ public class BusViewController {
         model.addAttribute("singlePhaseZone", ZoneType.SINGLE_PHASE);
         
         model.addAttribute("ranges", TimeRange.values());
-        String preference =
-            userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.DISPLAY_EVENT_RANGE);
         TimeRange lastRange =
             TimeRange.valueOf(userPreferenceService.getPreference(userContext.getYukonUser(),
                 UserPreferenceName.DISPLAY_EVENT_RANGE));
@@ -120,7 +116,7 @@ public class BusViewController {
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatness.getSubBusGraph(userContext, subBusId);
             Map<String, Object> graphAsJson = 
-                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
+                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
             return graphAsJson;
         }
         
