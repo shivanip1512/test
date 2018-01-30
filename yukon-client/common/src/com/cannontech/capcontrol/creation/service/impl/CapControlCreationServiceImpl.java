@@ -38,7 +38,14 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
     public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, LightDeviceConfiguration config, Integer parentRtuId) {
         CompleteYukonPao pao;
         
-        if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
+        if (paoType.isLogicalCBC()) {
+            CompleteCbcLogical cbcLogical = new CompleteCbcLogical();
+            if (parentRtuId == null) {
+                throw new IllegalArgumentException("Import of " + name + " failed. Cannot create Logical CBC without parent RTU");
+            }
+            cbcLogical.setParentDeviceId(parentRtuId);
+            pao = cbcLogical;
+        } else if (paoDefinitionDao.isTagSupported(paoType, PaoTag.ONE_WAY_DEVICE)) {
             pao = new CompleteOneWayCbc();
         } else if (paoDefinitionDao.isTagSupported(paoType, PaoTag.TWO_WAY_DEVICE)) {
             CompleteTwoWayCbc twoWayCbc = new CompleteTwoWayCbc();
@@ -47,16 +54,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         } else {
             throw new IllegalArgumentException("Import of " + name + " failed. Unknown CBC Type: " + paoType.getDbString());
         }
-        
-        if (paoType.isLogicalCBC()) {
-            CompleteCbcLogical cbcLogical = new CompleteCbcLogical();
-            if (parentRtuId == null) {
-                throw new IllegalArgumentException("Import of " + name + " failed. Cannot create Logical CBC without parent RTU");
-            }
-            cbcLogical.setParentDeviceId(parentRtuId);
-            pao = cbcLogical;
-        }
-        
+       
         pao.setDisabled(disabled);
         pao.setPaoName(name);
         

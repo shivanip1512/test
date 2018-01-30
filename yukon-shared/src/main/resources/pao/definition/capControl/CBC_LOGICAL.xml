@@ -3,7 +3,6 @@
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DEVICE_CONFIGURATION"/>
-        <tag name="ONE_WAY_DEVICE"/>
     </tags>
     <configuration>
         <category type="cbcHeartbeat" />
