@@ -435,6 +435,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     @Override
+    public boolean isAttributeMappingConfigurationType(PaoType paoType) {
+        return isCategoryTypeSupportedByPaoType(paoType, CategoryType.CBC_ATTRIBUTE_MAPPING);  //  the only one for now
+    }
+    
+    @Override
     public boolean isCategoryTypeSupportedByPaoType(PaoType paoType, CategoryType catType) {
         return paoCategoryMap.get(paoType)
                 .stream()

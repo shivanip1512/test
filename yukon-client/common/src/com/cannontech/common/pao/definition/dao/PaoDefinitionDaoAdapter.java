@@ -205,4 +205,9 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     public boolean isCategoryTypeSupportedByPaoType(PaoType paoType, CategoryType catType) {
         throw new UnsupportedOperationException("not implemented"); 
     }
+
+    @Override
+    public boolean isAttributeMappingConfigurationType(PaoType paoType) {
+        throw new UnsupportedOperationException("not implemented"); 
+    }
 }

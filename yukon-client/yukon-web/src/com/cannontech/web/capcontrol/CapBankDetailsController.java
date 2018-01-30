@@ -2,11 +2,8 @@ package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,14 +15,12 @@ import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -46,7 +41,6 @@ import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.service.SubstationService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableMap;
 
 @Controller
 @RequestMapping("/capbank/*")
@@ -58,20 +52,10 @@ public class CapBankDetailsController {
     @Autowired private CapControlDao capControlDao;
     @Autowired private CachingPointFormattingService cachingPointFormattingService;
     @Autowired private PaoDao paoDao;
-    @Autowired private AttributeService attributeService;
+    @Autowired private CbcHelperService cbcHelperService;
     @Autowired private SubstationService substationService;
     @Autowired private SubstationDao substationDao;
     @Autowired private IDatabaseCache dbCache;
-
-    private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
-        .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|firmwareVersion}")
-        .put(BuiltInAttribute.IP_ADDRESS, "{rawValue|ipAddress}")
-        .put(BuiltInAttribute.NEUTRAL_CURRENT_SENSOR, "{rawValue|neutralCurrent}")
-        .put(BuiltInAttribute.SERIAL_NUMBER, "{rawValue|long}")
-        .put(BuiltInAttribute.UDP_PORT, "{rawValue|long}")
-        .put(BuiltInAttribute.LAST_CONTROL_REASON, "{rawValue|lastControlReason}")
-        .put(BuiltInAttribute.IGNORED_CONTROL_REASON, "{rawValue|ignoredControlReason}")
-        .build();
 
     @RequestMapping("capBankLocations")
     public String capBankLocations(ModelMap model, FlashScope flash, LiteYukonUser user, int value) {
@@ -232,25 +216,10 @@ public class CapBankDetailsController {
 
     private Map<LitePoint, String> getFormatMappings(PaoType paoType, List<LitePoint> litePoints) {
 
-        Map<LitePoint, String> formatForPoints = new LinkedHashMap<>();
-
-        for (LitePoint point : litePoints) {
-            PointIdentifier pid = PointIdentifier.createPointIdentifier(point);
-            PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(paoType, pid);
-
-            String pointValueFormat = "SHORT";
-
-            //This set should contain 0 items if there is not a special format, or 1 if there is
-            Set<BuiltInAttribute> attributes = attributeService.findAttributesForPoint(pptId, formatMappings.keySet());
-            for (BuiltInAttribute attribute: attributes) {
-                if (formatMappings.get(attribute) != null) {
-                    pointValueFormat = formatMappings.get(attribute);
-                }
-            }
-
-            formatForPoints.put(point, pointValueFormat);
-        }
-        return formatForPoints;
+        Map<Integer, String> pointFormats = 
+                cbcHelperService.getPaoTypePointFormats(paoType, litePoints);
+        
+        return litePoints.stream().collect(StreamUtils.mapSelfTo(point ->
+                        pointFormats.getOrDefault(point.getPointID(), "SHORT")));
     }
-
 }

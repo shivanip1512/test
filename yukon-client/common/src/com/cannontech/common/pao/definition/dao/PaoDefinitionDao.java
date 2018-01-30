@@ -72,6 +72,7 @@ import com.google.common.collect.SetMultimap;
     Collection<ConfigurationCategory> getCategoriesForPaoTypes(Set<PaoType> paoTypes);
 
     boolean isDnpConfigurationType(PaoType paoType);
+    boolean isAttributeMappingConfigurationType(PaoType paoType);
 
     // POINTS
     // ============================================

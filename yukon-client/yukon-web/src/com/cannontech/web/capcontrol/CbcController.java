@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
@@ -29,12 +28,9 @@ import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
-import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -56,7 +52,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableMap;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
@@ -68,23 +63,13 @@ public class CbcController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
-    @Autowired private AttributeService attributeService;
+    @Autowired private CbcHelperService cbcHelperService;
     @Autowired private CapbankDao capbankDao;
     @Autowired private CapControlCache ccCache;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
-    
-    private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
-            .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|firmwareVersion}")
-            .put(BuiltInAttribute.IP_ADDRESS, "{rawValue|ipAddress}")
-            .put(BuiltInAttribute.NEUTRAL_CURRENT_SENSOR, "{rawValue|neutralCurrent}")
-            .put(BuiltInAttribute.SERIAL_NUMBER, "{rawValue|long}")
-            .put(BuiltInAttribute.UDP_PORT, "{rawValue|long}")
-            .put(BuiltInAttribute.LAST_CONTROL_REASON, "{rawValue|lastControlReason}")
-            .put(BuiltInAttribute.IGNORED_CONTROL_REASON, "{rawValue|ignoredControlReason}")
-            .build();
 
     @RequestMapping(value = "cbc/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
@@ -239,22 +224,28 @@ public class CbcController {
 
             }
 
-            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
+            List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(cbc.getId());
+
+            Map<PointType, List<PointInfo>> points =
+                    litePoints.stream()
+                        .map(PointInfo::of)
+                        .collect(Collectors.groupingBy(PointInfo::getType));
+            
+            Map<Integer, PointInfo> pointLookup = 
+                    points.values().stream()
+                        .flatMap(List::stream)
+                        .collect(StreamUtils.mapToSelf(PointInfo::getPointId)); 
+            
             //check for special formats
-            for(List<PointInfo> pointList : points.values()){
-                for(PointInfo point : pointList){
-                    LitePoint litePoint = pointDao.getLitePoint(point.getPointId());
-                    PointIdentifier pid = new PointIdentifier(point.getType(), litePoint.getPointOffset());
-                    PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(cbc.getPaoType(), pid);
-                    //This set should contain 0 items if there is not a special format, or 1 if there is
-                    Set<BuiltInAttribute> attributes = attributeService.findAttributesForPoint(pptId, formatMappings.keySet());
-                    for (BuiltInAttribute attribute: attributes) {
-                        if (formatMappings.get(attribute) != null) {
-                            point.setFormat(formatMappings.get(attribute));
-                        }
-                    }
-                }
-            }
+            Map<Integer, String> pointFormats = 
+                            cbcHelperService.getPaoTypePointFormats(cbc.getPaoType(), litePoints);
+            
+            pointFormats.forEach((pointId, format) -> {
+                    PointInfo pi = pointLookup.get(pointId);
+                    if (pi != null) {
+                        pi.setFormat(format);
+                    }});
+            
             model.addAttribute("points", points);
         }
 
@@ -281,21 +272,9 @@ public class CbcController {
         model.addAttribute("logicalTypes", CapControlCBC.getLogicalTypes());
 
         Set<Integer> tcpPorts = dbCache.getAllPorts().stream()
-            .filter(new Predicate<LiteYukonPAObject> () {
-
-                @Override
-                public boolean test(LiteYukonPAObject port) {
-                    return port.getPaoType() == PaoType.TCPPORT;
-                }
-
-            }).map(new Function<LiteYukonPAObject, Integer>(){
-
-                @Override
-                public Integer apply(LiteYukonPAObject port) {
-                    return port.getLiteID();
-                }
-
-            }).collect(Collectors.toSet());
+            .filter(port -> port.getPaoType() == PaoType.TCPPORT)
+            .map(LiteYukonPAObject::getLiteID)
+            .collect(Collectors.toSet());
 
         model.addAttribute("tcpCommPorts", tcpPorts);
 

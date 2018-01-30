@@ -1,29 +1,62 @@
 package com.cannontech.capcontrol.service.impl;
 
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.google.common.base.Functions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 public class CbcHelperServiceImpl implements CbcHelperService {
-    public static final String DEFAULT_FIXED_TEXT = "Fixed";
-    public static Pattern logicalPointPattern = Pattern.compile("^\\*Logical<.*> ");
+    private static final Logger logger = YukonLogManager.getLogger(CbcHelperServiceImpl.class);
+    private static final String DEFAULT_FIXED_TEXT = "Fixed";
 
     private RolePropertyDao rolePropertyDao;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    @Autowired public YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private AttributeService attributeService;
 
+    private static final Map<BuiltInAttribute,String> cbcFormatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
+        .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|firmwareVersion}")
+        .put(BuiltInAttribute.IP_ADDRESS, "{rawValue|ipAddress}")
+        .put(BuiltInAttribute.NEUTRAL_CURRENT_SENSOR, "{rawValue|neutralCurrent}")
+        .put(BuiltInAttribute.SERIAL_NUMBER, "{rawValue|long}")
+        .put(BuiltInAttribute.UDP_PORT, "{rawValue|long}")
+        .put(BuiltInAttribute.LAST_CONTROL_REASON, "{rawValue|lastControlReason}")
+        .put(BuiltInAttribute.IGNORED_CONTROL_REASON, "{rawValue|ignoredControlReason}")
+        .build();
+    
     @Autowired
     public CbcHelperServiceImpl(VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
         this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
@@ -78,5 +111,66 @@ public class CbcHelperServiceImpl implements CbcHelperService {
         CbcQueryHelper.appendOrphanQuery(builder);
         
         return builder;
+    }
+
+    @Override
+    public Map<Integer, String> getPaoTypePointFormats(PaoType paoType, List<LitePoint> litePoints) {
+        
+        Multimap<Integer, BuiltInAttribute> pointAttributes = 
+                getPaoTypePointAttributes(paoType, litePoints, cbcFormatMappings.keySet());
+        
+        return mapAttributesToFormats(pointAttributes, cbcFormatMappings);
+    }
+
+    private Multimap<Integer, BuiltInAttribute> getPaoTypePointAttributes(PaoType paoType, List<LitePoint> litePoints, 
+            Set<BuiltInAttribute> attributeMatches) {
+        //  First, get the paoDefinition attribute mappings
+        Multimap<Integer, BuiltInAttribute> attributeMappings = 
+                litePoints.stream()
+                    .collect(StreamUtils.mappedValueToMultimap(
+                            LitePoint::getPointID, 
+                            lp -> attributeService.findAttributesForPoint(
+                                    PaoTypePointIdentifier.of(paoType, PointIdentifier.createPointIdentifier(lp)), 
+                                    attributeMatches)));
+
+        //  if the paotype supports attribute mapping, look up its overrides, if any
+        if (paoDefinitionDao.isAttributeMappingConfigurationType(paoType)) {
+
+            List<Integer> pointIds = Lists.transform(litePoints, LitePoint::getPointID);
+            
+            ChunkingMappedSqlTemplate mappedSqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
+            
+            Multimap<Integer, String> overrides = 
+                    mappedSqlTemplate.multimappedQuery(sublist -> {
+                            VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+                            CbcQueryHelper.appendAttributeMappingQuery(attributeMatches, sublist, builder);
+                            return builder;
+                        }, pointIds, rs -> Maps.immutableEntry(rs.getInt("PointId"), rs.getString("Attribute")), Functions.identity());
+
+            //  Add the entries to the end of any existing entries
+            attributeMappings.putAll(Multimaps.transformValues(overrides, BuiltInAttribute::valueOf));
+        }
+        
+        return attributeMappings;
+    }
+
+    private Map<Integer, String> mapAttributesToFormats(Multimap<Integer, BuiltInAttribute> pointAttributes, 
+            Map<BuiltInAttribute,String> formatMappings) {
+        //  Transform the attribute mappings into format mappings  
+        Multimap<Integer, String> formatEntries = 
+                Multimaps.transformValues(pointAttributes, formatMappings::get);
+        
+        return formatEntries.entries().stream()
+                .filter(e -> e.getValue() != null)  //  filter out anything without a format mapping (shouldn't happen, but safety first)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey, 
+                        Map.Entry::getValue,
+                        //  collisions may happen if a remapped point overlaps a paoDefinition offset, so take the latter/override format.                        
+                        (first, second) -> {   
+                            if (!first.equals(second)) {
+                                logger.debug("Point format override: " + first + ", " + second);       
+                            } 
+                            return second;
+                        })); 
     }
 }

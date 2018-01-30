@@ -12,7 +12,7 @@ public class CapControlCBCOrphanRowMapperTest {
 
     private static final String prefixExpected =             
             "Query:  WITH OverridePointName AS ("
-            + " SELECT dcdm.DeviceID as PAObjectID, dcci_pt.ItemValue as POINTNAME"
+            + " SELECT dcdm.DeviceID as PAObjectID, dcci_pt.ItemValue as POINTNAME, dcci_at.ItemValue as Attribute"
             + " FROM DeviceConfigurationDeviceMap dcdm"
             + " JOIN DeviceConfigCategoryMap dccm ON dcdm.DeviceConfigurationId=dccm.DeviceConfigurationId"
             + " JOIN DeviceConfigCategory dcc ON dccm.DeviceConfigCategoryId=dcc.DeviceConfigCategoryId"
