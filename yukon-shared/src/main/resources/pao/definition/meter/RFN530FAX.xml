@@ -17,7 +17,6 @@
         <tag name="THREE_PHASE_VOLTAGE"/>
         <tag name="TOU"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
-        <tag name="VOLTAGE_PROFILE"/>
     </tags>
     <configuration>
         <category type="demand"/>
