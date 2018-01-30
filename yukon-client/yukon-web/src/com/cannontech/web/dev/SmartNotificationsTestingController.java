@@ -47,8 +47,8 @@ import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.widgets.service.InfrastructureWarningsWidgetService;
 import com.cannontech.web.dev.service.InfrastructureWarningsGeneratorService;
-import com.cannontech.web.infrastructure.service.InfrastructureWarningsRefreshService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -60,7 +60,7 @@ public class SmartNotificationsTestingController {
     @Autowired private SmartNotificationEventCreationService eventCreationService;
     @Autowired private SmartNotificationEventDao eventDao;
     @Autowired private InfrastructureWarningsGeneratorService infrastructureWarningsGeneratorService;
-    @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
+    @Autowired private InfrastructureWarningsWidgetService infrastructureWarningsWidgetService;
     @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private DeviceDataMonitorServiceImpl monitorService;
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
@@ -101,7 +101,7 @@ public class SmartNotificationsTestingController {
         monitorCacheService.getDeviceDataMonitors().forEach(m -> {
             monitorService.recaclulate(m);
         });
-        infrastructureWarningsRefreshService.initiateRecalculation();
+        infrastructureWarningsWidgetService.initiateRecalculation();
         flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Requested recualctulation."));
         return "redirect:smartNotificationsSimulator";
     }

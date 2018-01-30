@@ -3,8 +3,6 @@ package com.cannontech.infrastructure.dao;
 import java.util.Collection;
 import java.util.List;
 
-import org.joda.time.Instant;
-
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
@@ -44,11 +42,5 @@ public interface InfrastructureWarningsDao {
      * Retrieve the current infrastructure warnings by deviceId.
      */
     List<InfrastructureWarning> getWarnings(int deviceId);
-
-    /**
-     * If nextRunTime is true returns next time refresh can be attempted, otherwise return time the data was collected last.
-     */
-    Instant getRunTime(boolean nextRunTime);
-
-    boolean minimumTimeBetweenRunsExceeded();
 }
+

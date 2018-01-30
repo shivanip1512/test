@@ -8,23 +8,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.common.util.TimeUtil;
-import com.cannontech.core.dao.PersistedSystemValueDao;
-import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -37,26 +26,11 @@ import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.google.common.collect.Lists;
 
-public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao {
-    private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsDaoImpl.class);
-    private static List<InfrastructureWarning> cachedWarnings;
-    private static Instant cachedWarningsUpdateTime;
-    private static InfrastructureWarningSummary cachedSummary;
-    private static Instant cachedSummaryUpdateTime;
-    private static Instant lastRun;
-    private Duration minTimeBetweenRuns = Duration.standardMinutes(minimumMinutesBetweenCalculations);
+public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
+
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private DatabaseVendorResolver dbVendorResolver;
-    @Autowired private ConfigurationSource configurationSource;
-    
-    @PostConstruct
-    public void init() {
-        if (configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
-            minTimeBetweenRuns = Duration.standardMinutes(1);
-        }
-    }
-    
+        
     @Override
     @Transactional
     public void insert(Collection<InfrastructureWarning> warnings) {
@@ -93,14 +67,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
     
     @Override
     public synchronized List<InfrastructureWarning> getWarnings() {
-        if (cachedWarnings == null || cachedWarningsUpdateTime.isBefore(getLastRun())) {
-            log.debug("Warnings cache is outdated, updating.");
-            cachedWarnings = jdbcTemplate.query(selectAllInfrastructureWarnings(), infrastructureWarningRowMapper);
-            cachedWarningsUpdateTime = Instant.now();
-        } else {
-            log.trace("Warnings cache is up to date, returning cached warnings.");
-        }
-        return Lists.newArrayList(cachedWarnings);
+        return jdbcTemplate.query(selectAllInfrastructureWarnings(), infrastructureWarningRowMapper);
     }
 
     @Override
@@ -113,75 +80,66 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
 
     @Override
     public synchronized InfrastructureWarningSummary getWarningsSummary() {
-        if (cachedSummary == null || cachedSummaryUpdateTime.isBefore(getLastRun())) {
-            log.debug("Summary cache is outdated, updating.");
-            
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
-            sql.append(  "FROM YukonPaObject");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.GATEWAY.getPaoTypes());
-            sql.append(") AS Gateways,");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
-            sql.append(  "FROM YukonPaObject");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.RELAY.getPaoTypes());
-            sql.append(") AS Relays,");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
-            sql.append(  "FROM YukonPaObject");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.CCU.getPaoTypes());
-            sql.append(") AS Ccus,");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
-            sql.append(  "FROM YukonPaObject");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
-            sql.append(") AS Repeaters,");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaoId)");
-            sql.append(  "FROM InfrastructureWarnings iw");
-            sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.GATEWAY.getPaoTypes());
-            sql.append(") AS WarningGateways,");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaoId)");
-            sql.append(  "FROM InfrastructureWarnings iw");
-            sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.RELAY.getPaoTypes());
-            sql.append(") AS WarningRelays,");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaoId)");
-            sql.append(  "FROM InfrastructureWarnings iw");
-            sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.CCU.getPaoTypes());
-            sql.append(") AS WarningCcus,");
-            
-            sql.append("(");
-            sql.append(  "SELECT COUNT(DISTINCT PaoId)");
-            sql.append(  "FROM InfrastructureWarnings iw");
-            sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
-            sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
-            sql.append(") AS WarningRepeaters");
-            if (dbVendorResolver.getDatabaseVendor().isOracle()) {
-                sql.append("FROM dual");
-            }
-            
-            InfrastructureWarningSummary summary = jdbcTemplate.queryForObject(sql, warningSummaryRowMapper);
-            summary.setLastRun(getLastRun());
-            cachedSummary = summary;
-            cachedSummaryUpdateTime = Instant.now();
-        } else {
-            log.trace("Summary cache is up to date, returning cached summary");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append("FROM YukonPaObject");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.GATEWAY.getPaoTypes());
+        sql.append(") AS Gateways,");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append("FROM YukonPaObject");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.RELAY.getPaoTypes());
+        sql.append(") AS Relays,");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append("FROM YukonPaObject");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.CCU.getPaoTypes());
+        sql.append(") AS Ccus,");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append("FROM YukonPaObject");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
+        sql.append(") AS Repeaters,");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaoId)");
+        sql.append("FROM InfrastructureWarnings iw");
+        sql.append("JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.GATEWAY.getPaoTypes());
+        sql.append(") AS WarningGateways,");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaoId)");
+        sql.append("FROM InfrastructureWarnings iw");
+        sql.append("JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.RELAY.getPaoTypes());
+        sql.append(") AS WarningRelays,");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaoId)");
+        sql.append("FROM InfrastructureWarnings iw");
+        sql.append("JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.CCU.getPaoTypes());
+        sql.append(") AS WarningCcus,");
+
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaoId)");
+        sql.append("FROM InfrastructureWarnings iw");
+        sql.append("JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
+        sql.append(") AS WarningRepeaters");
+        if (dbVendorResolver.getDatabaseVendor().isOracle()) {
+            sql.append("FROM dual");
         }
-        return cachedSummary.copy();
+
+        return jdbcTemplate.queryForObject(sql, warningSummaryRowMapper);
+
     }
 
     @Override
@@ -243,29 +201,5 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
             arguments.add(argument3);
         }
         return arguments.toArray();
-    }
-    
-    private synchronized Instant getLastRun() {
-        if (lastRun == null || TimeUtil.isXMinutesBeforeNow(minimumMinutesBetweenCalculations, lastRun)) {
-            lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
-        }
-        return lastRun;
-    }
-
-    @Override
-    public Instant getRunTime(boolean nextCollectionTime) {
-        Instant runTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
-        if (nextCollectionTime) {
-            return runTime.plus(minTimeBetweenRuns);
-        }
-        return runTime;
-    }
-    
-    @Override
-    public boolean minimumTimeBetweenRunsExceeded() {
-        if (lastRun == null || getRunTime(true).isBeforeNow()) {
-            return true;
-        }
-        return false;
     }
 }

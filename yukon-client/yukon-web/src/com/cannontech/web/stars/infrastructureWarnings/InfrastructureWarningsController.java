@@ -33,7 +33,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.infrastructure.service.InfrastructureWarningsRefreshService;
+import com.cannontech.web.common.widgets.service.InfrastructureWarningsWidgetService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -42,7 +42,7 @@ import com.google.common.collect.Lists;
 public class InfrastructureWarningsController {
     
     @Autowired private InfrastructureWarningsDao infrastructureWarningsDao;
-    @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
+    @Autowired private InfrastructureWarningsWidgetService widgetService ;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache cache;
     @Autowired private DateFormattingService dateFormattingService;
@@ -54,14 +54,14 @@ public class InfrastructureWarningsController {
 
     @PostConstruct
     public void init() {
-        lastAttemptedRefresh = infrastructureWarningsDao.getRunTime(false);
+        lastAttemptedRefresh = widgetService.getRunTime(false);
     }
     
     @RequestMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
         lastAttemptedRefresh = new Instant();
         Map<String, Object> json = new HashMap<>();
-        infrastructureWarningsRefreshService.initiateRecalculation();
+        widgetService.initiateRecalculation();
         json.put("success", true);
         return json;
     }
@@ -70,9 +70,9 @@ public class InfrastructureWarningsController {
     @RequestMapping(value="updateWidget", method=RequestMethod.GET)
     public String updateWidget(ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        InfrastructureWarningSummary summary = infrastructureWarningsDao.getWarningsSummary();
+        InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
         model.addAttribute("summary", summary);
-        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings();
+        List<InfrastructureWarning> warnings = widgetService.getWarnings();
         Comparator<InfrastructureWarning> comparator = (o1, o2) -> o1.getSeverity().name().compareTo(o2.getSeverity().name());
         Collections.sort(warnings, comparator);
         if (warnings.size() > 10) {
@@ -80,7 +80,7 @@ public class InfrastructureWarningsController {
         }
         model.addAttribute("warnings",  warnings);
         model.addAttribute("lastAttemptedRefresh", lastAttemptedRefresh);
-        Instant nextRun = infrastructureWarningsDao.getRunTime(true);
+        Instant nextRun = widgetService.getRunTime(true);
         if (nextRun.isAfterNow()) {
             model.addAttribute("nextRefresh", nextRun);
             model.addAttribute("isRefreshPossible", false);
@@ -94,7 +94,7 @@ public class InfrastructureWarningsController {
     }
     
     private InfrastructureWarningDeviceCategory[] getTypesInSystem() {
-        InfrastructureWarningSummary summary = infrastructureWarningsDao.getWarningsSummary();
+        InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
         return Arrays.stream(InfrastructureWarningDeviceCategory.values())
                      .filter(category -> summary.getTotalDevices(category) != 0)
                      .toArray(InfrastructureWarningDeviceCategory[]::new);

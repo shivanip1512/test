@@ -85,6 +85,7 @@ import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
+import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -124,6 +125,18 @@ public final class JmsApiDirectory {
                   .requestMessage(InfrastructureWarningsRequest.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    public static JmsApi<InfrastructureWarningsRefreshRequest,?,?> INFRASTRUCTURE_WARNINGS_CACHE_REFRESH = 
+            JmsApi.builder(InfrastructureWarningsRefreshRequest.class)
+                  .name("Infrastructure Warnings WS Cache Refresh")
+                  .description("Sent from the Infrastructure Warnings Refresh Service to the Infrastructure Warnings dao "
+                               + "to notify the dao that cached warnings can be refreshed from teh database.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.infrastructure.InfrastructureWarningsRefreshRequest"))
+                  .requestMessage(InfrastructureWarningsRefreshRequest.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_WEBSERVER)
                   .build();
     
     //TODO: use this in DeviceDataMonitorServiceImpl
@@ -1045,6 +1058,7 @@ public final class JmsApiDirectory {
             .put(WIDGET_REFRESH, DATA_COLLECTION)
             .put(WIDGET_REFRESH, DATA_COLLECTION_RECALCULATION)
             .put(WIDGET_REFRESH, INFRASTRUCTURE_WARNINGS)
+            .put(WIDGET_REFRESH, INFRASTRUCTURE_WARNINGS_CACHE_REFRESH)
             .build();
     }
     

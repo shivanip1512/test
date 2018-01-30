@@ -49,7 +49,6 @@ public class DefaultGatewaySimulatorData {
     private static final String hardwareVersion = "5.0";
     private static final Set<ConflictType> versionConflicts = new HashSet<>();
     private static final String collectionSchedule = "0 0 * * * ?";
-    private static final short routeColor = 123;
     private static final AppMode mode = AppMode.NORMAL;
     private static final RadioType radioType = RadioType.EKANET_915;
     private static final String radioMacAddress = "01:23:45:67:89:ab";
@@ -109,8 +108,8 @@ public class DefaultGatewaySimulatorData {
         response.setVersionConflicts(versionConflicts);
         
         response.setCollectionSchedule(collectionSchedule);
-        response.setRouteColor(routeColor);
-        
+        Random rand = new Random(); 
+        response.setRouteColor((short) rand.nextInt(999));
         Set<Radio> radios = new HashSet<>();
         Radio radio = new Radio();
         radio.setType(radioType);

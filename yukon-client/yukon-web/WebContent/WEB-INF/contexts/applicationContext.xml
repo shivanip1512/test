@@ -1308,4 +1308,13 @@
      <bean class="com.cannontech.web.smartNotifications.DeviceDataMonitorSubscriptionHelper"/>
  
      <bean class="com.cannontech.web.common.widgets.service.impl.PorterQueueCountsWidgetServiceImpl"/>
+     
+     <bean id="infrastructureWarningsWidgetListener" class="com.cannontech.web.common.widgets.service.impl.InfrastructureWarningsWidgetServiceImpl"/>
+     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.infrastructure.InfrastructureWarningsRefreshRequest" />
+        <property name="pubSubDomain" value="false" />
+        <property name="concurrentConsumers" value="1" />
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="infrastructureWarningsWidgetListener" />
+    </bean>
 </beans>
