@@ -31,6 +31,13 @@ yukon.ami.dataCollection.detail = (function () {
                 form.submit();
                 form.attr('action', yukon.url('/amr/dataCollection/detail'));
             });
+            
+            $(document).on('click', '.js-collection-action', function () {   
+                var actionUrl = $(this).data('url'),
+                    form = $('#collectionDetail'),
+                    data = form.serialize();
+                window.open(yukon.url('/amr/dataCollection/collectionAction?actionUrl=' + actionUrl + '&' + data), '_blank');
+            });
 
             _initialized = true;
         }

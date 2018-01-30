@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
@@ -40,8 +41,8 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
@@ -55,8 +56,6 @@ import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
-
-
 @Controller
 @RequestMapping("/dataCollection/*")
 public class DataCollectionController {
@@ -66,7 +65,6 @@ public class DataCollectionController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointFormattingService pointFormattingService;
@@ -137,12 +135,7 @@ public class DataCollectionController {
                                   YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        List<DeviceGroup> subGroups = new ArrayList<>();
-        if (deviceSubGroups != null) {
-            for (String subGroup : deviceSubGroups) {
-                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
-            }
-        }
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         if (ranges == null) {
             ranges = RangeType.values();
         }
@@ -157,14 +150,6 @@ public class DataCollectionController {
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
-        List<SimpleDevice> devices = new ArrayList<>();
-        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), PagingParameters.EVERYTHING, sortBy.getValue(), dir);
-        allDetail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
-        deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
-        
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
-        model.addAttribute("deviceCollection", deviceCollection);
 
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -176,6 +161,27 @@ public class DataCollectionController {
         
     }
     
+    private List<DeviceGroup> retrieveSubGroups(String[] deviceSubGroups) {
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
+        }
+        return subGroups;
+    }
+    
+    @RequestMapping(value="collectionAction", method=RequestMethod.GET)
+    public String collectionAction(String actionUrl, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, YukonUserContext userContext) {
+        DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
+        SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), PagingParameters.EVERYTHING, SortBy.DEVICE_NAME, Direction.asc);
+        List<YukonPao> devices = allDetail.getResultList().stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
+        return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
+    }
+    
     @RequestMapping("download")
     public String download(YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, 
                           @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
@@ -183,12 +189,7 @@ public class DataCollectionController {
                           HttpServletResponse response) throws IOException {
         paging = PagingParameters.EVERYTHING;
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        List<DeviceGroup> subGroups = new ArrayList<>();
-        if (deviceSubGroups != null) {
-            for (String subGroup : deviceSubGroups) {
-                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
-            }
-        }
+        List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         SearchResults<DeviceCollectionDetail> details = dataCollectionWidgetService.getDeviceCollectionResult(group,

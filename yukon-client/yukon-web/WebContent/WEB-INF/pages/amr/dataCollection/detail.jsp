@@ -80,29 +80,11 @@
     <c:if test="${detail.hitCount > 0}">
         <span class="js-cog-menu">
             <cm:dropdown icon="icon-cog">
-                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                        <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>
-                </cti:url>
-                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/> 
+                <cm:dropdownOption key=".collectionActions" icon="icon-cog-go" classes="js-collection-action" data-url="/bulk/collectionActions"/> 
                 <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
-                <cti:url var="mapUrl" value="/tools/map">
-                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                </cti:url>
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>
-                <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
-                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                        <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>                
-                </cti:url>
-                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>          
-                <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
-                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                        <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>                
-                </cti:url>
-                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>
+                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" classes="js-collection-action" data-url="/tools/map"/>
+                <cm:dropdownOption icon="icon-read" key=".readAttribute" classes="js-collection-action" data-url="/group/groupMeterRead/homeCollection"/>          
+                <cm:dropdownOption icon="icon-ping" key=".sendCommand" classes="js-collection-action" data-url="/group/commander/collectionProcessing"/>
             </cm:dropdown>
         </span>
     </c:if>
