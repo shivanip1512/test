@@ -160,7 +160,7 @@ auto AttributeMapping::findPointOffset(const Attribute attribute) -> OptionalInt
         return boost::strict_get<int>(pcox);
     }
 
-    CTILOG_WARN(dout, boost::strict_get<std::string>(pcox));
+    CTILOG_DEBUG(dout, boost::strict_get<std::string>(pcox));
 
     return boost::none;
 }
