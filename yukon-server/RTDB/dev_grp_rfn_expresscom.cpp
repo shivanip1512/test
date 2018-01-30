@@ -213,11 +213,13 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
             logResponse(messageId, payload, reply);
         };
 
+    constexpr const auto GatewayTimeout = std::chrono::minutes { 35 };  //  Gateways can have a 30 minute timeout, see YUK-17293
+
     ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnBroadcastReplyMessage>(
             OutboundQueue::RfnBroadcast,
             std::move(rfnBroadcastMessage),
             callback,
-            std::chrono::seconds{ expirationDuration },
+            GatewayTimeout,
             []{ /* ignore failures */ });
 }
 
