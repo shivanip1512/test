@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -203,7 +204,7 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
     @Override
     public Map<Integer, Integer> getLcrWithLatestEvent(Set<Integer> allLcrs, int noOfLcrs) {
         final ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
-        final Map<Integer, Integer> sendMessageForLcrs = new HashMap<>();
+        final Map<Integer, Integer> sendMessageForLcrs = new LinkedHashMap<>();
         
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -234,9 +235,9 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
         
         Multimap<Integer, IdEventTimeMapping> selectedLcrDetails = template.multimappedQuery(sqlGenerator, allLcrs, rs -> {
             Integer deviceId = rs.getInt("deviceId");
-            Integer name = rs.getInt("inventoryId");
+            Integer inventoryId = rs.getInt("inventoryId");
             Instant maxEventTime = rs.getInstant("MaxEventTime");
-            return Maps.immutableEntry(deviceId, new IdEventTimeMapping(name, maxEventTime));
+            return Maps.immutableEntry(deviceId, new IdEventTimeMapping(inventoryId, maxEventTime));
         }, Functions.identity());
      
         
@@ -244,11 +245,15 @@ public class DrReconciliationDaoImpl implements DrReconciliationDao {
         idEventMapping.sort(Comparator.comparing(IdEventTimeMapping::getMaxEventTime));
         List<IdEventTimeMapping> limitedList = idEventMapping.stream().sequential().limit(noOfLcrs).collect(Collectors.toList());
 
-        selectedLcrDetails.entries().forEach(e -> {
-            IdEventTimeMapping idEventTime = e.getValue();
-            if (limitedList.contains(idEventTime)) {
-                sendMessageForLcrs.put(e.getKey(), idEventTime.getInventoryId());
-            }
+        Map<Integer, Integer> deviceInvMapping = new HashMap<>();
+        selectedLcrDetails.entries().forEach( e -> {
+            int inventoryId = e.getValue().getInventoryId();
+            deviceInvMapping.put(inventoryId, e.getKey());
+        });
+        
+        limitedList.stream().forEach(e -> {
+            int inventoryId = e.getInventoryId();
+            sendMessageForLcrs.put(deviceInvMapping.get(inventoryId), inventoryId);
         });
         return sendMessageForLcrs;
     }
