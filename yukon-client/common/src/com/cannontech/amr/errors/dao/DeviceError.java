@@ -8,17 +8,19 @@ import static com.cannontech.amr.errors.dao.DeviceErrorCategory.POWERLINE_CARRIE
 import static com.cannontech.amr.errors.dao.DeviceErrorCategory.TRANSMITTER;
 import static com.cannontech.amr.errors.dao.DeviceErrorCategory.YUKON_SYSTEM;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.google.common.collect.ImmutableMap;
 
 
 public enum DeviceError {
-    // NOTE: Remember to add any new error codes to error-code.xml for i18n'ing, too
+    // NOTE: Remember to add any new error codes to error-code.xml and deviceErrors.xml
+    //       New error categories must also be added to DeviceErrorCategory.xml
     
     //PORTER ERRORS
     BAD_MESSAGE_TYPE(BULK_COMMUNICATIONS, 3),
@@ -131,7 +133,11 @@ public enum DeviceError {
     
     private final String BASE_KEY = "yukon.web.error.code.";
 
-    private static final Map<Integer, DeviceError> errors = Collections.unmodifiableMap(initializeMapping()); 
+    private final static ImmutableMap<Integer, DeviceError> errors = 
+            ImmutableMap.copyOf(
+                Arrays.stream(values()).collect(
+                    StreamUtils.mapToSelf(DeviceError::getCode)));
+
     private final int code;
     private final DeviceErrorCategory category;
 
@@ -141,13 +147,6 @@ public enum DeviceError {
     private final MessageSourceResolvable troubleshootingResolvable = new YukonMessageSourceResolvable(BASE_KEY + getCode()
         + ".troubleshooting");
     
-    private static Map<? extends Integer, ? extends DeviceError> initializeMapping() {
-        Map<Integer, DeviceError> map = new HashMap<>();
-        for (DeviceError error : DeviceError.values()) {
-            map.put(error.getCode(), error);
-        }
-        return map;
-    }
     public DeviceErrorCategory getCategory() {
         return category;
     }
@@ -174,5 +173,9 @@ public enum DeviceError {
     
     public MessageSourceResolvable getTroubleshootingResolvable() {
         return troubleshootingResolvable;
+    }
+    
+    public static Map<Integer, DeviceError> getErrorsMap() {
+        return errors;
     }
 }

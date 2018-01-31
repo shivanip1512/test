@@ -5,9 +5,9 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 
 public class DeviceErrorDescription {
     private final DeviceError error;
-    private final String porter;
-    private final String description;
-    private final String troubleshooting;
+    private String porter;
+    private String description;
+    private String troubleshooting;
     private final String category;
 
     public DeviceErrorDescription(DeviceError error, String porter, String description, String troubleshooting) {
@@ -88,4 +88,17 @@ public class DeviceErrorDescription {
             return false;
         return true;
     }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTroubleshooting(String troubleshooting) {
+        this.troubleshooting = troubleshooting;
+    }
+
+    public void setPorter(String porter) {
+        this.porter = porter;
+    }
+    
 }
