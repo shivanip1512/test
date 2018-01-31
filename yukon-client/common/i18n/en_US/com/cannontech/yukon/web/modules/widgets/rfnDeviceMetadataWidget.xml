@@ -31,7 +31,7 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRODUCT_NUMBER">Product Number</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.SUB_MODULE_FIRMWARE_VERSION">Sub-Module Firmware Version</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NUM_ASSOCIATIONS">Battery Node Associations</entry>
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.IPV6">IPv6 Address</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.IPV6_ADDRESS">IPv6 Address</entry>
 
 <!-- Metadata type values -->
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS.value.UNKNOWN">Unknown</entry>
