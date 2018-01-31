@@ -1,38 +1,30 @@
 package com.cannontech.capcontrol.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.capcontrol.dao.DmvTestDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.db.capcontrol.DmvTest;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class DmvTestDaoImpl implements DmvTestDao {
-    private final RowMapper<DmvTest> rowMapper = new dmvTestRowMapper();
     
-    private class dmvTestRowMapper implements RowMapper<DmvTest> {
-
-        @Override
-        public DmvTest mapRow(ResultSet rs, int rowNum) throws SQLException {
-            DmvTest dmvTest = new DmvTest();
-            dmvTest.setName(rs.getString("DmvTestName"));
-            dmvTest.setDmvTestId(rs.getInt("DmvTestId"));
-            dmvTest.setPollingInterval(rs.getInt("PollingInterval"));
-            dmvTest.setDataGatheringDuration(rs.getInt("DataGatheringDuration"));
-            dmvTest.setStepSize(rs.getDouble("StepSize"));
-            dmvTest.setCommSuccPercentage(rs.getInt("CommSuccessPercentage"));
-            return dmvTest;
-        }
-
-    }
+    private static final YukonRowMapper<DmvTest> rowMapper = (rs) -> {
+        DmvTest dmvTest = new DmvTest();
+        dmvTest.setName(rs.getString("DmvTestName"));
+        dmvTest.setDmvTestId(rs.getInt("DmvTestId"));
+        dmvTest.setPollingInterval(rs.getInt("PollingInterval"));
+        dmvTest.setDataGatheringDuration(rs.getInt("DataGatheringDuration"));
+        dmvTest.setStepSize(rs.getDouble("StepSize"));
+        dmvTest.setCommSuccPercentage(rs.getInt("CommSuccessPercentage"));
+        return dmvTest;
+    };
     
     
     @Autowired private NextValueHelper nextValueHelper;
@@ -53,23 +45,23 @@ public class DmvTestDaoImpl implements DmvTestDao {
             parameterSink = sql.insertInto("DmvTest");
             id = nextValueHelper.getNextValue("DmvTest");
             parameterSink.addValue("DmvTestId", id);
-            parameterSink.addValue("DmvTestName", dmvTest.getName());
-            parameterSink.addValue("PollingInterval", dmvTest.getPollingInterval());
-            parameterSink.addValue("DataGatheringDuration", dmvTest.getDataGatheringDuration());
-            parameterSink.addValue("StepSize", dmvTest.getStepSize());
-            parameterSink.addValue("CommSuccessPercentage", dmvTest.getCommSuccPercentage());
+            updateParameterSink(parameterSink, dmvTest);
         }
         else {
             parameterSink = sql.update("DmvTest");
-            parameterSink.addValue("DmvTestName", dmvTest.getName());
-            parameterSink.addValue("PollingInterval", dmvTest.getPollingInterval());
-            parameterSink.addValue("DataGatheringDuration", dmvTest.getDataGatheringDuration());
-            parameterSink.addValue("StepSize", dmvTest.getStepSize());
-            parameterSink.addValue("CommSuccessPercentage", dmvTest.getCommSuccPercentage());
+            updateParameterSink(parameterSink, dmvTest);
             sql.append("Where DmvTestId").eq(id);
         }
         jdbcTemplate.update(sql);
         return id;
+    }
+    
+    private void updateParameterSink(SqlParameterSink parameterSink, DmvTest dmvTest) {
+        parameterSink.addValue("DmvTestName", dmvTest.getName());
+        parameterSink.addValue("PollingInterval", dmvTest.getPollingInterval());
+        parameterSink.addValue("DataGatheringDuration", dmvTest.getDataGatheringDuration());
+        parameterSink.addValue("StepSize", dmvTest.getStepSize());
+        parameterSink.addValue("CommSuccessPercentage", dmvTest.getCommSuccPercentage());
     }
     
     @Override
