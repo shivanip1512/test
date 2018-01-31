@@ -85,7 +85,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
                 String[] ports = StringUtils.split(port, " ");
                 for (String prt : ports) {
                     if (!portMatcher.matcher(prt).matches()) {
-                        errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidPort");
+                        errors.rejectValue("values[" + globalSettingType + "]", "typeMismatch");
                     }
                 }
             }
