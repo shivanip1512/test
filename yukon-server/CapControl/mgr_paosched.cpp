@@ -649,8 +649,6 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
-
         bool wasAlreadyRunning = false;
 
 
