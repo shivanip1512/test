@@ -741,6 +741,17 @@ Dlg_ObjDialogs:
             //Remove Lucene indexes so they're rebuilt on startup
             sDir = TARGETDIR ^ "\\cache";
             DeleteDir(sDir, ALLCONTENTS);
+            
+            //Remove ActiveMQ Client Cache to avoid corruption and upgrade issues
+            if(ExistsDir(TARGETDIR ^ "\\Server\\web\\bin\\activemq-data") = EXISTS) then
+                DeleteDir(TARGETDIR ^ "\\Server\\web\\bin\\activemq-data", ALLCONTENTS);
+            endif;
+            
+            //Remove ActiveMQ Web Cache to avoid corruption and upgrade issues
+            if(ExistsDir(TARGETDIR ^ "\\Client\\bin\\activemq-data") = EXISTS) then
+                DeleteDir(TARGETDIR ^ "\\Client\\bin\\activemq-data", ALLCONTENTS);
+            endif;
+			
 			// Ensure that all previously installed features are removed.
 			FeatureRemoveAllInMediaAndLog();
             // Added in 11.0 - Set appropriate StatusEx static text.
