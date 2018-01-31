@@ -20,7 +20,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -216,10 +216,11 @@ public class CapBankDetailsController {
 
     private Map<LitePoint, String> getFormatMappings(PaoType paoType, List<LitePoint> litePoints) {
 
-        Map<Integer, String> pointFormats = 
-                cbcHelperService.getPaoTypePointFormats(paoType, litePoints);
+        Map<LitePoint, String> pointFormats = 
+                cbcHelperService.getPaoTypePointFormats(paoType, litePoints, LitePoint::getPointID, PointIdentifier::createPointIdentifier);
         
-        return litePoints.stream().collect(StreamUtils.mapSelfTo(point ->
-                        pointFormats.getOrDefault(point.getPointID(), "SHORT")));
+        litePoints.forEach(lp -> pointFormats.putIfAbsent(lp, "SHORT"));
+        
+        return pointFormats;
     }
 }

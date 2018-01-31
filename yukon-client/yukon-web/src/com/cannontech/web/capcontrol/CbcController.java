@@ -30,11 +30,9 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
-import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
@@ -224,27 +222,15 @@ public class CbcController {
 
             }
 
-            List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(cbc.getId());
+            Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(cbc.getId());
 
-            Map<PointType, List<PointInfo>> points =
-                    litePoints.stream()
-                        .map(PointInfo::of)
-                        .collect(Collectors.groupingBy(PointInfo::getType));
-            
-            Map<Integer, PointInfo> pointLookup = 
-                    points.values().stream()
-                        .flatMap(List::stream)
-                        .collect(StreamUtils.mapToSelf(PointInfo::getPointId)); 
+            List<PointInfo> pointInfo = points.values().stream().flatMap(List::stream).collect(Collectors.toList());
             
             //check for special formats
-            Map<Integer, String> pointFormats = 
-                            cbcHelperService.getPaoTypePointFormats(cbc.getPaoType(), litePoints);
+            Map<PointInfo, String> pointFormats = 
+                            cbcHelperService.getPaoTypePointFormats(cbc.getPaoType(), pointInfo, PointInfo::getPointId, PointInfo::getPointIdentifier);
             
-            pointFormats.forEach((pointId, format) -> {
-                    PointInfo pi = pointLookup.get(pointId);
-                    if (pi != null) {
-                        pi.setFormat(format);
-                    }});
+            pointFormats.forEach((pi, format) -> pi.setFormat(format));
             
             model.addAttribute("points", points);
         }

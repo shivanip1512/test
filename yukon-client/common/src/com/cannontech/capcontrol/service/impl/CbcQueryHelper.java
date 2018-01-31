@@ -15,7 +15,6 @@ import com.cannontech.database.vendor.MicrosoftSqlBuilderAdapter;
 import com.cannontech.database.vendor.OracleSqlBuilderAdapter;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSqlBuilderAdapter;
-import com.google.common.collect.ImmutableList;
 
 final class CbcQueryHelper {
 
@@ -24,8 +23,6 @@ final class CbcQueryHelper {
                     .collect(Collectors.partitioningBy(
                             PaoType::isLogicalCBC));
     
-    private static final List<String> attributeMappingCategories = ImmutableList.of("cbcAttributeMapping");
-
     public static void appendOrphanQuery(VendorSpecificSqlBuilder builder) {
         appendVendorSpecificQueries(builder, ba -> appendOrphanQuery(ba));
     }

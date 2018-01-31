@@ -2,9 +2,11 @@ package com.cannontech.capcontrol.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface CbcHelperService {
@@ -28,10 +30,13 @@ public interface CbcHelperService {
 
     /** 
      * @param paoType the paoType of the device to check.
-     * @param litePoints the points to map.
-     * @return the mapping of point IDs to their associated format strings.
+     * @param points the objects to map to CBC attribute formats.  Must be capable of generating a point ID and PointIdentifier.
+     * @param pointIdMapper a Function mapping the input object to a point ID.
+     * @param pointIdentifierMapper a Function mapping the input object to a PointIdentifier.
+     * @return the mapping of points to their associated format strings.
      */
-    public Map<Integer, String> getPaoTypePointFormats(PaoType paoType, List<LitePoint> litePoints);
+    public <T> Map<T, String> getPaoTypePointFormats(PaoType paoType, List<T> points, 
+            Function<T, Integer> pointIdMapper, Function<T, PointIdentifier> pointIdentifierMapper);
 
     /**
      * Returns an SQL statement that finds all CBCs with a CONTROL_POINT that are not assigned to a Cap Bank.

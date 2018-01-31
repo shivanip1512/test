@@ -3,7 +3,6 @@ package com.cannontech.web.stars.rtu;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -22,10 +22,6 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.rtu.model.RtuPointDetail;
@@ -33,7 +29,6 @@ import com.cannontech.common.rtu.model.RtuPointsFilter;
 import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
@@ -44,26 +39,15 @@ import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableMap;
 
 @Controller
 public class RtuController {
     
     @Autowired private RtuDnpService rtuDnpService;
     @Autowired private PointDao pointDao;
-    @Autowired private AttributeService attributeService;
     @Autowired private IDatabaseCache cache;
+    @Autowired private CbcHelperService cbcHelperService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
-    private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
-            .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|firmwareVersion}")
-            .put(BuiltInAttribute.IP_ADDRESS, "{rawValue|ipAddress}")
-            .put(BuiltInAttribute.NEUTRAL_CURRENT_SENSOR, "{rawValue|neutralCurrent}")
-            .put(BuiltInAttribute.SERIAL_NUMBER, "{rawValue|long}")
-            .put(BuiltInAttribute.UDP_PORT, "{rawValue|long}")
-            .put(BuiltInAttribute.LAST_CONTROL_REASON, "{rawValue|lastControlReason}")
-            .put(BuiltInAttribute.IGNORED_CONTROL_REASON, "{rawValue|ignoredControlReason}")
-            .build();
     
     @RequestMapping(value = "rtu/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id) {
@@ -92,16 +76,9 @@ public class RtuController {
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
         SearchResults<RtuPointDetail> details = rtuDnpService.getRtuPointDetail(id, filter, dir, sortBy.getValue(), paging);
         
-        details.getResultList().forEach(rtuPoint -> {
-            // This set should contain 0 items if there is not a special format, or 1 if there is
-            Set<BuiltInAttribute> attributes = attributeService.findAttributesForPoint(rtuPoint.getPaoPointIdentifier().getPaoTypePointIdentifier(), formatMappings.keySet());
-            attributes.forEach(attribute -> {
-                if (formatMappings.get(attribute) != null) {
-                    rtuPoint.setFormat(formatMappings.get(attribute));
-                }
-            });
-
-        });
+        Map<RtuPointDetail, String> pointFormats = cbcHelperService.getPaoTypePointFormats(rtu.getPaoType(), details.getResultList(), RtuPointDetail::getPointId, r -> r.getPaoPointIdentifier().getPointIdentifier());
+        
+        pointFormats.forEach((rpd, format) -> rpd.setFormat(format));
 
         List<RtuPointDetail> rtuPointDetails = rtuDnpService.getRtuPointDetail(id);
         List<PointType> types = rtuPointDetails.stream()
@@ -137,23 +114,19 @@ public class RtuController {
     
     private Map<PointType, List<PointInfo>> getPointsForModel(int paoId, ModelMap model) {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+
         Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(paoId);
+
+        List<PointInfo> pointList = points.values().stream().flatMap(List::stream).collect(Collectors.toList()); 
+        
         //check for special formats
-        for(List<PointInfo> pointList : points.values()){
-            for(PointInfo point : pointList){
-                LitePoint litePoint = pointDao.getLitePoint(point.getPointId());
-                PointIdentifier pid = new PointIdentifier(point.getType(), litePoint.getPointOffset());
-                PaoTypePointIdentifier pptId = PaoTypePointIdentifier.of(pao.getPaoType(), pid);
-                //This set should contain 0 items if there is not a special format, or 1 if there is
-                Set<BuiltInAttribute> attributes = attributeService.findAttributesForPoint(pptId, formatMappings.keySet());
-                for (BuiltInAttribute attribute: attributes) {
-                    if (formatMappings.get(attribute) != null) {
-                        point.setFormat(formatMappings.get(attribute));
-                    }
-                }
-            }
-        }
+        Map<PointInfo, String> pointFormats = 
+                        cbcHelperService.getPaoTypePointFormats(pao.getPaoType(), pointList, PointInfo::getPointId, PointInfo::getPointIdentifier);
+        
+        pointFormats.forEach((pi, format) -> pi.setFormat(format));
+        
         model.addAttribute("points", points);
+
         return points;
     }
 

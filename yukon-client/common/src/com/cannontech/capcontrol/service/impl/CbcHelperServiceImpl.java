@@ -2,7 +2,9 @@ package com.cannontech.capcontrol.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -26,13 +28,10 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -114,38 +113,42 @@ public class CbcHelperServiceImpl implements CbcHelperService {
     }
 
     @Override
-    public Map<Integer, String> getPaoTypePointFormats(PaoType paoType, List<LitePoint> litePoints) {
+    public <T> Map<T, String> getPaoTypePointFormats(PaoType paoType, List<T> points, 
+            Function<T, Integer> pointIdMapper, Function<T, PointIdentifier> pointIdentifierMapper) {
         
-        Multimap<Integer, BuiltInAttribute> pointAttributes = 
-                getPaoTypePointAttributes(paoType, litePoints, cbcFormatMappings.keySet());
+        Multimap<T, BuiltInAttribute> pointAttributes = 
+                getPaoTypePointAttributes(paoType, points, pointIdMapper, pointIdentifierMapper, cbcFormatMappings.keySet());
         
         return mapAttributesToFormats(pointAttributes, cbcFormatMappings);
     }
 
-    private Multimap<Integer, BuiltInAttribute> getPaoTypePointAttributes(PaoType paoType, List<LitePoint> litePoints, 
-            Set<BuiltInAttribute> attributeMatches) {
-        //  First, get the paoDefinition attribute mappings
-        Multimap<Integer, BuiltInAttribute> attributeMappings = 
-                litePoints.stream()
-                    .collect(StreamUtils.mappedValueToMultimap(
-                            LitePoint::getPointID, 
-                            lp -> attributeService.findAttributesForPoint(
-                                    PaoTypePointIdentifier.of(paoType, PointIdentifier.createPointIdentifier(lp)), 
-                                    attributeMatches)));
+    private <T> Multimap<T, BuiltInAttribute> getPaoTypePointAttributes(PaoType paoType, List<T> points, 
+            Function<T, Integer> pointIdMapper, Function<T, PointIdentifier> pointIdentifierMapper, Set<BuiltInAttribute> possibleMatches) {
+
+        // First, get the paoDefinition attribute mappings
+    	Multimap<T, BuiltInAttribute> attributeMappings = 
+                points.stream()
+                        .collect(StreamUtils.mappedValueToMultimap(
+                                Function.identity(), 
+                                e -> attributeService.findAttributesForPoint(
+                                            PaoTypePointIdentifier.of(paoType, pointIdentifierMapper.apply(e)), 
+                                            possibleMatches)));
 
         //  if the paotype supports attribute mapping, look up its overrides, if any
         if (paoDefinitionDao.isAttributeMappingConfigurationType(paoType)) {
 
-            List<Integer> pointIds = Lists.transform(litePoints, LitePoint::getPointID);
-            
             ChunkingMappedSqlTemplate mappedSqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
             
-            Multimap<Integer, String> overrides = 
-                    mappedSqlTemplate.multimappedQuery(sublist -> {
+            Multimap<T, String> overrides = 
+                    mappedSqlTemplate.multimappedQuery(
+                        sublist -> {
                             VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-                            CbcQueryHelper.appendAttributeMappingQuery(attributeMatches, sublist, builder);
+                            CbcQueryHelper.appendAttributeMappingQuery(possibleMatches, sublist, builder);
                             return builder;
-                        }, pointIds, rs -> Maps.immutableEntry(rs.getInt("PointId"), rs.getString("Attribute")), Functions.identity());
+                        }, 
+                        points, 
+                        rs -> Maps.immutableEntry(rs.getInt("PointId"), rs.getString("Attribute")), 
+                        p -> pointIdMapper.apply(p));  //  create a Google Function out of a Java Function
 
             //  Add the entries to the end of any existing entries
             attributeMappings.putAll(Multimaps.transformValues(overrides, BuiltInAttribute::valueOf));
@@ -154,17 +157,17 @@ public class CbcHelperServiceImpl implements CbcHelperService {
         return attributeMappings;
     }
 
-    private Map<Integer, String> mapAttributesToFormats(Multimap<Integer, BuiltInAttribute> pointAttributes, 
-            Map<BuiltInAttribute,String> formatMappings) {
+    private <T> Map<T, String> mapAttributesToFormats(Multimap<T, BuiltInAttribute> pointAttributes, 
+            Map<BuiltInAttribute, String> formatMappings) {
         //  Transform the attribute mappings into format mappings  
-        Multimap<Integer, String> formatEntries = 
+        Multimap<T, String> formatEntries = 
                 Multimaps.transformValues(pointAttributes, formatMappings::get);
         
         return formatEntries.entries().stream()
                 .filter(e -> e.getValue() != null)  //  filter out anything without a format mapping (shouldn't happen, but safety first)
                 .collect(Collectors.toMap(
-                        Map.Entry::getKey, 
-                        Map.Entry::getValue,
+                        Entry::getKey, 
+                        Entry::getValue,
                         //  collisions may happen if a remapped point overlaps a paoDefinition offset, so take the latter/override format.                        
                         (first, second) -> {   
                             if (!first.equals(second)) {
