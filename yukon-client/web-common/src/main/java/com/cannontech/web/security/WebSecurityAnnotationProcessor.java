@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.security.annotation.CheckCparmString;
 import com.cannontech.web.security.annotation.CheckEnergyCompanySetting;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
@@ -25,6 +27,7 @@ public class WebSecurityAnnotationProcessor {
 
     public void processMethod(Method method) throws Exception {
         check(AnnotationUtils.findAnnotation(method, CheckCparm.class));
+        check(AnnotationUtils.findAnnotation(method, CheckCparmString.class));
         check(AnnotationUtils.findAnnotation(method, CheckRole.class));
         check(AnnotationUtils.findAnnotation(method, CheckGlobalSetting.class));
         check(AnnotationUtils.findAnnotation(method, CheckEnergyCompanySetting.class));
@@ -35,6 +38,7 @@ public class WebSecurityAnnotationProcessor {
 
     public void processClass(Class<?> clazz) throws Exception {
         check(AnnotationUtils.findAnnotation(clazz, CheckCparm.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckCparmString.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckRole.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class));
         check(AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class));
@@ -51,6 +55,14 @@ public class WebSecurityAnnotationProcessor {
         }
     }
 
+    private void check(CheckCparmString annotation) {
+        if (annotation != null) {
+            MasterConfigString configKey = annotation.config();
+            String expecting = annotation.expecting();
+            webSecurityChecker.authorizeByCparm(configKey, expecting);
+        }
+    }
+    
     private void check(CheckRole annotation) {
         if (annotation != null) {
             YukonRole[] roles = annotation.value();

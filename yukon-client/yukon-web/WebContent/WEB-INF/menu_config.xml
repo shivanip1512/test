@@ -127,6 +127,12 @@
       <option name="regulatorSetup">
         <link>/capcontrol/regulator-setup</link>
       </option>
+    <option name="dmvTest">
+        <permissions>
+            <masterConfig name="CAP_CONTROL_ENABLE_DMV_TEST:somethingTBDmarketingInTheFuturePossibly" />
+        </permissions>
+        <link>/capcontrol/dmvTestList</link>
+      </option>
       <option name="import" section="true">
         <permissions>
           <roleProperty name="CAP_CONTROL_IMPORTER" />

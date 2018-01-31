@@ -780,6 +780,21 @@
               </page>
             </pages>
           </page>
+          <page name="dmvTest" type="BASIC">
+            <link>/capcontrol/dmvTestList</link>
+            <pages>
+              <page name="dmvTest.CREATE" type="BASIC" />
+              <page name="dmvTest.VIEW" type="BASIC">
+                <link>/capcontrol/dmvTest/${dmvTest.dmvTestId}</link>
+                <labelArgument>${dmvTest.name}</labelArgument>
+                <pages>
+                  <page name="dmvTest.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${dmvTest.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
           <page name="movedCapBanks" type="BASIC">
             <link>/capcontrol/move/movedCapBanks</link>
           </page>

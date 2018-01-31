@@ -407,6 +407,7 @@
     <entry key="yukon.web.modules.capcontrol.type.LTC">Load Tap Changer</entry>
     <entry key="yukon.web.modules.capcontrol.type.GO_REGULATOR">Gang Operated Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.type.PO_REGULATOR">Phase Operated Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.type.DMVTEST">Demand Management and Verification Test</entry>
 
     <entry key="yukon.web.modules.capcontrol.edit.strategy">Edit Strategy Assignment</entry>
     
@@ -1169,4 +1170,33 @@
     <entry key="yukon.web.modules.capcontrol.cbc.error.duplicateSerial">Serial Number already in use by {0}.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.error.noCommChannel">Communication channel not selected.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.error.parentRTURequired">Parent RTU is required.</entry>
+    
+    <entry key="yukon.web.modules.capcontrol.dmvTest.pageName">Demand Management and Verification Test</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.delete">Delete Demand Management and Verification Test</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.info.title">Demand Management and Verification Test Info</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.VIEW.pageTitle">Demand Management and Verification Test: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.VIEW.pageHeading">Demand Management and Verification Test: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.EDIT.pageTitle">Demand Management and Verification Test: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.EDIT.pageHeading">Edit Demand Management and Verification Test: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.CREATE.pageTitle">Create Demand Management and Verification Test</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.CREATE.pageHeading">Create Demand Management and Verification Test</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.CREATE.crumbTitle">Create</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.confirmDelete">Are you sure you want to delete {0}?</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.deleteSuccess">Demand management and verification test {0} was deleted successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.saved">Demand management and verification test was saved successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.updateFailed">There was an error saving the demand management and verification test.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.deleteFailed">There was an error deleting the demand management and verification test.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.pollingInterval">Polling Interval</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.pollingInterval.title">1 to 300 seconds with a default of 30 seconds.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.dataGatheringDuration">Data Gathering Duration</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.dataGatheringDuration.title">1 to 30 minutes with a default of 10 minutes.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.stepSize">Step Size</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.stepSize.title">0.75 to 5.0 Volts with a default of 1.5 Volts.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.commSuccPercentage">Communication Success Percentage</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.commSuccPercentage.title">0 - 100 percent with a default of 100 percent.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest.deleteFailed">Demand management and verification test was not deleted.</entry>
+    <entry key="yukon.web.modules.capcontrol.dmvTest..noDmvTest">No Demand Management and Verification Test</entry>
+    
 </properties>

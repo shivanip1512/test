@@ -220,8 +220,15 @@ public class StandardMenuRenderer {
                 return true;
             }
         } else if (type == Permission.masterConfig) {
-            if (configurationSource.getBoolean(permission.getAttributeValue("name"), false)) {
-                  return true;
+            String value = permission.getAttributeValue("name");
+            String masterConfig[] = value.split(":");
+            if (masterConfig.length == 1) {
+                if (configurationSource.getBoolean(masterConfig[0], false)) {
+                      return true;
+                }
+            }
+            else if (masterConfig.length == 2) {
+                return configurationSource.getString(masterConfig[0]).equals(masterConfig[1]);
             }
         } else {
             /* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */

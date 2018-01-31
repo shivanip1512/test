@@ -5,6 +5,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -30,6 +31,14 @@ public class WebSecurityChecker {
     	
         boolean result = configurationSource.getBoolean(configKey);
         if (result != expecting) {
+            throw new NotAuthorizedException("User is not authorized to access this page.");
+        } 
+    }
+    
+    public void authorizeByCparm(MasterConfigString config, String expecting) {
+        
+        String  result = configurationSource.getString(config);
+        if (!result.equals(expecting)) {
             throw new NotAuthorizedException("User is not authorized to access this page.");
         } 
     }

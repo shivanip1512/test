@@ -311,6 +311,8 @@
 <entry key="yukon.common.upload">Upload</entry>
 <entry key="yukon.common.units.VOLTS">Volts</entry>
 <entry key="yukon.common.units.PERCENT">%</entry>
+<entry key="yukon.common.units.SECONDS">Seconds</entry>
+<entry key="yukon.common.units.MINUTES">Minutes</entry>
 <entry key="yukon.common.unsupported">Unsupported</entry>
 <entry key="yukon.common.user">User</entry>
 <entry key="yukon.common.user.editor">User Editor</entry>

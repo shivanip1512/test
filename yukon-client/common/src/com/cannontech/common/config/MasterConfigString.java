@@ -8,6 +8,7 @@ public enum MasterConfigString {
     AUTHENTICATION_TIMEOUT_STYLE,
     CAP_CONTROL_AMFM_DB_USERNAME,
     CAP_CONTROL_AMFM_DB_PASSWORD,
+    CAP_CONTROL_ENABLE_DMV_TEST,
     CMEP_UNITS,
     CYME_DIST_BASE_URL,
     CYME_INTEGRATION_SUBBUS,
@@ -65,6 +66,7 @@ public enum MasterConfigString {
         sensitiveData = new HashSet<>();
         sensitiveData.add(CAP_CONTROL_AMFM_DB_USERNAME);
         sensitiveData.add(CAP_CONTROL_AMFM_DB_PASSWORD);
+        sensitiveData.add(CAP_CONTROL_ENABLE_DMV_TEST);
         sensitiveData.add(DB_USERNAME);
         sensitiveData.add(DB_PASSWORD);
         sensitiveData.add(DB_SQLSERVER);
