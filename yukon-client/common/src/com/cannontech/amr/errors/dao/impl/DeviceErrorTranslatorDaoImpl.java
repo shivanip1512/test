@@ -107,9 +107,12 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         SAXBuilder builder = new SAXBuilder();
         Document document = builder.build(errorDefinitions);
         Element rootElement = document.getRootElement();
-        rootElement.getChildren("error").stream().forEach(errorEl -> {
+        rootElement.getChildren("error").forEach(errorEl -> {
             String errorCodeStr = errorEl.getAttributeValue("code");
-            DeviceError error = DeviceError.getErrorByCode(Integer.parseInt(errorCodeStr));
+            DeviceError error = DeviceError.UNKNOWN;
+            if (!"*".equals(errorCodeStr)) {
+                DeviceError.getErrorByCode(Integer.parseInt(errorCodeStr));
+            }
             String porter = errorEl.getChildTextTrim("porter");
             String description = errorEl.getChildTextTrim("description");
             Validate.notEmpty(description, "Description for error " + errorCodeStr + " must not be blank");

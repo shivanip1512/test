@@ -326,6 +326,10 @@
             <ul>
                 <li>Attempt the command again</li>
             </ul>]]></entry>
+            
+    <entry key="yukon.web.error.code.37.porter">Unknown Error</entry>
+    <entry key="yukon.web.error.code.37.description">Troubleshooting tips for this error code are not available at this time.</entry>
+    <entry key="yukon.web.error.code.37.troubleshooting"><![CDATA[]]></entry>
 
     <entry key="yukon.web.error.code.46.porter">REQACK Flag set-- Frame Unexecutable</entry>
     <entry key="yukon.web.error.code.46.description">The CCU has rejected a request from the master
