@@ -58,13 +58,39 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
         @Override
         public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
             String ipHost = (String) value;
-            if (StringUtils.isNotBlank(ipHost)) {
-                if (!ipHostNameMatcher.matcher(ipHost).matches()) {
-                    errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
+            if (StringUtils.isNotBlank((String) value)) {
+                // AD_SERVER_ADDRESS supports  a space separated list of addresses
+                if (globalSettingType == GlobalSettingType.AD_SERVER_ADDRESS) {
+                    String[] hosts = StringUtils.split(ipHost, " ");
+                    for (String host : hosts) {
+                        if (!ipHostNameMatcher.matcher(host).matches()) {
+                            errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
+                        }
+                    }
+                } else {
+                    if (!ipHostNameMatcher.matcher(ipHost).matches()) {
+                        errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
+                    }
                 }
             }
         }
     };    
+
+    private static TypeValidator portValidator = new TypeValidator() {
+        @Override
+        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
+            Pattern portMatcher = Pattern.compile("^[0-9]+$");
+            String port = (String) value;
+            if (StringUtils.isNotBlank(port)) {
+                String[] ports = StringUtils.split(port, " ");
+                for (String prt : ports) {
+                    if (!portMatcher.matcher(prt).matches()) {
+                        errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
+                    }
+                }
+            }
+        }
+    };
 
     // To add validation for a field, add the TypeValidator to validators map
     static {
@@ -117,6 +143,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
         validators.put(GlobalSettingType.SERVER_ADDRESS, ipHostNameValidator);
         validators.put(GlobalSettingType.LDAP_SERVER_ADDRESS, ipHostNameValidator);
         validators.put(GlobalSettingType.AD_SERVER_ADDRESS, ipHostNameValidator);
+        validators.put(GlobalSettingType.AD_SERVER_PORT, portValidator);
         validators.put(GlobalSettingType.SMTP_HOST, ipHostNameValidator);
 
         validators.put(GlobalSettingType.CONTACT_EMAIL, emailValidator);
