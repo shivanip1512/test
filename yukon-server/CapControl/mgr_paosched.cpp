@@ -14,6 +14,7 @@
 #include "MsgVerifyBanks.h"
 #include "MsgVerifyInactiveBanks.h"
 #include "MsgTriggerDmvTest.h"
+#include "utility.h"
 
 #include <regex>
 
@@ -66,6 +67,12 @@ CtiPAOScheduleManager::~CtiPAOScheduleManager()
 {
     if( _instance != NULL )
     {
+        delete_container( _schedules );
+        _schedules.clear();
+
+        delete_container( _events );
+        _events.clear();
+
         delete _instance;
         _instance = NULL;
     }
@@ -577,7 +584,6 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
 
         bool wasAlreadyRunning = false;
 
@@ -623,8 +629,14 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
-        _schedules.clear();
-        _schedules.assign(tempSchedules.begin(), tempSchedules.end());
+
+        {
+            CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+
+            std::swap( _schedules, tempSchedules );     // swap out the old for the new
+        }
+
+        delete_container( tempSchedules );              // delete the old
         setValid(true);
     }
     catch (...)
@@ -683,8 +695,13 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
-        _events.clear();
-        _events.assign(tempEvents.begin(), tempEvents.end());
+        {
+            CtiLockGuard<CtiCriticalSection>  guard(_mutex);
+
+            std::swap( _events, tempEvents );           // swap out the old for the new
+        }
+
+        delete_container( tempEvents );                 // delete the old
         setValid(true);
     }
     catch (...)
