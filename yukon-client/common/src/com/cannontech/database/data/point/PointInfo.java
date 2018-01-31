@@ -1,7 +1,6 @@
 package com.cannontech.database.data.point;
 
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.database.data.lite.LitePoint;
 
 public class PointInfo {
     private int pointId;
@@ -11,17 +10,6 @@ public class PointInfo {
     private int stateGroupId;
     private String format = "SHORT";
 
-    public static PointInfo of(LitePoint lp) {
-        PointInfo pi = new PointInfo();
-        
-        pi.setPointId(lp.getPointID());
-        pi.setName(lp.getPointName());
-        pi.setPointIdentifier(PointIdentifier.createPointIdentifier(lp));
-        pi.setStateGroupId(lp.getStateGroupID());
-        
-        return pi;
-    }
-    
     public int getPointId() {
         return pointId;
     }
