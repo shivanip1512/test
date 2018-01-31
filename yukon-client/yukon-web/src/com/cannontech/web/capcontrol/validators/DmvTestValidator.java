@@ -28,7 +28,7 @@ public class DmvTestValidator extends SimpleValidator<DmvTest>{
         YukonValidationUtils.checkRange(errors, "dataGatheringDuration", target.getDataGatheringDuration(), 1, 30, true);
         YukonValidationUtils.checkRange(errors, "stepSize", target.getStepSize(), 0.75, 5.0, true);
         YukonValidationUtils.checkRange(errors, "commSuccPercentage", target.getCommSuccPercentage(), 0, 100, true);
-        if (!dmvTestDao.isUniqueDmvTestName(target.getName()) && target.getDmvTestId() != 0) {
+        if (!dmvTestDao.isUniqueDmvTestName(target.getName()) && !dmvTestDao.getDmvTestById(target.getDmvTestId()).getName().equals(target.getName())) {
             errors.rejectValue("name", "yukon.web.error.nameConflict");
         }
 
