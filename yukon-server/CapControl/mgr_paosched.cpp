@@ -190,13 +190,10 @@ void CtiPAOScheduleManager::mainLoop()
             refreshEventsFromDB();
         }
         CtiTime currentTime;
-        CtiTime nextRunTime;// = getNextRunTime()
         std::list <CtiPAOSchedule*> mySchedules; // I dont own these
         std::list <CtiPAOSchedule*> updateSchedules; // I dont own these
         std::list <CtiPAOEvent*> myEvents; // I do own these
 
-        CtiPAOSchedule *currentSched = NULL;
-        CtiPAOEvent *currentEvent = NULL;
         while(true)
         {
             {
@@ -213,7 +210,7 @@ void CtiPAOScheduleManager::mainLoop()
 
                         while (!mySchedules.empty())
                         {
-                            currentSched = mySchedules.front();
+                            CtiPAOSchedule * currentSched = mySchedules.front();
                             mySchedules.pop_front();
 
                             if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
@@ -229,7 +226,7 @@ void CtiPAOScheduleManager::mainLoop()
                                 {
                                     while (!myEvents.empty())
                                     {
-                                        currentEvent = myEvents.front();
+                                        CtiPAOEvent * currentEvent = myEvents.front();
                                         myEvents.pop_front();
                                         if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                                         {
@@ -416,9 +413,7 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *paoEvent)
 int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, long &secsSinceLastOperation)
 {
     string command = _command;
-    string tempCommand;
     long multiplier = 0;
-    bool disableOvUvFlag = false;
 
     int retVal = SomethingElse; //0 capbank event...future use could include other devices??  dunno..open to expand on.
 
@@ -584,12 +579,8 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
 {
     try
     {
-
-        bool wasAlreadyRunning = false;
-
-
         std::list <CtiPAOSchedule *> tempSchedules;
-        tempSchedules.clear();
+
         try
         {
             //if( _CC_DEBUG )
@@ -602,9 +593,8 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
                                        "FROM paoschedule PAS";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader rdr(connection, sql);
 
-            rdr.setCommandText(sql);
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -612,11 +602,9 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
                 CTILOG_INFO(dout, rdr.asString());
             }
 
-            CtiPAOSchedule* currentPAOSchedule = NULL;
-
             while ( rdr() )
             {
-                currentPAOSchedule = new CtiPAOSchedule(rdr);
+                CtiPAOSchedule * currentPAOSchedule = new CtiPAOSchedule(rdr);
 
                 if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                 {
@@ -649,11 +637,8 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
 {
     try
     {
-        bool wasAlreadyRunning = false;
-
-
         std::list <CtiPAOEvent *> tempEvents;
-        tempEvents.clear();
+
         try
         {
             //if( _CC_DEBUG )
@@ -665,9 +650,8 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
                                       "FROM paoscheduleassignment PSA";
 
             Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            Cti::Database::DatabaseReader rdr(connection, sql);
 
-            rdr.setCommandText(sql);
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -675,11 +659,9 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
                 CTILOG_INFO(dout, rdr.asString());
             }
 
-            CtiPAOEvent* currentPAOEvent = NULL;
-
             while ( rdr() )
             {
-                currentPAOEvent = new CtiPAOEvent(rdr);
+                CtiPAOEvent * currentPAOEvent = new CtiPAOEvent(rdr);
 
                 if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                 {
@@ -714,11 +696,8 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
     {
         CtiLockGuard<CtiCriticalSection>  guard(_mutex);
 
-
         if ( !schedules.empty() )
         {
-            CtiTime currentDateTime = CtiTime();
-
             Cti::Database::DatabaseConnection   conn;
 
             if ( ! conn.isValid() )
