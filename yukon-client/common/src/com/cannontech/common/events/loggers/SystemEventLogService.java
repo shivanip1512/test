@@ -99,6 +99,15 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void smartIndexMaintenance(@Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
 
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance")
+    public void maintenanceTaskEnabled(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.taskName) String taskName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance")
+    public void maintenanceTaskDisabled(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.taskName) String taskName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance")
+    public void maintenanceTaskSettingsUpdated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.taskName) String taskName);
+
     /* DR Reconciliation */
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.maintenance.reconciliation")
     public void outOfServiceMessageSent(@Arg(ArgEnum.serialNumber) String serialNumber);
@@ -145,4 +154,6 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
     public void certificateGenerationFailed(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
+    
+
 }

@@ -607,6 +607,9 @@
     <entry key="yukon.common.events.system.maintenance.reconciliation.messageSendingFailed">Message sending failed for device: {1} Reason : {2}</entry>
     <entry key="yukon.common.events.system.maintenance.reconciliation.configMessageSent">Config message sent for device: {1}.</entry>
     <entry key="yukon.common.events.system.maintenance.reconciliation.groupConflictLCRDetected">LCR with serial number {1} detected with multiple conflicting groups.</entry>
+    <entry key="yukon.common.events.system.maintenance.maintenanceTaskEnabled">{2} enabled by {1}.</entry>
+    <entry key="yukon.common.events.system.maintenance.maintenanceTaskDisabled">{2} disabled by {1}.</entry>
+    <entry key="yukon.common.events.system.maintenance.maintenanceTaskSettingsUpdated">{2} settings were updated by {1}.</entry>
     
     <!--  System Administration -->
     <!-- Configuration -->

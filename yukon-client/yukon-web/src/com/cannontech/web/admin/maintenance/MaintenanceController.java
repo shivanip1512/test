@@ -23,12 +23,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -41,6 +43,7 @@ import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.maintenance.MaintenanceHelper;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
@@ -95,6 +98,7 @@ public class MaintenanceController {
         private YukonJobDefinition<RepeatingExportHistoryDeletionTask> exportHistoryJobDef;
     @Autowired @Qualifier("spSmartIndexMaintanence")
         private YukonJobDefinition<ScheduledSmartIndexMaintenanceExecutionTask> spSmartIndexMaintanenceJobDef;
+    @Autowired private SystemEventLogService systemEventLogService;
 
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
@@ -302,19 +306,29 @@ public class MaintenanceController {
     }
 
     @RequestMapping(value = "toggleDataPruningJobEnabled", method = RequestMethod.GET)
-    public String toggleDataPruningJobEnabled(int taskId) {
-        toggleDataPruningJob(taskId);
+    public String toggleDataPruningJobEnabled(HttpServletRequest request, int taskId) {
+        toggleDataPruningJob(taskId, request);
         return "redirect:view";
     }
 
-    private boolean toggleDataPruningJob(int taskId) {
+    private boolean toggleDataPruningJob(int taskId, HttpServletRequest request) {
         boolean isEnabled = true;
+        final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(yukonUserContext);
+        final LiteYukonUser user = yukonUserContext.getYukonUser();
         MaintenanceTask job = maintenanceTaskDao.getMaintenanceTaskById(taskId);
         if (!job.isDisabled()) {
             isEnabled = false;
         }
         job.setDisabled(!job.isDisabled());
         maintenanceTaskDao.updateTaskStatus(job);
+        if (isEnabled) {
+            systemEventLogService.maintenanceTaskEnabled(user,
+                accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskName().name() + ".title"));
+        } else {
+            systemEventLogService.maintenanceTaskDisabled(user,
+                accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskName().name() + ".title"));
+        }
         return isEnabled;
     }
 
@@ -340,7 +354,11 @@ public class MaintenanceController {
     @RequestMapping(value = "updateTask", method = RequestMethod.POST)
     public String save(@ModelAttribute("maintenanceEditorBean") MaintenanceEditorBean maintenanceEditorBean,
             BindingResult result, FlashScope flash, YukonUserContext userContext) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         maintenanceTaskDao.updateSettings(maintenanceEditorBean.getSettings());
+        systemEventLogService.maintenanceTaskSettingsUpdated(userContext.getYukonUser(),
+            messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
+                + maintenanceEditorBean.getTaskDetails().getTaskName().name() + ".title"));
         return "redirect:view";
     }
 

@@ -6,6 +6,7 @@
 <cti:standardPage module="adminSetup" page="maintenance.dataPruning.EDIT">
     <form:form action="updateTask" commandName="maintenanceEditorBean" method="post">
         <cti:csrfToken/>
+        <form:hidden path="taskDetails.taskName" />
         <tags:sectionContainer2 nameKey="${maintenanceEditorBean.taskDetails.taskName}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".status">
