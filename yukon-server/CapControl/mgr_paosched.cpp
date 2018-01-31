@@ -542,27 +542,17 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
 
 bool CtiPAOScheduleManager::getEventsBySchedId(long id, std::list<CtiPAOEvent*> &events)
 {
-    bool retVal = false;
     events.clear();
-    if (!_events.empty())
+
+    for ( CtiPAOEvent * event : _events )
     {
-        std::list <CtiPAOEvent*>::iterator iter = _events.begin();
-        while (iter != _events.end())
+        if ( event->getScheduleId() == id )
         {
-            if ((*iter)->getScheduleId() == id)
-            {
-                CtiPAOEvent* thisEvent = new CtiPAOEvent((*iter)->getEventId(),
-                                                         (*iter)->getScheduleId(),
-                                                         (*iter)->getPAOId(),
-                                                         (*iter)->getEventCommand(),
-                                                         (*iter)->getDisableOvUvFlag());
-                events.push_back(thisEvent);
-                retVal = true;
-            }
-            iter++;
+            events.push_back( new CtiPAOEvent( *event ) );
         }
     }
-    return retVal;
+    
+    return ! events.empty();
 }
 
 bool CtiPAOScheduleManager::isValid()

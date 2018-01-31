@@ -18,18 +18,6 @@ _disableOvUvFlag(false)
 {
 }
 
-
-CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const std::string& command, bool disableOvUv)
-    :   _eventId( eventId ),
-        _scheduleId( schedId ),
-        _paoId( paoId ),
-        _eventCommand( command ),
-        _disableOvUvFlag( disableOvUv )
-{
-    // empty
-}
-
-
 CtiPAOEvent::CtiPAOEvent(Cti::RowReader& rdr)
 {
     rdr["eventid"] >> _eventId;
@@ -46,16 +34,6 @@ CtiPAOEvent::CtiPAOEvent(Cti::RowReader& rdr)
 CtiPAOEvent::~CtiPAOEvent()
 {
 
-}
-CtiPAOEvent& CtiPAOEvent::operator=(const CtiPAOEvent& right)
-{
-    _eventId      = right._eventId;
-    _scheduleId   = right._scheduleId;
-    _paoId        = right._paoId;
-    _eventCommand = right._eventCommand;
-    _disableOvUvFlag = right._disableOvUvFlag;
-
-    return *this;
 }
 
 long CtiPAOEvent::getEventId() const

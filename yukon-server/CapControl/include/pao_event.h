@@ -11,8 +11,8 @@ class CtiPAOEvent
 public:
 
     CtiPAOEvent();
-    CtiPAOEvent(long eventId, long schedId, long paoId, const std::string& command, bool disableOvUv);
     CtiPAOEvent(Cti::RowReader& rdr);
+
     virtual ~CtiPAOEvent();
 
     long getEventId()const;
@@ -20,8 +20,6 @@ public:
     long getPAOId()const;
     const std::string& getEventCommand() const;
     bool getDisableOvUvFlag() const;
-
-    CtiPAOEvent& operator=(const CtiPAOEvent& right);
 
 private:
     
