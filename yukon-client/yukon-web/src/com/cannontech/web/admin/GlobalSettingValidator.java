@@ -58,7 +58,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
         @Override
         public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
             String ipHost = (String) value;
-            if (StringUtils.isNotBlank((String) value)) {
+            if (StringUtils.isNotBlank(ipHost)) {
                 // AD_SERVER_ADDRESS supports  a space separated list of addresses
                 if (globalSettingType == GlobalSettingType.AD_SERVER_ADDRESS) {
                     String[] hosts = StringUtils.split(ipHost, " ");
