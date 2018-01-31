@@ -204,9 +204,9 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private int attachPointsToSubBus(int pointOffset, PaoIdentifier subBusPao, PaoIdentifier rtuPao) {
         CapControlSubBus capControlSubBus = busService.get(subBusPao.getPaoId());
         
-        PointBase voltLoadPoint = createAnalogPoint(capControlSubBus.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
-        PointBase kwPoint = createAnalogPoint(capControlSubBus.getName() + " kWatt Point", UnitOfMeasure.KW, pointOffset++, rtuPao);
-        PointBase kvarPoint = createAnalogPoint(capControlSubBus.getName() + " kVar Point", UnitOfMeasure.KVAR, pointOffset++, rtuPao);
+        PointBase voltLoadPoint = createAnalogPoint(capControlSubBus.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.DEFAULT_DECIMAL_PLACES);
+        PointBase kwPoint = createAnalogPoint(capControlSubBus.getName() + " kWatt Point", UnitOfMeasure.KW, pointOffset++, rtuPao, PointUnit.DEFAULT_DECIMAL_PLACES);
+        PointBase kvarPoint = createAnalogPoint(capControlSubBus.getName() + " kVar Point", UnitOfMeasure.KVAR, pointOffset++, rtuPao, PointUnit.DEFAULT_DECIMAL_PLACES);
 
         capControlSubBus.getCapControlSubstationBus().setCurrentVoltLoadPointID(voltLoadPoint.getPoint().getPointID());
         capControlSubBus.getCapControlSubstationBus().setCurrentWattLoadPointID(kwPoint.getPoint().getPointID());
@@ -227,9 +227,9 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     private int attachPointsToFeeder(int pointOffset, PaoIdentifier feederBusPao, PaoIdentifier rtuPao) {
         CapControlFeeder capControlFeeder = feederService.get(feederBusPao.getPaoId());
         
-        PointBase voltLoadPoint = createAnalogPoint(capControlFeeder.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
-        PointBase kwPoint = createAnalogPoint(capControlFeeder.getName() + " kWatt Point", UnitOfMeasure.KW, pointOffset++, rtuPao);
-        PointBase kvarPoint = createAnalogPoint(capControlFeeder.getName() + " kVar Point", UnitOfMeasure.KVAR, pointOffset++, rtuPao);
+        PointBase voltLoadPoint = createAnalogPoint(capControlFeeder.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.DEFAULT_DECIMAL_PLACES);
+        PointBase kwPoint = createAnalogPoint(capControlFeeder.getName() + " kWatt Point", UnitOfMeasure.KW, pointOffset++, rtuPao, PointUnit.DEFAULT_DECIMAL_PLACES);
+        PointBase kvarPoint = createAnalogPoint(capControlFeeder.getName() + " kVar Point", UnitOfMeasure.KVAR, pointOffset++, rtuPao, PointUnit.DEFAULT_DECIMAL_PLACES);
 
         capControlFeeder.getCapControlFeeder().setCurrentVoltLoadPointID(voltLoadPoint.getPoint().getPointID());
         capControlFeeder.getCapControlFeeder().setCurrentWattLoadPointID(kwPoint.getPoint().getPointID());
@@ -253,22 +253,22 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             }
         }
 
-        PointBase autoRemoteControl = createStatusPoint(regulator.getName() + "-Auto Remote Control", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
-        PointBase autoBlockEnable = createStatusPoint(regulator.getName() + "-Auto Block Enable", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
+        PointBase autoRemoteControl = createStatusPoint(regulator.getName() + "-Auto Remote Control", StateGroupUtils.STATEGROUP_TRUEFALSE, pointOffset++, rtuPao);
+        PointBase autoBlockEnable = createStatusPoint(regulator.getName() + "-Auto Block Enable", StateGroupUtils.STATEGROUP_TRUEFALSE, pointOffset++, rtuPao);
         PointBase tapUp = createStatusPoint(regulator.getName() + "-Tap Up", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
         PointBase tapDown = createStatusPoint(regulator.getName() + "-Tap Down", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
         PointBase terminate = createStatusPoint(regulator.getName() + "-Terminate", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
         
-        PointBase tapPosition = createAnalogPoint(regulator.getName() + "-Tap Position", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase sourceVoltage = createAnalogPoint(regulator.getName() + "-Source Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
-        PointBase voltage = createAnalogPoint(regulator.getName() + "-Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
-        PointBase keepAlive = createAnalogPoint(regulator.getName() + "-Keep Alive", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase forwardSetPoint = createAnalogPoint(regulator.getName() + "-Forward Set Point", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase forwardBandwidth = createAnalogPoint(regulator.getName() + "-Forward Bandwidth", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase reverseBandwidth = createAnalogPoint(regulator.getName() + "-Reverse Bandwidth", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase reverseFlowIndicator = createStatusPoint(regulator.getName() + "-Reverse Flow Indicator", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
-        PointBase reverseSetPoint =  createAnalogPoint(regulator.getName() + "-Reverse Set Point", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
-        PointBase controlModePointBase =  createAnalogPoint(regulator.getName() + "-Control Mode", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        PointBase tapPosition = createAnalogPoint(regulator.getName() + "-Tap Position", UnitOfMeasure.TAP, pointOffset++, rtuPao, PointUnit.ZERO_DECIMAL_PLACE);
+        PointBase sourceVoltage = createAnalogPoint(regulator.getName() + "-Source Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.ONE_DECIMAL_PLACE);
+        PointBase voltage = createAnalogPoint(regulator.getName() + "-Voltage", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.ONE_DECIMAL_PLACE);
+        PointBase keepAlive = createAnalogPoint(regulator.getName() + "-Keep Alive", UnitOfMeasure.UNDEF, pointOffset++, rtuPao, PointUnit.ZERO_DECIMAL_PLACE);
+        PointBase forwardSetPoint = createAnalogPoint(regulator.getName() + "-Forward Set Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.ONE_DECIMAL_PLACE);
+        PointBase forwardBandwidth = createAnalogPoint(regulator.getName() + "-Forward Bandwidth", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.ONE_DECIMAL_PLACE);
+        PointBase reverseBandwidth = createAnalogPoint(regulator.getName() + "-Reverse Bandwidth", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.ONE_DECIMAL_PLACE);
+        PointBase reverseFlowIndicator = createStatusPoint(regulator.getName() + "-Reverse Flow Indicator", StateGroupUtils.STATEGROUP_TRUEFALSE, pointOffset++, rtuPao);
+        PointBase reverseSetPoint =  createAnalogPoint(regulator.getName() + "-Reverse Set Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao, PointUnit.ONE_DECIMAL_PLACE);
+        PointBase controlModePointBase =  createAnalogPoint(regulator.getName() + "-Control Mode", UnitOfMeasure.UNDEF, pointOffset++, rtuPao, PointUnit.ZERO_DECIMAL_PLACE);
 
         Map<RegulatorPointMapping, Integer> mappings = new ImmutableMap.Builder<RegulatorPointMapping, Integer>()
         .put(RegulatorPointMapping.AUTO_REMOTE_CONTROL, autoRemoteControl.getPoint().getPointID())
@@ -298,8 +298,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         return pointOffset;
     }
     
-    private PointBase createAnalogPoint(String name, UnitOfMeasure unitOfMeasure, int pointOffset, PaoIdentifier pao) {
-        PointTemplate pointTemplate = new PointTemplate(name, PointType.Analog, pointOffset, 1, unitOfMeasure.getId(), StateGroupUtils.STATEGROUP_ANALOG, PointUnit.DEFAULT_DECIMAL_PLACES);
+    private PointBase createAnalogPoint(String name, UnitOfMeasure unitOfMeasure, int pointOffset, PaoIdentifier pao, int decimalPlaces) {
+        PointTemplate pointTemplate = new PointTemplate(name, PointType.Analog, pointOffset, 1, unitOfMeasure.getId(), StateGroupUtils.STATEGROUP_ANALOG, decimalPlaces);
         pointTemplate.setPointArchiveType(PointArchiveType.ON_CHANGE);
         PointBase point = pointCreationService.createPoint(pao, pointTemplate );
         dbPersistentDao.performDBChange(point, TransactionType.INSERT);
@@ -483,12 +483,12 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             logCapControlAssignment(cbcName, capBankPao);
             
             if (!threePhaseCbcTypes.contains(paoType)) {
-                createAnalogPoint("Voltage Phase B", UnitOfMeasure.VOLTS, 230, cbcPao);
-                createAnalogPoint("Voltage Phase C", UnitOfMeasure.VOLTS, 231, cbcPao);
+                createAnalogPoint("Voltage Phase B", UnitOfMeasure.VOLTS, 230, cbcPao, PointUnit.DEFAULT_DECIMAL_PLACES);
+                createAnalogPoint("Voltage Phase C", UnitOfMeasure.VOLTS, 231, cbcPao, PointUnit.DEFAULT_DECIMAL_PLACES);
             } else {
-                createAnalogPoint("Va Secondary", UnitOfMeasure.VOLTS, 39, cbcPao);
-                createAnalogPoint("Vb Secondary", UnitOfMeasure.VOLTS, 40, cbcPao);
-                createAnalogPoint("Vc Secondary", UnitOfMeasure.VOLTS, 41, cbcPao);
+                createAnalogPoint("Va Secondary", UnitOfMeasure.VOLTS, 39, cbcPao, PointUnit.DEFAULT_DECIMAL_PLACES);
+                createAnalogPoint("Vb Secondary", UnitOfMeasure.VOLTS, 40, cbcPao, PointUnit.DEFAULT_DECIMAL_PLACES);
+                createAnalogPoint("Vc Secondary", UnitOfMeasure.VOLTS, 41, cbcPao, PointUnit.DEFAULT_DECIMAL_PLACES);
             }
         }
     }

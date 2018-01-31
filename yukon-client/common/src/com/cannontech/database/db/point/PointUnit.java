@@ -9,6 +9,8 @@ import com.cannontech.database.db.DBPersistent;
 public class PointUnit extends DBPersistent {
     
     public static final int DEFAULT_DECIMAL_PLACES = 3;
+    public static final int ZERO_DECIMAL_PLACE = 0;
+    public static final int ONE_DECIMAL_PLACE = 1;
     public static final int DEFAULT_METER_DIALS = 0;
 
     private Integer pointID = null;
