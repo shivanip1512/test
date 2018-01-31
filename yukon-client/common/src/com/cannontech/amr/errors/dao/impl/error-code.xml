@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <?xml-stylesheet type="text/xsl" href="porter_error.xsl"?>
 
-<!-- NOTE New error codes added to this file also need to be added to DeviceError.java AND deviceErrors.xml -->
+<!-- NOTE New error codes added to this file also need to be added to DeviceError.java -->
 <portererrorcodes>
     <error code="3">
         <category>Bulk Communications</category>
@@ -32,7 +32,6 @@
             </ul>
         </troubleshooting>
     </error>
-    
     <error code="9">
         <category>Data Validation</category>
         <porter>Parameter Out of Range</porter>
@@ -406,8 +405,6 @@
         <category>N/A</category>
         <porter>Unknown Error</porter>
         <description>Troubleshooting tips for this error code are not available at this time.</description>
-        <troubleshooting>
-        </troubleshooting>
     </error>
     
     <error code="46">
@@ -1056,7 +1053,7 @@
     </error>
     <error code="281">
         <category>Yukon System</category>
-        <porter>Failed to find a point for the given device.</porter>
+        <porter></porter>
         <description>Point is missing.</description>
         <troubleshooting>
             Add missing point.
@@ -1064,14 +1061,14 @@
     </error>
     <error code="282">
         <category>Yukon System</category>
-        <porter>The device's date range must be reset to continue.</porter>
+        <porter></porter>
         <description>The action failed, the timestamp was not received.</description>
         <troubleshooting>
         </troubleshooting>
     </error>
      <error code="283">
         <category>Yukon System</category>
-        <porter>Not enough data received from the device.</porter>
+        <porter></porter>
         <description>The action failed, the timestamp is outside of the expected range.</description>
         <troubleshooting>
         </troubleshooting>
@@ -1234,36 +1231,31 @@
         <category>Network Manager</category>
         <porter>Load side voltage detected while disconnected.</porter>
         <description>Load side voltage detected while disconnected.</description>
-        <troubleshooting></troubleshooting>
     </error>
     <error code="1029">
         <category>Network Manager</category>
         <porter>No load side voltage detected while connected.</porter>
         <description>No load side voltage detected while connected.</description>
-        <troubleshooting></troubleshooting>
     </error>
     <error code="1030">
         <category>Network Manager</category>
         <porter>No load side voltage detected while connected.</porter>
         <description>Load side voltage higher than the configurable threshold prevented the switch from closing.</description>
-        <troubleshooting></troubleshooting>
     </error>
     <error code="2000">
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>
         <description>This action cannot be performed on this device type.</description>
-        <troubleshooting></troubleshooting>
     </error>
+    
     <error code="0">
         <category>N/A</category>
-        <porter>N/A</porter>
         <description>Successful Read</description>
-        <troubleshooting>N/A</troubleshooting>
     </error>
-    <error code="-1">
+    <error code="*">
         <category>N/A</category>
-        <porter>A porter error string is not available for this error code at this time</porter>
-        <description>A description for this error code is not available at this time</description>
-        <troubleshooting>Troubleshooting tips for this error code are not available at this time</troubleshooting>
+        <porter>Troubleshooting tips for this error code are not available at this time</porter>
+        <description>Troubleshooting tips for this error code are not available at this time
+        </description>
     </error>
 </portererrorcodes>

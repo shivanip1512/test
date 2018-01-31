@@ -92,7 +92,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     }
 
     /**
-     * Loads the error-code.xml file with English values. This fallback is required for EIM Server, Service Manager, etc
+     * Loads the error-code.xml file with English values.  This fallback is required for EIM Server, Service Manager, etc
      * where there is no access to the i18n files.
      */
     @PostConstruct
@@ -107,13 +107,15 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         SAXBuilder builder = new SAXBuilder();
         Document document = builder.build(errorDefinitions);
         Element rootElement = document.getRootElement();
-        rootElement.getChildren("error").forEach(errorEl -> {
+        List<Element> children = rootElement.getChildren("error");
+        for (Element errorEl : children) {
             String errorCodeStr = errorEl.getAttributeValue("code");
             DeviceError error = DeviceError.UNKNOWN;
             if (!"*".equals(errorCodeStr)) {
-                DeviceError.getErrorByCode(Integer.parseInt(errorCodeStr));
+                error = DeviceError.getErrorByCode(Integer.parseInt(errorCodeStr));
             }
             String porter = errorEl.getChildTextTrim("porter");
+
             String description = errorEl.getChildTextTrim("description");
             Validate.notEmpty(description, "Description for error " + errorCodeStr + " must not be blank");
             Element troubleEl = errorEl.getChild("troubleshooting");
@@ -128,7 +130,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             } else {
                 mapBuilder.put(error, dded);
             }
-        });
+        }
         Validate.notNull(defaultTranslation, "No default translation found");
         store.put(defaultThemeKey, mapBuilder.build());
         log.info("Device error code descriptions loaded: " + store.size());
