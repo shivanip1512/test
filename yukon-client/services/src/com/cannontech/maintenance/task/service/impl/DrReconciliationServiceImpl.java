@@ -32,6 +32,7 @@ import com.cannontech.maintenance.task.service.DrReconciliationService;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
@@ -54,6 +55,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private LmHardwareCommandService commandService;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private InventoryDao inventoryDao;
     
     private static final Logger log = YukonLogManager.getLogger(DrReconciliationServiceImpl.class);
 
@@ -292,16 +294,21 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
 
         // Get LCR's which are expected to be out of service, we need to send OOS messages to them.
         List<Integer> sendOOS = getOutOfServiceExpectedLcrs();
+        List<Integer> sendOOSDevice = Lists.newArrayList(inventoryDao.getDeviceIds(sendOOS).values());
+        log.debug("Send OOS to device "+sendOOSDevice);
 
         // Get LCR's which are expected to be in service, we need to send IN service message to them.
         List<Integer> sendInService = getInServiceExpectedLcrs();
+        List<Integer> sendInServiceDevice = Lists.newArrayList(inventoryDao.getDeviceIds(sendInService).values());
+        log.debug("Send In service to device "+sendInServiceDevice);
 
         // Get LCR's with incorrect addressing, we need to send config message to them
         Set<Integer> sendAddressing = getLCRWithConflictingAddressing();
+        log.debug("Send config to device "+sendAddressing);
 
         Set<Integer> allLcrs = new HashSet<>();
-        allLcrs.addAll(sendOOS);
-        allLcrs.addAll(sendInService);
+        allLcrs.addAll(sendOOSDevice);
+        allLcrs.addAll(sendInServiceDevice);
         allLcrs.addAll(sendAddressing);
 
         // Do not have any LCR's to send message return back.
@@ -319,7 +326,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         if (noOfGateways == 0) {
             return false;
         }
-        // Have to send 1 message per gateway every 12 c
+        // Have to send 1 message per gateway every 12 min
         int noOfMessagePerMin = (noOfGateways / calculationCycleMinutes == 0) ? 1 : noOfGateways / calculationCycleMinutes;
 
         // This scheduler will run initially (0 minute) and then after every 12 minute.
@@ -337,15 +344,15 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             sendMessageToLcr.entrySet().stream().forEach(lcr -> {
                 try {
                     int noOfMessages = 1;
-                    if (sendOOS.contains(lcr.getKey())) {
-                        queue.put(new LCRCommandHolder(lcr.getValue(), LmHardwareCommandType.OUT_OF_SERVICE, noOfMessages));
-                    } else if (sendInService.contains(lcr.getKey())) {
-                        queue.put(new LCRCommandHolder(lcr.getValue(), LmHardwareCommandType.IN_SERVICE, noOfMessages));
+                    if (sendOOSDevice.contains(lcr.getKey())) {
+                        queue.put(new LCRCommandHolder(lcr.getValue(), lcr.getKey(), LmHardwareCommandType.OUT_OF_SERVICE, noOfMessages));
+                    } else if (sendInServiceDevice.contains(lcr.getKey())) {
+                        queue.put(new LCRCommandHolder(lcr.getValue(), lcr.getKey(), LmHardwareCommandType.IN_SERVICE, noOfMessages));
                     } else if (sendAddressing.contains(lcr.getKey())) {
                         if (lcrInMultipleGroups.containsKey(lcr.getKey())) {
                             noOfMessages = lcrInMultipleGroups.get(lcr.getKey()).size();
                         }
-                        queue.put(new LCRCommandHolder(lcr.getValue(), LmHardwareCommandType.CONFIG, noOfMessages));
+                        queue.put(new LCRCommandHolder(lcr.getValue(), lcr.getKey(), LmHardwareCommandType.CONFIG, noOfMessages));
                     }
                 } catch (InterruptedException e) {
                     log.error("Scheduler for finding message to send Interrupted " + e);
@@ -364,14 +371,14 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                 try {
                     lcrCommandHolder = queue.take();
                     if (sendCommand(lcrCommandHolder)) {
-                        Integer inventoryId = lcrCommandHolder.getInventoryId();
+                        Integer deviceId = lcrCommandHolder.getDeviceId();
                         LmHardwareCommandType lmHardwareCommandType = lcrCommandHolder.getOperation();
                         if (lmHardwareCommandType == LmHardwareCommandType.OUT_OF_SERVICE) {
-                            sendOOS.remove(inventoryId);
+                            sendOOSDevice.remove(deviceId);
                         } else if (lmHardwareCommandType == LmHardwareCommandType.IN_SERVICE) {
-                            sendInService.remove(inventoryId);
+                            sendInServiceDevice.remove(deviceId);
                         } else if (lmHardwareCommandType == LmHardwareCommandType.CONFIG) {
-                            sendAddressing.remove(inventoryId);
+                            sendAddressing.remove(deviceId);
                         }
                         messagesSend = messagesSend + lcrCommandHolder.getNoOfMessages();
                     }
@@ -428,7 +435,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             }
         } catch (CommandCompletionException e) {
             success = false;
-            log.error("Failed - Unable to send command " + lmHardwareCommandType + "to inventory id=" + inventoryId, e);
+            log.error("Failed - Unable to send command " + lmHardwareCommandType + " to inventory id=" + inventoryId, e);
             systemEventLogService.messageSendingFailed(serialNumber, e.getMessage());
         }
         return success;
@@ -439,11 +446,14 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
      */
     private class LCRCommandHolder {
         int inventoryId;
+        int deviceId;
+        
         LmHardwareCommandType commandType;
         int noOfMessages;
 
-        public LCRCommandHolder(int inventoryId, LmHardwareCommandType commandType, int noOfMessages) {
+        public LCRCommandHolder(int inventoryId, int deviceId, LmHardwareCommandType commandType, int noOfMessages) {
             this.inventoryId = inventoryId;
+            this.deviceId = deviceId;
             this.commandType = commandType;
             this.noOfMessages = noOfMessages;
         }
@@ -458,6 +468,10 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
 
         public int getNoOfMessages() {
             return noOfMessages;
+        }
+        
+        public int getDeviceId() {
+            return deviceId;
         }
     }
 }
