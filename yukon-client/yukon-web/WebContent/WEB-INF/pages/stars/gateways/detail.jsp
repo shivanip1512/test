@@ -81,8 +81,6 @@
                 </div>
             </div>
         </tags:sectionContainer2>
-        <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
-        <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section" deviceId="${gateway.paoIdentifier.paoId}"/>
     </div>
     
 </div>
@@ -162,6 +160,8 @@
             <%-- </div> --%>
         </div>
         <div class="column two nogutter">
+            <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
+            <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section" deviceId="${gateway.paoIdentifier.paoId}"/>
             <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
                 <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
