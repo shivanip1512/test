@@ -225,7 +225,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public void queuePointData(int pointId, Range<Instant> instantRange, Order order,
             BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted) {
-        SqlFragmentSource sql = buildSql(instantRange, Collections.singleton(pointId), order, true);
+        SqlFragmentSource sql = buildSql(instantRange, Collections.singleton(pointId), order, false);
         executeQueryToQueue(sql, queue, isCompleted);
     }
 
