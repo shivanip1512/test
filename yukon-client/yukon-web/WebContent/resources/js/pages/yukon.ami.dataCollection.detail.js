@@ -25,6 +25,20 @@ yukon.ami.dataCollection.detail = (function () {
                         
             yukon.widget.dataCollection.buildChart(chart, data);
             
+            //check which legend items should be selected
+            $('input[name=ranges]').each(function() {
+                var rangeButton = $(this);
+                if (!rangeButton.prop("checked")) {
+                    var legendItems = chart.highcharts().series[0].data;
+                    for (var i = 0; i < legendItems.length; i++) {
+                        if (rangeButton.val() == legendItems[i].filter) {
+                            legendItems[i].setVisible(false, false);
+                        }
+                    }
+                }
+            });
+            chart.highcharts().redraw();
+            
             $(document).on('click', '.js-download', function () {
                 var form = $('#collectionDetail');
                 form.attr('action', yukon.url('/amr/dataCollection/download'));
