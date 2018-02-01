@@ -398,6 +398,37 @@ begin
 	endif;
 end;
 
+
+//------------------------------------------------------------
+// Helper function that removes all ActiveMQ folders and caches
+// Returns 0 if successful, <0 if not
+//------------------------------------------------------------
+export prototype number RemoveActiveMQFolders();
+function number RemoveActiveMQFolders()
+number retVal, nResult;
+begin
+    retVal = 0;
+    //Remove ActiveMQ Client Cache to avoid corruption and upgrade issues
+    if(ExistsDir(TARGETDIR ^ "\\Server\\web\\bin\\activemq-data") = EXISTS) then
+        nResult = DeleteDir(TARGETDIR ^ "\\Server\\web\\bin\\activemq-data", ALLCONTENTS);
+        
+        if(nResult != 0) then
+            retVal = nResult;
+        endif;
+    endif;
+    
+    //Remove ActiveMQ Web Cache to avoid corruption and upgrade issues
+    if(ExistsDir(TARGETDIR ^ "\\Client\\bin\\activemq-data") = EXISTS) then
+        nResult = DeleteDir(TARGETDIR ^ "\\Client\\bin\\activemq-data", ALLCONTENTS);
+        
+        if(nResult != 0) then
+            retVal = nResult;
+        endif;
+    endif;
+    
+    return retVal;
+end;
+
 //------------------------------------------------------------
 // Helper function that copies all the files from srcDir 
 // except for logs folder/files to the specified targetDir
