@@ -424,7 +424,7 @@ string CtiDeviceCBC::getSQLCoreStatement() const
                                     "WHERE " 
                                         "UPPER(YP.Type) NOT IN( "
                                             "'CBC 7020', 'CBC 7022', 'CBC 7023', 'CBC 7024', "
-                                            "'CBC DNP',  'CBC 8020', 'CBC 8024', 'CBC Logical')";
+                                            "'CBC DNP',  'CBC 8020', 'CBC 8024', 'CBC LOGICAL')";
 
     return sqlCore;
 }
