@@ -142,8 +142,8 @@ public class DeviceErrorTranslatorDaoImplTest {
                     //check DeviceErrorCategory against deviceErrors.xml category entry and makes sure it is not a duplicate
                     DeviceErrorCategory deviceErrorCategory = DeviceErrorCategory.getByName(elementValue);
                     assertNotNull("An error category entry with value " + elementValue + " in deviceErrors.xml is not defined in DeviceErrorCategory.java", deviceErrorCategory);
-                    String keyCategoryText = keyName.substring(25);
-                    assertEquals("Category entries in deviceErrors.xml must be of the form yukon.web.error.category.<DeviceErrorCategory value> and map to the DeviceErrorCategory value provided. Entry with key " + keyName + " violates this rule.", deviceErrorCategory, DeviceErrorCategory.valueOf(keyCategoryText));
+                    String keyCategoryText = keyElements[4];
+                    assertEquals(keyName + " and " + elementValue +  " in deviceErrors.xml do not map to the same DeviceErrorCategory", deviceErrorCategory, DeviceErrorCategory.valueOf(keyCategoryText));
                     assertFalse("Duplicate category entries in deviceErrors.xml for category " + keyCategoryText, deviceErrorsCategories.contains(deviceErrorCategory));
                     deviceErrorsCategories.add(deviceErrorCategory);
                     break;
