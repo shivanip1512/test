@@ -548,43 +548,28 @@ yukon.namespace = function (ns) {
          */
         _drawTicks: function () {
             
-            var container = this.element;
+            var container = this.element,
+                begin = this.options.begin,
+                end = this.options.end,
+                beginText = moment(begin).tz(yg.timezone).format(yg.formats.date.long_date_time_hm),
+                endText = moment(end).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
             
-            var begin = this.options.begin;
-            var end = this.options.end;
-            
-            var beginText = moment(begin).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
-            var endText = moment(end).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
-
-            var quarters = (this.options.end - this.options.begin) / 4;
-            var firstQuarterDate = new Date(this.options.begin + quarters);
-            var firstQuarterText = moment(firstQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
-            var secondQuarterDate = new Date(this.options.begin + quarters * 2);
-            var secondQuarterText = moment(secondQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
-            var thirdQuarterDate = new Date(this.options.begin + quarters * 3);
-            var thirdQuarterText = moment(thirdQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
-            
-            $('<span class="timeline-label-begin">')
-            .text(beginText)
-            .appendTo(container);
-            
-           $('<span class="timeline-label-end">')
-            .text(endText)
-            .appendTo(container);
+            $('<span class="timeline-label-begin">').text(beginText).appendTo(container);
+            $('<span class="timeline-label-end">').text(endText).appendTo(container);
            
            //add labels
            if (this.options.showLabels) {
-               $('<span class="timeline-label-first">')
-               .text(firstQuarterText)
-               .appendTo(container);
+               var quarters = (this.options.end - this.options.begin) / 4,
+               firstQuarterDate = new Date(this.options.begin + quarters),
+               firstQuarterText = moment(firstQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm),
+               secondQuarterDate = new Date(this.options.begin + quarters * 2),
+               secondQuarterText = moment(secondQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm),
+               thirdQuarterDate = new Date(this.options.begin + quarters * 3),
+               thirdQuarterText = moment(thirdQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
                
-               $('<span class="timeline-label-second">')
-               .text(secondQuarterText)
-               .appendTo(container);
-               
-               $('<span class="timeline-label-third">')
-               .text(thirdQuarterText)
-               .appendTo(container);
+               $('<span class="timeline-label-first">').text(firstQuarterText).appendTo(container);
+               $('<span class="timeline-label-second">').text(secondQuarterText).appendTo(container);
+               $('<span class="timeline-label-third">').text(thirdQuarterText).appendTo(container);
            }
             
         },
