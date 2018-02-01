@@ -20,6 +20,7 @@ yukon.widget.dataCollection = (function () {
         return [
             {
                 name: $('.js-AVAILABLE').val(),
+                filter: 'AVAILABLE',
                 displayPercentage: data.available.percentage < 1 && data.available.percentage != 0 ? '&lt;1%' : yukon.percent(data.available.percentage, 100, 1),
                 y: (data.available.percentage < 1 && data.available.percentage != 0 ? 1 : data.available.percentage),
                 x: data.available.deviceCount,
@@ -27,6 +28,7 @@ yukon.widget.dataCollection = (function () {
             },
             {
                 name: $('.js-EXPECTED').val(),
+                filter: 'EXPECTED',
                 displayPercentage: data.expected.percentage < 1 && data.expected.percentage != 0 ? '&lt;1%' : yukon.percent(data.expected.percentage, 100, 1),
                 y: (data.expected.percentage < 1 && data.expected.percentage != 0 ? 1 : data.expected.percentage),
                 x: data.expected.deviceCount,
@@ -35,6 +37,7 @@ yukon.widget.dataCollection = (function () {
             },
             {
                 name: $('.js-OUTDATED').val(),
+                filter: 'OUTDATED',
                 displayPercentage: data.outdated.percentage < 1 && data.outdated.percentage != 0 ? '&lt;1%' : yukon.percent(data.outdated.percentage, 100, 1),
                 y: (data.outdated.percentage < 1 && data.outdated.percentage != 0 ? 1 : data.outdated.percentage),
                 x: data.outdated.deviceCount,
@@ -42,6 +45,7 @@ yukon.widget.dataCollection = (function () {
             },
             {
                 name: $('.js-UNAVAILABLE').val(),
+                filter: 'UNAVAILABLE',
                 displayPercentage: data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%' : yukon.percent(data.unavailable.percentage, 100, 1),
                 y: (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
                 x: data.unavailable.deviceCount,
@@ -80,8 +84,9 @@ yukon.widget.dataCollection = (function () {
                 borderWidth: 0,
                 useHTML: true,
                 labelFormatter: function (point) {
+                    var legendValueText = '<span class="js-legend-value dn">' + this.filter + '</span>';
                     var spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
-                    return spanText + this.name + ': ' + this.displayPercentage;
+                    return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
                 layout: 'vertical',
                 verticalAlign: 'middle'
@@ -173,12 +178,22 @@ yukon.widget.dataCollection = (function () {
             $(document).on('click', '.js-data-pie', function () {
                 var widget = $(this).closest('.js-data-collection-widget'),
                     deviceGroup = $(widget).find('input[name=groupName]').val(),
-                    includeDisabled = $(widget).find('#includeDisabled').is(":checked");
+                    includeDisabled = $(widget).find('#includeDisabled').is(":checked"),
+                    ranges = [];
+                
+                    //check which legend items are selected
+                    $(widget).find('div.highcharts-legend-item').each(function(index, elem) {
+                        if (!$(elem).hasClass('highcharts-legend-item-hidden')) {
+                            var legendValue = $(elem).find('.js-legend-value').text();
+                            ranges.push(legendValue);
+                        }
+                        
+                    });
                 var data = {
                         deviceGroup: deviceGroup,
                         includeDisabled: includeDisabled
                 }
-                window.open(yukon.url('/amr/dataCollection/detail?' + $.param(data)));
+                window.open(yukon.url('/amr/dataCollection/detail?' + $.param(data) + "&ranges=" + ranges));
             });
 
             $(document).on('dialogclose', '.js-device-group-picker-dialog', function (ev, ui) {
