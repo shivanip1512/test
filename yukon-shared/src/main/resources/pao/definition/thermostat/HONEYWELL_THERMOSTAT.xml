@@ -5,6 +5,7 @@
     </pointFiles>
     <tags>
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        <tag name="ASSET_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
         <pointInfo name="Comm Status" init="true" attributes="COMM_STATUS"/>
