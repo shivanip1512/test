@@ -470,6 +470,7 @@ yukon.namespace = function (ns) {
         options: {
             begin: new Date(new Date().setDate(new Date().getDate() - 1)),
             end: new Date().getTime(),
+            showLabels: false,
             events: []
         },
         
@@ -554,6 +555,14 @@ yukon.namespace = function (ns) {
             
             var beginText = moment(begin).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
             var endText = moment(end).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
+
+            var quarters = (this.options.end - this.options.begin) / 4;
+            var firstQuarterDate = new Date(this.options.begin + quarters);
+            var firstQuarterText = moment(firstQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
+            var secondQuarterDate = new Date(this.options.begin + quarters * 2);
+            var secondQuarterText = moment(secondQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
+            var thirdQuarterDate = new Date(this.options.begin + quarters * 3);
+            var thirdQuarterText = moment(thirdQuarterDate).tz(yg.timezone).format(yg.formats.date.long_date_time_hm);
             
             $('<span class="timeline-label-begin">')
             .text(beginText)
@@ -562,6 +571,21 @@ yukon.namespace = function (ns) {
            $('<span class="timeline-label-end">')
             .text(endText)
             .appendTo(container);
+           
+           //add labels
+           if (this.options.showLabels) {
+               $('<span class="timeline-label-first">')
+               .text(firstQuarterText)
+               .appendTo(container);
+               
+               $('<span class="timeline-label-second">')
+               .text(secondQuarterText)
+               .appendTo(container);
+               
+               $('<span class="timeline-label-third">')
+               .text(thirdQuarterText)
+               .appendTo(container);
+           }
             
         },
         
@@ -609,11 +633,16 @@ yukon.namespace = function (ns) {
                 
                 if (events.length > 1) {
                     // If there is there more than one event to cluster together, use the count as the icon
-                    
                     span.addClass('timeline-icon multi');
+
+                    var count = events.length;
+                    if (count > 99) {
+                        count = ">99"
+                        span.addClass('greaterThan99')
+                    }
                     
                     $('<span class="timeline-event-count">')
-                        .text(events.length)
+                        .text(count)
                         .appendTo(span);
                     
                 } else {

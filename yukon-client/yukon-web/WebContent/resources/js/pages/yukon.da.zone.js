@@ -45,6 +45,7 @@ yukon.da.zone = (function () {
             var hoursAgo = _range_hours[range];
             var begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
             options.begin = begin.getTime();
+            options.showLabels = true;
             
             var eventsToRemove = [];
             // Remove any rows in the table and timeline that are not in the retrieved list.

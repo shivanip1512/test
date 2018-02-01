@@ -177,13 +177,13 @@
         <tbody>
             <cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
                 <tr>
-                    <td class="half-width">
+                    <td style="width:25%;">
                         <cti:url var="url" value="/capcontrol/ivvc/zone/detail">
                             <cti:param name="zoneId" value="${zone.zoneId}"/>
                         </cti:url>
                         <a href="${url}">${fn:escapeXml(zone.name)}</a>
                     </td>
-                    <td class="half-width">
+                    <td>
                        <div class="js-events-timeline clear" data-zone-id="${zone.zoneId}"></div>
                     </td>
                 </tr>

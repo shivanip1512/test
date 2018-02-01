@@ -81,6 +81,7 @@ yukon.smart.notifications = (function () {
         var timeZone = $('#startDateFilter').data('timeZoneShort');
         options.begin = new Date(startDate + ' ' + timeZone).getTime();
         options.end = new Date(endDate + ' ' + timeZone).getTime();
+        options.showLabels = true;
         // Reverse order to add oldest first.
         eventData.reverse().forEach(function (event) {
             var statusMessage = $('.js-status-' + event.eventId),

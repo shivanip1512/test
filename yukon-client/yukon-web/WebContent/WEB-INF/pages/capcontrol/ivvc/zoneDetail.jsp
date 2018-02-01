@@ -114,6 +114,7 @@
 </div>
 <div class="clear">
     <tags:sectionContainer2 nameKey="ivvcEvents">
+        <div class="js-events-timeline clear" data-zone-id="${zoneId}"></div>
         <tags:stepper id="ivvc-events-range" key=".events.shown" classes="fr stacked">
             <c:forEach var="range" items="${ranges}">
                 <c:set var="selected" value="${range eq lastRange ? 'selected' : ''}"/>
@@ -137,7 +138,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="js-events-timeline clear" data-zone-id="${zoneId}"></div>
     </tags:sectionContainer2>
 </div>
 <table class="dn">
