@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.naming.ConfigurationException;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -102,7 +103,8 @@ public class UserGroupEditorController {
     public String update(@ModelAttribute("userGroup") com.cannontech.database.db.user.UserGroup userGroup, 
             BindingResult result, ModelMap model, FlashScope flash, LiteYukonUser user,
             @DefaultItemsPerPage(10) PagingParameters paging) {
-        
+
+        userGroup.setUserGroupName(StringUtils.trim(userGroup.getUserGroupName()));
         userGroupValidator.validate(userGroup, result);
         
         if (result.hasErrors()) {

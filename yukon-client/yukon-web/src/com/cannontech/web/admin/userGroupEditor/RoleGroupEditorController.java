@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -95,7 +96,8 @@ public class RoleGroupEditorController {
     @RequestMapping(value="role-groups/{roleGroupId}", method=RequestMethod.POST, params="update")
     public String update(ModelMap model, FlashScope flash, @PathVariable int roleGroupId,
             @ModelAttribute("group") LiteYukonGroup group, BindingResult result) {
-        
+
+        group.setGroupName(StringUtils.trim(group.getGroupName()));
         validator.validate(group, result);
         
         if (result.hasErrors()) {

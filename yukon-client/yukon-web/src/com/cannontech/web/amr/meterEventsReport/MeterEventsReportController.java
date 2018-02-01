@@ -424,6 +424,7 @@ public class MeterEventsReportController {
              // The UI attempts to make this never happen but just in case it does, lets reject this request
             result.reject(baseKey + ".noEventTypes");
         }
+        exportData.setScheduleName(StringUtils.trim(exportData.getScheduleName()));
         exportValidator.validate(exportData, result);
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);

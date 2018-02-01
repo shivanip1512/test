@@ -10,7 +10,7 @@ public final class LiteYukonUserMapper implements YukonRowMapper<LiteYukonUser> 
     @Override
     public LiteYukonUser mapRow(YukonResultSet rs) throws SQLException {
         LiteYukonUser user = new LiteYukonUser(rs.getInt("UserID"));
-        user.setUsername(rs.getString("UserName"));
+        user.setUsername(rs.getStringSafe("UserName"));
         user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
         user.setForceReset(rs.getBoolean("ForceReset"));
         user.setUserGroupId(rs.getNullableInt("UserGroupId"));

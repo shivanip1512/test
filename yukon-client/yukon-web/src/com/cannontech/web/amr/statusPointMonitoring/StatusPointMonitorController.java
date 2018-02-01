@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -172,7 +173,8 @@ public class StatusPointMonitorController {
                                                   ModelMap modelMap, 
                                                   YukonUserContext userContext,
                                                   FlashScope flashScope) {
-        
+
+        statusPointMonitor.setStatusPointMonitorName(StringUtils.trim(statusPointMonitor.getStatusPointMonitorName()));
         updateValidator.validate(statusPointMonitor, bindingResult);
           
         if (bindingResult.hasErrors()) {

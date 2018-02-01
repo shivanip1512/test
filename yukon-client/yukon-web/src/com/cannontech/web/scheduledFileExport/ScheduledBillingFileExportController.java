@@ -151,6 +151,8 @@ public class ScheduledBillingFileExportController {
         exportData.setParameters(billingParameters);
 
         scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
+        exportData.setScheduleName(StringUtils.trim(exportData.getScheduleName()));
+        exportData.setExportFileName(StringUtils.trim(exportData.getExportFileName()));
         scheduledFileExportValidator.validate(exportData, bindingResult);
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         

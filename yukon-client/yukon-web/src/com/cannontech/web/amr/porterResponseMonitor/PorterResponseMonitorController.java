@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -222,7 +223,7 @@ public class PorterResponseMonitorController {
                     FlashScope flashScope) {
 
         PorterResponseMonitor monitor = null;
-
+        monitorDto.setName(StringUtils.trim(monitorDto.getName()));
         try {
             monitor = new PorterResponseMonitor(monitorDto);
         } catch (NumberFormatException e) {

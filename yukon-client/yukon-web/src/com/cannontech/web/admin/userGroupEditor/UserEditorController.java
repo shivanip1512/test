@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -133,7 +134,8 @@ public class UserEditorController {
     @RequestMapping(value="users/{userId}", method=RequestMethod.POST, params="update")
     public String update(YukonUserContext userContext, 
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
-        
+
+        user.setUsername(StringUtils.trim(user.getUsername()));
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserId());
         user.updateForSave(yukonUser, userAuthenticationInfo);
@@ -213,6 +215,9 @@ public class UserEditorController {
         if (userContext.getYukonUser().getUserID() != userId) {
             isOldPasswordRequired = false;
         }
+        password.setOldPassword(StringUtils.trim(password.getOldPassword()));
+        password.setPassword(StringUtils.trim(password.getPassword()));
+        password.setConfirmPassword(StringUtils.trim(password.getConfirmPassword()));
         if (isOldPasswordRequired) {
             boolean isValidPassword =
                 authService.validateOldPassword(yukonUser.getUsername(), password.getOldPassword());

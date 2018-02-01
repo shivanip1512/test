@@ -148,7 +148,8 @@ public class DeviceDataMonitorController {
             ModelMap model, 
             YukonUserContext userContext,
             FlashScope flash) {
-        
+
+        monitor.setName(StringUtils.trim(monitor.getName()));
         validator.validate(monitor, result);
         
         List<DeviceDataMonitorProcessor> remaining = getRemainingProcessors(monitor.getProcessors());
@@ -194,7 +195,8 @@ public class DeviceDataMonitorController {
                       ModelMap model, 
                       YukonUserContext userContext,
                       FlashScope flash) {
-        
+
+        monitor.setName(StringUtils.trim(monitor.getName()));
         validator.validate(monitor, result);
         
         if (result.hasErrors()) {

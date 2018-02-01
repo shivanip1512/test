@@ -16,6 +16,7 @@ import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -121,7 +122,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		}
 
 		// Execute the format update or insert
-		jdbcTemplate.update(bffSql, format.getName(), format.getFormatId());
+        jdbcTemplate.update(bffSql, StringUtils.trimSpaces(format.getName()), format.getFormatId());
 		jdbcTemplate.update(dbfSql, 
 		                          SqlUtils.convertStringToDbValue(format.getDelim()),
 		                          SqlUtils.convertStringToDbValue(format.getHeader()),

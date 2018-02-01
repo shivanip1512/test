@@ -496,6 +496,18 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             return ((ReadableInstant) argument).toInstant().toDate();
         } else if (argument instanceof ReadablePeriod) {
             return ISOPeriodFormat.standard().print((ReadablePeriod) argument);
+        } else if (argument instanceof String) {
+            String trimmedString = StringUtils.trim((String) argument);
+            if (StringUtils.isEmpty(trimmedString)) {
+                trimmedString = " ";
+            }
+            return trimmedString;
+        } else if (argument instanceof Character) {
+            String trimmedString = StringUtils.trim(((Character) argument).toString());
+            if (StringUtils.isEmpty(trimmedString)) {
+                trimmedString = " ";
+            }
+            return trimmedString;
         } else {
             return argument;
         }

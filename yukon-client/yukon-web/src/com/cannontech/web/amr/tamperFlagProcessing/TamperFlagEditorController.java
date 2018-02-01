@@ -96,6 +96,7 @@ public class TamperFlagEditorController {
         String editError = null;
         int tamperFlagMonitorId = ServletRequestUtils.getIntParameter(request, "tamperFlagMonitorId", 0);
         String name = ServletRequestUtils.getStringParameter(request, "name", null);
+        name = StringUtils.trim(name);
         String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
 
         // new processor?

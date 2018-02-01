@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -66,7 +67,8 @@ public class NewUserGroupController {
     @RequestMapping(value="user-groups", method=RequestMethod.POST)
     public String create(ModelMap model, HttpServletRequest req, HttpServletResponse resp, 
             @ModelAttribute("group") UserGroup group, BindingResult binding) throws Exception {
-        
+
+        group.setUserGroupName(StringUtils.trim(group.getUserGroupName()));
         validator.validate(group, binding);
         
         if (binding.hasErrors()) {

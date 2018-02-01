@@ -31,6 +31,7 @@ import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.HashMultimap;
@@ -146,7 +147,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
                 ValidationMonitor validationMonitor = new ValidationMonitor();
                 
                 validationMonitor.setValidationMonitorId(rs.getInt("ValidationMonitorId"));
-                validationMonitor.setName(rs.getString("ValidationMonitorName"));
+                validationMonitor.setName(SqlUtils.convertDbValueToString(rs.getString("ValidationMonitorName")));
                 validationMonitor.setDeviceGroupName(rs.getString("GroupName"));
                 validationMonitor.setReasonableMaxKwhPerDay(rs.getDouble("Threshold"));
                 validationMonitor.setReReadOnUnreasonable(rs.getInt("ReRead") > 0 ? true : false);

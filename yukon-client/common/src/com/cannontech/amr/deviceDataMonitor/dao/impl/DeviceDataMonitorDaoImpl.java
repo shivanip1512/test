@@ -67,7 +67,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         @Override
         public DeviceDataMonitor mapRow(YukonResultSet rs) throws SQLException {
             return new DeviceDataMonitor(rs.getInt("monitorId"),
-                                         rs.getString("name"),
+                                         rs.getStringSafe("name"),
                                          rs.getString("groupName"),
                                          rs.getInt("enabled") == 1 ? true : false,
                                                  null);

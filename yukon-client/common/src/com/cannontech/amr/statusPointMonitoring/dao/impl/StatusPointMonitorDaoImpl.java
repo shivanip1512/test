@@ -49,7 +49,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
             
             StatusPointMonitor retVal = new StatusPointMonitor();
             retVal.setStatusPointMonitorId(rs.getInt("statusPointMonitorId"));
-            retVal.setStatusPointMonitorName(rs.getString("statusPointMonitorName"));
+            retVal.setStatusPointMonitorName(rs.getStringSafe("statusPointMonitorName"));
             retVal.setGroupName(rs.getString("groupName"));
             String attributeKey = rs.getString("attribute");
             Attribute attribute = attributeService.resolveAttributeName(attributeKey);

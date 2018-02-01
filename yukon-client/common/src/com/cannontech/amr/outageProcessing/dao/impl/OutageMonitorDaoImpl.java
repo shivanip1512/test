@@ -22,6 +22,7 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -89,7 +90,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao {
                 OutageMonitor outageMonitor = new OutageMonitor();
 
                 outageMonitor.setOutageMonitorId(rs.getInt("OutageMonitorId"));
-                outageMonitor.setOutageMonitorName(rs.getString("OutageMonitorName"));
+                outageMonitor.setOutageMonitorName(SqlUtils.convertDbValueToString(rs.getString("OutageMonitorName")));
                 outageMonitor.setGroupName(rs.getString("GroupName"));
                 outageMonitor.setTimePeriodDays(rs.getInt("TimePeriod"));
                 outageMonitor.setNumberOfOutages(rs.getInt("NumberOfOutages"));

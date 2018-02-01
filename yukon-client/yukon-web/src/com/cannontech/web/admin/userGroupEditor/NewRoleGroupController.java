@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,8 @@ public class NewRoleGroupController {
     @RequestMapping(value="role-groups", method=RequestMethod.POST)
     public String create(HttpServletResponse resp, 
             @ModelAttribute("group") LiteYukonGroup group, BindingResult binding) throws Exception {
-        
+
+        group.setGroupName(StringUtils.trim(group.getGroupName()));
         validator.validate(group, binding);
         
         if (binding.hasErrors()) {
