@@ -95,8 +95,10 @@
             <c:set var="clazz" value="${empty gateway.data ? 'dn' : ''}"/>
             <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" 
                 classes="${clazz} js-edit"/>
-            <cti:button nameKey="configure" icon="icon-cog-edit" data-popup="#gateway-configure-popup" 
-                classes="${clazz}"/>
+            <c:if test="${gateway.ipv6Supported}">
+                <cti:button nameKey="configure" icon="icon-cog-edit" data-popup="#gateway-configure-popup" 
+                    classes="${clazz}"/>
+            </c:if>
         </div>
     </cti:checkRolesAndProperties>
     

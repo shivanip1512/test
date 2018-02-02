@@ -73,6 +73,12 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
         }
     }
     
+    public boolean isIpv6Supported () {
+        String currentVersionString = getData().getReleaseVersion();
+        GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(currentVersionString);
+        return currentVersion.compareTo(new GatewayFirmwareVersion(9, 0, 0)) >= 0;
+    }
+    
     public void setData(RfnGatewayData data) {
         this.data = data;
     }
