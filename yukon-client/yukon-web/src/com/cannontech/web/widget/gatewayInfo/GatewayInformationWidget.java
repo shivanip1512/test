@@ -125,6 +125,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
             GatewayConfiguration configuration = rfnGatewayService.gatewayAsConfiguration(gateway);
             model.addAttribute("configuration", configuration);
+            model.addAttribute("gateway", gateway);
             
         } catch (NmCommunicationException e) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);

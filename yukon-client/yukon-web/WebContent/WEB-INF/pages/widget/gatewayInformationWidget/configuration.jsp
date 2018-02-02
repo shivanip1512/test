@@ -3,11 +3,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.operator.gateways">
 
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
+<c:if test="${empty gateway.data.ipv6Prefix}"><tags:alertBox type="info"><i:inline key=".configureMessage"/></tags:alertBox></c:if>
 
 <cti:url var="url" value="/widget/gatewayInformationWidget/configure">
     <cti:param name="deviceId" value="${deviceId}"/>
