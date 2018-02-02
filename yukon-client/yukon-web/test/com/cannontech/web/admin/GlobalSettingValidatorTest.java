@@ -156,6 +156,26 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
         assertFalse(errors.hasErrors());
+        
+        //Validation for AD_SERVER_ADDRESS and AD_SERVER_PORT with single space
+        command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
+        globalSettings.put(GlobalSettingType.AD_SERVER_ADDRESS, "1.1.1.1 5.5.5.5");
+        globalSettings.put(GlobalSettingType.AD_SERVER_PORT, "1234 3345");
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertFalse(errors.hasErrors());
+        
+       //Validation for AD_SERVER_ADDRESS and AD_SERVER_PORT with multiple spaces
+        command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
+        globalSettings.put(GlobalSettingType.AD_SERVER_ADDRESS, "1.1.1.1        5.5.5.5");
+        globalSettings.put(GlobalSettingType.AD_SERVER_PORT, "1234        3345");
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertFalse(errors.hasErrors());
 
         command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
         globalSettings.put(GlobalSettingType.SERVER_ADDRESS, "/127.0.0.1");
