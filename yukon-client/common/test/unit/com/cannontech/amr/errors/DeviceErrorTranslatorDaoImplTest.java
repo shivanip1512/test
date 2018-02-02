@@ -2,9 +2,7 @@ package com.cannontech.amr.errors;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +19,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorCategory;
 import com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl;
@@ -31,6 +28,14 @@ public class DeviceErrorTranslatorDaoImplTest {
     private DeviceErrorTranslatorDaoImpl translator;
     private Document errorCodeDocument, deviceErrorsDocument;
     
+    /**
+     * NOTE: If you are running this test individually and it is failing to find resources, it is 
+     *       because the i18n files are not on its classpath. Either run All Common Tests or add the 
+     *       i18n files to DeviceErrorTranslatorDaoImplTest.launch to resolve the classpath issue.
+     */
+    private static final String errorCodePath    = "com/cannontech/amr/errors/dao/impl/error-code.xml";
+    private static final String deviceErrorsPath = "com/cannontech/yukon/common/deviceErrors.xml";
+
     private static class ErrorDescription {
         public String porter;
         public String description;
@@ -48,16 +53,14 @@ public class DeviceErrorTranslatorDaoImplTest {
         //setup for test_TranslateErrorCode
         translator = new DeviceErrorTranslatorDaoImpl();
         ClassLoader classLoader = getClass().getClassLoader();
-        String path = "com/cannontech/amr/errors/dao/impl/error-code.xml";
-        InputStream resourceAsStream = classLoader.getResourceAsStream(path);
-        translator.setErrorDefinitions(resourceAsStream);
+        translator.setErrorDefinitions(classLoader.getResourceAsStream(errorCodePath));
         translator.initialize();
         
         //setup for test_ErrorDefinitions
         SAXBuilder builder = new SAXBuilder();
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        errorCodeDocument = builder.build(new File("../common/src/com/cannontech/amr/errors/dao/impl/error-code.xml"));
-        deviceErrorsDocument = builder.build(new File("../common/i18n/en_US/com/cannontech/yukon/common/deviceErrors.xml"));
+        errorCodeDocument    = builder.build(classLoader.getResourceAsStream(errorCodePath));
+        deviceErrorsDocument = builder.build(classLoader.getResourceAsStream(deviceErrorsPath));
     }
 
     @Test
