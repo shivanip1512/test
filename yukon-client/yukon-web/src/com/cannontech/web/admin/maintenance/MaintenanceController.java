@@ -43,7 +43,6 @@ import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.maintenance.MaintenanceHelper;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
@@ -306,16 +305,15 @@ public class MaintenanceController {
     }
 
     @RequestMapping(value = "toggleDataPruningJobEnabled", method = RequestMethod.GET)
-    public String toggleDataPruningJobEnabled(HttpServletRequest request, int taskId) {
-        toggleDataPruningJob(taskId, request);
+    public String toggleDataPruningJobEnabled(YukonUserContext userContext, int taskId) {
+        toggleDataPruningJob(taskId, userContext);
         return "redirect:view";
     }
 
-    private boolean toggleDataPruningJob(int taskId, HttpServletRequest request) {
+    private boolean toggleDataPruningJob(int taskId, YukonUserContext userContext) {
         boolean isEnabled = true;
-        final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(yukonUserContext);
-        final LiteYukonUser user = yukonUserContext.getYukonUser();
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        final LiteYukonUser user = userContext.getYukonUser();
         MaintenanceTask job = maintenanceTaskDao.getMaintenanceTaskById(taskId);
         if (!job.isDisabled()) {
             isEnabled = false;
