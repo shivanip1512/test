@@ -8,6 +8,7 @@
 
 using namespace Cti::Database;
 using Cti::RowReader;
+using namespace std::string_literals;
 using std::endl;
 using std::string;
 
@@ -152,14 +153,25 @@ bool DatabaseReader::operator()()
 
 RowReader &DatabaseReader::operator[](const char *columnName)
 {
-    _currentIndex = _command[columnName].Pos();
+    try
+    {
+        _currentIndex = _command[columnName].Pos();
+    }
+    catch(SAException &x)
+    {
+        std::string error_text = "Column "s + columnName + " is not present in the result set";
+
+        CTILOG_EXCEPTION_ERROR(dout, x, error_text);
+
+        throw DatabaseException(error_text);
+    }
+
     return *this;
 }
 
 RowReader &DatabaseReader::operator[](const std::string &columnName)
 {
-    _currentIndex = _command[columnName.c_str()].Pos();
-    return *this;
+    return this->operator[](columnName.c_str());
 }
 
 RowReader &DatabaseReader::operator[](int columnNumber)

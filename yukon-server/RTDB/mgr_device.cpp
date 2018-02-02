@@ -7,6 +7,7 @@
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_connection.h"
+#include "database_exceptions.h"
 #include "database_util.h"
 #include "dev_macro.h"
 #include "dev_cbc.h"
@@ -589,25 +590,32 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
         sql += " AND " + Cti::Database::createIdInClause( "YP", "paobjectid", paoids.size() );
     }
 
-    Cti::Database::DatabaseConnection connection;
-    DatabaseReader rdr(connection, sql);
-
-    if ( ! paoids.empty() )
+    try
     {
-        rdr << paoids;
+        Cti::Database::DatabaseConnection connection;
+        DatabaseReader rdr(connection, sql);
+
+        if( !paoids.empty() )
+        {
+            rdr << paoids;
+        }
+
+        rdr.execute();
+
+        retVal = refreshDevices(rdr);
+
+        if( !rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed: " << rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read: " << rdr.asString());
+        }
     }
-
-    rdr.execute();
-
-    retVal = refreshDevices(rdr);
-
-    if( ! rdr.isValid() )
+    catch( const Cti::Database::DatabaseException &ex )
     {
-        CTILOG_ERROR(dout, "DB read failed: "<< rdr.asString());
-    }
-    else if( DebugLevel & 0x00020000 )
-    {
-        CTILOG_DEBUG(dout, "DB read: "<< rdr.asString());
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Database load FAILED for " << device_name);
     }
 
     return retVal;
