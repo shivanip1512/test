@@ -6152,13 +6152,13 @@ void TriggerDmvTestExecutor::execute()
     {
         IVVCStrategy * IVVCStrat = dynamic_cast<IVVCStrategy *>( bus->getStrategy().get() );
 
+        CTILOG_INFO(dout, "Preparing to execute DMV Test: '" << testName << "' on Substation Bus: " << bus->getPaoName());
+
         if( ! IVVCStrat )
         {
             CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Substation Bus " << bus->getPaoName() << " does not have an IVVC Strategy assigned." );
             return;
         }
-
-        CTILOG_INFO( dout, "Preparing to execute DMV Test: '" << testName << "' on Substation Bus: " << bus->getPaoName() );
 
         static const string sql = "SELECT "
                                   "    DmvTestId AS TestId, "
