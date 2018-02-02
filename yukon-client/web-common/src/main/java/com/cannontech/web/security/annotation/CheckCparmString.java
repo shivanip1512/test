@@ -6,10 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckCparmString {
     MasterConfigString config();
-    String expecting();
+    MasterConfigLicenseKey expecting();
 }

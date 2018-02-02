@@ -16,6 +16,8 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -61,7 +63,8 @@ public class MenuController {
     @Autowired private AttributeService attributeService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ServerDatabaseCache dbcache;
-
+    @Autowired private ConfigurationSource configurationSource;
+    
     private final static BankOpState[] allowedOperationStates =
             new BankOpState[] {BankOpState.FIXED,BankOpState.STANDALONE,BankOpState.SWITCHED};
 
@@ -344,6 +347,9 @@ public class MenuController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String title = accessor.getMessage("yukon.web.modules.capcontrol.create.title");
         model.addAttribute("title", title);
+        
+        boolean usesDmvTest = MasterConfigLicenseKey.CAP_CONTROL_ENABLE_DMV_TEST.getKey().equals(configurationSource.getString("CAP_CONTROL_ENABLE_DMV_TEST"));
+        model.addAttribute("usesDmvTest", usesDmvTest);
         
         return "tier/popupmenu/create.jsp";
     }

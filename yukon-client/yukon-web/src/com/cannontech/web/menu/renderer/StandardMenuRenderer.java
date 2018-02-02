@@ -228,7 +228,7 @@ public class StandardMenuRenderer {
                 }
             }
             else if (masterConfig.length == 2) {
-                return configurationSource.getString(masterConfig[0]).equals(masterConfig[1]);
+                return masterConfig[1].equals(configurationSource.getString(masterConfig[0]));
             }
         } else {
             /* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */

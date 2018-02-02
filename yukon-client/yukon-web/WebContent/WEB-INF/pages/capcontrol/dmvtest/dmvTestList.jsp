@@ -28,26 +28,26 @@
                     <c:forEach var="dmvTest" items="${dmvTestList}">
                         <tr data-strategy-id="${dmvTest.dmvTestId}">
                             <td>
-                                <cti:url var="editUrl" value="/capcontrol/dmvTest/${dmvTest.dmvTestId}" />
-                                <a href="${editUrl}">${fn:escapeXml(dmvTest.name)}</a>
+                                <cti:url var="viewUrl" value="/capcontrol/dmvTest/${dmvTest.dmvTestId}" />
+                                <a href="${viewUrl}">${fn:escapeXml(dmvTest.name)}</a>
                             </td>
                             <td>
-                                <i:inline key="${dmvTest.pollingInterval}"/>
+                                ${dmvTest.pollingInterval}
                                 &nbsp;
                                 <i:inline key="yukon.common.units.SECONDS"/>                                                        
                             </td>
                             <td>
-                                <i:inline key="${dmvTest.dataGatheringDuration}"/>
+                                ${dmvTest.dataGatheringDuration}
                                 &nbsp;
                                 <i:inline key="yukon.common.units.MINUTES"/>                                                        
                             </td>                            
                             <td>
-                                <i:inline key="${dmvTest.stepSize}"/>
+                                ${dmvTest.stepSize}
                                 &nbsp;
                                 <i:inline key="yukon.common.units.VOLTS"/>                                                        
                             </td>
                             <td>
-                                <i:inline key="${dmvTest.commSuccPercentage}"/>
+                                ${dmvTest.commSuccPercentage}
                                 <i:inline key="yukon.common.units.PERCENT"/>                                                        
                             </td>
                         </tr>

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.dao.DmvTestDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.db.capcontrol.DmvTest;
@@ -30,7 +31,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-@CheckCparmString(config = MasterConfigString.CAP_CONTROL_ENABLE_DMV_TEST, expecting = "somethingTBDmarketingInTheFuturePossibly")
+@CheckCparmString(config = MasterConfigString.CAP_CONTROL_ENABLE_DMV_TEST, expecting = MasterConfigLicenseKey.CAP_CONTROL_ENABLE_DMV_TEST)
 public class DmvTestController {
     private static Logger log = YukonLogManager.getLogger(DmvTestController.class);
     private static final String baseKey = "yukon.web.modules.capcontrol.dmvTest";

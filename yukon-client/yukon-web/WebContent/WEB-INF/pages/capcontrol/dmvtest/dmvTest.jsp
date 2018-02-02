@@ -62,7 +62,7 @@
                 <cti:msg2 var="deleteTitle" key=".dmvTest.delete"/>
                 <cti:button nameKey="delete" classes="delete js-delete" data-ok-event="yukon:da:dmvtest:delete"
                     title="${deleteTitle}"/>
-                <confirm on=".js-delete" nameKey="confirmDelete" argument="${dmvTest.name}"/>
+                <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${dmvTest.name}"/>
                 
                 <cti:url var="viewUrl" value="/capcontrol/dmvTest/${dmvTest.dmvTestId}" />
                 <cti:button nameKey="cancel" href="${viewUrl}"/>

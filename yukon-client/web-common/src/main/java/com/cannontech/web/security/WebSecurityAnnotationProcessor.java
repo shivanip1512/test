@@ -7,6 +7,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -58,7 +59,7 @@ public class WebSecurityAnnotationProcessor {
     private void check(CheckCparmString annotation) {
         if (annotation != null) {
             MasterConfigString configKey = annotation.config();
-            String expecting = annotation.expecting();
+            MasterConfigLicenseKey expecting = annotation.expecting();
             webSecurityChecker.authorizeByCparm(configKey, expecting);
         }
     }
