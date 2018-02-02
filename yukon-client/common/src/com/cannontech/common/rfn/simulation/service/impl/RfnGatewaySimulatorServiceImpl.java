@@ -418,16 +418,17 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             log.info("Processing Ipv6 prefix update message.");
             ObjectMessage requestMessage = (ObjectMessage) message;
             
-            GatewaySetConfigResponse response = new GatewaySetConfigResponse();
             GatewaySetConfigRequest request = (GatewaySetConfigRequest) requestMessage.getObject();
-            response.setRfnIdentifier(request.getRfnIdentifier());
-            response.setIpv6PrefixResult(settings.getIpv6PrefixUpdateResult());
+            
             if(settings.getIpv6PrefixUpdateResult() == GatewayConfigResult.SUCCESSFUL) {
-                gatewayDataCache.get(request.getRfnIdentifier()).setIpv6Prefix(request.getIpv6Prefix());
-                jmsTemplate.convertAndSend(dataAndUpgradeResponseQueue,
-                    setUpDataResponse(request.getRfnIdentifier(), getGatewayDataSettings()));
+                GatewayDataResponse gwResponse = setUpDataResponse(request.getRfnIdentifier(), getGatewayDataSettings());
+                gwResponse.setIpv6Prefix(request.getIpv6Prefix());
+                jmsTemplate.convertAndSend(dataAndUpgradeResponseQueue, gwResponse);
             }
             
+            GatewaySetConfigResponse response = new GatewaySetConfigResponse();
+            response.setRfnIdentifier(request.getRfnIdentifier());
+            response.setIpv6PrefixResult(settings.getIpv6PrefixUpdateResult());
             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
         }
     }
@@ -736,7 +737,6 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_READY_NODES, settings.getNumberOfReadyNodes());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FAILSAFE_MODE, settings.isFailsafeMode());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_CONNECTION_STATUS, settings.getConnectionStatus());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_GENERATE_IPV6_PREFIX, settings.isGenerateIpv6Prefix());
     }
     
     public void saveSettings(SimulatedUpdateReplySettings settings) {
@@ -775,7 +775,6 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             settings.setNumberOfReadyNodes(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_READY_NODES));
             settings.setFailsafeMode(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FAILSAFE_MODE));
             settings.setConnectionStatus(ConnectionStatus.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_CONNECTION_STATUS)));
-            settings.setGenerateIpv6Prefix(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_GENERATE_IPV6_PREFIX));
             gatewayDataSettings = settings;
         }
         return gatewayDataSettings;

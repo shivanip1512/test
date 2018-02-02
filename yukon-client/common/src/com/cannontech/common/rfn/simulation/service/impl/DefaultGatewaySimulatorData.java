@@ -78,13 +78,7 @@ public class DefaultGatewaySimulatorData {
         GatewayDataResponse response = new GatewayDataResponse();
         response.setRfnIdentifier(rfnId);
         
-        if (settings.isGenerateIpv6Prefix() && customData.getIpv6Prefix() == null) {
-            customData.setIpv6Prefix(getRandomHexString(16));
-        }
-
-        response.setIpv6Prefix(customData.getIpv6Prefix());
-        response.setSuggestedIpv6Prefix(response.getIpv6Prefix() == null ? getRandomHexString(12)
-            : response.getIpv6Prefix().toString().substring(0, 12));
+        response.setSuggestedIpv6Prefix(getRandomHexString(12));
 
         response.setAdmin(customData.getAdmin());
         response.setIpAddress(customData.getIpAddress());

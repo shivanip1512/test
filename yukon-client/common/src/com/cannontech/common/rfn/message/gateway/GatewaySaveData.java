@@ -22,8 +22,6 @@ public class GatewaySaveData implements Serializable {
     private String updateServerUrl;
     private Authentication updateServerLogin;
     
-    private String ipv6Prefix;
-    
     public String getIpAddress() {
         return ipAddress;
     }
@@ -147,14 +145,6 @@ public class GatewaySaveData implements Serializable {
                              defaultAccessLevel,
                              updateServerUrl,
                              updateServerLogin);
-    }
-
-    public String getIpv6Prefix() {
-        return ipv6Prefix;
-    }
-
-    public void setIpv6Prefix(String ipv6Prefix) {
-        this.ipv6Prefix = ipv6Prefix;
     }
     
 }

@@ -12,7 +12,6 @@ public class SimulatedGatewayDataSettings implements Serializable {
     private Integer numberOfNotReadyNodes;
     private boolean isFailsafeMode;
     private ConnectionStatus connectionStatus;
-    private boolean generateIpv6Prefix;
     
     public boolean isReturnGwy800Model() {
         return returnGwy800Model;
@@ -60,13 +59,5 @@ public class SimulatedGatewayDataSettings implements Serializable {
 
     public void setConnectionStatus(ConnectionStatus connectionStatus) {
         this.connectionStatus = connectionStatus;
-    }
-
-    public boolean isGenerateIpv6Prefix() {
-        return generateIpv6Prefix;
-    }
-
-    public void setGenerateIpv6Prefix(boolean generateIpv6Prefix) {
-        this.generateIpv6Prefix = generateIpv6Prefix;
     }
 }
