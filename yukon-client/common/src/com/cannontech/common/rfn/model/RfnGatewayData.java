@@ -293,6 +293,10 @@ public final class RfnGatewayData {
         }
         return ipv6PrefixSuggested + sb.toString().substring(0, 4);
     }
+    
+    public String getFormattedIpv6Prefix() {
+        return ipv6Prefix.replaceAll("....(?!$)", "$0:") + " ::/64";
+    }
 
     @Override
     public String toString() {

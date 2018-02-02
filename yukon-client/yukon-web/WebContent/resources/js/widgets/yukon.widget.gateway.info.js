@@ -41,7 +41,43 @@ yukon.widget.gatewayInfo = (function () {
             /** Edit popup was opened, adjust test connection buttons. */
             $(document).on('yukon:assets:gateway:edit:load', function (ev) {
                 yukon.assets.gateway.shared.adjustTestConnectionButtons();
+            });
+            
+            /** Configure popup was opened, adjust Ipv6 prefix. */
+            $(document).on('yukon:assets:gateway:configure:load', function (ev) {
                 updateIPv6input();
+            });
+            
+            /** Save button clicked on conifguration popup. */
+            $(document).on('yukon:assets:gateway:configure', function (ev) {
+                
+                var popup = $('#gateway-configure-popup'),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+                
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                
+                popup.find('.user-message').remove();
+                
+                $('#gateway-configuration-form').ajaxSubmit({
+                    type: 'post',
+                    success: function (result, status, xhr, $form) {
+                        
+                        popup.dialog('close');
+                        window.location.href = window.location.href;
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                        yukon.ui.initContent(popup);
+                        updateIPv6input();
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
             });
             
             /** Save button clicked on edit popup. */

@@ -39,15 +39,6 @@
         <tags:nameValue2 nameKey=".ipaddress">
             <tags:input path="ipAddress" inputClass="js-gateway-edit-ip" maxlength="15" size="15" tabindex="2"/>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".ipv6prefix">
-            <div class="column-6-6-6-6 clearfix">
-                <tags:input id="ipv6prefix" path="ipv6Prefix" inputClass="dn"/>
-                <input id="ipv6-1" type="text" class="js-ipv6-update" maxlength="4" size="4"/>
-                <input id="ipv6-2" type="text" class="js-ipv6-update" maxlength="4" size="4"/>
-                <input id="ipv6-3" type="text" class="js-ipv6-update" maxlength="4" size="4"/>
-                <input id="ipv6-4" type="text" class="js-ipv6-update" maxlength="4" size="4" />
-            </div>
-        </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>
         

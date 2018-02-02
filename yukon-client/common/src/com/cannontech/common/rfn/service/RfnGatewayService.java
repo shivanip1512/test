@@ -10,6 +10,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
+import com.cannontech.common.rfn.model.GatewayConfiguration;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -259,6 +260,9 @@ public interface RfnGatewayService {
      */
     GatewayConfigResult updateIpv6Prefix(RfnGateway gateway, String newIpv6Prefix)
             throws NmCommunicationException, DuplicateException, IllegalArgumentException;
+
+    /** Converts an {@link RfnGateway} to a {@link GatewayConfiguration} */
+    GatewayConfiguration gatewayAsConfiguration(RfnGateway gateway);
     
 
 }

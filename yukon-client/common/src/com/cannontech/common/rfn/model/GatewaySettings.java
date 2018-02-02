@@ -15,7 +15,6 @@ public class GatewaySettings {
     private String updateServerUrl;
     private Authentication updateServerLogin;
     private boolean useDefault;
-    private String ipv6Prefix;
     
     public Integer getId() {
         return id;
@@ -40,8 +39,8 @@ public class GatewaySettings {
     @Override
     public String toString() {
         return String.format(
-            "GatewaySettings [id=%s, name=%s, ipAddress=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s, ipv6Prefix=%s]",
-            id, name, ipAddress, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin, useDefault, ipv6Prefix);
+            "GatewaySettings [id=%s, name=%s, ipAddress=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s]",
+            id, name, ipAddress, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin, useDefault);
     }
 
     @Override
@@ -57,7 +56,6 @@ public class GatewaySettings {
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
-        result = prime * result + ((ipv6Prefix == null) ? 0 : ipv6Prefix.hashCode());
         return result;
     }
 
@@ -136,13 +134,6 @@ public class GatewaySettings {
         } else if (!updateServerLogin.equals(other.updateServerLogin)) {
             return false;
         }
-        if (ipv6Prefix == null) {
-            if (other.ipv6Prefix != null) {
-                return false;
-            }
-        } else if (!ipv6Prefix.equals(other.ipv6Prefix)) {
-            return false;
-        }
         return true;
     }
 
@@ -204,14 +195,6 @@ public class GatewaySettings {
 
     public void setUseDefault(boolean useDefault) {
         this.useDefault = useDefault;
-    }
-
-    public String getIpv6Prefix() {
-        return ipv6Prefix;
-    }
-
-    public void setIpv6Prefix(String ipv6Prefix) {
-        this.ipv6Prefix = ipv6Prefix;
     }
 
 }

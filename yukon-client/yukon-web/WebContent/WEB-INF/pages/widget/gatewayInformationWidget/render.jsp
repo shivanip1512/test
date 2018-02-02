@@ -19,6 +19,19 @@
         data-event="yukon:assets:gateway:save" 
         data-load-event="yukon:assets:gateway:edit:load" 
         data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
+        
+<%-- Configure Popup --%>
+<cti:url var="configureUrl" value="/widget/gatewayInformationWidget/configure">
+    <cti:param name="deviceId" value="${gateway.paoIdentifier.paoId}"/>
+    <cti:param name="shortName" value="gatewayInformationWidget"/>
+</cti:url>
+<div id="gateway-configure-popup" data-dialog class="dn" data-title="<cti:msg2 key=".configure.title"/>"
+        data-url="${configureUrl}"
+        data-id="${gateway.paoIdentifier.paoId}"
+        data-width="580" 
+        data-event="yukon:assets:gateway:configure" 
+        data-load-event="yukon:assets:gateway:configure:load" 
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".name" valueClass="js-gw-name">${fn:escapeXml(gateway.name)}</tags:nameValue2>
@@ -73,15 +86,17 @@
 	        </tags:nameValue2>
         </cti:checkRolesAndProperties>
         <c:if test="${not empty gateway.data.ipv6Prefix}">
-            <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.ipv6Prefix)}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.formattedIpv6Prefix)}</tags:nameValue2>
         </c:if>
     </tags:nameValueContainer2>
     
     <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-        <div class="buffered clearfix">
+        <div class="buffered clearfix fr">
             <c:set var="clazz" value="${empty gateway.data ? 'dn' : ''}"/>
             <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" 
-                classes="fr ${clazz} js-edit"/>
+                classes="${clazz} js-edit"/>
+            <cti:button nameKey="configure" icon="icon-cog-edit" data-popup="#gateway-configure-popup" 
+                classes="${clazz}"/>
         </div>
     </cti:checkRolesAndProperties>
     

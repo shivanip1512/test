@@ -50,6 +50,7 @@ import com.cannontech.common.rfn.message.gateway.GatewaySetConfigRequest;
 import com.cannontech.common.rfn.message.gateway.GatewaySetConfigResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
+import com.cannontech.common.rfn.model.GatewayConfiguration;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -660,21 +661,30 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         String updateServerUrl = gateway.getData().getUpdateServerUrl();
         settings.setUpdateServerUrl(updateServerUrl);
         settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
-
-        settings.setIpv6Prefix(gateway.getData().getIpv6Prefix());
-
-        while (settings.getIpv6Prefix() == null) {
-            String newPrefix = gateway.getData().generateNewIpv6Prefix();
-            if (!isDuplicateIpv6Prefix(newPrefix)) {
-                settings.setIpv6Prefix(newPrefix);
-            }
-        }
         
         if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
             settings.setUseDefault(true);
         }
 
         return settings;
+    }
+    
+    @Override
+    public GatewayConfiguration gatewayAsConfiguration(RfnGateway gateway) {
+        GatewayConfiguration configuration = new GatewayConfiguration();
+
+        configuration.setId(gateway.getPaoIdentifier().getPaoId());
+
+        configuration.setIpv6Prefix(gateway.getData().getIpv6Prefix());
+
+        while (configuration.getIpv6Prefix() == null) {
+            String newPrefix = gateway.getData().generateNewIpv6Prefix();
+            if (!isDuplicateIpv6Prefix(newPrefix)) {
+                configuration.setIpv6Prefix(newPrefix);
+            }
+        }
+
+        return configuration;
     }
 
     @Override
