@@ -566,6 +566,8 @@ void refreshGlobalCParms()
             DEMAND_MEASUREMENT_VERIFICATION_ENABLED     :   452C3B88-1BD2-468A-6D62-FDFB58B528B5
     */
 
+    // Deliberate obfuscation so the raw key doesn't show up in the binary in readable form. Stored
+    //  as hex bytes "45" --> \x45, the key is decoded in memory and discarded after use.
     const std::array<std::string, 5>    key
     {
         "\x45\x2C\x3B\x88", "\x1B\xD2", "\x46\x8A", "\x6D\x62", "\xFD\xFB\x58\xB5\x28\xB5"
@@ -577,8 +579,8 @@ void refreshGlobalCParms()
 
         for ( auto b : input )
         {
-            result += std::toupper( Cti::toAsciiHex( ( b >> 4 ) & 0x0F ) );
-            result += std::toupper( Cti::toAsciiHex( b & 0x0F ) );
+            result += Cti::toAsciiHex( ( b >> 4 ) & 0x0F );
+            result += Cti::toAsciiHex( b & 0x0F );
         }
 
         return result;
@@ -586,11 +588,11 @@ void refreshGlobalCParms()
 
     _DMV_TEST_ENABLED = ciStringEqual(
         gConfigParms.getValueAsString( "DEMAND_MEASUREMENT_VERIFICATION_ENABLED" ),
-        boost::join( boost::adaptors::transform( key, keyFormatter ), "-" ) );
+        boost::join( key | boost::adaptors::transformed( keyFormatter ), "-" ) );
 
     if ( _DMV_TEST_ENABLED && ( _CC_DEBUG & CC_DEBUG_STANDARD ) )
     {
-        CTILOG_DEBUG( dout, "Demand Management & Verification Testing is ENABLED" );
+        CTILOG_DEBUG( dout, "Demand Measurement & Verification Testing is ENABLED" );
     }
 }
 
