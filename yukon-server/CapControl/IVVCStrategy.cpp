@@ -44,8 +44,7 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _capbankCommReportingPercentage(100.0),
     _voltageMonitorCommReportingPercentage(100.0),
     _reportCommStatisticsByPhase(true),
-    _controlMethod(SubstationBusControlMethod),
-    _paoStateMap()
+    _controlMethod(SubstationBusControlMethod)
 {
 }
 
@@ -529,27 +528,26 @@ void IVVCStrategy::execute()
     }
 }
 
-bool IVVCStrategy::setDmvTestExecution( long BusID, std::unique_ptr<DmvTestData> & DmvTestData )
+bool IVVCStrategy::setDmvTestExecution( long busID, std::unique_ptr<DmvTestData> dmvTestData )
 {
-    auto iter = _paoStateMap.find( BusID );
+    auto iter = _paoStateMap.find( busID );
     if( iter != _paoStateMap.end() ) 
     {
-        IVVCStatePtr IVVCStatePointer = iter->second.second;
-        auto & currentDmvTestState = IVVCStatePointer->getDmvTestState();
+        auto ivvcStatePointer = iter->second.second;
 
-        if( ! currentDmvTestState ) 
+        if( ! ivvcStatePointer->hasDmvTestState() ) 
         {
-            IVVCStatePointer->setDmvTestState( DmvTestData );
+            ivvcStatePointer->setDmvTestState( std::move( dmvTestData ) );
 
             return true;
         }
     }
     else
     {
-        IVVCStatePtr IVVCStatePointer;
+        auto ivvcStatePointer = boost::make_shared<IVVCState>();
 
-        IVVCStatePointer->setDmvTestState( DmvTestData );
-        _paoStateMap.emplace( std::make_pair( BusID, std::make_pair( 1, IVVCStatePointer ) ) );
+        ivvcStatePointer->setDmvTestState( std::move( dmvTestData ) );
+        _paoStateMap.emplace( std::make_pair( busID, std::make_pair( 1, ivvcStatePointer) ) );
 
         return true;
     }

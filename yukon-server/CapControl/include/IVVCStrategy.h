@@ -81,7 +81,7 @@ public:
     void setPointDataRequestFactory(const PointDataRequestFactoryPtr& factory);
 
     //Queue a DMV Test for execution
-    virtual bool setDmvTestExecution(long BusID, std::unique_ptr<DmvTestData> & DmvTestData);
+    bool setDmvTestExecution(long busID, std::unique_ptr<DmvTestData> dmvTestData);
 
 private:
 

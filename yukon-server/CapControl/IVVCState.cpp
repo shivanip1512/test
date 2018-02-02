@@ -195,12 +195,12 @@ unsigned long IVVCState::getCommsRetryCount() const
     return _commsRetryCount;
 }
 
-std::unique_ptr<DmvTestData> & IVVCState::getDmvTestState()
+bool IVVCState::hasDmvTestState()
 {
-    return _DmvTestData;
+    return static_cast<bool>(_DmvTestData);
 }
 
-void IVVCState::setDmvTestState( std::unique_ptr<DmvTestData> & TestData )
+void IVVCState::setDmvTestState( std::unique_ptr<DmvTestData> testData )
 {
-    _DmvTestData = std::move( TestData );
+    _DmvTestData = std::move( testData );
 };

@@ -55,8 +55,8 @@ class IVVCState
         State getState();
         void setState(State state);
 
-        std::unique_ptr<DmvTestData> & getDmvTestState();
-        void setDmvTestState( std::unique_ptr<DmvTestData> & TestData );
+        bool hasDmvTestState();
+        void setDmvTestState( std::unique_ptr<DmvTestData> testData );
 
         bool isScannedRequest();
         void setScannedRequest(bool scannedRequest);
