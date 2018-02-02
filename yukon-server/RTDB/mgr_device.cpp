@@ -595,7 +595,7 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
         Cti::Database::DatabaseConnection connection;
         DatabaseReader rdr(connection, sql);
 
-        if( !paoids.empty() )
+        if( ! paoids.empty() )
         {
             rdr << paoids;
         }
@@ -604,7 +604,7 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
 
         retVal = refreshDevices(rdr);
 
-        if( !rdr.isValid() )
+        if( ! rdr.isValid() )
         {
             CTILOG_ERROR(dout, "DB read failed: " << rdr.asString());
         }

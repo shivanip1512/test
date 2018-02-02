@@ -36,7 +36,7 @@ bool DatabaseReader::setCommandText(const std::string &command)
         _command.setCommandText( assignSQLPlaceholders(command).c_str() );
         return true;
     }
-    catch(SAException &x)
+    catch( const SAException& x )
     {
         _isValid = false;
 
@@ -68,7 +68,7 @@ bool DatabaseReader::executeWithRetries()
             executeWithDatabaseException();
             return true;
         }
-        catch(DatabaseException &x)
+        catch( const DatabaseException& x )
         {
             retries--;
 
@@ -97,7 +97,7 @@ void DatabaseReader::executeWithDatabaseException()
         _command.Execute();
         _isValid = true;
     }
-    catch(SAException &x)
+    catch( const SAException& x )
     {
         _isValid = false;
         DatabaseConnection::throwDatabaseException(_command.Connection(), x);
@@ -111,7 +111,7 @@ bool DatabaseReader::execute()
         executeWithDatabaseException();
         return true;
     }
-    catch(DatabaseException &x)
+    catch( const DatabaseException& x )
     {
         CTILOG_EXCEPTION_ERROR(dout, x, "DB Reader execute command failed for SQL query: "<< asString());
     }
@@ -135,7 +135,7 @@ bool DatabaseReader::operator()()
             _currentIndex = 1;
             return _command.FetchNext();
         }
-        catch(SAException &x)
+        catch( const SAException& x )
         {
             _isValid = false;
 
@@ -157,7 +157,7 @@ RowReader &DatabaseReader::operator[](const char *columnName)
     {
         _currentIndex = _command[columnName].Pos();
     }
-    catch(SAException &x)
+    catch( const SAException& x )
     {
         std::string error_text = "Column "s + columnName + " is not present in the result set";
 
