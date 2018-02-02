@@ -584,9 +584,9 @@ void refreshGlobalCParms()
         return result;
     };
 
-    _DMV_TEST_ENABLED =
-        gConfigParms.getValueAsString( "DEMAND_MEASUREMENT_VERIFICATION_ENABLED" )
-            == boost::join( boost::adaptors::transform( key, keyFormatter ), "-" );
+    _DMV_TEST_ENABLED = ciStringEqual(
+        gConfigParms.getValueAsString( "DEMAND_MEASUREMENT_VERIFICATION_ENABLED" ),
+        boost::join( boost::adaptors::transform( key, keyFormatter ), "-" ) );
 
     if ( _DMV_TEST_ENABLED && ( _CC_DEBUG & CC_DEBUG_STANDARD ) )
     {
