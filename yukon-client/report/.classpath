@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test/unit"/>
+	<classpathentry excluding="All Report Tests.launch" kind="src" path="test/unit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/web-common"/>
