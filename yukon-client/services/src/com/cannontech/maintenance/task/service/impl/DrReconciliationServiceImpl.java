@@ -295,16 +295,16 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         // Get LCR's which are expected to be out of service, we need to send OOS messages to them.
         List<Integer> sendOOS = getOutOfServiceExpectedLcrs();
         List<Integer> sendOOSDevice = Lists.newArrayList(inventoryDao.getDeviceIds(sendOOS).values());
-        log.debug("Send OOS to device "+sendOOSDevice);
+        log.debug("Send OOS to device " + sendOOSDevice);
 
         // Get LCR's which are expected to be in service, we need to send IN service message to them.
         List<Integer> sendInService = getInServiceExpectedLcrs();
         List<Integer> sendInServiceDevice = Lists.newArrayList(inventoryDao.getDeviceIds(sendInService).values());
-        log.debug("Send In service to device "+sendInServiceDevice);
+        log.debug("Send In service to device " + sendInServiceDevice);
 
         // Get LCR's with incorrect addressing, we need to send config message to them
         Set<Integer> sendAddressing = getLCRWithConflictingAddressing();
-        log.debug("Send config to device "+sendAddressing);
+        log.debug("Send config to device " + sendAddressing);
 
         Set<Integer> allLcrs = new HashSet<>();
         allLcrs.addAll(sendOOSDevice);
