@@ -121,7 +121,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     public void start(SimulatedNmMappingSettings settings) {
         updateSettings(settings);
         isRunning = true;
-        this.task = scheduler.scheduleAtFixedRate(new Runnable() {
+        task = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -161,6 +161,26 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             } else {
                                 metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.NOT_READY);
                             }
+                            
+                            metadata.put(RfnMetadata.COMM_STATUS_TIMESTAMP, 1517588257267L);
+                            metadata.put(RfnMetadata.GROUPS, "Simulated Group Value");
+                            metadata.put(RfnMetadata.HARDWARE_VERSION, "1.1.1 (Sim)");
+                            metadata.put(RfnMetadata.IN_NETWORK_TIMESTAMP, 1517588257267L);
+                            metadata.put(RfnMetadata.IPV6_ADDRESS, "1234:1234:1234:1234:1234:1234:1234:1234");
+                            metadata.put(RfnMetadata.NEIGHBOR_COUNT, 2);
+                            metadata.put(RfnMetadata.NODE_ADDRESS, "123456789 (Sim)");
+                            metadata.put(RfnMetadata.NODE_FIRMWARE_VERSION, "Simulated Firmware Version");
+                            metadata.put(RfnMetadata.NODE_NAMES, "Node (Sim)");
+                            metadata.put(RfnMetadata.NODE_SERIAL_NUMBER, settings.getRouteData().getSerialNumber());
+                            metadata.put(RfnMetadata.NODE_TYPE, "Nodetype (Sim)");
+                            metadata.put(RfnMetadata.NUM_ASSOCIATIONS, 3);
+                            metadata.put(RfnMetadata.PRIMARY_GATEWAY, "Primary Gateway (Sim)");
+                            metadata.put(RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT, settings.getRouteData().getHopCount().intValue());
+                            metadata.put(RfnMetadata.PRIMARY_NEIGHBOR, settings.getNeighborData().getSerialNumber());
+                            metadata.put(RfnMetadata.PRIMARY_NEIGHBOR_DATA_TIMESTAMP, settings.getNeighborData().getNeighborDataTimestamp());
+                            metadata.put(RfnMetadata.PRIMARY_NEIGHBOR_LINK_COST, settings.getNeighborData().getNeighborLinkCost().toString());
+                            metadata.put(RfnMetadata.PRODUCT_NUMBER, "123456789 (Sim)");
+                            metadata.put(RfnMetadata.SUB_MODULE_FIRMWARE_VERSION, "1.1.1 (Sim)");
                             reply.setMetadata(metadata);
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
