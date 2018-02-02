@@ -4,7 +4,9 @@
 #include "CParms.h"
 #include "logger.h"
 #include "utility.h"
+#include "string_util.h"
 
+#include <boost/range/adaptor/transformed.hpp>
 using std::endl;
 using std::string;
 
@@ -53,7 +55,7 @@ bool    _IVVC_STATIC_DELTA_VOLTAGES;
 bool    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 
-bool    _ENABLE_DMV_TEST;
+bool    _DMV_TEST_ENABLED;
 
 
 void refreshGlobalCParms()
@@ -560,12 +562,35 @@ void refreshGlobalCParms()
 
     /*
         Demand Management & Verification Test
+     
+            DEMAND_MEASUREMENT_VERIFICATION_ENABLED     :   452C3B88-1BD2-468A-6D62-FDFB58B528B5
     */
 
-    _ENABLE_DMV_TEST = gConfigParms.isTrue("CAP_CONTROL_ENABLE_DMV_TEST");
-    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    const std::array<std::string, 5>    key
     {
-        CTILOG_DEBUG( dout, "CAP_CONTROL_ENABLE_DMV_TEST: " << _ENABLE_DMV_TEST );
+        "\x45\x2C\x3B\x88", "\x1B\xD2", "\x46\x8A", "\x6D\x62", "\xFD\xFB\x58\xB5\x28\xB5"
+    };
+
+    auto keyFormatter = []( const std::string & input ) -> std::string
+    {
+        std::string result;
+
+        for ( auto b : input )
+        {
+            result += std::toupper( Cti::toAsciiHex( ( b >> 4 ) & 0x0F ) );
+            result += std::toupper( Cti::toAsciiHex( b & 0x0F ) );
+        }
+
+        return result;
+    };
+
+    _DMV_TEST_ENABLED =
+        gConfigParms.getValueAsString( "DEMAND_MEASUREMENT_VERIFICATION_ENABLED" )
+            == boost::join( boost::adaptors::transform( key, keyFormatter ), "-" );
+
+    if ( _DMV_TEST_ENABLED && ( _CC_DEBUG & CC_DEBUG_STANDARD ) )
+    {
+        CTILOG_DEBUG( dout, "Demand Management & Verification Testing is ENABLED" );
     }
 }
 
