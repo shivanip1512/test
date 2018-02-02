@@ -212,7 +212,7 @@ public class PageDetailProducer {
         // abbreviate label to prevent bread crumbs from being too long
         label = StringUtils.elideCenter(label, 60);
         String safeLabel = StringEscapeUtils.escapeHtml4(label);
-        if (link == null) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(link)) {
             return safeLabel;
         }
         String safeLink = StringEscapeUtils.escapeHtml4(link);
