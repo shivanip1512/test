@@ -80,6 +80,9 @@ public:
     //Allows unit test to change this out
     void setPointDataRequestFactory(const PointDataRequestFactoryPtr& factory);
 
+    //Queue a DMV Test for execution
+    virtual bool setDmvTestExecution(long BusID, std::unique_ptr<DmvTestData> & DmvTestData);
+
 private:
 
     void setPeakTargetPowerFactor( double value );

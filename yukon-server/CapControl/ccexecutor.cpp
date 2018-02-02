@@ -17,7 +17,10 @@
 #include "ExecChangeOpState.h"
 #include "MsgCapControlServerResponse.h"
 #include "database_util.h"
+#include "database_connection.h"
 #include "database_reader.h"
+#include "IVVCState.h"
+#include "IVVCStrategy.h"
 
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
@@ -6142,17 +6145,64 @@ void TriggerDmvTestExecutor::execute()
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
-    const long        busID    = _message->getBusID();
+    long busID = _message->getBusID();
     const std::string testName = _message->getDmvTestName();
 
     if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( busID ) )
     {
+        IVVCStrategy * IVVCStrat = dynamic_cast<IVVCStrategy *>( bus->getStrategy().get() );
+
+        if( ! IVVCStrat )
+        {
+            CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Substation Bus " << bus->getPaoName() << " does not have an IVVC Strategy assigned." );
+            return;
+        }
+
         CTILOG_INFO( dout, "Preparing to execute DMV Test: '" << testName << "' on Substation Bus: " << bus->getPaoName() );
 
-        /*         
-            Look up the Bump Test info and stuff it into the bus, trigger the bus to execute the test.
-        */
+        static const string sql = "SELECT "
+                                  "    DmvTestId AS TestId, "
+                                  "    DmvTestName AS TestName, "
+                                  "    PollingInterval, "
+                                  "    DataGatheringDuration, "
+                                  "    StepSize, "
+                                  "    CommSuccessPercentage "
+                                  "FROM DmvTest "
+                                  "WHERE DmvTestName = ?";
 
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr( connection, sql );
+
+        rdr << testName;
+
+        rdr.execute();
+
+        std::unique_ptr<DmvTestData> TestData;
+        
+        if( rdr() ) 
+        {
+            TestData = std::make_unique<DmvTestData>();
+
+            TestData->TestId                = rdr["TestId"].as<long>();
+            TestData->TestId                = rdr["TestId"].as<long>();
+            TestData->TestName              = rdr["TestName"].as<string>();
+            TestData->PollingInterval       = rdr["PollingInterval"].as<long>();
+            TestData->DataGatheringDuration = rdr["DataGatheringDuration"].as<long>();
+            TestData->StepSize              = rdr["StepSize"].as<double>();
+            TestData->CommSuccessPercentage = rdr["CommSuccessPercentage"].as<long>();
+        }
+        else
+        {
+            CTILOG_DEBUG( dout, "Unable to execute DMV Test: '" << testName << "' - Test parameters could not be found in the database." );
+            return;
+        }
+
+        bool TestRunning = ! IVVCStrat->setDmvTestExecution( busID, TestData );
+
+        if( TestRunning )
+        {
+            CTILOG_ERROR( dout, "Could not schedule DMV Test on bus: " << busID << ".  A DMV Test is already being executed." );
+        }
     }
     else
     {

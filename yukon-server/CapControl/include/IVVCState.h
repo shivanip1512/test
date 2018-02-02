@@ -7,6 +7,21 @@
 
 #include <boost/shared_ptr.hpp>
 
+struct DmvTestData
+{
+    std::string
+        TestName;
+
+    long
+        TestId,
+        PollingInterval,
+        DataGatheringDuration,
+        CommSuccessPercentage;
+
+    double
+        StepSize;
+};
+
 class IVVCState
 {
     public:
@@ -39,6 +54,9 @@ class IVVCState
 
         State getState();
         void setState(State state);
+
+        std::unique_ptr<DmvTestData> & getDmvTestState();
+        void setDmvTestState( std::unique_ptr<DmvTestData> & TestData );
 
         bool isScannedRequest();
         void setScannedRequest(bool scannedRequest);
@@ -140,6 +158,8 @@ class IVVCState
         unsigned long _commsRetryCount;
 
         std::set<long> _reportedControllers;
+
+        std::unique_ptr<DmvTestData> _DmvTestData;
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;

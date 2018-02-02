@@ -44,7 +44,8 @@ IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     _capbankCommReportingPercentage(100.0),
     _voltageMonitorCommReportingPercentage(100.0),
     _reportCommStatisticsByPhase(true),
-    _controlMethod(SubstationBusControlMethod)
+    _controlMethod(SubstationBusControlMethod),
+    _paoStateMap()
 {
 }
 
@@ -526,4 +527,33 @@ void IVVCStrategy::execute()
             //debug
         }
     }
+}
+
+bool IVVCStrategy::setDmvTestExecution( long BusID, std::unique_ptr<DmvTestData> & DmvTestData )
+{
+    auto iter = _paoStateMap.find( BusID );
+    if( iter != _paoStateMap.end() ) 
+    {
+        IVVCStatePtr IVVCStatePointer = iter->second.second;
+        auto & currentDmvTestState = IVVCStatePointer->getDmvTestState();
+
+        if( ! currentDmvTestState ) 
+        {
+            IVVCStatePointer->setDmvTestState( DmvTestData );
+
+            return true;
+        }
+    }
+    else
+    {
+        IVVCStatePtr IVVCStatePointer;
+
+        IVVCStatePointer->setDmvTestState( DmvTestData );
+        _paoStateMap.emplace( std::make_pair( BusID, std::make_pair( 1, IVVCStatePointer ) ) );
+
+        return true;
+    }
+
+    // There is already a DMV test executing
+    return false;
 }
