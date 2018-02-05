@@ -14,7 +14,7 @@ public enum CbcImportResultType implements DatabaseRepresentationSource {
 	INVALID_SERIAL_NUMBER("Invalid Serial Number", 10),
 	ILLEGAL_CHARS("Invalid CBC name", 11), 
 	INVALID_PARENT_RTU("Invalid Parent RTU name", 12),
-	;
+    ACTION_NOT_SUPPORTED_CBC_LOGICAL("Assignment of Cap Bank to CBC Logical is currently unsupported for import action ADD ", 13);
 	
 	private final String dbString;
 	private final int errorCode;

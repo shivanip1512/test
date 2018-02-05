@@ -182,7 +182,12 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
             return;
         }
-        
+
+        if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL && StringUtils.isNotBlank(cbcImportData.getCapBankName())) {
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.ACTION_NOT_SUPPORTED_CBC_LOGICAL));
+            return;
+        }
+
         Integer parentId = getParentCapBankId(cbcImportData);
         
         CompleteCbcBase pao;
@@ -290,7 +295,12 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.OBJECT_EXISTS));
             return;
         }
-        
+
+        if (cbcImportData.getCbcType() == PaoType.CBC_LOGICAL && StringUtils.isNotBlank(cbcImportData.getCapBankName())) {
+            results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.ACTION_NOT_SUPPORTED_CBC_LOGICAL));
+            return;
+        }
+
         Integer parentId = getParentCapBankId(cbcImportData);
         
         PaoIdentifier templateIdentifier = templatePao.getPaoIdentifier();
