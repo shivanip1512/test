@@ -32,6 +32,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -81,6 +82,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -104,6 +106,7 @@ public class PointController {
     @Autowired private PointDao pointDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointService pointService;
+    @Autowired private RtuService rtuService;
     
     private static final String baseKey = "yukon.web.modules.tools.point";
 
@@ -131,7 +134,7 @@ public class PointController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".notFoundError", id));
             return "point/point.jsp";
         }
-
+        
         PointBase base = pointModel.getPointBase();
         if (base instanceof SystemPoint){
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".viewError", base.getPoint().getPointName()));
@@ -140,6 +143,12 @@ public class PointController {
             if (pointModel.getPointBase().getPoint().getPseudoFlag().equals(Point.PSEUDOFLAG_PSEUDO)) {
                 pointModel.getPointBase().getPoint().setPhysicalOffset(false);
             }
+
+            Point point = pointModel.getPointBase().getPoint();
+            List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(
+                point.getPaoID(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
+            flashScope.setError(duplicatePointMessages);
+      
             return setUpModel(model, pointModel, userContext);
         }
     }

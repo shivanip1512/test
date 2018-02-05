@@ -77,7 +77,7 @@ public class MockPointDao implements PointDao {
 
     @Override
     public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
-        List<LitePoint> pointList = new ArrayList<LitePoint>();
+        List<LitePoint> pointList = new ArrayList<>();
         for (int x = 1; x < 5; x++) {
             pointList.add(getLitePoint(x));
         }
@@ -133,7 +133,7 @@ public class MockPointDao implements PointDao {
     }
     
     private List<PointBase> getPointsForDevice1(PaoIdentifier pao) {
-        List<PointBase> points = new ArrayList<PointBase>();
+        List<PointBase> points = new ArrayList<>();
         points.add(getPoint(1, pao, PointType.DemandAccumulator, 100, "User Created"));
         points.add(getPoint(2, pao, PointType.PulseAccumulator, 20, "Blink Count"));
         points.add(getPoint(3, pao, PointType.PulseAccumulator, 1, "kWh"));
@@ -143,7 +143,7 @@ public class MockPointDao implements PointDao {
     }
     
     private List<PointBase> getPointsForDevice2(PaoIdentifier pao) {
-        List<PointBase> points = new ArrayList<PointBase>();
+        List<PointBase> points = new ArrayList<>();
         points.add(getPoint(1, pao, PointType.DemandAccumulator, 100, "User Created"));
         points.add(getPoint(2, pao, PointType.Analog, 1, "Delivered kWh"));
         points.add(getPoint(3, pao, PointType.Analog, 2, "Received kWh"));
@@ -295,4 +295,10 @@ public class MockPointDao implements PointDao {
     public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
         return null;
     }
+
+    @Override
+    public List<LitePoint> getDuplicatePointsByPointIdentifiers(List<Integer> paoIds, List<PointIdentifier> points) {
+        return null;
+    }
+
 }

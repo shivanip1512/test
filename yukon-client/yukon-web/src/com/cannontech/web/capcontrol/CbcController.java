@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -49,6 +50,7 @@ import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
@@ -66,13 +68,17 @@ public class CbcController {
     @Autowired private CapControlCache ccCache;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
+    @Autowired private RtuService rtuService;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
 
     @RequestMapping(value = "cbc/{id}", method = RequestMethod.GET)
-    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
         CapControlCBC cbc = cbcService.getCbc(id);
         model.addAttribute("mode", PageEditMode.VIEW);
+        List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id);
+        flash.setError(duplicatePointMessages);
+
         return setUpModel(model, cbc, userContext);
     }
     

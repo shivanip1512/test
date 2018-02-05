@@ -73,7 +73,7 @@ public interface PointDao {
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT p.PointId, p.PointName, PointType, p.PaobjectId, PointOffset, StateGroupId, pu.DecimalDigits,");
+            sql.append("SELECT p.PointId, p.PointName, p.PointType, p.PaobjectId, p.PointOffset, StateGroupId, pu.DecimalDigits,");
             sql.append(    "um.Formula, um.UomId, pa.Multiplier AnalogMultiplier, pa.DataOffset AnalogOffset,");
             sql.append(    "pac.Multiplier AccumulatorMultiplier, pac.DataOffset AccumulatorOffset");
             sql.append("FROM Point p");
@@ -254,4 +254,10 @@ public interface PointDao {
     
     /** Retrieves all points and puts them in a Map. */
     Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId);
+
+    /**
+     * Returns the list of duplicates points. If points is an empty list, all duplicate points for the
+     * specified devices will be returned, otherwise returns only duplicate listed points.
+     */
+    List<LitePoint> getDuplicatePointsByPointIdentifiers(List<Integer> paoIds, List<PointIdentifier> points);
 }

@@ -63,7 +63,7 @@ public class MockPointDao implements PointDao {
 
     @Override
     public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
-        List<LitePoint> pointList = new ArrayList<LitePoint>();
+        List<LitePoint> pointList = new ArrayList<>();
         for (int x = 1; x < 5; x++) {
             pointList.add(getLitePoint(x));
         }
@@ -235,6 +235,11 @@ public class MockPointDao implements PointDao {
 
     @Override
     public Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId) {
+        return null;
+    }
+
+    @Override
+    public List<LitePoint> getDuplicatePointsByPointIdentifiers(List<Integer> paoIds, List<PointIdentifier> points) {
         return null;
     }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -36,8 +37,10 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.TimeIntervals;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.editor.CapControlCBC;
+import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
@@ -48,9 +51,10 @@ public class RtuController {
     @Autowired private IDatabaseCache cache;
     @Autowired private CbcHelperService cbcHelperService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private RtuService rtuService;
     
     @RequestMapping(value = "rtu/{id}", method = RequestMethod.GET)
-    public String view(ModelMap model, @PathVariable int id) {
+    public String view(ModelMap model, @PathVariable int id, FlashScope flash) {
         model.addAttribute("mode", PageEditMode.VIEW);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
@@ -58,6 +62,9 @@ public class RtuController {
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
         model.addAttribute("rtu", rtu);
         getPointsForModel(id, model);
+        List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id);
+        flash.setError(duplicatePointMessages);
+
         return "/rtu/rtuDetail.jsp";
     }
     

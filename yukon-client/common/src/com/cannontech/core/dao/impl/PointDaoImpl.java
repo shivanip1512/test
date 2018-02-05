@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -670,6 +671,56 @@ public class PointDaoImpl implements PointDao {
             throw new NotFoundException("Unable to find point for deviceId=" + paobjectId + ", pointOffset="
                 + pointOffset + ", pointType=" + pointType);
         }
+    }
+    
+    @Override
+    public List<LitePoint> getDuplicatePointsByPointIdentifiers(List<Integer> paoIds, List<PointIdentifier> points) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("WITH Duplicates AS (");
+        sql.append("    SELECT dp.PointOffset, dp.PointType");
+        sql.append("    FROM POINT as dp");
+        sql.append("    WHERE PAObjectId").in(paoIds);
+        sql.append(buildPointIdentifierSql(points, "dp"));
+        sql.append("    GROUP BY dp.PointOffset, dp.PointType");
+        sql.append("    HAVING count(dp.PointId) > 1");
+        sql.append(")");
+        
+        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
+        sql.append("JOIN Duplicates d ON (d.PointOffset = p.PointOffset AND d.PointType = p.PointType)");
+        sql.append("WHERE PAObjectId").in(paoIds);
+        sql.append(buildPointIdentifierSql(points, "p"));
+        sql.append("ORDER BY p.PointType, p.PointOffset");
+        return jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
+    }
+    
+    /**
+     * Example - 
+     * AND
+     * ( (
+     *      dp.PointType = 'Analog'
+     *      AND dp.PointOffset = 1
+     * )
+     * OR
+     * (
+     *      dp.PointType = 'Analog'
+     *      AND dp.PointOffset = 2
+     * )
+     * OR
+     * (
+     *      dp.PointType = 'Analog'
+     *      AND dp.PointOffset = 3
+     * ) )
+     */
+    private String buildPointIdentifierSql(List<PointIdentifier> points, String prefix) {
+        if(points.isEmpty()) {
+            return "";
+        }
+        List<String> pointsString =
+            points.stream()
+            .map(p -> "(" + prefix + ".PointType='" + p.getPointType().getPointTypeString() + "' AND " + prefix + ".PointOffset=" + p.getOffset() + " )")
+            .collect( Collectors.toList());
+        return "AND (" +String.join(" OR ", pointsString)+")";
     }
 
     @Override

@@ -1317,4 +1317,6 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="infrastructureWarningsWidgetListener" />
     </bean>
+    
+     <bean class="com.cannontech.web.stars.rtu.service.impl.RtuServiceImpl"/>
 </beans>
