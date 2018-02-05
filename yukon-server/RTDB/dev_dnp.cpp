@@ -677,6 +677,8 @@ YukonError_t DnpDevice::recvCommRequest( OUTMESS *OutMessage )
         catch( const std::exception& e )
         {
             CTILOG_EXCEPTION_ERROR(dout, e, "Device "<< getName() <<" had a configuration failure, unable to process comm request");
+
+            retVal = ClientErrors::NoConfigData;
         }
     }
     else
