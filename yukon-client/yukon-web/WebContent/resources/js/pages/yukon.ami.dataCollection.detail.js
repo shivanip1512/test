@@ -25,7 +25,7 @@ yukon.ami.dataCollection.detail = (function () {
                         
             yukon.widget.dataCollection.buildChart(chart, data);
             
-            //check which legend items should be selected
+            //check which legend items should be displayed
             $('input[name=ranges]').each(function() {
                 var rangeButton = $(this);
                 if (!rangeButton.prop("checked")) {
