@@ -42,6 +42,7 @@ import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -101,30 +102,31 @@ public class MeterController {
     
     @Autowired private AttributeService attributeService;
     @Autowired private CachingPointFormattingService pointFormattingService;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DashboardService dashboardService;
+    @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
+    @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceFilterCollectionHelper filterCollectionHelper;
+    @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private DisconnectService disconnectService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private MeterSearchService meterSearchService;
+    @Autowired private MeterTypeHelper meterTypeHelper;
+    @Autowired private MeterValidator meterValidator;
     @Autowired private MspMeterSearchService mspMeterSearchService;
+    @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefDao;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private PointDao pointDao;
     @Autowired private PointService pointService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private PaoDao paoDao;
-    @Autowired private MeterValidator meterValidator;
-    @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
-    @Autowired private MeterTypeHelper meterTypeHelper;
-    @Autowired private MeterDao meterDao;
-    @Autowired private DeviceUpdateService deviceUpdateService;
-    @Autowired private DashboardService dashboardService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
 
@@ -159,7 +161,7 @@ public class MeterController {
         MeterSearchOrderBy orderBy = new MeterSearchOrderBy(sort.toString(), desc);
         
         // all filters
-        List<FilterBy> filterByList = new ArrayList<FilterBy>();
+        List<FilterBy> filterByList = new ArrayList<>();
         filterByList.addAll(StandardFilterByGenerator.getStandardFilterByList());
         filterByList.addAll(mspMeterSearchService.getMspFilterByList());
         
@@ -380,6 +382,11 @@ public class MeterController {
         if (meter.isDisabled()) {
            deviceUpdateService.disableDevice(device); 
         }
+        
+        String serialOrAddress = meter.getType().isPlc() ? Integer.toString(meter.getAddress()) : meter.getSerialNumber();
+        meteringEventLogService.meterCreated(meter.getName(), meter.getMeterNumber(), serialOrAddress, meter.getType(), 
+                                             user.getUsername());
+        
         Map<String, Object> json = new HashMap<>();
         json.put("deviceId", device.getDeviceId());
         resp.setContentType("application/json");
@@ -422,6 +429,11 @@ public class MeterController {
         } else {
             deviceDao.enableDevice(device);
         }
+        
+        String serialOrAddress = meter.getType().isPlc() ? Integer.toString(meter.getAddress()) : meter.getSerialNumber();
+        meteringEventLogService.meterCreated(meter.getName(), meter.getMeterNumber(), serialOrAddress, meter.getType(), 
+                                             user.getUsername());
+        
         Map<String, Object> json = new HashMap<>();
         json.put("deviceId", device.getDeviceId());
         resp.setContentType("application/json");
@@ -429,7 +441,6 @@ public class MeterController {
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.create.successful", meter.getName()));
         return null;
     }
-    
     
     @CheckRole({ YukonRole.METERING })
     @RequestMapping("touPreviousReadings")
@@ -477,16 +488,20 @@ public class MeterController {
     
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-    public String delete(FlashScope flash, @PathVariable int id, ModelMap model) {
-        String meterName = serverDatabaseCache.getAllPaosMap().get(id).getPaoName();
+    public String delete(FlashScope flash, @PathVariable int id, ModelMap model, LiteYukonUser user) {
+        LiteYukonPAObject meter = serverDatabaseCache.getAllPaosMap().get(id);
+        String meterName = serverDatabaseCache.getAllMeters().get(id).getMeterNumber();
         try {
             deviceDao.removeDevice(id);
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", meterName));
+            
+            meteringEventLogService.meterDeleted(meter.getPaoName(), meterName, user.getUsername());
+            
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", meter.getPaoName()));
             return "redirect:/meter/start";
         }
         catch (Exception e) {
-            log.error("Unable to delete meter with id " + meterName, e);
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", meterName));
+            log.error("Unable to delete meter with id " + meter.getPaoName(), e);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", meter.getPaoName()));
             return "redirect:/meter/home?deviceId="+id;
         }
     }

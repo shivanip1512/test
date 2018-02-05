@@ -4,6 +4,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -74,4 +75,21 @@ public interface MeteringEventLogService {
             @Arg(ArgEnum.scheduleName) String scheduleName, int tryNumber, int commands,
             @Arg(ArgEnum.commandRequestExecutionContextId) int contextId,
             @Arg(ArgEnum.commandRequestExecutionId) int executionId);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category="amr.meters")
+    public void meterCreated(@Arg(ArgEnum.deviceName) String deviceName,
+                             @Arg(ArgEnum.meterNumber) String meterNumber,
+                             @Arg(ArgEnum.serialNumber) String serialNumberOrAddress,
+                             @Arg(ArgEnum.paoType) PaoType paoType,
+                             @Arg(ArgEnum.username) String username);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category="amr.meters")
+    public void meterEdited(@Arg(ArgEnum.deviceName) String deviceName,
+                            @Arg(ArgEnum.meterNumber) String meterNumber,
+                            @Arg(ArgEnum.username) String username);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category="amr.meters")
+    public void meterDeleted(@Arg(ArgEnum.deviceName) String deviceName,
+                             @Arg(ArgEnum.meterNumber) String meterNumber,
+                             @Arg(ArgEnum.username) String username);
 }

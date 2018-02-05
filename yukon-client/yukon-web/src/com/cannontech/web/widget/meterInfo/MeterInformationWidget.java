@@ -26,6 +26,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -75,14 +76,15 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
-    @Autowired private MeterDao meterDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private CommandRequestDeviceExecutor cre;
+    @Autowired private MeterDao meterDao;
+    @Autowired private MeteringEventLogService meteringEventLogService;
+    @Autowired private MeterValidator meterValidator;
+    @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private MeterValidator meterValidator;
     
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId) {
@@ -190,6 +192,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 null, meter.getRouteId(), Integer.toString(meter.getAddress()));
         
         meterDao.update(plc);
+        
+        meteringEventLogService.meterEdited(meter.getName(), meter.getMeterNumber(), user.getUsername());
+        
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
@@ -239,6 +244,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("errorMsg", errorMsg);
             return "meterInformationWidget/edit.jsp";
         }
+        
+        meteringEventLogService.meterEdited(meter.getName(), meter.getMeterNumber(), user.getUsername());
+        
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
@@ -271,6 +279,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         IedMeter ied = new IedMeter(pao.getPaoIdentifier(), meter.getMeterNumber(), meter.getName(), meter.isDisabled());
         ied.setPortId(meter.getPortId());
         meterDao.update(ied);
+        
+        meteringEventLogService.meterEdited(meter.getName(), meter.getMeterNumber(), user.getUsername());
+        
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
