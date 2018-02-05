@@ -8,7 +8,7 @@ public interface DmvTestDao {
 
     int updateDmvTest(DmvTest dmvTest);
 
-    boolean isUniqueDmvTestName(String name);
+    boolean isUniqueDmvTestName(String name, int id);
 
     List<DmvTest> getAllDmvTest();
 

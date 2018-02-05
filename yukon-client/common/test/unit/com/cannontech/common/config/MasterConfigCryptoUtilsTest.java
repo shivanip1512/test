@@ -15,7 +15,7 @@ public class MasterConfigCryptoUtilsTest {
         sensitiveData = new HashSet<MasterConfigString>();
         sensitiveData.add(MasterConfigString.CAP_CONTROL_AMFM_DB_USERNAME);
         sensitiveData.add(MasterConfigString.CAP_CONTROL_AMFM_DB_PASSWORD);
-        sensitiveData.add(MasterConfigString.CAP_CONTROL_ENABLE_DMV_TEST);
+        sensitiveData.add(MasterConfigString.DEMAND_MEASUREMENT_VERIFICATION_ENABLED);
         sensitiveData.add(MasterConfigString.DB_USERNAME);
         sensitiveData.add(MasterConfigString.DB_PASSWORD);
         sensitiveData.add(MasterConfigString.DB_SQLSERVER);

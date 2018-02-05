@@ -34,7 +34,7 @@ public class DmvTestDaoImpl implements DmvTestDao {
     @Override
     public int updateDmvTest(DmvTest dmvTest) throws DuplicateException {
         
-        if (!isUniqueDmvTestName(dmvTest.getName()) && dmvTest.getDmvTestId() == 0) {
+        if (!isUniqueDmvTestName(dmvTest.getName(), dmvTest.getDmvTestId())) {
             throw new DuplicateException("Demand Verification and Mangement Test with name" + dmvTest.getName() + " already exist.");
         }
         
@@ -85,11 +85,11 @@ public class DmvTestDaoImpl implements DmvTestDao {
     }
     
     @Override
-    public boolean isUniqueDmvTestName(String name) {
+    public boolean isUniqueDmvTestName(String name, int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) FROM DmvTest");
         sql.append("WHERE DmvTestName").eq(name);
-
+        sql.append("AND DMVTestId").neq(id);
         int duplicateNames =  jdbcTemplate.queryForInt(sql);
         return duplicateNames == 0;
     }

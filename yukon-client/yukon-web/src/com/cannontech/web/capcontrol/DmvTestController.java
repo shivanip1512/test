@@ -31,7 +31,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
-@CheckCparmString(config = MasterConfigString.CAP_CONTROL_ENABLE_DMV_TEST, expecting = MasterConfigLicenseKey.CAP_CONTROL_ENABLE_DMV_TEST)
+@CheckCparmString(config = MasterConfigString.DEMAND_MEASUREMENT_VERIFICATION_ENABLED, expecting = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED)
 public class DmvTestController {
     private static Logger log = YukonLogManager.getLogger(DmvTestController.class);
     private static final String baseKey = "yukon.web.modules.capcontrol.dmvTest";
@@ -39,7 +39,7 @@ public class DmvTestController {
     @Autowired DmvTestDao dmvTestDao;
     @Autowired DmvTestValidator validator;
     
-    @RequestMapping("dmvTestList")
+    @RequestMapping(value="dmvTestList", method=RequestMethod.GET)
     public String dmvTestList(ModelMap model) {
         
         List<DmvTest> dmvTestList = dmvTestDao.getAllDmvTest();
@@ -49,7 +49,7 @@ public class DmvTestController {
         return "dmvtest/dmvTestList.jsp";
     }
     
-    @RequestMapping("dmvTest/create")
+    @RequestMapping(value="dmvTest/create", method=RequestMethod.GET)
     public String create(ModelMap model) {
         
         DmvTest dmvTest = new DmvTest();
@@ -103,9 +103,6 @@ public class DmvTestController {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             return bindAndForward(dmvTest, result, redirectAttributes);
         }
-        if (dmvTest.getDmvTestId() == null) {
-            dmvTest.setDmvTestId(0);
-        }
         int id = 0;
         try {
             id = dmvTestDao.updateDmvTest(dmvTest);
@@ -125,7 +122,7 @@ public class DmvTestController {
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.dmvTest", result);
         attrs.addFlashAttribute("dmvTest", dmvTest);
         
-        if (dmvTest.getDmvTestId() == null || dmvTest.getDmvTestId() == 0) {
+        if (dmvTest.getDmvTestId() == 0) {
             return "redirect:dmvTest/create";
         }
         return "redirect:dmvTest/" + dmvTest.getDmvTestId() + "/edit";

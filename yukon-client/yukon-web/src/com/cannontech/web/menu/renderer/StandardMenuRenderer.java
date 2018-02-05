@@ -20,6 +20,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -221,14 +222,14 @@ public class StandardMenuRenderer {
             }
         } else if (type == Permission.masterConfig) {
             String value = permission.getAttributeValue("name");
-            String masterConfig[] = value.split(":");
-            if (masterConfig.length == 1) {
-                if (configurationSource.getBoolean(masterConfig[0], false)) {
+            
+            if (!MasterConfigLicenseKey.configMap.containsKey(value)) {
+                if (configurationSource.getBoolean(value, false)) {
                       return true;
                 }
             }
-            else if (masterConfig.length == 2) {
-                return masterConfig[1].equals(configurationSource.getString(masterConfig[0]));
+            else {
+                return MasterConfigLicenseKey.configMap.get(value).getKey().equals(configurationSource.getString(value));
             }
         } else {
             /* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */

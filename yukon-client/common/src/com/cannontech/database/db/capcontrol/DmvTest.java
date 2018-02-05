@@ -2,12 +2,12 @@ package com.cannontech.database.db.capcontrol;
 
 public class DmvTest {
 
-    private Integer dmvTestId;
+    private int dmvTestId;
     private String name;
-    private Integer pollingInterval = 30;
-    private Integer dataGatheringDuration = 10;
-    private Double stepSize = 1.5;
-    private Integer commSuccPercentage = 100;
+    private int pollingInterval = 30;
+    private int dataGatheringDuration = 10;
+    private double stepSize = 1.5;
+    private int commSuccPercentage = 100;
     
     public String getName() {
         return name;
@@ -15,34 +15,34 @@ public class DmvTest {
     public void setName(String name) {
         this.name = name;
     }
-    public Integer getPollingInterval() {
+    public int getPollingInterval() {
         return pollingInterval;
     }
     public void setPollingInterval(int pollingInterval) {
         this.pollingInterval = pollingInterval;
     }
-    public Double getStepSize() {
+    public double getStepSize() {
         return stepSize;
     }
-    public void setStepSize(Double stepSize) {
+    public void setStepSize(double stepSize) {
         this.stepSize = stepSize;
     }
-    public Integer getDataGatheringDuration() {
+    public int getDataGatheringDuration() {
         return dataGatheringDuration;
     }
-    public void setDataGatheringDuration(Integer dataGatheringDuration) {
+    public void setDataGatheringDuration(int dataGatheringDuration) {
         this.dataGatheringDuration = dataGatheringDuration;
     }
-    public Integer getCommSuccPercentage() {
+    public int getCommSuccPercentage() {
         return commSuccPercentage;
     }
-    public void setCommSuccPercentage(Integer commSuccPercentage) {
+    public void setCommSuccPercentage(int commSuccPercentage) {
         this.commSuccPercentage = commSuccPercentage;
     }
-    public Integer getDmvTestId() {
+    public int getDmvTestId() {
         return dmvTestId;
     }
-    public void setDmvTestId(Integer dmvTestId) {
+    public void setDmvTestId(int dmvTestId) {
         this.dmvTestId = dmvTestId;
     }
 }

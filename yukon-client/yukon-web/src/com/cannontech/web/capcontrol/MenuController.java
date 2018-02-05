@@ -348,7 +348,7 @@ public class MenuController {
         String title = accessor.getMessage("yukon.web.modules.capcontrol.create.title");
         model.addAttribute("title", title);
         
-        boolean usesDmvTest = MasterConfigLicenseKey.CAP_CONTROL_ENABLE_DMV_TEST.getKey().equals(configurationSource.getString("CAP_CONTROL_ENABLE_DMV_TEST"));
+        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
         model.addAttribute("usesDmvTest", usesDmvTest);
         
         return "tier/popupmenu/create.jsp";
