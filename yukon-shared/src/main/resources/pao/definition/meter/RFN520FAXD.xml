@@ -19,7 +19,6 @@
         <tag name="VOLTAGE_PROFILE"/>
     </tags>
     <configuration>
-        <category type="demand"/>
         <category type="demandFreeze"/>
         <category type="rfnChannelConfiguration"/>
         <category type="rfnDisconnectConfiguration"/>

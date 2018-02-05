@@ -21,7 +21,6 @@
     </tags>
     <configuration>
         <category type="centron410DisplayItems"/>
-        <category type="demand"/>
         <category type="demandFreeze"/>
         <category type="lcdConfiguration"/>
         <category type="rfnChannelConfiguration"/>
