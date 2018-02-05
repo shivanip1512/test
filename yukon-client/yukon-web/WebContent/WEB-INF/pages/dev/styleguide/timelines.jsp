@@ -17,6 +17,7 @@
 
 <p class="description">
     Create a timeline component through the jquery timeline function added by the new timeline widget.
+    Add the begin and end date and events to the timeline.   You can also optionally add showLabels, which will add labels in between the start/end on the timeline.
 </p>
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
@@ -49,6 +50,7 @@
             options.end = now.getTime();
             options.begin = twelveHoursAgo.getTime();
             options.events = events;
+            options.showLabels = true;
             
             tl.timeline(options);
         })();
@@ -85,6 +87,7 @@
     options.end = now.getTime();
     options.begin = twelveHoursAgo.getTime();
     options.events = events;
+    options.showLabels = true;
     
     tl.timeline(options);
 })();
