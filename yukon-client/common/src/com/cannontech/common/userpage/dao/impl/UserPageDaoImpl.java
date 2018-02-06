@@ -358,7 +358,6 @@ public class UserPageDaoImpl implements UserPageDao {
 
         otherDeviceUrls.add(compileUrlParam("/stars/relay/home", "deviceId"));
         otherDeviceUrls.add(Pattern.compile("/stars/gateways/(\\d+)"));
-        otherDeviceUrls.add(compileUrlParam("/stars/operator/inventory/view", "inventoryId"));
 
         paoUrls.addAll(otherDeviceUrls);
     }
