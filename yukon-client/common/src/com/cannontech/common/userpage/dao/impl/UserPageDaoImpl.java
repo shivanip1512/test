@@ -316,6 +316,7 @@ public class UserPageDaoImpl implements UserPageDao {
     private static List<Pattern> drFavoritesUrls = new ArrayList<>();
     private static List<Pattern> capControlUrls = new ArrayList<>();
     private static List<Pattern> meterUrls = new ArrayList<>();
+    private static List<Pattern> otherDeviceUrls = new ArrayList<>();
 
     private static Pattern compileUrlParam(String url, String param){
         String regex = url + "\\?.*" + param + "=(\\d+).*";
@@ -334,6 +335,12 @@ public class UserPageDaoImpl implements UserPageDao {
         capControlUrls.add(compileUrlParam("/capcontrol/tier/feeders", "substationId"));
         capControlUrls.add(compileUrlParam("/capcontrol/ivvc/bus/detail", "subBusId"));
         capControlUrls.add(Pattern.compile("/capcontrol/regulators/(\\d+)"));
+        capControlUrls.add(Pattern.compile("/capcontrol/feeders/(\\d+)"));
+        capControlUrls.add(Pattern.compile("/capcontrol/substations/(\\d+)"));
+        capControlUrls.add(Pattern.compile("/capcontrol/buses/(\\d+)"));
+        capControlUrls.add(Pattern.compile("/capcontrol/cbc/(\\d+)"));
+        capControlUrls.add(Pattern.compile("/capcontrol/capbanks/(\\d+)"));
+        capControlUrls.add(Pattern.compile("/capcontrol/strategies/(\\d+)"));
 
         paoUrls.addAll(capControlUrls);
 
@@ -348,6 +355,12 @@ public class UserPageDaoImpl implements UserPageDao {
         meterUrls.add(Pattern.compile("/bulk/routeLocate/home\\?.*?idList.ids=(\\d+(?:,\\d+)).*?"));
 
         paoUrls.addAll(meterUrls);
+
+        otherDeviceUrls.add(compileUrlParam("/stars/relay/home", "deviceId"));
+        otherDeviceUrls.add(Pattern.compile("/stars/gateways/(\\d+)"));
+        otherDeviceUrls.add(compileUrlParam("/stars/operator/inventory/view", "inventoryId"));
+
+        paoUrls.addAll(otherDeviceUrls);
     }
     
     private static Pattern pointUrl = Pattern.compile("/tools/points/(\\d+).*");
