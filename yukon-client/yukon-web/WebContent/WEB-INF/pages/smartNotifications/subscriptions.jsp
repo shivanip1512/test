@@ -85,8 +85,8 @@
                                 <td>
                                     <cm:dropdown icon="icon-cog">
                                         <cti:url var="editUrl" value="/notifications/subscription/${subId}/edit"/>
-                                        <div id="edit-popup-${subId}" data-dialog class="dn js-smart-notifications-popup" data-hide-link="true"
-                                            data-event="yukon:notifications:save" data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
+                                        <div id="edit-popup-${subId}" data-dialog class="dn js-smart-notifications-popup"
+                                            data-event="yukon:notifications:save" data-title="<cti:msg2 key=".editPopup.title"/>"
                                             data-url="${editUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
                                         <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" data-popup="#edit-popup-${subId}"/>
                                         <cti:url var="detailsUrl" value="/notifications/events/${subscription.type.urlPath}"/>
@@ -117,8 +117,7 @@
     <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>
     <div id="create-popup" data-dialog
             class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
-            data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
-            data-hide-link="true"
+            data-title="<cti:msg2 key=".createPopup.title"/>"
             data-url="${smartNotificationsUrl}" 
             data-load-event="yukon:notifications:load"
             data-width="600"></div>

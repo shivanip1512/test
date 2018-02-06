@@ -1,7 +1,7 @@
 package com.cannontech.web.smartNotifications;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,21 +16,17 @@ public class DeviceDataMonitorSubscriptionHelper {
     
     @Autowired private MonitorCacheService monitorCacheService;
     
-    public SmartNotificationSubscription retrieveSubscription(ModelMap model, HttpServletRequest request, 
-                                                              List<SmartNotificationSubscription> subscriptions, SmartNotificationSubscription subscription) {
+    public List<SmartNotificationSubscription> retrieveSubscriptionsForMonitor(ModelMap model, HttpServletRequest request, 
+                                                              List<SmartNotificationSubscription> subscriptions) {
         int monitorId = ServletRequestUtils.getIntParameter(request, "monitorId", 0);
         if (monitorId != 0) {
-            subscription.addParameters("monitorId",  monitorId);
-            model.addAttribute("monitorName", monitorCacheService.getDeviceMonitor(monitorId).getName());
-            Optional<SmartNotificationSubscription> ddmSub = subscriptions.stream()
-                .filter(sub -> monitorId == Integer
-                    .parseInt((String) sub.getParameters().get("monitorId")))
-                .findFirst();
-            if (ddmSub.isPresent()) {
-                return ddmSub.get();
-            }
+            model.addAttribute("monitorId", monitorId);
+            subscriptions = subscriptions.stream()
+                    .filter(sub -> monitorId == Integer
+                        .parseInt((String) sub.getParameters().get("monitorId")))
+                    .collect(Collectors.toList()); 
         }
-        return subscription;
+        return subscriptions;
     }
     
     public void retrieveMonitor(ModelMap model, SmartNotificationSubscription subscription) {

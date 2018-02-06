@@ -95,7 +95,7 @@
             data-width="600"><div class="scroll-lg">${helpText}</div></div>
 </c:if>
 <c:if test="${not empty pageScope.smartNotificationsEvent}">
-    <cti:url var="smartNotificationsUrl" value="/notifications/subscription/popup/${pageScope.smartNotificationsEvent}"/>
+    <cti:url var="smartNotificationsUrl" value="/notifications/subscription/existingPopup/${pageScope.smartNotificationsEvent}"/>
     <div id="smart-notifications-popup-${thisId}" data-dialog
             class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
             data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"

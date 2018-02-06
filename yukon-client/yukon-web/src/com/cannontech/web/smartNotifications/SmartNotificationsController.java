@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -262,6 +263,27 @@ public class SmartNotificationsController {
         return "redirect:/user/profile";
     }
     
+    @RequestMapping(value="subscription/existingPopup/{type}", method=RequestMethod.GET)
+    public String existingSubscriptionsPopup(ModelMap model, YukonUserContext userContext, @PathVariable SmartNotificationEventType type,
+                                    HttpServletRequest request) {
+        List<SmartNotificationSubscription> subscriptions = subscriptionDao.getSubscriptions(userContext.getYukonUser().getUserID(), type);
+        //check if monitor Id is present, then filter by monitor
+        if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
+            Map<String, String> deviceDataMonitors = new HashMap<>();
+            monitorCacheService.getDeviceDataMonitors().forEach(monitor -> deviceDataMonitors.put(monitor.getId().toString(), monitor.getName()));
+            model.addAttribute("deviceDataMonitors", deviceDataMonitors);
+            subscriptions = ddmHelper.retrieveSubscriptionsForMonitor(model, request, subscriptions);
+        }
+        //if there are no existing subscriptions for that type, go straight to creating a new one
+        if (subscriptions.size() == 0) {
+            return subscriptionPopup(model, userContext, type, request);
+        }
+        model.addAttribute("existingSubscriptions", subscriptions);
+        model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
+        model.addAttribute("type", type);
+        return "existingSubscriptionsPopup.jsp";
+    }
+    
     @RequestMapping(value="subscription/popup/{type}", method=RequestMethod.GET)
     public String subscriptionPopup(ModelMap model, YukonUserContext userContext, @PathVariable SmartNotificationEventType type,
                                     HttpServletRequest request) {
@@ -269,13 +291,12 @@ public class SmartNotificationsController {
         SmartNotificationSubscription subscription = new SmartNotificationSubscription();
         subscription.setType(type);
         setDefaultEmail(userContext, subscription);
-        //check if subscription already exists for user and type
-        List<SmartNotificationSubscription> subscriptions = subscriptionDao.getSubscriptions(userContext.getYukonUser().getUserID(), type);
-        if (type.equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
-            subscription = ddmHelper.retrieveSubscription(model, request, subscriptions, subscription);
-        }
-        else if (!subscriptions.isEmpty()) {
-            subscription = subscriptions.get(0);
+        if (type == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
+            int monitorId = ServletRequestUtils.getIntParameter(request, "monitorId", 0);
+            if (monitorId != 0) {
+                subscription.addParameters("monitorId",  monitorId);
+                ddmHelper.retrieveMonitorById(model, monitorId);
+            }
         }
         setupPopupModel(model, userContext);
         model.addAttribute("subscription", subscription);
@@ -299,18 +320,19 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="subscription/{id}/unsubscribe", method=RequestMethod.POST)
-    public void removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp, FlashScope flash) {
+    public String removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp, FlashScope flash) {
+        Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
         if (subscription.getUserId() != userContext.getYukonUser().getUserID()) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "deleteNotOwner"));
-            resp.setStatus(HttpStatus.NO_CONTENT.value());
-            return;
+            json.put("errorMessage",  accessor.getMessage(baseKey + "deleteNotOwner"));
+        } else {
+            subscriptionService.deleteSubscription(id, userContext);
+            String event = accessor.getMessage(subscription.getType().getFormatKey());
+            json.put("successMessage",  accessor.getMessage(baseKey + "unsubscribeSuccess", event));
         }
-        subscriptionService.deleteSubscription(id, userContext);
-        String event = accessor.getMessage(subscription.getType().getFormatKey());
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "unsubscribeSuccess", event));
-        resp.setStatus(HttpStatus.NO_CONTENT.value());
+        resp.setContentType("application/json");
+        return JsonUtils.writeResponse(resp, json);
     }
     
     @RequestMapping(value="subscription/create", method=RequestMethod.GET)
@@ -350,17 +372,21 @@ public class SmartNotificationsController {
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)
     public String saveDetails(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, FlashScope flash, 
                               @ModelAttribute("subscription") SmartNotificationSubscription subscription, BindingResult result) throws Exception {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         subscription.setUserId(userContext.getYukonUser().getUserID());
         subscriptionValidator.doValidation(subscription, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
             setupPopupModel(model, userContext);
+            if (subscription.getType() == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
+                ddmHelper.retrieveMonitorById(model, Integer.parseInt(subscription.getParameters().get("monitorId").toString()));
+            }
             return "subscriptionPopup.jsp";
         }
         subscriptionService.saveSubscription(subscription, userContext);
         Map<String, Object> json = new HashMap<>();
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "saveSuccessful"));
+        json.put("successMessage",  accessor.getMessage(baseKey + "saveSuccessful"));
         resp.setContentType("application/json");
         return JsonUtils.writeResponse(resp, json);
     }

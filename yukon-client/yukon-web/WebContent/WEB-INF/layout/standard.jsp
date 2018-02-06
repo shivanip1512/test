@@ -267,7 +267,7 @@
         </div>
     </cti:msgScope>
     <c:if test="${!empty info.smartNotificationsEvent}">
-       <cti:url var="subscriptionUrl" value="/notifications/subscription/popup/${info.smartNotificationsEvent}">
+       <cti:url var="subscriptionUrl" value="/notifications/subscription/existingPopup/${info.smartNotificationsEvent}">
         <c:forEach var="parameter" items="${info.smartNotificationsParameters}">
             <cti:param name="${parameter.key}" value="${parameter.value}"/>
         </c:forEach>

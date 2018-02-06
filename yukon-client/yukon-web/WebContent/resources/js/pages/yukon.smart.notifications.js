@@ -104,6 +104,17 @@ yukon.smart.notifications = (function () {
         
     },
     
+    updateSubscriptions = function () {
+        var tableContainer = $('#smart-notifications-container'),
+            form = $('#filter-form');
+        form.ajaxSubmit({
+            success: function(data, status, xhr, $form) {
+                tableContainer.html(data);
+                tableContainer.data('url', yukon.url('/notifications/subscriptions?' + form.serialize()));
+            }
+        });
+    },
+    
     mod = {
             
         initTimeSlider : function () {
@@ -121,14 +132,15 @@ yukon.smart.notifications = (function () {
             
             /** Load the notifications popup. */
             $(document).on('yukon:notifications:load', function (ev) {
-                var popup = $(ev.target),
-                    hideLink = popup.data("hideLink");
+                var popup = $(ev.target);
                 initializeTimeSlider(popup);
                 updateTypeFields(popup);
-                if (hideLink) {
-                    $('.js-settings-link').addClass('dn');
-                }
-                
+            });
+            
+            /** Change buttons for Existing Subscriptions popup */
+            $('.js-smart-notifications-popup').on('dialogfocus', function (ev) {
+                var existingDialog = $('#existingSubscriptions').closest('.ui-dialog-content');
+                existingDialog.dialog("option", "buttons", yukon.ui.buttons({cancelOmit:true}));
             });
             
             /** 'Save' button clicked on the notifications popup. */
@@ -138,10 +150,17 @@ yukon.smart.notifications = (function () {
                 form.ajaxSubmit({
                     success: function (data, status, xhr, $form) {
                         popup.dialog('close');
-                        window.location.reload();
+                        $('#existingSubscriptions').closest('.js-smart-notifications-popup').dialog('close');
+                        //refresh subscriptions
+                        if ($('#filter-form').is(":visible")) {
+                            updateSubscriptions();
+                        }
+                        yukon.ui.alertSuccess(data.successMessage);
                     },
                     error: function (xhr, status, error, $form) {
                         form.html(xhr.responseText);
+                        initializeTimeSlider(popup);
+                        updateTypeFields(popup);
                     }
                 });
             });
@@ -152,8 +171,13 @@ yukon.smart.notifications = (function () {
                 $.ajax({
                     url: yukon.url('/notifications/subscription/' + subscriptionId + '/unsubscribe'),
                     type: 'post'
-                }).done(function () {
-                    window.location.reload();
+                }).done(function (data) {
+                    if (data.successMessage) {
+                        yukon.ui.alertSuccess(data.successMessage)
+                        updateSubscriptions();
+                    } else if (data.errorMessage) {
+                        yukon.ui.alertError(data.errorMessage)
+                    }
                 });
             });
             
@@ -183,26 +207,13 @@ yukon.smart.notifications = (function () {
             });
             
             $(document).on('click', '.js-filter', function (ev) {
-                var tableContainer = $('#smart-notifications-container'),
-                    form = $('#filter-form');
-                form.ajaxSubmit({
-                    success: function(data, status, xhr, $form) {
-                        tableContainer.html(data);
-                        tableContainer.data('url', yukon.url('/notifications/subscriptions?' + form.serialize()));
-                    }
-                });
+                updateSubscriptions();
             });
             
             $(document).on('click', '.js-download', function () {
                 var form = $('#filter-form');
                 var data = form.serialize();
                 window.location = yukon.url('/notifications/download?' + data);
-            });
-            
-            $(document).on('click', '.js-settings-link', function (ev) {
-                var popup = $(this).closest('.js-smart-notifications-popup');
-                popup.dialog('close');
-                window.location = yukon.url('/user/profile?#notifications-section');
             });
             
             initializeSmartNotificationsTable();
