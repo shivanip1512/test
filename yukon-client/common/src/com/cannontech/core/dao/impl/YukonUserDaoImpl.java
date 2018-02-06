@@ -439,7 +439,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink values = sql.insertInto("YukonUser");
         values.addValue("UserId", userId);
-        values.addValueSafe("Username", user.getUsername());
+        values.addValue("Username", user.getUsername());
         values.addValueSafe("Password", user.getPassword().getPassword());
         LoginStatusEnum status = user.isEnabled() ? LoginStatusEnum.ENABLED : LoginStatusEnum.DISABLED;
         values.addValue("Status", status);
