@@ -644,10 +644,16 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
     {
         if( OUTMESS *om = dr->outbound.front() )
         {
-            //  this should pay attention to the status
-            dr->device->recvCommRequest(om);
+            if( const auto status = dr->device->recvCommRequest(om) )
+            {
+                dr->device_status = status;
 
-            queueToGenerate(dr);
+                queueRequestComplete(dr);
+            }
+            else
+            {
+                queueToGenerate(dr);
+            }
         }
         else
         {
