@@ -73,7 +73,7 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     }
 
     @Override
-    public long getSecondsUntilRun() {
+    public long getMillisecondsUntilRun() {
         DateTime nextMaintenanceRunTime = null;
         try {
             nextMaintenanceRunTime = maintenanceHelper.getNextRunTime();
@@ -82,9 +82,9 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
             // If now time window found, sleep for 24hrs and then recheck.
             nextMaintenanceRunTime = DateTime.now().plus(Duration.standardDays(1));
         }
-        long currentTimeInSec = System.currentTimeMillis() / 1000;
-        long nextRunTimeInSec = nextMaintenanceRunTime.getMillis() / 1000;
-        return nextRunTimeInSec - currentTimeInSec;
+        long currentTimeInMillisec = System.currentTimeMillis();
+        long nextRunTimeInMillisec = nextMaintenanceRunTime.getMillis();
+        return nextRunTimeInMillisec - currentTimeInMillisec;
     }
 
     @Override

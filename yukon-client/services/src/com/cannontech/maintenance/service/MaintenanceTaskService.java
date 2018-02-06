@@ -21,9 +21,9 @@ public interface MaintenanceTaskService {
     Instant getEndOfRunWindow();
 
     /**
-     * Return start time of maintenance tasks in seconds
+     * Return start time of maintenance tasks in milliseconds
      **/
-    long getSecondsUntilRun();
+    long getMillisecondsUntilRun();
 
     /**
      * Return value for given maintenance task and setting type.

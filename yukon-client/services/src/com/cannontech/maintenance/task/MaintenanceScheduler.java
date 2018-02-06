@@ -36,8 +36,8 @@ public class MaintenanceScheduler {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     private ScheduledFuture<?> future;
-    // Four hours in seconds
-    private static final long fourHourWindow = 14400;
+    // Four hours in milliseconds
+    private static final long fourHourWindow = 14400000;
     // One hour in milliseconds
     private static final long minimumRunWindow = 3600000;
     private boolean rescheduleScheduler = false;
@@ -76,7 +76,7 @@ public class MaintenanceScheduler {
         if (future != null) {
             future.cancel(true);
         }
-        long secondsUntilRun = getSecondsUntilNextRun();
+        long millisecondsUntilRun = getMillisecondsUntilRun();
         // Schedule the runner
         future = scheduledExecutorService.schedule(() -> {
             if (forceReschedule) {
@@ -112,7 +112,7 @@ public class MaintenanceScheduler {
                 // At the end of the run window, schedule this to run again at the start of the next window
                 reschedule();
             }
-        }, secondsUntilRun, TimeUnit.SECONDS);
+        }, millisecondsUntilRun, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -123,28 +123,27 @@ public class MaintenanceScheduler {
      *  be four hours from now otherwise it will be the what ever the next run time is. 
      *  case 2 is required so that we do not keep on running the scheduler when there is nothing much to process or not much time (< 1hr) to process.
      */
-    private long getSecondsUntilNextRun() {
-        long secondsUntilRun = 0;
-
+    private long getMillisecondsUntilRun() {
+        long millisecondsUntilRun = 0;
         // Different rules of rescheduling when all tasks are completed or no task to run or no time window to run.
         if (rescheduleScheduler) {
             Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
-            if ((endOfRunWindow.getMillis() - Instant.now().getMillis() - (fourHourWindow *1000)) >= (minimumRunWindow)) {
-                secondsUntilRun = maintenanceService.getSecondsUntilRun();
-                if (secondsUntilRun == 0 || secondsUntilRun > fourHourWindow) {
-                    secondsUntilRun = fourHourWindow;
+            if ((endOfRunWindow.getMillis() - Instant.now().getMillis() - fourHourWindow) >= (minimumRunWindow)) {
+                millisecondsUntilRun = maintenanceService.getMillisecondsUntilRun();
+                if (millisecondsUntilRun == 0 || millisecondsUntilRun > fourHourWindow) {
+                    millisecondsUntilRun = fourHourWindow;
                 }
             } else {
-                secondsUntilRun = (endOfRunWindow.getMillis() - Instant.now().getMillis())/1000;
+                millisecondsUntilRun = (endOfRunWindow.getMillis() - Instant.now().getMillis());
                 forceReschedule = true;
             }
             log.info("No task or no time window to run. Rescheduling task runner.");
         } else {
-            secondsUntilRun = maintenanceService.getSecondsUntilRun();
+            millisecondsUntilRun = maintenanceService.getMillisecondsUntilRun();
         }
         log.info("Maintenance task will start after "
-            + DurationFormatUtils.formatDuration(secondsUntilRun * 1000, "HH:mm:ss.SSS", true) + " hours");
-        return secondsUntilRun;
+            + DurationFormatUtils.formatDuration(millisecondsUntilRun, "HH:mm:ss.SSS", true) + " hours");
+        return millisecondsUntilRun;
     }
     
     // Stop schedules Task
