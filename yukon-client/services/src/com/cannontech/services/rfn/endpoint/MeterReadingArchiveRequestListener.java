@@ -1,10 +1,12 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -14,13 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveResponse;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
@@ -38,6 +43,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     
     @Autowired private CalculatedPointDataProducer calculatedProducer;
     @Autowired private ConnPool connPool;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveResponse";
@@ -146,9 +152,15 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
                         log.info("Waiting for dispatch to connect");
                         dispatchConnection.waitForValidConnection();
                     }
+
                     RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
+                    Map<RfnIdentifier, String> gateways = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY)
+                            .stream().collect(Collectors.toMap(RfnDevice::getRfnIdentifier, RfnDevice::getName));
+                    notif.setGatewayNames(gateways);
+
                     jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
                     log.info("Startup notification request has been sent to Network manager");
+                    log.info("Gateways sent to NM to update gateway names: " + notif.getGatewayNames());
                 } catch (Exception e) {
                     log.error("Failed to send startup notification to Network Manager", e);
                 }

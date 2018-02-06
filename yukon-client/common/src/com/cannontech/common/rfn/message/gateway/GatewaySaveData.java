@@ -13,6 +13,7 @@ public class GatewaySaveData implements Serializable {
     
     public enum AccessLevel { USER, ADMIN, SUPER_ADMIN }
     
+    private String name;
     private String ipAddress;
     private Authentication superAdmin;
     private Authentication admin;
@@ -21,6 +22,14 @@ public class GatewaySaveData implements Serializable {
     private AccessLevel defaultAccessLevel = AccessLevel.ADMIN;
     private String updateServerUrl;
     private Authentication updateServerLogin;
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
     
     public String getIpAddress() {
         return ipAddress;
@@ -80,6 +89,7 @@ public class GatewaySaveData implements Serializable {
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
     
@@ -112,6 +122,13 @@ public class GatewaySaveData implements Serializable {
         } else if (!ipAddress.equals(other.ipAddress)) {
             return false;
         }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
         if (superAdmin == null) {
             if (other.superAdmin != null) {
                 return false;
@@ -138,13 +155,14 @@ public class GatewaySaveData implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("GatewaySaveData [ipAddress=%s, superAdmin=%s, admin=%s, defaultAccessLevel=%s, updateServerURL=%s, updateServerLogin=%s]",
+        return String.format("GatewaySaveData [ipAddress=%s, superAdmin=%s, admin=%s, defaultAccessLevel=%s, updateServerURL=%s, updateServerLogin=%s, name=%s]",
                              ipAddress,
                              superAdmin,
                              admin,
                              defaultAccessLevel,
                              updateServerUrl,
-                             updateServerLogin);
+                             updateServerLogin,
+                             name);
     }
     
 }

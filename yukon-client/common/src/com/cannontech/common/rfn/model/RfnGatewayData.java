@@ -51,9 +51,9 @@ public final class RfnGatewayData {
     private final String ipv6Prefix;
     private final String ipv6PrefixSuggested;
     
-    public RfnGatewayData(GatewayDataResponse dataResponse) {
+    public RfnGatewayData(GatewayDataResponse dataResponse, String name) {
         
-        name = dataResponse.getRfnIdentifier().getSensorSerialNumber();
+        this.name = name;
         
         hardwareVersion = dataResponse.getHardwareVersion();
         softwareVersion = dataResponse.getSoftwareVersion();

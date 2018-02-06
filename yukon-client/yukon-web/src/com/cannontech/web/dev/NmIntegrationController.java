@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.IntConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.jms.ConnectionFactory;
@@ -34,12 +35,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
@@ -52,6 +55,7 @@ import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
@@ -112,6 +116,7 @@ public class NmIntegrationController {
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -702,6 +707,10 @@ public class NmIntegrationController {
     @RequestMapping("resend-startup")
     public void startup(HttpServletResponse resp) {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
+        Map<RfnIdentifier, String> gateways = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY)
+                .stream().collect(Collectors.toMap(RfnDevice::getRfnIdentifier, RfnDevice::getName));
+        notif.setGatewayNames(gateways);
+        
         try {
             jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
             resp.setStatus(HttpStatus.NO_CONTENT.value());

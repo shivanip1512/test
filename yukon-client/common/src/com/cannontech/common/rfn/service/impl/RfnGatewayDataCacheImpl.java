@@ -61,7 +61,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
     @PostConstruct
     public void init() {
-        requestTemplate = new RequestReplyTemplateImpl<GatewayDataResponse>(gatewayDataRequestCparm, configurationSource,
+        requestTemplate = new RequestReplyTemplateImpl<>(gatewayDataRequestCparm, configurationSource,
                 connectionFactory, gatewayDataRequestQueue, false);
     }
     
@@ -157,7 +157,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             }
             
             //Update the cache and return the data
-            data = new RfnGatewayData(response);
+            data = new RfnGatewayData(response, device.getName());
             cacheMap.put(key, data);
             return data;
         }

@@ -370,6 +370,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewayCreateRequest request = new GatewayCreateRequest();
         GatewaySaveData data = new GatewaySaveData();
         data.setIpAddress(settings.getIpAddress());
+        data.setName(settings.getName());
         
         data.setAdmin(settings.getAdmin());
         data.setSuperAdmin(settings.getSuperAdmin());
@@ -406,7 +407,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         if (newGatewayData.getIpAddress() != null 
                 && !newGatewayData.getIpAddress().equals(existingGatewayData.getIpAddress())) {
-            editData.setIpAddress(newGatewayData.getIpAddress());
+            editData.setIpAddress(newGatewayData.getIpAddress());;
             sendGatewayEditRequest = true;
         }
         if (newGatewayData.getAdmin() != null 
@@ -427,6 +428,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         if (newGatewayData.getUpdateServerLogin() != null 
                 && !newGatewayData.getUpdateServerLogin().equals(existingGatewayData.getUpdateServerLogin())) {
             editData.setUpdateServerLogin(newGatewayData.getUpdateServerLogin());
+            sendGatewayEditRequest = true;
+        }
+        if (newGatewayData.getName() != null 
+                && !newGatewayData.getName().equals(existingGatewayData.getName())) {
+            editData.setName(newGatewayData.getName());
             sendGatewayEditRequest = true;
         }
         
@@ -456,6 +462,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             // Parse GatewayUpdateResponse
             result = response.getResult();
             if (result == GatewayUpdateResult.SUCCESSFUL) {
+                // Update yukon database
+                if (gateway.getName() != null && !gateway.getName().equals(existingGateway.getName())) {
+                    // (Also sends DB change message)
+                    deviceDao.changeName(existingGateway, gateway.getName());
+                }
                 // Force the data cache to update
                 dataCache.remove(paoIdentifier);
                 // Note: for lazy loading, comment out this line.
@@ -466,11 +477,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             }
         }
         
-        // Update yukon database
-        if (gateway.getName() != null && !gateway.getName().equals(existingGateway.getName())) {
-            // (Also sends DB change message)
-            deviceDao.changeName(existingGateway, gateway.getName());
-        }
         if (gateway.getLocation() != null && !gateway.getLocation().equals(existingGateway.getLocation())) {
             paoLocationDao.save(gateway.getLocation());
             PaoLocation location = gateway.getLocation();

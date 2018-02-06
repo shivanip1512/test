@@ -68,7 +68,7 @@ public class RfnGatewayServiceTest {
     private Double latitude2 = 3.0;
     private Double longitude2 = 4.0;
     private final String ipAddress2 = "123.123.123.124";
-    private final String gateway2Name = "Test Gateway 2";
+    private final static String gateway2Name = "Test Gateway 2";
     private final PaoIdentifier gateway2PaoId = new PaoIdentifier(101, PaoType.GWY800);
     private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "CPS", "RFGateway2");
     
@@ -115,7 +115,7 @@ public class RfnGatewayServiceTest {
     private static RfnGatewayData createEmptyRfnGatewayData(RfnIdentifier rfnIdentifier) {
         GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
         gatewayDataResponse.setRfnIdentifier(rfnIdentifier);
-        return new RfnGatewayData(gatewayDataResponse);
+        return new RfnGatewayData(gatewayDataResponse, gateway2Name);
     }
     
     private static RfnDevice createRfnDevice(String name, final PaoIdentifier paoIdentifier, RfnIdentifier rfnIdentifier) {
@@ -581,7 +581,7 @@ public class RfnGatewayServiceTest {
         gatewayDataResponse.setIpAddress(ipAddress);
         gatewayDataResponse.setAdmin(admin);
         gatewayDataResponse.setSuperAdmin(superAdmin);
-        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse);
+        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse, gatewayName);
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
         rfnGateway.setLocation(location);
         
@@ -650,7 +650,7 @@ public class RfnGatewayServiceTest {
         gatewayDataResponse.setIpAddress(ipAddress2);
         gatewayDataResponse.setAdmin(admin2);
         gatewayDataResponse.setSuperAdmin(superAdmin2);
-        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse);
+        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse, gatewayName);
         RfnGateway rfnGateway = new RfnGateway("New Name", gateway2PaoId, gateway2RfnId, rfnGatewayData);
         rfnGateway.setLocation(location);
         
@@ -711,7 +711,7 @@ public class RfnGatewayServiceTest {
         gatewayDataResponse.setIpAddress(ipAddress);
         gatewayDataResponse.setAdmin(admin);
         gatewayDataResponse.setSuperAdmin(superAdmin);
-        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse);
+        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse, gatewayName);
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
         PaoLocation location = new PaoLocation(null, latitude, longitude);
         rfnGateway.setLocation(location);
@@ -774,7 +774,7 @@ public class RfnGatewayServiceTest {
         gatewayDataResponse.setIpAddress(ipAddress);
         gatewayDataResponse.setAdmin(admin);
         gatewayDataResponse.setSuperAdmin(superAdmin);
-        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse);
+        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse, gatewayName);
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
         PaoLocation location = new PaoLocation(null, latitude, longitude);
         rfnGateway.setLocation(location);

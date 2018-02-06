@@ -133,7 +133,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             log.debug("Handling gateway data message: " + message);
-            RfnGatewayData data = new RfnGatewayData(message);
+            RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
             gatewayCache.put(rfnDevice.getPaoIdentifier(), data);
         } catch (NotFoundException e) {
             log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
