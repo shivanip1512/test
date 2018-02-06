@@ -381,12 +381,13 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         case ScanRequest:
         {
             Cti::Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
-            if( !deviceConfig )
+            if( ! deviceConfig )
             {
                 CTILOG_ERROR(dout, "DNP configuration missing for DNP device \""<< getName() <<"\"");
 
-                nRet = ClientErrors::MissingConfig;
-                break;
+                insertReturnMsg(ClientErrors::MissingConfig, OutMessage, retList, "DNP configuration missing for DNP device");
+
+                return ClientErrors::MissingConfig;
             }
 
             const bool omitTimeRequest = ciStringEqual(deviceConfig->getValueFromKey(DNPStrings::omitTimeRequest), "true");
