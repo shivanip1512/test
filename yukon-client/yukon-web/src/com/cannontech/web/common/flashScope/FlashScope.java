@@ -44,6 +44,10 @@ public class FlashScope {
     public void setError(List<MessageSourceResolvable> messages) {
         setMessage(FlashScopeMessageType.ERROR, messages);
     }
+    
+    public void setError(List<MessageSourceResolvable> messages, boolean asBulletedList) {
+        setMessage(FlashScopeMessageType.ERROR, messages, asBulletedList);
+    }
     public void setError(MessageSourceResolvable message) {
         setMessage(FlashScopeMessageType.ERROR, Collections.singletonList(message));
     }
@@ -69,6 +73,15 @@ public class FlashScope {
     private void setMessage(FlashScopeMessageType type, List<? extends MessageSourceResolvable> messages) {
         
         FlashScopeMessage msg = new FlashScopeMessage(messages, type);
+        
+        String attributeName = getAttributeNameForType(type);
+        session.setAttribute(attributeName, msg);
+    }
+    
+    private void setMessage(FlashScopeMessageType type, List<? extends MessageSourceResolvable> messages, boolean asBulletedList) {
+        
+        FlashScopeMessage msg = new FlashScopeMessage(messages, type);
+        msg.setAsBulletedList(asBulletedList);
         
         String attributeName = getAttributeNameForType(type);
         session.setAttribute(attributeName, msg);

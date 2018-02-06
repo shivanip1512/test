@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -73,11 +75,11 @@ public class CbcController {
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
 
     @RequestMapping(value = "cbc/{id}", method = RequestMethod.GET)
-    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash) {
+    public String view(ModelMap model, @PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         CapControlCBC cbc = cbcService.getCbc(id);
         model.addAttribute("mode", PageEditMode.VIEW);
-        List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id);
-        flash.setError(duplicatePointMessages);
+        List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id, request);
+        flash.setError(duplicatePointMessages, false);
 
         return setUpModel(model, cbc, userContext);
     }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -17,7 +19,8 @@ import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.WebMessageSourceResolvable;
+import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.stars.rtu.service.RtuService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -27,13 +30,14 @@ public class RtuServiceImpl implements RtuService{
     @Autowired private PointDao pointDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     
     @Override
-    public List<MessageSourceResolvable> generateDuplicatePointsErrorMessages(int paoId, PointIdentifier pointIdentifier) {
+    public List<MessageSourceResolvable> generateDuplicatePointsErrorMessages(int paoId, PointIdentifier pointIdentifier, HttpServletRequest request) {
         List<MessageSourceResolvable> messages = new ArrayList<>();
         List<LitePoint> points = getDuplicatePointsByTypeAndOffset(paoId, pointIdentifier);
         if (points.size() > 0) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.operator.rtu.pointUniqueness"));
+            messages.add(new WebMessageSourceResolvable("yukon.web.modules.operator.rtu.pointUniqueness"));
             System.out.println("Point type and offset must be unique across an RTU-DNP and its Logical devices:");
             for (LitePoint point : points) {
                 System.out.println("-----Device:" + cache.getAllPaosMap().get(point.getPaobjectID()).getPaoName()
@@ -41,10 +45,17 @@ public class RtuServiceImpl implements RtuService{
                     + point.getPointOffset());
             }
             
+            
+            
             points.forEach(point -> {
-                messages.add(YukonMessageSourceResolvable.createSingleCodeWithArguments(
-                    "yukon.web.modules.operator.rtu.pointUniqueness.detail",
-                    cache.getAllPaosMap().get(point.getPaobjectID()).getPaoName(), point.getPointName(),
+                LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPaobjectID());
+                String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
+                String contextPath = request.getContextPath();
+                String paoLinkHtml = "<a href='" + contextPath + urlForPaoDetailPage + "'>" + pao.getPaoName() + "</a>";
+                String pointLinkHtml = "<a href='" + contextPath + "/tools/points/" + point.getPointID() + "'>" + point.getPointName() + "</a>";
+
+                messages.add(new WebMessageSourceResolvable("yukon.web.modules.operator.rtu.pointUniqueness.detail",
+                    paoLinkHtml, pointLinkHtml,
                     point.getPointTypeEnum(), point.getPointOffset()));
             });
         }
@@ -53,8 +64,8 @@ public class RtuServiceImpl implements RtuService{
     }
     
     @Override
-    public List<MessageSourceResolvable> generateDuplicatePointsErrorMessages(int paoId) {
-        return generateDuplicatePointsErrorMessages(paoId, null);
+    public List<MessageSourceResolvable> generateDuplicatePointsErrorMessages(int paoId, HttpServletRequest request) {
+        return generateDuplicatePointsErrorMessages(paoId, null, request);
     }
     
     /**

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -54,7 +56,7 @@ public class RtuController {
     @Autowired private RtuService rtuService;
     
     @RequestMapping(value = "rtu/{id}", method = RequestMethod.GET)
-    public String view(ModelMap model, @PathVariable int id, FlashScope flash) {
+    public String view(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.VIEW);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
@@ -62,8 +64,8 @@ public class RtuController {
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
         model.addAttribute("rtu", rtu);
         getPointsForModel(id, model);
-        List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id);
-        flash.setError(duplicatePointMessages);
+        List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id, request);
+        flash.setError(duplicatePointMessages, false);
 
         return "/rtu/rtuDetail.jsp";
     }

@@ -64,12 +64,20 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 				    String displayableMessage = getDisplayableMessage(messageSourceResolvable, false);
 					out.println(displayableMessage);
 				} else {
-					out.println("<ul>");
-					for (MessageSourceResolvable messageSourceResolvable : flashScopeMessage.getMessages()) {
-	                    String displayableMessage = getDisplayableMessage(messageSourceResolvable, true);
-	                    out.println(displayableMessage);
-					}
-					out.println("</ul>");
+				    if (flashScopeMessage.isAsBulletedList()) {
+	                    out.println("<ul>");
+	                    for (MessageSourceResolvable messageSourceResolvable : flashScopeMessage.getMessages()) {
+	                        String displayableMessage = getDisplayableMessage(messageSourceResolvable, true);
+	                        out.println(displayableMessage);
+	                    }
+	                    out.println("</ul>");
+				    } else {
+                        for (MessageSourceResolvable messageSourceResolvable : flashScopeMessage.getMessages()) {
+                            String displayableMessage = getDisplayableMessage(messageSourceResolvable, false);
+                            out.println(displayableMessage);
+                        }
+				    }
+
 				}
 				
 				out.println("</div>");

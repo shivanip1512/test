@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -120,13 +121,13 @@ public class PointController {
     };
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
-    public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
+    public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext, HttpServletRequest request) {
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.LIMITED);
         model.addAttribute("mode", PageEditMode.VIEW);
-        return retrievePointAndModel(model, userContext, flashScope, id);
+        return retrievePointAndModel(model, userContext, flashScope, id, request);
     }
     
-    private String retrievePointAndModel(ModelMap model, YukonUserContext userContext, FlashScope flashScope, int id){
+    private String retrievePointAndModel(ModelMap model, YukonUserContext userContext, FlashScope flashScope, int id, HttpServletRequest request){
         PointModel pointModel = null;
         try {
             pointModel = pointEditorService.getModelForId(id);
@@ -146,18 +147,18 @@ public class PointController {
 
             Point point = pointModel.getPointBase().getPoint();
             List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(
-                point.getPaoID(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()));
-            flashScope.setError(duplicatePointMessages);
+                point.getPaoID(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()), request);
+            flashScope.setError(duplicatePointMessages, false);
       
             return setUpModel(model, pointModel, userContext);
         }
     }
 
     @RequestMapping(value = "/points/{id}/edit", method = RequestMethod.GET)
-    public String edit(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
+    public String edit(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext, HttpServletRequest request) {
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         model.addAttribute("mode", PageEditMode.EDIT);
-        return retrievePointAndModel(model, userContext, flashScope, id);
+        return retrievePointAndModel(model, userContext, flashScope, id, request);
     }
 
     @RequestMapping("/points/{type}/create")
