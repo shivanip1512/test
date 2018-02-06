@@ -54,6 +54,7 @@ public class YukonLoginController extends MultiActionController {
     public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = ServletRequestUtils.getRequiredStringParameter(request, LoginController.USERNAME);
         String password = ServletRequestUtils.getRequiredStringParameter(request, LoginController.PASSWORD);
+        password = StringUtils.trim(password);
         Boolean createRememberMeCookie = ServletRequestUtils.getBooleanParameter(request, "rememberme", false);
         String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
 

@@ -269,7 +269,7 @@ public class LoginFilter implements Filter {
     private boolean doDefaultParameterLogin(HttpServletRequest request) throws ServletRequestBindingException {
         String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
         String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
-
+        password = StringUtils.trim(password);
         if (username == null || password == null) {
             return false;
         }
