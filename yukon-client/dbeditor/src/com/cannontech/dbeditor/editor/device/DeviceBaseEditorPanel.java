@@ -2771,10 +2771,13 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             SimpleDevice device = new SimpleDevice(id, type);
             DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean(DeviceConfigurationDao.class);
             LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
+            DNPConfiguration dnpConfig = null;
             if (config != null) {
                 DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(config.getConfigurationId());
 
-                DNPConfiguration dnpConfig = deviceConfigurationDao.getDnpConfiguration(configuration);
+                dnpConfig = deviceConfigurationDao.getDnpConfiguration(configuration);
+            }
+            if (dnpConfig != null) {
                 getAssignedDnpConfigLabel().setText(dnpConfig.getName());
 
                 int internalRetries = dnpConfig.getInternalRetries();
