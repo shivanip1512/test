@@ -135,7 +135,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 log.info("Infrastructure warnings calculation complete");
                 
                 sendSmartNotifications(oldWarnings, warnings);
-                sendCacheResfreshRequest(lastRun);
+                sendCacheRefreshRequest(lastRun);
                 
                 isRunning.set(false);
             }
@@ -148,7 +148,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     /**
      * Notify WS that warnings were recalculated and warnings cache can be updated
      */
-    private void sendCacheResfreshRequest(Instant lastRun) {
+    private void sendCacheRefreshRequest(Instant lastRun) {
         log.info("Notifying WS that Smart Infrastructure Warnings were recalculated.");
         InfrastructureWarningsRefreshRequest refreshRequest = new InfrastructureWarningsRefreshRequest();
         //lastRun - time the warning calculation started
