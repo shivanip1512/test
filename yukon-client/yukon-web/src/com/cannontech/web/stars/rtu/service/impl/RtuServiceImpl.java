@@ -55,8 +55,8 @@ public class RtuServiceImpl implements RtuService{
                 String pointLinkHtml = "<a href='" + contextPath + "/tools/points/" + point.getPointID() + "'>" + point.getPointName() + "</a>";
 
                 messages.add(new WebMessageSourceResolvable("yukon.web.modules.operator.rtu.pointUniqueness.detail",
-                    paoLinkHtml, pointLinkHtml,
-                    point.getPointTypeEnum(), point.getPointOffset()));
+                    point.getPointTypeEnum(), point.getPointOffset(),                                 
+                    paoLinkHtml, pointLinkHtml));
             });
         }
 
