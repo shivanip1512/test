@@ -141,6 +141,70 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_demand_accumulator)
         delete_container(points);
     }
 }
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_no_config_data)
+{
+    std::list<CtiMessage*> vgList, retList;
+    std::list<OUTMESS*> outList;
+
+    //  First, test with no config assignment at all
+    {
+        Cti::Test::Override_ConfigManager overrideConfigManager { nullptr };
+
+        test_DnpDevice dev;
+        dev._name = "Test DNP device";
+
+        //  start the request
+        BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+        CtiCommandParser parse("scan integrity");
+
+        CtiRequestMsg request;
+
+        BOOST_CHECK_EQUAL(ClientErrors::MissingConfig, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->Status(), ClientErrors::MissingConfig);
+
+        BOOST_CHECK_EQUAL(
+            retMsg->ResultString(),
+            "Test DNP device / DNP configuration missing for DNP device");
+    }
+
+    delete_container(retList);  retList.clear();
+
+    //  Test with a config with no entries
+    {
+        auto fixtureConfig = boost::make_shared<Cti::Test::test_DeviceConfig>();
+        Cti::Test::Override_ConfigManager overrideConfigManager{ fixtureConfig };
+
+        test_DnpDevice dev;
+
+        //  start the request
+        BOOST_CHECK_EQUAL(true, dev.isTransactionComplete());
+
+        CtiCommandParser parse("scan integrity");
+
+        CtiRequestMsg request;
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(outList.size(), 1);
+        BOOST_CHECK(vgList.empty());
+        BOOST_CHECK(retList.empty());
+
+        BOOST_CHECK_EQUAL(ClientErrors::NoConfigData, dev.recvCommRequest(outList.front()));
+    }
+
+    delete_container(outList);  outList.clear();
+}
     
 struct beginExecuteRequest_helper
 {
