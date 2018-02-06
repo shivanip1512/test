@@ -32,18 +32,15 @@
                                 <a href="${viewUrl}">${fn:escapeXml(dmvTest.name)}</a>
                             </td>
                             <td>
-                                ${dmvTest.pollingInterval}
-                                &nbsp;
+                                <c:out value="${dmvTest.pollingInterval} " />
                                 <i:inline key="yukon.common.units.SECONDS"/>                                                        
                             </td>
                             <td>
-                                ${dmvTest.dataGatheringDuration}
-                                &nbsp;
+                                <c:out value="${dmvTest.dataGatheringDuration} " />
                                 <i:inline key="yukon.common.units.MINUTES"/>                                                        
                             </td>                            
                             <td>
-                                ${dmvTest.stepSize}
-                                &nbsp;
+                                <c:out value="${dmvTest.stepSize} " />
                                 <i:inline key="yukon.common.units.VOLTS"/>                                                        
                             </td>
                             <td>

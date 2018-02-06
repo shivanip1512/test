@@ -26,33 +26,29 @@
     <form:form id="dmvTest-form" commandName="dmvTest" action="${action}" method="POST">
         <cti:csrfToken />
         <form:hidden path="dmvTestId" />
-        <div class="column-12-12 clearfix">
-            <div class="column one">
-                <tags:sectionContainer2 nameKey="info" styleClass="stacked-lg">
-                    <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
-                        <tags:nameValue2 nameKey="yukon.common.name">
-                            <tags:input path="name" maxlength="100"/>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".pollingInterval">
-                            <tags:input path="pollingInterval" size="3"/>
-                            <i:inline key="yukon.common.units.SECONDS"/>                                                        
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".dataGatheringDuration">
-                            <tags:input path="dataGatheringDuration" size="2"/>
-                            <i:inline key="yukon.common.units.MINUTES"/>                                                        
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".stepSize">
-                            <tags:input path="stepSize" size="5"/>
-                            <i:inline key="yukon.common.units.VOLTS"/>                                                        
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".commSuccPercentage">
-                            <tags:input path="commSuccPercentage" size="3"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>                            
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </tags:sectionContainer2>
-            </div>
-        </div>
+        <tags:sectionContainer2 nameKey="info" styleClass="stacked-lg">
+            <tags:nameValueContainer2 tableClass="natural-width">
+                <tags:nameValue2 nameKey="yukon.common.name">
+                    <tags:input path="name" maxlength="100"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".pollingInterval">
+                    <tags:input path="pollingInterval" size="3" maxlength="3"/>
+                    <i:inline key="yukon.common.units.SECONDS"/>                                                        
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".dataGatheringDuration">
+                    <tags:input path="dataGatheringDuration" size="2" maxlength="2"/>
+                    <i:inline key="yukon.common.units.MINUTES"/>                                                        
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".stepSize">
+                    <tags:input path="stepSize" size="5"/>
+                    <i:inline key="yukon.common.units.VOLTS"/>                                                        
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".commSuccPercentage">
+                    <tags:input path="commSuccPercentage" size="3" maxlength="3"/>
+                    <i:inline key="yukon.common.units.PERCENT"/>                            
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
+        </tags:sectionContainer2>
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action"/>
