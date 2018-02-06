@@ -622,8 +622,8 @@ yukon.namespace = function (ns) {
 
                     var count = events.length;
                     if (count > 99) {
-                        count = ">99"
-                        span.addClass('greaterThan99')
+                        count = ">99";
+                        span.addClass('greaterThan99');
                     }
                     
                     $('<span class="timeline-event-count">')
