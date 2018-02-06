@@ -49,7 +49,7 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
         public PorterResponseMonitor mapRow(YukonResultSet rs) throws SQLException {
             PorterResponseMonitor retVal = new PorterResponseMonitor();
             retVal.setMonitorId(rs.getInt("monitorId"));
-            retVal.setName(rs.getStringSafe("name"));
+            retVal.setName(rs.getString("name"));
             retVal.setGroupName(rs.getString("groupName"));
             retVal.setStateGroup(stateGroupDao.getStateGroup(rs.getInt("stateGroupId")));
             String attributeKey = rs.getString("attribute");

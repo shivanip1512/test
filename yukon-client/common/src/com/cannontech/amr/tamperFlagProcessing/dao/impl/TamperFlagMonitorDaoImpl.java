@@ -22,7 +22,6 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -90,7 +89,7 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao {
             public TamperFlagMonitor mapRow(ResultSet rs, int rowNum) throws SQLException {
                 TamperFlagMonitor tamperFlagMonitor = new TamperFlagMonitor();
                 tamperFlagMonitor.setTamperFlagMonitorId(rs.getInt("TamperFlagMonitorId"));
-                tamperFlagMonitor.setTamperFlagMonitorName(SqlUtils.convertDbValueToString(rs.getString("TamperFlagMonitorName")));
+                tamperFlagMonitor.setTamperFlagMonitorName(rs.getString("TamperFlagMonitorName"));
                 tamperFlagMonitor.setGroupName(rs.getString("GroupName"));
                 tamperFlagMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.valueOf(rs.getString("EvaluatorStatus")));
                 return tamperFlagMonitor;
