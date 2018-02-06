@@ -39,13 +39,11 @@ public enum MasterConfigLicenseKey {
     }
 
     public String getKey() {
-        StringBuilder retVal = new StringBuilder();
-        retVal.append(key1+"-");
-        retVal.append(String.format("%04X", key2)+"-");
-        retVal.append(String.format("%04X", key3)+"-");
-        retVal.append(String.format("%04X", key4)+"-");
-        retVal.append(key5);
-        return retVal.toString();
+        return key1 + "-" 
+                + String.format("%04X", key2) + "-" 
+                + String.format("%04X", key3) + "-" 
+                + String.format("%04X", key4) + "-" 
+                + key5;
     }
 
 }
