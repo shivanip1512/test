@@ -24,6 +24,18 @@
     <entry key="yukon.web.modules.adminSetup.maintenance.DR_RECONCILIATION.title">DR Reconciliation</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.DUPLICATE_POINT_DATA_PRUNING.title">Duplicate Point Data Pruning</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.title">Point Data Pruning</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmEnable.title">Confirm Enable</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmEnable.message">
+        Data Pruning for deleting historical point data older than {0} will be enabled. Data pruned by this task 
+        cannot be recovered, it will be permanently deleted from the Yukon system. Are you sure you want to enable this task ?
+    </entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmEnable.ok">Enable</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmDisable.title">Confirm Disable</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmDisable.message">
+        Data Pruning for deleting historical point data older than {0} will be disabled. Data will no longer be 
+        pruned from the Yukon system. Are you sure you want to disable this task ?
+    </entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmDisable.ok">Disable</entry>
     
     
     <!-- weather data update -->

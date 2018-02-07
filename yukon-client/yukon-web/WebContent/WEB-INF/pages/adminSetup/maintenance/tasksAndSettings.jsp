@@ -3,7 +3,17 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<cti:msgScope paths="modules.adminSetup.maintenance.dataPruning,yukon.web.modules.adminSetup.maintenance">
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<cti:msgScope paths="modules.adminSetup.maintenance,modules.adminSetup.maintenance.dataPruning,yukon.web.modules.adminSetup.maintenance,yukon.web.components.ajaxConfirm">
+    
+    <cti:msg2 var="confirmEnableTitle" key=".confirmEnable.title"/>
+    <cti:msg2 var="confirmDisableTitle" key=".confirmDisable.title"/>
+    
+    <input id="confirmEnableText" type="hidden" value="${confirmEnableTitle}"/>
+    <input id="confirmDisableText" type="hidden" value="${confirmDisableTitle}"/>
+    
     <tags:sectionContainer2 nameKey="dataPruning" styleClass="stacked-md">
         <div class="stacked">
             <em><i:inline key=".tasksInfo"/></em>
@@ -46,7 +56,25 @@
                                     </td>
                                     <td class="fr">
                                         <tags:switch checked="${task.enabled}" name="toggle" data-task-type="${task.taskType}"
-                                                     classes="js-toggleDataPruningJobEnabled toggle-sm"/>
+                                                     classes="js-toggle-maintenance-task toggle-sm js-toggle-maintenance-task-${task.taskType}"
+                                                     data-popup="#js-api-show-popup-${task.taskType}" />
+                                        <c:choose>
+                                            <c:when test="${task.taskType=='POINT_DATA_PRUNING'}">
+                                                <cti:msg2 var="confirmEnableMessage" key=".POINT_DATA_PRUNING.confirmEnable.message" 
+                                                          argument="${pointDataPruningDuration}" />
+                                                <cti:msg2 var="confirmDisableMessage" key=".POINT_DATA_PRUNING.confirmDisable.message" 
+                                                          argument="${pointDataPruningDuration}" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <cti:msg2 var="confirmEnableMessage" key=".confirmEnable.message" argument="${taskTypeMsg}" />
+                                                <cti:msg2 var="confirmDisableMessage" key=".confirmDisable.message" argument="${taskTypeMsg}" />
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <div class="dn js-toggle-maintenance-task-popup" id="js-api-show-popup-${task.taskType}" 
+                                             data-dialog data-width="400" data-target=".js-toggle-maintenance-task-${task.taskType}" 
+                                             data-event="yukon:maintenance:toggle-task-ajax"
+                                             data-confirm-enable-message="${fn:escapeXml(confirmEnableMessage)}"
+                                             data-confirm-disable-message="${fn:escapeXml(confirmDisableMessage)}"></div>
                                     </td>
                                 </tr>
                             </c:if>

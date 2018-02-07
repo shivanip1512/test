@@ -2,32 +2,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:standardPage module="adminSetup" page="maintenance">
-
-    <c:url value="/admin/maintenance/toggleJobEnabledAjax" var="toggleJobAjaxUrl"/>
-    <c:url value="/admin/maintenance/toggleDataPruningJobEnabled" var="toggleDataPruningJobEnabledAjaxUrl"/>
-
-    <script>
-        $(function(){
-            $(document).on('change', '.js-toggleJobEnabled .checkbox-input', function() {
-                var checkbox = $(this);
-                var jobId = checkbox.data('jobId');
-        
-                $.ajax({
-                    url: '${toggleJobAjaxUrl}?jobId=' + jobId
-                });
-            });
-    
-            $(document).on('change', '.js-toggleDataPruningJobEnabled .checkbox-input', function() {
-                var taskType = $(this).data('taskType');
-                $.ajax({
-                    url: '${toggleDataPruningJobEnabledAjaxUrl}?taskType=' + taskType
-                });
-            });
-        });
-    </script>
 
     <table class="compact-results-table has-alerts">
         <thead>
@@ -74,4 +50,5 @@
         <%@ include file="tasksAndSettings.jsp" %>
     </div>
     
+    <cti:includeScript link="/resources/js/pages/yukon.admin.maintenance.js"/>
 </cti:standardPage>

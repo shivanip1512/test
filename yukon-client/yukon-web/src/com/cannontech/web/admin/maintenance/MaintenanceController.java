@@ -136,7 +136,7 @@ public class MaintenanceController {
         }
 
         model.addAttribute("jobs", jobs);
-        setUpModelForPointDataPruning(model, userContext);
+        setUpModelForMaintenanceTask(model, userContext);
         return "maintenance/home.jsp";
     }
 
@@ -229,7 +229,7 @@ public class MaintenanceController {
         return job;
     }
 
-    private void setUpModelForPointDataPruning(ModelMap model, YukonUserContext context) throws ExecutionException {
+    private void setUpModelForMaintenanceTask(ModelMap model, YukonUserContext context) throws ExecutionException {
         List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks();
         model.addAttribute("tasks", tasks);
         final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
@@ -263,6 +263,9 @@ public class MaintenanceController {
             }
         }));
         model.addAttribute("command", command);
+        model.addAttribute("pointDataPruningDuration", accessor.getMessage("yukon.common.durationType."
+            + maintenanceTaskDao.getSettingValue(MaintenanceSettingType.POINT_DATA_PRUNING_NO_OF_MONTHS)));
+        
     }
 
     @RequestMapping(value = "updateMaintenanceSettings", method = RequestMethod.POST, params = "save")
@@ -306,21 +309,23 @@ public class MaintenanceController {
         return settings;
     }
 
-    @RequestMapping(value = "toggleDataPruningJobEnabled", method = RequestMethod.GET)
-    public String toggleDataPruningJobEnabled(YukonUserContext userContext, String taskType) {
-        MaintenanceTaskType maintenanceTaskType = MaintenanceTaskType.valueOf(taskType);
-        toggleDataPruningJob(maintenanceTaskType, userContext);
+    @RequestMapping(value = "toggleMaintenanceTask", method = RequestMethod.POST)
+    public String toggleMaintenanceTask(YukonUserContext userContext, @ModelAttribute MaintenanceEditorBean maintenanceEditorBean) {
+        toggleTask(maintenanceEditorBean.getTaskDetails().getTaskType(), userContext);
         return "redirect:view";
     }
+    
+    @RequestMapping(value = "toggleMaintenanceTaskAjax", method = RequestMethod.POST)
+    public @ResponseBody Boolean toggleMaintenanceTaskAjax(HttpServletRequest request, YukonUserContext userContext, String taskType) {
+        MaintenanceTaskType maintenanceTaskType = MaintenanceTaskType.valueOf(taskType);
+        return toggleTask(maintenanceTaskType, userContext);
+    }
 
-    private boolean toggleDataPruningJob(MaintenanceTaskType taskType, YukonUserContext userContext) {
-        boolean isEnabled = true;
+    private boolean toggleTask(MaintenanceTaskType taskType, YukonUserContext userContext) {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         final LiteYukonUser user = userContext.getYukonUser();
         MaintenanceTask job = maintenanceTaskDao.getMaintenanceTask(taskType);
-        if (!job.isEnabled()) {
-            isEnabled = false;
-        }
+
         job.setEnabled(!job.isEnabled());
 
         MaintenanceSetting setting = new MaintenanceSetting();
@@ -332,14 +337,14 @@ public class MaintenanceController {
         settings.add(setting);
 
         maintenanceTaskDao.updateSettings(settings);
-        if (isEnabled) {
+        if (job.isEnabled()) {
             systemEventLogService.maintenanceTaskEnabled(user,
                 accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskType().name() + ".title"));
         } else {
             systemEventLogService.maintenanceTaskDisabled(user,
                 accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskType().name() + ".title"));
         }
-        return isEnabled;
+        return job.isEnabled();
     }
 
     @RequestMapping(value = "editTask", method = RequestMethod.GET)
@@ -358,6 +363,31 @@ public class MaintenanceController {
         String taskTypeMsg = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
             + maintenanceEditorBean.getTaskDetails().getTaskType() + ".title");
         model.addAttribute("taskTypeMsg", taskTypeMsg);
+
+        String confrimToggleTaskMsgKey = null;
+        if (maintenanceTaskType == MaintenanceTaskType.POINT_DATA_PRUNING) {
+            for (MaintenanceSetting setting : settings) {
+                if (setting.getAttribute() == MaintenanceSettingType.POINT_DATA_PRUNING_NO_OF_MONTHS) {
+                    model.addAttribute("msgArgument",
+                        messageSourceAccessor.getMessage("yukon.common.durationType." + setting.getAttributeValue()));
+                    break;
+                }
+            }
+            if (taskDetails.isEnabled()) {
+                confrimToggleTaskMsgKey = "POINT_DATA_PRUNING.confirmDisable";
+            } else {
+                confrimToggleTaskMsgKey = "POINT_DATA_PRUNING.confirmEnable";
+            }
+        } else {
+            model.addAttribute("msgArgument", taskTypeMsg);
+            if (taskDetails.isEnabled()) {
+                confrimToggleTaskMsgKey = "confirmDisable";
+            } else {
+                confrimToggleTaskMsgKey = "confirmEnable";
+            }
+        }
+
+        model.addAttribute("confrimToggleTaskMsgKey", confrimToggleTaskMsgKey);
         return "maintenance/editTask.jsp";
     }
 

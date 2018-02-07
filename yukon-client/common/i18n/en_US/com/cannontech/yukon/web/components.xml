@@ -195,6 +195,18 @@
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.message">Are you sure you want to perform this action?</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmAction.ok">Ok</entry>
 
+    <entry key="yukon.web.components.ajaxConfirm.confirmEnable.title">Confirm Enable</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmEnable.message">Are you sure you want to enable "{0}" ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmEnable.ok">Enable</entry>
+    
+    <entry key="yukon.web.components.ajaxConfirm.confirmDisable.title">Confirm Disable</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmDisable.message">Are you sure you want to disable "{0}" ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmDisable.ok">Disable</entry>
+    
+    <entry key="yukon.web.components.ajaxConfirm.confirmUpdate.title">Confirm Update</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmUpdate.message">Are you sure you want to update "{0}" ?</entry>
+    <entry key="yukon.web.components.ajaxConfirm.confirmUpdate.ok">Update</entry>
+    
     <entry key="yukon.web.components.ajaxConfirm.confirmSync.title">Request RF Data Sync</entry>
     <entry key="yukon.web.components.ajaxConfirm.confirmSync.message">Request all previously unacknowledged RF data be sent to Service Manager. This may result in increased network traffic. Are you sure you want to initiate this request?</entry>
 
