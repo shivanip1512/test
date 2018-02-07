@@ -472,6 +472,44 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
 }
 
 
+bool IVVCAlgorithm::checkAllZonesHaveExpectedBusses( CtiCCSubstationBusPtr subbus )
+{
+    bool anyToDisable = false;
+
+    // 1. Retrieve a list of all banks on the bus
+    auto busBankIds = subbus->getAllCapBankIds();
+
+    // 2. Retrieve a list of all bank IDs in the zone
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    ZoneManager & zoneManager = store->getZoneManager();
+    Zone::IdSet zoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    std::set<long> zoneBankIds;
+
+    for( const auto zoneId : zoneIds )
+    {
+        auto currentZoneIds = zoneManager.getZone(zoneId)->getBankIds();
+        zoneBankIds.insert( currentZoneIds.begin(), currentZoneIds.end() );
+    }
+
+    // 3. Compare the two lists and log or disable as necessary
+    std::set<long> result;
+    std::set_difference( zoneBankIds.begin(),   zoneBankIds.end(),
+                         busBankIds.begin(),    busBankIds.end(),
+                         std::inserter( result, result.end() ) );
+
+    if( result.size() )
+    {
+        CTILOG_ERROR( dout, "IVVC zone hierarchy mismatch on Substation Bus " << subbus->getPaoName() << " [" << subbus->getPaoId() <<
+                            "]: Devices may have been moved deleted unexpectedly. Disabling this bus." );
+        anyToDisable = true;
+    }
+
+    return anyToDisable;
+}
+
+
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
     CtiTime timeNow;
@@ -518,6 +556,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
         CTILOG_INFO(dout, "IVVC Configuration: Disabled unassigned banks on bus: " << subbus->getPaoName()
                             << ". Aborting current analysis." );
+        return;
+    }
+    
+    // If any banks on the zone are not found within the bus hierarchy, disable the bus
+    if ( ! subbus->getDisableFlag() && checkAllZonesHaveExpectedBusses( subbus ) )
+    {
+        sendDisableRemoteControl( subbus );
+        state->setState( IVVCState::IVVC_WAIT );
+
+        CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::DISABLE_SUBSTATION_BUS,
+                                                               subbus->getPaoId() ) )->execute();
         return;
     }
     

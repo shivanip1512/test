@@ -7136,6 +7136,16 @@ std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllSwitchedCapBanks( )
     return banks;
 }
 
+std::set<long> CtiCCSubstationBus::getAllCapBankIds()
+{
+    auto bankIds =
+        boost::copy_range<std::set<long>>(
+            getAllCapBanks() | boost::adaptors::transformed(
+                [](CtiCCCapBankPtr bank) { return bank->getPaoId(); }));
+
+    return bankIds;
+}
+
 void CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
 {
