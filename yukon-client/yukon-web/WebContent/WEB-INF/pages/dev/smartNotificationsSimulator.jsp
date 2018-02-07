@@ -7,7 +7,8 @@
         <tags:sectionContainer title="Daily Digest" helpText="Select an hour of the day, and click the Send Digest button to initiate daily digest notifications for that hour.">
             <tags:nameValueContainer tableClass="natural-width">
                 <tags:nameValue name="Hour of Day">
-                    <select name="hour">
+                    <div class="js-hour-selected" data-hour-selected="${smartNotificationSimulatorSettings.dailyDigestHour }"></div>
+                    <select name="hour" id="selectHour">
                         <option value="0">Midnight</option>
                         <option value="1">1:00 AM</option>
                         <option value="2">2:00 AM</option>
@@ -50,12 +51,13 @@
 
                 <tags:pickerDialog type="userGroupPicker" id="userGroupPicker"
                     selectionProperty="userGroupName" destinationFieldId="userGroupId"
-                    linkType="selection" immediateSelectMode="true" />
+                    linkType="selection" immediateSelectMode="true" initialId="${smartNotificationSimulatorSettings.userGroupId}" />
                     
             </tags:nameValue>
             
             <tags:nameValue name="">
-                <input type="checkbox" id="generateTestEmailAddresses"/> Generate test email addresses
+                <tags:checkbox id="generateTestEmailAddresses" path="smartNotificationSimulatorSettings.generateTestEmail"/> 
+                Generate test email addresses
             </tags:nameValue>
             
             <tags:nameValue name="Subscription Setings">
@@ -77,13 +79,13 @@
 
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Total number of events per event type">
-                <input id="numberOfMessages" value="250" />
+                <input id="numberOfMessages" value="${smartNotificationSimulatorSettings.eventsPerType }" />
             </tags:nameValue>
             <tags:nameValue name="Number of events per message">
-                <input id="eventsPerMessage" value="5" />
+                <input id="eventsPerMessage" value="${smartNotificationSimulatorSettings.eventsPerMessage }" />
             </tags:nameValue>
             <tags:nameValue name="Wait time in seconds">
-                <input id="waitTime" value="3" />
+                <input id="waitTime" value="${smartNotificationSimulatorSettings.waitTimeSec }" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>

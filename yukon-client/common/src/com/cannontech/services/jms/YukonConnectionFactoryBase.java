@@ -24,7 +24,8 @@ abstract class YukonConnectionFactoryBase {
             "com.thoughtworks.xstream.mapper",
             "org.joda",
             "com.google.common.collect",
-            "com.cannontech"            
+            "com.cannontech",
+            "sun.util"
     };
     
     @Autowired private GlobalSettingDao globalSettingDao;

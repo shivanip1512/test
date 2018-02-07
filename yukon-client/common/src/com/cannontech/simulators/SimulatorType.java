@@ -15,6 +15,7 @@ public enum SimulatorType {
     RFN_METER,
     RFN_NETWORK,
     IVVC,
-    SIMULATOR_STARTUP
+    SIMULATOR_STARTUP,
+    SMART_NOTIFICATION
     ;
 }

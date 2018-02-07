@@ -20,6 +20,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.smartNotification.simulation.service.SmartNotificationSimulatorService;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
@@ -53,6 +54,7 @@ public class SimulatorsService {
     @Autowired private NmNetworkSimulatorService nmNetworkSimulatorService;
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;
     @Autowired private IvvcSimulatorService ivvcSimulatorService;
+    @Autowired private SmartNotificationSimulatorService smartNotificationSimulatorService;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
     private SimulatorMessageListener messageListener;
@@ -98,6 +100,7 @@ public class SimulatorsService {
             yukonSimulatorSettingsDao.initYukonSimulatorSettings();
             Arrays.stream(SimulatorType.values())
                 .filter(not(SimulatorType.SIMULATOR_STARTUP::equals))
+                .filter(not(SimulatorType.SMART_NOTIFICATION::equals))
                 .filter(simulatorStartupSettingsService::isRunOnStartup)
                 .map   (simulatorTypeToSimulator::get)
                 .filter(Objects::nonNull)

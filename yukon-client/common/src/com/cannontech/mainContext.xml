@@ -445,5 +445,6 @@
     <bean class="com.cannontech.common.config.YukonHttpProxyHandler"/>
     <bean class="com.cannontech.common.config.UpdateServerConfigHelper"/>
     <bean class="com.cannontech.common.util.WebserverUrlResolver"/>
-    
+    <bean class="com.cannontech.infrastructure.simulation.service.impl.InfrastructureWarningsGeneratorServiceImpl"/>
+    <bean class="com.cannontech.common.smartNotification.simulation.service.impl.SmartNotificationSimulatorServiceImpl"/>
 </beans>

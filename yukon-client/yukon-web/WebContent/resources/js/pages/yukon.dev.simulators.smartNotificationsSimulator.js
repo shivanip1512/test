@@ -27,7 +27,12 @@ yukon.dev.smartNotificationsSimulator = (function() {
                     data: form.serialize()
                 }).done( function(data) {
                     popup.dialog('close');
-                    yukon.ui.alertSuccess("Subscription has been saved successfully.")
+//                    if (data.success) {
+//                        yukon.ui.alertSuccess(data.message);
+//                    } else {
+//                        yukon.ui.alertError(data.message);
+//                    }
+					yukon.ui.alertSuccess("Subscription saved successfully");
                 });
             });
             
@@ -36,6 +41,15 @@ yukon.dev.smartNotificationsSimulator = (function() {
                     eventsPerMessage = $('#eventsPerMessage').val(),
                     numberOfMessages = $('#numberOfMessages').val();
                 window.location.href = yukon.url('/dev/createEvents?waitTime=' + waitTime + "&eventsPerMessage=" + eventsPerMessage + "&numberOfMessages=" + numberOfMessages);
+            });
+            
+            //set the value for the Daily Digest hour dropdown that was received from YukonSimulatorSettings
+            var hourSelected = $(".js-hour-selected").data("hourSelected");
+            $("#selectHour option").each(function() {
+                if ($(this).val() == hourSelected) {
+                    $(this).attr("selected", "selected");
+                    return false;
+                }
             });
             
             _initialized = true;

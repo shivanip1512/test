@@ -109,6 +109,14 @@ public enum YukonSimulatorSettingsKey {
     IVVC_SIMULATOR_REMOTE_VOLTAGE_OFFSET_VAR(1200, InputTypeFactory.doubleType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_BLOCKED_POINTS("", InputTypeFactory.stringType(), SimulatorType.IVVC),
     IVVC_SIMULATOR_BAD_QUALITY_POINTS("", InputTypeFactory.stringType(), SimulatorType.IVVC),
+    
+    //SmartNotificationSimulator
+    SMART_NOTIFICATION_SIM_DAILY_DIGEST_HOUR(0, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_SIM_USER_GROUP_ID(0, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_GENERATE_TEST_EMAIL(false, InputTypeFactory.booleanType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_SIM_EVENTS_PER_TYPE(250, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_SIM_EVENTS_PER_MESSAGE(5, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_SIM_WAIT_TIME_SEC(3, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
     ;
 
     private final Object defaultValue;

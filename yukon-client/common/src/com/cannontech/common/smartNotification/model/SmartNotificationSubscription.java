@@ -1,12 +1,13 @@
 package com.cannontech.common.smartNotification.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class SmartNotificationSubscription {
+public class SmartNotificationSubscription implements Serializable {
     private int id;
     private int userId;
     private SmartNotificationEventType type;
@@ -15,6 +16,7 @@ public class SmartNotificationSubscription {
     private String recipient;
     private SmartNotificationVerbosity verbosity;
     private Map<String, Object> parameters = new HashMap<>();
+    private static final long serialVersionUID = 1L;
     
     public int getUserId() {
         return userId;

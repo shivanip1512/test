@@ -1,4 +1,4 @@
-package com.cannontech.web.dev.service;
+package com.cannontech.infrastructure.simulation.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
+import com.cannontech.infrastructure.simulation.service.InfrastructureWarningsGeneratorService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;

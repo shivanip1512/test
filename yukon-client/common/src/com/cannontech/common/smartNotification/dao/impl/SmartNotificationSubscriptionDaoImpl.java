@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -120,7 +121,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     public List<SmartNotificationSubscription> getAllSubscriptions() {
         SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
-        System.out.println(sql.getDebugSql());
+        Log.debug(sql.getDebugSql());
         addParameters(subscriptions);
         
         return subscriptions;
