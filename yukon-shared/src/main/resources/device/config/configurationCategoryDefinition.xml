@@ -160,7 +160,7 @@
     </category>
         
     <category type="dnp">
-        <integer field="internalRetries" default="2"/>
+        <integer field="internalRetries" minValue="0" maxValue="99" default="2"/>
         <enum field="timeOffset" type="DnpTimeOffset" default="UTC"/>
         <boolean field="enableDnpTimesyncs" default="false"/>
         <boolean field="omitTimeRequest" default="false"/>
