@@ -503,9 +503,9 @@ public class ZoneDaoImpl implements ZoneDao {
         sql.append("JOIN YukonPAObject PAO ON EV.SubID = PAO.PAObjectId");
         sql.append("WHERE EV.EventType").eq_k(CcEventType.CommandSent);
         sql.append("AND PAO.PAObjectId IN (");
-        sql.append("  SELECT DeviceId");
-        sql.append("  FROM CapBankToZoneMapping");
-        sql.append("  WHERE ZoneId").in(zoneIds);
+        sql.append("    SELECT DISTINCT(SubstationBusId)");
+        sql.append("        FROM Zone ZE JOIN CapBankToZoneMapping CTZ ON CTZ.ZoneId = ZE.ZoneId");
+        sql.append("    WHERE ZE.ZoneId").in(zoneIds);
         sql.append(")");
         sql.append("AND EV.EventSubtype").in(subTypes);
         sql.append("AND EV.DateTime").gte(since);
