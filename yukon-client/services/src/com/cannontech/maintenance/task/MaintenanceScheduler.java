@@ -92,7 +92,7 @@ public class MaintenanceScheduler {
                     rescheduleScheduler = true;
                 } else {
                     log.info("Maintenance task is starting now and will end at " + endOfRunWindow.toDate());
-                    List<MaintenanceTask> tasks = maintenanceService.getMaintenanceTasks();
+                    List<MaintenanceTask> tasks = maintenanceService.getEnabledMaintenanceTasks();
                     
                     // TODO Remove this check after 7.0.0 build
                     boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);

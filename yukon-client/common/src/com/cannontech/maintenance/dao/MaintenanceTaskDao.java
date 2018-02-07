@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.MaintenanceSetting;
@@ -13,36 +14,14 @@ import com.cannontech.system.model.MaintenanceTask;
 public interface MaintenanceTaskDao {
 
     /**
-     * Return enable maintenance task if excludeDisabled is true otherwise it will return all
-     * maintenance task type
+     * Return all maintenance tasks.
      **/
-    List<MaintenanceTaskType> getMaintenanceTaskTypes(boolean excludeDisabled);
-
-    /**
-     * Return enable maintenance task if excludeDisabled is true otherwise it will return all
-     * maintenance task
-     **/
-    List<MaintenanceTask> getMaintenanceTasks(boolean includeDisabledTask);
+    List<MaintenanceTask> getMaintenanceTasks();
 
     /**
      * Returns a maintenance task with the given task type.
      **/
     MaintenanceTask getMaintenanceTask(MaintenanceTaskType taskName);
-
-    /**
-     * Returns a maintenance task with the given taskId.
-     **/
-    MaintenanceTask getMaintenanceTaskById(int taskId);
-
-    /**
-     * Updates status for the given task.
-     **/
-    void updateTaskStatus(MaintenanceTask task);
-
-    /**
-     * Returns all settings for the given maintenance task type.
-     **/
-    List<MaintenanceSetting> getSettingsForMaintenanceTaskType(MaintenanceTaskType taskType);
 
     /**
      * Updates all the settings provided.
@@ -53,5 +32,20 @@ public interface MaintenanceTaskDao {
      * Returns all global maintenance setting values and comments.
      **/
     Map<GlobalSettingType, Pair<Object, String>> getValuesAndComments();
+
+    /**
+     * Returns boolean value of the passed setting.
+     */
+    boolean getBooleanValue(MaintenanceSettingType setting);
+
+    /**
+     * Return all settings for a maintenance task type.
+     **/
+    List<MaintenanceSetting> getSettingsForTaskType(MaintenanceTaskType taskType);
+
+    /**
+     * Returns value of the passed setting.
+     */
+    Object getSettingValue(MaintenanceSettingType setting);
 
 }

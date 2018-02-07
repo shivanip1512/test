@@ -46,7 +46,10 @@
 	<entry key="yukon.web.modules.adminSetup.maintenance.nextRun">Next Run</entry>
 	
 	<!-- editTask.jsp -->
-    <entry key="yukon.web.modules.adminSetup.maintenance.NO_OF_MONTHS">Duration (Older than)</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING_ENABLED">Enabled</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.DUPLICATE_POINT_DATA_PRUNING_ENABLED">Enabled</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.DR_RECONCILIATION_ENABLED">Enabled</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING_NO_OF_MONTHS">Duration (Older than)</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.dataPruning.EDIT.pageDescription">{0}</entry>
 
     <entry key="yukon.web.modules.adminSetup.maintenance.updateFailed">There was an error saving the exclusion hours settings.</entry>

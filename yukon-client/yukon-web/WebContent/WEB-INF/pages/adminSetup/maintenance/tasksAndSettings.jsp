@@ -22,31 +22,30 @@
                     <tbody>
                         <c:set var="developementMode" value="${false}"/>
                         <c:forEach var="task" items="${tasks}">
-                            <cti:msg2 var="taskNameMsg" key=".${task.taskName}.title"/>
-                            <c:if test="${task.taskName=='DUPLICATE_POINT_DATA_PRUNING'}">
+                            <cti:msg2 var="taskTypeMsg" key=".${task.taskType}.title"/>
+                            <c:if test="${task.taskType=='DUPLICATE_POINT_DATA_PRUNING'}">
                                 <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                                     <c:set var="developementMode" value="${true}"/>
                                 </cti:checkGlobalRolesAndProperties>
                             </c:if>
                             
                             <!-- This check is to be removed after 7.0.0 build -->
-                            <c:if test="${developementMode || (task.taskName!='DUPLICATE_POINT_DATA_PRUNING' &&
-                                            task.taskName!='DR_RECONCILIATION')}">
+                            <c:if test="${developementMode || (task.taskType!='DUPLICATE_POINT_DATA_PRUNING' &&
+                                            task.taskType!='DR_RECONCILIATION')}">
                                 <tr>
                                     <cti:url var="editTaskDetailsUrl" value="/admin/maintenance/editTask" >
-                                        <cti:param name="taskId" value="${task.taskId}"/>
-                                        <cti:param name="taskName" value="${task.taskName}"/>
+                                        <cti:param name="taskType" value="${task.taskType}"/>
                                     </cti:url>
                                     <td>
                                         <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
-                                           arguments="${taskNameMsg}"/>"><i class="icon icon-script"></i></a>
+                                           arguments="${taskTypeMsg}"/>"><i class="icon icon-script"></i></a>
                                     </td>
                                     <td>
                                         <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
-                                           arguments="${taskNameMsg}"/>"><i:inline key=".${task.taskName}.title"/></a>
+                                           arguments="${taskTypeMsg}"/>"><i:inline key=".${task.taskType}.title"/></a>
                                     </td>
                                     <td class="fr">
-                                        <tags:switch checked="${not task.disabled}" name="toggle" data-task-id="${task.taskId}"
+                                        <tags:switch checked="${task.enabled}" name="toggle" data-task-type="${task.taskType}"
                                                      classes="js-toggleDataPruningJobEnabled toggle-sm"/>
                                     </td>
                                 </tr>

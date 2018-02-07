@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.maintenance;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.maintenance.MaintenanceHelper;
+import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.system.GlobalSettingType;
@@ -228,7 +230,7 @@ public class MaintenanceController {
     }
 
     private void setUpModelForPointDataPruning(ModelMap model, YukonUserContext context) throws ExecutionException {
-        List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks(false);
+        List<MaintenanceTask> tasks = maintenanceTaskDao.getMaintenanceTasks();
         model.addAttribute("tasks", tasks);
         final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
        Set<GlobalSettingType> all = maintenanceHelper.getGlobalSettingsForMaintenance();
@@ -305,47 +307,57 @@ public class MaintenanceController {
     }
 
     @RequestMapping(value = "toggleDataPruningJobEnabled", method = RequestMethod.GET)
-    public String toggleDataPruningJobEnabled(YukonUserContext userContext, int taskId) {
-        toggleDataPruningJob(taskId, userContext);
+    public String toggleDataPruningJobEnabled(YukonUserContext userContext, String taskType) {
+        MaintenanceTaskType maintenanceTaskType = MaintenanceTaskType.valueOf(taskType);
+        toggleDataPruningJob(maintenanceTaskType, userContext);
         return "redirect:view";
     }
 
-    private boolean toggleDataPruningJob(int taskId, YukonUserContext userContext) {
+    private boolean toggleDataPruningJob(MaintenanceTaskType taskType, YukonUserContext userContext) {
         boolean isEnabled = true;
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         final LiteYukonUser user = userContext.getYukonUser();
-        MaintenanceTask job = maintenanceTaskDao.getMaintenanceTaskById(taskId);
-        if (!job.isDisabled()) {
+        MaintenanceTask job = maintenanceTaskDao.getMaintenanceTask(taskType);
+        if (!job.isEnabled()) {
             isEnabled = false;
         }
-        job.setDisabled(!job.isDisabled());
-        maintenanceTaskDao.updateTaskStatus(job);
+        job.setEnabled(!job.isEnabled());
+
+        MaintenanceSetting setting = new MaintenanceSetting();
+        setting.setTaskType(taskType);
+        setting.setAttribute(MaintenanceSettingType.getEnabledSetting(taskType));
+        setting.setAttributeValue(job.isEnabled());
+
+        List<MaintenanceSetting> settings = new ArrayList<>();
+        settings.add(setting);
+
+        maintenanceTaskDao.updateSettings(settings);
         if (isEnabled) {
             systemEventLogService.maintenanceTaskEnabled(user,
-                accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskName().name() + ".title"));
+                accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskType().name() + ".title"));
         } else {
             systemEventLogService.maintenanceTaskDisabled(user,
-                accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskName().name() + ".title"));
+                accessor.getMessage("yukon.web.modules.adminSetup.maintenance." + job.getTaskType().name() + ".title"));
         }
         return isEnabled;
     }
 
     @RequestMapping(value = "editTask", method = RequestMethod.GET)
-    public String editTask(ModelMap model, YukonUserContext userContext, int taskId, FlashScope flashScope,
-            String taskName) {
+    public String editTask(ModelMap model, YukonUserContext userContext, FlashScope flashScope,
+            String taskType) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        MaintenanceTaskType maintenanceTaskType = MaintenanceTaskType.valueOf(taskName);
+        MaintenanceTaskType maintenanceTaskType = MaintenanceTaskType.valueOf(taskType);
         MaintenanceTask taskDetails = maintenanceTaskDao.getMaintenanceTask(maintenanceTaskType);
-        List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskDetails.getTaskName());
+        List<MaintenanceSetting> settings = maintenanceTaskDao.getSettingsForTaskType(taskDetails.getTaskType());
         
         MaintenanceEditorBean maintenanceEditorBean = new MaintenanceEditorBean();
         maintenanceEditorBean.setTaskDetails(taskDetails);
         maintenanceEditorBean.setSettings(settings);
 
         model.addAttribute("maintenanceEditorBean", maintenanceEditorBean);
-        String taskNameMsg = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
-            + maintenanceEditorBean.getTaskDetails().getTaskName() + ".title");
-        model.addAttribute("taskNameMsg", taskNameMsg);
+        String taskTypeMsg = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
+            + maintenanceEditorBean.getTaskDetails().getTaskType() + ".title");
+        model.addAttribute("taskTypeMsg", taskTypeMsg);
         return "maintenance/editTask.jsp";
     }
 
@@ -356,7 +368,7 @@ public class MaintenanceController {
         maintenanceTaskDao.updateSettings(maintenanceEditorBean.getSettings());
         systemEventLogService.maintenanceTaskSettingsUpdated(userContext.getYukonUser(),
             messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.maintenance."
-                + maintenanceEditorBean.getTaskDetails().getTaskName().name() + ".title"));
+                + maintenanceEditorBean.getTaskDetails().getTaskType().name() + ".title"));
         return "redirect:view";
     }
 
@@ -409,8 +421,6 @@ public class MaintenanceController {
         public void setComments(Map<GlobalSettingType, String> comments) {
             this.comments = comments;
         }
-        
-        
     }
 
 }

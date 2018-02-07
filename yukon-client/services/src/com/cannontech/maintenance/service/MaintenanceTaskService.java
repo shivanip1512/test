@@ -13,7 +13,7 @@ public interface MaintenanceTaskService {
     /**
      * Return all enabled maintenance tasks.
      **/
-    List<MaintenanceTask> getMaintenanceTasks();
+    List<MaintenanceTask> getEnabledMaintenanceTasks();
 
     /**
      * Return end time for maintenance tasks
@@ -28,6 +28,10 @@ public interface MaintenanceTaskService {
     /**
      * Return value for given maintenance task and setting type.
      **/
-    Object getMaintenanceSettings(MaintenanceTaskType taskName, MaintenanceSettingType type);
-
+    Object getMaintenanceSettings(MaintenanceSettingType type);
+    
+    /**
+     * Returns enabled maintenance tasks types.
+     */
+    List<MaintenanceTaskType> getEnabledMaintenanceTaskTypes();
 }

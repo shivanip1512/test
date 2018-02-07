@@ -4,32 +4,23 @@ import com.cannontech.maintenance.MaintenanceTaskType;
 
 public class MaintenanceTask {
 
-    private int taskId;
-    private MaintenanceTaskType taskName;
-    private boolean disabled;
+    private MaintenanceTaskType taskType;
+    private boolean enabled;
 
-    public int getTaskId() {
-        return taskId;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
-    public MaintenanceTaskType getTaskName() {
-        return taskName;
+    public MaintenanceTaskType getTaskType() {
+        return taskType;
     }
 
-    public void setTaskName(MaintenanceTaskType taskName) {
-        this.taskName = taskName;
-    }
-
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public void setTaskType(MaintenanceTaskType taskType) {
+        this.taskType = taskType;
     }
 
 }

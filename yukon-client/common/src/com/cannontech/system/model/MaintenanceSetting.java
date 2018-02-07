@@ -1,10 +1,10 @@
 package com.cannontech.system.model;
 
 import com.cannontech.maintenance.MaintenanceSettingType;
+import com.cannontech.maintenance.MaintenanceTaskType;
 
 public class MaintenanceSetting {
-    private Integer taskPropertyId;
-    private Integer taskId;
+    private MaintenanceTaskType taskType;
     private MaintenanceSettingType attribute;
     private Object attributeValue;
 
@@ -17,20 +17,12 @@ public class MaintenanceSetting {
         this.attributeValue = attributeValue;
     }
 
-    public Integer getTaskPropertyId() {
-        return taskPropertyId;
+    public MaintenanceTaskType getTaskType() {
+        return taskType;
     }
 
-    public void setTaskPropertyId(Integer taskPropertyId) {
-        this.taskPropertyId = taskPropertyId;
-    }
-
-    public Integer getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Integer taskId) {
-        this.taskId = taskId;
+    public void setTaskType(MaintenanceTaskType taskType) {
+        this.taskType = taskType;
     }
 
     public Object getAttributeValue() {

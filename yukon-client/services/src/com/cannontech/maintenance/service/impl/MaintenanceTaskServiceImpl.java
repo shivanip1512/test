@@ -1,9 +1,11 @@
 package com.cannontech.maintenance.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -20,7 +22,7 @@ import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.maintenance.task.MaintenanceTask;
 import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.model.MaintenanceSetting;
+import com.google.common.collect.Sets;
 
 public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     private final static Logger log = YukonLogManager.getLogger(MaintenanceTaskServiceImpl.class);
@@ -29,8 +31,8 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     private Map<MaintenanceTaskType, MaintenanceTask> maintenanceTaskMap = new HashMap<>();
 
     @Override
-    public List<MaintenanceTask> getMaintenanceTasks() {
-        List<MaintenanceTaskType> maintenanceTaskTypes = maintenanceTaskDao.getMaintenanceTaskTypes(true);
+    public List<MaintenanceTask> getEnabledMaintenanceTasks() {
+        List<MaintenanceTaskType> maintenanceTaskTypes = getEnabledMaintenanceTaskTypes();
         List<MaintenanceTask> tasks = maintenanceTaskMap.entrySet().stream()
                                                                    .filter(e -> maintenanceTaskTypes.contains(e.getKey()))
                                                                    .map(e -> e.getValue())
@@ -86,12 +88,24 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
         long nextRunTimeInMillisec = nextMaintenanceRunTime.getMillis();
         return nextRunTimeInMillisec - currentTimeInMillisec;
     }
+    
+    @Override
+    public List<MaintenanceTaskType> getEnabledMaintenanceTaskTypes() {
+        Set<MaintenanceTaskType> tasks = Sets.newHashSet(MaintenanceTaskType.values());
+        List<MaintenanceTaskType> enabledTasks = new ArrayList<>();
+
+        tasks.stream().forEach(task -> {
+            MaintenanceSettingType setting = MaintenanceSettingType.getEnabledSetting(task);
+            if (maintenanceTaskDao.getBooleanValue(setting)) {
+                enabledTasks.add(task);
+            }
+        });
+        return enabledTasks;
+    }
 
     @Override
-    public Object getMaintenanceSettings(MaintenanceTaskType taskName, MaintenanceSettingType type) {
-        List<MaintenanceSetting> allSettings = maintenanceTaskDao.getSettingsForMaintenanceTaskType(taskName);
-        MaintenanceSetting settings = allSettings.stream().filter(setting -> setting.getAttribute() == type).findAny().get();
-        return settings.getAttributeValue();
+    public Object getMaintenanceSettings(MaintenanceSettingType type) {
+        return maintenanceTaskDao.getSettingValue(type);
     }
 
     @Autowired

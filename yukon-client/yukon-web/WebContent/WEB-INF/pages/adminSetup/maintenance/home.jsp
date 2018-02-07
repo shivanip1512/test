@@ -21,9 +21,9 @@
             });
     
             $(document).on('change', '.js-toggleDataPruningJobEnabled .checkbox-input', function() {
-                var taskId = $(this).data('taskId');
+                var taskType = $(this).data('taskType');
                 $.ajax({
-                    url: '${toggleDataPruningJobEnabledAjaxUrl}?taskId=' + taskId
+                    url: '${toggleDataPruningJobEnabledAjaxUrl}?taskType=' + taskType
                 });
             });
         });

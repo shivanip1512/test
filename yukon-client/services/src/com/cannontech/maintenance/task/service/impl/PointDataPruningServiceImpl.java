@@ -7,13 +7,12 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.util.Range;
 import com.cannontech.maintenance.DurationType;
 import com.cannontech.maintenance.MaintenanceSettingType;
-import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.maintenance.task.dao.PointDataPruningDao;
 import com.cannontech.maintenance.task.service.PointDataPruningService;
@@ -34,7 +33,8 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
 
     @Override
     public int deletePointData(Instant processEndTime) {
-        DurationType noOfMonths = (DurationType) maintenanceTaskService.getMaintenanceSettings(MaintenanceTaskType.POINT_DATA_PRUNING, MaintenanceSettingType.NO_OF_MONTHS);
+        DurationType noOfMonths = (DurationType) maintenanceTaskService.getMaintenanceSettings(
+            MaintenanceSettingType.POINT_DATA_PRUNING_NO_OF_MONTHS);
         Instant deleteUpto = Instant.now().toDateTime().minusMonths(noOfMonths.getDuration()).toInstant();
         
         int numDeleted = 1;
