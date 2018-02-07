@@ -28,14 +28,14 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.impl.LMGroupDaoImpl;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.LcrDeviceStatus;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
@@ -73,7 +73,6 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private AttributeService attributeService;
     @Autowired public AsyncDynamicDataSource asyncDynamicDataSource;
-    private @Autowired StateGroupDao stateGroupDao;
 
     private static final Logger log = YukonLogManager.getLogger(DrReconciliationServiceImpl.class);
 
@@ -468,7 +467,6 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
 
         List<Integer> deviceList = new ArrayList<>();
         lcrsToSendCommand.values().forEach(lst -> deviceList.addAll(lst));
-
         List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaos(deviceList);
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(paos, BuiltInAttribute.SERVICE_STATUS);
@@ -485,12 +483,17 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         pointValues.forEach(pointValue -> {
             Integer pointId = pointValue.getId();
             LitePoint litePoint = pointLookup.get(pointId);
-            LiteState liteState = stateGroupDao.findLiteState(litePoint.getStateGroupID(), (int) pointValue.getValue());
             Integer deviceId = pointsToPaos.get(litePoint).getPaoId();
 
-            if (liteState.getStateText().equalsIgnoreCase("In Service")) {
+            LcrDeviceStatus lcrStatus = PointStateHelper.decodeRawState(LcrDeviceStatus.class, pointValue.getValue());
+
+            if (lcrStatus == LcrDeviceStatus.IN_SERVICE) {
+                // If actual reporting status of LCR is already In Service, then we don't need to send
+                // InService message to that LCR, hence removing it from sendInServiceDevice list
                 lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).remove(deviceId);
-            } else if (liteState.getStateText().equalsIgnoreCase("Out Of service")) {
+            } else if (lcrStatus == LcrDeviceStatus.OUT_OF_SERVICE) {
+                // If actual reporting status of LCR is already OOS, then we don't need to send Out Of Service
+                // message to that LCR, hence removing it from OOSDevice list
                 lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).remove(deviceId);
             }
         });
