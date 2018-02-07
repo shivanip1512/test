@@ -130,7 +130,7 @@ public class DmvTestController {
     
     @RequestMapping(value="dmvTest/{id}", method=RequestMethod.DELETE)
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    public String delete(ModelMap model, @PathVariable int id, FlashScope flash) {
+    public String delete(@PathVariable int id, FlashScope flash) {
         boolean success = dmvTestDao.delete(id);
         if (!success) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".deleteFailed"));
