@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/19/2018 10:34:17 AM                        */
+/* Created on:     2/6/2018 8:13:38 AM                          */
 /*==============================================================*/
 
 
@@ -7426,25 +7426,12 @@ AppName ASC
 go
 
 /*==============================================================*/
-/* Table: MaintenanceTask                                       */
-/*==============================================================*/
-create table MaintenanceTask (
-   TaskId               numeric(10)          not null,
-   TaskName             varchar(50)          not null,
-   Disabled             char(1)              not null,
-   constraint PK_MaintenanceTask primary key (TaskId)
-)
-go
-
-/*==============================================================*/
 /* Table: MaintenanceTaskSettings                               */
 /*==============================================================*/
 create table MaintenanceTaskSettings (
-   TaskPropertyId       numeric(10)          not null,
-   TaskId               numeric(10)          not null,
-   Attribute            varchar(50)          not null,
+   SettingType          varchar(50)          not null,
    Value                varchar(50)          not null,
-   constraint PK_MaintenanceTaskSettings primary key (TaskPropertyId)
+   constraint PK_MaintenanceTaskSettings primary key (SettingType)
 )
 go
 
@@ -14067,12 +14054,6 @@ go
 alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID)
-go
-
-alter table MaintenanceTaskSettings
-   add constraint FK_MTaskSettings_MTask foreign key (TaskId)
-      references MaintenanceTask (TaskId)
-         on delete cascade
 go
 
 alter table MeterHardwareBase

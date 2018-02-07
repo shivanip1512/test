@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/19/2018 10:33:25 AM                        */
+/* Created on:     2/6/2018 8:12:41 AM                          */
 /*==============================================================*/
 
 
@@ -7010,24 +7010,12 @@ create unique index INDEX_1 on MSPVendor (
 );
 
 /*==============================================================*/
-/* Table: MaintenanceTask                                       */
-/*==============================================================*/
-create table MaintenanceTask  (
-   TaskId               NUMBER(10)                      not null,
-   TaskName             VARCHAR2(50)                    not null,
-   Disabled             CHAR(1)                         not null,
-   constraint PK_MaintenanceTask primary key (TaskId)
-);
-
-/*==============================================================*/
 /* Table: MaintenanceTaskSettings                               */
 /*==============================================================*/
 create table MaintenanceTaskSettings  (
-   TaskPropertyId       NUMBER(10)                      not null,
-   TaskId               NUMBER(10)                      not null,
-   Attribute            VARCHAR2(50)                    not null,
+   SettingType          VARCHAR2(50)                    not null,
    Value                VARCHAR2(50)                    not null,
-   constraint PK_MaintenanceTaskSettings primary key (TaskPropertyId)
+   constraint PK_MaintenanceTaskSettings primary key (SettingType)
 );
 
 /*==============================================================*/
@@ -12958,11 +12946,6 @@ alter table MCTConfigMapping
 alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID);
-
-alter table MaintenanceTaskSettings
-   add constraint FK_MTaskSettings_MTask foreign key (TaskId)
-      references MaintenanceTask (TaskId)
-      on delete cascade;
 
 alter table MeterHardwareBase
    add constraint FK_METERHARD_INVENBSE foreign key (InventoryID)
