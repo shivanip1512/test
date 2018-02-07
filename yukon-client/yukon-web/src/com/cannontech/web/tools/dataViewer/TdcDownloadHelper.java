@@ -103,7 +103,7 @@ public class TdcDownloadHelper {
                         case POINT_VALUE:
                             value =
                                 registrationService.getLatestValue(data.getPointId(),
-                                                                   Format.VALUE_UNIT.name(),
+                                                                   Format.SHORT.name(),
                                                                    context);
                             row.add(value.getValue());
                             break;
@@ -178,7 +178,7 @@ public class TdcDownloadHelper {
                 if (!data.isBlank()) {
                     UpdateValue value =
                         registrationService.getLatestValue(data.getPointId(),
-                                                           Format.VALUE_UNIT.name(),
+                                                           Format.SHORT.name(),
                                                            context);
                     if (value.isUnavailable()) {
                         isDataAvailable = false;

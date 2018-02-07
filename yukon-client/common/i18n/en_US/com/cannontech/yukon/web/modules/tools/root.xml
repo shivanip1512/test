@@ -205,7 +205,7 @@
     <entry key="yukon.web.modules.tools.tdc.POINT_QUALITY">Quality</entry>    
     <entry key="yukon.web.modules.tools.tdc.POINT_TIME_STAMP">Timestamp</entry>    
     <entry key="yukon.web.modules.tools.tdc.U_OF_M">UofM</entry>    
-    <entry key="yukon.web.modules.tools.tdc.STATE">Status</entry>    
+    <entry key="yukon.web.modules.tools.tdc.STATE">Alarm Status</entry>    
     <entry key="yukon.web.modules.tools.tdc.TIME_STAMP">Timestamp</entry>    
     <entry key="yukon.web.modules.tools.tdc.TEXT_MESSAGE">Text Message</entry>    
     <entry key="yukon.web.modules.tools.tdc.USERNAME">Username</entry>    

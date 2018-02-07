@@ -112,7 +112,7 @@
                                             <cti:pointStatus pointId="${row.pointId}"/>
                                         </c:if>
                                     </td>
-                                    <td><cti:pointValue pointId="${row.pointId}" format="VALUE_UNIT"/></td>
+                                    <td><cti:pointValue pointId="${row.pointId}" format="SHORT"/></td>
                                 </c:if>
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_QUALITY')}">
                                     <td><cti:pointValue pointId="${row.pointId}" format="{quality}"/></td>
