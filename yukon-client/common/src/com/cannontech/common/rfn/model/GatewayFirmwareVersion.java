@@ -31,14 +31,16 @@ public final class GatewayFirmwareVersion implements Comparable<GatewayFirmwareV
             throw new IllegalArgumentException("Null firmware version string.");
         }
         String[] parts = versionString.split("\\.");
-        if (parts.length != 3) {
+        int partsLength = parts.length;
+        // Expected Firmware Version format is either x.y or x.y.z
+        if (partsLength < 2 || partsLength > 3) {
             throw new IllegalArgumentException("Invalid firmware version string: " + versionString);
         }
         try {
             int major = Integer.parseInt(parts[0]);
             int minor = Integer.parseInt(parts[1]);
-            int revision = Integer.parseInt(parts[2]);
-            
+            // If Firmware Version is in x.y format. Convert it to x.y.0
+            int revision = partsLength == 2 ? 0 : Integer.parseInt(parts[2]);
             return new GatewayFirmwareVersion(major, minor, revision);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid firmware version string: " + versionString, e);
