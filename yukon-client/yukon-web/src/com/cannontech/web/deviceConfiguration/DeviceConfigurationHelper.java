@@ -3,6 +3,7 @@ package com.cannontech.web.deviceConfiguration;
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.IP_ADDRESS;
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.UDP_PORT;
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.FIRMWARE_VERSION;
+import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.COMM_STATUS;
 import static com.cannontech.common.stream.StreamUtils.not; 
 
 import java.beans.PropertyEditor;
@@ -80,7 +81,7 @@ public class DeviceConfigurationHelper {
     private static final String channelErrorBaseKey = categoryBaseKey + ".rfnChannelConfiguration.error";
 
     private static final Set<PaoType> cbcAttributeTypes = ImmutableSet.of(PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.CBC_LOGICAL);
-    private static final Set<Attribute> cbcAttributesExcluded = ImmutableSet.of(IP_ADDRESS, UDP_PORT, FIRMWARE_VERSION);
+    private static final Set<Attribute> cbcAttributesExcluded = ImmutableSet.of(IP_ADDRESS, UDP_PORT, FIRMWARE_VERSION, COMM_STATUS);
 
     private final Map<EnumOption, DeviceConfigurationInputEnumeration> fieldToEnumerationMap;
     private final Map<MapType, DeviceConfigurationInputEnumeration> fieldToMapTypeMap;
