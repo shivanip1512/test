@@ -322,8 +322,8 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, sendInServiceDevice);
 
         compareExpectedServiceStatusWithReportedLcrs(lcrsToSendCommand);
-        log.info("Send In service to device "+sendInServiceDevice);
-        log.info("Send OOS to device "+sendOOSDevice);
+        log.debug("Send In service to device "+sendInServiceDevice);
+        log.debug("Send OOS to device "+sendOOSDevice);
 
         // Get LCR's with incorrect addressing, we need to send config message to them
         Set<Integer> sendAddressing = getLCRWithConflictingAddressing();
