@@ -1,5 +1,6 @@
 package com.cannontech.common.rtu.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -85,9 +86,12 @@ public class RtuDnpServiceImpl implements RtuDnpService {
     }
 
     private List<Integer> getChildDevices(int rtuId){
-        return deviceDao.getChildDevices(rtuId).stream()
-                                               .map(p -> p.getPaoIdentifier().getPaoId())
-                                               .collect(Collectors.toList());
+        List<Integer> paoIds = new ArrayList<>();
+        paoIds.add(rtuId);
+        paoIds.addAll(deviceDao.getChildDevices(rtuId).stream()
+                                                      .map(p -> p.getPaoIdentifier().getPaoId())
+                                                      .collect(Collectors.toList()));
+        return paoIds;
     }
 
 }

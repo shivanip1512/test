@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.rtu;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.capcontrol.service.CbcHelperService;
+import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -110,13 +112,17 @@ public class RtuController {
             model.addAttribute(column.name(), col);
         }
 
+        List<DisplayableDevice> devices = new ArrayList<>();
+        devices.add(new DisplayableDevice(rtu.getPaoIdentifier(), rtu.getName()));
+        devices.addAll(rtu.getChildDevices());
+
         model.addAttribute("pointNames", allPointNames);
         model.addAttribute("details", details);
         model.addAttribute("rtuId", id);
         model.addAttribute("filter", filter);
 
         model.addAttribute("pointTypes", types);
-        model.addAttribute("devices", rtu.getChildDevices());
+        model.addAttribute("devices", devices);
 
         return "/rtu/allPoints.jsp";
     }
