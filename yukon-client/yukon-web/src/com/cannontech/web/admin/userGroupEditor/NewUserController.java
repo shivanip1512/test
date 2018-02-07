@@ -77,8 +77,6 @@ public class NewUserController {
             @ModelAttribute("user") NewUser user, BindingResult binding) throws Exception {
 
         user.setUsername(StringUtils.trim(user.getUsername()));
-        user.getPassword().setPassword(StringUtils.trim(user.getPassword().getPassword()));
-        user.getPassword().setConfirmPassword(StringUtils.trim(user.getPassword().getConfirmPassword()));
         userValidator.validate(user, binding);
         
         AuthenticationCategory category = user.getAuthCategory();

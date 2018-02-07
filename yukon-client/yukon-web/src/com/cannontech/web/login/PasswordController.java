@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -294,7 +293,6 @@ public class PasswordController {
     @RequestMapping(value="/check-password", method=RequestMethod.POST)
     public @ResponseBody Map<String, Object> checkPassword(HttpServletResponse resp, 
             int userId, String password) {
-        password = StringUtils.trim(password);
         LiteYukonUser user = userDao.getLiteYukonUser(userId);
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(userId);
         

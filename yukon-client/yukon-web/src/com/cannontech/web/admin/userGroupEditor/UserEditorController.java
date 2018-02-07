@@ -215,9 +215,6 @@ public class UserEditorController {
         if (userContext.getYukonUser().getUserID() != userId) {
             isOldPasswordRequired = false;
         }
-        password.setOldPassword(StringUtils.trim(password.getOldPassword()));
-        password.setPassword(StringUtils.trim(password.getPassword()));
-        password.setConfirmPassword(StringUtils.trim(password.getConfirmPassword()));
         if (isOldPasswordRequired) {
             boolean isValidPassword =
                 authService.validateOldPassword(yukonUser.getUsername(), password.getOldPassword());
