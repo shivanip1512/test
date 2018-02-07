@@ -1118,7 +1118,7 @@
                     </page>
                     <page name="maintenance.dataPruning.EDIT" type="DETAIL" hideFavorite="true">
                         <link>/admin/maintenance/editTask</link>
-                        <labelArgument>${taskNameMsg}</labelArgument>
+                        <labelArgument>${taskTypeMsg}</labelArgument>
                     </page>
                 </pages>
             </page>
