@@ -11,7 +11,7 @@
         <cti:csrfToken/>
         <form:hidden path="id"/>
         <span class="fr">
-            <cti:button renderMode="image" icon="icon-help" classes="fr" onclick="$('.js-user-message').removeClass('dn');"/>
+            <cti:button renderMode="image" icon="icon-help" classes="fr js-notifications-help"/>
         </span><br/>
         <tags:alertBox type="info" key=".popup.helpText" classes="dn js-user-message" includeCloseButton="true"/>
 

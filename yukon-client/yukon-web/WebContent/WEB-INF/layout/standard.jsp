@@ -268,9 +268,9 @@
     </cti:msgScope>
     <c:if test="${!empty info.smartNotificationsEvent}">
        <cti:url var="subscriptionUrl" value="/notifications/subscription/existingPopup/${info.smartNotificationsEvent}">
-        <c:forEach var="parameter" items="${info.smartNotificationsParameters}">
-            <cti:param name="${parameter.key}" value="${parameter.value}"/>
-        </c:forEach>
+            <c:forEach var="parameter" items="${info.smartNotificationsParameters}">
+                <cti:param name="${parameter.key}" value="${parameter.value}"/>
+            </c:forEach>
        </cti:url>
        <div id="subscriptionPopup" class="dn js-smart-notifications-popup" data-dialog data-url="${subscriptionUrl}" 
         data-event="yukon:notifications:save" data-width="600" data-load-event="yukon:notifications:load"

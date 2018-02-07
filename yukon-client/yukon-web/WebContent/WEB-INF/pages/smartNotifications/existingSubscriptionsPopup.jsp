@@ -57,7 +57,7 @@
         
     </tags:sectionContainer2>
         
-    <div class="fr" style="margin-bottom:10px;">
+    <div class="fr stacked">
         <cti:url var="createUrl" value="/notifications/subscription/popup/${type}">
             <cti:param name="monitorId" value="${monitorId}"/>
         </cti:url>

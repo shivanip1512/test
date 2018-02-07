@@ -320,7 +320,7 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="subscription/{id}/unsubscribe", method=RequestMethod.POST)
-    public String removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp, FlashScope flash) {
+    public String removeSubscription(YukonUserContext userContext, @PathVariable int id, HttpServletResponse resp) {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         SmartNotificationSubscription subscription = subscriptionDao.getSubscription(id);
@@ -370,7 +370,7 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)
-    public String saveDetails(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, FlashScope flash, 
+    public String saveDetails(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, 
                               @ModelAttribute("subscription") SmartNotificationSubscription subscription, BindingResult result) throws Exception {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         subscription.setUserId(userContext.getYukonUser().getUserID());

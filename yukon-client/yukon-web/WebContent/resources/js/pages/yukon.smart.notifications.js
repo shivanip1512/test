@@ -216,6 +216,10 @@ yukon.smart.notifications = (function () {
                 window.location = yukon.url('/notifications/download?' + data);
             });
             
+            $(document).on('click', '.js-notifications-help', function (ev) {
+                $('.js-user-message').removeClass('dn');
+            });
+            
             initializeSmartNotificationsTable();
 
             _initialized = true;
