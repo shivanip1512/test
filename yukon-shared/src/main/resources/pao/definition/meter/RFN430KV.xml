@@ -65,7 +65,6 @@
         <pointInfo name="Improper Meter Engine Operation Warning" attributes="IMPROPER_METER_ENGINE_OPERATION_WARNING"/>
         <pointInfo name="Internal Communication Error" attributes="INTERNAL_COMMUNICATION_ERROR"/>
         <pointInfo name="Line Frequency Warning" attributes="LINE_FREQUENCY_WARNING"/>
-        <pointInfo name="Load Side Voltage Is Missing" attributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
         <pointInfo name="Loss Of All Current" attributes="LOSS_OF_ALL_CURRENT"/>
         <pointInfo name="Loss Of Phase A Current" attributes="LOSS_OF_PHASE_A_CURRENT"/>
         <pointInfo name="Loss Of Phase C Current" attributes="LOSS_OF_PHASE_C_CURRENT"/>

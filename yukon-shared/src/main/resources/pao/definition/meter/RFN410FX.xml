@@ -44,7 +44,6 @@
         <pointInfo name="Energy Accumulated While In Standby Mode" attributes="ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
-        <pointInfo name="Load Side Voltage Is Missing" attributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Max Volts Phase A"/>
         <pointInfo name="Max Volts Phase B"/>
