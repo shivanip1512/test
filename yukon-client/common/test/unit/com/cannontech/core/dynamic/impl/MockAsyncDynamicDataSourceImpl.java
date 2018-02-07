@@ -29,6 +29,7 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.collect.Maps;
@@ -219,5 +220,10 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
     @Override
     public PointValueQualityTagHolder getPointValueAndTags(int pointId) {
         throw new MethodNotImplementedException(); 
+    }
+
+    @Override
+    public Set<LitePointData> getPointDataOnce(Set<Integer> pointIds) {
+        throw new MethodNotImplementedException();
     }
 }

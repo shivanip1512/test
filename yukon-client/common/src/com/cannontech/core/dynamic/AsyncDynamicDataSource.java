@@ -154,4 +154,9 @@ public interface AsyncDynamicDataSource {
      * This method is used for debugging
      */
     void logListenerInfo(int pointId);
+
+    /**
+     * This method gets the point data for given points
+     */
+    Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds);
 }

@@ -150,7 +150,23 @@ class DispatchProxy {
         pReg.setRegFlags(PointRegistration.REG_ALL_POINTS | PointRegistration.REG_NO_UPLOAD);
         dispatchConnection.write(pReg);
     }
-    
+
+    /**
+     * Get the current set of PointData's for the given set of point ids
+     * This method does not register these points
+     * 
+     * @param pointIds
+     * @return
+     */
+    Set<LitePointData> getPointDataOnce(Set<Integer> pointIds) {
+        Set<LitePointData> pointData = new HashSet<LitePointData>((int) (pointIds.size() / 0.75f) + 1);
+        if (!pointIds.isEmpty()) {
+            Multi m = getPointDataMultiOnce(pointIds);
+            extractPointData(pointData, m);
+        }
+        return pointData;
+    }
+
     /**
      * Return the raw multi from dispatch for a set of point ids.
      * Also registers for point ids.
@@ -293,6 +309,26 @@ class DispatchProxy {
     
     public void setDispatchConnection(IServerConnection dispatchConnection) {
         this.dispatchConnection = dispatchConnection;
+    }
+
+    /**
+     * Return the raw multi from dispatch for a set of point ids.
+     * 
+     * @throws {@link DynamicDataAccessException}
+     */
+    private Multi getPointDataMultiOnce(Set<Integer> pointIds) {
+        if (log.isDebugEnabled()) {
+            log.debug("Making getPointDataMultiOnce request for: " + pointIds);
+        }
+        Multi m;
+        try {
+            Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
+            m = (Multi) makeRequest(cmd);
+        } catch (DynamicDataAccessException e) {
+            throw new DynamicDataAccessException("There was an error retreiving the value for pointIds: " + pointIds,
+                e);
+        }
+        return m;
     }
 
 }

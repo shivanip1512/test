@@ -512,4 +512,35 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
            log.info("..."+listener);
        }
     }
+
+    @Override
+    public Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds) {
+        Set<Integer> notCachedPointIds = new HashSet<>(pointIds);
+        Set<LitePointData> pointData = new HashSet<>((int) (pointIds.size() / 0.75f) + 1);
+
+        // Get whatever we can out of the cache first
+        for (Integer id : pointIds) {
+            LitePointData pd = dynamicDataCache.getPointData(id);
+            if (pd != null) {
+                pointData.add(pd);
+                notCachedPointIds.remove(id);
+            }
+        }
+
+        // Request to dispatch for the rest
+        if (notCachedPointIds.size() > 0) {
+            if (!pointIds.isEmpty()) {
+                // break the request into partitions of 1000 so we reduce the risk of the request timing out
+                List<List<Integer>> partitionedPointIds = Lists.partition(Lists.newArrayList(pointIds), 1000);
+
+                partitionedPointIds.forEach(pointIdPartition -> {
+                    Set<LitePointData> retrievedPointData =
+                        dispatchProxy.getPointDataOnce(Sets.newHashSet(pointIdPartition));
+                    pointData.addAll(retrievedPointData);
+                });
+            }
+        }
+        return pointData;
+    }
+
 }
