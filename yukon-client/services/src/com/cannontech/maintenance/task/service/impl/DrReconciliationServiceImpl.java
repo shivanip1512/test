@@ -466,7 +466,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     private void compareExpectedServiceStatusWithReportedLcrs(Map<Integer, List<Integer>> lcrsToSendCommand) {
 
         List<Integer> deviceList = new ArrayList<>();
-        lcrsToSendCommand.values().forEach(lst -> deviceList.addAll(lst));
+        deviceList = lcrsToSendCommand.values().stream()
+                                               .flatMap(p -> p.stream())
+                                               .collect(Collectors.toList());
         List<LiteYukonPAObject> paos = paoDao.getLiteYukonPaos(deviceList);
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(paos, BuiltInAttribute.SERVICE_STATUS);

@@ -159,7 +159,7 @@ class DispatchProxy {
      * @return
      */
     Set<LitePointData> getPointDataOnce(Set<Integer> pointIds) {
-        Set<LitePointData> pointData = new HashSet<LitePointData>((int) (pointIds.size() / 0.75f) + 1);
+        Set<LitePointData> pointData = new HashSet<>((int) (pointIds.size() / 0.75f) + 1);
         if (!pointIds.isEmpty()) {
             Multi m = getPointDataMultiOnce(pointIds);
             extractPointData(pointData, m);

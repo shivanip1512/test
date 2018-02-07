@@ -531,7 +531,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         if (notCachedPointIds.size() > 0) {
             if (!pointIds.isEmpty()) {
                 // break the request into partitions of 1000 so we reduce the risk of the request timing out
-                List<List<Integer>> partitionedPointIds = Lists.partition(Lists.newArrayList(pointIds), 1000);
+                List<List<Integer>> partitionedPointIds = Lists.partition(Lists.newArrayList(notCachedPointIds), 1000);
 
                 partitionedPointIds.forEach(pointIdPartition -> {
                     Set<LitePointData> retrievedPointData =
