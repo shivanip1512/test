@@ -195,6 +195,7 @@ public class MessageScopeHelper {
         public BasicScopeHolder(String ... paths) {
             Builder<String> builder = ImmutableList.builder();
             for (int i = 0; i < paths.length; i++) {
+                if (null != paths[i])
                 builder.add(paths[i].trim());
             }
             searchPaths = builder.build();
