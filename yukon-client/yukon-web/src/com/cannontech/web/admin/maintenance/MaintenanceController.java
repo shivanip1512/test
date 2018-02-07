@@ -366,13 +366,8 @@ public class MaintenanceController {
 
         String confrimToggleTaskMsgKey = null;
         if (maintenanceTaskType == MaintenanceTaskType.POINT_DATA_PRUNING) {
-            for (MaintenanceSetting setting : settings) {
-                if (setting.getAttribute() == MaintenanceSettingType.POINT_DATA_PRUNING_NO_OF_MONTHS) {
-                    model.addAttribute("msgArgument",
-                        messageSourceAccessor.getMessage("yukon.common.durationType." + setting.getAttributeValue()));
-                    break;
-                }
-            }
+            model.addAttribute("msgArgument", messageSourceAccessor.getMessage("yukon.common.durationType."
+                + maintenanceTaskDao.getSettingValue(MaintenanceSettingType.POINT_DATA_PRUNING_NO_OF_MONTHS)));
             if (taskDetails.isEnabled()) {
                 confrimToggleTaskMsgKey = "POINT_DATA_PRUNING.confirmDisable";
             } else {
