@@ -83,7 +83,7 @@ public class RtuServiceImpl implements RtuService{
                 if (pointIdentifier == null) {
                     //CBC Logical view
                     List<PointIdentifier> cbcLogicalPoints = pointDao.getLitePointsByPaObjectId(paoId).stream()
-                            .map(p -> new PointIdentifier(p.getPointTypeEnum(), p.getPointOffset()))
+                            .map(PointIdentifier::createPointIdentifier)
                             .collect(Collectors.toList());
                     
                     if(!cbcLogicalPoints.isEmpty()) {
