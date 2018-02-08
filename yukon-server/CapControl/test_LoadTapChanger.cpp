@@ -2,7 +2,6 @@
 
 #include "capcontroller.h"
 #include "VoltageRegulatorManager.h"
-#include "GangOperatedVoltageRegulator.h"
 #include "mgr_config.h"
 #include "std_helper.h"
 #include "RegulatorEvents.h"
@@ -13,7 +12,6 @@
 // Objects
 using Cti::CapControl::VoltageRegulator;
 using Cti::CapControl::VoltageRegulatorManager;
-using Cti::CapControl::GangOperatedVoltageRegulator;
 using Cti::CapControl::ControlPolicy;
 
 // Exceptions
@@ -22,44 +20,7 @@ using Cti::CapControl::MissingAttribute;
 namespace
 {
 
-struct regulator_device_config_base
-{
-    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
-
-    Cti::Test::Override_ConfigManager overrideConfigManager;
-
-    regulator_device_config_base()
-        :   fixtureConfig( new Cti::Test::test_DeviceConfig ),
-            overrideConfigManager( fixtureConfig )
-    {
-        fixtureConfig->insertValue( "voltageChangePerTap",      "0.75" );
-
-        fixtureConfig->insertValue( "regulatorHeartbeatMode",   "COUNTDOWN" );
-        fixtureConfig->insertValue( "regulatorHeartbeatPeriod", "0" );
-        fixtureConfig->insertValue( "regulatorHeartbeatValue",  "123" );
-    }
-};
-
-struct regulator_device_config_direct_tap : regulator_device_config_base
-{
-    regulator_device_config_direct_tap()
-        :   regulator_device_config_base()
-    {
-        fixtureConfig->insertValue( "voltageControlMode",  "DIRECT_TAP" );
-    }
-};
-
-struct regulator_device_config_set_point : regulator_device_config_base
-{
-    regulator_device_config_set_point()
-        :   regulator_device_config_base()
-    {
-        fixtureConfig->insertValue( "voltageControlMode",  "SET_POINT" );
-    }
-};
-
-
-struct gang_operated_voltage_regulator_fixture_core
+struct load_tap_changer_fixture
 {
     struct TestCtiCapController : public CtiCapController
     {
@@ -116,8 +77,6 @@ struct gang_operated_voltage_regulator_fixture_core
         {
             _attr = decltype( _attr )
             {
-                { Attribute::SourceVoltage,
-                    { 2202,  AnalogPointType, "Source Voltage", 1000, 1, "", "", 1.0, 0 } },
                 { Attribute::Voltage,
                     { 2203,  AnalogPointType, "Load Voltage", 1001, 2, "", "", 1.0, 0 } },
                 { Attribute::TapUp,
@@ -130,18 +89,6 @@ struct gang_operated_voltage_regulator_fixture_core
                     { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0, 0 } },
                 { Attribute::TapPosition,
                     { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0, 0 } },
-                { Attribute::ForwardSetPoint,
-                    { 7000,  AnalogPointType, "Forward SetPoint", 1020, 10007, "", "", 1.0, 0 } },
-                { Attribute::ForwardBandwidth,
-                    { 7100,  AnalogPointType, "Forward Bandwidth", 1021, 8, "", "", 1.0, 0 } },
-                { Attribute::ReverseSetPoint,
-                    { 7200,  AnalogPointType, "Reverse SetPoint", 1022, 10017, "", "", 1.0, 0 } },
-                { Attribute::ReverseBandwidth,
-                    { 7300,  AnalogPointType, "Reverse Bandwidth", 1023, 18, "", "", 1.0, 0 } },
-                { Attribute::ReverseFlowIndicator,
-                    { 7400,  StatusPointType, "Reverse Flow Indicator", 1024, 19, "", "", 1.0, 0 } },
-                { Attribute::ControlMode,
-                    { 7450,  AnalogPointType, "Regulator Control Mode", 1026, 21, "", "", 1.0, 0 } }
             };
         }
     }
@@ -151,34 +98,32 @@ struct gang_operated_voltage_regulator_fixture_core
 
     VoltageRegulatorManager::SharedPtr  regulator;
 
-    gang_operated_voltage_regulator_fixture_core()
-        :   regulator( new GangOperatedVoltageRegulator )
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    load_tap_changer_fixture()
+        :   regulator( new VoltageRegulator ),
+            fixtureConfig( new Cti::Test::test_DeviceConfig ),
+            overrideConfigManager( fixtureConfig )
     {
+        fixtureConfig->insertValue("voltageChangePerTap", "0.75");
+
+        fixtureConfig->insertValue("regulatorHeartbeatMode", "COUNTDOWN");
+        fixtureConfig->insertValue("regulatorHeartbeatPeriod", "0");
+        fixtureConfig->insertValue("regulatorHeartbeatValue", "123");
+
         regulator->setPaoId( 23456 );
         regulator->setPaoName( "Test Regulator #1" );
         regulator->setPaoCategory( "CAPCONTROL" );
-        regulator->setPaoType( VoltageRegulator::GangOperatedVoltageRegulator );
+        regulator->setPaoType( VoltageRegulator::LoadTapChanger );
     }
-};
-
-
-struct gang_operated_voltage_regulator_fixture_direct_tap
-    :   gang_operated_voltage_regulator_fixture_core,
-        regulator_device_config_direct_tap
-{
-};
-
-
-struct gang_operated_voltage_regulator_fixture_setpoint
-    :   gang_operated_voltage_regulator_fixture_core,
-        regulator_device_config_set_point
-{
 };
 
 }
 
 
-BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap, gang_operated_voltage_regulator_fixture_direct_tap )
+BOOST_FIXTURE_TEST_SUITE( test_LoadTapChanger_DirectTap, load_tap_changer_fixture )
 
 BOOST_AUTO_TEST_CASE(test_IntegrityScan_Fail)
 {
@@ -197,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_Fail)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_IntegrityScan_MultiplePao)
+BOOST_AUTO_TEST_CASE(test_IntegrityScan)
 {
     regulator->loadAttributes( &attributes );
 
@@ -205,81 +150,13 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_MultiplePao)
     BOOST_CHECK_NO_THROW( regulator->executeIntegrityScan( "cap control" ) );
 
 
-    BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
-    BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-    signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.back().get());
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
-    BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-
-    BOOST_REQUIRE_EQUAL( 2, capController.requestMessages.size() );
-
-    auto requestMsg = capController.requestMessages.front().get();
-
-    BOOST_REQUIRE( requestMsg );
-
-    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'Voltage' LitePoint
-    BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
-
-    requestMsg = capController.requestMessages.back().get();
-
-    BOOST_REQUIRE(requestMsg);
-
-    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId());  // PaoID of the 'SourceVoltage' LitePoint
-    BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString());
-
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
-
-        BOOST_CHECK_EQUAL( 0, events.size() );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_IntegrityScan_SinglePao)
-{
-    // Set the Voltage point pao ID to the same as the SourceVoltage point pao ID
-    const auto sourceVoltagePaoId = attributes._attr[Attribute::SourceVoltage].getPaoId();
-    attributes._attr[Attribute::Voltage].setPaoId(sourceVoltagePaoId);
-
-    regulator->loadAttributes( &attributes );
-
-
-    BOOST_CHECK_NO_THROW( regulator->executeIntegrityScan( "cap control" ) );
-
-
-    BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
-
-    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
-    BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-    signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.back().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
+    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -291,7 +168,7 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_SinglePao)
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'SourceVoltage' and 'Voltage' LitePoints
+    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
 
 
@@ -304,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_SinglePao)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_IntegrityScan_nonstandard_user)
+BOOST_AUTO_TEST_CASE(test_IntegrityScan_Success_nonstandard_user)
 {
     regulator->loadAttributes( &attributes );
 
@@ -312,42 +189,26 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_nonstandard_user)
     BOOST_CHECK_NO_THROW( regulator->executeIntegrityScan( "unit test" ) );
 
 
-    BOOST_REQUIRE_EQUAL( 2, capController.signalMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
 
-    auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
-    BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-    signalMsg = dynamic_cast<CtiSignalMsg *>(capController.signalMessages.back().get());
+    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
+    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
 
 
-    BOOST_REQUIRE_EQUAL( 2, capController.requestMessages.size() );
+    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    auto requestMsg = capController.requestMessages.front().get();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'Voltage' LitePoint
+    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
-
-    requestMsg = capController.requestMessages.back().get();
-
-    BOOST_REQUIRE( requestMsg );
-
-    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId());  // PaoID of the 'SourceVoltage' LitePoint
-    BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString());
 
 
     // Validate generated RegulatorEvent messages
@@ -766,310 +627,6 @@ BOOST_AUTO_TEST_CASE(test_DisableRemoteControl_Success)
 
         BOOST_CHECK( ! event.setPointValue );
         BOOST_CHECK( ! event.tapPosition );
-    }
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-
-BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_SetPoint, gang_operated_voltage_regulator_fixture_setpoint )
-
-BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_RaiseSetPoint_Fail)
-{
-    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
-
-
-    BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
-
-        BOOST_CHECK_EQUAL( 0, events.size() );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_RaiseSetPoint_Success)
-{
-    regulator->loadAttributes( &attributes );
-
-
-    CtiPointDataMsg setPointData( 7000, 120.0, NormalQuality, AnalogPointType );
-
-    regulator->handlePointData( setPointData );
-
-
-    BOOST_CHECK_CLOSE( 0.75, regulator->adjustVoltage( 0.75 ),  1e-6 );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
-
-    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 7000, signalMsg->getId() );     // ID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "Raise Set Point", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
-
-    const auto requestMsg = capController.requestMessages.front().get();
-
-    BOOST_REQUIRE( requestMsg );
-
-    BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog value 120.750000 select pointid 7000",
-                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
-
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
-
-        BOOST_REQUIRE_EQUAL( 1, events.size() );
-
-        Cti::CapControl::RegulatorEvent event = events.front();
-
-        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::IncreaseSetPoint, event.eventType );
-        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
-        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
-        BOOST_CHECK_CLOSE( 120.75,                                           *event.setPointValue,     1e-6 );
-
-        BOOST_CHECK( ! event.tapPosition );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_LowerSetPoint_Fail)
-{
-    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
-
-
-    BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
-    BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
-
-        BOOST_CHECK_EQUAL( 0, events.size() );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Success)
-{
-    regulator->loadAttributes( &attributes );
-
-
-    CtiPointDataMsg setPointData( 7000, 120.0, NormalQuality, AnalogPointType );
-
-    regulator->handlePointData( setPointData );
-
-    CtiPointDataMsg tapPositionData( 3500, 3.0, NormalQuality, AnalogPointType );
-
-    regulator->handlePointData( tapPositionData );
-
-
-    BOOST_CHECK_CLOSE( -0.75, regulator->adjustVoltage( -0.75 ),    1e-6 );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
-
-    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 7000, signalMsg->getId() );     // ID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "Lower Set Point", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
-
-    const auto requestMsg = capController.requestMessages.front().get();
-
-    BOOST_REQUIRE( requestMsg );
-
-    BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog value 119.250000 select pointid 7000",
-                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
-
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
-
-        BOOST_REQUIRE_EQUAL( 1, events.size() );
-
-        Cti::CapControl::RegulatorEvent event = events.front();
-
-        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::DecreaseSetPoint, event.eventType );
-        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
-        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
-        BOOST_CHECK_CLOSE( 119.25,                                           *event.setPointValue,     1e-6 );
-        BOOST_CHECK_EQUAL( 3,                                                *event.tapPosition );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Cogeneration_ForwardFlow_Success)
-{
-    regulator->loadAttributes( &attributes );
-
-    const std::vector<CtiPointDataMsg>    incomingPointData
-    {
-        { 7450,   5.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
-        { 7400,   0.0,  NormalQuality,  AnalogPointType },      // Forward Flow
-        { 7000, 120.0,  NormalQuality,  AnalogPointType },      // Forward SetPoint is 120 volts
-        { 3500,   3.0,  NormalQuality,  AnalogPointType }       // Tap is in position +3
-    };
-
-    for ( auto message : incomingPointData )
-    {
-        regulator->handlePointData( message );
-    }
-    
-
-    BOOST_CHECK_CLOSE( -0.75, regulator->adjustVoltage( -0.75 ),    1e-6 );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
-
-    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 7000, signalMsg->getId() );     // ID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "Lower Set Point", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
-
-    const auto requestMsg = capController.requestMessages.front().get();
-
-    BOOST_REQUIRE( requestMsg );
-
-    BOOST_CHECK_EQUAL( 1020, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog value 119.250000 select pointid 7000",
-                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
-
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
-
-        BOOST_REQUIRE_EQUAL( 1, events.size() );
-
-        Cti::CapControl::RegulatorEvent event = events.front();
-
-        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::DecreaseSetPoint, event.eventType );
-        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
-        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
-        BOOST_CHECK_CLOSE( 119.25,                                           *event.setPointValue,     1e-6 );
-        BOOST_CHECK_EQUAL( 3,                                                *event.tapPosition );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Cogeneration_ReverseFlow_Success)
-{
-    regulator->loadAttributes( &attributes );
-
-    const std::vector<CtiPointDataMsg>    incomingPointData
-    {
-        { 7450,   5.0,  NormalQuality,  AnalogPointType },      // Regulator is in Cogeneration mode
-        { 7400,   1.0,  NormalQuality,  AnalogPointType },      // Reverse Flow
-        { 7200, 121.5,  NormalQuality,  AnalogPointType },      // Reverse SetPoint is 121.5 volts
-        { 3500,   4.0,  NormalQuality,  AnalogPointType }       // Tap is in position +4
-    };
-
-    for ( auto message : incomingPointData )
-    {
-        regulator->handlePointData( message );
-    }
-    
-
-    BOOST_CHECK_CLOSE( -0.75, regulator->adjustVoltage( -0.75 ),    1e-6 );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.signalMessages.size() );
-
-    const auto signalMsg = dynamic_cast<CtiSignalMsg *>( capController.signalMessages.front().get() );
-
-    BOOST_REQUIRE( signalMsg );
-
-    BOOST_CHECK_EQUAL( 7200, signalMsg->getId() );     // ID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "Lower Set Point", signalMsg->getText() );
-    BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
-                       signalMsg->getAdditionalInfo() );
-
-
-    BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
-
-    const auto requestMsg = capController.requestMessages.front().get();
-
-    BOOST_REQUIRE( requestMsg );
-
-    BOOST_CHECK_EQUAL( 1022, requestMsg->DeviceId() );  // PaoID of the 'SetPoint' LitePoint
-    BOOST_CHECK_EQUAL( "putvalue analog value 120.750000 select pointid 7200",
-                       requestMsg->CommandString() );   // The new value and the ID of the 'SetPoint' LitePoint
-
-
-    // Validate generated RegulatorEvent messages
-    {
-        std::vector<Cti::CapControl::RegulatorEvent>  events;
-        Cti::CapControl::Test::exportRegulatorEvents( events, test_limiter );
-
-        BOOST_REQUIRE_EQUAL( 1, events.size() );
-
-        Cti::CapControl::RegulatorEvent event = events.front();
-
-        BOOST_CHECK_EQUAL( Cti::CapControl::RegulatorEvent::DecreaseSetPoint, event.eventType );
-        BOOST_CHECK_EQUAL( 23456,                                             event.regulatorID );
-        BOOST_CHECK_EQUAL( Cti::CapControl::Phase_Unknown,                    event.phase );
-        BOOST_CHECK_CLOSE( 120.75,                                           *event.setPointValue,     1e-6 );
-        BOOST_CHECK_EQUAL( 4,                                                *event.tapPosition );
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_Mode_Documentation)
-{
-    regulator->loadAttributes( &attributes );
-
-    const std::map<double, ControlPolicy::ControlModes> testCases
-    {
-        {   -1.0,   ControlPolicy::LockedForward            },
-        {    0.0,   ControlPolicy::LockedForward            },
-        {    1.0,   ControlPolicy::LockedReverse            },
-        {    2.0,   ControlPolicy::ReverseIdle              },
-        {    3.0,   ControlPolicy::Bidirectional            },
-        {    4.0,   ControlPolicy::NeutralIdle              },
-        {    5.0,   ControlPolicy::Cogeneration             },
-        {    6.0,   ControlPolicy::ReactiveBidirectional    },
-        {    7.0,   ControlPolicy::BiasBidirectional        },
-        {    8.0,   ControlPolicy::BiasCogeneration         },
-        {    9.0,   ControlPolicy::ReverseCogeneration      },
-        {   10.0,   ControlPolicy::LockedForward            }
-    };
-
-    CtiPointDataMsg message { 7450,  0.0,  NormalQuality,  AnalogPointType };
-
-    for ( auto testCase : testCases )
-    {
-        message.setValue( testCase.first );
-
-        regulator->handlePointData( message );
-
-        BOOST_CHECK_EQUAL( regulator->getConfigurationMode(), testCase.second );
     }
 }
 

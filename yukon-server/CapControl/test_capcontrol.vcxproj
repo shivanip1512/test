@@ -555,6 +555,7 @@
     </ClCompile>
     <ClCompile Include="test_likeDayControl.cpp">
     </ClCompile>
+    <ClCompile Include="test_LoadTapChanger.cpp" />
     <ClCompile Include="test_main.cpp">
     </ClCompile>
     <ClCompile Include="test_PhaseOperatedVoltageRegulator.cpp">

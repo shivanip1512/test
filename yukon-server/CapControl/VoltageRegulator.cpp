@@ -20,6 +20,8 @@
 #include "RegulatorEvents.h"
 #include "std_helper.h"
 
+#include <boost/range/adaptor/map.hpp>
+
 using namespace boost::posix_time;
 using namespace Cti::Messaging::CapControl;
 
@@ -735,6 +737,8 @@ try
 {
     bool scanSent = false;
 
+    std::map<long, std::unique_ptr<CtiRequestMsg>> requests;
+
     for ( auto & action : _scanPolicy->IntegrityScan() )
     {
         scanSent = true;
@@ -746,6 +750,12 @@ try
 
         CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
 
+        //  Only send one scan request per pao ID
+        requests[request->DeviceId()] = std::move(request);
+    }
+
+    for ( auto & request : requests | boost::adaptors::map_values )
+    {
         const long pointPaoID = request->DeviceId();
 
         CtiCapController::getInstance()->manualCapBankControl( request.release() );
