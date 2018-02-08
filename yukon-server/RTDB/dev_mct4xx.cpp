@@ -3237,7 +3237,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
         if ( freeze_counter )
         {
             insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakFrozenOffset,
-                ReturnMsg, pi_kw, peak_demand_str, kw_time);
+                                  ReturnMsg, pi_kw, peak_demand_str, kw_time);
         }
     }
 
