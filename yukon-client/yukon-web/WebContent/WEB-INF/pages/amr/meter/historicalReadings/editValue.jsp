@@ -10,7 +10,7 @@
     <form:form id="manual-entry-form" commandName="backingBean" action="${saveUrl}" method="post">
         <cti:csrfToken/>
         <form:hidden path="pointId" />
-        <cti:formatDate var="dateTime" type="FULL" value="${backingBean.timestamp}"/>
+        <cti:formatDate var="dateTime" type="BOTH" value="${backingBean.timestamp}"/>
         <input type="hidden" name="editTimestamp" value="${dateTime}"/>
         <c:choose>
             <c:when test="${stateList == null}">

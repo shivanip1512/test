@@ -187,7 +187,7 @@ public class HistoricalReadingsController {
     @RequestMapping(value = "delete", method=RequestMethod.POST)
     public String deletePointValue(YukonUserContext userContext, int pointId, double value,
             String timestamp, FlashScope flash, ModelMap model) {
-        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.BOTH, userContext);
         DateTime dateTime = formatter.parseDateTime(timestamp).withZone(userContext.getJodaTimeZone());
         pointService.deletePointData(pointId, value, dateTime.toInstant(), userContext);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "value.deleteConfirmation", timestamp));
@@ -198,7 +198,7 @@ public class HistoricalReadingsController {
     @RequestMapping(value = "edit", method=RequestMethod.GET)
     public String editPointValue(YukonUserContext userContext, ModelMap model, int pointId, double value,
             String timestamp) {
-        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.BOTH, userContext);
         DateTime dateTime = formatter.parseDateTime(timestamp).withZone(userContext.getJodaTimeZone());
         PointBackingBean backingBean = new PointBackingBean();
         backingBean.setPointId(pointId);
@@ -225,7 +225,7 @@ public class HistoricalReadingsController {
     public String editPointValueSubmit(HttpServletResponse response, YukonUserContext userContext, 
            @ModelAttribute("backingBean") PointBackingBean backingBean, BindingResult bindingResult, 
            Double oldValue, String editTimestamp, ModelMap model, FlashScope flashScope) throws IOException {
-        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.FULL, userContext);
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.BOTH, userContext);
         DateTime dateTime = formatter.parseDateTime(editTimestamp).withZone(userContext.getJodaTimeZone());
         backingBean.setTimestamp(dateTime.toInstant());
         double newValue;

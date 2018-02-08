@@ -44,7 +44,7 @@
                                 <c:otherwise>
                                     <cti:url value="/meter/historicalReadings/edit" var="editUrl">
                                         <cti:param name="pointId" value="${pointId}"/>
-                                        <cti:formatDate var="dateTime" type="FULL" value="${point.pointDataTimeStamp}"/>
+                                        <cti:formatDate var="dateTime" type="BOTH" value="${point.pointDataTimeStamp}"/>
                                         <cti:param name="timestamp" value="${dateTime}"/>
                                         <cti:param name="value" value="${point.value}"/>
                                     </cti:url>
