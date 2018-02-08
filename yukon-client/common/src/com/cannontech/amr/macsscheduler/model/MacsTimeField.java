@@ -74,6 +74,8 @@ public class MacsTimeField {
     }
     
     static DateTime parseDate(int year, int month, int day, String time) {
+        int maxDateOfTheCurrentMonth = new DateTime().dayOfMonth().getMaximumValue();
+        day = day > maxDateOfTheCurrentMonth ? maxDateOfTheCurrentMonth : day;
         String date = new DateTime(year, month, day, 00, 00, 00).toString("MM/dd/yyyy") + " " + time;
         DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
         return formatter.parseDateTime(date);
