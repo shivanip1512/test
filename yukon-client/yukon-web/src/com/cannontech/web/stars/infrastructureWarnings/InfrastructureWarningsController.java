@@ -47,25 +47,16 @@ public class InfrastructureWarningsController {
     @Autowired private IDatabaseCache cache;
     @Autowired private DateFormattingService dateFormattingService;
 
-    private Instant lastAttemptedRefresh = null;
-
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
     private final static String widgetKey = "yukon.web.widgets.";
 
-    @PostConstruct
-    public void init() {
-        lastAttemptedRefresh = widgetService.getRunTime(false);
-    }
-    
     @RequestMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
-        lastAttemptedRefresh = new Instant();
         Map<String, Object> json = new HashMap<>();
         widgetService.initiateRecalculation();
         json.put("success", true);
         return json;
     }
-    
     
     @RequestMapping(value="updateWidget", method=RequestMethod.GET)
     public String updateWidget(ModelMap model, YukonUserContext userContext) {
@@ -79,7 +70,7 @@ public class InfrastructureWarningsController {
             warnings = warnings.subList(0,  10);
         }
         model.addAttribute("warnings",  warnings);
-        model.addAttribute("lastAttemptedRefresh", lastAttemptedRefresh);
+        model.addAttribute("lastAttemptedRefresh", widgetService.getRunTime(false));
         Instant nextRun = widgetService.getRunTime(true);
         if (nextRun.isAfterNow()) {
             model.addAttribute("nextRefresh", nextRun);

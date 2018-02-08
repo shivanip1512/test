@@ -72,12 +72,6 @@ public class DataCollectionController {
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     private final static String widgetKey = "yukon.web.widgets.";
-    private Instant lastAttemptedRefresh = null;
-    
-    @PostConstruct
-    public void init() {
-        lastAttemptedRefresh = dataCollectionWidgetService.getRunTime(false);
-    }
     
     @RequestMapping(value="updateChart", method=RequestMethod.GET)
     public @ResponseBody Map<String, Object> updateChart(String deviceGroup, Boolean includeDisabled, YukonUserContext userContext) throws Exception {
@@ -86,7 +80,7 @@ public class DataCollectionController {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
         json.put("summary",  summary);
-        json.put("lastAttemptedRefresh", lastAttemptedRefresh);
+        json.put("lastAttemptedRefresh", dataCollectionWidgetService.getRunTime(false));
         Instant nextRun = dataCollectionWidgetService.getRunTime(true);
         if (nextRun.isAfterNow()) {
             json.put("nextRefresh", nextRun);
@@ -102,7 +96,6 @@ public class DataCollectionController {
     
     @RequestMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
-        lastAttemptedRefresh = new Instant();
         Map<String, Object> json = new HashMap<>();
         dataCollectionWidgetService.collectData();
         json.put("success", true);
