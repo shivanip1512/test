@@ -37,7 +37,9 @@
                                 <c:when test="${point.pointDataTimeStamp == maxTimestamp}">
                                     <cti:msg2 var="disabledTitle" key=".editDisabled"/>
                                     <span title="${disabledTitle}"><cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" disabled="true"/></span>
+                                    <cti:checkRolesAndProperties value="MANAGE_POINT_DATA" level="OWNER">
                                     <span title="${disabledTitle}"><cm:dropdownOption key="components.button.delete.label" icon="icon-cross" disabled="true"/></span>
+                                    </cti:checkRolesAndProperties>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:url value="/meter/historicalReadings/edit" var="editUrl">
