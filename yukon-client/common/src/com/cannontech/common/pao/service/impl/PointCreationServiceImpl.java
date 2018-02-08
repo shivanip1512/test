@@ -73,6 +73,9 @@ public class PointCreationServiceImpl implements PointCreationService {
             break;
 
         case PointTypes.STATUS_POINT:
+            String stateZeroCtrl = stateZeroControl != null ? stateZeroControl.getControlCommand() : null;
+            String stateOneCtrl = stateOneControl != null ? stateOneControl.getControlCommand() : null;
+            
             point = PointFactory.createStatusPoint(name, 
                                                    paoIdentifier.getPaoId(), 
                                                    pointId, 
@@ -81,8 +84,8 @@ public class PointCreationServiceImpl implements PointCreationService {
                                                    initialState,
                                                    controlOffset,
                                                    controlType,
-                                                   stateZeroControl.getControlCommand(),
-                                                   stateOneControl.getControlCommand(),
+                                                   stateZeroCtrl,
+                                                   stateOneCtrl,
                                                    pointArchiveType,
                                                    pointArchiveInterval);
             break;
