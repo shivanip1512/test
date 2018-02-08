@@ -493,7 +493,7 @@ bool IVVCAlgorithm::checkAllZonesHaveExpectedBusses( CtiCCSubstationBusPtr subbu
     if( ! allZoneBanksOnSubbus )
     {
         CTILOG_ERROR( dout, "IVVC zone hierarchy mismatch on Substation Bus " << subbus->getPaoName() << " [" << subbus->getPaoId() <<
-                            "]: Devices may have been moved deleted unexpectedly. Disabling this bus." );
+                            "]: Devices may have been moved or deleted unexpectedly. Disabling this bus." );
     }
 
     return allZoneBanksOnSubbus;
