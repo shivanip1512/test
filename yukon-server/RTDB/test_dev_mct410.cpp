@@ -1100,7 +1100,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             const auto& points = retMsg->PointData();
 
             {
-                BOOST_REQUIRE_EQUAL(points.size(), 2);
+                BOOST_REQUIRE_EQUAL(points.size(), 3);
 
                 {
                     const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[0]);
@@ -1117,10 +1117,20 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
                     BOOST_REQUIRE(pdata);
 
+                    BOOST_CHECK_CLOSE(pdata->getValue(), 0.258, 0.0001);
+                    BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
+                    BOOST_CHECK_EQUAL(pdata->getString(), "Test MCT-410iL / DemandAccumulator21 = 0.258 @ 11/15/2009 12:51:08");
+                    BOOST_CHECK_EQUAL(pdata->getId(), 2);
+                }
+                {
+                    const CtiPointDataMsg *pdata = dynamic_cast<const CtiPointDataMsg *>(points[2]);
+
+                    BOOST_REQUIRE(pdata);
+
                     BOOST_CHECK_EQUAL(pdata->getValue(), 66052);
                     BOOST_CHECK_EQUAL(pdata->getQuality(), NormalQuality);
                     BOOST_CHECK_EQUAL(pdata->getString(), "Test MCT-410iL / PulseAccumulator1 = 66052.000 @ 12/22/2009 00:00:00");
-                    BOOST_CHECK_EQUAL(pdata->getId(), 2);
+                    BOOST_CHECK_EQUAL(pdata->getId(), 3);
                 }
             }
         }
@@ -1180,7 +1190,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK(retMsg->PointData().empty());
 
-            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / DemandAccumulator11 = (invalid data) [Invalid peak timestamp]");
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / DemandAccumulator11 = (invalid data) [Invalid peak timestamp]\nTest MCT-410iL / DemandAccumulator21 = (invalid data) [Invalid peak timestamp]");
         }
     }
 

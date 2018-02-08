@@ -182,6 +182,7 @@ protected:
         PointOffset_RateOffset  =  20,   //  gets added for rate B, C, D
 
         PointOffset_PeakOffset  =  10,
+        PointOffset_PeakFrozenOffset = 20,
 
         PointOffset_TOUBase     = 100,  //  this is okay because TOU only has peak and frozen demand - it must start at 111 anyway
     };
