@@ -81,6 +81,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
@@ -151,7 +152,7 @@ public class PointController {
                 Point point = pointModel.getPointBase().getPoint();
                 List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(
                     point.getPaoID(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()), request);
-                flashScope.setError(duplicatePointMessages, false);
+                flashScope.setError(duplicatePointMessages, FlashScopeListType.NONE);
             }
       
             return setUpModel(model, pointModel, userContext);

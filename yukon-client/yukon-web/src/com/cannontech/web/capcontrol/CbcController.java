@@ -50,6 +50,7 @@ import com.cannontech.web.capcontrol.service.CbcService;
 import com.cannontech.web.capcontrol.validators.CbcValidator;
 import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.rtu.service.RtuService;
@@ -79,7 +80,7 @@ public class CbcController {
         CapControlCBC cbc = cbcService.getCbc(id);
         model.addAttribute("mode", PageEditMode.VIEW);
         List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id, request);
-        flash.setError(duplicatePointMessages, false);
+        flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
 
         return setUpModel(model, cbc, userContext);
     }

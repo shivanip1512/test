@@ -6,9 +6,9 @@ import org.springframework.context.MessageSourceResolvable;
 
 public class FlashScopeMessage {
 
-	private List<? extends MessageSourceResolvable> messages;
+    private List<? extends MessageSourceResolvable> messages;
 	private FlashScopeMessageType type;
-	private boolean asBulletedList = true;
+	private FlashScopeListType listType = FlashScopeListType.BULLETED;
 	
 	public FlashScopeMessage(List<? extends MessageSourceResolvable> messages, FlashScopeMessageType type) {
 		this.messages = messages;
@@ -23,11 +23,11 @@ public class FlashScopeMessage {
 		return type;
 	}
 
-    public boolean isAsBulletedList() {
-        return asBulletedList;
+    public FlashScopeListType getListType() {
+        return listType;
     }
 
-    public void setAsBulletedList(boolean asBulletedList) {
-        this.asBulletedList = asBulletedList;
+    public void setListType(FlashScopeListType listType) {
+        this.listType = listType;
     }
 }

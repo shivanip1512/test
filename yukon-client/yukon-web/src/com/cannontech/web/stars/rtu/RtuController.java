@@ -42,6 +42,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.stars.rtu.service.RtuService;
@@ -67,7 +68,7 @@ public class RtuController {
         model.addAttribute("rtu", rtu);
         getPointsForModel(id, model);
         List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id, request);
-        flash.setError(duplicatePointMessages, false);
+        flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
 
         return "/rtu/rtuDetail.jsp";
     }
