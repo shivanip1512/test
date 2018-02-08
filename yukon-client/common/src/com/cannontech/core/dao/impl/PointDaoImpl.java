@@ -674,13 +674,23 @@ public class PointDaoImpl implements PointDao {
     }
     
     @Override
-    public List<LitePoint> getDuplicatePointsByPointIdentifiers(List<Integer> paoIds, List<PointIdentifier> points) {
+    public List<LitePoint> getAllDuplicatePoints(List<Integer> paoIds){
+        return getDuplicatePointsByPointIdentifiers(paoIds, null);
+    }
 
+    @Override
+    public List<LitePoint> getDuplicatePoints(List<Integer> paoIds, List<PointIdentifier> points){
+        return getDuplicatePointsByPointIdentifiers(paoIds, points);
+    }
+    
+    private List<LitePoint> getDuplicatePointsByPointIdentifiers(List<Integer> paoIds, List<PointIdentifier> points) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("WITH Duplicates AS (");
         sql.append("    SELECT dp.PointOffset, dp.PointType");
         sql.append("    FROM POINT as dp");
         sql.append("    WHERE PAObjectId").in(paoIds);
+        sql.append("    AND dp.PSEUDOFLAG").neq("P");
+        sql.append("    AND dp.PointOffset").neq(0);
         sql.append(buildPointIdentifierSql(points, "dp"));
         sql.append("    GROUP BY dp.PointOffset, dp.PointType");
         sql.append("    HAVING count(dp.PointId) > 1");
@@ -689,6 +699,8 @@ public class PointDaoImpl implements PointDao {
         sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
         sql.append("JOIN Duplicates d ON (d.PointOffset = p.PointOffset AND d.PointType = p.PointType)");
         sql.append("WHERE PAObjectId").in(paoIds);
+        sql.append("AND p.PSEUDOFLAG").neq("P");
+        sql.append("AND p.PointOffset").neq(0);
         sql.append(buildPointIdentifierSql(points, "p"));
         sql.append("ORDER BY p.PointType, p.PointOffset");
         return jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
@@ -713,7 +725,7 @@ public class PointDaoImpl implements PointDao {
      * ) )
      */
     private String buildPointIdentifierSql(List<PointIdentifier> points, String prefix) {
-        if(points.isEmpty()) {
+        if(points == null || points.isEmpty()) {
             return "";
         }
         List<String> pointsString =

@@ -37,4 +37,9 @@ public interface RtuDnpService {
      * @param rtuId - Id of pao
      */
     List<RtuPointDetail> getRtuPointDetail(int rtuId);
+
+    /**
+     * Returns list of devices that include parent and children.
+     */
+    List<Integer> getChildDevices(int rtuId);
 }

@@ -9,11 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBankControllerLogical;
 import com.cannontech.database.data.lite.LitePoint;
@@ -28,25 +27,16 @@ import com.google.common.collect.Lists;
 public class RtuServiceImpl implements RtuService{
     @Autowired private IDatabaseCache cache;
     @Autowired private PointDao pointDao;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
+    @Autowired private RtuDnpService rtuDnpService;
     
     @Override
     public List<MessageSourceResolvable> generateDuplicatePointsErrorMessages(int paoId, PointIdentifier pointIdentifier, HttpServletRequest request) {
         List<MessageSourceResolvable> messages = new ArrayList<>();
         List<LitePoint> points = getDuplicatePointsByTypeAndOffset(paoId, pointIdentifier);
         if (points.size() > 0) {
-            messages.add(new WebMessageSourceResolvable("yukon.web.modules.operator.rtu.pointUniqueness"));
-            System.out.println("Point type and offset must be unique across an RTU-DNP and its Logical devices:");
-            for (LitePoint point : points) {
-                System.out.println("-----Device:" + cache.getAllPaosMap().get(point.getPaobjectID()).getPaoName()
-                    + "---Name:" + point.getPointName() + "---Type:" + point.getPointTypeEnum() + "---Offset:"
-                    + point.getPointOffset());
-            }
-            
-            
-            
+            messages.add(new WebMessageSourceResolvable("yukon.web.modules.operator.rtu.pointUniqueness"));            
             points.forEach(point -> {
                 LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPaobjectID());
                 String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
@@ -77,17 +67,19 @@ public class RtuServiceImpl implements RtuService{
     private List<LitePoint> getDuplicatePointsByTypeAndOffset(int paoId, PointIdentifier pointIdentifier) {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         if (pao.getPaoType() == PaoType.RTU_DNP) {
+            List<Integer> parentAndChildren = rtuDnpService.getChildDevices(paoId);
             if (pointIdentifier != null) {
                 //RTU point edit screen
-                return getDuplicatePoints(paoId, Lists.newArrayList(pointIdentifier)); 
+                return pointDao.getDuplicatePoints(parentAndChildren, Lists.newArrayList(pointIdentifier));
             } 
             //RTU view
-            return getDuplicatePoints(paoId, new ArrayList<>());
+            return pointDao.getAllDuplicatePoints(parentAndChildren);
             
         } else if (pao.getPaoType() == PaoType.CBC_LOGICAL) {
             DBPersistent dbPersistent = dbPersistentDao.retrieveDBPersistent(pao);
             CapBankControllerLogical logicalCbc = (CapBankControllerLogical) dbPersistent;
             if(logicalCbc.getParentDeviceId() != null) {
+                List<Integer> parentAndChildren = rtuDnpService.getChildDevices(logicalCbc.getParentDeviceId());
                 if (pointIdentifier == null) {
                     //CBC Logical view
                     List<PointIdentifier> cbcLogicalPoints = pointDao.getLitePointsByPaObjectId(paoId).stream()
@@ -95,27 +87,14 @@ public class RtuServiceImpl implements RtuService{
                             .collect(Collectors.toList());
                     
                     if(!cbcLogicalPoints.isEmpty()) {
-                        return getDuplicatePoints(logicalCbc.getParentDeviceId(), cbcLogicalPoints);   
+                        return pointDao.getDuplicatePoints(parentAndChildren,  cbcLogicalPoints);
                     }
                 } else {
                     //CBC Logical point edit
-                    return getDuplicatePoints(logicalCbc.getParentDeviceId(), Lists.newArrayList(pointIdentifier)); 
+                    return pointDao.getDuplicatePoints(parentAndChildren,  Lists.newArrayList(pointIdentifier));
                 }
             }
         }
         return new ArrayList<>();
-    }
-    
-    private List<LitePoint> getDuplicatePoints(Integer parentRtuDeviceId, List<PointIdentifier> pointIdentifiers){
-        List<Integer> paoIds = Lists.newArrayList(parentRtuDeviceId);
-        List<LitePoint> points = new ArrayList<>();
-        // RTU-DNP and its Logical CBC devices
-        paoIds.addAll(deviceDao.getChildDevices(parentRtuDeviceId).stream()
-            .map(DisplayableDevice::getId)
-            .collect(Collectors.toList()));
-        if (!paoIds.isEmpty()) {
-            points.addAll(pointDao.getDuplicatePointsByPointIdentifiers(paoIds, pointIdentifiers));
-        }
-        return points;
     }
 }

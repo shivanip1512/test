@@ -85,10 +85,8 @@ public class RtuDnpServiceImpl implements RtuDnpService {
 
     }
 
-    /**
-     * Returns devices that also include parent
-     */
-    private List<Integer> getChildDevices(int rtuId){
+    @Override
+    public List<Integer> getChildDevices(int rtuId){
         List<Integer> paoIds = new ArrayList<>();
         paoIds.add(rtuId);
         paoIds.addAll(deviceDao.getChildDevices(rtuId).stream()
@@ -96,5 +94,4 @@ public class RtuDnpServiceImpl implements RtuDnpService {
                                                       .collect(Collectors.toList()));
         return paoIds;
     }
-
 }

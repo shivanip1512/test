@@ -33,6 +33,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
@@ -145,10 +146,13 @@ public class PointController {
                 pointModel.getPointBase().getPoint().setPhysicalOffset(false);
             }
 
-            Point point = pointModel.getPointBase().getPoint();
-            List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(
-                point.getPaoID(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()), request);
-            flashScope.setError(duplicatePointMessages, false);
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(base.getPoint().getPaoID());
+            if (pao.getPaoType() == PaoType.RTU_DNP || pao.getPaoType() == PaoType.CBC_LOGICAL) {
+                Point point = pointModel.getPointBase().getPoint();
+                List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(
+                    point.getPaoID(), new PointIdentifier(point.getPointTypeEnum(), point.getPointOffset()), request);
+                flashScope.setError(duplicatePointMessages, false);
+            }
       
             return setUpModel(model, pointModel, userContext);
         }

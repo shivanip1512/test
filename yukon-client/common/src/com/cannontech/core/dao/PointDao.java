@@ -254,10 +254,15 @@ public interface PointDao {
     
     /** Retrieves all points and puts them in a Map. */
     Map<PointType, List<PointInfo>> getAllPointNamesAndTypesForPAObject(int paobjectId);
+    
+    /**
+     * Returns all duplicate points for the specified pao IDs.
+     */
+    List<LitePoint> getAllDuplicatePoints(List<Integer> paoIds);
 
     /**
-     * Returns the list of duplicates points. If points is an empty list, all duplicate points for the
-     * specified devices will be returned, otherwise returns only duplicate listed points.
+     * Returns duplicate points for the specified pao IDs, limited to the set of specified point identifiers.
      */
-    List<LitePoint> getDuplicatePointsByPointIdentifiers(List<Integer> paoIds, List<PointIdentifier> points);
+    List<LitePoint> getDuplicatePoints(List<Integer> paoIds, List<PointIdentifier> points);
+
 }
