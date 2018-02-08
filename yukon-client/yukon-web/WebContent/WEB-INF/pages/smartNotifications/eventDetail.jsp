@@ -48,6 +48,8 @@
                     <tags:nameValue2 nameKey=".dateRange">
                         <dt:dateTime id="startDateFilter" name="startDate" value="${filter.startDate}"/>
                         <dt:dateTime id="endDateFilter" name="endDate" value="${filter.endDate}"/>
+                        <input type="hidden" id="startInstant" value="${filter.startInstant}"/>
+                        <input type="hidden" id="endInstant" value="${filter.endInstant}"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
@@ -113,7 +115,7 @@
             </tr>
             <tbody>
                 <c:forEach var="event" items="${events.resultList}">
-                    <tr>
+                    <tr class="js-event-${event.eventId}">
                         <td>
                             <cti:paoDetailUrl paoId="${event.deviceId}" newTab="true">
                                 ${fn:escapeXml(event.deviceName)}

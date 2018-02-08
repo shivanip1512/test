@@ -1,5 +1,6 @@
 package com.cannontech.web.smartNotifications;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,12 @@ public class SmartNotificationEventFilter {
     }
     public void setCategories(List<InfrastructureWarningDeviceCategory> categories) {
         this.categories = categories;
+    }
+    public Instant getStartInstant() {
+        return startDate.toInstant();
+    }
+    public Instant getEndInstant() {
+        return endDate.toInstant();
     }
     
 

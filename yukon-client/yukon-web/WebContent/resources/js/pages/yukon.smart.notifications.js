@@ -75,12 +75,11 @@ yukon.smart.notifications = (function () {
             eventData = yukon.fromJson('#eventsjson'),
             toAdd = [],
             options = {},
-            startDate = $('#startDateFilter').val(),
-            endDate = $('#endDateFilter').val();
+            startDateInstant = $('#startInstant').val(),
+            endDateInstant = $('#endInstant').val();
         
-        var timeZone = $('#startDateFilter').data('timeZoneShort');
-        options.begin = new Date(startDate + ' ' + timeZone).getTime();
-        options.end = new Date(endDate + ' ' + timeZone).getTime();
+        options.begin = new Date(startDateInstant).getTime();
+        options.end = new Date (endDateInstant).getTime();
         options.showLabels = true;
         // Reverse order to add oldest first.
         eventData.reverse().forEach(function (event) {
@@ -91,17 +90,16 @@ yukon.smart.notifications = (function () {
             eventMessageSpan.find('strong').text(event.deviceName);
             event.message = eventMessageSpan.html() + " - " + statusMessage.text();
             event.timestamp = event.timestamp.millis;
+            //change the timezone if needed
+            var row = $('.js-event-' + event.id);
+            var timeText = moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);
+            row.find('.js-timestamp').text(timeText);
+            
             toAdd.push(event);
         });
         options.events = toAdd;
         timeline.timeline(options);
-        timeline.timeline('draw');
-        //update timestamps in table
-        $('.js-timestamp').each(function () {
-            var timeText = moment($(this).html()).tz(yg.timezone).format(yg.formats.date.full);
-            $(this).text(timeText);
-        });
-        
+        timeline.timeline('draw'); 
     },
     
     updateSubscriptions = function () {
@@ -112,6 +110,16 @@ yukon.smart.notifications = (function () {
                 tableContainer.html(data);
                 tableContainer.data('url', yukon.url('/notifications/subscriptions?' + form.serialize()));
             }
+        });
+    },
+    
+    refreshExistingSubscriptions = function (existingSubscriptionsTable, data) {
+        var existingPopup = existingSubscriptionsTable.closest('.js-smart-notifications-popup'),
+            type = existingPopup.find('#type').val(),
+            monitorId = existingPopup.find('#monitorId').val();
+        existingPopup.load(yukon.url('/notifications/subscription/existingPopup/' + type + "?monitorId=" + monitorId), function () {
+            existingPopup.find('#successMessage').text(data.successMessage);
+            existingPopup.find('#successMessage').removeClass('dn');
         });
     },
     
@@ -137,12 +145,6 @@ yukon.smart.notifications = (function () {
                 updateTypeFields(popup);
             });
             
-            /** Change buttons for Existing Subscriptions popup */
-            $('.js-smart-notifications-popup').on('dialogfocus', function (ev) {
-                var existingDialog = $('#existingSubscriptions').closest('.ui-dialog-content');
-                existingDialog.dialog("option", "buttons", yukon.ui.buttons({cancelOmit:true}));
-            });
-            
             /** 'Save' button clicked on the notifications popup. */
             $(document).on('yukon:notifications:save', function (ev) {
                 var popup = $(ev.target),
@@ -150,12 +152,18 @@ yukon.smart.notifications = (function () {
                 form.ajaxSubmit({
                     success: function (data, status, xhr, $form) {
                         popup.dialog('close');
-                        $('#existingSubscriptions').closest('.js-smart-notifications-popup').dialog('close');
-                        //refresh subscriptions
+                        var existingSubscriptionsTable = $('.js-existing-subscriptions:visible');
+                        //refresh subscriptions if on profile page
                         if ($('#filter-form').is(":visible")) {
                             updateSubscriptions();
                         }
-                        yukon.ui.alertSuccess(data.successMessage);
+                        //refresh subscriptions in Existing Subscriptions popup
+                        if (existingSubscriptionsTable.length > 0) {
+                            refreshExistingSubscriptions(existingSubscriptionsTable, data);
+                        } else {
+                            yukon.ui.alertSuccess(data.successMessage);
+                        }
+                        
                     },
                     error: function (xhr, status, error, $form) {
                         form.html(xhr.responseText);
@@ -173,8 +181,14 @@ yukon.smart.notifications = (function () {
                     type: 'post'
                 }).done(function (data) {
                     if (data.successMessage) {
-                        yukon.ui.alertSuccess(data.successMessage)
-                        updateSubscriptions();
+                        if ($('#filter-form').is(":visible")) {
+                            yukon.ui.alertSuccess(data.successMessage)
+                            updateSubscriptions();
+                        }
+                        var existingSubscriptionsTable = $('.js-existing-subscriptions:visible');
+                        if (existingSubscriptionsTable.length > 0) {
+                            refreshExistingSubscriptions(existingSubscriptionsTable, data);
+                        }
                     } else if (data.errorMessage) {
                         yukon.ui.alertError(data.errorMessage)
                     }

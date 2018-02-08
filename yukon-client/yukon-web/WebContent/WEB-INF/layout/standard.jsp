@@ -273,7 +273,7 @@
             </c:forEach>
        </cti:url>
        <div id="subscriptionPopup" class="dn js-smart-notifications-popup" data-dialog data-url="${subscriptionUrl}" 
-        data-event="yukon:notifications:save" data-width="600" data-load-event="yukon:notifications:load"
+        data-cancel-omit data-width="600" data-load-event="yukon:notifications:load"
         data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"></div>
     </c:if>
 </body>

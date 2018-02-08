@@ -274,10 +274,6 @@ public class SmartNotificationsController {
             model.addAttribute("deviceDataMonitors", deviceDataMonitors);
             subscriptions = ddmHelper.retrieveSubscriptionsForMonitor(model, request, subscriptions);
         }
-        //if there are no existing subscriptions for that type, go straight to creating a new one
-        if (subscriptions.size() == 0) {
-            return subscriptionPopup(model, userContext, type, request);
-        }
         model.addAttribute("existingSubscriptions", subscriptions);
         model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
         model.addAttribute("type", type);

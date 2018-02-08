@@ -37,6 +37,7 @@
     
     <!-- Subscription popup -->
     <entry key="yukon.web.modules.smartNotifications.existingSubscriptions.message">Select from an existing subscription to edit or click on the Add button to add a new subscription.</entry>
+    <entry key="yukon.web.modules.smartNotifications.noSubscriptions.message">You are currently not subscribed to any {0} notifications.  Click on the Add button to add a new subscription.</entry>
     <entry key="yukon.web.modules.smartNotifications.existingSubscriptions.title">Existing {0} Subscriptions</entry>
     <entry key="yukon.web.modules.smartNotifications.actionLink">Notifications</entry>
     <entry key="yukon.web.modules.smartNotifications.popup.title">Notification Setup</entry>
