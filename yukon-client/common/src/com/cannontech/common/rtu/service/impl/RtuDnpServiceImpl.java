@@ -85,6 +85,9 @@ public class RtuDnpServiceImpl implements RtuDnpService {
 
     }
 
+    /**
+     * Returns devices that also include parent
+     */
     private List<Integer> getChildDevices(int rtuId){
         List<Integer> paoIds = new ArrayList<>();
         paoIds.add(rtuId);
