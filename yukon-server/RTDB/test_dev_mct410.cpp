@@ -1190,7 +1190,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK(retMsg->PointData().empty());
 
-            BOOST_CHECK_EQUAL(retMsg->ResultString(), "Test MCT-410iL / DemandAccumulator11 = (invalid data) [Invalid peak timestamp]\nTest MCT-410iL / DemandAccumulator21 = (invalid data) [Invalid peak timestamp]");
+            BOOST_CHECK_EQUAL(retMsg->ResultString(), 
+                              "Test MCT-410iL / DemandAccumulator11 = (invalid data) [Invalid peak timestamp]"
+                              "\nTest MCT-410iL / DemandAccumulator21 = (invalid data) [Invalid peak timestamp]");
         }
     }
 
