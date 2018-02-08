@@ -141,6 +141,9 @@ public class MaintenanceScheduler {
         } else {
             millisecondsUntilRun = maintenanceService.getMillisecondsUntilRun();
         }
+        if (millisecondsUntilRun < 0) {
+            millisecondsUntilRun = 0;
+        }
         log.info("Maintenance task will start after "
             + DurationFormatUtils.formatDuration(millisecondsUntilRun, "HH:mm:ss.SSS", true) + " hours");
         return millisecondsUntilRun;
