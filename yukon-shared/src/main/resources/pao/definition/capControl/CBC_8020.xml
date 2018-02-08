@@ -41,9 +41,6 @@
         <pointInfo name="Emergency OV Threshold" init="true"/>
         <pointInfo name="Emergency UV Threshold" init="true"/>
         <pointInfo name="Enable SCADA Override" attributes="SCADA_OVERRIDE_ENABLE"/>
-        <pointInfo name="Enable OVUV Control" attributes="ENABLE_OVUV_CONTROL"/>
-        <pointInfo name="Enable Time Control" attributes="ENABLE_TIME_CONTROL"/>
-        <pointInfo name="Enable VAR Control" attributes="ENABLE_VAR_CONTROL"/>
         <pointInfo name="Firmware Version" init="true" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="Firmware Major Version" attributes="FIRMWARE_VERSION_MAJOR"/>
         <pointInfo name="Firmware Minor Version" attributes="FIRMWARE_VERSION_MINOR"/>
@@ -66,7 +63,7 @@
         <pointInfo name="Operation Failed" init="true"/>
         <pointInfo name="OV Op Count" init="true" attributes="OVER_VOLTAGE_COUNT"/>
         <pointInfo name="OV Threshold" init="true" attributes="OVER_VOLTAGE_THRESHOLD"/>
-        <pointInfo name="OVUV Control" init="true" attributes="AUTO_VOLTAGE_CONTROL"/>
+        <pointInfo name="OVUV Control" init="true" attributes="AUTO_VOLTAGE_CONTROL,ENABLE_OVUV_CONTROL"/>
         <pointInfo name="Phase A Fundamental Current Average"/>
         <pointInfo name="Phase A Fundamental Voltage Average"/>
         <pointInfo name="Phase A Reverse Power Flow"/>
@@ -101,12 +98,12 @@
         <pointInfo name="Temperature Low" init="true"/>
         <pointInfo name="Three-Phase Current Average Interval"/>
         <pointInfo name="Three-Phase Voltage Average Interval"/>
-        <pointInfo name="Time Control"/>
+        <pointInfo name="Time Control" attributes="ENABLE_TIME_CONTROL"/>
         <pointInfo name="Total Op Count" init="true" attributes="TOTAL_OPERATION_COUNT"/>
         <pointInfo name="UDP Port" init="true" attributes="UDP_PORT"/>
         <pointInfo name="UV Op Count" init="true" attributes="UNDER_VOLTAGE_COUNT"/>
         <pointInfo name="UV Threshold" init="true" attributes="UNDER_VOLTAGE_THRESHOLD"/>
-        <pointInfo name="VAR Control"/>
+        <pointInfo name="VAR Control" attributes = "ENABLE_VAR_CONTROL"/>
         <pointInfo name="VAR Control Total Voltage"/>
         <pointInfo name="VAr Reverse Power Flow"/>
         <pointInfo name="Voltage Control Flags" init="true" attributes="VOLTAGE_CONTROL"/>
