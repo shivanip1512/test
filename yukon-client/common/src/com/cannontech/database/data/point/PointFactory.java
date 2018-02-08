@@ -212,7 +212,7 @@ public final class PointFactory {
 
     public static synchronized PointBase createStatusPoint(String pointName, Integer paoID, Integer pointID,
             int pointOffset, int stateGroupId, int initialState, Integer controlOffset, StatusControlType controlType,
-            ControlStateType stateZeroControl, ControlStateType stateOneControl, PointArchiveType pointArchiveType,
+            String stateZeroControl, String stateOneControl, PointArchiveType pointArchiveType,
             PointArchiveInterval pointArchiveInterval) {
         
         // Create new point
@@ -232,10 +232,10 @@ public final class PointFactory {
         ((StatusPoint) newPoint).getPointStatusControl().setControlType(controlType.getControlName());
 
         if (stateZeroControl != null) {
-            ((StatusPoint) newPoint).getPointStatusControl().setStateZeroControl(stateZeroControl.getControlCommand());
+            ((StatusPoint) newPoint).getPointStatusControl().setStateZeroControl(stateZeroControl);
         }
         if (stateOneControl != null) {
-            ((StatusPoint) newPoint).getPointStatusControl().setStateOneControl(stateOneControl.getControlCommand());
+            ((StatusPoint) newPoint).getPointStatusControl().setStateOneControl(stateOneControl);
         }
 
         return newPoint;

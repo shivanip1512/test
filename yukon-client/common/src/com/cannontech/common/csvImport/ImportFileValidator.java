@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -319,6 +320,11 @@ public class ImportFileValidator {
                 try {
                     if(column.isUppercaseValue()) {
                         value = value.toUpperCase();
+                    }
+                    
+                    if (StringUtils.equalsIgnoreCase("STATE 1 COMMAND", columnName)
+                        || StringUtils.equalsIgnoreCase("STATE 2 COMMAND", columnName)) {
+                        continue;
                     }
                     column.getType().getMethod("valueOf", String.class).invoke(null, value);
                     continue;

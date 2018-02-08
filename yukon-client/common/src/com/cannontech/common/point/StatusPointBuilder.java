@@ -30,8 +30,8 @@ public class StatusPointBuilder extends PointBuilder {
     private Integer closeTime2 = null;
     private Integer commandTimeout = null;
     private int controlOffset = 0;
-    private ControlStateType state1Command = ControlStateType.OPEN;
-    private ControlStateType state2Command = ControlStateType.CLOSE;
+    private String state1Command = ControlStateType.OPEN.getControlCommand();
+    private String state2Command = ControlStateType.CLOSE.getControlCommand();
     
     protected StatusPointBuilder(int paoId, int pointId, String pointName, boolean isDisabled, PointPropertyValueDao pointPropertyValueDao) {
         super(paoId, pointId, pointName, isDisabled, pointPropertyValueDao);
@@ -142,11 +142,11 @@ public class StatusPointBuilder extends PointBuilder {
         this.controlType = controlType;
     }
     
-    public void setState1Command(ControlStateType state1Command) {
+    public void setState1Command(String state1Command) {
         this.state1Command = state1Command;
     }
     
-    public void setState2Command(ControlStateType state2Command) {
+    public void setState2Command(String state2Command) {
         this.state2Command = state2Command;
     }
     

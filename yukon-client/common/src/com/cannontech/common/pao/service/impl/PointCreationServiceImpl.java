@@ -81,8 +81,8 @@ public class PointCreationServiceImpl implements PointCreationService {
                                                    initialState,
                                                    controlOffset,
                                                    controlType,
-                                                   stateZeroControl,
-                                                   stateOneControl,
+                                                   stateZeroControl.getControlCommand(),
+                                                   stateOneControl.getControlCommand(),
                                                    pointArchiveType,
                                                    pointArchiveInterval);
             break;

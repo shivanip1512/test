@@ -1,6 +1,23 @@
 package com.cannontech.common.bulk.processor;
 
-import static com.cannontech.common.bulk.model.PointImportParameters.*;
+import static com.cannontech.common.bulk.model.PointImportParameters.ARCHIVE_DATA;
+import static com.cannontech.common.bulk.model.PointImportParameters.CLOSE_TIME_1;
+import static com.cannontech.common.bulk.model.PointImportParameters.CLOSE_TIME_2;
+import static com.cannontech.common.bulk.model.PointImportParameters.COMMAND_TIMEOUT;
+import static com.cannontech.common.bulk.model.PointImportParameters.CONTROL_INHIBIT;
+import static com.cannontech.common.bulk.model.PointImportParameters.CONTROL_POINT_OFFSET;
+import static com.cannontech.common.bulk.model.PointImportParameters.CONTROL_TYPE;
+import static com.cannontech.common.bulk.model.PointImportParameters.DEVICE_NAME;
+import static com.cannontech.common.bulk.model.PointImportParameters.DEVICE_TYPE;
+import static com.cannontech.common.bulk.model.PointImportParameters.DISABLED;
+import static com.cannontech.common.bulk.model.PointImportParameters.INITIAL_STATE;
+import static com.cannontech.common.bulk.model.PointImportParameters.POINT_NAME;
+import static com.cannontech.common.bulk.model.PointImportParameters.POINT_OFFSET;
+import static com.cannontech.common.bulk.model.PointImportParameters.STALE_DATA_TIME;
+import static com.cannontech.common.bulk.model.PointImportParameters.STALE_DATA_UPDATE;
+import static com.cannontech.common.bulk.model.PointImportParameters.STATE_1_COMMAND;
+import static com.cannontech.common.bulk.model.PointImportParameters.STATE_2_COMMAND;
+import static com.cannontech.common.bulk.model.PointImportParameters.STATE_GROUP;
 
 import com.cannontech.common.bulk.model.StaleDataUpdateStyle;
 import com.cannontech.common.csvImport.ImportFileFormat;
@@ -14,7 +31,6 @@ import com.cannontech.common.point.StatusPointBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 
@@ -81,10 +97,10 @@ public class StatusPointImportProcessor extends PointImportProcessor {
                 builder.setCloseTime2(Integer.valueOf(row.getValue(CLOSE_TIME_2.NAME)));
             }
             if(row.hasValue(STATE_1_COMMAND.NAME)) {
-                builder.setState1Command(ControlStateType.valueOf(row.getValue(STATE_1_COMMAND.NAME)));
+                builder.setState1Command(row.getValue(STATE_1_COMMAND.NAME).toLowerCase());
             }
             if(row.hasValue(STATE_2_COMMAND.NAME)) {
-                builder.setState2Command(ControlStateType.valueOf(row.getValue(STATE_2_COMMAND.NAME)));
+                builder.setState2Command(row.getValue(STATE_2_COMMAND.NAME).toLowerCase());
             }
             if(row.hasValue(COMMAND_TIMEOUT.NAME)) {
                 builder.setCommandTimeout(Integer.valueOf(row.getValue(COMMAND_TIMEOUT.NAME)));
