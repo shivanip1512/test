@@ -54,9 +54,7 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DrReconciliationServiceImpl implements DrReconciliationService {
@@ -478,15 +476,11 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                                   .collect(Collectors.toSet());
         Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointDataOnce(statusPointIds);
 
-        BiMap<LitePoint, PaoIdentifier> pointsToPaos = deviceToPoint.inverse();
-        final ImmutableMap<Integer, LitePoint> pointLookup =
-            Maps.uniqueIndex(pointsToPaos.keySet(), LitePoint.ID_FUNCTION);
-
+        Map<Integer, Integer> pointsToPaos = deviceToPoint.inverse().entrySet()
+                                                                    .stream()
+                                                                    .collect(Collectors.toMap(p -> p.getKey().getPointID(), p -> p.getValue().getPaoId()));
         pointValues.forEach(pointValue -> {
-            Integer pointId = pointValue.getId();
-            LitePoint litePoint = pointLookup.get(pointId);
-            Integer deviceId = pointsToPaos.get(litePoint).getPaoId();
-
+            Integer deviceId = pointsToPaos.get(pointValue.getId());
             LcrDeviceStatus lcrStatus = PointStateHelper.decodeRawState(LcrDeviceStatus.class, pointValue.getValue());
 
             if (lcrStatus == LcrDeviceStatus.IN_SERVICE) {

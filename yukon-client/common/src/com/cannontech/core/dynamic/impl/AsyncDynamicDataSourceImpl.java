@@ -466,36 +466,22 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     public void setDispatchProxy(DispatchProxy dispatchProxy) {
         this.dispatchProxy = dispatchProxy;
     }
-    
+
     private Set<LitePointData> getPointData(Set<Integer> pointIds) {
-
-        Set<Integer> notCachedPointIds = new HashSet<>(pointIds);
         Set<LitePointData> pointData = new HashSet<>((int) (pointIds.size() / 0.75f) + 1);
-
-        // Get whatever we can out of the cache first
-        for (Integer id : pointIds) {
-            LitePointData pd = dynamicDataCache.getPointData(id);
-            if (pd != null) {
-                pointData.add(pd);
-                notCachedPointIds.remove(id);
-            }
-        }
+        List<List<Integer>> notCachedPartitionedPointIds = extractPointDataFromCache(pointIds, pointData);
 
         // Request to dispatch for the rest
-        if (notCachedPointIds.size() > 0) {
-            // break the request into partitions of 1000 so we reduce the risk of the request timing out
-            List<List<Integer>> notCachedPointIdsPartitioned =
-                Lists.partition(Lists.newArrayList(notCachedPointIds), 1000);
-            for (List<Integer> notCachedPointIdsPartition : notCachedPointIdsPartitioned) {
+        if (!notCachedPartitionedPointIds.isEmpty()) {
+            notCachedPartitionedPointIds.forEach(partitionedPointIds -> {
                 Set<LitePointData> retrievedPointData =
-                    dispatchProxy.getPointData(Sets.newHashSet(notCachedPointIdsPartition));
+                    dispatchProxy.getPointData(Sets.newHashSet(partitionedPointIds));
                 pointData.addAll(retrievedPointData);
-            }
+            });
         }
-
         return pointData;
     }
-    
+
     private LitePointData getPointData(int pointId) {
         LitePointData pointData = dynamicDataCache.getPointData(pointId);
         if (pointData == null) {
@@ -515,32 +501,44 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
     @Override
     public Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds) {
-        Set<Integer> notCachedPointIds = new HashSet<>(pointIds);
         Set<LitePointData> pointData = new HashSet<>((int) (pointIds.size() / 0.75f) + 1);
-
-        // Get whatever we can out of the cache first
-        for (Integer id : pointIds) {
-            LitePointData pd = dynamicDataCache.getPointData(id);
-            if (pd != null) {
-                pointData.add(pd);
-                notCachedPointIds.remove(id);
-            }
-        }
+        List<List<Integer>> notCachedPartitionedPointIds = extractPointDataFromCache(pointIds, pointData);
 
         // Request to dispatch for the rest
+        if (!notCachedPartitionedPointIds.isEmpty()) {
+            notCachedPartitionedPointIds.forEach(partitionedPointIds -> {
+                Set<LitePointData> retrievedPointData =
+                    dispatchProxy.getPointDataOnce(Sets.newHashSet(partitionedPointIds));
+                pointData.addAll(retrievedPointData);
+            });
+        }
+        return pointData;
+    }
+
+    /**
+     * Method tries to get the point data from dynamicDataCache for given points
+     * 
+     * @return Partitioned list of point ids which are not available in cache
+     */
+    private List<List<Integer>> extractPointDataFromCache(Set<Integer> pointIds, Set<LitePointData> pointData) {
+        Set<Integer> notCachedPointIds = new HashSet<>(pointIds);
+
+        // Get whatever we can out of the cache first
+        pointIds.forEach(pointId -> {
+            LitePointData pd = dynamicDataCache.getPointData(pointId);
+            if (pd != null) {
+                pointData.add(pd);
+                notCachedPointIds.remove(pointId);
+            }
+        });
+        List<List<Integer>> notCachedPartitionedPointIds = Collections.emptyList();
         if (notCachedPointIds.size() > 0) {
             if (!pointIds.isEmpty()) {
                 // break the request into partitions of 1000 so we reduce the risk of the request timing out
-                List<List<Integer>> partitionedPointIds = Lists.partition(Lists.newArrayList(notCachedPointIds), 1000);
-
-                partitionedPointIds.forEach(pointIdPartition -> {
-                    Set<LitePointData> retrievedPointData =
-                        dispatchProxy.getPointDataOnce(Sets.newHashSet(pointIdPartition));
-                    pointData.addAll(retrievedPointData);
-                });
+                notCachedPartitionedPointIds = Lists.partition(Lists.newArrayList(notCachedPointIds), 1000);
             }
         }
-        return pointData;
+        return notCachedPartitionedPointIds;
     }
 
 }
