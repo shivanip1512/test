@@ -67,7 +67,7 @@ public class RtuServiceImpl implements RtuService{
     private List<LitePoint> getDuplicatePointsByTypeAndOffset(int paoId, PointIdentifier pointIdentifier) {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         if (pao.getPaoType() == PaoType.RTU_DNP) {
-            List<Integer> parentAndChildren = rtuDnpService.getChildDevices(paoId);
+            List<Integer> parentAndChildren = rtuDnpService.getParentAndChildDevices(paoId);
             if (pointIdentifier != null) {
                 //RTU point edit screen
                 return pointDao.getDuplicatePoints(parentAndChildren, Lists.newArrayList(pointIdentifier));
@@ -79,7 +79,7 @@ public class RtuServiceImpl implements RtuService{
             DBPersistent dbPersistent = dbPersistentDao.retrieveDBPersistent(pao);
             CapBankControllerLogical logicalCbc = (CapBankControllerLogical) dbPersistent;
             if(logicalCbc.getParentDeviceId() != null) {
-                List<Integer> parentAndChildren = rtuDnpService.getChildDevices(logicalCbc.getParentDeviceId());
+                List<Integer> parentAndChildren = rtuDnpService.getParentAndChildDevices(logicalCbc.getParentDeviceId());
                 if (pointIdentifier == null) {
                     //CBC Logical view
                     List<PointIdentifier> cbcLogicalPoints = pointDao.getLitePointsByPaObjectId(paoId).stream()

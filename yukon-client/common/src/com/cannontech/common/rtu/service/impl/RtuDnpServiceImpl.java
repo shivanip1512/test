@@ -73,7 +73,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
             return rtuDnpDao.getRtuPointDetail(filter.getDeviceIds(), filter.getPointNames(), filter.getTypes(),
                 direction, sortBy, paging);
         } else {
-            return rtuDnpDao.getRtuPointDetail(getChildDevices(rtuId), filter.getPointNames(), filter.getTypes(),
+            return rtuDnpDao.getRtuPointDetail(getParentAndChildDevices(rtuId), filter.getPointNames(), filter.getTypes(),
                 direction, sortBy, paging);
         }
     }
@@ -86,7 +86,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
     }
 
     @Override
-    public List<Integer> getChildDevices(int rtuId){
+    public List<Integer> getParentAndChildDevices(int rtuId){
         List<Integer> paoIds = new ArrayList<>();
         paoIds.add(rtuId);
         paoIds.addAll(deviceDao.getChildDevices(rtuId).stream()

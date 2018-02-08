@@ -41,5 +41,6 @@ public interface RtuDnpService {
     /**
      * Returns list of devices that include parent and children.
      */
-    List<Integer> getChildDevices(int rtuId);
+
+    List<Integer> getParentAndChildDevices(int rtuId);
 }
