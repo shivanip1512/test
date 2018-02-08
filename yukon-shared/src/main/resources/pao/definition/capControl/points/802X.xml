@@ -379,18 +379,10 @@
         <decimalplaces value="0"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <point offset="-5" type="Status">
+    <point offset="-4" type="Status">
         <name>Enable Time Control</name>
         <controlType value="LATCH"/>
         <controlOffset value="23"/>
-        <stateZeroControl value="CLOSE"/>
-        <stateOneControl value="OPEN"/>
-        <stategroup value="YesNo"/>
-    </point>
-    <point offset="-4" type="Status">
-        <name>Enable Temperature Control</name>
-        <controlType value="LATCH"/>
-        <controlOffset value="16"/>
         <stateZeroControl value="CLOSE"/>
         <stateOneControl value="OPEN"/>
         <stategroup value="YesNo"/>
@@ -529,8 +521,22 @@
     </point>
     <point offset="89" type="Status">
         <name>OVUV Control</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="90" type="Status">
+        <name>VAR Control</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="91" type="Status">
+        <name>Time Control</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="92" type="Status">
+        <name>Temperature Control</name>
         <controlType value="LATCH"/>
-        <controlOffset value="14"/>
+        <controlOffset value="16"/>
+        <stateZeroControl value="CLOSE"/>
+        <stateOneControl value="OPEN"/>
         <stategroup value="TrueFalse"/>
     </point>
     <point offset="125" type="Status">
