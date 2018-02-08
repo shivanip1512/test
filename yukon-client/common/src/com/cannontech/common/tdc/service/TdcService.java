@@ -10,6 +10,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tdc.dao.DisplayDataDao.SortBy;
+import com.cannontech.common.tdc.model.AlarmFilter;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.core.dao.DuplicateException;
@@ -146,7 +147,8 @@ public interface TdcService {
      */
     SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone,
                                                     PagingParameters paging, SortBy sortBy,
-                                                    Direction direction, DateTime date);
+                                                    Direction direction, DateTime date,
+                                                    AlarmFilter alarmFilter);
 
     int getDisplayDataCount(int displayId, DateTime date);
 
@@ -154,5 +156,8 @@ public interface TdcService {
      * Delete custom display.
      */
     void deleteCustomDisplay(int displayId);
+
+    List<DisplayData> getAlarms(AlarmFilter alarmFilter, DateTimeZone timeZone, DateTime date, SortBy sortBy,
+                                Direction direction);
 
 }

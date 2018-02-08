@@ -8,11 +8,26 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/page"/>
-<form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">
-    <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}" cssClass="js-date"/></span>
+<form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">        
+    <cti:csrfToken />
+    <c:choose>
+        <c:when test="${display.displayId == 4 && backingBean.alarmFilter eq 'ALARM_HISTORY'}">
+            <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
+            <inline class="fr">&nbsp;&nbsp;</inline>
+            <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}" inputClass="fr"/>
+        </c:when>
+        <c:when test="${display.displayId == 4}">
+            <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}" inputClass="fr"/>
+        </c:when>
+        <c:otherwise>
+            <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
+        </c:otherwise>
+    </c:choose>
 </form:form>
+<input id="display-id" type="hidden" value="${display.displayId}">
 <c:url var="url" value="/tools/data-viewer/${display.displayId}/page">
     <cti:param name="date" value="${backingBean.date}"/>
+    <cti:param name="alarmFilter" value="${backingBean.alarmFilter}"/>
 </c:url>
 <div data-url="${url}" data-static>
     <table class="compact-results-table has-actions has-alerts">

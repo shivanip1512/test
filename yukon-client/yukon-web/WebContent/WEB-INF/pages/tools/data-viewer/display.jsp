@@ -32,6 +32,7 @@
         <c:if test="${display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
             <cti:url var="download" value="/tools/data-viewer/${display.displayId}/download">
                 <cti:param name="date" value="${backingBean.date}"/>
+                <cti:param name="alarmFilter" value="${backingBean.alarmFilter}"/>
             </cti:url>               
             <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
         </c:if>

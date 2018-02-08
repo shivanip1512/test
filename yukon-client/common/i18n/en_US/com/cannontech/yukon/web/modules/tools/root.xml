@@ -213,6 +213,11 @@
     <entry key="yukon.web.modules.tools.tdc.DESCRIPTION">Description</entry>    
     <entry key="yukon.web.modules.tools.tdc.TAG">Tag</entry>    
     
+    <entry key="yukon.web.modules.tools.tdc.alarmFilters.NO_FILTER">No Filter</entry>  
+    <entry key="yukon.web.modules.tools.tdc.alarmFilters.UNACKNOWLEDGED_ALARMS">Unacknowledged Alarms</entry>  
+    <entry key="yukon.web.modules.tools.tdc.alarmFilters.ACTIVE_ALARMS">Active Alarms</entry>  
+    <entry key="yukon.web.modules.tools.tdc.alarmFilters.ALARM_HISTORY">Alarm History</entry>  
+    
     <entry key="yukon.web.modules.tools.pao.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.pageHeading">{0}</entry>
     <entry key="yukon.web.modules.tools.pao.crumbTitle">{0}</entry>

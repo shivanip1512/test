@@ -36,6 +36,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.dao.DisplayDataDao;
 import com.cannontech.common.tdc.dao.DisplayDataDao.SortBy;
+import com.cannontech.common.tdc.model.AlarmFilter;
 import com.cannontech.common.tdc.model.Cog;
 import com.cannontech.common.tdc.model.Column;
 import com.cannontech.common.tdc.model.Display;
@@ -98,25 +99,49 @@ public class TdcServiceImpl implements TdcService {
         }
     };
 
+    private final Comparator<DisplayData> sortByDeviceName = new Comparator<DisplayData>() {
+        @Override
+        public int compare(DisplayData d1, DisplayData d2) {
+            return -d1.getDeviceName().compareTo(d2.getDeviceName());
+        }
+    };
+    
+    private final Comparator<DisplayData> sortByPointName = new Comparator<DisplayData>() {
+        @Override
+        public int compare(DisplayData d1, DisplayData d2) {
+            return -d1.getPointName().compareTo(d2.getPointName());
+        }
+    };
+    
+    private final Comparator<DisplayData> sortByTextMessage = new Comparator<DisplayData>() {
+        @Override
+        public int compare(DisplayData d1, DisplayData d2) {
+            return -d1.getTextMessage().compareTo(d2.getTextMessage());
+        }
+    };
+    
+    private final Comparator<DisplayData> sortByUsername = new Comparator<DisplayData>() {
+        @Override
+        public int compare(DisplayData d1, DisplayData d2) {
+            return -d1.getUserName().compareTo(d2.getUserName());
+        }
+    };
+    
     @Override
     public List<DisplayData> getDisplayData(Display display) {
         List<DisplayData> retVal = null;
-        switch (display.getDisplayId()) {
-        case GLOBAL_ALARM_DISPLAY:
-            retVal = getAlarms(true);
-            break;
-        default:
-            if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
-                retVal = displayDataDao.getCustomDisplayData(display);
-            }else if(display.getType() == DisplayType.ALARMS_AND_EVENTS){
-                retVal = getCustomDisplayDataByAlarmCategory(display);
-            }
+
+        if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
+            retVal = displayDataDao.getCustomDisplayData(display);
+        }else if(display.getType() == DisplayType.ALARMS_AND_EVENTS){
+            retVal = getCustomDisplayDataByAlarmCategory(display);
         }
+
         return retVal;
     }
     
     @Override
-    public SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, DateTime date) {
+    public SearchResults<DisplayData> getSortedDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, DateTime date, AlarmFilter alarmFilter) {
         SearchResults<DisplayData> searchResults = null;
         switch (display.getDisplayId()) {
         case SOE_LOG_DISPLAY_NUMBER:
@@ -128,6 +153,9 @@ public class TdcServiceImpl implements TdcService {
         case EVENT_VIEWER_DISPLAY_NUMBER:
             searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction, date);
             break;
+        case GLOBAL_ALARM_DISPLAY:
+            searchResults = SearchResults.indexBasedForWholeList(0, 50, getAlarms(alarmFilter, timeZone, date, sortBy, direction));
+        break;
         }
         return searchResults;
     }
@@ -196,21 +224,59 @@ public class TdcServiceImpl implements TdcService {
     }
 
     @Override
-    public List<DisplayData> getAlarms(boolean showActive) {
+    public List<DisplayData> getAlarms(AlarmFilter alarmFilter, DateTimeZone timeZone, DateTime date, SortBy sortBy, Direction direction) {
+        if (sortBy == null) {
+            sortBy = SortBy.TIME_STAMP;
+        }
+        if (direction == null) {
+            direction = Direction.asc;
+        }
         List<DisplayData> data = Lists.newArrayList();
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
         for (LiteAlarmCategory alarmCat : alarmList) {
             Set<Signal> signals = asyncDynamicDataSource.getCachedSignalsByCategory(alarmCat.getAlarmCategoryId());
-            data.addAll(getDisplayData(signals, showActive));
+            data.addAll(getDisplayData(signals, alarmFilter, timeZone, date));
         }
-        Collections.sort(data, sortByDate);
+        
+        Comparator<DisplayData> comparator = sortByDate;
+        switch (sortBy) {
+            case DEVICE_NAME:
+                comparator = sortByDeviceName;
+                break;
+            case POINT_NAME:
+                comparator = sortByPointName;
+                break;
+            case TEXT_MESSAGE:
+                comparator = sortByTextMessage;
+                break;
+            case USERNAME:
+                comparator = sortByUsername;
+                break;
+            default:
+                break;
+        }
+        if (direction == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        Collections.sort(data, comparator);
+
         return data;
     }
-        
+    
+    @Override
+    public List<DisplayData> getAlarms(boolean showActive) {
+        if (showActive) {
+            return getAlarms(AlarmFilter.ACTIVE_ALARMS, DateTimeZone.getDefault(), null, SortBy.TIME_STAMP, Direction.asc);
+        }
+        else {
+            return getAlarms(AlarmFilter.NO_FILTER, DateTimeZone.getDefault(), null, SortBy.TIME_STAMP, Direction.asc);
+        }
+    }
+    
     @Override
     public List<DisplayData> getUnacknowledgedAlarms(int pointId) {
         Set<Signal> signals = asyncDynamicDataSource.getCachedSignals(pointId);
-        return getDisplayData(signals, false);
+        return getDisplayData(signals, AlarmFilter.ACTIVE_ALARMS, DateTimeZone.getDefault(), null);
     }
 
     @Override
@@ -359,7 +425,7 @@ public class TdcServiceImpl implements TdcService {
         return count;
     }
 
-    private List<DisplayData> getDisplayData(Set<Signal> signals, boolean showActive) {
+    private List<DisplayData> getDisplayData(Set<Signal> signals, AlarmFilter alarmFilter, DateTimeZone timeZone, DateTime date) {
         List<DisplayData> data = new ArrayList<>();
         if (signals.isEmpty()) {
             return data;
@@ -405,13 +471,34 @@ public class TdcServiceImpl implements TdcService {
         for (Signal signal : signals) {
             if (signal.getCondition() != Signal.SIGNAL_COND) {
                 int tags = signal.getTags();
-                boolean displayAlarm;
-                if (showActive) {
+                boolean displayAlarm = false;
+                switch (alarmFilter) {
+                case NO_FILTER:
                     displayAlarm = TagUtils.isAlarmActive(tags) || TagUtils.isAlarmUnacked(tags);
-                } else {
+                    break;
+                case ACTIVE_ALARMS:
+                    displayAlarm = TagUtils.isAlarmActive(tags);
+                    break;
+                case UNACKNOWLEDGED_ALARMS:
                     displayAlarm = TagUtils.isAlarmUnacked(tags);
+                    break;
+                case ALARM_HISTORY:
+                    displayAlarm = TagUtils.isAlarmActive(tags) || TagUtils.isAlarmUnacked(tags);
+                    break;
+                }
+                if (AlarmFilter.ALARM_HISTORY == alarmFilter) {
+                    if (date == null) {
+                        date = new DateTime(timeZone);
+                    }
+                    DateTime from = date.withTimeAtStartOfDay();
+                    DateTime to = from.plusDays(1);
+                    DateTime signalDate = new DateTime(signal.getTimeStamp());
+                    if (signalDate.isBefore(from) || signalDate.isAfter(to)) {
+                        continue;
+                    }
                 }
                 if (displayAlarm) {
+                    
                     LitePoint litePoint = null;
                     try {
                         litePoint = pointMap.get(signal.getPointID());
@@ -420,6 +507,7 @@ public class TdcServiceImpl implements TdcService {
                                   + ") for this Alarm might have been deleted!", nfe);
                     }
                     if (litePoint != null) {
+                        
                         SimpleDevice device = deviceMap.get(litePoint.getPaobjectID());
                         LiteYukonPAObject liteYukonPAO =
                             paoIdentifiers.get(device.getPaoIdentifier());
@@ -475,7 +563,7 @@ public class TdcServiceImpl implements TdcService {
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
         int catId = alarmCatDao.getAlarmCategoryId(display.getName());
         Set<Signal> signals = asyncDynamicDataSource.getCachedSignalsByCategory(catId);
-        return getDisplayData(signals, true);
+        return getDisplayData(signals, AlarmFilter.NO_FILTER, DateTimeZone.getDefault(), null);
     }
        
     @PostConstruct
@@ -578,4 +666,5 @@ public class TdcServiceImpl implements TdcService {
         }
         return pointIds;
     }
+
 }

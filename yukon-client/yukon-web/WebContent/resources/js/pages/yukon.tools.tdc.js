@@ -321,6 +321,14 @@ yukon.tools.tdc = (function () {
                 });
             });
             
+            $(document).on('change', '#alarmFilter', function (ev) {
+                $('#date-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        $(document.body).html(data);
+                    }
+                });
+            });
+            
             $(document).on('click', '.js-add-points', function (ev) {
                 var picker = yukon.pickers['displayPointPicker'],
                     selectedContainer = $('#assigned');

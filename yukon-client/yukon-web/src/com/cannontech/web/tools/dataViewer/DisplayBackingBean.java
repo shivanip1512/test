@@ -21,6 +21,7 @@ public class DisplayBackingBean extends PointBackingBean {
     private int rowIndex;
     private String displayName;
     private DateTime date;
+    private String alarmFilter;
     
     public AltScanRate getAltScanRate() {
         return altScanRate;
@@ -100,5 +101,13 @@ public class DisplayBackingBean extends PointBackingBean {
 
     public void setDate(DateTime date) {
         this.date = date;
+    }
+
+    public String getAlarmFilter() {
+        return alarmFilter;
+    }
+
+    public void setAlarmFilter(String alarmFilter) {
+        this.alarmFilter = alarmFilter;
     }
 }

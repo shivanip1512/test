@@ -51,6 +51,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tag.service.TagService;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.dao.DisplayDataDao.SortBy;
+import com.cannontech.common.tdc.model.AlarmFilter;
 import com.cannontech.common.tdc.model.AltScanRate;
 import com.cannontech.common.tdc.model.ColumnType;
 import com.cannontech.common.tdc.model.Display;
@@ -120,7 +121,7 @@ public class TdcDisplayController {
     
     private final static String baseKey = "yukon.web.modules.tools.tdc.";
     private final static int itemsPerPage = 50;
-
+    
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
         @Override
         protected void doValidation(DisplayBackingBean bean, Errors errors) {
@@ -150,7 +151,7 @@ public class TdcDisplayController {
         if (display.isPageable()) {
             PagingParameters pagingParameter = PagingParameters.of(50, 1);
             SortingParameters sorting = SortingParameters.of(ColumnType.TIME_STAMP.name(), Direction.desc);
-            return setupPageableModel(userContext, model, displayId, sorting, pagingParameter, new DateTime(userContext.getJodaTimeZone()));
+            return setupPageableModel(userContext, model, displayId, sorting, pagingParameter, new DateTime(userContext.getJodaTimeZone()), AlarmFilter.NO_FILTER.name());
         }
         
         PagingParameters paging = null;
@@ -255,34 +256,46 @@ public class TdcDisplayController {
     public String page(YukonUserContext userContext, ModelMap model, @PathVariable int displayId, 
                        @DefaultSort(dir=Direction.desc, sort="TIME_STAMP") SortingParameters sorting, 
                        @DefaultItemsPerPage(50) PagingParameters pagingParameters,
-                       String date) {
+                       String date, String alarmFilter) {
         DateTime dateTime = null;
         DateTimeZone timeZone = userContext.getJodaTimeZone();
-        if (date.contains("-")) {
-            dateTime = DateTime.parse(date).withZone(timeZone);
+        if (date != null) {
+            if (date.contains("-")) {
+                dateTime = DateTime.parse(date).withZone(timeZone);
+            }
+            else {
+                DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
+                dateTime = formatter.parseDateTime(date).withTimeAtStartOfDay().withZone(timeZone);
+            }
         }
-        else {
-            DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
-            dateTime = formatter.parseDateTime(date).withTimeAtStartOfDay().withZone(timeZone);
-        }
-        return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime);
+        
+        return setupPageableModel(userContext, model, displayId, sorting, pagingParameters, dateTime, alarmFilter);
     }
     
     private String setupPageableModel(YukonUserContext userContext, ModelMap model, int displayId, 
-                                      SortingParameters sorting, PagingParameters pagingParameters, DateTime dateTime) {
+                                      SortingParameters sorting, PagingParameters pagingParameters, DateTime dateTime, String alarmFilter) {
         model.addAttribute("pageable", true);
         model.addAttribute("mode", PageEditMode.VIEW);
         Display display = displayDao.getDisplayById(displayId);
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         DisplayBackingBean backingBean = new DisplayBackingBean();
-
+        
+        if (dateTime == null) {
+            dateTime = new DateTime();
+        }
+        
         backingBean.setDate(dateTime);
+        AlarmFilter filter = null;
+        if (alarmFilter != null && !alarmFilter.isEmpty()) {
+            backingBean.setAlarmFilter(alarmFilter);
+            filter = AlarmFilter.valueOf(alarmFilter);
+        }
         model.addAttribute("backingBean", backingBean);
-
+        model.addAttribute("alarmFilters", AlarmFilter.values());
         ColumnType column = ColumnType.valueOf(sorting.getSort());
         SortBy sortBy =  SortBy.getSortBy(column);
-        SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime);
+        SearchResults<DisplayData> result = tdcService.getSortedDisplayData(display, userContext.getJodaTimeZone(), pagingParameters, sortBy, sorting.getDirection(), dateTime, filter);
         model.addAttribute("result", result);
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -645,13 +658,17 @@ public class TdcDisplayController {
     @RequestMapping(value = "data-viewer/{displayId}/download", method = RequestMethod.GET)
     public String download(HttpServletResponse response, @PathVariable int displayId,
                            YukonUserContext userContext,
-                           String date)
+                           String date, String alarmFilter)
             throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> displayData;
         if (display.isPageable()) {
-            displayData = tdcService.getSortedDisplayData(display, null, PagingParameters.EVERYTHING, null, null, new DateTime(date)).getResultList();
+            AlarmFilter filter = null;
+            if (alarmFilter != null) {
+                filter = AlarmFilter.valueOf(alarmFilter);
+            }
+            displayData = tdcService.getSortedDisplayData(display, null, PagingParameters.EVERYTHING, null, null, new DateTime(date), filter).getResultList();
 
         }
         else {
