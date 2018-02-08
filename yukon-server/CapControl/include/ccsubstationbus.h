@@ -156,7 +156,7 @@ public:
     CtiCCCapBankPtr getPendingCapBank( );
     std::vector<CtiCCCapBankPtr> getAllCapBanks( );
     std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( );
-    std::set<long> CtiCCSubstationBus::getAllCapBankIds();
+    std::set<long> getAllCapBankIds();
     void checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     void checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
