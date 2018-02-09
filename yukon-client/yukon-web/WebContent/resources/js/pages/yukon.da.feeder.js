@@ -29,7 +29,6 @@ yukon.da.feeder = (function () {
         var remove = btn.is('.js-remove-capbank'),
         container = btn.closest('.select-box').find(remove ? '.select-box-available' : '.select-box-selected'),
         tripContainer = btn.closest('.select-box').find('.select-box-trip-order'),
-        tripContainerHeading = tripContainer.find('#tripOrderHeading'),
         closeContainer = btn.closest('.select-box').find('.select-box-close-order'),
         item = btn.closest('.select-box-item'),
         dataId = item.attr('data-id'),
@@ -52,15 +51,18 @@ yukon.da.feeder = (function () {
             tripContainer.find('.select-box-item[data-id=' + dataId + ']').remove();
             closeContainer.find('.select-box-item[data-id=' + dataId + ']').remove();
         } else {
-            tripItem
-            .css('padding-left', '10px')
-            .insertAfter(tripContainerHeading)
-            .find('.js-add-capbank').remove();
-            
-            closeItem
-            .css('padding-left', '10px')
-            .appendTo(closeContainer)
-            .find('.js-add-capbank').remove()
+            if ($('#tripOrder').children().length > 0) {
+                tripItem.css('padding-left', '10px')
+                        .insertBefore($('#tripOrder').children(':first'))
+                        .find('.js-add-capbank').remove();
+            } else {
+                tripItem.css('padding-left', '10px')
+                        .appendTo(tripContainer)
+                        .find('.js-add-capbank').remove();
+            }
+            closeItem.css('padding-left', '10px')
+                     .appendTo(closeContainer)
+                     .find('.js-add-capbank').remove();
         }
         
         // Show/hide movers.
