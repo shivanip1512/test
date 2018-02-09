@@ -5,6 +5,7 @@
 /* Start YUK-17899 */
 DROP TABLE MaintenanceTaskSettings;
 DROP TABLE MaintenanceTask;
+GO
 
 CREATE TABLE MaintenanceTaskSettings (
    SettingType            VARCHAR(50)          NOT NULL,
