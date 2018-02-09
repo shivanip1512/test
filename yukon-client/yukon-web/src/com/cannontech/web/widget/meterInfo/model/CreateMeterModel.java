@@ -92,4 +92,11 @@ public class CreateMeterModel extends MeterModel {
         }
         return false;
     }
+    
+    /**
+     * Returns serialNumber or address based on paoType.
+     */
+    public String getSerialOrAddress() {
+        return getType().isPlc() ? Integer.toString(getAddress()) : getSerialNumber();
+    }
 }

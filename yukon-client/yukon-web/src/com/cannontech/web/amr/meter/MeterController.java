@@ -383,8 +383,7 @@ public class MeterController {
            deviceUpdateService.disableDevice(device); 
         }
         
-        String serialOrAddress = meter.getType().isPlc() ? Integer.toString(meter.getAddress()) : meter.getSerialNumber();
-        meteringEventLogService.meterCreated(meter.getName(), meter.getMeterNumber(), serialOrAddress, meter.getType(), 
+        meteringEventLogService.meterCreated(meter.getName(), meter.getMeterNumber(), meter.getSerialOrAddress(), meter.getType(), 
                                              user.getUsername());
         
         Map<String, Object> json = new HashMap<>();
@@ -430,8 +429,7 @@ public class MeterController {
             deviceDao.enableDevice(device);
         }
         
-        String serialOrAddress = meter.getType().isPlc() ? Integer.toString(meter.getAddress()) : meter.getSerialNumber();
-        meteringEventLogService.meterCreated(meter.getName(), meter.getMeterNumber(), serialOrAddress, meter.getType(), 
+        meteringEventLogService.meterCreated(meter.getName(), meter.getMeterNumber(), meter.getSerialOrAddress(), meter.getType(), 
                                              user.getUsername());
         
         Map<String, Object> json = new HashMap<>();
