@@ -34,7 +34,7 @@ struct NoCbcHeartbeatPolicy : CbcHeartbeatPolicy
 
 protected:
 
-    AttributeList getSupportedAttributes() override;
+    AttributeList getSupportedAttributes() const override;
 };
 
 
@@ -44,7 +44,7 @@ struct AnalogCbcHeartbeatPolicy : CbcHeartbeatPolicy
 
 protected:
 
-    AttributeList getSupportedAttributes() override;
+    AttributeList getSupportedAttributes() const override;
 };
 
 
@@ -54,7 +54,7 @@ struct PulsedCbcHeartbeatPolicy : CbcHeartbeatPolicy
 
 protected:
 
-    AttributeList getSupportedAttributes() override;
+    AttributeList getSupportedAttributes() const override;
 
     long readCurrentValue( CtiCCTwoWayPoints & twoWayPoints);
 };

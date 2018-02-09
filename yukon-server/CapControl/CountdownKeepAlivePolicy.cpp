@@ -6,7 +6,7 @@
 namespace Cti           {
 namespace CapControl    {
 
-Policy::AttributeList CountdownKeepAlivePolicy::getSupportedAttributes()
+Policy::AttributeList CountdownKeepAlivePolicy::getSupportedAttributes() const
 {
     return
     {

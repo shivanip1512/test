@@ -9,7 +9,7 @@ namespace CapControl    {
 
 struct StandardControlPolicy : ControlPolicy
 {
-    virtual AttributeList getSupportedAttributes() override;
+    AttributeList getSupportedAttributes() const override;
 
     Action TapUp() override;
     Action TapDown() override;

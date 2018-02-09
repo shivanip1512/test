@@ -64,7 +64,7 @@ Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const Attribute & attribute
 
 ///
 
-Policy::AttributeList NoCbcHeartbeatPolicy::getSupportedAttributes()
+Policy::AttributeList NoCbcHeartbeatPolicy::getSupportedAttributes() const
 {
     return
     {
@@ -87,7 +87,7 @@ Policy::Actions NoCbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayP
 
 ///
 
-Policy::AttributeList AnalogCbcHeartbeatPolicy::getSupportedAttributes()
+Policy::AttributeList AnalogCbcHeartbeatPolicy::getSupportedAttributes() const
 {
     return
     {
@@ -110,7 +110,7 @@ Policy::Actions AnalogCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveVal
 
 /// 
 
-Policy::AttributeList PulsedCbcHeartbeatPolicy::getSupportedAttributes()
+Policy::AttributeList PulsedCbcHeartbeatPolicy::getSupportedAttributes() const
 {
     return
     {

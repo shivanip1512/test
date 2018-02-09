@@ -8,9 +8,9 @@
 namespace Cti           {
 namespace CapControl    {
 
-struct LoadOnlyScanPolicy : ScanPolicy
+class LoadOnlyScanPolicy : public ScanPolicy
 {
-    AttributeList getSupportedAttributes() override;
+    AttributeList getSupportedAttributes() const override;
 };
 
 }

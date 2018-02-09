@@ -10,7 +10,7 @@ namespace CapControl    {
 
 struct StandardScanPolicy : ScanPolicy
 {
-    AttributeList getSupportedAttributes() override;
+    AttributeList getSupportedAttributes() const override;
 };
 
 }

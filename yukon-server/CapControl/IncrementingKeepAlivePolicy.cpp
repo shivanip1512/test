@@ -8,7 +8,7 @@ extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 namespace Cti           {
 namespace CapControl    {
 
-Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes()
+Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes() const
 {
     return
     {

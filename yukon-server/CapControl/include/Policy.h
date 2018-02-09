@@ -41,7 +41,7 @@ protected:
     using AttributeList = std::vector<Attribute>;
     using AttributeMap  = std::map<Attribute, LitePoint>;
 
-    virtual AttributeList getSupportedAttributes() = 0;
+    virtual AttributeList getSupportedAttributes() const = 0;
 
     std::unique_ptr<CtiSignalMsg>   makeSignalTemplate( const long ID, const long pointValue, const std::string & description );
     std::unique_ptr<CtiRequestMsg>  makeRequestTemplate( const long ID, const std::string & command );

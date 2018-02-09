@@ -6,7 +6,7 @@
 namespace Cti           {
 namespace CapControl    {
 
-Policy::AttributeList NoKeepAlivePolicy::getSupportedAttributes()
+Policy::AttributeList NoKeepAlivePolicy::getSupportedAttributes() const
 {
     return
     {
