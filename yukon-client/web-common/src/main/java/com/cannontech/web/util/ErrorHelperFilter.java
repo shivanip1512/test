@@ -66,7 +66,7 @@ public class ErrorHelperFilter implements Filter {
                 String key = (String) iter.next();
                 String values;
                 // avoid printing password values to the log
-                if (key.equalsIgnoreCase("PASSWORD")) {
+                if (key.equalsIgnoreCase("password")) {
                     values = "password removed";
                 } else {
                     values = StringUtils.join(httpReq.getParameterValues(key), ",");
@@ -80,7 +80,7 @@ public class ErrorHelperFilter implements Filter {
             String queryString = httpReq.getQueryString();
             // avoid printing password values to the log
             if (queryString != null) {
-                queryString = queryString.replaceAll("password=[^&]*&?", "password=<password removed>&");
+                queryString = queryString.replaceAll("(?i)password=[^&]*&?", "password=<password removed>&");
             }
 
             return "contextPath=" + contextPath + "; pathInfo=" + pathInfo + "; parameters=" + parameters
