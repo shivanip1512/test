@@ -48,7 +48,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
     }
     
     public void setGroupName(String groupName) {
-        this.groupName = groupName.trim();
+        this.groupName = groupName;
     }
     
     public void setAttribute(Attribute attribute) {
