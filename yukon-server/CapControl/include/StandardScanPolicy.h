@@ -8,9 +8,10 @@
 namespace Cti           {
 namespace CapControl    {
 
-struct StandardScanPolicy : ScanPolicy
+class StandardScanPolicy : public ScanPolicy
 {
-    AttributeList getSupportedAttributes() const override;
+    AttributeList getRequiredAttributes() const override;
+    AttributeList getOptionalAttributes() const override;
 };
 
 }

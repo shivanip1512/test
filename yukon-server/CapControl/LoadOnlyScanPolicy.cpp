@@ -6,7 +6,7 @@
 namespace Cti           {
 namespace CapControl    {
 
-Policy::AttributeList LoadOnlyScanPolicy::getSupportedAttributes() const
+Policy::AttributeList LoadOnlyScanPolicy::getRequiredAttributes() const
 {
     return
     {

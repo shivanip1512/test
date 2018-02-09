@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_MultiplePao)
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
+    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_MultiplePao)
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
+    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_SinglePao)
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
+    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(test_IntegrityScan_SinglePao)
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
+    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );

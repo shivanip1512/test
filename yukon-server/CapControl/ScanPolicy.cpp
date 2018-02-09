@@ -2,26 +2,57 @@
 
 #include "ScanPolicy.h"
 
+#include "std_helper.h"
+
+#include <boost/range/join.hpp>
 
 namespace Cti           {
 namespace CapControl    {
+
+Policy::AttributeList ScanPolicy::getSupportedAttributes() const
+{
+    return boost::copy_range<AttributeList>(
+               boost::range::join(
+                   getRequiredAttributes(), 
+                   getOptionalAttributes()));
+}
+
+Policy::AttributeList ScanPolicy::getOptionalAttributes() const
+{
+    return
+    {
+        // Empty by default, child classes can override if needed
+    };
+}
 
 Policy::Actions ScanPolicy::IntegrityScan()
 {
     Actions actions;
 
-    for ( const auto & attribute : getSupportedAttributes() )
+    for ( const auto & attribute : getRequiredAttributes() )
     {
-        actions.emplace_back( makeIntegrityScanCommand( attribute ) );
+        auto point = getPointByAttribute( attribute );
+
+        actions.emplace_back( makeIntegrityScanCommand( point ) );
+    }
+
+    for ( const auto & attribute : getOptionalAttributes() )
+    {
+        if( auto point = mapFindRef( _pointMapping, attribute ) )
+        {
+            actions.emplace_back( makeIntegrityScanCommand( *point ) );
+        }
+        else
+        {
+            CTILOG_DEBUG( dout, "Point not found for attribute " << attribute );
+        }
     }
 
     return actions;
 }
 
-Policy::Action ScanPolicy::makeIntegrityScanCommand( const Attribute & attribute )
+Policy::Action ScanPolicy::makeIntegrityScanCommand( const LitePoint & point )
 {
-    LitePoint point = getPointByAttribute( attribute );
-
     return
     {
         makeSignalTemplate( point.getPointId(), 0, "Integrity Scan" ),

@@ -10,7 +10,7 @@ namespace CapControl    {
 
 class LoadOnlyScanPolicy : public ScanPolicy
 {
-    AttributeList getSupportedAttributes() const override;
+    AttributeList getRequiredAttributes() const override;
 };
 
 }

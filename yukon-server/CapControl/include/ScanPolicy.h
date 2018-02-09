@@ -12,7 +12,12 @@ struct ScanPolicy : Policy
 
 protected:
 
-    Action makeIntegrityScanCommand( const Attribute & attribute );
+    AttributeList getSupportedAttributes() const override final;
+
+    virtual AttributeList getRequiredAttributes() const = 0;
+    virtual AttributeList getOptionalAttributes() const;
+
+    Action makeIntegrityScanCommand( const LitePoint & point );
 };
 
 }

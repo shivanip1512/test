@@ -6,12 +6,19 @@
 namespace Cti           {
 namespace CapControl    {
 
-Policy::AttributeList StandardScanPolicy::getSupportedAttributes() const
+Policy::AttributeList StandardScanPolicy::getRequiredAttributes() const
 {
     return
     {
-        Attribute::SourceVoltage,
         Attribute::Voltage
+    };
+}
+
+Policy::AttributeList StandardScanPolicy::getOptionalAttributes() const
+{
+    return
+    {
+        Attribute::SourceVoltage
     };
 }
 
