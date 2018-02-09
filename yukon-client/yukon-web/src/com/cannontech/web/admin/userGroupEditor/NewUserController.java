@@ -76,7 +76,6 @@ public class NewUserController {
     public String create(ModelMap model, HttpServletResponse resp, 
             @ModelAttribute("user") NewUser user, BindingResult binding) throws Exception {
 
-        user.setUsername(StringUtils.trim(user.getUsername()));
         userValidator.validate(user, binding);
         
         AuthenticationCategory category = user.getAuthCategory();

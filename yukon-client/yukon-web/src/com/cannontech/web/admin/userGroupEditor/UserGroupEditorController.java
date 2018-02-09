@@ -104,7 +104,6 @@ public class UserGroupEditorController {
             BindingResult result, ModelMap model, FlashScope flash, LiteYukonUser user,
             @DefaultItemsPerPage(10) PagingParameters paging) {
 
-        userGroup.setUserGroupName(StringUtils.trim(userGroup.getUserGroupName()));
         userGroupValidator.validate(userGroup, result);
         
         if (result.hasErrors()) {

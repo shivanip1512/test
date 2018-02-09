@@ -29,7 +29,7 @@ public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> 
 
 	public PorterResponseMonitor(PorterResponseMonitorDto monitorDto) {
 	    monitorId = monitorDto.getMonitorId();
-	    name = monitorDto.getName();
+	    name = monitorDto.getName().trim();
 	    groupName = monitorDto.getGroupName();
 	    stateGroup = monitorDto.getStateGroup();
 	    attribute = monitorDto.getAttribute();

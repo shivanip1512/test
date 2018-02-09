@@ -135,7 +135,6 @@ public class UserEditorController {
     public String update(YukonUserContext userContext, 
             @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
 
-        user.setUsername(StringUtils.trim(user.getUsername()));
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserId());
         user.updateForSave(yukonUser, userAuthenticationInfo);

@@ -28,7 +28,7 @@ public class UserGroup extends DBPersistent implements Comparable<UserGroup> {
     }
     
     public void setUserGroupName(String userGroupName) {
-        this.userGroupName = userGroupName;
+        this.userGroupName = userGroupName.trim();
     }
     
     public String getUserGroupDescription() {

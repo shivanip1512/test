@@ -147,7 +147,6 @@ public class DataExporterFormatController {
             @ModelAttribute("format") ExportFormat format, 
             BindingResult result) {
 
-        trimExportFormat(format);
         exportFormatValidator.validate(format, result);
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
@@ -549,13 +548,6 @@ public class DataExporterFormatController {
                 }
             }
         });
-    }
-
-    private void trimExportFormat(ExportFormat format) {
-        format.setFormatName(StringUtils.trim(format.getFormatName()));
-        format.setDelimiter(StringUtils.trim(format.getDelimiter()));
-        format.setHeader(StringUtils.trim(format.getHeader()));
-        format.setFooter(StringUtils.trim(format.getFooter()));
     }
 
 }

@@ -148,7 +148,7 @@ public class ScheduledFileExportData {
     }
 
     public void setScheduleName(String scheduleName) {
-        this.scheduleName = scheduleName;
+        this.scheduleName = scheduleName.trim();
 	}
 
 	public void setScheduleCronString(String scheduleCronString) {
@@ -164,7 +164,7 @@ public class ScheduledFileExportData {
 	}
 
 	public void setExportFileName(String exportFileName) {
-		this.exportFileName = exportFileName;
+		this.exportFileName = exportFileName.trim();
 	}
 
     public void setNotificationEmailAddresses(String notificationEmailAddresses) {

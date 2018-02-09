@@ -149,7 +149,6 @@ public class DeviceDataMonitorController {
             YukonUserContext userContext,
             FlashScope flash) {
 
-        monitor.setName(StringUtils.trim(monitor.getName()));
         validator.validate(monitor, result);
         
         List<DeviceDataMonitorProcessor> remaining = getRemainingProcessors(monitor.getProcessors());

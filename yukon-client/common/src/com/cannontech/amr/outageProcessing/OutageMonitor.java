@@ -26,7 +26,7 @@ public class OutageMonitor implements PointMonitor, Comparable<OutageMonitor> {
     }
     
     public void setOutageMonitorName(String outageMonitorName) {
-        this.outageMonitorName = outageMonitorName;
+        this.outageMonitorName = outageMonitorName.trim();
     }
     
     public String getGroupName() {

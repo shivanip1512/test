@@ -223,7 +223,6 @@ public class PorterResponseMonitorController {
                     FlashScope flashScope) {
 
         PorterResponseMonitor monitor = null;
-        monitorDto.setName(StringUtils.trim(monitorDto.getName()));
         try {
             monitor = new PorterResponseMonitor(monitorDto);
         } catch (NumberFormatException e) {

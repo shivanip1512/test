@@ -22,7 +22,7 @@ public class User {
     /** Create an instance for editing. */
     public User(LiteYukonUser yukonUser, UserAuthenticationInfo userAuthenticationInfo) {
         userId = yukonUser.getUserID();
-        username = yukonUser.getUsername();
+        username = yukonUser.getUsername().trim();
         authCategory = userAuthenticationInfo.getAuthenticationCategory();
         loginStatus = yukonUser.getLoginStatus();
         userGroupId = yukonUser.getUserGroupId();
@@ -58,7 +58,7 @@ public class User {
     }
     
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.trim();
     }
     
     public Password getPassword() {

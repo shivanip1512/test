@@ -32,7 +32,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
             List<DeviceDataMonitorProcessor> processors) {
         this.id = id;
         this.groupName = groupName;
-        this.name = name;
+        this.name = name.trim();
         this.enabled = enabled;
         this.processors = processors;
     }

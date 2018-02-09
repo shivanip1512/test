@@ -174,7 +174,6 @@ public class StatusPointMonitorController {
                                                   YukonUserContext userContext,
                                                   FlashScope flashScope) {
 
-        statusPointMonitor.setStatusPointMonitorName(StringUtils.trim(statusPointMonitor.getStatusPointMonitorName()));
         updateValidator.validate(statusPointMonitor, bindingResult);
           
         if (bindingResult.hasErrors()) {

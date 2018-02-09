@@ -122,7 +122,6 @@ public class ValidationMonitorEditorController {
         }
         
         /* Validate inputs. */
-        name = StringUtils.trim(name);
         if (StringUtils.isBlank(name)) {
             editError = "Name required.";
         } else if (isNewMonitor && validationMonitorDao.processorExistsWithName(name)) { /* New monitor, check name. */

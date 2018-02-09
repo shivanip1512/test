@@ -21,7 +21,7 @@ public class TamperFlagMonitor implements PointMonitor, Comparable<TamperFlagMon
         return tamperFlagMonitorName;
     }
     public void setTamperFlagMonitorName(String name) {
-        this.tamperFlagMonitorName = name;
+        this.tamperFlagMonitorName = name.trim();
     }
     public String getGroupName() {
         return groupName;

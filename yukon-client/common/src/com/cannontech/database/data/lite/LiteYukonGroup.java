@@ -30,7 +30,7 @@ public class LiteYukonGroup extends LiteBase {
     }
 
     public void setGroupName(String groupName) {
-        this.groupName = groupName;
+        this.groupName = groupName != null ? groupName.trim() : groupName;
     }
 
     public int getGroupID() {

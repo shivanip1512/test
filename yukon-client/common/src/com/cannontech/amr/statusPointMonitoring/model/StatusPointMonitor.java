@@ -40,7 +40,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
     }
     
     public void setStatusPointMonitorName(String name) {
-        this.statusPointMonitorName = name;
+        this.statusPointMonitorName = name.trim();
     }
     
     public String getGroupName() {
@@ -48,7 +48,7 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
     }
     
     public void setGroupName(String groupName) {
-        this.groupName = groupName;
+        this.groupName = groupName.trim();
     }
     
     public void setAttribute(Attribute attribute) {

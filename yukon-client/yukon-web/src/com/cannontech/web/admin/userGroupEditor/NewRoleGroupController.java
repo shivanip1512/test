@@ -41,7 +41,6 @@ public class NewRoleGroupController {
     public String create(HttpServletResponse resp, 
             @ModelAttribute("group") LiteYukonGroup group, BindingResult binding) throws Exception {
 
-        group.setGroupName(StringUtils.trim(group.getGroupName()));
         validator.validate(group, binding);
         
         if (binding.hasErrors()) {

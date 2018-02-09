@@ -68,7 +68,6 @@ public class NewUserGroupController {
     public String create(ModelMap model, HttpServletRequest req, HttpServletResponse resp, 
             @ModelAttribute("group") UserGroup group, BindingResult binding) throws Exception {
 
-        group.setUserGroupName(StringUtils.trim(group.getUserGroupName()));
         validator.validate(group, binding);
         
         if (binding.hasErrors()) {

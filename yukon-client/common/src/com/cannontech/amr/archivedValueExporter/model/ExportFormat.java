@@ -40,7 +40,7 @@ public class ExportFormat {
     }
     
     public void setFooter(String footer) {
-        this.footer = footer;
+        this.footer = footer.trim();
     }
 
     public String getHeader() {
@@ -48,7 +48,7 @@ public class ExportFormat {
     }
     
     public void setHeader(String header) {
-        this.header = header;
+        this.header = header.trim();
     }
 
     public String getFormatName() {
@@ -56,7 +56,7 @@ public class ExportFormat {
     }
     
     public void setFormatName(String formatName) {
-        this.formatName = formatName;
+        this.formatName = formatName.trim();
     }
 
     public String getDelimiter() {
@@ -64,7 +64,7 @@ public class ExportFormat {
     }
     
     public void setDelimiter(String delimiter) {
-        this.delimiter = delimiter;
+        this.delimiter = delimiter.trim();
     }
 
     public List<ExportAttribute> getAttributes() {
