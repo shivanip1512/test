@@ -233,7 +233,7 @@ public class TdcServiceImpl implements TdcService {
             sortBy = SortBy.TIME_STAMP;
         }
         if (direction == null) {
-            direction = Direction.asc;
+            direction = Direction.desc;
         }
         List<DisplayData> data = Lists.newArrayList();
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
@@ -259,7 +259,7 @@ public class TdcServiceImpl implements TdcService {
             default:
                 break;
         }
-        if (direction == Direction.desc) {
+        if (direction == Direction.asc) {
             comparator = Collections.reverseOrder(comparator);
         }
         Collections.sort(data, comparator);
