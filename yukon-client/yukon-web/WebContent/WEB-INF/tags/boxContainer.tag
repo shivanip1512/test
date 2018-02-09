@@ -96,8 +96,7 @@
 </c:if>
 <c:if test="${not empty pageScope.smartNotificationsEvent}">
     <cti:url var="smartNotificationsUrl" value="/notifications/subscription/existingPopup/${pageScope.smartNotificationsEvent}"/>
-    <div id="smart-notifications-popup-${thisId}" data-dialog data-cancel-omit
-            class="dn js-smart-notifications-popup"
+    <div id="smart-notifications-popup-${thisId}" class="dn js-smart-notifications-popup"
             data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"
             data-load-event="yukon:notifications:load"
             data-url="${smartNotificationsUrl}" 

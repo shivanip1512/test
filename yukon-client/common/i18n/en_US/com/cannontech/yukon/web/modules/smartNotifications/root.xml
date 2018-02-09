@@ -13,6 +13,7 @@
     <entry key="yukon.web.modules.smartNotifications.unsubscribe">Unsubscribe</entry>   
     <entry key="yukon.web.modules.smartNotifications.unsubscribeConfirmation.title">Unsubscribe</entry>     
     <entry key="yukon.web.modules.smartNotifications.unsubscribeConfirmation.message">Are you sure you want to unsubscribe from {0} notifications?</entry>    
+    <entry key="yukon.web.modules.smartNotifications.unsubscribeConfirmation.ok">Unsubscribe</entry>
     <entry key="yukon.web.modules.smartNotifications.unsubscribeSuccess">You have been successfully unsubscribed from notification: {0}</entry>    
     <entry key="yukon.web.modules.smartNotifications.singleNotificationSuccess">Single Notification Settings have been saved successfully.</entry>    
     <entry key="yukon.web.modules.smartNotifications.singleNotificationWarning">Send Time is disabled when Single Notification for all Daily Digests has been selected on the User Profile page.</entry>    

@@ -272,8 +272,8 @@
                 <cti:param name="${parameter.key}" value="${parameter.value}"/>
             </c:forEach>
        </cti:url>
-       <div id="subscriptionPopup" class="dn js-smart-notifications-popup" data-dialog data-url="${subscriptionUrl}" 
-        data-cancel-omit data-width="600" data-load-event="yukon:notifications:load"
+       <div id="subscriptionPopup" class="dn js-smart-notifications-popup" data-url="${subscriptionUrl}" 
+        data-width="600" data-load-event="yukon:notifications:load"
         data-title="<cti:msg2 key="yukon.web.modules.smartNotifications.popup.title"/>"></div>
     </c:if>
 </body>
