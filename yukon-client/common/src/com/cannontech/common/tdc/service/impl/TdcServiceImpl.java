@@ -158,7 +158,7 @@ public class TdcServiceImpl implements TdcService {
             searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction, date);
             break;
         case GLOBAL_ALARM_DISPLAY:
-            searchResults = SearchResults.indexBasedForWholeList(0, 50, getAlarms(alarmFilter, timeZone, date, sortBy, direction));
+            searchResults = SearchResults.indexBasedForWholeList(paging.getStartIndex(), paging.getItemsPerPage(), getAlarms(alarmFilter, timeZone, date, sortBy, direction));
         break;
         }
         return searchResults;
