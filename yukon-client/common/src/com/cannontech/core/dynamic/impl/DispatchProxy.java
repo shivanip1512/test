@@ -48,7 +48,7 @@ class DispatchProxy {
      * @return
      */
     LitePointData getPointData(int pointId) {
-        Multi m = getPointDataMulti(ImmutableSet.of(pointId));
+        Multi m = getPointDataMulti(ImmutableSet.of(pointId), true);
         List<LitePointData> pointData = new ArrayList<LitePointData>(1);
         extractPointData(pointData, m);
         Validate.isTrue(pointData.size() != 0, "Returned multi was empty: ", pointData.size());
@@ -60,13 +60,27 @@ class DispatchProxy {
     
     /**
      * Get the current set of PointData's for the given set of point ids
-     * @param pointIds
-     * @return
      */
     Set<LitePointData> getPointData(Set<Integer> pointIds) {
+        return getPointData(pointIds, true);
+    }
+
+    /**
+     * Get the current set of PointData's for the given set of point ids
+     * This method does not register these points
+     */
+    Set<LitePointData> getPointDataOnce(Set<Integer> pointIds) {
+        return getPointData(pointIds, false);
+    }
+
+    /**
+     * Helper method to get the current set of PointData's for the given set of point ids
+     * Optionally registers for pointdata
+     */
+    private Set<LitePointData> getPointData(Set<Integer> pointIds, boolean shouldRegister) {
         Set<LitePointData> pointData = new HashSet<LitePointData>((int)(pointIds.size() / 0.75f) + 1);
         if (!pointIds.isEmpty()) {
-            Multi m = getPointDataMulti(pointIds);
+            Multi m = getPointDataMulti(pointIds, shouldRegister);
             extractPointData(pointData, m);
         }
         
@@ -96,7 +110,7 @@ class DispatchProxy {
     Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {
         Map<Integer, Set<Signal>> signals = new HashMap<Integer, Set<Signal>>((int)(pointIds.size() / 0.75f) + 1);
         if(!pointIds.isEmpty()) {
-            Multi m = getPointDataMulti(pointIds);
+            Multi m = getPointDataMulti(pointIds, true);
             extractSignals(signals, m);
         }
         
@@ -152,34 +166,20 @@ class DispatchProxy {
     }
 
     /**
-     * Get the current set of PointData's for the given set of point ids
-     * This method does not register these points
-     * 
-     * @param pointIds
-     * @return
-     */
-    Set<LitePointData> getPointDataOnce(Set<Integer> pointIds) {
-        Set<LitePointData> pointData = new HashSet<>((int) (pointIds.size() / 0.75f) + 1);
-        if (!pointIds.isEmpty()) {
-            Multi m = getPointDataMultiOnce(pointIds);
-            extractPointData(pointData, m);
-        }
-        return pointData;
-    }
-
-    /**
      * Return the raw multi from dispatch for a set of point ids.
      * Also registers for point ids.
      * @param pointIds
      * @throws {@link DynamicDataAccessException}
      */
-    private Multi getPointDataMulti(Set<Integer> pointIds) {
+    private Multi getPointDataMulti(Set<Integer> pointIds, boolean shouldRegister) {
         if (log.isDebugEnabled()) {
             log.debug("Making getPointDataMulti request for: " + pointIds);
         }
         Multi m;
         try {
-            registerForPointIds(pointIds);
+            if (shouldRegister) {
+                registerForPointIds(pointIds);
+            }
             Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
             m = (Multi) makeRequest(cmd);
         } catch (DynamicDataAccessException e) {
@@ -310,25 +310,4 @@ class DispatchProxy {
     public void setDispatchConnection(IServerConnection dispatchConnection) {
         this.dispatchConnection = dispatchConnection;
     }
-
-    /**
-     * Return the raw multi from dispatch for a set of point ids.
-     * 
-     * @throws {@link DynamicDataAccessException}
-     */
-    private Multi getPointDataMultiOnce(Set<Integer> pointIds) {
-        if (log.isDebugEnabled()) {
-            log.debug("Making getPointDataMultiOnce request for: " + pointIds);
-        }
-        Multi m;
-        try {
-            Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
-            m = (Multi) makeRequest(cmd);
-        } catch (DynamicDataAccessException e) {
-            throw new DynamicDataAccessException("There was an error retreiving the value for pointIds: " + pointIds,
-                e);
-        }
-        return m;
-    }
-
 }

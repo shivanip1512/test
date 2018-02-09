@@ -6,10 +6,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 
@@ -20,6 +25,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -47,9 +53,12 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
@@ -468,18 +477,33 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     private Set<LitePointData> getPointData(Set<Integer> pointIds) {
-        Set<LitePointData> pointData = new HashSet<>((int) (pointIds.size() / 0.75f) + 1);
-        List<List<Integer>> notCachedPartitionedPointIds = extractPointDataFromCache(pointIds, pointData);
+        return getPointData(pointIds, dispatchProxy::getPointData);
+    }
 
-        // Request to dispatch for the rest
-        if (!notCachedPartitionedPointIds.isEmpty()) {
-            notCachedPartitionedPointIds.forEach(partitionedPointIds -> {
-                Set<LitePointData> retrievedPointData =
-                    dispatchProxy.getPointData(Sets.newHashSet(partitionedPointIds));
-                pointData.addAll(retrievedPointData);
-            });
-        }
-        return pointData;
+    @Override
+    public Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds) {
+        return getPointData(pointIds, dispatchProxy::getPointDataOnce);
+    }
+
+    private Set<LitePointData> getPointData(Set<Integer> pointIds, Function<Set<Integer>, Set<LitePointData>> pointDataRequester) {
+        //  Try a cache lookup
+        ImmutableMap<Integer, LitePointData> pointData = Maps.toMap(pointIds, dynamicDataCache::getPointData);
+
+        //  Create a stream containing the cached pointdata  
+        Stream<LitePointData> cached = pointData.values().stream().filter(Objects::nonNull);
+        
+        //  Filter off the point IDs without data, partition them into chunks of 1000
+        Iterable<List<Integer>> missingIds = Iterables.partition(Maps.filterValues(pointData, Objects::isNull).keySet(), 1000); 
+        
+        //  Create a stream that requests the non-cached IDs from Dispatch
+        Stream<LitePointData> fromDispatch = 
+                StreamSupport.stream(missingIds.spliterator(), false)
+                    .map(HashSet::new)
+                    .map(pointDataRequester)
+                    .flatMap(Set::stream);
+        
+        //  Run through both the cached and non-cached streams, collecting into a single set
+        return Stream.concat(cached, fromDispatch).collect(Collectors.toSet());
     }
 
     private LitePointData getPointData(int pointId) {
@@ -498,47 +522,4 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
            log.info("..."+listener);
        }
     }
-
-    @Override
-    public Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds) {
-        Set<LitePointData> pointData = new HashSet<>((int) (pointIds.size() / 0.75f) + 1);
-        List<List<Integer>> notCachedPartitionedPointIds = extractPointDataFromCache(pointIds, pointData);
-
-        // Request to dispatch for the rest
-        if (!notCachedPartitionedPointIds.isEmpty()) {
-            notCachedPartitionedPointIds.forEach(partitionedPointIds -> {
-                Set<LitePointData> retrievedPointData =
-                    dispatchProxy.getPointDataOnce(Sets.newHashSet(partitionedPointIds));
-                pointData.addAll(retrievedPointData);
-            });
-        }
-        return pointData;
-    }
-
-    /**
-     * Method tries to get the point data from dynamicDataCache for given points
-     * 
-     * @return Partitioned list of point ids which are not available in cache
-     */
-    private List<List<Integer>> extractPointDataFromCache(Set<Integer> pointIds, Set<LitePointData> pointData) {
-        Set<Integer> notCachedPointIds = new HashSet<>(pointIds);
-
-        // Get whatever we can out of the cache first
-        pointIds.forEach(pointId -> {
-            LitePointData pd = dynamicDataCache.getPointData(pointId);
-            if (pd != null) {
-                pointData.add(pd);
-                notCachedPointIds.remove(pointId);
-            }
-        });
-        List<List<Integer>> notCachedPartitionedPointIds = Collections.emptyList();
-        if (notCachedPointIds.size() > 0) {
-            if (!pointIds.isEmpty()) {
-                // break the request into partitions of 1000 so we reduce the risk of the request timing out
-                notCachedPartitionedPointIds = Lists.partition(Lists.newArrayList(notCachedPointIds), 1000);
-            }
-        }
-        return notCachedPartitionedPointIds;
-    }
-
 }
