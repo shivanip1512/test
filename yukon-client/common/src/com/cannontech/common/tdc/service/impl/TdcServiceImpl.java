@@ -130,13 +130,17 @@ public class TdcServiceImpl implements TdcService {
     @Override
     public List<DisplayData> getDisplayData(Display display) {
         List<DisplayData> retVal = null;
-
-        if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
-            retVal = displayDataDao.getCustomDisplayData(display);
-        }else if(display.getType() == DisplayType.ALARMS_AND_EVENTS){
-            retVal = getCustomDisplayDataByAlarmCategory(display);
+        switch (display.getDisplayId()) {
+        case GLOBAL_ALARM_DISPLAY:
+            retVal = getAlarms(true);
+            break;
+        default:
+            if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
+                retVal = displayDataDao.getCustomDisplayData(display);
+            }else if(display.getType() == DisplayType.ALARMS_AND_EVENTS){
+                retVal = getCustomDisplayDataByAlarmCategory(display);
+            }
         }
-
         return retVal;
     }
     
