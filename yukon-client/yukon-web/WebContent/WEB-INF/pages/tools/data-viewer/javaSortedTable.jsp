@@ -11,12 +11,12 @@
 <form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">        
     <cti:csrfToken />
     <c:choose>
-        <c:when test="${display.displayId == 4 && backingBean.alarmFilter eq 'ALARM_HISTORY'}">
+        <c:when test="${display.isAlarmDisplay() && backingBean.alarmFilter eq 'ALARM_HISTORY'}">
             <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
             <inline class="fr">&nbsp;&nbsp;</inline>
             <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}" inputClass="fr"/>
         </c:when>
-        <c:when test="${display.displayId == 4}">
+        <c:when test="${display.isAlarmDisplay()}">
             <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}" inputClass="fr"/>
         </c:when>
         <c:otherwise>

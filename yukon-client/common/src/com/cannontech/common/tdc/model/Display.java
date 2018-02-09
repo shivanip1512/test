@@ -85,6 +85,10 @@ public class Display {
                || displayId == EVENT_VIEWER_DISPLAY_NUMBER || displayId == GLOBAL_ALARM_DISPLAY;
     }
     
+    public boolean isAlarmDisplay() {
+        return displayId == GLOBAL_ALARM_DISPLAY;
+    }
+    
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
