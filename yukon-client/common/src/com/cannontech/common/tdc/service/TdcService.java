@@ -107,12 +107,6 @@ public interface TdcService {
 
     boolean isManualEntryEnabled(int pointId, int pointTypeId, boolean hasPointValueColumn);
 
-    /**
-     * Returns the row count for the displays that support paging.
-     * 
-     * @throws NotImplementedException - if the display doesn't support paging.
-     **/
-    int getDisplayDataCount(int displayId, DateTimeZone timeZone);
 
     /**
      * Creates a new display from existing display.
@@ -149,8 +143,6 @@ public interface TdcService {
                                                     PagingParameters paging, SortBy sortBy,
                                                     Direction direction, DateTime date,
                                                     AlarmFilter alarmFilter);
-
-    int getDisplayDataCount(int displayId, DateTime date);
 
     /**
      * Delete custom display.

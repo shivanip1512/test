@@ -158,34 +158,15 @@ public class TdcServiceImpl implements TdcService {
             searchResults = displayDataDao.getEventViewerDisplayData(timeZone, paging, sortBy, direction, date);
             break;
         case GLOBAL_ALARM_DISPLAY:
-            searchResults = SearchResults.indexBasedForWholeList(paging.getStartIndex(), paging.getItemsPerPage(), getAlarms(alarmFilter, timeZone, date, sortBy, direction));
-        break;
+            if (AlarmFilter.ALARM_HISTORY == alarmFilter) {
+                searchResults = displayDataDao.getAlarmHistoryDisplayData(timeZone, paging, sortBy, direction, date);
+            }
+            else {
+                searchResults = SearchResults.indexBasedForWholeList(paging.getStartIndex(), paging.getItemsPerPage(), getAlarms(alarmFilter, timeZone, date, sortBy, direction));
+            }    
+            break;
         }
         return searchResults;
-    }
-    
-    @Override
-    public int getDisplayDataCount(int displayId, DateTimeZone timeZone) {
-        int count;
-        switch (displayId) {
-        case SOE_LOG_DISPLAY_NUMBER:
-            count = displayDataDao.getSoeLogDisplayDataCount(timeZone);
-            break;
-        case TAG_LOG_DISPLAY_NUMBER:
-            count = displayDataDao.getTagLogDisplayDataCount(timeZone);
-            break;
-        case EVENT_VIEWER_DISPLAY_NUMBER:
-            count = displayDataDao.getEventViewerDisplayDataCount(timeZone);
-            break;
-        default:
-            throw new UnsupportedOperationException();
-        }
-        return count;
-    }
-    
-    @Override
-    public int getDisplayDataCount(int displayId, DateTime date) {
-        return displayDataDao.getEventViewerDisplayDataCount(date);
     }
     
     @Override
@@ -670,5 +651,5 @@ public class TdcServiceImpl implements TdcService {
         }
         return pointIds;
     }
-
+    
 }
