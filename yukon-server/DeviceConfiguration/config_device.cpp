@@ -17,6 +17,17 @@ const std::string BoolTrue = "true";
 
 std::atomic_size_t DeviceConfig::_instances;
 
+DeviceConfig::DeviceConfig( int configId )
+    :   _configId { configId }
+{
+    // empty
+}
+
+int DeviceConfig::getConfigId() const
+{
+    return _configId;
+}
+
 size_t DeviceConfig::getInstanceId() const
 {
     return _instanceId;

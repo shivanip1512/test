@@ -49,11 +49,14 @@ class IM_EX_CONFIG DeviceConfig
 {
 public:
 
+    DeviceConfig( int configId );
+
+    int getConfigId() const;
+
     template <typename T>
     boost::optional<T> findValue( const std::string & key ) const;
     template <typename T>
     boost::optional<T> findValue( const std::string & key, const std::map<std::string, T> &map ) const;
-
 
     std::string getValueFromKey( const std::string & key ) const;
     long        getLongValueFromKey( const std::string & key ) const;
@@ -76,6 +79,8 @@ protected:
 private:
 
     friend class ConfigManager;
+
+    const int _configId;
 
     ItemsByName        _items;
     IndexedItemsByName _indexedItems;

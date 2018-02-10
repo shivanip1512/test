@@ -24,6 +24,8 @@ using std::to_string;
     
 struct test_DeviceConfig : public Config::DeviceConfig
 {
+    test_DeviceConfig() : DeviceConfig( 271828 ) {}
+
     using DeviceConfig::insertValue;
     using DeviceConfig::findValue;
     using DeviceConfig::addCategory;

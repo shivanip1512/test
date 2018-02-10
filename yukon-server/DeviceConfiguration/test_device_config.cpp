@@ -7,6 +7,8 @@
 
 struct test_DeviceConfig : public Cti::Config::DeviceConfig
 {
+    test_DeviceConfig() : DeviceConfig( 271828 ) {}
+
     using DeviceConfig::insertValue;
 };
 

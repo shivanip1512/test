@@ -9,6 +9,7 @@
 #include "logger.h"
 #include "std_helper.h"
 
+#include <boost/make_shared.hpp>
 #include <boost/tuple/tuple.hpp>
 
 
@@ -306,7 +307,7 @@ Config::DeviceConfigSPtr  ConfigManager::buildConfig( const long configID, const
     // grab the config
     if ( const auto configCategoryIds = mapFind( _configurations, configID ) )
     {
-        auto deviceConfiguration = Config::DeviceConfigSPtr(new Config::DeviceConfig);
+        auto deviceConfiguration = boost::make_shared<Config::DeviceConfig>( configID );
 
         // iterate the config's categories
         for ( const long categoryID : *configCategoryIds )

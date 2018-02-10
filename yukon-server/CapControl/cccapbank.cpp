@@ -2258,9 +2258,7 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    CTILOG_DEBUG( dout, "Failed attribute lookup on bank: " << getPaoName() );
-
-    CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+    CTILOG_EXCEPTION_ERROR( dout, missingAttribute, "Failed attribute lookup on bank: " << getPaoName() );
 }
 
 void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
@@ -2283,9 +2281,7 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    CTILOG_DEBUG( dout, "Failed attribute lookup on bank: " << getPaoName() );
-
-    CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+    CTILOG_EXCEPTION_ERROR( dout, missingAttribute, "Failed attribute lookup on bank: " << getPaoName() );
 }
 
 void CtiCCCapBank::loadAttributes( AttributeService * service )
@@ -2321,14 +2317,16 @@ namespace
 {
 
 template <typename T>
-T retrieveConfigValue( Cti::Config::DeviceConfigSPtr & deviceConfig, const std::string & configItemKey, const T && defaultValue )
+T retrieveConfigValue( const int cbcId, Cti::Config::DeviceConfigSPtr & deviceConfig, const std::string & configItemKey, const T && defaultValue )
 {
     if ( auto value = deviceConfig->findValue<T>( configItemKey ) )
     {
         return *value;
     }
 
-    CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << configItemKey << "\" not found. Setting to: " << defaultValue );
+    CTILOG_WARN( dout, "Heartbeat Config error: \"" << configItemKey << "\" not found. Setting to: " << defaultValue << Cti::FormattedList::of(
+                       "CBC ID",    cbcId,
+                       "Config ID", deviceConfig->getConfigId() ) );
 
     return defaultValue;
 }
@@ -2339,15 +2337,16 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
 {
     using Cti::Config::CbcStrings;
 
-    auto deviceConfig = 
-        Cti::ConfigManager::getConfigForIdAndType( bank->getControlDeviceId(),
-                                                   static_cast<DeviceTypes>( resolvePAOType( bank->getPaoCategory(),
-                                                                                             bank->getControlDeviceType() ) ) );
+    const auto cbcId = bank->getControlDeviceId();
+    const auto cbcType = static_cast<DeviceTypes>( resolvePAOType( bank->getPaoCategory(), bank->getControlDeviceType() ) );
+
+    auto deviceConfig = Cti::ConfigManager::getConfigForIdAndType( cbcId, cbcType );
+
     if ( deviceConfig )
     {
         using namespace std::string_literals;
 
-        _mode   = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatMode,   "DISABLED"s );
+        _mode   = retrieveConfigValue( cbcId, deviceConfig, CbcStrings::cbcHeartbeatMode,   "DISABLED"s );
 
         static const std::map< std::string,
                                std::function< std::unique_ptr<CbcHeartbeatPolicy>() > > Lookup
@@ -2365,14 +2364,14 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
         {
             _policy = std::make_unique<NoCbcHeartbeatPolicy>();
 
-            CTILOG_DEBUG( dout, "Heartbeat Config error: Mode \"" << _mode
+            CTILOG_WARN( dout, "Heartbeat Config error: Mode \"" << _mode
                                     << "\" not valid. Disabling CBC Heartbeat on Bank: " << bank->getPaoName() );
         }
 
         if ( _mode != "DISABLED" )
         {
-            _period = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0.0 );
-            _value  = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatValue,  0L );
+            _period = retrieveConfigValue( cbcId, deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0.0 );
+            _value  = retrieveConfigValue( cbcId, deviceConfig, CbcStrings::cbcHeartbeatValue,  0L );
         }
     }
 }
