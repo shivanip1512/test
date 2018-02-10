@@ -33,14 +33,14 @@ public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
         
         AnalogPointBuilder builder = pointBuilderFactory.getAnalogPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled);
         
-        if(row.hasValue(POINT_OFFSET.NAME)) {
+        if (row.hasValue(POINT_OFFSET.NAME)) {
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
-            
-            if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
-                String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
-                throw new ProcessingException(error, "pointOffsetInUse");
+            if (pointOffset > 0) {
+                if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
+                    throw new ProcessingException(error, "pointOffsetInUse");
+                }
             }
-            
             builder.setPointOffset(pointOffset);
         }
         

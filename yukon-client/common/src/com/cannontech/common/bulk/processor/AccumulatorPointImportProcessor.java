@@ -35,17 +35,17 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
         
         AccumulatorPointBuilder builder = pointBuilderFactory.getAccumulatorPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled, accumulatorType);
         
-        if(row.hasValue(POINT_OFFSET.NAME)) {
+        if (row.hasValue(POINT_OFFSET.NAME)) {
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
-            
-            if ((accumulatorType == AccumulatorType.PULSE
-                && pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.PULSE_ACCUMULATOR_POINT))
-                || (accumulatorType == AccumulatorType.DEMAND
-                    && pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.DEMAND_ACCUMULATOR_POINT))) {
-                String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
-                throw new ProcessingException(error, "pointOffsetInUse", pointOffset, deviceName);
+            if (pointOffset > 0) {
+                if ((accumulatorType == AccumulatorType.PULSE
+                    && pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.PULSE_ACCUMULATOR_POINT))
+                    || (accumulatorType == AccumulatorType.DEMAND
+                        && pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.DEMAND_ACCUMULATOR_POINT))) {
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
+                    throw new ProcessingException(error, "pointOffsetInUse", pointOffset, deviceName);
+                }
             }
-            
             builder.setPointOffset(pointOffset);
         }
         
