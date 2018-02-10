@@ -10,7 +10,7 @@
 
 std::string IgnoredControlReasonCbcDnp::getText( const CtiCCTwoWayPoints & points )
 {
-    return "";
+    return "---";
 }
 
 bool IgnoredControlReasonCbcDnp::controlRejectedByVoltageLimits( const CtiCCTwoWayPoints & points )

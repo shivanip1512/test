@@ -115,6 +115,10 @@ DLLEXPORT string ResolveStateName(LONG grpid, LONG rawValue)
             CtiTableStateGroup &theGroup = sgit->second;
             rStr = theGroup.getRawState(rawValue);
         }
+        else
+        {
+            rStr = "Unknown state (" + std::to_string(rawValue) + ")";
+        }
     }
 
     return rStr;
