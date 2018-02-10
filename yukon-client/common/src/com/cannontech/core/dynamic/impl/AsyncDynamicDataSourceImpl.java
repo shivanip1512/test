@@ -25,7 +25,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
-import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -477,15 +476,21 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     private Set<LitePointData> getPointData(Set<Integer> pointIds) {
-        return getPointData(pointIds, dispatchProxy::getPointData);
+        return getPointData(pointIds, true);
     }
 
     @Override
     public Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds) {
-        return getPointData(pointIds, dispatchProxy::getPointDataOnce);
+        return getPointData(pointIds, false);
     }
 
-    private Set<LitePointData> getPointData(Set<Integer> pointIds, Function<Set<Integer>, Set<LitePointData>> pointDataRequester) {
+    private Set<LitePointData> getPointData(Set<Integer> pointIds, boolean shouldRegister) {
+
+        Function<Set<Integer>, Set<LitePointData>> getPointDataFromDispatch = 
+                shouldRegister 
+                    ? dispatchProxy::getPointData 
+                    : dispatchProxy::getPointDataOnce;
+        
         //  Try a cache lookup
         ImmutableMap<Integer, LitePointData> pointData = Maps.toMap(pointIds, dynamicDataCache::getPointData);
 
@@ -499,7 +504,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         Stream<LitePointData> fromDispatch = 
                 StreamSupport.stream(missingIds.spliterator(), false)
                     .map(HashSet::new)
-                    .map(pointDataRequester)
+                    .map(getPointDataFromDispatch)
                     .flatMap(Set::stream);
         
         //  Run through both the cached and non-cached streams, collecting into a single set
