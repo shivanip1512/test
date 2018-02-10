@@ -8,8 +8,6 @@ class ScannableDeviceManager : public CtiDeviceManager
 {
 private:
 
-    ScannableDeviceManager &operator=(const ScannableDeviceManager &);
-
     void refreshScanRates    (Database::id_set &paoids);
     void refreshDeviceWindows(Database::id_set &paoids);
 
@@ -17,11 +15,14 @@ protected:
 
     typedef CtiDeviceManager Inherited;
 
-    virtual void refreshDeviceProperties(Database::id_set &paoids, int type);
+    void refreshDeviceProperties(Database::id_set &paoids, int type) override;
+    void refreshDnpChildDevices(Cti::Database::id_set &paoids) override;
 
-    virtual bool shouldDiscardDevice(CtiDeviceSPtr dev) const;
+    bool shouldDiscardDevice(CtiDeviceSPtr dev) const override;
 
 public:
+
+    ScannableDeviceManager &operator=(const ScannableDeviceManager &) = delete;
 
     virtual void refreshAllDevices();
 };

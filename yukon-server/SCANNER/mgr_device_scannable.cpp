@@ -24,6 +24,10 @@ void ScannableDeviceManager::refreshDeviceProperties(Database::id_set &paoids, i
     {  Timing::DebugTimer timer("loading scan windows", print_bounds);  refreshDeviceWindows(paoids);  }
 }
 
+void ScannableDeviceManager::refreshDnpChildDevices(Cti::Database::id_set & paoids)
+{
+    //  Empty - child devices are handled within Porter, unused in Scanner's DNP device processing
+}
 
 bool ScannableDeviceManager::shouldDiscardDevice(CtiDeviceSPtr dev) const
 {

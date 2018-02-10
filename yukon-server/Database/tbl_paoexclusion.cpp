@@ -22,7 +22,6 @@ CtiTablePaoExclusion::CtiTablePaoExclusion(long xid,
 _exclusionId(xid),
 _paoId(paoid),
 _excludedPaoId(excludedpaoid),
-_pointId(pointid),
 _value(value),
 _functionId(function),
 _funcName(str),
@@ -61,11 +60,6 @@ long CtiTablePaoExclusion::getExcludedPaoId() const
     return _excludedPaoId;
 }
 
-long CtiTablePaoExclusion::getPointId() const
-{
-    return _pointId;
-}
-
 double CtiTablePaoExclusion::getValue() const
 {
     return _value;
@@ -79,11 +73,6 @@ long CtiTablePaoExclusion::getFunctionId() const
 string CtiTablePaoExclusion::getFunctionName() const
 {
     return _funcName;
-}
-
-string CtiTablePaoExclusion::getFunctionParams() const
-{
-    return _funcParams;
 }
 
 long CtiTablePaoExclusion::getFunctionRequeue() const
@@ -123,7 +112,7 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["exclusionid"]      >> _exclusionId;
     rdr["paoid"]            >> _paoId;
     rdr["excludedpaoid"]    >> _excludedPaoId;
-    rdr["pointid"]          >> _pointId;
+    //rdr["pointid"]          >> _pointId;  //  unused column
     rdr["value"]            >> _value;
     rdr["functionid"]       >> _functionId;
     rdr["funcname"]         >> _funcName;
@@ -178,7 +167,7 @@ std::string CtiTablePaoExclusion::toString() const
     itemList.add("exclusionid")   << _exclusionId;
     itemList.add("paoid")         << _paoId;
     itemList.add("excludedpaoid") << _excludedPaoId;
-    itemList.add("pointid")       << _pointId;
+    //itemList.add("pointid")       << _pointId;  //  unused column
     itemList.add("value")         << _value;
     itemList.add("functionid")    << _functionId;
     itemList.add("funcname")      << _funcName;
