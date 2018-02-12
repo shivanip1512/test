@@ -52,7 +52,6 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultimap;
@@ -492,7 +491,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
                     : dispatchProxy::getPointDataOnce;
         
         //  Try a cache lookup
-        ImmutableMap<Integer, LitePointData> pointData = Maps.toMap(pointIds, dynamicDataCache::getPointData);
+        Map<Integer, LitePointData> pointData = Maps.newHashMap(Maps.asMap(pointIds, dynamicDataCache::getPointData));
 
         //  Create a stream containing the cached pointdata  
         Stream<LitePointData> cached = pointData.values().stream().filter(Objects::nonNull);
