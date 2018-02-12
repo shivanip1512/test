@@ -2364,7 +2364,7 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
         {
             _policy = std::make_unique<NoCbcHeartbeatPolicy>();
 
-            CTILOG_WARN( dout, "Heartbeat Config error: Mode \"" << _mode
+            CTILOG_ERROR( dout, "Heartbeat Config error: Mode \"" << _mode
                                     << "\" not valid. Disabling CBC Heartbeat on Bank: " << bank->getPaoName() );
         }
 
