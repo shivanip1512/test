@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -53,6 +53,7 @@ public class SystemHealthController {
     @Autowired private SystemHealthService systemHealthService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PorterQueueCountsWidgetService porterQueueCountsWidgetService;
+    @Autowired private NmSyncService nmSyncService;
     
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
@@ -139,8 +140,7 @@ public class SystemHealthController {
         }
         
         // Send the sync message
-        RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
-        jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
+        nmSyncService.sendSyncRequest();
         
         resp.setStatus(HttpStatus.OK.value());
         json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.sync.success"));
@@ -148,9 +148,9 @@ public class SystemHealthController {
     }
     
     private List<Map<String, Object>> getPortJson(Map<Integer, LiteYukonPAObject> portPointIdToPaoMap) {
-        List<Map<String, Object>> portData = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> portData = new ArrayList<>();
         portPointIdToPaoMap.keySet().forEach(pointId -> {
-            Map<String, Object> portMap = new HashMap<String, Object>();
+            Map<String, Object> portMap = new HashMap<>();
             portMap.put("pointId", pointId);
             portMap.put("paoIdentifier", portPointIdToPaoMap.get(pointId).getPaoIdentifier());
             portMap.put("paoName", portPointIdToPaoMap.get(pointId).getPaoName());

@@ -130,4 +130,6 @@
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectPlcServiceImpl" />
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectRfnStrategy" />
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectRfnServiceImpl" />
+    
+    <bean class="com.cannontech.amr.rfn.impl.NmSyncServiceImpl" />
 </beans>
