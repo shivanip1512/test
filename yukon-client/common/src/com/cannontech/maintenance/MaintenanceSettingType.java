@@ -1,5 +1,6 @@
 package com.cannontech.maintenance;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -7,7 +8,6 @@ import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 public enum MaintenanceSettingType implements DisplayableEnum {
 
@@ -47,12 +47,9 @@ public enum MaintenanceSettingType implements DisplayableEnum {
     private static void buildAllSettings() {
         ImmutableMap.Builder<MaintenanceTaskType, Set<MaintenanceSettingType>> allSettingsBuilder =
             ImmutableMap.builder();
-        
-        Set<MaintenanceTaskType> tasks = Sets.newHashSet(MaintenanceTaskType.values());
-        Set<MaintenanceSettingType> settings = Sets.newHashSet(MaintenanceSettingType.values());
-        tasks.stream().forEach(task -> {
+        Arrays.stream(MaintenanceTaskType.values()).forEach(task -> {
             ImmutableSet.Builder<MaintenanceSettingType> settingsBuilder = ImmutableSet.builder();
-            settings.stream().forEach(setting -> {
+            Arrays.stream(values()).forEach(setting -> {
                 if (setting.getMaintenanceTaskType() == task) {
                     settingsBuilder.add(setting);
                 }

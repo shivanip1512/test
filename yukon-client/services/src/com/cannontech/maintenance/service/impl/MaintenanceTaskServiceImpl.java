@@ -16,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.maintenance.MaintenanceHelper;
+import com.cannontech.maintenance.MaintenanceScheduler;
 import com.cannontech.maintenance.MaintenanceSettingType;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.dao.MaintenanceTaskDao;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.maintenance.task.MaintenanceTask;
 import com.cannontech.system.GlobalSettingType;
-import com.google.common.collect.Sets;
 
 public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     private final static Logger log = YukonLogManager.getLogger(MaintenanceTaskServiceImpl.class);
@@ -31,8 +31,8 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     private Map<MaintenanceTaskType, MaintenanceTask> maintenanceTaskMap = new HashMap<>();
 
     @Override
-    public List<MaintenanceTask> getEnabledMaintenanceTasks() {
-        List<MaintenanceTaskType> maintenanceTaskTypes = getEnabledMaintenanceTaskTypes();
+    public List<MaintenanceTask> getEnabledMaintenanceTasks(MaintenanceScheduler scheduler) {
+        List<MaintenanceTaskType> maintenanceTaskTypes = getEnabledMaintenanceTaskTypes(scheduler);
         List<MaintenanceTask> tasks = maintenanceTaskMap.entrySet().stream()
                                                                    .filter(e -> maintenanceTaskTypes.contains(e.getKey()))
                                                                    .map(e -> e.getValue())
@@ -89,9 +89,8 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
         return nextRunTimeInMillisec - currentTimeInMillisec;
     }
     
-    @Override
-    public List<MaintenanceTaskType> getEnabledMaintenanceTaskTypes() {
-        Set<MaintenanceTaskType> tasks = Sets.newHashSet(MaintenanceTaskType.values());
+    private List<MaintenanceTaskType> getEnabledMaintenanceTaskTypes(MaintenanceScheduler scheduler) {
+        Set<MaintenanceTaskType> tasks = MaintenanceTaskType.getMaintenanceTaskForScheduler(scheduler);
         List<MaintenanceTaskType> enabledTasks = new ArrayList<>();
 
         tasks.stream().forEach(task -> {

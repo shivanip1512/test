@@ -23,7 +23,7 @@ public class MaintenanceTaskRunner {
      * It returns true when all the task have completed and false if all task are not completed.
      * Completed here means that there is no further records to delete for now.
      */
-    public synchronized boolean run(List<MaintenanceTask> tasks, Instant endOfRunWindow) {
+    public  boolean run(List<MaintenanceTask> tasks, Instant endOfRunWindow) {
         Duration timeSliceLength = getTimeSliceLength(tasks.size(), endOfRunWindow);
         while (Instant.now().isBefore(endOfRunWindow) && completedMaintenanceTask.size() != tasks.size()) {
             runTasks(tasks, timeSliceLength);

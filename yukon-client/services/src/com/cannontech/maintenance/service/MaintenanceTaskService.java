@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
+import com.cannontech.maintenance.MaintenanceScheduler;
 import com.cannontech.maintenance.MaintenanceSettingType;
-import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.task.MaintenanceTask;
 
 public interface MaintenanceTaskService {
 
     /**
-     * Return all enabled maintenance tasks.
+     * Return all enabled maintenance tasks for a scheduler.
      **/
-    List<MaintenanceTask> getEnabledMaintenanceTasks();
+    List<MaintenanceTask> getEnabledMaintenanceTasks(MaintenanceScheduler scheduler);
 
     /**
      * Return end time for maintenance tasks
@@ -30,8 +30,4 @@ public interface MaintenanceTaskService {
      **/
     Object getMaintenanceSettings(MaintenanceSettingType type);
     
-    /**
-     * Returns enabled maintenance tasks types.
-     */
-    List<MaintenanceTaskType> getEnabledMaintenanceTaskTypes();
 }
