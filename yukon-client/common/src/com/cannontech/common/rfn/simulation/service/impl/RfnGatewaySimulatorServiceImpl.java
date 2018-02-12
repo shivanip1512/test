@@ -407,8 +407,11 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             Serializable request = requestMessage.getObject();
             
             GatewayUpdateResponse response = setUpUpdateResponse(request, settings);
-            
-            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
+
+            // Update gateway message is also sent on startup to update gateway names, no reply is required.
+            if (requestMessage.getJMSReplyTo() != null) {
+                jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
+            }
         }
     }
     

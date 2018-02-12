@@ -42,11 +42,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
-import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
+import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
+import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
@@ -55,7 +56,6 @@ import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
@@ -65,6 +65,7 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -706,14 +707,24 @@ public class NmIntegrationController {
 
     @RequestMapping("resend-startup")
     public void startup(HttpServletResponse resp) {
-        RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
-        Map<RfnIdentifier, String> gateways = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY)
-                .stream().collect(Collectors.toMap(RfnDevice::getRfnIdentifier, RfnDevice::getName));
-        notif.setGatewayNames(gateways);
-        
         try {
-            jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
-            resp.setStatus(HttpStatus.NO_CONTENT.value());
+            RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
+            jmsTemplate.convertAndSend(JmsApiDirectory.ARCHIVE_STARTUP.getQueue().getName(), notif);
+            List<GatewayEditRequest> editRequests = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY).stream().map(gateway ->{
+                GatewayEditRequest request = new GatewayEditRequest();
+                GatewaySaveData editData = new GatewaySaveData();
+                editData.setName(gateway.getName());
+                request.setRfnIdentifier(gateway.getRfnIdentifier());
+                request.setData(editData);
+                return request;
+            }).collect(Collectors.toList());
+            editRequests.forEach(request -> {
+                jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_EDIT.getQueue().getName(), request);
+            });
+            log.info("Startup notification request has been sent to NM Simulator");
+            log.info("Gateway names sent to NM Simulator: "
+                + editRequests.stream().map(request -> request.getData().getName()).collect(
+                    Collectors.toList()));
         } catch (Exception e) {
             resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }

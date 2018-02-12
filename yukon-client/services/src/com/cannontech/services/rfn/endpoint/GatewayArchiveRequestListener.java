@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -26,6 +28,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestListener.class);
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
 
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private List<Worker> workers;
@@ -40,14 +43,25 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
             if (missingGatewayFirstDataTimes.containsKey(identifier)) {
                 missingGatewayFirstDataTimes.remove(identifier);
             }
+
             try {
                 // Create the device in Yukon and send a DB change message
-                RfnDevice device = rfnDeviceCreationService.createGateway(request.getName(), request.getRfnIdentifier());
+                String newGatewayName = request.getName();
+                boolean nameExists = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY).stream()
+                        .anyMatch(g -> g.getName().equalsIgnoreCase(request.getName()));
+                if (nameExists) {
+                    // gateway with this name already exists in Yukon
+                    newGatewayName = request.getName() + request.getRfnIdentifier().getSensorSerialNumber();
+                    log.info("Gateway " + request.getName()
+                        + " already exists in Yukon. Attempting to create a gateway with the name " + newGatewayName);
+                }
+
+                RfnDevice device = rfnDeviceCreationService.createGateway(newGatewayName, request.getRfnIdentifier());
                 rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new gateway: " + device);
-                gatewayEventLogService.createdGatewayAutomatically(request.getName(), 
-                                                                   request.getRfnIdentifier().getSensorSerialNumber());
-                
+
+                gatewayEventLogService.createdGatewayAutomatically(newGatewayName,
+                    request.getRfnIdentifier().getSensorSerialNumber());
                 return device;
             } catch (Exception e) {
                 log.warn("Creation failed for gateway: " + request.getRfnIdentifier(), e);

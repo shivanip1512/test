@@ -1,7 +1,6 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +24,10 @@ import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
-import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
+import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.services.calculated.CalculatedPointDataProducer;
@@ -154,13 +155,22 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
                     }
 
                     RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
-                    Map<RfnIdentifier, String> gateways = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY)
-                            .stream().collect(Collectors.toMap(RfnDevice::getRfnIdentifier, RfnDevice::getName));
-                    notif.setGatewayNames(gateways);
-
-                    jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
+                    jmsTemplate.convertAndSend(JmsApiDirectory.ARCHIVE_STARTUP.getQueue().getName(), notif);
+                    List<GatewayEditRequest> editRequests = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY).stream().map(gateway ->{
+                        GatewayEditRequest request = new GatewayEditRequest();
+                        GatewaySaveData editData = new GatewaySaveData();
+                        editData.setName(gateway.getName());
+                        request.setRfnIdentifier(gateway.getRfnIdentifier());
+                        request.setData(editData);
+                        return request;
+                    }).collect(Collectors.toList());
+                    editRequests.forEach(request -> {
+                        jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_EDIT.getQueue().getName(), request);
+                    });
                     log.info("Startup notification request has been sent to Network manager");
-                    log.info("Gateways sent to NM to update gateway names: " + notif.getGatewayNames());
+                    log.info("Gateway names sent to NM: "
+                        + editRequests.stream().map(request -> request.getData().getName()).collect(
+                            Collectors.toList()));
                 } catch (Exception e) {
                     log.error("Failed to send startup notification to Network Manager", e);
                 }
