@@ -21,9 +21,10 @@ yukon.admin.maintenance = (function () {
             if (_initialized) return;
             
             $(document).on('yukon:maintenance:toggle-task-ajax', function(event) {
-                var taskType = $(event.target).find("input[name='toggle']").data('task-type');
+                var taskType = $(event.target).data('task-type');
+                var checkBoxSelector = $(event.target).data('target');
                 $.post(yukon.url('/admin/maintenance/toggleMaintenanceTaskAjax'), {taskType : taskType}, function (isTaskEnabled) {
-                        $(event.target).find("input[name='toggle']").prop('checked', isTaskEnabled);
+                        $(checkBoxSelector + " .checkbox-input").prop('checked', isTaskEnabled);
                 });
                 $("#js-api-show-popup-" + taskType).dialog('close');
             });
@@ -40,24 +41,15 @@ yukon.admin.maintenance = (function () {
                 $(this).prop('checked', !$(this).prop("checked"));
                 var taskType = $(this).data('task-type'),
                     isEnabled = !$(this).is(":checked"),
-                    okBtnText, 
-                    dialogTitle,
-                    confirmMsg;
-                if (isEnabled) {
-                    okBtnText = yg.text.enable;
-                    dialogTitle = $("#confirmEnableText").val();
-                    confirmMsg = $('#js-api-show-popup-' + taskType).attr('data-confirm-enable-message');
-                } else {
-                    okBtnText = yg.text.disable;
-                    dialogTitle = $("#confirmDisableText").val();
-                    confirmMsg = $('#js-api-show-popup-' + taskType).attr('data-confirm-disable-message');
-                }
-                yukon.ui.dialog('#js-api-show-popup-' + taskType);
-                $('#js-api-show-popup-' + taskType).dialog({ title: dialogTitle });
-                $('#js-api-show-popup-' + taskType).text(confirmMsg);
-                setTimeout(function() {
-                    $('#js-api-show-popup-' + taskType).closest(".ui-dialog").find('.js-primary-action .ui-button-text').text(okBtnText);
-                }, 1);
+                    popup = $('#js-api-show-popup-' + taskType),
+                    okBtnText = isEnabled ? yg.text.enable : yg.text.disable,
+                    dialogTitle = isEnabled ? $("#confirmEnableText").val() : $("#confirmDisableText").val(),
+                    confirmMsg = isEnabled ? popup.attr('data-confirm-enable-message') : popup.attr('data-confirm-disable-message');
+                popup.dialog({ 
+                    title: dialogTitle,
+                    buttons: yukon.ui.buttons({ okText: okBtnText, event: 'yukon:maintenance:toggle-task-ajax' })
+                });
+                popup.html(confirmMsg);
             });
             
             $(document).on('yukon:maintenance:update-task', function() {

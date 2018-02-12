@@ -71,8 +71,8 @@
                                             </c:otherwise>
                                         </c:choose>
                                         <div class="dn js-toggle-maintenance-task-popup" id="js-api-show-popup-${task.taskType}" 
-                                             data-dialog data-width="400" data-target=".js-toggle-maintenance-task-${task.taskType}" 
-                                             data-event="yukon:maintenance:toggle-task-ajax"
+                                             data-width="400" data-target=".js-toggle-maintenance-task-${task.taskType}" 
+                                             data-event="yukon:maintenance:toggle-task-ajax" data-task-type = "${task.taskType}"
                                              data-confirm-enable-message="${fn:escapeXml(confirmEnableMessage)}"
                                              data-confirm-disable-message="${fn:escapeXml(confirmDisableMessage)}"></div>
                                     </td>
