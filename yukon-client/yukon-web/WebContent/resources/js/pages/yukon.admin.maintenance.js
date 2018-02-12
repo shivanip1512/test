@@ -2,7 +2,7 @@ yukon.namespace('yukon.admin.maintenance');
  
 /**
  * Module that manages the Maintenance tasks under Admin > Maintenance menu.
- * @module yukon.admin.multispeak
+ * @module yukon.admin.maintenance
  * @requires JQUERY
  * @requires yukon
  */
