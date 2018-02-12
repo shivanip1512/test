@@ -7,6 +7,7 @@
 #include <log4cxx/helpers/systemoutwriter.h>
 #include <log4cxx/helpers/loglog.h>
 #include <log4cxx/helpers/transcoder.h>
+#include <log4cxx/helpers/synchronized.h>
 
 #include <boost/range/algorithm/find_if.hpp>
 
@@ -62,6 +63,8 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
 {
     const auto Now = apr_time_now();
     const auto eventTimestamp = (event != PokeEvent) ? event->getTimeStamp() : Now;
+
+    log4cxx::helpers::synchronized sync(mutex);
 
     if( eventTimestamp > _intervalEnd )
     {
