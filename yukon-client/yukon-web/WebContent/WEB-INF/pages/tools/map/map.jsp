@@ -30,9 +30,6 @@
     max-height: 95px;
 }
 
-.ui-dialog {
-    z-index: 99999999999;
-}
 </style>
 
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">

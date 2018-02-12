@@ -15,7 +15,12 @@ $(function() {
          * have been ajaxed in. */
         if (menu[0]) { // The menu hasn't been moved to the body yet
             trigger.data({'menu': menu});
-            $('body').prepend(menu); // prepend will move, not clone
+            if($(this).closest('div.ol-viewport').length === 1) {
+                $(this).closest('div.ol-viewport').prepend(menu); // prepend will move, not clone
+            } else {
+                $('body').prepend(menu); // prepend will move, not clone
+            }
+            
             menu.data('trigger', trigger);
         } else { // The menu has been opened once already
             menu = trigger.data('menu');
@@ -57,7 +62,13 @@ $(function() {
         container.addClass('menu-open');
 
         menu.removeAttr('style');
-        menu.css({top: offset.top + container.height() + 2, right: ($(window).width() - offset.left - container.width())});
+        if(menu.closest('div.ol-viewport').length === 1) {
+            var mapOffset = menu.closest('div.ol-viewport').offset().top;
+            menu.css({top: offset.top - mapOffset + container.height() + 2, right: ($(window).width() - offset.left - container.width())});
+        } else {
+            menu.css({top: offset.top + container.height() + 2, right: ($(window).width() - offset.left - container.width())});
+        }
+        
 
         menu.toggle();
 

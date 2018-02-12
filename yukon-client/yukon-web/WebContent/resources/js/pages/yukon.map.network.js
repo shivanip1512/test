@@ -47,6 +47,15 @@ yukon.map.network = (function () {
     _nearbyLines = [],
     _nearbyIconLayer,
     
+    /** @type {ol.interaction.DoubleClickZoom} - The openlayers interaction object for zoom on double click. */
+    _doubleClickZoomInteraction,
+    
+    /** @type {ol.interaction.MouseWheelZoom} - The openlayers interaction object for zoom on scrolling mouse wheel. */
+    _mouseWheelZoomInteraction,
+    
+    /** @type {boolean} - This is a boolean variable indicating if the _doubleClickZoomInteraction and _doubleClickZoomInteraction interactions are blocked */
+    _interactionsBlocked = false,
+    
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
     
@@ -867,8 +876,50 @@ yukon.map.network = (function () {
                 
                 $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
                     _updateZoom();
+                    // we if are doing an exit from the full screen, close any open pop-ups
+                    if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
+                        $(".ui-dialog-content").dialog("close");
+                        if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
+                            $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
+                        }
+                    }
                 });
-
+                
+                $("body").on("dialogopen", function (event, ui) {
+                    if (document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement) {
+                        $(event.target).closest('.ui-dialog').appendTo("div.ol-viewport");
+                        $(event.target).closest('.ui-dialog').find('.ui-dialog-content').scroll( function (event) {
+                            if ($(this).hasClass('menu-open')) {
+                                $(this).removeClass('menu-open');
+                            }
+                            $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
+                        });
+                        if(!_interactionsBlocked) {
+                            _doubleClickZoomInteraction.setActive(false);
+                            _mouseWheelZoomInteraction.setActive(false);
+                            _interactionsBlocked = true;
+                        }
+                    }
+                });
+                
+                $("body").on("dialogclose", function(event, ui) {
+                    if(($("body").find(".ui-dialog:visible").length === 0) && _interactionsBlocked) {
+                        _doubleClickZoomInteraction.setActive(true);
+                        _mouseWheelZoomInteraction.setActive(true);
+                        _interactionsBlocked = false;
+                    }
+                });
+                
+                var interactions = _map.getInteractions();
+                for(var i=0; i < interactions.getLength(); i++) {
+                    var interaction = interactions.item(i);
+                    if (interaction instanceof ol.interaction.DoubleClickZoom) {
+                        _doubleClickZoomInteraction = interaction;
+                    } else if (interaction instanceof ol.interaction.MouseWheelZoom) {
+                        _mouseWheelZoomInteraction = interaction;
+                    }
+                }
+                
             }
             
             _initialized = true;
