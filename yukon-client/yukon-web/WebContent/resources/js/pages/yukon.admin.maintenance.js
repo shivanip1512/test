@@ -37,24 +37,27 @@ yukon.admin.maintenance = (function () {
             });
             
             $(document).on('change', '.js-toggle-maintenance-task .checkbox-input', function() {
+                $(this).prop('checked', !$(this).prop("checked"));
                 var taskType = $(this).data('task-type'),
-                    isEnabled = $(this).is(":checked"),
-                    okBtnTest, 
+                    isEnabled = !$(this).is(":checked"),
+                    okBtnText, 
                     dialogTitle,
                     confirmMsg;
                 if (isEnabled) {
-                    okBtnTest = yg.text.enable;
+                    okBtnText = yg.text.enable;
                     dialogTitle = $("#confirmEnableText").val();
                     confirmMsg = $('#js-api-show-popup-' + taskType).attr('data-confirm-enable-message');
                 } else {
-                    okBtnTest = yg.text.disable;
+                    okBtnText = yg.text.disable;
                     dialogTitle = $("#confirmDisableText").val();
                     confirmMsg = $('#js-api-show-popup-' + taskType).attr('data-confirm-disable-message');
                 }
                 yukon.ui.dialog('#js-api-show-popup-' + taskType);
                 $('#js-api-show-popup-' + taskType).dialog({ title: dialogTitle });
-                $('#js-api-show-popup-' + taskType).closest(".ui-dialog").find('.js-primary-action .ui-button-text').text(okBtnTest);
                 $('#js-api-show-popup-' + taskType).text(confirmMsg);
+                setTimeout(function() {
+                    $('#js-api-show-popup-' + taskType).closest(".ui-dialog").find('.js-primary-action .ui-button-text').text(okBtnText);
+                }, 1);
             });
             
             $(document).on('yukon:maintenance:update-task', function() {
@@ -64,12 +67,6 @@ yukon.admin.maintenance = (function () {
             $(document).on('yukon:maintenance:toggle-task', function() {
                 $("#maintenance-task-form").attr('action', yukon.url('/admin/maintenance/toggleMaintenanceTask'));
                 $("#maintenance-task-form").submit();
-            });
-            
-            $(document).on('dialogclose', function(event) {
-                var toggleButton = $(event.target).attr('data-target');
-                toggleButton = toggleButton + " .checkbox-input";
-                $(toggleButton).prop('checked', !$(toggleButton).prop("checked"));
             });
             
             _initialized = true;
