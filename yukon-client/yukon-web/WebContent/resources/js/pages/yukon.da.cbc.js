@@ -101,6 +101,8 @@ yukon.da.cbc = (function () {
                         }
                         if (data.deviceConfiguration.attributeMappingCategory != null) {
                             $('.js-attribute-mapping-name').text(data.deviceConfiguration.attributeMappingCategory.categoryName);
+                        } else {
+                            $('.js-attribute-mapping-name').text(yg.text.noneChoice);
                         }
                     }).always(function () {
                         yukon.ui.unblock(dnpFields);
