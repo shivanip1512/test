@@ -118,6 +118,7 @@ public interface PointEditorService {
      *
      * @param pointType - must pass {@link PointTypes#isValidPointType(pointType)}
      * @param paoId - parent of the point
+     * @param userContext - Current user context
      * @return the id of the new point
      */
     int create(int pointType, int paoId, YukonUserContext userContext);
