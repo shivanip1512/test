@@ -479,6 +479,25 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                         data[index++] = (byte) fieldCount;
                         valueIndex++;
                     }
+                    
+                    if (field.equals(TLVField.RELAY_N_REMAINING_CONTROLTIME)) {
+                        // 5 elements, first is relay number, last 4 are control time in seconds.
+                        int remainingSeconds = 60*60*(valueIndex+1); // relay 1 = 1 hour, relay 2 = 2 hour.... 
+                        data[index++] = (byte) fieldCount;
+                        data[index++] = (byte) (remainingSeconds >> 24);
+                        data[index++] = (byte) (remainingSeconds >> 16);
+                        data[index++] = (byte) (remainingSeconds >> 8);
+                        data[index++] = (byte) remainingSeconds;
+                        valueIndex = field.length; // Let everyone know we took care of this field in its entirety
+                    }
+                    
+                    if (field.equals(TLVField.PROTECTION_TIME_RELAY_N) || field.equals(TLVField.CLP_TIME_FOR_RELAY_N)) {
+                        // 3 elements, first is relay number, the rest is a time possibly in seconds?
+                        data[index++] = (byte) fieldCount;
+                        data[index++] = (byte) 0;
+                        data[index++] = (byte) 120;
+                        valueIndex = field.length; // Let everyone know we took care of this field in its entirety
+                    }
 
                     if(field.equals(TLVField.RELAY_INTERVAL_START_TIME)) {
                         // Add relay interval start time in sec(24 hour before UTC field value).Hourly data will be added after this till UTC (field value).
@@ -487,15 +506,14 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                         byte[] relayStartTime = buffer.putLong(intervalStartTime).array();
                         // Add relay interval start time to byte array.
                         for (int i = 4; i < relayStartTime.length; i++) {
-                            data[index] = relayStartTime[i];
-                            index++;
+                            data[index++] = relayStartTime[i];
                         }
                         valueIndex = field.length;
                     }
-                    // Generate random byte data for specified field type. 
+                    
+                    // Fill in remaining values with incrementing numbers
                     while (valueIndex < field.length) {
-                        data[index] = (byte) (Math.random() * (15 - 0));
-                        index++;
+                        data[index++] = (byte) (data[index-1] + 1);
                         valueIndex++;
                     }
                     fieldCount++;
