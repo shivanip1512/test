@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
@@ -201,28 +200,15 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             
             channelData.setUnitOfMeasure(reading.getUom());
             
-            //  TODO JAVA 8
-            
             Set<String> modifiers =
-                    reading.getModifiers().entrySet().stream().filter(new Predicate<Map.Entry<String, Boolean>>() {
-                        @Override
-                        public boolean test(Entry<String, Boolean> t) {
-                            return t.getValue();
-                        }
-                    }).map(new Function<Map.Entry<String, Boolean>, String>() {
-                        @Override
-                        public String apply(Entry<String, Boolean> t) {
-                            return t.getKey();
-                        }
-                    }).map(new Function<String, String>() {
-                        @Override
-                        public String apply(String t) {
-                            return modifierPaths.get(t);
-                        }
-                    }).collect(Collectors.toSet());
+                    reading.getModifiers().entrySet().stream()
+                        .filter(Entry::getValue)
+                        .map(Entry::getKey)
+                        .map(modifierPaths::get)
+                        .collect(Collectors.toSet());
             
             if (reading.isRandom()) {
-                channelData.setValue(Math.random() * 1000);
+                channelData.setValue(ThreadLocalRandom.current().nextLong(1000));
             } else {
                 channelData.setValue(reading.getValue());
             }
@@ -232,7 +218,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             data.setTimeStamp(reading.getTimestampAsMillis());
             
             message.setData(data);
-            message.setDataPointId(1);
+            message.setDataPointId(ThreadLocalRandom.current().nextLong(1000000000));
             
             if (reading.getModel().contains("water")) {
                 message.setReadingType(RfnMeterReadingType.INTERVAL);
