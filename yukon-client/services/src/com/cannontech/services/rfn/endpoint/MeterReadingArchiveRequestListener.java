@@ -50,7 +50,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         public void processData(RfnDevice device, RfnMeterReadingArchiveRequest request) {
             RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(device, request.getData());
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
-            List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend);
+            List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend, request.getDataPointId());
 
             asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
