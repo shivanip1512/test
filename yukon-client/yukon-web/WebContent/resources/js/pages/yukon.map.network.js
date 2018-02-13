@@ -894,6 +894,9 @@ yukon.map.network = (function () {
                             }
                             $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
                         });
+                        
+                        // If a dialog box is opened while viewing the map in full screen map, disable double click and
+                        // mouse wheel zoom interactions since they perform a zoom operation on map.
                         if(!_interactionsBlocked) {
                             _doubleClickZoomInteraction.setActive(false);
                             _mouseWheelZoomInteraction.setActive(false);
@@ -903,6 +906,8 @@ yukon.map.network = (function () {
                 });
                 
                 $("body").on("dialogclose", function(event, ui) {
+                    // If Double click and mouse wheel zoom interactions are disabled AND there is no dialog box open,
+                    // enable those operations again.
                     if(($("body").find(".ui-dialog:visible").length === 0) && _interactionsBlocked) {
                         _doubleClickZoomInteraction.setActive(true);
                         _mouseWheelZoomInteraction.setActive(true);
