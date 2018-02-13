@@ -158,13 +158,12 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("createNewGateway")
-    public String createNewGateway(@RequestParam String name, 
-                                   @RequestParam String serial, 
+    public String createNewGateway(@RequestParam String serial, 
                                    @RequestParam(defaultValue="false") boolean returnGwy800Model,
                                    FlashScope flash) {
         
-        gatewaySimService.sendGatewayArchiveRequest(name, serial, returnGwy800Model);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated", name));
+        gatewaySimService.sendGatewayArchiveRequest(serial, returnGwy800Model);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated", serial));
         
         return "redirect:gatewaySimulator";
     }

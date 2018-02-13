@@ -233,12 +233,10 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
 
     @Override
-    public void sendGatewayArchiveRequest(String name, String serial, boolean isGateway2) {
+    public void sendGatewayArchiveRequest(String serial, boolean isGateway2) {
         
         GatewayArchiveRequest request = new GatewayArchiveRequest();
-        
-        request.setName(name);
-        
+  
         String model = isGateway2 ? RfnDeviceCreationService.GATEWAY_2_MODEL_STRING : RfnDeviceCreationService.GATEWAY_1_MODEL_STRING;
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
         request.setRfnIdentifier(rfnIdentifier);
@@ -408,9 +406,12 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             
             GatewayUpdateResponse response = setUpUpdateResponse(request, settings);
 
-            // Update gateway message is also sent on startup to update gateway names, no reply is required.
             if (requestMessage.getJMSReplyTo() != null) {
                 jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
+            } else if (request instanceof GatewayEditRequest) {
+                // Update gateway message is also sent to sync gateway names, no reply is required.
+                GatewayEditRequest editRequest = (GatewayEditRequest) request;
+                log.info("Processing message to update name to "+ editRequest.getData().getName());
             }
         }
     }
@@ -449,7 +450,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                         
                         Object message = jmsTemplate.receive(dataQueue);
                         if (message != null && message instanceof ObjectMessage) {
-                            log.info("Processing gateway data message " + message);
+                            log.info("Processing gateway data message");
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             GatewayDataRequest request = (GatewayDataRequest) requestMessage.getObject();
                             
@@ -641,6 +642,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         GatewaySaveData cachedData = gatewayDataCache.get(rfnId);
         GatewayDataResponse response = 
                 DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, settings);
+       
+        //response.setName(rfnId.getSensorSerialNumber());
         
         return response;
     }

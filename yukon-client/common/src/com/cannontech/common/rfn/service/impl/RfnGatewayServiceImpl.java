@@ -407,7 +407,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         if (newGatewayData.getIpAddress() != null 
                 && !newGatewayData.getIpAddress().equals(existingGatewayData.getIpAddress())) {
-            editData.setIpAddress(newGatewayData.getIpAddress());;
+            editData.setIpAddress(newGatewayData.getIpAddress());
             sendGatewayEditRequest = true;
         }
         if (newGatewayData.getAdmin() != null 

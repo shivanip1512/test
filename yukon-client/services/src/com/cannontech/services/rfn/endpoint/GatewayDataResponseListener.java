@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.UpdateServerConfigHelper;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
@@ -40,6 +41,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private UpdateServerConfigHelper updateServerConfigHelper;
+    @Autowired private NmSyncServiceImpl nmSyncService;
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private JmsTemplate outgoingJmsTemplate;
     private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
@@ -132,6 +134,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+            nmSyncService.syncGatewayName(rfnDevice, message.getName());
             log.debug("Handling gateway data message: " + message);
             RfnGatewayData data = new RfnGatewayData(message, rfnDevice.getName());
             gatewayCache.put(rfnDevice.getPaoIdentifier(), data);

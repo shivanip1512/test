@@ -89,7 +89,7 @@ public interface RfnGatewaySimulatorService extends AutoStartableSimulator{
     /**
      * Send an unsolicited gateway archive message (which will create a new gateway device in Yukon).
      */
-    void sendGatewayArchiveRequest(String name, String serial, boolean isGateway2);
+    void sendGatewayArchiveRequest(String serial, boolean isGateway2);
     
     /**
      * @return true if the simulator is actively replying to data requests.

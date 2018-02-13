@@ -1,10 +1,8 @@
 package com.cannontech.amr.rfn.impl;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.jms.ConnectionFactory;
 
@@ -12,13 +10,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -30,7 +27,6 @@ public class NmSyncServiceImpl implements NmSyncService {
     private static final Logger log = YukonLogManager.getLogger(NmSyncServiceImpl.class);
     
     @Autowired private ConnPool connPool;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     protected JmsTemplate jmsTemplate;
     
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -39,21 +35,7 @@ public class NmSyncServiceImpl implements NmSyncService {
     public void sendSyncRequest() {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
         jmsTemplate.convertAndSend(JmsApiDirectory.ARCHIVE_STARTUP.getQueue().getName(), notif);
-        List<GatewayEditRequest> editRequests = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY).stream().map(gateway ->{
-            GatewayEditRequest request = new GatewayEditRequest();
-            GatewaySaveData editData = new GatewaySaveData();
-            editData.setName(gateway.getName());
-            request.setRfnIdentifier(gateway.getRfnIdentifier());
-            request.setData(editData);
-            return request;
-        }).collect(Collectors.toList());
-        editRequests.forEach(request -> {
-            jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_EDIT.getQueue().getName(), request);
-        });
         log.info("Startup notification request has been sent to Network manager");
-        log.info("Gateway names sent to NM: "
-            + editRequests.stream().map(request -> request.getData().getName()).collect(
-                Collectors.toList()));
     }
     
     @Override
@@ -76,6 +58,20 @@ public class NmSyncServiceImpl implements NmSyncService {
                 }
             }
         }, MINUTES_TO_WAIT_TO_SEND_STARTUP_REQUEST, TimeUnit.MINUTES);
+    }
+    
+    @Override
+    public void syncGatewayName(RfnDevice rfnDevice, String nmGatewayName) {
+        if (!rfnDevice.getName().equalsIgnoreCase(nmGatewayName)) {
+            GatewayEditRequest request = new GatewayEditRequest();
+            GatewaySaveData editData = new GatewaySaveData();
+            editData.setName(rfnDevice.getName());
+            request.setRfnIdentifier(rfnDevice.getRfnIdentifier());
+            request.setData(editData);
+            log.info("Sending message to NM to update gateway name from " + nmGatewayName + " to " + rfnDevice.getName()
+                + " for " + rfnDevice);
+            jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_EDIT.getQueue().getName(), request);
+        }
     }
     
     @Autowired

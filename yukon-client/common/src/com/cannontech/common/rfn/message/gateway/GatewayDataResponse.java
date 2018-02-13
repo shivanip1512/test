@@ -1,4 +1,5 @@
 package com.cannontech.common.rfn.message.gateway;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private static final long serialVersionUID = 1L;
     
     private RfnIdentifier rfnIdentifier;
+    private String name;
     
     private String hardwareVersion;
     private String softwareVersion;
@@ -33,7 +35,15 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private Set<Radio> radios;
     private short routeColor;
     private String ipv6Prefix;
-    private String ipv6PrefixSuggested;  // value suggested by NM only when ipv6Prefix is null or empty
+    
+    /* Default first 6 bytes used for Yukon to compose the suggested ipv6Prefix
+        The default address segment comes from NI_Property table PropertyID 49, 
+        which is pre-configured during NM installation when IPV6 feature is enabled.
+        String Format:  FD30:0000:0000::/48
+        This value will be the same for all gateways. 
+        And might be null if NM does not have it in NI_Property table.
+    */
+    private String ipv6PrefixSuggested;  
     
     private Authentication superAdmin;
     private Authentication admin;
@@ -57,6 +67,14 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     @Override
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
     
     public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
@@ -354,6 +372,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
     
@@ -540,6 +559,13 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         } else if (!versionConflicts.equals(other.versionConflicts)) {
             return false;
         }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
         return true;
     }
 
@@ -561,7 +587,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
                + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN="
                + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
-               + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
+               + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "name=" + name + "]";
     }
     
 }

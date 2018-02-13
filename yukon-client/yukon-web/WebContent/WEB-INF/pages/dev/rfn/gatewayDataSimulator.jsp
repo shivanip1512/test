@@ -452,9 +452,6 @@
                 <form action="createNewGateway">
                     <cti:csrfToken/>
                     <tags:nameValueContainer tableClass="natural-width">
-                        <tags:nameValue name="Name">
-                            <input name="name" value="Fake Gateway">
-                        </tags:nameValue>
                         <tags:nameValue name="Serial Number">
                             <input name="serial" value="7500000019">
                         </tags:nameValue>
