@@ -26,21 +26,21 @@ public class SmartNotificationSimulatorMessageHandler extends SimulatorMessageHa
             if (simulatorRequest instanceof SmartNotificationSimulatorRequest) {
                 SmartNotificationSimulatorRequest request = (SmartNotificationSimulatorRequest) simulatorRequest;
                 switch (request.getRequestAction()) {
-                    case "getSettings":
+                    case GET_SETTINGS:
                         return new SmartNotificationSimulatorResponse(smartNotificationSimulatorService.getCurrentSettings());
-                    case "clearAllSubscriptions":
+                    case CLEAR_ALL_SUBSCRIPTIONS:
                         return smartNotificationSimulatorService.clearAllSubscriptions();
-                    case "clearAllEvents":
+                    case CLEAR_ALL_EVENTS:
                         return smartNotificationSimulatorService.clearAllEvents();
-                    case "createEvents":
+                    case CREATE_EVENTS:
                         return smartNotificationSimulatorService.createEvents(request.getWaitTime(),
                                                                               request.getEventsPerMessage(), 
                                                                               request.getNumberOfMessages());
-                    case "saveSubscription":
+                    case SAVE_SUBSCRIPTION:
                         return smartNotificationSimulatorService.saveSubscription(request.getSubscription(), request.getUserGroupId(), 
                                                                                   request.isGenerateTestEmailAddresses(),
                                                                                   request.getUserContext());
-                    case "startDailyDigest":
+                    case START_DAILY_DIGEST:
                         return smartNotificationSimulatorService.startDailyDigest(request.getDailyDigestHour());
                     default:
                         SimulatorResponseBase response = new SimulatorResponseBase(false);

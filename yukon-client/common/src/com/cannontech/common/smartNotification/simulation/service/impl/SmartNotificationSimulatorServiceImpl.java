@@ -33,9 +33,11 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler.MonitorState;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
+import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.common.smartNotification.simulation.service.SmartNotificationSimulatorService;
 import com.cannontech.infrastructure.simulation.service.*;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.infrastructure.model.SmartNotificationSimulatorSettings;
@@ -56,6 +58,8 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private SmartNotificationSubscriptionService subscriptionService;
+    @Autowired private YukonUserDao yukonUserDao;
     
     private Executor executor = Executors.newCachedThreadPool();
     private JmsTemplate jmsTemplate;
@@ -100,9 +104,8 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                     if (subscriptions != null) {
                         List<SmartNotificationEvent> events = new ArrayList<>();
 
-                        int i = 0;
                         int nextIndex = -1;
-                        while (i++ < numberOfMessages) {
+                        for (int i = 0; i < numberOfMessages; i++) {
                             int index = random.nextInt(deviceIds.size());
                             nextIndex = getNextSubscriptionIndex(subscriptions, nextIndex);
                             
@@ -149,19 +152,17 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Override
     public SimulatorResponseBase saveSubscription(SmartNotificationSubscription subscription, int userGroupId,
                                                   boolean generateTestEmailAddresses, YukonUserContext userContext) {
-        return null;
+        List<Integer> userIds = yukonUserDao.getUserIdsForUserGroup(userGroupId);
+        userIds.forEach(id -> {
+            subscription.setId(0);
+            subscription.setUserId(id);
+            if (generateTestEmailAddresses) {
+                subscription.setRecipient(id + "@eaton");
+            }
+            subscriptionService.saveSubscription(subscription, userContext);
+        });
+        return new SimulatorResponseBase(true);
     }
-//        List<Integer> userIds = yukonUserDao.getUserIdsForUserGroup(userGroupId);
-//        userIds.forEach(id -> {
-//            subscription.setId(0);
-//            subscription.setUserId(id);
-//            if (generateTestEmailAddresses) {
-//                subscription.setRecipient(id + "@eaton");
-//            }
-//            subscriptionService.saveSubscription(subscription, userContext);
-//        });
-//        return new SimulatorResponseBase(true);
-//    }
     
     @Override 
     public SimulatorResponseBase startDailyDigest(int dailyDigestHour) {

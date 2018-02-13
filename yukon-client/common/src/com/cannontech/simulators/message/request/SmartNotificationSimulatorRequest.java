@@ -11,26 +11,35 @@ import com.cannontech.user.YukonUserContext;
  */
 public class SmartNotificationSimulatorRequest implements SimulatorRequest {
     
-    private String requestAction;
+    private RequestAction requestAction;
     private int dailyDigestHour, waitTime, eventsPerMessage, numberOfMessages, userGroupId;
     private boolean generateTestEmailAddresses;
     SmartNotificationSubscription subscription;
     private YukonUserContext userContext;
     
-    public SmartNotificationSimulatorRequest(String requestAction) {
+    public static enum RequestAction {
+        GET_SETTINGS,
+        CLEAR_ALL_SUBSCRIPTIONS,
+        CLEAR_ALL_EVENTS,
+        CREATE_EVENTS,
+        SAVE_SUBSCRIPTION,
+        START_DAILY_DIGEST;
+    }
+    
+    public SmartNotificationSimulatorRequest(RequestAction requestAction) {
         this.requestAction = requestAction;
     }
     
     public SmartNotificationSimulatorRequest(int dailyDigestHour) {
         this.dailyDigestHour = dailyDigestHour;
-        requestAction = "startDailyDigest";
+        requestAction = RequestAction.START_DAILY_DIGEST;
     }
     
     public SmartNotificationSimulatorRequest(int waitTime, int eventsPerMessage, int numberOfMessages) {
         this.waitTime = waitTime;
         this.eventsPerMessage = eventsPerMessage;
         this.numberOfMessages = numberOfMessages;
-        requestAction = "createEvents";
+        requestAction = RequestAction.CREATE_EVENTS;
     }
     
     public SmartNotificationSimulatorRequest(SmartNotificationSubscription subscription, int userGroupId, 
@@ -39,7 +48,7 @@ public class SmartNotificationSimulatorRequest implements SimulatorRequest {
         this.userGroupId = userGroupId;
         this.generateTestEmailAddresses = generateTestEmailAddresses;
         this.userContext = userContext;
-        requestAction = "saveSubscription";
+        requestAction = RequestAction.SAVE_SUBSCRIPTION;
     }
     
     @Override
@@ -47,7 +56,7 @@ public class SmartNotificationSimulatorRequest implements SimulatorRequest {
         return SimulatorType.SMART_NOTIFICATION;
     }
     
-    public String getRequestAction() {
+    public RequestAction getRequestAction() {
         return requestAction;
     }
     

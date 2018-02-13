@@ -8,12 +8,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
@@ -36,6 +37,8 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
+    
+    private static final Logger log = YukonLogManager.getLogger(SmartNotificationSubscriptionDaoImpl.class);
     
     private static final YukonRowMapper<SmartNotificationSubscription> subscriptionMapper = r -> {
         SmartNotificationSubscription subscription = new SmartNotificationSubscription();
@@ -121,7 +124,7 @@ public class SmartNotificationSubscriptionDaoImpl implements SmartNotificationSu
     public List<SmartNotificationSubscription> getAllSubscriptions() {
         SqlStatementBuilder sql = new SqlStatementBuilder(baseSubscriptionSql.getSql());
         List<SmartNotificationSubscription> subscriptions = jdbcTemplate.query(sql, subscriptionMapper);
-        Log.debug(sql.getDebugSql());
+        log.debug(sql.getDebugSql());
         addParameters(subscriptions);
         
         return subscriptions;

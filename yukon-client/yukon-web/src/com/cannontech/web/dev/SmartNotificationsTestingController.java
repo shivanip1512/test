@@ -1,14 +1,10 @@
 package com.cannontech.web.dev;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,8 +17,6 @@ import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorServic
 import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
-import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.message.request.SmartNotificationSimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
@@ -39,21 +33,20 @@ public class SmartNotificationsTestingController {
     @Autowired private InfrastructureWarningsWidgetService infrastructureWarningsWidgetService;
     @Autowired private MonitorCacheService monitorCacheService;
     @Autowired private DeviceDataMonitorServiceImpl monitorService;
-    @Autowired private SmartNotificationSubscriptionService subscriptionService;
-    @Autowired private YukonUserDao yukonUserDao;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
-    private JmsTemplate jmsTemplate;
   
     @RequestMapping("smartNotificationsSimulator")
     public String smartNotificationsSimulator(ModelMap model) {
-        SmartNotificationSimulatorResponse response = (SmartNotificationSimulatorResponse) getSimulatorResponse(new SmartNotificationSimulatorRequest("getSettings"));
+        SmartNotificationSimulatorResponse response = (SmartNotificationSimulatorResponse)
+                getSimulatorResponse(new SmartNotificationSimulatorRequest(SmartNotificationSimulatorRequest.RequestAction.GET_SETTINGS));
         model.addAttribute("smartNotificationSimulatorSettings", response.getSettings());
         return "smartNotificationsSimulator.jsp";
     }
     
     @RequestMapping("clearAllSubscriptions")
     public String clearAllSubscriptions(FlashScope flash) {
-        SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest("clearAllSubscriptions"));
+        SimulatorResponseBase response = 
+                getSimulatorResponse(new SmartNotificationSimulatorRequest(SmartNotificationSimulatorRequest.RequestAction.CLEAR_ALL_SUBSCRIPTIONS));
         if (response.isSuccessful()) {
             flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("All Subscriptions have been cleared."));
         } else {
@@ -64,7 +57,8 @@ public class SmartNotificationsTestingController {
     
     @RequestMapping("clearAllEvents")
     public String clearAllEvents(FlashScope flash) {
-        SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest("clearAllEvents"));
+        SimulatorResponseBase response = 
+                getSimulatorResponse(new SmartNotificationSimulatorRequest(SmartNotificationSimulatorRequest.RequestAction.CLEAR_ALL_EVENTS));
         if (response.isSuccessful()) {
             flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("All Events have been cleared."));
         } else {
@@ -95,37 +89,21 @@ public class SmartNotificationsTestingController {
         return "redirect:smartNotificationsSimulator";
     }
 
-//  @RequestMapping(value="saveSubscription", method=RequestMethod.POST)
-//  @ResponseBody
-//  public Map<String, Object> saveSmartNotificationsSubscription(@ModelAttribute("subscription") SmartNotificationSubscription subscription,
-//                                                   @RequestParam int userGroupId, @RequestParam boolean generateTestEmailAddresses, 
-//                                                   YukonUserContext userContext, FlashScope flash) throws Exception {    
-//      SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest(subscription, userGroupId, generateTestEmailAddresses, userContext));
-//      Map<String, Object> json = new HashMap<String, Object>();
-//      if (response.isSuccessful()) {
-//          json.put("success", true);
-//          json.put("message", "Subscription saved: " + subscription.toString());
-//      } else {
-//          json.put("success", false);
-//          json.put("message", response.getException().getMessage());
-//      }
-//      return json;
-//    }
-    
-    @RequestMapping(value="saveSubscription", method=RequestMethod.POST)
-    public String saveSmartNotificationsSubscription(@ModelAttribute("subscription") SmartNotificationSubscription subscription,
-                                                     @RequestParam int userGroupId, @RequestParam boolean generateTestEmailAddresses, 
-                                                     YukonUserContext userContext, FlashScope flash) throws Exception {
-        List<Integer> userIds = yukonUserDao.getUserIdsForUserGroup(userGroupId);
-        userIds.forEach(id -> {
-            subscription.setId(0);
-            subscription.setUserId(id);
-            if (generateTestEmailAddresses) {
-                subscription.setRecipient(id + "@eaton");
-            }
-            subscriptionService.saveSubscription(subscription, userContext);
-        });
-        return "redirect:smartNotificationsSimulator";
+  @RequestMapping(value="saveSubscription", method=RequestMethod.POST)
+  @ResponseBody
+  public Map<String, Object> saveSmartNotificationsSubscription(@ModelAttribute("subscription") SmartNotificationSubscription subscription,
+                                                   @RequestParam int userGroupId, @RequestParam boolean generateTestEmailAddresses, 
+                                                   YukonUserContext userContext, FlashScope flash) throws Exception {
+    SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest(subscription, userGroupId, generateTestEmailAddresses, userContext));
+      Map<String, Object> json = new HashMap<String, Object>();
+      if (response.isSuccessful()) {
+          json.put("success", true);
+          json.put("message", "Subscription saved successfully.");
+      } else {
+          json.put("success", false);
+          json.put("message", response.getException().getMessage());
+      }
+      return json;
     }
     
     @RequestMapping(value="startDailyDigest")

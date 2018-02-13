@@ -9,4 +9,5 @@
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.cannontech.simulators.service.SimulatorsService"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="simulators"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcom.cooperindustries.dev.wsdir=&quot;${workspace_loc}&quot;"/>
 </launchConfiguration>

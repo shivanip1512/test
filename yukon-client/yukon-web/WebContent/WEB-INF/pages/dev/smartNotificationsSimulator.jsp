@@ -47,10 +47,10 @@
 
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="User Group">
-                <input type="hidden" id="userGroupId" />
+                <input type="hidden" id="userGroupId" value = "${smartNotificationSimulatorSettings.userGroupId}"/>
 
                 <tags:pickerDialog type="userGroupPicker" id="userGroupPicker"
-                    selectionProperty="userGroupName" destinationFieldId="userGroupId"
+                    selectionProperty="userGroupName" destinationFieldId="userGroupId" allowEmptySelection="false"
                     linkType="selection" immediateSelectMode="true" initialId="${smartNotificationSimulatorSettings.userGroupId}" />
                     
             </tags:nameValue>
