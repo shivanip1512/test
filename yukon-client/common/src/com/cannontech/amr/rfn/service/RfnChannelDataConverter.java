@@ -119,9 +119,9 @@ public class RfnChannelDataConverter {
     private PaoPointValue convertSingleChannelData(RfnDevice rfnDevice, ChannelData channelData, Instant readingInstant, Long dataPointId) {
         if (log.isDebugEnabled()) {
             if (dataPointId != null) {
-                log.debug("Processing " + channelData + " for " + rfnDevice);
-            } else {
                 log.debug("Processing " + channelData + " for " + rfnDevice + " with dataPointId " + dataPointId);
+            } else {
+                log.debug("Processing " + channelData + " for " + rfnDevice);
             }
         }
         ChannelDataStatus status = channelData.getStatus();
