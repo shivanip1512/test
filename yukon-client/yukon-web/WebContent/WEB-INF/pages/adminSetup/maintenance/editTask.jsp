@@ -12,7 +12,7 @@
     
     <form:form id="maintenance-task-form" action="updateTask" commandName="maintenanceEditorBean" method="post">
         <cti:csrfToken/>
-        <form:hidden path="taskDetails.taskType" id="task"/>
+        <form:hidden path="taskDetails.taskType"/>
         <tags:sectionContainer2 nameKey="${maintenanceEditorBean.taskDetails.taskType}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".status">
