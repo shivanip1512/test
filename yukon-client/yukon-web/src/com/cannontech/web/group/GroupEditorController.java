@@ -588,7 +588,7 @@ public class GroupEditorController {
             rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
             
             // Make sure we can remove the group
-            if (removeGroup.isEditable()) {
+            if (removeGroup.isModifiable()) {
                 deviceGroupMemberEditorDao.removeAllChildDevices(removeGroup);
             } else {
                 membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName();
