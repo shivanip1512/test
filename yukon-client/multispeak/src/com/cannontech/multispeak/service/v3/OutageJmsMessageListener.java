@@ -83,7 +83,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
                             + mspVendor.getCompanyName());
                     }
                 } catch (MultispeakWebServiceClientException e) {
-                    log.warn("caught exception in initialize");
+                    log.warn("caught exception in initialize " + e);
                 }
             }
         }
