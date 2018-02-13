@@ -70,9 +70,8 @@
                                                 <cti:msg2 var="confirmDisableMessage" key=".confirmDisable.message" argument="${taskTypeMsg}" />
                                             </c:otherwise>
                                         </c:choose>
-                                        <div class="dn js-toggle-maintenance-task-popup" id="js-api-show-popup-${task.taskType}" 
-                                             data-width="400" data-target=".js-toggle-maintenance-task-${task.taskType}" 
-                                             data-event="yukon:maintenance:toggle-task-ajax" data-task-type = "${task.taskType}"
+                                        <div class="dn" id="js-api-show-popup-${task.taskType}" data-width="400" 
+                                             data-target=".js-toggle-maintenance-task-${task.taskType}" data-task-type="${task.taskType}"
                                              data-confirm-enable-message="${fn:escapeXml(confirmEnableMessage)}"
                                              data-confirm-disable-message="${fn:escapeXml(confirmDisableMessage)}"></div>
                                     </td>
