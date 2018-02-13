@@ -25,6 +25,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.widgets.service.InfrastructureWarningsWidgetService;
 import com.cannontech.yukon.IDatabaseCache;
+import static com.cannontech.simulators.message.request.SmartNotificationSimulatorRequest.RequestAction.*;
 
 @Controller
 public class SmartNotificationsTestingController {
@@ -37,16 +38,15 @@ public class SmartNotificationsTestingController {
   
     @RequestMapping("smartNotificationsSimulator")
     public String smartNotificationsSimulator(ModelMap model) {
-        SmartNotificationSimulatorResponse response = (SmartNotificationSimulatorResponse)
-                getSimulatorResponse(new SmartNotificationSimulatorRequest(SmartNotificationSimulatorRequest.RequestAction.GET_SETTINGS));
+        SmartNotificationSimulatorResponse response = 
+                (SmartNotificationSimulatorResponse) getSimulatorResponse(new SmartNotificationSimulatorRequest(GET_SETTINGS));
         model.addAttribute("smartNotificationSimulatorSettings", response.getSettings());
         return "smartNotificationsSimulator.jsp";
     }
     
     @RequestMapping("clearAllSubscriptions")
     public String clearAllSubscriptions(FlashScope flash) {
-        SimulatorResponseBase response = 
-                getSimulatorResponse(new SmartNotificationSimulatorRequest(SmartNotificationSimulatorRequest.RequestAction.CLEAR_ALL_SUBSCRIPTIONS));
+        SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest(CLEAR_ALL_SUBSCRIPTIONS));
         if (response.isSuccessful()) {
             flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("All Subscriptions have been cleared."));
         } else {
@@ -57,8 +57,7 @@ public class SmartNotificationsTestingController {
     
     @RequestMapping("clearAllEvents")
     public String clearAllEvents(FlashScope flash) {
-        SimulatorResponseBase response = 
-                getSimulatorResponse(new SmartNotificationSimulatorRequest(SmartNotificationSimulatorRequest.RequestAction.CLEAR_ALL_EVENTS));
+        SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest(CLEAR_ALL_EVENTS));
         if (response.isSuccessful()) {
             flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("All Events have been cleared."));
         } else {
@@ -80,7 +79,8 @@ public class SmartNotificationsTestingController {
     @RequestMapping("createEvents")
     public String createEvents(@RequestParam int waitTime, @RequestParam int eventsPerMessage,
             @RequestParam int numberOfMessages, FlashScope flash) {
-        SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest(waitTime, eventsPerMessage, numberOfMessages));
+        SimulatorResponseBase response = 
+                getSimulatorResponse(new SmartNotificationSimulatorRequest(waitTime, eventsPerMessage, numberOfMessages));
         if (response.isSuccessful()) {
             flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Created test events."));
         } else {
@@ -94,7 +94,8 @@ public class SmartNotificationsTestingController {
   public Map<String, Object> saveSmartNotificationsSubscription(@ModelAttribute("subscription") SmartNotificationSubscription subscription,
                                                    @RequestParam int userGroupId, @RequestParam boolean generateTestEmailAddresses, 
                                                    YukonUserContext userContext, FlashScope flash) throws Exception {
-    SimulatorResponseBase response = getSimulatorResponse(new SmartNotificationSimulatorRequest(subscription, userGroupId, generateTestEmailAddresses, userContext));
+    SimulatorResponseBase response = 
+            getSimulatorResponse(new SmartNotificationSimulatorRequest(subscription, userGroupId, generateTestEmailAddresses, userContext));
       Map<String, Object> json = new HashMap<String, Object>();
       if (response.isSuccessful()) {
           json.put("success", true);
