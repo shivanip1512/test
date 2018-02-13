@@ -21,7 +21,7 @@ public interface PointEditorService {
      * 
      * @return the id of the point
      */
-    int save(PointModel model);
+    int save(PointModel model, YukonUserContext userContext);
 
     /**
      * @param interfaceType
@@ -111,7 +111,7 @@ public interface PointEditorService {
      * 
      * @throws AttachedException if the point has attachments that prevent it from being deleted
      */
-    void delete(int id) throws AttachedException;
+    void delete(int id, YukonUserContext userContext) throws AttachedException;
 
     /**
      * Creates a new point with the specified parent id

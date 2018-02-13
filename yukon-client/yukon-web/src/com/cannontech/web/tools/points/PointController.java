@@ -328,7 +328,7 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
-        return save(pointModel, result, redirectAttributes, flash);
+        return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
     @RequestMapping(value = "/points/PulseAccumulator", method = RequestMethod.POST)
@@ -336,7 +336,7 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
-        return save(pointModel, result, redirectAttributes, flash);
+        return save(pointModel, result, redirectAttributes, flash, userContext);
     }
     
     @RequestMapping(value = "/points/DemandAccumulator", method = RequestMethod.POST)
@@ -344,7 +344,7 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
-        return save(pointModel, result, redirectAttributes, flash);
+        return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
     @RequestMapping(value = "/points/CalcAnalog", method = RequestMethod.POST)
@@ -352,7 +352,7 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
-        return save(pointModel, result, redirectAttributes, flash);
+        return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
     @RequestMapping(value = "/points/Status", method = RequestMethod.POST)
@@ -360,7 +360,7 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
-        return save(pointModel, result, redirectAttributes, flash);
+        return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
     @RequestMapping(value = "/points/CalcStatus", method = RequestMethod.POST)
@@ -369,7 +369,7 @@ public class PointController {
 
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
 
-        return save(pointModel, result, redirectAttributes, flash);
+        return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
     @RequestMapping(value = "/points/System", method = RequestMethod.POST)
@@ -377,10 +377,10 @@ public class PointController {
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
         verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
-        return save(pointModel, result, redirectAttributes, flash);
+        return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
-    private String save(PointModel pointModel, BindingResult result, RedirectAttributes redirectAttributes, FlashScope flash) {
+    private String save(PointModel pointModel, BindingResult result, RedirectAttributes redirectAttributes, FlashScope flash, YukonUserContext userContext) {
 
         pointModel.finishSetup();
 
@@ -390,7 +390,7 @@ public class PointController {
             return bindAndForward(pointModel, result, redirectAttributes);
         }
         
-        int id = pointEditorService.save(pointModel);
+        int id = pointEditorService.save(pointModel, userContext);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saveSuccess"));
         
         return "redirect:/tools/points/" + id;
@@ -413,7 +413,7 @@ public class PointController {
         int paoId = pointModel.getPointBase().getPoint().getPaoID();
 
         try {
-            pointEditorService.delete(id);
+            pointEditorService.delete(id, userContext);
 
         } catch (AttachedException e) {
 

@@ -21,4 +21,16 @@ public interface PointEventLogService {
     public void pointDataAdded(@Arg(ArgEnum.deviceName) String deviceName, @Arg(ArgEnum.pointName) String pointName,
             String value, @Arg(ArgEnum.pointDate) Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
 
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
+    public void pointCreated(@Arg(ArgEnum.deviceName) String deviceName, @Arg(ArgEnum.pointName) String pointName,
+            String pointType, @Arg(ArgEnum.pointDate) Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
+    public void pointUpdated(@Arg(ArgEnum.deviceName) String deviceName, @Arg(ArgEnum.pointName) String pointName,
+            String pointType, @Arg(ArgEnum.pointDate) Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "endpoint.point")
+    public void pointDeleted(@Arg(ArgEnum.deviceName) String deviceName, @Arg(ArgEnum.pointName) String pointName,
+            String pointType, @Arg(ArgEnum.pointDate) Date timestamp, @Arg(ArgEnum.username) LiteYukonUser user);
+
 }

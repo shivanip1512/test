@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -27,6 +28,7 @@ import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
@@ -40,6 +42,7 @@ import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
 @Service
@@ -52,6 +55,8 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private PointPropertyValueDao pointPropertyValueDao;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private PointEventLogService eventLog;
+    @Autowired private IDatabaseCache cache;
 
     protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
 
@@ -93,7 +98,10 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
 
         PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false);
-
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
+        
+        eventLog.pointCreated(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointType(),
+            new java.util.Date(), userContext.getYukonUser());
         int id = point.getPoint().getPointID();
 
         return id;
@@ -189,7 +197,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
     
     @Override
-    public int save(PointModel model) {
+    public int save(PointModel model, YukonUserContext userContext) {
         
         PointBase base = model.getPointBase();
         Integer pointId = base.getPoint().getPointID();
@@ -218,7 +226,9 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         /* This one must be done AFTER for create */
         saveStaleData(pointId, model.getStaleData());
-        
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(base.getPoint().getPaoID());
+        eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), base.getPoint().getPointType(),
+            new java.util.Date(), userContext.getYukonUser());
         return pointId;
     }
     
@@ -378,7 +388,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public void delete(int id) throws AttachedException {
+    public void delete(int id, YukonUserContext userContext) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
         if (!attachmentStatus.isDeletable()) {
             throw new AttachedException(attachmentStatus);
@@ -395,6 +405,9 @@ public class PointEditorServiceImpl implements PointEditorService {
             DbChangeType.DELETE);
         
         dbChangeManager.processDbChange(dbChange);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
+        eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointType(),
+            new java.util.Date(), userContext.getYukonUser());
     }
 
 }
