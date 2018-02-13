@@ -253,13 +253,19 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     @Override
     public void storeAddressingData(JmsTemplate jmsTemplate, ListMultimap<FieldType, byte[]> data, RfnDevice device) {
 
-        ExpressComReportedAddress currentAddress = expressComReportedAddressDao.getCurrentAddress(device.getPaoIdentifier().getPaoId());
-        ExpressComReportedAddress address = currentAddress.clone();
+        ExpressComReportedAddress currentAddress = expressComReportedAddressDao.findCurrentAddress(device.getPaoIdentifier().getPaoId());
+        ExpressComReportedAddress address;
+        if (currentAddress != null) {
+            address = currentAddress.clone();
+        } else {
+            address = new ExpressComReportedAddress();
+        }
+
         address.setDeviceId(device.getPaoIdentifier().getPaoId());
 
         address.setTimestamp(new Instant(ByteUtil.getLong(data.get(FieldType.UTC).get(0)) * 1000));
         // reject to save old addressing information in database
-        if (currentAddress.getTimestamp().isAfter(address.getTimestamp())) {
+        if (currentAddress!= null && currentAddress.getTimestamp().isAfter(address.getTimestamp())) {
             log.info("Current addressing from" + currentAddress.getTimestamp().toDate() + " is newer than newly reported at "
                 + address.getTimestamp().toDate() + " for device " + device.getName() + ", ignoring older addressing information");
             return;
@@ -318,7 +324,12 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         address.setRelays(new HashSet<ExpressComReportedAddressRelay>(relays.values()));
 
         log.debug(String.format("Received LM Address for %s - ", address, device.getName()));
-        expressComReportedAddressDao.save(address, currentAddress);
+        
+        if (currentAddress != null) {
+            expressComReportedAddressDao.save(address, currentAddress);
+        } else {
+            expressComReportedAddressDao.insertAddress(address);
+        }
 
         jmsTemplate.convertAndSend("yukon.notif.obj.dr.rfn.LmAddressNotification", address);
 

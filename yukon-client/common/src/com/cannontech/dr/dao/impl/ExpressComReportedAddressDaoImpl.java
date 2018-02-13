@@ -108,25 +108,21 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
     @Override
     @Transactional
     public boolean save(ExpressComReportedAddress address, ExpressComReportedAddress currentaddress) {
-        try {
-            if (!address.isEquivalent(currentaddress)) {
-                insertAddress(address);
-                return true;
-            } else {
-                if (!address.getTimestamp().equals(currentaddress.getTimestamp())) {
-                    updateReportedTimeStamp(address);
-                    return true;
-                }
-                return false;
-            }
 
-        } catch (NotFoundException e) {
+        if (!address.isEquivalent(currentaddress)) {
             insertAddress(address);
             return true;
+        } else {
+            if (!address.getTimestamp().equals(currentaddress.getTimestamp())) {
+                updateReportedTimeStamp(address);
+                return true;
+            }
+            return false;
         }
     }
 
-    private void insertAddress(ExpressComReportedAddress address) {
+    @Override
+    public void insertAddress(ExpressComReportedAddress address) {
         addressTemplate.insert(address);
         
         for (ExpressComReportedAddressRelay relay : address.getRelays()) {
@@ -173,7 +169,16 @@ public class ExpressComReportedAddressDaoImpl implements ExpressComReportedAddre
         
         return Sets.newHashSet(yukonJdbcTemplate.query(sql, relayMapper));
     }
-    
+
+    @Override
+    public ExpressComReportedAddress findCurrentAddress(int deviceId) {
+        try {
+            return getCurrentAddress(deviceId);
+        } catch (NotFoundException e) {
+            return null;
+        }
+    }
+
     @Override
     public ExpressComReportedAddress getCurrentAddress(int deviceId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -41,5 +41,17 @@ public interface ExpressComReportedAddressDao {
      * Retrieves the most current address for devices.
      */
     List<ExpressComReportedAddress> getCurrentAddresses(List<Integer> deviceId);
-    
+
+    /**
+     * Insert the {@link ExpressComReportedAddress} to the LmReportedAddress table
+     */
+    void insertAddress(ExpressComReportedAddress address);
+
+    /**
+     * Returns the most recent current address{@link ExpressComReportedAddress} or null from LmReportedAddress table for
+     * given device.
+     * 
+     */
+    ExpressComReportedAddress findCurrentAddress(int deviceId);
+
 }
