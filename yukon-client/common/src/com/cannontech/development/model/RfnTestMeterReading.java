@@ -6,12 +6,12 @@ import org.apache.commons.collections4.map.DefaultedMap;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 
 public class RfnTestMeterReading {
     private int serialFrom = 1000;
     private int serialTo = 1000;
-    private String manufacturer;
-    private String model;
+    private RfnManufacturerModel manufacturerModel;
     private Double value;
     private boolean random;
     private String uom; // V
@@ -36,17 +36,11 @@ public class RfnTestMeterReading {
     public void setSerialTo(int serialTo) {
         this.serialTo = serialTo;
     }
-    public String getManufacturer() {
-        return manufacturer;
+    public RfnManufacturerModel getManufacturerModel() {
+        return manufacturerModel;
     }
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-    public String getModel() {
-        return model;
-    }
-    public void setModel(String model) {
-        this.model = model;
+    public void setManufacturerModel(RfnManufacturerModel manufacturerModel) {
+        this.manufacturerModel = manufacturerModel;
     }
     public String getUom() {
         return uom;

@@ -29,57 +29,79 @@ function useRandom() {
                     <input name="serialTo" type="text" value="1000">
                 </tags:nameValue>
                 
-                <tags:nameValue name="Manufacturer">
-                    <select name="manufacturer">
-                        <option value="Eka">Eka</option>
-                        <option value="EE">EE (Elster)</option>
-                        <option value="ELO">ELO</option>
-                        <option value="GE">GE (General Electric)</option>
-                        <option value="ITRN">ITRN (Itron)</option>
-                        <option value="LGYR">LGYR (Landis & Gyr)</option>
-                        <option value="SCH">SCH (Schlumberger)</option>
-                        <option value="WTR2">WTR2 (Eaton Water 2)</option>
-                    </select>
-                </tags:nameValue>
-                
-                <tags:nameValue name="Model">
-                    <select name="model">
+                <tags:nameValue name="Manufacturer and Model">
+                    <select name="manufacturerModel">
+                        <optgroup label="Itron single phase">
+                            <option value="RFN_410CL">RFN-410CL (ITRN C1SX)</option>
+                            <option value="RFN_420CL">RFN-420CL (ITRN C2SX)</option>
+                            <option value="RFN_420CD">RFN-420CD (ITRN C2SX-SD)</option>
+                        </optgroup>
+
+                        <optgroup label="Landis & Gys single phase">
+                            <option value="RFN_410FL">RFN-410FL (LGYR FocuskWh)</option>
+                            <option value="RFN_410FX_D">RFN-410FX (LGYR FocusAXD)</option>
+                            <option value="RFN_410FX_R">RFN-410FX (LGYR FocusAXR)</option>
+                            <option value="RFN_410FD_D">RFN-410FD (LGYR FocusAXR-SD)</option>
+                            <option value="RFN_410FD_R">RFN-410FD (LGYR FocusAXD-SD)</option>
+                            <option value="RFN_420FL">RFN-420FL (LGYR FocuskWh)</option>
+                            <option value="RFN_420FX">RFN-420FX (LGYR FocusAXD)</option>
+                            <option value="RFN_420FD">RFN-420FD (LGYR FocusAXR-SD)</option>
+                            <option value="RFN_420FRX">RFN-420FRX (LGYR FocusRXR)</option>
+                            <option value="RFN_420FRD">RFN-420FRD (LGYR FocusRXR-SD)</option>
+                            <option value="RFN_510FL">RFN-510FL (LGYR FocuskWh-500)</option>
+                            <option value="RFN_520FAXD">RFN-520FAX (LGYR FocusAXD-500)</option>
+                            <option value="RFN_520FAXT">RFN-520FAX (LGYR FocusAXT-500)</option>
+                            <option value="RFN_520FAXR">RFN-520FAX (LGYR FocusAXR-500)</option>
+                            <option value="RFN_520FRXD">RFN-520FRX (LGYR FocusRXD-500)</option>
+                            <option value="RFN_520FRXT">RFN-520FRX (LGYR FocusRXT-500)</option>
+                            <option value="RFN_520FRXR">RFN-520FRX (LGYR FocusRXR-500)</option>
+                            <option value="RFN_520FAXD_SD">RFN-520FAXD (LGYR FocusAXD-SD-500)</option>
+                            <option value="RFN_520FAXT_SD">RFN-520FAXD (LGYR FocusAXT-SD-500)</option>
+                            <option value="RFN_520FAXR_SD">RFN-520FAXD (LGYR FocusAXR-SD-500)</option>
+                            <option value="RFN_520FRXD_SD">RFN-520FRXD (LGYR FocusRXD-SD-500)</option>
+                            <option value="RFN_520FRXT_SD">RFN-520FRXD (LGYR FocusRXT-SD-500)</option>
+                            <option value="RFN_520FRXR_SD">RFN-520FRXD (LGYR FocusRXR-SD-500)</option>
+                        </optgroup>
+
+                        <optgroup label="Landis & Gyr polyphase">
+                            <option value="RFN_530FAX">RFN-530FAX (LGYR FocusAXT-530)</option>
+                            <option value="RFN_530FRX">RFN-530FRX (LGYR FocusAXR-530)</option>
+                            <option value="RFN_530S4X">RFN-530S4X (LGYR E650)</option>
+                            <option value="RFN_530S4AD">RFN-530S4EAX (LGYR S4-AD)</option>
+                            <option value="RFN_530S4AT">RFN-530S4EAXR (LGYR S4-AT)</option>
+                            <option value="RFN_530S4AR">RFN-530S4EAXR (LGYR S4-AR)</option>
+                            <option value="RFN_530S4RD">RFN-530S4ERX (LGYR S4-RD)</option>
+                            <option value="RFN_530S4RT">RFN-530S4ERXR (LGYR S4-RT)</option>
+                            <option value="RFN_530S4RR">RFN-530S4ERXR (LGYR S4-RR)</option>
+                        </optgroup>
+
+                        <optgroup label="General Electric polyphase">
+                            <option value="RFN_430KV">RFN-430KV (GE kV2)</option>
+                        </optgroup>
+
+                        <optgroup label="Schlumberger polyphase">
+                            <option value="RFN_430SL0">RFN-430SL0 (SCH SENTINEL-L0)</option>
+                            <option value="RFN_430SL1">RFN-430SL1 (SCH SENTINEL-L1)</option>
+                            <option value="RFN_430SL2">RFN-430SL2 (SCH SENTINEL-L2)</option>
+                            <option value="RFN_430SL3">RFN-430SL3 (SCH SENTINEL-L3)</option>
+                            <option value="RFN_430SL4">RFN-430SL4 (SCH SENTINEL-L4)</option>
+                        </optgroup>
+
                         <optgroup label="Eaton Water 2">
-	                        <option value="Pulse-201">Pulse-201</option>
-	                        <option value="Encoder-201">Encoder-201</option>
-	                        <option value="Pulse-205">Pulse-205</option>
-	                        <option value="Encoder-205">Encoder-205</option>
+                            <option value="RFW201_PULSE">RFW-201 Pulse (WTR2 Pulse-201)</option>
+                            <option value="RFW201_ENCODER">RFW-201 Encoder (WTR2 Encoder-201)</option>
+                            <option value="RFW205_PULSE">RFW-205 Pulse (WTR2 Pulse-205)</option>
+                            <option value="RFW205_ENCODER">RFW-205 Encoder (WTR2 Encoder-205)</option>
                         </optgroup>
-	                    <optgroup label="Eka">
-	                        <option value="water_sensor">water_sensor</option>
-	                        <option value="water_node">water_node</option>
-	                    </optgroup>
+
+                        <optgroup label="Legacy Water">
+                            <option value="RFN_WATER_SENSOR">RFN water sensor (Eka water_sensor)</option>
+                        </optgroup>
+
                         <optgroup label="ELO">
-	                        <option value="2131T">2131T</option>
-	                        <option value="2131xT">2131xT</option>
-                        </optgroup>
-                        <optgroup label="Elster">
-	                        <option value="A3K">A3K</option>
-	                        <option value="A3R">A3R</option>
-                        </optgroup>
-                        <optgroup label="General Electric">
-	                        <option value="kV2">kV2</option>
-                        </optgroup>
-                        <optgroup label="Itron">
-	                        <option value="Centron">Centron</option>
-                        	<option value="C2SX">C2SX</option>
-                        </optgroup>
-                        <optgroup label="Landis & Gyr">
-	                        <option value="FocuskWh">FocuskWh</option>
-	                        <option value="FocusAXD">FocusAXD</option>
-	                        <option value="FocusAXR">FocusAXR</option>
-                        	<option value="E650">S4x</option>
-                        </optgroup>
-                        <optgroup label="Schlumberger">
-	                        <option value="SENTINEL-L1">SENTINEL-L1</option>
-	                        <option value="SENTINEL-L2">SENTINEL-L2</option>
-	                        <option value="SENTINEL-L3">SENTINEL-L3</option>
-                        	<option value="SENTINEL-L4">SENTINEL-L4</option>
+                            <option value="RFN_440_2131TD">RFN-440_2131TD (ELO 0131)</option>
+                            <option value="RFN_440_2132TD">RFN-440_2132TD (ELO 0132)</option>
+                            <option value="RFN_440_2133TD">RFN-440_2133TD (ELO 0133)</option>
                         </optgroup>
                     </select>
                 </tags:nameValue>

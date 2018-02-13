@@ -189,7 +189,9 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             
             RfnMeterReadingData data = new RfnMeterReadingData();
             data.setTimeStamp(new Instant().getMillis());
-            RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), reading.getManufacturer(), reading.getModel());
+            RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), 
+                                                              reading.getManufacturerModel().getManufacturer(), 
+                                                              reading.getManufacturerModel().getModel());
             data.setRfnIdentifier(meterIdentifier);
             data.setRecordInterval(300); // pick some default for testing, needs to be greater >= 300
             
@@ -220,7 +222,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             message.setData(data);
             message.setDataPointId(ThreadLocalRandom.current().nextLong(1000000000));
             
-            if (reading.getModel().contains("water")) {
+            if (reading.getManufacturerModel().getModel().contains("water")) {
                 message.setReadingType(RfnMeterReadingType.INTERVAL);
                 modifiers.add("Kilo");
             } else {
