@@ -22,8 +22,21 @@
     <entry key="yukon.web.modules.adminSetup.maintenance.scheduledMeterEventsFileExportJobDefinition.title">Scheduled Meter Events File Export Maintenance</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.dataPruning.title">System</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.DR_RECONCILIATION.title">DR Reconciliation</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.DR_RECONCILIATION.infoText">
+        This task will find all the LCRs with incorrect status and incorrect addressing and send messages to those LCRs with 
+        correct status or addressing. Incorrect status means that a device should be In-service or Out of Service and is not.
+        Incorrect addressing means that the addressing of the LCR does not match the addressing of the group it is enrolled in.
+    </entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.DUPLICATE_POINT_DATA_PRUNING.title">Duplicate Point Data Pruning</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.DUPLICATE_POINT_DATA_PRUNING.infoText">
+        This task is for deleting duplicate historical point data older than duration configured. 
+        The duplicate point data deleted by this task cannot be recovered and will be permanently deleted from the Yukon system.
+    </entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.title">Point Data Pruning</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.infoText">
+        This task deletes historical point data older than duration configured in this task. The point data deleted by 
+        this task cannot be recovered and will be permanently deleted from the Yukon system.
+    </entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmEnable.title">Confirm Enable</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.confirmEnable.message">
         Data Pruning for deleting historical point data older than {0} will be enabled. Data pruned by this task 
