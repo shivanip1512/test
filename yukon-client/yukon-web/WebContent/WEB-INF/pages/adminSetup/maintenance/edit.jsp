@@ -5,7 +5,7 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:standardPage module="adminSetup" page="maintenance.EDIT">
-    <form action="update" method="post">
+    <form id="maintenance-job-form" action="update" method="post">
         <cti:csrfToken/>
         <c:set var="cronUniqueId" value="cronUniqueId_${job.id}" />
         <input type="hidden" name="jobId" value="${job.id}"> <input type="hidden" name="cronUniqueId"
@@ -33,11 +33,13 @@
             <cti:param name="jobId" value="${job.id}" />
         </cti:url>
         <c:if test="${job.disabled}">
-            <cti:button nameKey="enable" href="${toggleJobEnabled}" />
+            <cti:button nameKey="enable" classes="js-toggle-job"/>
         </c:if>
         <c:if test="${!job.disabled}">
-            <cti:button nameKey="disable" href="${toggleJobEnabled}" />
+            <cti:button nameKey="disable" classes="js-toggle-job"/>
         </c:if>
         <cti:button nameKey="cancel" href="view" />
     </form>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.admin.maintenance.js"/>
 </cti:standardPage>

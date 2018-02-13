@@ -31,10 +31,12 @@ yukon.admin.maintenance = (function () {
             
             $(document).on('change', '.js-toggleJobEnabled .checkbox-input', function() {
                 var jobId = $(this).data('jobId');
-                
-                $.ajax({
-                    url: yukon.url('/admin/maintenance/toggleJobEnabledAjax?jobId=' + jobId)
-                });
+                $.post(yukon.url('/admin/maintenance/toggleJobEnabledAjax'), {jobId : jobId});
+            });
+            
+            $(document).on('click', '.js-toggle-job', function() {
+                $("#maintenance-job-form").attr('action', yukon.url('/admin/maintenance/toggleJobEnabled'));
+                $("#maintenance-job-form").submit();
             });
             
             $(document).on('change', '.js-toggle-maintenance-task .checkbox-input', function() {

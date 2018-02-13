@@ -178,13 +178,13 @@ public class MaintenanceController {
         return "redirect:view";
     }
 
-    @RequestMapping("toggleJobEnabled")
+    @RequestMapping(value = "toggleJobEnabled", method = RequestMethod.POST)
     public String toggleJobEnabled(int jobId) {
         toggle(jobId);
         return "redirect:view";
     }
 
-    @RequestMapping("toggleJobEnabledAjax")
+    @RequestMapping(value = "toggleJobEnabledAjax", method = RequestMethod.POST)
     public @ResponseBody Boolean toggleJobEnabledAjax(int jobId) {
         return toggle(jobId);
     }
