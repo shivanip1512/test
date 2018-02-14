@@ -25,6 +25,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.maintenance.MaintenanceScheduler;
 import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -51,30 +52,65 @@ public class MaintenanceSchedulerRunner {
     private Map<MaintenanceScheduler, Boolean> rescheduleScheduler = new ConcurrentHashMap<>();
     private final Map<MaintenanceScheduler, ScheduledFuture<?>> schedulersFuture = new ConcurrentHashMap<>();
 
-    // Update the schedule on startup and on maintenance Global Setting change
+ // Update the schedule on startup and on maintenance Global Setting change
     @PostConstruct
     public void init() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
-            int primaryKeyId = event.getPrimaryKey();
             if ((event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING)
-                && ((globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS).getId() != null
-                    && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS).getId().intValue())
-                    || (globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId() != null
-                        && primaryKeyId == globalSettingDao.getSetting(
-                            GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId().intValue())
-                    || (globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId() != null
-                        && primaryKeyId == globalSettingDao.getSetting(
-                            GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId().intValue())
-                    || (globalSettingDao.getSetting(
-                        GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId() != null
-                        && primaryKeyId == globalSettingDao.getSetting(
-                            GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId().intValue()))) {
+                && (isBusinessDaysSettingUpdated(event) ||
+                    isBusinessHoursSettingUpdated(event) ||
+                    isExternalMaintDaysSettingUpdated(event) ||
+                    isExternalMaintHoursStartStopSettingUpdated(event))) {
                 rescheduleScheduler.clear();
                 forceReschedule.clear();
                 rescheduleAllScheduler();
             }
         });
         rescheduleAllScheduler();
+    }
+    
+    /**
+     * @return True if the db change event reflects a change in the business days setting.
+     */
+    private boolean isBusinessDaysSettingUpdated(DatabaseChangeEvent event) {
+        int primaryKeyId = event.getPrimaryKey();
+        return globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS).getId() != null
+                && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.BUSINESS_DAYS)
+                                                   .getId()
+                                                   .intValue();
+    }
+    
+    /**
+     * @return True if the db change event reflects a change in the business hours start/stop time setting.
+     */
+    private boolean isBusinessHoursSettingUpdated(DatabaseChangeEvent event) {
+        int primaryKeyId = event.getPrimaryKey();
+        return globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME).getId() != null
+                && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME)
+                                                   .getId()
+                                                   .intValue();
+    }
+    
+    /**
+     * @return True if the db change event reflects a change in the external maintenance days setting.
+     */
+    private boolean isExternalMaintDaysSettingUpdated(DatabaseChangeEvent event) {
+        int primaryKeyId = event.getPrimaryKey();
+        return globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS).getId() != null
+                && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS)
+                                                   .getId()
+                                                   .intValue();
+    }
+    
+    /**
+     * @return True if the db change event reflects a change in the external maintenance hours start/stop time setting.
+     */
+    private boolean isExternalMaintHoursStartStopSettingUpdated(DatabaseChangeEvent event) {
+        int primaryKeyId = event.getPrimaryKey();
+        return globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME).getId() != null
+                && primaryKeyId == globalSettingDao.getSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME)
+                                                   .getId()
+                                                   .intValue();
     }
 
     @PreDestroy

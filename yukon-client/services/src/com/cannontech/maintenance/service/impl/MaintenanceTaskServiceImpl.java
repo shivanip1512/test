@@ -90,7 +90,7 @@ public class MaintenanceTaskServiceImpl implements MaintenanceTaskService {
     }
     
     private List<MaintenanceTaskType> getEnabledMaintenanceTaskTypes(MaintenanceScheduler scheduler) {
-        Set<MaintenanceTaskType> tasks = MaintenanceTaskType.getMaintenanceTaskForScheduler(scheduler);
+        Set<MaintenanceTaskType> tasks = scheduler.getTasks();
         List<MaintenanceTaskType> enabledTasks = new ArrayList<>();
 
         tasks.stream().forEach(task -> {

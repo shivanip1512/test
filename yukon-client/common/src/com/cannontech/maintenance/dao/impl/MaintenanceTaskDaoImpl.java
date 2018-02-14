@@ -85,7 +85,7 @@ public class MaintenanceTaskDaoImpl implements MaintenanceTaskDao {
     @Override
     public List<MaintenanceSetting> getSettingsForTaskType(MaintenanceTaskType taskType) {
         final List<MaintenanceSetting> allSettings = Lists.newArrayList();
-        Set<MaintenanceSettingType> allSettingForTask = MaintenanceSettingType.getSettingsForTask(taskType);
+        Set<MaintenanceSettingType> allSettingForTask = taskType.getSettings();
         allSettingForTask.stream().forEach(setting -> {
             Class<?> valueType = setting.getType().getTypeClass();
             Object settingValue = null;
