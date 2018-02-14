@@ -45,7 +45,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         rtu.setName(pao.getPaoName());
         rtu.setId(pao.getPaoIdentifier().getPaoId());
         rtu.setPaoType(pao.getPaoType());
-        rtu.setDisableFlag(Boolean.parseBoolean(pao.getDisableFlag()));
+        rtu.setDisableFlag(pao.getDisableFlag().equals("Y") ? true : false);
         DBPersistent dbPersistent = dbPersistentDao.retrieveDBPersistent(pao);
         DNPBase dnpBase = (DNPBase) dbPersistent;
         rtu.setDeviceScanRateMap(dnpBase.getDeviceScanRateMap());
