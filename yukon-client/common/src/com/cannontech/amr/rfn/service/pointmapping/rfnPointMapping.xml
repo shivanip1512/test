@@ -902,6 +902,18 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
         
         <point name="Rate A Peak kVA">
             <uom>VA</uom>
@@ -914,6 +926,20 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Rate A Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Rate B Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
@@ -925,6 +951,20 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Rate B Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Rate C Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
@@ -936,6 +976,20 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Rate C Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Rate D Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
@@ -947,6 +1001,20 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Rate D Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Delivered kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
@@ -956,6 +1024,18 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Delivered kVAh">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Received kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
@@ -965,6 +1045,18 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Received kVAh">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
@@ -1370,9 +1462,20 @@
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
-                <modifier>Harmonic</modifier>   <!-- Delivered kVA on other paoTypes do not have this modifier -->
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Delivered kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Received kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
@@ -1380,9 +1483,32 @@
             <modifiers match="equal">
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
-                <modifier>Harmonic</modifier>   <!-- Received kVA on other paoTypes do not have this modifier -->
             </modifiers>
         </point>
+        <!-- alternate definition in case of Harmonic being present -->
+        <point name="Received kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
+        
+        <point name="Sum kVAh">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <!-- alternate definition in case of Harmonic being present -->
         <point name="Sum kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
