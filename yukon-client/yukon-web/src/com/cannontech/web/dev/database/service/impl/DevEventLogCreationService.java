@@ -38,6 +38,7 @@ import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.events.loggers.OutageEventLogService;
+import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
@@ -88,6 +89,7 @@ public class DevEventLogCreationService {
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
+    @Autowired private PointEventLogService pointEventLogService;
 
     private Map<LogType, DevEventLogExecutable> eventLogExecutables;
 
@@ -878,6 +880,29 @@ public class DevEventLogCreationService {
                gatewayEventLogService.sentFirmwareUpdate(user, 1);
            }
         });
+        executables.put(LogType.POINT, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
+
+                String deviceName = devEventLog.getIndicatorString() + "deviceName";
+                String pointName = devEventLog.getIndicatorString() + "pointName";
+                PointType pointType = PointType.Analog;
+                int pointOffset = 14;
+
+                Date timestamp = new Date();
+                String value = devEventLog.getIndicatorString() + "12345";
+                String oldValue = devEventLog.getIndicatorString() + "12345";
+                String newValue = devEventLog.getIndicatorString() + "6789";
+                pointEventLogService.pointDataAdded(deviceName, pointName, value, timestamp, user);
+                pointEventLogService.pointDataUpdated(deviceName, pointName, oldValue, newValue, timestamp, user);
+                pointEventLogService.pointDataDeleted(deviceName, pointName, value, timestamp, user);
+                pointEventLogService.pointCreated(deviceName, pointName, pointType, pointOffset, user);
+                pointEventLogService.pointUpdated(deviceName, pointName, pointType, pointOffset, user);
+                pointEventLogService.pointDeleted(deviceName, pointName, pointType, pointOffset, user);
+
+            }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -909,6 +934,7 @@ public class DevEventLogCreationService {
         TOOLS(ToolsEventLogService.class, 19),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
+        POINT(PointEventLogService.class, 6),
         ;
 
         private final Class<?> eventLogServiceClass;

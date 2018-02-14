@@ -768,9 +768,9 @@
     <entry key="yukon.common.events.endpoint.point.data.pointDataUpdated">Device {1} - {2} point data manually changed from {3} to {4} for Timestamp={11} by {5}.</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataUpdated.3">Old Value</entry>
     <entry key="yukon.common.events.endpoint.point.data.pointDataUpdated.4">New Value</entry>
-    <entry key="yukon.common.events.endpoint.point.pointCreated">Device {1} - {2} point of type {3} created, Timestamp={11} by {4}.</entry>
-    <entry key="yukon.common.events.endpoint.point.pointUpdated">Device {1} - {2} point of type {3} updated, Timestamp={11} by {4}.</entry>
-    <entry key="yukon.common.events.endpoint.point.pointDeleted">Device {1} - {2} point of type {3} deleted, Timestamp={11} by {4}.</entry>
+    <entry key="yukon.common.events.endpoint.point.pointCreated">Device {1} - {2} point {3} offset {7} created by {4}.</entry>
+    <entry key="yukon.common.events.endpoint.point.pointUpdated">Device {1} - {2} point {3} offset {7} updated by {4}.</entry>
+    <entry key="yukon.common.events.endpoint.point.pointDeleted">Device {1} - {2} point {3} offset {7} deleted by {4}.</entry>
     
     <!-- Infrastructure Warnings -->
     <entry key="yukon.common.events.infrastructure.warning.warningGenerated">{3}-severity {2} warning generated for device: {1}. Message: {4}</entry>

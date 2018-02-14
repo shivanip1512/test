@@ -30,6 +30,7 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
@@ -100,8 +101,8 @@ public class PointEditorServiceImpl implements PointEditorService {
         PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         
-        eventLog.pointCreated(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointType(),
-            new java.util.Date(), userContext.getYukonUser());
+        eventLog.pointCreated(pao.getPaoName(), point.getPoint().getPointName(), PointType.valueOf(point.getPoint().getPointType()),
+            point.getPoint().getPointOffset(), userContext.getYukonUser());
         int id = point.getPoint().getPointID();
 
         return id;
@@ -227,8 +228,8 @@ public class PointEditorServiceImpl implements PointEditorService {
         /* This one must be done AFTER for create */
         saveStaleData(pointId, model.getStaleData());
         LiteYukonPAObject pao = cache.getAllPaosMap().get(base.getPoint().getPaoID());
-        eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), base.getPoint().getPointType(),
-            new java.util.Date(), userContext.getYukonUser());
+        eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), PointType.valueOf(base.getPoint().getPointType()),
+            base.getPoint().getPointOffset(), userContext.getYukonUser());
         return pointId;
     }
     
@@ -406,8 +407,8 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         dbChangeManager.processDbChange(dbChange);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
-        eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointType(),
-            new java.util.Date(), userContext.getYukonUser());
+        eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), PointType.valueOf(point.getPoint().getPointType()),
+            point.getPoint().getPointOffset(), userContext.getYukonUser());
     }
 
 }
