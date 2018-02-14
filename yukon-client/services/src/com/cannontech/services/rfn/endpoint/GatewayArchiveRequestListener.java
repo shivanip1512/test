@@ -48,7 +48,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
                 rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new gateway: " + device);
 
-                gatewayEventLogService.createdGatewayAutomatically(identifier.getSensorSerialNumber(),
+                gatewayEventLogService.createdGatewayAutomatically(device.getName(),
                     request.getRfnIdentifier().getSensorSerialNumber());
                 return device;
             } catch (Exception e) {
