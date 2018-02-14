@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
@@ -98,6 +99,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     @Autowired ConnectionFactory connectionFactory;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     private JmsTemplate jmsTemplate;
     
     @PostConstruct
@@ -643,7 +645,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         GatewayDataResponse response = 
                 DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, settings);
        
-        //response.setName(rfnId.getSensorSerialNumber());
+        response.setName(rfnDeviceDao.getDeviceForExactIdentifier(rfnId).getName());
         
         return response;
     }
