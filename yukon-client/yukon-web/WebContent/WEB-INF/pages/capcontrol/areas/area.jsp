@@ -214,11 +214,18 @@
                     <div class="scroll-md">
                         <%@ include file="/WEB-INF/pages/capcontrol/pointsTable.jsp" %>
                     </div>
+                    <c:set var="isPointCreate" value= "false" />
                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                        <c:set var="isPointCreate" value= "true" />
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
+                        <c:set var="isPointCreate" value= "true" />
+                    </cti:checkRolesAndProperties>
+                    <c:if test="${isPointCreate}">
                         <div class="action-area">
                             <tags:pointCreation paoId="${areaId}" />
                         </div>
-                    </cti:checkRolesAndProperties>
+                    </c:if>
                 </cti:tab>
             </cti:tabs>
         </div>

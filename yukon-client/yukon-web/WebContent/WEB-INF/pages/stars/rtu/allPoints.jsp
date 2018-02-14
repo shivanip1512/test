@@ -41,8 +41,21 @@
                     <c:forEach var="point" items="${details.resultList}">
                         <tr>
                             <td>
-                                <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
+                            <c:set var="isPointLinkVisible" value= "false" />
+                            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="LIMITED">
+                                <c:set var="isPointLinkVisible" value= "true" />
+                            </cti:checkRolesAndProperties>
+                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                <c:set var="isPointLinkVisible" value= "true" />
+                            </cti:checkRolesAndProperties>
+                            <c:choose>
+                                <c:when test="${!isPointLinkVisible}">${fn:escapeXml(point.pointName)}</c:when>
+                                <c:otherwise>
+                                    <cti:url var="pointUrl" value="/tools/points/${point.pointId}" />
                                     <a href="${pointUrl}">${fn:escapeXml(point.pointName)}</a>
+                                </c:otherwise>
+                            </c:choose>
+                                
                             </td>
                             <td class="state-indicator">
                                 <c:choose>

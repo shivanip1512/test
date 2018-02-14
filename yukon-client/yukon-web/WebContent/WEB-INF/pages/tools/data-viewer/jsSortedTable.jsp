@@ -57,6 +57,9 @@
                             <cti:checkRolesAndProperties value="MANAGE_POINTS" level="LIMITED">
                                 <c:set var="isPointLinkVisible" value= "true" />
                             </cti:checkRolesAndProperties>
+                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                <c:set var="isPointLinkVisible" value= "true" />
+                            </cti:checkRolesAndProperties>
                             <c:forEach var="column" items="${display.columns}">
                                 <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_ID')}">
                                     <td>${fn:escapeXml(row.pointId)}</td>

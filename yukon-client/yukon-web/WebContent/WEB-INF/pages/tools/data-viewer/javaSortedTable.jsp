@@ -45,6 +45,9 @@
             <cti:checkRolesAndProperties value="MANAGE_POINTS" level="LIMITED">
                 <c:set var="isPointLinkVisible" value= "true" />
             </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <c:set var="isPointLinkVisible" value= "true" />
+            </cti:checkRolesAndProperties>
             <c:forEach var="row" items="${result.resultList}">
                 <tr id="row-${row.pointId}">
                     <td>
