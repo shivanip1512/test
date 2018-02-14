@@ -54,8 +54,11 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.UserUtils;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired private DrReconciliationDao drReconciliationDao;
@@ -472,27 +475,35 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             attributeService.getPoints(paos, BuiltInAttribute.SERVICE_STATUS);
         Set<Integer> statusPointIds =
             deviceToPoint.values().stream()
-                                  .map(litePoint -> litePoint.getPointID())
+                                  .map(LitePoint :: getPointID)
                                   .collect(Collectors.toSet());
         Set<? extends PointValueQualityHolder> pointValues = asyncDynamicDataSource.getPointDataOnce(statusPointIds);
 
-        Map<Integer, Integer> pointsToPaos = deviceToPoint.inverse().entrySet()
-                                                                    .stream()
-                                                                    .collect(Collectors.toMap(p -> p.getKey().getPointID(), p -> p.getValue().getPaoId()));
-        pointValues.forEach(pointValue -> {
-            Integer deviceId = pointsToPaos.get(pointValue.getId());
-            LcrDeviceStatus lcrStatus = PointStateHelper.decodeRawState(LcrDeviceStatus.class, pointValue.getValue());
+        Map<Integer, Integer> pointsToPaos = 
+                deviceToPoint.inverse().entrySet().stream()
+                        .collect(Collectors.toMap(
+                            p -> p.getKey().getPointID(),
+                            p -> p.getValue().getPaoId()));
 
-            if (lcrStatus == LcrDeviceStatus.IN_SERVICE) {
-                // If actual reporting status of LCR is already In Service, then we don't need to send
-                // InService message to that LCR, hence removing it from sendInServiceDevice list
-                lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).remove(deviceId);
-            } else if (lcrStatus == LcrDeviceStatus.OUT_OF_SERVICE) {
-                // If actual reporting status of LCR is already OOS, then we don't need to send Out Of Service
-                // message to that LCR, hence removing it from OOSDevice list
-                lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).remove(deviceId);
-            }
-        });
+        ImmutableListMultimap<LcrDeviceStatus, ? extends PointValueQualityHolder> pointValueStates = Multimaps.index(
+            pointValues, pointValue -> PointStateHelper.decodeRawState(LcrDeviceStatus.class, pointValue.getValue()));
+
+        ListMultimap<LcrDeviceStatus, Integer> devicesByStatus =
+            Multimaps.transformValues(pointValueStates, pointValue -> pointsToPaos.get(pointValue.getId()));
+
+        List<Integer> inServiceLcrs = devicesByStatus.get(LcrDeviceStatus.IN_SERVICE);
+        List<Integer> outOfServiceLcrs = devicesByStatus.get(LcrDeviceStatus.OUT_OF_SERVICE);
+
+        if (inServiceLcrs != null) {
+            // If actual reporting status of LCR is already In Service, then we don't need to send
+            // InService message to that LCR, hence removing it from sendInServiceDevice list
+            lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).removeAll(inServiceLcrs);
+        }
+        if (outOfServiceLcrs != null) {
+            // If actual reporting status of LCR is already OOS, then we don't need to send Out Of Service
+            // message to that LCR, hence removing it from OOSDevice list
+            lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).removeAll(outOfServiceLcrs);
+        }
     }
 
     /**

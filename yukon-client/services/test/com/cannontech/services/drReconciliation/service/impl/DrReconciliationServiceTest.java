@@ -4,12 +4,15 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.easymock.EasyMock;
@@ -18,7 +21,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LMGroupDaoImpl;
+import com.cannontech.core.dynamic.impl.MockAsyncDynamicDataSourceImpl;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl;
@@ -231,6 +240,29 @@ public class DrReconciliationServiceTest {
         replay(lmGroupDaoImpl);
         ReflectionTestUtils.setField(dr, "drReconciliationDao", drReconciliationDao);
         ReflectionTestUtils.setField(dr, "lmGroupDaoImpl", lmGroupDaoImpl);
+
+        List<LiteYukonPAObject> paos = new ArrayList<>(7);
+        PaoDao paoDao = createNiceMock(PaoDao.class);
+        paoDao.getLiteYukonPaos(EasyMock.<List<Integer>> anyObject());
+        expectLastCall().andAnswer(() -> {
+            @SuppressWarnings("unchecked")
+            List<Integer> args = (List<Integer>) getCurrentArguments()[0];
+            for (int i = 1; i <= 7; i++) {
+                LiteYukonPAObject paoObject = new LiteYukonPAObject(args.get(i - 1));
+                if (i == 7 || i == 2) {
+                    paoObject.setPaoType(PaoType.LCR6600_RFN);
+                } else {
+                    paoObject.setPaoType(PaoType.LCR6200_RFN);
+                }
+                paos.add(paoObject);
+            }
+            return paos;
+        });
+
+        replay(paoDao);
+        ReflectionTestUtils.setField(dr, "paoDao", paoDao);
+        ReflectionTestUtils.setField(dr, "attributeService", new MockAttributeServiceImpl());
+        ReflectionTestUtils.setField(dr, "asyncDynamicDataSource", new MockAsyncDynamicDataSourceImpl());
     }
 
     @Test
@@ -483,7 +515,34 @@ public class DrReconciliationServiceTest {
         Set<Integer> conflictingLCR = ReflectionTestUtils.invokeMethod(dr, "getLCRWithConflictingAddressing");
         assertTrue("Group did not match ", !conflictingLCR.contains(5));
     }
-    
+
+    @Test
+    public void test_compareExpectedServiceStatusWithReportedLcrs() {
+        Map<Integer, List<Integer>> lcrsToSendCommand = new HashMap<>(2);
+        List<Integer> inServiceExppectedLcrs = new ArrayList<>(4);
+        inServiceExppectedLcrs.add(1);
+        inServiceExppectedLcrs.add(2);
+        inServiceExppectedLcrs.add(3);
+        inServiceExppectedLcrs.add(4);
+
+        List<Integer> outOfServiceExppectedLcrs = new ArrayList<>(3);
+        outOfServiceExppectedLcrs.add(5);
+        outOfServiceExppectedLcrs.add(6);
+        outOfServiceExppectedLcrs.add(7);
+
+        Integer[] reportedInServiceLcrs = { 1, 4 };
+        Integer[] reportedOutOfServiceLcrs = { 5, 7 };
+
+        lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, inServiceExppectedLcrs);
+        lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL, outOfServiceExppectedLcrs);
+
+        ReflectionTestUtils.invokeMethod(dr, "compareExpectedServiceStatusWithReportedLcrs", lcrsToSendCommand);
+        assertArrayEquals("Devices to send InServcie Message : ", reportedInServiceLcrs,
+            lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).toArray());
+
+        assertArrayEquals("Devices to send Out Of Service Message : ", reportedOutOfServiceLcrs,
+            lcrsToSendCommand.get(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).toArray());
+    }
 
     private List<ExpressComReportedAddress> getDefaultLCRAddressing(List<Integer> lcrs) {
         

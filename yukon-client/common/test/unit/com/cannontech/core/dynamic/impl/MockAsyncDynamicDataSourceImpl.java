@@ -5,6 +5,7 @@ import static com.cannontech.database.data.point.PointType.DemandAccumulator;
 import static com.cannontech.database.data.point.PointType.PulseAccumulator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -224,6 +225,29 @@ public class MockAsyncDynamicDataSourceImpl implements AsyncDynamicDataSource {
 
     @Override
     public Set<LitePointData> getPointDataOnce(Set<Integer> pointIds) {
-        throw new MethodNotImplementedException();
+        // Setting point data for pointIds : 1 - 7
+        Set<LitePointData> pointValues = new HashSet<>();
+        for (int i = 1; i <= 7; i++) {
+            LitePointData litePointData = new LitePointData();
+            litePointData.setId(i);
+            switch (i) {
+            case 2:
+            case 5:
+            case 3:
+                litePointData.setValue(1);
+                break;
+            case 6:
+            case 1:
+                litePointData.setValue(2);
+                break;
+            case 4:
+            case 7:
+                litePointData.setValue(0);
+                break;
+            }
+            pointValues.add(litePointData);
+        }
+        return pointValues;
+
     }
 }

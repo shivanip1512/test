@@ -7,9 +7,13 @@ import static com.cannontech.core.dao.MockUnitMeasureDaoImpl.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.data.lite.LitePoint;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 public class MockAttributeServiceImpl extends AttributeServiceImpl {
     public static final LitePoint USAGE_POINT_ONE = new LitePoint(0, "kWh", 0, 0, 0, 0, 0, kWH.getUomID());
@@ -34,5 +38,15 @@ public class MockAttributeServiceImpl extends AttributeServiceImpl {
     @Override
     public LitePoint findPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         return getPointForAttribute(pao, attribute);
+    }
+
+    @Override
+    public BiMap<PaoIdentifier, LitePoint> getPoints(Iterable<? extends YukonPao> paos, BuiltInAttribute attribute) {
+        final BiMap<PaoIdentifier, LitePoint> deviceToPoint = HashBiMap.create();
+
+        paos.forEach(pao -> {
+            deviceToPoint.put(pao.getPaoIdentifier(), new LitePoint(pao.getPaoIdentifier().getPaoId()));
+        });
+        return deviceToPoint;
     }
 }
