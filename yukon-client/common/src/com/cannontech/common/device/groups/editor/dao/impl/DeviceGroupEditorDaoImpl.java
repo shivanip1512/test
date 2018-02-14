@@ -494,7 +494,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
 
         List<String> jobProperties = ImmutableList.of("deviceGroup",
                                                       "deviceGroupNames");
-        
+
         List<SqlStatementBuilder> updateStatement = new ArrayList<>();
         SqlStatementBuilder update = new SqlStatementBuilder();
         update.append("UPDATE JobProperty");
@@ -506,7 +506,18 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         update.append("WHERE Value").contains(previousGroupName);
         update.append("AND Name").in(jobProperties);
         updateStatement.add(update);
-        
+
+        SqlStatementBuilder updateWidgetSettingsQuery = new SqlStatementBuilder();
+        updateWidgetSettingsQuery.append("UPDATE WidgetSettings");
+        updateWidgetSettingsQuery.append("SET Value = REPLACE(Value,")
+                                 .appendArgument(previousGroupName)
+                                 .append(",")
+                                 .appendArgument(group.getFullName())
+                                 .append(")");
+        updateWidgetSettingsQuery.append("WHERE Value").contains(previousGroupName);
+        updateWidgetSettingsQuery.append(  "AND Name").eq("deviceGroup");
+        updateStatement.add(updateWidgetSettingsQuery);
+
         for (String tableName : tablesToUpdate) {
             SqlStatementBuilder updatetable = new SqlStatementBuilder();
             updatetable.append("UPDATE ").append(tableName);
