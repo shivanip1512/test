@@ -53,6 +53,19 @@ public interface DisplayDataDao {
     List<DisplayData> getCustomDisplayData(Display display);
 
     /**
+     * Gets number of SOE log Display Data count
+     */
+    int getSoeLogDisplayDataCount(DateTimeZone timeZone);
+
+    /**
+     * Gets number of TAG log Display Data count
+     */
+    int getTagLogDisplayDataCount(DateTimeZone timeZone);
+
+    /**
+     * Gets number of System log Display Data count
+     */
+    int getEventViewerDisplayDataCount(DateTimeZone timeZone);
 
     /**
      * Deletes Display2Waydata entries for display id, inserts the entries for points.
@@ -86,6 +99,21 @@ public interface DisplayDataDao {
     SearchResults<DisplayData> getEventViewerDisplayData(DateTimeZone timeZone,
                                                          PagingParameters paging, SortBy sortBy,
                                                          Direction direction, DateTime date);
+
+    /**
+     * Gets the count of results for Event Viewer
+     */
+    int getEventViewerDisplayDataCount(DateTime date);
+
+    /**
+     * Gets the count of results for SOE Log
+     */
+    int getSoeLogDisplayDataCount(DateTime date);
+
+    /**
+     * Gets the count of results for TAG Log
+     */
+    int getTagLogDisplayDataCount(DateTime date);
     /**
      * Gets the Alarm History Display Data (Allows for paging, sorting and a date selection)
      * @param sortBy nullable.
@@ -95,5 +123,9 @@ public interface DisplayDataDao {
     SearchResults<DisplayData> getAlarmHistoryDisplayData(DateTimeZone timeZone,
                                                           PagingParameters paging, SortBy sortBy,
                                                           Direction direction, DateTime date);
-
+    /**
+     * Gets the count of results for Alarm History Data Viewer
+     */
+    int getAlarmHistoryDisplayDataCount(DateTime date);
+    
 }

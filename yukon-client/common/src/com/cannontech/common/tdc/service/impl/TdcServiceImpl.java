@@ -66,6 +66,7 @@ import com.cannontech.message.dispatch.command.service.CommandService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
@@ -251,17 +252,17 @@ public class TdcServiceImpl implements TdcService {
     @Override
     public List<DisplayData> getAlarms(boolean showActive) {
         if (showActive) {
-            return getAlarms(AlarmFilter.ACTIVE_ALARMS, DateTimeZone.getDefault(), null, SortBy.TIME_STAMP, Direction.asc);
+            return getAlarms(AlarmFilter.ACTIVE_ALARMS, YukonUserContext.system.getJodaTimeZone(), null, SortBy.TIME_STAMP, Direction.asc);
         }
         else {
-            return getAlarms(AlarmFilter.NO_FILTER, DateTimeZone.getDefault(), null, SortBy.TIME_STAMP, Direction.asc);
+            return getAlarms(AlarmFilter.NO_FILTER, YukonUserContext.system.getJodaTimeZone(), null, SortBy.TIME_STAMP, Direction.asc);
         }
     }
     
     @Override
     public List<DisplayData> getUnacknowledgedAlarms(int pointId) {
         Set<Signal> signals = asyncDynamicDataSource.getCachedSignals(pointId);
-        return getDisplayData(signals, AlarmFilter.ACTIVE_ALARMS, DateTimeZone.getDefault(), null);
+        return getDisplayData(signals, AlarmFilter.ACTIVE_ALARMS, YukonUserContext.system.getJodaTimeZone(), null);
     }
 
     @Override
@@ -548,7 +549,7 @@ public class TdcServiceImpl implements TdcService {
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
         int catId = alarmCatDao.getAlarmCategoryId(display.getName());
         Set<Signal> signals = asyncDynamicDataSource.getCachedSignalsByCategory(catId);
-        return getDisplayData(signals, AlarmFilter.NO_FILTER, DateTimeZone.getDefault(), null);
+        return getDisplayData(signals, AlarmFilter.NO_FILTER, YukonUserContext.system.getJodaTimeZone(), null);
     }
        
     @PostConstruct

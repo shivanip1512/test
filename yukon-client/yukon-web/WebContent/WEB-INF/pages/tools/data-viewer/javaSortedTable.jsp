@@ -9,15 +9,14 @@
 
 <cti:url var="dateUrl" value="/tools/data-viewer/${display.displayId}/page"/>
 <form:form id="date-form" action="${dateUrl}"  method="get" commandName="backingBean">        
-    <cti:csrfToken />
     <c:choose>
-        <c:when test="${display.isAlarmDisplay() && backingBean.alarmFilter eq 'ALARM_HISTORY'}">
-            <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
-            <inline class="fr">&nbsp;&nbsp;</inline>
-            <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}" inputClass="fr"/>
-        </c:when>
         <c:when test="${display.isAlarmDisplay()}">
-            <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}" inputClass="fr"/>
+            <span class="fr">
+                <tags:selectWithItems id="alarmFilter" path="alarmFilter" items="${alarmFilters}"/>
+                <c:if test="${backingBean.alarmFilter eq 'ALARM_HISTORY'}">
+                    <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
+                </c:if>
+            </span>
         </c:when>
         <c:otherwise>
             <span class="fr"><dt:date id="date" path="date" value="${backingBean.date}"/></span>
@@ -25,10 +24,10 @@
     </c:choose>
 </form:form>
 <input id="display-id" type="hidden" value="${display.displayId}">
-<c:url var="url" value="/tools/data-viewer/${display.displayId}/page">
+<cti:url var="url" value="/tools/data-viewer/${display.displayId}/page">
     <cti:param name="date" value="${backingBean.date}"/>
     <cti:param name="alarmFilter" value="${backingBean.alarmFilter}"/>
-</c:url>
+</cti:url>
 <div data-url="${url}" data-static>
     <table class="compact-results-table has-actions has-alerts">
         <thead>
@@ -37,6 +36,9 @@
                 <c:forEach var="column" items="${sortableColumns}">
                     <tags:sort column="${column}"/>
                 </c:forEach>
+                <c:if test="${display.isAlarmDisplay()}">
+                    <th/>
+                </c:if>
             </tr>
         </thead>
         <tfoot></tfoot>
