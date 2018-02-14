@@ -18,4 +18,9 @@ public interface NmSyncService {
      * Sends request to NM to change the gateway name, if gateway name in NM doesn't match gateway name in Yukon.
      */
     void syncGatewayName(RfnDevice rfnDevice, String nmGatewayName);
+
+    /**
+     * Sends request to NM to change the gateway name.
+     */
+    void syncGatewayName(RfnDevice rfnDevice);
 }

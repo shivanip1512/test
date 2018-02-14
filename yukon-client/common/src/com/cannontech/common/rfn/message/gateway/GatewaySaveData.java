@@ -13,7 +13,7 @@ public class GatewaySaveData implements Serializable {
     
     public enum AccessLevel { USER, ADMIN, SUPER_ADMIN }
     
-    private String name;
+    private String name; //name to be used for Yukon to tell NM to update the NM database
     private String ipAddress;
     private Authentication superAdmin;
     private Authentication admin;

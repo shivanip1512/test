@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -26,6 +27,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestListener.class);
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private NmSyncServiceImpl nmSyncService;
 
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private List<Worker> workers;
@@ -50,6 +52,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
 
                 gatewayEventLogService.createdGatewayAutomatically(device.getName(),
                     request.getRfnIdentifier().getSensorSerialNumber());
+                nmSyncService.syncGatewayName(device);
                 return device;
             } catch (Exception e) {
                 log.warn("Creation failed for gateway: " + request.getRfnIdentifier(), e);

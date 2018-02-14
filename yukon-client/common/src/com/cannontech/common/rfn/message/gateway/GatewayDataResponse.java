@@ -16,7 +16,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private static final long serialVersionUID = 1L;
     
     private RfnIdentifier rfnIdentifier;
-    private String name;
+    private String name;  //name is only to be used for a comparison (no update) between NM and Yukon
     
     private String hardwareVersion;
     private String softwareVersion;

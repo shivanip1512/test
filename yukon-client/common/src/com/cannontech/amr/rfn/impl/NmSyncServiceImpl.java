@@ -63,17 +63,30 @@ public class NmSyncServiceImpl implements NmSyncService {
     @Override
     public void syncGatewayName(RfnDevice rfnDevice, String nmGatewayName) {
         if (!rfnDevice.getName().equalsIgnoreCase(nmGatewayName)) {
-            GatewayEditRequest request = new GatewayEditRequest();
-            GatewaySaveData editData = new GatewaySaveData();
-            editData.setName(rfnDevice.getName());
-            request.setRfnIdentifier(rfnDevice.getRfnIdentifier());
-            request.setData(editData);
             log.info("Sending message to NM to update gateway name from " + nmGatewayName + " to " + rfnDevice.getName()
-                + " for " + rfnDevice);
-            jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_EDIT.getQueue().getName(), request);
+            + " for " + rfnDevice);
+            sendGatewayNameToNm(rfnDevice);
         }
     }
     
+    @Override
+    public void syncGatewayName(RfnDevice rfnDevice) {
+        log.info("Sending message to NM to update gateway name " + rfnDevice.getName());
+        sendGatewayNameToNm(rfnDevice);
+    }
+    
+    /**
+     * Sends gateway name to NM
+     */
+    private void sendGatewayNameToNm(RfnDevice rfnDevice) {
+        GatewayEditRequest request = new GatewayEditRequest();
+        GatewaySaveData editData = new GatewaySaveData();
+        editData.setName(rfnDevice.getName());
+        request.setRfnIdentifier(rfnDevice.getRfnIdentifier());
+        request.setData(editData);
+        jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_EDIT.getQueue().getName(), request);
+    }
+
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
