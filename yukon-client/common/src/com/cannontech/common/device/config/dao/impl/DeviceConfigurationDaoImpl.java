@@ -1083,21 +1083,21 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                 new HeartbeatConfiguration(config.getConfigurationId(), config.getName(), config.getDescription());
         
         DeviceConfigCategory heartbeatCategory = config.getHeartbeatCategory();
-        for (DeviceConfigCategoryItem item : heartbeatCategory.getDeviceConfigurationItems()) {
-            switch (item.getFieldName()) {
-            case "cbcHeartbeatMode":
-                heartbeatConfiguration.setMode(item.getValue());
-                break;
-            case "cbcHeartbeatPeriod":
-                heartbeatConfiguration.setPeriod(Integer.valueOf(item.getValue()));
-                break;
-            case "cbcHeartbeatValue":
-                heartbeatConfiguration.setValue(Integer.valueOf(item.getValue()));
-                break;
+        if (heartbeatCategory != null) {
+            for (DeviceConfigCategoryItem item : heartbeatCategory.getDeviceConfigurationItems()) {
+                switch (item.getFieldName()) {
+                case "cbcHeartbeatMode":
+                    heartbeatConfiguration.setMode(item.getValue());
+                    break;
+                case "cbcHeartbeatPeriod":
+                    heartbeatConfiguration.setPeriod(Integer.valueOf(item.getValue()));
+                    break;
+                case "cbcHeartbeatValue":
+                    heartbeatConfiguration.setValue(Integer.valueOf(item.getValue()));
+                    break;
+                }
             }
-                
         }
-            
         return heartbeatConfiguration;
     }
     

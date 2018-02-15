@@ -271,7 +271,7 @@
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
                         </c:if>
-                        <c:set var="heartbeatClass" value="${cbc.dnpConfigId == null ? 'dn' : ''}"/>
+                        <c:set var="heartbeatClass" value="${heartbeatConfig.mode == null ? 'dn' : ''}"/>
                         <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode"
                             valueClass="js-heartbeat-cbcHeartbeatMode" rowClass="js-heartbeat-field ${heartbeatClass}">
                             <c:if test="${heartbeatConfig.mode != null}">
