@@ -113,7 +113,7 @@ DELETE FROM DeviceConfigCategoryMap
 WHERE DeviceConfigurationId IN (
     SELECT dc.DeviceConfigurationID
     FROM DeviceConfiguration dc
-    WHERE EXISTS (
+    WHERE NOT EXISTS (
         SELECT 1 FROM DeviceConfigDeviceTypes dcdt
         WHERE dcdt.DeviceConfigurationId = dc.DeviceConfigurationID
         AND dcdt.PaoType IN ('MCT-430A', 'MCT-430A3', 'MCT-430S4', 'MCT-430SL', 'MCT-470')
