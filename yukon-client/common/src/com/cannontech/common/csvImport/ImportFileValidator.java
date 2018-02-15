@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.model.PointImportParameters;
 import com.cannontech.common.exception.DuplicateColumnNameException;
 import com.cannontech.common.exception.InvalidColumnNameException;
 import com.cannontech.common.exception.RequiredColumnMissingException;
@@ -322,14 +323,17 @@ public class ImportFileValidator {
                         value = value.toUpperCase();
                     }
                     
-                    if (StringUtils.equalsIgnoreCase("STATE 1 COMMAND", columnName)
-                        || StringUtils.equalsIgnoreCase("STATE 2 COMMAND", columnName)) {
-                        continue;
-                    }
                     column.getType().getMethod("valueOf", String.class).invoke(null, value);
                     continue;
                 } catch(InvocationTargetException ite) {
-                    //method exists, but conversion fails
+                    // This exception indicates that the method exists, but conversion fails
+                    
+                    // If this exception occurred while paring the value for STATE_1_COMMAND or STATE_2_COMMAND for Status
+                    // Point, this means that it is a custom string that we should accept. 
+                    if (StringUtils.equalsIgnoreCase(columnName, PointImportParameters.STATE_1_COMMAND.NAME) ||
+                            StringUtils.equalsIgnoreCase(columnName, PointImportParameters.STATE_2_COMMAND.NAME)) {
+                        continue;
+                    }
                     invalidValues.add(columnName);
                     continue;
                 } catch (Exception e) {

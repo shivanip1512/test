@@ -19,6 +19,8 @@ import static com.cannontech.common.bulk.model.PointImportParameters.STATE_1_COM
 import static com.cannontech.common.bulk.model.PointImportParameters.STATE_2_COMMAND;
 import static com.cannontech.common.bulk.model.PointImportParameters.STATE_GROUP;
 
+import org.apache.commons.lang3.EnumUtils;
+
 import com.cannontech.common.bulk.model.StaleDataUpdateStyle;
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportRow;
@@ -31,6 +33,7 @@ import com.cannontech.common.point.StatusPointBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 
@@ -98,11 +101,25 @@ public class StatusPointImportProcessor extends PointImportProcessor {
             if(row.hasValue(CLOSE_TIME_2.NAME)) {
                 builder.setCloseTime2(Integer.valueOf(row.getValue(CLOSE_TIME_2.NAME)));
             }
-            if(row.hasValue(STATE_1_COMMAND.NAME)) {
-                builder.setState1Command(row.getValue(STATE_1_COMMAND.NAME).toLowerCase());
+            if (row.hasValue(STATE_1_COMMAND.NAME)) {
+                /* if the value for STATE 1 COMMAND column is a valid enum value, use the control command for this enum value
+                 * else treat the value of STATE 1 COMMAND as a custom string and use this value instead.
+                 */
+                if (EnumUtils.isValidEnum(ControlStateType.class, row.getValue(STATE_1_COMMAND.NAME))) {
+                    builder.setState1Command(ControlStateType.valueOf(row.getValue(STATE_1_COMMAND.NAME)).getControlCommand());
+                } else {
+                    builder.setState1Command(row.getValue(STATE_1_COMMAND.NAME).toLowerCase());
+                }
             }
-            if(row.hasValue(STATE_2_COMMAND.NAME)) {
-                builder.setState2Command(row.getValue(STATE_2_COMMAND.NAME).toLowerCase());
+            if (row.hasValue(STATE_2_COMMAND.NAME)) {
+                /* if the value for STATE 2 COMMAND column is a valid enum value, use the control command for this enum value
+                 * else treat the value of STATE 2 COMMAND as a custom string and use this value instead.
+                 */
+                if (EnumUtils.isValidEnum(ControlStateType.class, row.getValue(STATE_2_COMMAND.NAME))) {
+                    builder.setState2Command(ControlStateType.valueOf(row.getValue(STATE_2_COMMAND.NAME)).getControlCommand());
+                } else {
+                    builder.setState2Command(row.getValue(STATE_2_COMMAND.NAME).toLowerCase());
+                }
             }
             if(row.hasValue(COMMAND_TIMEOUT.NAME)) {
                 builder.setCommandTimeout(Integer.valueOf(row.getValue(COMMAND_TIMEOUT.NAME)));
