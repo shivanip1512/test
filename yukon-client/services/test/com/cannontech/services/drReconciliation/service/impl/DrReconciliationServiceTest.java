@@ -33,6 +33,7 @@ import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl;
 import com.cannontech.maintenance.task.dao.DrReconciliationDao;
 import com.cannontech.maintenance.task.service.impl.DrReconciliationServiceImpl;
+import com.cannontech.message.dispatch.message.LitePointData;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -262,7 +263,34 @@ public class DrReconciliationServiceTest {
         replay(paoDao);
         ReflectionTestUtils.setField(dr, "paoDao", paoDao);
         ReflectionTestUtils.setField(dr, "attributeService", new MockAttributeServiceImpl());
-        ReflectionTestUtils.setField(dr, "asyncDynamicDataSource", new MockAsyncDynamicDataSourceImpl());
+        ReflectionTestUtils.setField(dr, "asyncDynamicDataSource", new MockAsyncDynamicDataSourceImpl() {
+            @Override
+            public Set<LitePointData> getPointDataOnce(Set<Integer> pointIds) {
+                // Setting point data for pointIds : 1 - 7
+                Set<LitePointData> pointValues = new HashSet<>();
+                for (int i = 1; i <= 7; i++) {
+                    LitePointData litePointData = new LitePointData();
+                    litePointData.setId(i);
+                    switch (i) {
+                    case 2:
+                    case 5:
+                    case 3:
+                        litePointData.setValue(1);
+                        break;
+                    case 6:
+                    case 1:
+                        litePointData.setValue(2);
+                        break;
+                    case 4:
+                    case 7:
+                        litePointData.setValue(0);
+                        break;
+                    }
+                    pointValues.add(litePointData);
+                }
+                return pointValues;
+            }
+        });
     }
 
     @Test
