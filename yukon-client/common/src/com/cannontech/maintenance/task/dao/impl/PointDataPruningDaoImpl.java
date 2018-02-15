@@ -98,7 +98,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             sql.append("SELECT CHANGEID, ROW_NUMBER() ");
             sql.append(  "OVER (PARTITION BY PointId, Value, Timestamp, Quality ORDER BY ChangeId) RN ");
             sql.append("FROM RAWPOINTHISTORY ");
-            if(noLockRequired) {
+            if (noLockRequired) {
                 sql.append("WITH (NOLOCK)");
             }
             sql.append("WHERE Timestamp").gte(dateRange.getMin());
