@@ -101,7 +101,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         
-        eventLog.pointCreated(pao.getPaoName(), point.getPoint().getPointName(), PointType.valueOf(point.getPoint().getPointType()),
+        eventLog.pointCreated(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
         int id = point.getPoint().getPointID();
 
@@ -228,7 +228,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         /* This one must be done AFTER for create */
         saveStaleData(pointId, model.getStaleData());
         LiteYukonPAObject pao = cache.getAllPaosMap().get(base.getPoint().getPaoID());
-        eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), PointType.valueOf(base.getPoint().getPointType()),
+        eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), base.getPoint().getPointTypeEnum(),
             base.getPoint().getPointOffset(), userContext.getYukonUser());
         return pointId;
     }
@@ -407,7 +407,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         dbChangeManager.processDbChange(dbChange);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
-        eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), PointType.valueOf(point.getPoint().getPointType()),
+        eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
     }
 
