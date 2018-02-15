@@ -47,6 +47,7 @@ BEGIN
         AND CI.ItemValue = 'LAST_INTERVAL_VOLTAGE'
     )
     AND I.ItemValue NOT IN( 'SLOT_DISABLED', 'LAST_INTERVAL_VOLTAGE' )
+    AND ItemName LIKE 'displayItem%'
     ORDER BY CAST( SUBSTR( I.ItemName, 12, 2 ) AS INT );
     
     /* Fill in the edge cases where the category items only includes 'LAST_INTERVAL_VOLTAGE' and 'SLOT_DISABLED' */
@@ -87,12 +88,14 @@ BEGIN
         SELECT T.ItemValueTemp
         FROM t_ConfigCategoryItemTemp T
         WHERE DeviceConfigCategoryId = T.DeviceConfigCategoryIdTemp
+        AND ItemName LIKE 'displayItem%'
         AND CAST( SUBSTR( ItemName, 12, 2 ) AS INT ) = Ordering
     )
     WHERE DeviceConfigCategoryId = (
         SELECT T.DeviceConfigCategoryIdTemp
         FROM t_ConfigCategoryItemTemp T
         WHERE DeviceConfigCategoryId = T.DeviceConfigCategoryIdTemp
+        AND ItemName LIKE 'displayItem%'
         AND CAST( SUBSTR( ItemName, 12, 2 ) AS INT ) = Ordering
     );
 
