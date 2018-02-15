@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -287,7 +288,7 @@ public class TdcDisplayController {
         
         backingBean.setDate(dateTime);
         AlarmFilter filter = null;
-        if (alarmFilter != null && !alarmFilter.isEmpty()) {
+        if (StringUtils.isNotEmpty(alarmFilter)) {
             backingBean.setAlarmFilter(alarmFilter);
             filter = AlarmFilter.valueOf(alarmFilter);
         }
