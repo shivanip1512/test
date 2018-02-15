@@ -60,13 +60,17 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
     }
 
     @Override
-    public int deleteDuplicatePointData(Range<Instant> dateRange) {
-        SqlStatementBuilder deleteDuplicatePointDataQuery = buildDeleteDuplicatePointDataQuery(dateRange);
+    public int deleteDuplicatePointData(Range<Instant> dateRange, boolean noLockRequired) {
+        log.debug("Query execution started for date range - " + dateRange);
+        SqlStatementBuilder deleteDuplicatePointDataQuery =
+            buildDeleteDuplicatePointDataQuery(dateRange, noLockRequired);
         int rowsDeleted = jdbcTemplate.update(deleteDuplicatePointDataQuery);
+        log.debug("Query execution finished for date range - " + dateRange);
+        log.debug("Rows deleted for this range = " + rowsDeleted);
         return rowsDeleted;
     }
 
-    private SqlStatementBuilder buildDeleteDuplicatePointDataQuery(Range<Instant> dateRange) {
+    private SqlStatementBuilder buildDeleteDuplicatePointDataQuery(Range<Instant> dateRange, boolean noLockRequired) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
@@ -93,8 +97,10 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             sql.append("WITH CTE AS (");
             sql.append("SELECT CHANGEID, ROW_NUMBER() ");
             sql.append(  "OVER (PARTITION BY PointId, Value, Timestamp, Quality ORDER BY ChangeId) RN ");
-            sql.append("FROM RAWPOINTHISTORY");
-            sql.append("WITH (NOLOCK)");
+            sql.append("FROM RAWPOINTHISTORY ");
+            if(noLockRequired) {
+                sql.append("WITH (NOLOCK)");
+            }
             sql.append("WHERE Timestamp").gte(dateRange.getMin());
             sql.append(  "AND Timestamp").lte(dateRange.getMax());
             sql.append(  "AND PointId IN (");

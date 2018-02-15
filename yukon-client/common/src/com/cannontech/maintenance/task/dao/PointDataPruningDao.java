@@ -16,8 +16,9 @@ public interface PointDataPruningDao {
     /**
      * Method Deletes duplicate records from RPH for given date range
      * 
-     * @param dateRange : 7 days Range for which records have to be deleted
+     * @param dateRange : Date Range for which records have to be deleted
+     * @param noLockRequired : NOLOCK will be added to the query if it is true
      * @return no of records deleted for the given date range.
      */
-    int deleteDuplicatePointData(Range<Instant> dateRange);
+    int deleteDuplicatePointData(Range<Instant> dateRange, boolean noLockRequired);
 }

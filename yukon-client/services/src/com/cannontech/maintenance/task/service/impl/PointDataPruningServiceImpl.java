@@ -4,10 +4,12 @@ import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Period;
+import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.util.Range;
@@ -61,25 +63,35 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     @Override
     public int deleteDuplicatePointData(Instant processEndTime) {
         int totalRowsdeleted = 0;
-        int noOfMonths = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
+        boolean noLockRequired =
+            configurationSource.getBoolean(MasterConfigBoolean.MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED, true);
+        Integer daysInDuration =
+            configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 60);
+        int noOfMonthsConfigured = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
+        // Forcing noOfMonths to max 12 in case user configures above value more than 12 months.
+        int noOfMonths = noOfMonthsConfigured > 12 ? 12 : noOfMonthsConfigured;
         Duration monthInDuration = Period.months(noOfMonths).toDurationTo(Instant.now());
         Instant fromTimestamp = Instant.now();
         Instant limit = Instant.now().minus(monthInDuration);
+        log.debug(
+            "Overall duration for which duplicate records should be deleted = From " + limit + " To " + fromTimestamp);
         Instant start = new Instant();
-        log.info("Duplicate point data deletion started at " + start.toDate());
+        log.debug("Duplicate point data deletion started at " + start.toDate());
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
-            Integer daysInDuration =
-                configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 7);
             Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
             Instant toTimestamp = fromTimestamp.minus(deletionDuration);
             Range<Instant> dateRange = Range.inclusive(toTimestamp, fromTimestamp);
-            int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange);
+            int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange, noLockRequired);
             totalRowsdeleted = totalRowsdeleted + rowsDeleted;
             fromTimestamp = toTimestamp;
         }
         Instant finish = new Instant();
-        log.info("Duplicate point data deletion finished at " + finish.toDate());
-        systemEventLogService.deleteDuplicatePointDataEntries(totalRowsdeleted, start, finish);
+        log.debug("Duplicate point data deletion finished at " + finish.toDate());
+        log.debug("Total duplicate rows deleted == " + totalRowsdeleted);
+        Seconds secondsTaken = Seconds.secondsBetween(start, finish);
+        log.debug("Total execution time = " + secondsTaken.getSeconds() + " Seconds");
+
+        systemEventLogService.rphDeleteDuplicates(totalRowsdeleted, start, finish);
         return totalRowsdeleted;
     }
 }

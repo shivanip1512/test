@@ -88,9 +88,6 @@ public interface SystemEventLogService {
     public void deletePointDataEntries(int rowsDeleted, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
-    public void deleteDuplicatePointDataEntries(int rowsDeleted, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
-
-    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void systemLogDeleteDanglingEntries(int rowsDeleted, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
