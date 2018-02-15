@@ -11,7 +11,7 @@ public enum MaintenanceSettingType implements DisplayableEnum {
     POINT_DATA_PRUNING_NO_OF_MONTHS(DurationType.TWO_YEARS, true, InputTypeFactory.enumType(DurationType.class)),
 
     // Setting for Duplicate Point Data Pruning
-    DUPLICATE_POINT_DATA_PRUNING_ENABLED(false, false, InputTypeFactory.booleanType()),
+    DUPLICATE_POINT_DATA_PRUNING_ENABLED(true, false, InputTypeFactory.booleanType()),
 
     // Setting for DR Reconciliation
     DR_RECONCILIATION_ENABLED(true, false, InputTypeFactory.booleanType());

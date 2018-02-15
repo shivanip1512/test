@@ -13,9 +13,10 @@ public class ScheduledRphDuplicateDeletionExecutionTask extends YukonTaskBase {
 
     @Override
     public void start() {
-        Instant start = new Instant();
+        // This is done just to inactive Duplicate Deletion Task
+        /*Instant start = new Instant();
         int numDeleted = databaseManagementDao.deleteRphDuplicates();
         Instant finish = new Instant();
-        systemEventLogService.rphDeleteDuplicates(numDeleted, start, finish);
+        systemEventLogService.rphDeleteDuplicates(numDeleted, start, finish);*/
     }
 }
