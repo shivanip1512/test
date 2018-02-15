@@ -90,16 +90,16 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("FROM SystemLog s");
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        allRowsSql.append("WHERE s.Datetime").gte(from);
-        allRowsSql.append("    AND s.Datetime").lt(to);
-        allRowsSql.append("    AND s.Type").eq(SystemLog.TYPE_ALARM);
+        allRowsSql.append("WHERE s.Datetime").gt(from);
+        allRowsSql.append("    AND s.Datetime").lte(to);
+        allRowsSql.append("    AND s.Type").eq_k(SystemLog.TYPE_ALARM);
         allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
         
         PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createAlarmHistoryRowMapper);
         yukonJdbcTemplate.query(allRowsSql, rse);
 
         SearchResults<DisplayData> searchResults = new SearchResults<>();
-        searchResults.setBounds(start, count, rse.getResultList().size());
+        searchResults.setBounds(start, count, getAlarmHistoryDisplayDataCount(date));
         searchResults.setResultList(rse.getResultList());
         
         return searchResults;
@@ -115,8 +115,10 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("FROM SystemLog s");
         sql.append("JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("WHERE s.Datetime").gte(from);
-        sql.append("  AND s.Datetime").lt(to);
+        sql.append("WHERE s.Datetime").gt(from);
+        sql.append("  AND s.Datetime").lte(to);
+        sql.append("    AND s.Type").eq_k(SystemLog.TYPE_ALARM);
+
         return yukonJdbcTemplate.queryForInt(sql);
     }
 
@@ -144,8 +146,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("FROM SystemLog s");
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        allRowsSql.append("WHERE s.Datetime").gte(from);
-        allRowsSql.append("    AND s.Datetime").lt(to);
+        allRowsSql.append("WHERE s.Datetime").gt(from);
+        allRowsSql.append("    AND s.Datetime").lte(to);
         allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
         
         PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createEventViewerRowMapper);
@@ -166,8 +168,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("SELECT count(*)");
         sql.append("FROM SystemLog s JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("WHERE s.Datetime").gte(from);
-        sql.append("  AND s.Datetime").lt(to);
+        sql.append("WHERE s.Datetime").gt(from);
+        sql.append("  AND s.Datetime").lte(to);
         return yukonJdbcTemplate.queryForInt(sql);
     }
 
@@ -179,8 +181,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("SELECT count(*)");
         sql.append("FROM SystemLog s JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
-        sql.append("WHERE s.Datetime").gte(from);
-        sql.append("  AND s.Datetime").lt(to);
+        sql.append("WHERE s.Datetime").gt(from);
+        sql.append("  AND s.Datetime").lte(to);
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
@@ -253,8 +255,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("JOIN Point p ON s.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
         allRowsSql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.SOE);
-        allRowsSql.append("    AND s.Datetime").gte(from);
-        allRowsSql.append("    AND s.Datetime").lt(to);
+        allRowsSql.append("    AND s.Datetime").gt(from);
+        allRowsSql.append("    AND s.Datetime").lte(to);
         allRowsSql = addSortByClause(allRowsSql, sortBy, direction);
         
         PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createSoeRowMapper);
@@ -276,8 +278,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("FROM SystemLog s JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
         sql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.SOE);
-        sql.append("    AND s.Datetime").gte(from);
-        sql.append("    AND s.Datetime").lt(to);
+        sql.append("    AND s.Datetime").gt(from);
+        sql.append("    AND s.Datetime").lte(to);
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
@@ -290,8 +292,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("FROM SystemLog s JOIN Point p ON s.PointId = p.PointId");
         sql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
         sql.append("WHERE p.LogicalGroup").eq_k(PointLogicalGroups.SOE);
-        sql.append("    AND s.Datetime").gte(from);
-        sql.append("    AND s.Datetime").lt(to);
+        sql.append("    AND s.Datetime").gt(from);
+        sql.append("    AND s.Datetime").lte(to);
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
@@ -319,8 +321,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         allRowsSql.append("JOIN Point p ON l.PointId = p.PointId");
         allRowsSql.append("JOIN YukonPaobject y ON p.PaobjectId = y.PaobjectId");
         allRowsSql.append("JOIN Tags t ON t.Tagid = l.Tagid");
-        allRowsSql.append("    AND l.Tagtime").gte(from);
-        allRowsSql.append("    AND l.Tagtime").lt(to);
+        allRowsSql.append("    AND l.Tagtime").gt(from);
+        allRowsSql.append("    AND l.Tagtime").lte(to);
         allRowsSql.append("ORDER BY").append(sortBy.getDbString()).append(direction);
 
         PagingResultSetExtractor<DisplayData> rse = new PagingResultSetExtractor<>(start, count, createTagRowMapper);
@@ -342,8 +344,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("FROM  TagLog l JOIN Point p ON l.Pointid=p.Pointid");
         sql.append("JOIN YukonPAObject y ON y.PAObjectID=p.PAObjectID");
         sql.append("JOIN Tags t ON t.Tagid = l.Tagid");
-        sql.append("   AND l.tagtime").gte(from);
-        sql.append("   AND l.tagtime").lt(to);
+        sql.append("   AND l.tagtime").gt(from);
+        sql.append("   AND l.tagtime").lte(to);
         return yukonJdbcTemplate.queryForInt(sql);
     }
     
@@ -356,8 +358,8 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("FROM  TagLog l JOIN Point p ON l.Pointid=p.Pointid");
         sql.append("JOIN YukonPAObject y ON y.PAObjectID=p.PAObjectID");
         sql.append("JOIN Tags t ON t.Tagid = l.Tagid");
-        sql.append("   AND l.tagtime").gte(from);
-        sql.append("   AND l.tagtime").lt(to);
+        sql.append("   AND l.tagtime").gt(from);
+        sql.append("   AND l.tagtime").lte(to);
         return yukonJdbcTemplate.queryForInt(sql);
     }
 

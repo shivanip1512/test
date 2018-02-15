@@ -148,7 +148,12 @@ public interface TdcService {
      * Delete custom display.
      */
     void deleteCustomDisplay(int displayId);
-
+    
+    /**
+     * 
+     * @param alarmFilter - can have no filter, unacked, or active alarms as options for this method which gets data from dispatch. Alarm History filter will obtain data from system log.
+     * @return returns a sorted list of alarms from dispatch.
+     */
     List<DisplayData> getAlarms(AlarmFilter alarmFilter, DateTimeZone timeZone, DateTime date, SortBy sortBy,
                                 Direction direction);
 

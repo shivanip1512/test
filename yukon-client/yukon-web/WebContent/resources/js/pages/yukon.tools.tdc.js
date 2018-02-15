@@ -310,10 +310,11 @@ yukon.tools.tdc = (function () {
             });
             
             $(document).ready(function() {
-                $('#date').attr('readonly', true)
+                $('#date').attr('readonly', true);
+                $('#date').addClass('opacityOff');
             });
             
-            $(document).on('change', '#date', function (ev) {
+            $(document).on('focusout', '#date', function (ev) {
                 $('#date-form').submit();
             });
             
