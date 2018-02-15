@@ -229,7 +229,7 @@ public class CapBankController {
         model.addAttribute("pointPhaseList", CapBankPointPhase.values());
 
         Set<TimeIntervals> timeInterval = TimeIntervals.getCapControlIntervals();
-        List<TimeIntervals> timeIntervals = new LinkedList<TimeIntervals>(timeInterval);
+        List<TimeIntervals> timeIntervals = new LinkedList<>(timeInterval);
         timeIntervals.add(0, TimeIntervals.NONE);
 
         model.addAttribute("timeIntervals", timeIntervals);
@@ -237,7 +237,7 @@ public class CapBankController {
         model.addAttribute("bankSizes", CapBankSize.values());
         
         List<PaoType> cbcTypes =
-            PaoType.getCbcTypes().stream().filter(cbcType -> paoDefinitionDao.getPaoDefinition(cbcType).isCreatable()).collect(
+            PaoType.getCbcTypes().stream().filter(cbcType -> paoDefinitionDao.getPaoDefinition(cbcType).isCreatable() && cbcType != PaoType.CBC_LOGICAL).collect(
                 Collectors.toList());
         
         model.addAttribute("cbcTypes", cbcTypes);
