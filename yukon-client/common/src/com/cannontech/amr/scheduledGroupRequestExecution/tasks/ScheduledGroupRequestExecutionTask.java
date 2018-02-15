@@ -40,7 +40,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private DeviceRequestType deviceRequestType;
     private int retryCount = 0;
     private Integer stopRetryAfterHoursCount = null;
-    private Integer turnOffQueuingAfterRetryCount = null;
+    private Integer turnOffQueuingAfterRetryCount = new Integer(0);
     private CompletionCallback completionCallback = null;
     private Integer dependentJobGroupId;
     private String dependentJobResultCategories;
