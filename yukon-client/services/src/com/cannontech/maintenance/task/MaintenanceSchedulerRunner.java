@@ -45,8 +45,8 @@ public class MaintenanceSchedulerRunner {
 
     // Four hours in milliseconds
     private static final long fourHourWindow = 14400000;
-    // One hour in milliseconds
-    private static final long minimumRunWindow = 3600000;
+    // Half an hour in milliseconds
+    private static final long minimumRunWindow = 1800000;
 
     private Map<MaintenanceScheduler, Boolean> forceReschedule = new ConcurrentHashMap<>();
     private Map<MaintenanceScheduler, Boolean> rescheduleScheduler = new ConcurrentHashMap<>();
