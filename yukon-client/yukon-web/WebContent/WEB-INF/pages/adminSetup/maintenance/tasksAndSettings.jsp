@@ -20,10 +20,9 @@
         </div>
         <div class="column-10-14 clearfix">
             <div class="column one">
-                <table class="compact-results-table has-alerts">
+                <table class="compact-results-table">
                     <thead>
                         <tr>
-                            <th>&nbsp;</th>
                             <th><i:inline key=".tableHeader.scheduleName"/></th>
                             <th></th>
                         </tr>
@@ -46,10 +45,6 @@
                                     <cti:url var="editTaskDetailsUrl" value="/admin/maintenance/editTask" >
                                         <cti:param name="taskType" value="${task.taskType}"/>
                                     </cti:url>
-                                    <td>
-                                        <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
-                                           arguments="${taskTypeMsg}"/>"><i class="icon icon-script"></i></a>
-                                    </td>
                                     <td>
                                         <a href="${editTaskDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" 
                                            arguments="${taskTypeMsg}"/>"><i:inline key=".${task.taskType}.title"/></a>
