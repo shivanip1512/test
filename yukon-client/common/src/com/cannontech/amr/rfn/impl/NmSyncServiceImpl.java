@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jms.ConnectionFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
@@ -63,7 +62,7 @@ public class NmSyncServiceImpl implements NmSyncService {
     
     @Override
     public void syncGatewayName(RfnDevice rfnDevice, String nmGatewayName) {
-        if (StringUtils.isNotEmpty(nmGatewayName) && !rfnDevice.getName().equalsIgnoreCase(nmGatewayName)) {
+        if (nmGatewayName != null && !nmGatewayName.isEmpty() && !rfnDevice.getName().equalsIgnoreCase(nmGatewayName)) {
             log.info("Sending message to NM to update gateway name from " + nmGatewayName + " to " + rfnDevice.getName()
                 + " for " + rfnDevice);
             sendGatewayNameToNm(rfnDevice);
