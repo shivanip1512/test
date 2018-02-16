@@ -48,6 +48,11 @@ public class StrategyAssignmentController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private StrategyService strategyService;
     
+    private final List<String> unsupportedAlgosforFeeder = Arrays.asList(ControlAlgorithm.INTEGRATED_VOLT_VAR.name(),
+                                                                         ControlAlgorithm.MULTI_VOLT.name(),
+                                                                         ControlAlgorithm.MULTI_VOLT_VAR.name(),
+                                                                         ControlAlgorithm.TIME_OF_DAY.name());
+
     /** ASSIGNMENT POPUP */
     @RequestMapping(value="strategy-assignment/{id}", method=RequestMethod.GET)
     public String stratAssignmentPopup(ModelMap model, LiteYukonUser user, @PathVariable int id) {
@@ -122,7 +127,7 @@ public class StrategyAssignmentController {
         List<LiteCapControlStrategy> strategies;
         //don't include IVVC strategies for feeders
         if (pao.getPaoType().equals(PaoType.CAP_CONTROL_FEEDER)) {
-            strategies = strategyDao.getLiteStrategiesWithoutSpecifiedAlgorithms(Arrays.asList(ControlAlgorithm.INTEGRATED_VOLT_VAR.name()));
+            strategies = strategyDao.getLiteStrategiesWithoutSpecifiedAlgorithms(unsupportedAlgosforFeeder);
         } else {
             strategies = strategyDao.getAllLiteStrategies();
         }
