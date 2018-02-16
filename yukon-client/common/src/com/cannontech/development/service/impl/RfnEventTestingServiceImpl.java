@@ -1,14 +1,19 @@
 package com.cannontech.development.service.impl;
 
+import static com.cannontech.common.stream.StreamUtils.not;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.jms.ConnectionFactory;
 
@@ -45,6 +50,7 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -53,6 +59,7 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -74,6 +81,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
 
     private static final Map<String, String> modifierPaths;
+    private static final Map<String, List<RfnManufacturerModel>> groupedMeterTypes;
     
     static {
         modifierPaths = ImmutableMap.<String, String>builder()
@@ -103,8 +111,83 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 .put("neutralToGround", "Phase Neutral->Ground")
                 .put("dailyMax", "Daily Max")
                 .build();
+        
+        //  LinkedHashMap preserves insert order - this is how we want them to be displayed
+        Map<String, List<RfnManufacturerModel>> groupedMeterTypesBuilder = new LinkedHashMap<>();
+        
+        groupedMeterTypesBuilder.put("Itron single phase", ImmutableList.of(
+            RfnManufacturerModel.RFN_410CL,
+            RfnManufacturerModel.RFN_420CL,
+            RfnManufacturerModel.RFN_420CD));
+
+        groupedMeterTypesBuilder.put("Landis & Gyr single phase", ImmutableList.of(
+            RfnManufacturerModel.RFN_410FL,
+            RfnManufacturerModel.RFN_410FX_D, 
+            RfnManufacturerModel.RFN_410FX_R, 
+            RfnManufacturerModel.RFN_410FD_D,
+            RfnManufacturerModel.RFN_410FD_R,
+            RfnManufacturerModel.RFN_420FL,
+            RfnManufacturerModel.RFN_420FX,
+            RfnManufacturerModel.RFN_420FD,
+            RfnManufacturerModel.RFN_420FRX,
+            RfnManufacturerModel.RFN_420FRD,
+            RfnManufacturerModel.RFN_510FL,
+            RfnManufacturerModel.RFN_520FAXD,
+            RfnManufacturerModel.RFN_520FAXT,
+            RfnManufacturerModel.RFN_520FAXR,
+            RfnManufacturerModel.RFN_520FRXD,
+            RfnManufacturerModel.RFN_520FRXT,
+            RfnManufacturerModel.RFN_520FRXR,
+            RfnManufacturerModel.RFN_520FAXD_SD,
+            RfnManufacturerModel.RFN_520FAXT_SD,
+            RfnManufacturerModel.RFN_520FAXR_SD,
+            RfnManufacturerModel.RFN_520FRXD_SD,
+            RfnManufacturerModel.RFN_520FRXT_SD,
+            RfnManufacturerModel.RFN_520FRXR_SD));
+
+        groupedMeterTypesBuilder.put("Landis & Gyr polyphase", ImmutableList.of(
+            RfnManufacturerModel.RFN_530FAX,
+            RfnManufacturerModel.RFN_530FRX,
+            RfnManufacturerModel.RFN_530S4X,
+            RfnManufacturerModel.RFN_530S4AD,
+            RfnManufacturerModel.RFN_530S4AT,
+            RfnManufacturerModel.RFN_530S4AR,
+            RfnManufacturerModel.RFN_530S4RD,
+            RfnManufacturerModel.RFN_530S4RT,
+            RfnManufacturerModel.RFN_530S4RR));
+
+        groupedMeterTypesBuilder.put("General Electric polyphase", ImmutableList.of(
+            RfnManufacturerModel.RFN_430KV));
+
+        groupedMeterTypesBuilder.put("Schlumberger polyphase", ImmutableList.of(
+            RfnManufacturerModel.RFN_430SL0,
+            RfnManufacturerModel.RFN_430SL1,
+            RfnManufacturerModel.RFN_430SL2,
+            RfnManufacturerModel.RFN_430SL3,
+            RfnManufacturerModel.RFN_430SL4));
+
+        groupedMeterTypesBuilder.put("Eaton Water 2", ImmutableList.of(
+            RfnManufacturerModel.RFW201_PULSE,
+            RfnManufacturerModel.RFW201_ENCODER,
+            RfnManufacturerModel.RFW205_PULSE,
+            RfnManufacturerModel.RFW205_ENCODER));
+
+        groupedMeterTypesBuilder.put("Legacy Water", ImmutableList.of(
+            RfnManufacturerModel.RFN_WATER_SENSOR));
+
+        groupedMeterTypesBuilder.put("ELO", ImmutableList.of(
+            RfnManufacturerModel.RFN_440_2131TD,
+            RfnManufacturerModel.RFN_440_2132TD,
+            RfnManufacturerModel.RFN_440_2133TD));
+        
+        groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);
     }
     
+    @Override
+    public Map<String, List<RfnManufacturerModel>> getGroupedRfnTypes() {
+        return groupedMeterTypes;
+    }
+
     @Override
     public int sendEventsAndAlarms(RfnTestEvent event) {
         int numEventsSent = 0;
@@ -175,23 +258,31 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
     
     @Override
-    public int sendMeterArchiveRequests(RfnTestMeterReading reading) {
+    public int sendMeterReadArchiveRequests(RfnTestMeterReading reading) {
         
         RfnMeterReadingType type = reading.getType();
-        if (type == null) {
-            type = RfnMeterReadingType.INTERVAL;
-        }
         
-        int numSent = 0;
-        for (int i = reading.getSerialFrom(); i <= reading.getSerialTo(); i++) {
-            
+        List<Integer> serials = 
+                Optional.ofNullable(reading.getSerialTo())
+                    .map(to -> IntStream.rangeClosed(reading.getSerialFrom(), to))
+                    .orElseGet(() -> IntStream.of(reading.getSerialFrom()))
+                    .boxed()
+                    .collect(Collectors.toList());
+        
+        serials.forEach(serial -> {
             RfnMeterReadingArchiveRequest message = new RfnMeterReadingArchiveRequest();
             
             RfnMeterReadingData data = new RfnMeterReadingData();
             data.setTimeStamp(new Instant().getMillis());
-            RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), 
-                                                              reading.getManufacturerModel().getManufacturer(), 
-                                                              reading.getManufacturerModel().getModel());
+            String manufacturer = 
+                    Optional.ofNullable(reading.getManufacturerOverride())
+                                .filter(not(String::isEmpty))
+                                .orElse(reading.getManufacturerModel().getManufacturer());
+            String model = 
+                    Optional.ofNullable(reading.getModelOverride())
+                                .filter(not(String::isEmpty))
+                                .orElse(reading.getManufacturerModel().getModel());
+            RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(serial), manufacturer, model);
             data.setRfnIdentifier(meterIdentifier);
             data.setRecordInterval(300); // pick some default for testing, needs to be greater >= 300
             
@@ -217,11 +308,18 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             dataList.add(channelData);
             
             data.setChannelDataList(dataList);
-            data.setTimeStamp(reading.getTimestampAsMillis());
+            if (reading.isNow()) {
+                data.setTimeStamp(new Instant().getMillis());
+            } else {
+                data.setTimeStamp(reading.getTimestampAsMillis());
+            }
             
             message.setData(data);
-            message.setDataPointId(ThreadLocalRandom.current().nextLong(1000000000));
-            
+            //  On-demand meter reads don't set a dataPointId
+            if (type != RfnMeterReadingType.CURRENT) {
+                message.setDataPointId(ThreadLocalRandom.current().nextLong(1000000000));
+            }
+                
             if (reading.getManufacturerModel().getModel().contains("water")) {
                 message.setReadingType(RfnMeterReadingType.INTERVAL);
                 modifiers.add("Kilo");
@@ -231,9 +329,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             channelData.setUnitOfMeasureModifiers(modifiers);
             
             sendArchiveRequest(meterReadingArchiveRequestQueueName, message);
-            numSent++;
-        }
-        return numSent;
+        });
+        return serials.size();
     }
     
     @Override

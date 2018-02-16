@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -94,6 +95,7 @@ import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusRes
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
@@ -359,11 +361,22 @@ public class NmIntegrationController {
         }
     }
 
+    @ModelAttribute("meterReading")
+    RfnTestMeterReading rfnTestMeterReadingFactory() {
+        return new RfnTestMeterReading();
+    }
+    
     @RequestMapping("viewMeterReadArchiveRequest")
-    public String viewMeterReadArchiveRequest(ModelMap model) {
-        
-        model.addAttribute("meterReading", new RfnTestMeterReading());
-        
+    public String viewMeterReadArchiveRequest(@ModelAttribute RfnTestMeterReading meterReading, ModelMap model, FlashScope flashScope) {
+
+        model.addAttribute("rfnTypeGroups", rfnEventTestingService.getGroupedRfnTypes());
+
+        Integer numberSent = (Integer) model.get("numberSent");
+        if (numberSent != null) {
+            flashScope.setMessage(YukonMessageSourceResolvable.createDefaultWithoutCode("Meter read requests sent: " + numberSent), 
+                                  numberSent > 0 ? FlashScopeMessageType.SUCCESS : FlashScopeMessageType.ERROR);
+        }
+
         return "rfn/viewMeterReadArchive.jsp";
     }
 
@@ -620,10 +633,14 @@ public class NmIntegrationController {
         return "rfn/viewEventArchive.jsp";
     }
 
-    @RequestMapping("sendMeterArchiveRequest")
-    public String sendMeterReadArchiveRequest(@ModelAttribute RfnTestMeterReading meterReading) {
+    @RequestMapping("sendMeterReadArchiveRequest")
+    public String sendMeterReadArchiveRequest(@ModelAttribute RfnTestMeterReading meterReading, RedirectAttributes redirectAttributes) {
         
-        rfnEventTestingService.sendMeterArchiveRequests(meterReading);
+        int numberSent = rfnEventTestingService.sendMeterReadArchiveRequests(meterReading);
+
+        redirectAttributes.addFlashAttribute("numberSent", numberSent);
+        redirectAttributes.addFlashAttribute("meterReading", meterReading);
+
         return "redirect:viewMeterReadArchiveRequest";
     }
 

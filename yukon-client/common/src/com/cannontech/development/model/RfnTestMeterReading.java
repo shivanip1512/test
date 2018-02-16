@@ -10,14 +10,17 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 
 public class RfnTestMeterReading {
     private int serialFrom = 1000;
-    private int serialTo = 1000;
-    private RfnManufacturerModel manufacturerModel;
-    private Double value;
+    private Integer serialTo;
+    private RfnManufacturerModel manufacturerModel = RfnManufacturerModel.RFN_420CL;
+    private String manufacturerOverride;
+    private String modelOverride;
+    private Double value = 271828.18;
     private boolean random;
     private String uom; // V
     private Map<String, Boolean> uomModifiers = new DefaultedMap<>(false);
     private RfnMeterReadingType type;
     private Instant timestamp = new Instant();
+    private boolean now = true;
     
     public RfnTestMeterReading() {
         uomModifiers.put("quad1", true);
@@ -30,10 +33,10 @@ public class RfnTestMeterReading {
     public void setSerialFrom(int serialFrom) {
         this.serialFrom = serialFrom;
     }
-    public int getSerialTo() {
+    public Integer getSerialTo() {
         return serialTo;
     }
-    public void setSerialTo(int serialTo) {
+    public void setSerialTo(Integer serialTo) {
         this.serialTo = serialTo;
     }
     public RfnManufacturerModel getManufacturerModel() {
@@ -41,6 +44,18 @@ public class RfnTestMeterReading {
     }
     public void setManufacturerModel(RfnManufacturerModel manufacturerModel) {
         this.manufacturerModel = manufacturerModel;
+    }
+    public String getManufacturerOverride() {
+        return manufacturerOverride;
+    }
+    public void setManufacturerOverride(String manufacturerOverride) {
+        this.manufacturerOverride = manufacturerOverride;
+    }
+    public String getModelOverride() {
+        return modelOverride;
+    }
+    public void setModelOverride(String model) {
+        this.modelOverride = model;
     }
     public String getUom() {
         return uom;
@@ -81,5 +96,10 @@ public class RfnTestMeterReading {
     public Long getTimestampAsMillis() {
         return timestamp.getMillis();
     }
-
+    public boolean isNow() {
+        return now;
+    }
+    public void setNow(boolean now) {
+        this.now = now;
+    }
 }
