@@ -120,7 +120,6 @@ public class SmartNotificationsTestingController {
     
     private SimulatorResponseBase getSimulatorResponse(SmartNotificationSimulatorRequest request) {
         try {
-            System.out.println(request.getSubscription());
             SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
             return response;
         } catch (Exception e) {
