@@ -203,4 +203,14 @@ bool IVVCState::hasDmvTestState()
 void IVVCState::setDmvTestState( std::unique_ptr<DmvTestData> testData )
 {
     _DmvTestData = std::move( testData );
-};
+}
+
+void IVVCState::deleteDmvState()
+{
+    _DmvTestData.reset();
+}
+
+std::unique_ptr<DmvTestData> & IVVCState::getDmvTestData()
+{
+    return _DmvTestData;
+}

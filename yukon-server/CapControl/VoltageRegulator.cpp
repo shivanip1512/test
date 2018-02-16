@@ -463,15 +463,22 @@ std::string VoltageRegulator::getHeartbeatMode() const
 
 
 double VoltageRegulator::requestVoltageChange( const double changeAmount,
-                                               const bool   isEmergency )
+                                               const VoltageAdjuster adjuster )
 {
     const double voltageChangePerTap = getVoltageChangePerTap();
 
     if ( getControlMode() == ManualTap ) 
     {
-        double tapCount = isEmergency
-                            ? std::ceil( std::abs( changeAmount ) / voltageChangePerTap )
-                            : 1 ;
+        double tapCount = 1;    // adjuster == Single
+
+        if ( adjuster == Inclusive )    // tapCount that would give a result >= changeAmount
+        {
+            tapCount = std::ceil( std::abs( changeAmount ) / voltageChangePerTap );
+        }
+        else if ( adjuster == Exclusive )   // tapCount nearest to but < changeAmount
+        {
+            tapCount = std::floor( std::abs( changeAmount ) / voltageChangePerTap );
+        }
 
         return tapCount * ( ( changeAmount > 0 )
                     ?  voltageChangePerTap
@@ -938,6 +945,18 @@ bool VoltageRegulator::isReverseFlowDetected()
 ControlPolicy::ControlModes VoltageRegulator::getConfigurationMode()
 {
     return _controlPolicy->getControlMode();
+}
+
+
+double VoltageRegulator::getSetPointValue() const
+{
+    return _controlPolicy->getSetPointValue();
+}
+
+
+void VoltageRegulator::setSetPointValue( const double newSetPoint )
+{
+    _controlPolicy->setSetPointValue( newSetPoint );
 }
 
 

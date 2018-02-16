@@ -14,6 +14,7 @@ struct StandardControlPolicy : ControlPolicy
     Action TapUp() override;
     Action TapDown() override;
 
+    Action setSetPointValue( const double newSetPoint ) override;
     Action AdjustSetPoint( const double changeAmount ) override;
 
     double getSetPointValue() override;

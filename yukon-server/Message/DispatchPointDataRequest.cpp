@@ -94,6 +94,11 @@ void DispatchPointDataRequest::processNewMessage(CtiMessage* message)
     delete message;
 }
 
+unsigned DispatchPointDataRequest::requestSize()
+{
+    return _points.size();
+}
+
 bool DispatchPointDataRequest::watchPoints(const std::set<PointRequest>& pointRequests)
 {
     if (_connection.get() != NULL)

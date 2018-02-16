@@ -25,6 +25,7 @@ struct ControlPolicy : Policy
     virtual Action TapUp() = 0;
     virtual Action TapDown() = 0;
 
+    virtual Action setSetPointValue( const double newSetPoint ) = 0;
     virtual Action AdjustSetPoint( const double changeAmount ) = 0;
 
     virtual double getSetPointValue() = 0;

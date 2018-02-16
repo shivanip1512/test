@@ -63,6 +63,13 @@ public:
         PhaseOperatedVoltageRegulatorType
     };
 
+    enum VoltageAdjuster
+    {
+        Single,
+        Exclusive,
+        Inclusive
+    };
+
     static const std::string LoadTapChanger;
     static const std::string GangOperatedVoltageRegulator;
     static const std::string PhaseOperatedVoltageRegulator;
@@ -118,7 +125,7 @@ public:
 
     double getVoltageChangePerTap() const;
     double requestVoltageChange( const double changeAmount,
-                                 const bool isEmergency = false );
+                                 const VoltageAdjuster adjuster = Single );
     void canExecuteVoltageRequest( const double changeAmount );
 
     double adjustVoltage( const double changeAmount );
@@ -143,6 +150,9 @@ public:
     bool isReverseFlowDetected();
 
     ControlPolicy::ControlModes getConfigurationMode();
+
+    double getSetPointValue() const;
+    void setSetPointValue( const double newSetPoint );
 
 protected:
 

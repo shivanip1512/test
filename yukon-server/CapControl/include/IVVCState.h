@@ -16,7 +16,8 @@ struct DmvTestData
         TestId,
         PollingInterval,
         DataGatheringDuration,
-        CommSuccessPercentage;
+        CommSuccessPercentage,
+        ExecutionID;
 
     double
         StepSize;
@@ -41,8 +42,40 @@ class IVVCState
             IVVC_CONTROLLED_LOOP,
             IVVC_VERIFY_CONTROL_LOOP,
             IVVC_POSTSCAN_LOOP,
-            IVVC_OPERATE_TAP
+            IVVC_OPERATE_TAP,
+
+            DMV_TEST_SETUP,
+            DMV_TEST_DATA_GATHERING_START,
+            DMV_TEST_PRESCAN,
+            DMV_TEST_PRESCAN_LOOP,
+            DMV_TEST_POSTSCAN_PROCESSING,
+            DMV_TEST_DECIDE_BUMP_DIRECTION,
+            DMV_TEST_ISSUE_CONTROLS,
+            DMV_POST_BUMP_TEST_DATA_GATHERING_START,
+            DMV_POST_BUMP_TEST_SCAN,
+            DMV_POST_BUMP_TEST_SCAN_LOOP,
+            DMV_POST_BUMP_TEST_SCAN_PROCESSING,
+            DMV_TEST_RETURN_BUMP_ISSUE_CONTROLS,
+            DMV_RETURN_BUMP_TEST_DATA_GATHERING_START,
+            DMV_RETURN_BUMP_TEST_SCAN,
+            DMV_RETURN_BUMP_TEST_SCAN_LOOP,
+            DMV_RETURN_BUMP_TEST_SCAN_PROCESSING,
+            DMV_TEST_EXIT_SUCCESS,
+            DMV_TEST_EXIT_FAILURE,
+            DMV_TEST_END_TEST
         };
+
+        CtiTime dataGatheringEndTime;
+
+        std::map< long, std::pair< double, double > >   feasibilityData;    // pointID -> { min, max } voltages
+
+        enum
+        {
+            Down,
+            Up
+        }
+        bumpDirection;
+
 
 //        typedef std::map<Zone::IdSet::value_type, int>  TapOperationZoneMap;
         typedef std::map<long, double>  TapOperationZoneMap;
@@ -57,6 +90,8 @@ class IVVCState
 
         bool hasDmvTestState();
         void setDmvTestState( std::unique_ptr<DmvTestData> testData );
+        void deleteDmvState();
+        std::unique_ptr<DmvTestData> & getDmvTestData();
 
         bool isScannedRequest();
         void setScannedRequest(bool scannedRequest);

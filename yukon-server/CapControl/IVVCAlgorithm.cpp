@@ -20,6 +20,8 @@
 #include "ccutil.h"
 #include "std_helper.h"
 #include "IVVCAnalysisMessage.h"
+#include "database_util.h"
+#include "database_reader.h"
 
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
@@ -45,6 +47,14 @@ extern bool _IVVC_STATIC_DELTA_VOLTAGES;
 extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 extern unsigned long _REFUSAL_TIMEOUT;
 extern unsigned long _MAX_KVAR;
+
+long GetDmvTestExecutionID( Cti::Database::DatabaseConnection & connection );
+void updateDmvTestStatus( const long            executionID,
+                          const long            testID,
+                          const CtiTime &       stopTime,
+                          const std::string &   status );
+
+bool processDmvScanData( IVVCStatePtr state, const std::string & busName );
 
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
@@ -604,8 +614,551 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     switch ( state->getState() )
     {
+        case IVVCState::DMV_TEST_SETUP:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            CTILOG_INFO( dout, "Preparing to execute DMV test: " << testDataPtr->TestName << " on Bus: " << subbus->getPaoName() );
+
+            long    spAreaID,   // unused...
+                    areaID,
+                    substationID;
+
+            store->getSubBusParentInfo( subbus, spAreaID, areaID, substationID );
+
+            {
+                Cti::Database::DatabaseConnection   connection;
+
+                testDataPtr->ExecutionID = GetDmvTestExecutionID( connection );
+
+                static const std::string sql =
+                    "INSERT INTO "
+                        "DmvTestExecution "
+                    "VALUES "
+                        "(?, ?, ?, ?, ?, ?, ?, ?)";
+
+                Cti::Database::DatabaseWriter   writer( connection, sql );
+
+                writer
+                    << testDataPtr->ExecutionID
+                    << testDataPtr->TestId
+                    << areaID
+                    << substationID
+                    << subbus->getPaoId()
+                    << timeNow
+                    << Cti::Database::DatabaseWriter::Null
+                    << Cti::Database::DatabaseWriter::Null
+                        ;
+
+                Cti::Database::executeWriter( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+            }
+
+            state->setState( IVVCState::DMV_TEST_DATA_GATHERING_START );
+            break;
+        }
+        case IVVCState::DMV_TEST_DATA_GATHERING_START:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr->DataGatheringDuration );    // DataGatheringDuration in minutes   
+
+            state->feasibilityData.clear();
+
+            state->setState( IVVCState::DMV_TEST_PRESCAN );
+            break;
+        }
+        case IVVCState::DMV_TEST_PRESCAN:
+        {
+            // Scan all the devices on the bus to see if we can even bump the bus by the required step size.
+
+            auto & testDataPtr = state->getDmvTestData();
+
+            // What points are we wanting?
+            std::set<PointRequest> pointRequests;
+
+            bool shouldScan = allowScanning && state->isScannedRequest();
+            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
+            {
+                // Configuration Error
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName() );
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            // Set the current and expiration times for the polling interval
+            state->setTimeStamp( timeNow );
+            state->setNextControlTime( timeNow + testDataPtr->PollingInterval );
+
+            // Make GroupRequest Here
+            PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
+            request->watchPoints( pointRequests );
+            state->setGroupRequest( request );
+
+            //ActiveMQ message here for System Refresh
+            sendCapControlOperationMessage( CapControlOperationMessage::createRefreshSystemMessage( subbus->getPaoId(), timeNow ) );
+
+            if ( _CC_DEBUG & CC_DEBUG_IVVC )
+            {
+                CTILOG_DEBUG( dout, "DMV Test: "
+                                        << ( state->isScannedRequest() ? "Scanned ": "" )
+                                        << "Group Request made on Bus: "
+                                        << subbus->getPaoName() );
+            }
+
+            //reset this flag.  ?? Why we do this and what does this flag even do...
+            state->setScannedRequest( false );
+
+            state->setState( IVVCState::DMV_TEST_PRESCAN_LOOP );
+            break;
+        }
+        case IVVCState::DMV_TEST_PRESCAN_LOOP:
+        {
+            if ( timeNow >= state->getNextControlTime() )
+            {
+                state->setState( IVVCState::DMV_TEST_POSTSCAN_PROCESSING );
+            }
+            break;
+        }
+        case IVVCState::DMV_TEST_POSTSCAN_PROCESSING:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            PointDataRequestPtr request = state->getGroupRequest();
+
+            if ( ! processDmvScanData( state, subbus->getPaoName() ) )
+            {
+                // Didn't receive all the requested data so we can't determine if the bump size is possible.
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName() );
+                CTILOG_INFO( dout, request->createStatusReport() );
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            // update our voltage data min/max pair data structure
+            //      feasibilityData:     pointID -> { min, max } voltages
+            for ( auto pointData : request->getPointValues() )
+            {
+                // if it is in the mapping, update the min and max voltages as necessary, if it isn't, add the current
+                //  value as both the min and max
+
+                if ( auto result = Cti::mapFind( state->feasibilityData, pointData.first ) )
+                {
+                    auto & min_max_pair = *result;
+
+                    if ( pointData.second.value < min_max_pair.first )
+                    {
+                        min_max_pair.first = pointData.second.value;
+                    }
+                    if ( pointData.second.value > min_max_pair.second )
+                    {
+                        min_max_pair.second = pointData.second.value;
+                    }
+                }
+                else
+                {
+                    state->feasibilityData[ pointData.first ] = { pointData.second.value, pointData.second.value };
+                }
+            }
+
+            // what's our next state?
+
+            state->setState( timeNow < state->dataGatheringEndTime
+                                ? IVVCState::DMV_TEST_PRESCAN
+                                : IVVCState::DMV_TEST_DECIDE_BUMP_DIRECTION );
+            break;
+        }
+        case IVVCState::DMV_TEST_DECIDE_BUMP_DIRECTION:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            PointDataRequestPtr request = state->getGroupRequest();
+
+            // is the feasibilityData the same size as the request? if yes then we have all the data and can proceed
+
+            if ( request->requestSize() != state->feasibilityData.size() )
+            {
+                // Didn't receive all the requested data so we can't determine if the bump size is possible.
+                CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName() );
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            // crunch the numbers
+
+            const bool isPeakTime = subbus->getPeakTimeFlag();
+            const auto monitorSet = subbus->getAllMonitorPoints();
+
+            bool    canBumpUp = true,
+                    canBumpDown = true;
+
+            for ( auto feasibility : state->feasibilityData )
+            {
+                double Vmax = strategy->getUpperVoltLimit( isPeakTime );
+                double Vmin = strategy->getLowerVoltLimit( isPeakTime );
+
+                // has monitor point
+                if ( auto monitorPoint = Cti::mapFind( subbus->getAllMonitorPoints(), feasibility.first ) )
+                {
+                    if ( (*monitorPoint)->getOverrideStrategy() )
+                    {
+                        Vmax = (*monitorPoint)->getUpperBandwidth();
+                        Vmin = (*monitorPoint)->getLowerBandwidth();
+                    }                   
+                }
+
+                if ( feasibility.second.first - testDataPtr->StepSize < Vmin )  // undervoltage
+                {
+                    canBumpDown = false;
+                }
+                if ( feasibility.second.second + testDataPtr->StepSize > Vmax ) // overvoltage
+                {
+                    canBumpUp = false;
+                }
+            }
+
+            if ( ! ( canBumpUp || canBumpDown ) )
+            {
+                // Bail out of the bump test since the StepSize is too big for the existing conditions
+
+                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName()
+                                    << ". Test StepSize is too large for the current bus conditions." );
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            state->bumpDirection = ( canBumpUp ? IVVCState::Up : IVVCState::Down );
+
+            state->setState( IVVCState::DMV_TEST_ISSUE_CONTROLS );
+            break;
+        }
+        case IVVCState::DMV_TEST_ISSUE_CONTROLS:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            //  deal with the root zone regulator(s)...
+
+            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+            ZoneManager & zoneManager = store->getZoneManager();
+
+            const long rootZoneId = zoneManager.getRootZoneIdForSubbus( subbus->getPaoId() );
+
+            ZoneManager::SharedPtr  rootZone = zoneManager.getZone( rootZoneId );
+
+
+            std::map<long, double> storedSetPoints;
+
+            std::map<  std::pair<Cti::CapControl::Phase, long>, double>     actualAdjustments;
+            std::map<  std::pair<Cti::CapControl::Phase, long>, double>     downlineAdjustments;
+
+            // the root zone regulators
+
+            for ( const auto & mapping : rootZone->getRegulatorIds() )
+            {
+                try
+                {
+                    const long regulatorID = mapping.second;
+
+                    VoltageRegulatorManager::SharedPtr  regulator
+                        = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
+
+                    if ( regulator->getControlMode() == VoltageRegulator::SetPoint )
+                    {
+                        storedSetPoints[ regulatorID ] = regulator->getSetPointValue();
+                    }
+
+                    actualAdjustments[ mapping ] =
+                        regulator->requestVoltageChange( ( state->bumpDirection == IVVCState::Up ? 1.0 : -1.0 ) * testDataPtr->StepSize,
+                                                         Cti::CapControl::VoltageRegulator::Exclusive );
+                }
+                catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+                {
+                    CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+                }
+            }
+
+            // the rest of the downline regulators
+            //      if direct tap driven do nothing
+            //      if set point then record the current and set the new setpoint to the old + adjustment value...
+
+            Zone::IdSet allChildren = zoneManager.getAllChildrenOfZone( rootZoneId );
+
+            for ( const auto & zoneID : allChildren )
+            {
+                ZoneManager::SharedPtr  zone = zoneManager.getZone( zoneID );
+
+                for ( const auto & mapping : zone->getRegulatorIds() )
+                {
+                    const long regulatorID = mapping.second;
+
+                    VoltageRegulatorManager::SharedPtr  regulator
+                        = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
+
+                    if ( regulator->getControlMode() == VoltageRegulator::SetPoint )
+                    {
+                        storedSetPoints[ regulatorID ] = regulator->getSetPointValue();
+
+                        // to determine the amount of adjustment we need to search 'actualAdjustments' to find the regulator
+                        //  on the same phase and then add its adjustment to the current regulators set point
+
+                        const auto currentRegulatorPhase = mapping.first;
+
+                        for ( const auto thing   :    actualAdjustments  )
+                        {
+
+                            if ( thing.first.first == currentRegulatorPhase
+                                 || thing.first.first == Cti::CapControl::Phase_Poly )
+                            {
+
+                                downlineAdjustments[ mapping ] = thing.second;
+
+                            }
+                            
+                        }
+                        
+                    }
+
+                }
+
+            }
+
+// you are here
+
+            state->setState( IVVCState::DMV_POST_BUMP_TEST_DATA_GATHERING_START );
+            break;
+        }
+        case IVVCState::DMV_POST_BUMP_TEST_DATA_GATHERING_START:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr->DataGatheringDuration );    // DataGatheringDuration in minutes   
+
+            state->setState( IVVCState::DMV_POST_BUMP_TEST_SCAN );
+            break;
+        }
+        case IVVCState::DMV_POST_BUMP_TEST_SCAN:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            // What points are we wanting?
+            std::set<PointRequest> pointRequests;
+
+            bool shouldScan = allowScanning && state->isScannedRequest();
+            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
+            {
+                // Configuration Error
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName() );
+
+//////////////////////////// 
+///     we need to return to the pre test regulator set points 
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            // Set the current and expiration times for the polling interval
+            state->setTimeStamp( timeNow );
+            state->setNextControlTime( timeNow + testDataPtr->PollingInterval );
+
+            // Make GroupRequest Here
+            PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
+            request->watchPoints( pointRequests );
+            state->setGroupRequest( request );
+
+            //ActiveMQ message here for System Refresh
+            sendCapControlOperationMessage( CapControlOperationMessage::createRefreshSystemMessage( subbus->getPaoId(), timeNow ) );
+
+            if ( _CC_DEBUG & CC_DEBUG_IVVC )
+            {
+                CTILOG_DEBUG( dout, "DMV Test: "
+                                        << ( state->isScannedRequest() ? "Scanned ": "" )
+                                        << "Group Request made on Bus: "
+                                        << subbus->getPaoName() );
+            }
+
+            //reset this flag.  ?? Why we do this and what does this flag even do...
+            state->setScannedRequest( false );
+
+            state->setState( IVVCState::DMV_POST_BUMP_TEST_SCAN_LOOP );
+            break;
+        }
+        case IVVCState::DMV_POST_BUMP_TEST_SCAN_LOOP:
+        {
+            if ( timeNow >= state->getNextControlTime() )
+            {
+                state->setState( IVVCState::DMV_POST_BUMP_TEST_SCAN_PROCESSING );
+            }
+            break;
+        }
+        case IVVCState::DMV_POST_BUMP_TEST_SCAN_PROCESSING:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            PointDataRequestPtr request = state->getGroupRequest();
+
+            if ( ! processDmvScanData( state, subbus->getPaoName() ) )
+            {
+                // Didn't receive all the requested data so we can't determine if the bump size is possible.
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName() );
+                CTILOG_INFO( dout, request->createStatusReport() );
+
+//////////////////////////// 
+///     we need to return to the pre test regulator set points 
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            // what's our next state?
+
+            state->setState( timeNow < state->dataGatheringEndTime
+                                ? IVVCState::DMV_POST_BUMP_TEST_SCAN
+                                : IVVCState::DMV_TEST_RETURN_BUMP_ISSUE_CONTROLS );
+            break;
+        }
+        case IVVCState::DMV_TEST_RETURN_BUMP_ISSUE_CONTROLS:
+        {
+
+            // undo the bump
+
+
+
+            state->setState( IVVCState::DMV_RETURN_BUMP_TEST_DATA_GATHERING_START );
+            break;
+        }
+        case IVVCState::DMV_RETURN_BUMP_TEST_DATA_GATHERING_START:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr->DataGatheringDuration );    // DataGatheringDuration in minutes   
+
+            state->setState( IVVCState::DMV_RETURN_BUMP_TEST_SCAN );
+            break;
+        }
+        case IVVCState::DMV_RETURN_BUMP_TEST_SCAN:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            // What points are we wanting?
+            std::set<PointRequest> pointRequests;
+
+            bool shouldScan = allowScanning && state->isScannedRequest();
+            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
+            {
+                // Configuration Error
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName() );
+
+//////////////////////////// 
+///     we need to return to the pre test regulator set points 
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            // Set the current and expiration times for the polling interval
+            state->setTimeStamp( timeNow );
+            state->setNextControlTime( timeNow + testDataPtr->PollingInterval );
+
+            // Make GroupRequest Here
+            PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
+            request->watchPoints( pointRequests );
+            state->setGroupRequest( request );
+
+            //ActiveMQ message here for System Refresh
+            sendCapControlOperationMessage( CapControlOperationMessage::createRefreshSystemMessage( subbus->getPaoId(), timeNow ) );
+
+            if ( _CC_DEBUG & CC_DEBUG_IVVC )
+            {
+                CTILOG_DEBUG( dout, "DMV Test: "
+                                        << ( state->isScannedRequest() ? "Scanned ": "" )
+                                        << "Group Request made on Bus: "
+                                        << subbus->getPaoName() );
+            }
+
+            //reset this flag.  ?? Why we do this and what does this flag even do...
+            state->setScannedRequest( false );
+
+            state->setState( IVVCState::DMV_RETURN_BUMP_TEST_SCAN_LOOP );
+            break;
+        }
+        case IVVCState::DMV_RETURN_BUMP_TEST_SCAN_LOOP:
+        {
+            if ( timeNow >= state->getNextControlTime() )
+            {
+                state->setState( IVVCState::DMV_RETURN_BUMP_TEST_SCAN_PROCESSING );
+            }
+            break;
+        }
+        case IVVCState::DMV_RETURN_BUMP_TEST_SCAN_PROCESSING:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            PointDataRequestPtr request = state->getGroupRequest();
+
+            if ( ! processDmvScanData( state, subbus->getPaoName() ) )
+            {
+                // Didn't receive all the requested data so we can't determine if the bump size is possible.
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr->TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName() );
+                CTILOG_INFO( dout, request->createStatusReport() );
+
+//////////////////////////// 
+///     we need to return to the pre test regulator set points 
+
+                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                break;
+            }
+
+            // what's our next state?
+            state->setState( timeNow < state->dataGatheringEndTime
+                                ? IVVCState::DMV_RETURN_BUMP_TEST_SCAN
+                                : IVVCState::DMV_TEST_EXIT_SUCCESS );
+            break;
+        }
+        case IVVCState::DMV_TEST_EXIT_FAILURE:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            updateDmvTestStatus( testDataPtr->ExecutionID, testDataPtr->TestId, timeNow, "FAIL" );
+
+            state->setState( IVVCState::DMV_TEST_END_TEST );
+            break;
+        }
+        case IVVCState::DMV_TEST_EXIT_SUCCESS:
+        {
+            auto & testDataPtr = state->getDmvTestData();
+
+            updateDmvTestStatus( testDataPtr->ExecutionID, testDataPtr->TestId, timeNow, "SUCCESS" );
+
+            state->setState( IVVCState::DMV_TEST_END_TEST );
+            break;
+        }
+        case IVVCState::DMV_TEST_END_TEST:
+        {
+            state->deleteDmvState();
+            state->setState( IVVCState::IVVC_WAIT );
+            break;
+        }
         case IVVCState::IVVC_WAIT:
         {
+            {   // shim for the bump test...
+                if ( state->hasDmvTestState() )
+                {
+                    state->setState( IVVCState::DMV_TEST_SETUP );                    
+                    break;
+                }
+            }
+
             // toggle these flags so the log message prints again....
             state->setShowVarCheckMsg(true);
             state->setNextControlTime(CtiTime() + strategy->getControlInterval());
@@ -3183,11 +3736,12 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 
             if ( theMaxVoltage > 0.0 )
             {
-                // tapping down so this should be negative and is an emergency voltage adjustment
+                // tapping down so this should be negative and is Inclusive because we want to make sure we change
+                //  yhe voltage by at least the requested amount.
 
                 realVoltageChange[ phase ]  =
                     solution[ regulatorID ] =
-                        regulator->requestVoltageChange( -theMaxVoltage, true );
+                        regulator->requestVoltageChange( -theMaxVoltage, Cti::CapControl::VoltageRegulator::Inclusive );
             }
 
             if ( zone->isGangOperated() )
@@ -3774,5 +4328,135 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID, const int tota
     }
 
     return isValid;
+}
+
+
+long GetDmvTestExecutionID( Cti::Database::DatabaseConnection & connection )
+{
+    static long executionID = -1;
+
+    if ( executionID < 0 )
+    {
+        static const std::string sql =
+            "SELECT "
+                "COALESCE(MAX(ExecutionId) + 1, 0) AS ExecutionId "
+            "FROM "
+                "DmvTestExecution";
+
+        Cti::Database::DatabaseReader    reader( connection, sql );
+
+        reader.execute();
+
+        if ( reader() )
+        {
+            reader[ "ExecutionId" ] >> executionID;
+        }
+    }
+
+    return executionID++;
+}
+
+void updateDmvTestStatus( const long            executionID,
+                          const long            testID,
+                          const CtiTime &       stopTime,
+                          const std::string &   status )
+{
+    static const std::string sql =
+        "UPDATE "
+            "DmvTestExecution "
+        "SET "
+            "StopTime = ?, "
+            "TestStatus = ? "
+        "WHERE "
+            "ExecutionId = ? "
+            "AND DmvTestId = ?";
+
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseWriter       updater( connection, sql );
+
+    updater
+        << stopTime
+        << status
+        << executionID
+        << testID
+            ;
+
+    Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+}
+
+
+bool completionCheck( PointDataRequestPtr   request,
+                      PointRequestType      requestType,
+                      const double          thresholdPercentage )
+{
+    static const std::map<PointRequestType, std::string>    description
+    {
+        {   RegulatorRequestType,   "Regulator voltage"     },
+        {   CbcRequestType,         "CBC voltage"           },
+        {   OtherRequestType,       "additional voltage"    },
+        {   BusPowerRequestType,    "bus telemetry"         }
+    };
+
+    const double complete = request->ratioComplete( requestType );
+
+    if ( complete < thresholdPercentage )
+    {
+        CTILOG_ERROR( dout, "Incomplete Data: Have " << complete << "%% of " << description.at( requestType ) << " data." );
+
+        return false;
+    }
+
+    CTILOG_INFO( dout, "Complete Data: Have " << complete << "%% of " << description.at( requestType ) << " data." );
+
+    return true;
+}
+
+
+bool processDmvScanData( IVVCStatePtr           state,
+                         const std::string &    busName )
+{
+    bool    allGood = true;
+
+    auto & testDataPtr = state->getDmvTestData();
+
+    PointDataRequestPtr request = state->getGroupRequest();
+
+    CTILOG_INFO( dout, "Processing Data: DMV Test '" << testDataPtr->TestName
+                        << "' on bus: " << busName
+                        << ". Minimum complete data percentage is "
+                        << testDataPtr->CommSuccessPercentage << "%%." );
+
+    allGood &= completionCheck( request, RegulatorRequestType, testDataPtr->CommSuccessPercentage );
+    allGood &= completionCheck( request, CbcRequestType,       testDataPtr->CommSuccessPercentage );
+    allGood &= completionCheck( request, OtherRequestType,     testDataPtr->CommSuccessPercentage );
+    allGood &= completionCheck( request, BusPowerRequestType,  testDataPtr->CommSuccessPercentage );
+
+    // record the point data in the database
+    {
+        Cti::Database::DatabaseConnection   connection;
+
+        static const std::string sql =
+            "INSERT INTO "
+                "DmvMeasurementData "
+            "VALUES "
+                "(?, ?, ?, ?, ?)";
+
+        Cti::Database::DatabaseWriter   writer( connection, sql );
+
+        for ( auto pointData : request->getPointValues() )
+        {                    
+            writer
+                << testDataPtr->ExecutionID
+                << pointData.first
+                << pointData.second.timestamp
+                << pointData.second.quality
+                << pointData.second.value
+                    ;
+
+            Cti::Database::executeWriter( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+        }
+    }
+
+    return allGood;
 }
 

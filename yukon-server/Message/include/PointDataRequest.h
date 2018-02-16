@@ -58,6 +58,7 @@ class IM_EX_MSG PointDataRequest
         virtual std::set<long> getMissingPoints()=0;
         virtual PointValueMap getRejectedPointValues()=0;
         virtual bool isPointStale(long pointId, CtiTime & staleTime)=0;
+        virtual unsigned requestSize() = 0;
 };
 
 typedef boost::shared_ptr<PointDataRequest> PointDataRequestPtr;

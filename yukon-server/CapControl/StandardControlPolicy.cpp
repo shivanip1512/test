@@ -35,13 +35,11 @@ Policy::Action StandardControlPolicy::TapDown()
                                        "Lower Tap Position" );
 }
 
-Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount )
+Policy::Action StandardControlPolicy::setSetPointValue( const double newSetPoint )
 {
     LitePoint point = getPointByAttribute( getSetPointAttribute() );
 
-    const std::string description = changeAmount > 0 ? "Raise Set Point" : "Lower Set Point";
-
-    const double newSetPoint = getSetPointValue() + changeAmount;
+    const std::string description = newSetPoint > getSetPointValue() ? "Raise Set Point" : "Lower Set Point";
 
     std::string commandString;
 
@@ -68,6 +66,11 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
         makeSignalTemplate( point.getPointId(), 0, description ),
         makeRequestTemplate( point.getPaoId(), commandString )
     };
+}
+
+Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount )
+{
+    return setSetPointValue( getSetPointValue() + changeAmount );
 }
 
 double StandardControlPolicy::getSetPointValue()

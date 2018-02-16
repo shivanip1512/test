@@ -35,6 +35,8 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
         virtual PointValueMap getRejectedPointValues();
         void setDispatchConnection(DispatchConnectionPtr connection);
 
+        unsigned requestSize() override;
+
     private:
         DispatchConnectionPtr _connection;
 
