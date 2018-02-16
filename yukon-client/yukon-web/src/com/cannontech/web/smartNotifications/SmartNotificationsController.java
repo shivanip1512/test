@@ -212,16 +212,19 @@ public class SmartNotificationsController {
         Direction dir = sorting.getDirection();
 
         List<SmartNotificationSubscription> itemList = Lists.newArrayList(subscriptions);
-        
-        Comparator<SmartNotificationSubscription> comparator = (o1, o2) -> o1.getType().compareTo(o2.getType());
+        List<DeviceDataMonitor> deviceDataMonitorList = monitorCacheService.getDeviceDataMonitors();
+
+        Comparator<SmartNotificationSubscription> comparator =
+            (o1, o2) -> o1.getTypeAndDeviceDataMonitorName(deviceDataMonitorList).compareToIgnoreCase(
+                o2.getTypeAndDeviceDataMonitorName(deviceDataMonitorList));
         if (sortBy == SubscriptionSortBy.frequency) {
-            comparator = (o1, o2) -> o1.getFrequency().compareTo(o2.getFrequency());
+            comparator = (o1, o2) -> o1.getFrequency().toString().compareTo(o2.getFrequency().toString());
         } else if (sortBy == SubscriptionSortBy.media) {
             comparator = (o1, o2) -> o1.getMedia().compareTo(o2.getMedia());
         } else if (sortBy == SubscriptionSortBy.recipient) {
             comparator = (o1, o2) -> o1.getRecipient().compareTo(o2.getRecipient());
         } else if (sortBy == SubscriptionSortBy.detail) {
-            comparator = (o1, o2) -> o1.getVerbosity().compareTo(o2.getVerbosity());
+            comparator = (o1, o2) -> o1.getVerbosity().toString().compareTo(o2.getVerbosity().toString());
         }
         if (sorting.getDirection() == Direction.desc) {
             comparator = Collections.reverseOrder(comparator);
@@ -245,7 +248,7 @@ public class SmartNotificationsController {
         model.addAttribute("filter", filter);
         model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
         Map<String, String> deviceDataMonitors = new HashMap<>();
-        monitorCacheService.getDeviceDataMonitors().forEach(monitor -> deviceDataMonitors.put(monitor.getId().toString(), monitor.getName()));
+        deviceDataMonitorList.forEach(monitor -> deviceDataMonitors.put(monitor.getId().toString(), monitor.getName()));
         model.addAttribute("deviceDataMonitors", deviceDataMonitors);
         return "subscriptions.jsp";
     }
