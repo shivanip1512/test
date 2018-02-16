@@ -61,10 +61,17 @@ public class EcobeeRestProxyFactory {
                     addAuthorizationToken(args);
                     Object responseObj = method.invoke(proxiedTemplate, args);
                     if (didAuthenticationFail(responseObj)) {
-                        addAuthorizationToken(args);
-                        responseObj = method.invoke(proxiedTemplate, args);
-                        if (didAuthenticationFail(responseObj)) {
-                            throw new EcobeeCommunicationException("Communication error during authentication with Ecobee API.");
+                        synchronized (this) {
+                            responseObj = method.invoke(proxiedTemplate, args);
+                            if (didAuthenticationFail(responseObj)) {
+                                log.warn("Ecobee API authentication failed with cached token. Retrying after clearing it.");
+                                tokenCache.invalidateAll();
+                                addAuthorizationToken(args);
+                                responseObj = method.invoke(proxiedTemplate, args);
+                                if (didAuthenticationFail(responseObj)) {
+                                    throw new EcobeeCommunicationException("Communication error during authentication with Ecobee API.");
+                                }
+                            }
                         }
                     }
                     return responseObj;
