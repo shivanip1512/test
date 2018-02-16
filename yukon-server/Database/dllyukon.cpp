@@ -117,7 +117,9 @@ DLLEXPORT string ResolveStateName(LONG grpid, LONG rawValue)
         }
         else
         {
-            rStr = "Unknown state (" + std::to_string(rawValue) + ")";
+            CTILOG_WARN(dout, "Could not find state group id " << grpid);
+
+            rStr = "Unknown (" + std::to_string(rawValue) + ")";
         }
     }
 

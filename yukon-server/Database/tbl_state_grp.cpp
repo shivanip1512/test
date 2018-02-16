@@ -120,6 +120,14 @@ string CtiTableStateGroup::getRawState(LONG rawValue)
 
         rStr = theState.getText();
     }
+    else
+    {
+        CTILOG_WARN(dout, "Raw state not found in state group" << Cti::FormattedList::of(
+                              "State group ID", getStateGroupID(),
+                              "Raw state", rawValue));
+
+        rStr = "Unknown (" + std::to_string(rawValue) + ")";
+    }
 
     return rStr;
 }
