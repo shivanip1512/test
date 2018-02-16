@@ -314,7 +314,7 @@ yukon.tools.tdc = (function () {
                 $('#date').addClass('opacityOff');
             });
             
-            $(document).on('focusout', '#date', function (ev) {
+            $(document).on('change', '#date', function (ev) {
                 $('#date-form').submit();
             });
             
