@@ -156,6 +156,12 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_530S4RT,
             RfnManufacturerModel.RFN_530S4RR));
 
+        groupedMeterTypesBuilder.put("Elster A3", ImmutableList.of(
+            RfnManufacturerModel.RFN_430A3D,
+            RfnManufacturerModel.RFN_430A3T,
+            RfnManufacturerModel.RFN_430A3K,
+            RfnManufacturerModel.RFN_430A3R));
+
         groupedMeterTypesBuilder.put("General Electric polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_430KV));
 
