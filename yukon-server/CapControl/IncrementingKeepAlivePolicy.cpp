@@ -8,7 +8,7 @@ extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 namespace Cti           {
 namespace CapControl    {
 
-Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes() const
+Policy::AttributeList IncrementingKeepAlivePolicy_SendAutoBlock::getSupportedAttributes() const
 {
     return
     {
@@ -19,7 +19,7 @@ Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes() cons
     };
 }
 
-Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAliveValue )
+Policy::Actions IncrementingKeepAlivePolicy_SendAutoBlock::SendKeepAlive( const long keepAliveValue )
 {
 // Ignore incoming parameter...
 
@@ -58,7 +58,7 @@ Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAlive
     return actions;
 }
 
-Policy::Actions IncrementingKeepAlivePolicy::StopKeepAlive()
+Policy::Actions IncrementingKeepAlivePolicy_SendAutoBlock::StopKeepAlive()
 {
     Actions actions;
 
@@ -68,7 +68,7 @@ Policy::Actions IncrementingKeepAlivePolicy::StopKeepAlive()
     return actions;
 }
 
-Policy::Actions IncrementingKeepAlivePolicy::EnableRemoteControl( const long keepAliveValue )
+Policy::Actions IncrementingKeepAlivePolicy_SendAutoBlock::EnableRemoteControl( const long keepAliveValue )
 {
     Actions actions;
 
@@ -80,7 +80,7 @@ Policy::Actions IncrementingKeepAlivePolicy::EnableRemoteControl( const long kee
     return actions;
 }
 
-Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
+Policy::Actions IncrementingKeepAlivePolicy_SendAutoBlock::DisableRemoteControl()
 {
     Actions actions;
 
@@ -92,7 +92,7 @@ Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
     return actions;
 }
 
-long IncrementingKeepAlivePolicy::readKeepAliveValue()
+long IncrementingKeepAlivePolicy_SendAutoBlock::readKeepAliveValue()
 try
 {
     return getValueByAttribute( Attribute::KeepAlive );
@@ -102,7 +102,7 @@ catch ( UninitializedPointValue & )
     return 0;      // can't read value -- send default of 0
 }
 
-long IncrementingKeepAlivePolicy::getNextKeepAliveValue()
+long IncrementingKeepAlivePolicy_SendAutoBlock::getNextKeepAliveValue()
 try
 {
     long keepalive = getValueByAttribute( Attribute::KeepAlive );
@@ -119,7 +119,7 @@ catch ( UninitializedPointValue & )
     return 0;      // can't read value -- send default of 0
 }
 
-bool IncrementingKeepAlivePolicy::needsAutoBlockEnable()
+bool IncrementingKeepAlivePolicy_SendAutoBlock::needsAutoBlockEnable()
 try
 {
     return getValueByAttribute( Attribute::AutoBlockEnable ) == 0.0; 
@@ -127,6 +127,11 @@ try
 catch ( UninitializedPointValue & )
 {
     return false;   // can't read value -- assume we don't need it
+}
+
+bool IncrementingKeepAlivePolicy_SuppressAutoBlock::needsAutoBlockEnable()
+{
+    return false;
 }
 
 }

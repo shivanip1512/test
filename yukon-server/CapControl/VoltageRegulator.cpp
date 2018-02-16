@@ -47,19 +47,20 @@ Config::DeviceConfigSPtr    getDeviceConfig( const CapControlPao * regulator )
     return deviceConfig;
 }
 
-std::unique_ptr<KeepAlivePolicy> resolveKeepAlivePolicy( const std::string & policyType )
+std::unique_ptr<KeepAlivePolicy> resolveKeepAlivePolicy( const std::string & policyType, VoltageRegulator::ControlMode controlMode )
 {
-    static const std::map< std::string,
-                           std::function< std::unique_ptr<KeepAlivePolicy>() > > Lookup
-    {
-        { "NONE",      std::make_unique<NoKeepAlivePolicy> },
-        { "INCREMENT", std::make_unique<IncrementingKeepAlivePolicy> },
-        { "COUNTDOWN", std::make_unique<CountdownKeepAlivePolicy> }
-    };
 
-    if ( auto & result = mapFind( Lookup, policyType ) )
+    if ( policyType == "COUNTDOWN" )
     {
-        return (*result)();
+        return std::make_unique<CountdownKeepAlivePolicy>();
+    }
+    else if (policyType == "INCREMENT" )
+    {
+        if ( controlMode == VoltageRegulator::ControlMode::SetPoint )
+        {
+            return std::make_unique<IncrementingKeepAlivePolicy_SuppressAutoBlock>();
+        }
+        return std::make_unique<IncrementingKeepAlivePolicy_SendAutoBlock>();
     }
 
     return std::make_unique<NoKeepAlivePolicy>();
@@ -250,7 +251,7 @@ void VoltageRegulator::loadAttributes( AttributeService * service )
     _keepAlivePeriod = getKeepAliveTimer();
     _keepAliveValue  = getKeepAliveConfig();
 
-    _keepAlivePolicy = resolveKeepAlivePolicy( getHeartbeatMode() );
+    _keepAlivePolicy = resolveKeepAlivePolicy( getHeartbeatMode(), getControlMode() );
     _scanPolicy = resolveScanPolicy( getPaoType() );
 
     _controlPolicy->loadAttributes( *service, getPaoId() );

@@ -7,7 +7,10 @@
 namespace Cti           {
 namespace CapControl    {
 
-struct IncrementingKeepAlivePolicy : KeepAlivePolicy
+// If the regulator's heartbeat mode is INCREMENT and the regulators control mode is NOT SetPoint,
+// then the AutoBlockEnable command should be sent in the SendKeepAlive() method. In this case the 
+// struct below will be used.
+struct IncrementingKeepAlivePolicy_SendAutoBlock : KeepAlivePolicy
 {
     AttributeList getSupportedAttributes() const override;
 
@@ -23,7 +26,18 @@ protected:
 
     long readKeepAliveValue();
     long getNextKeepAliveValue();
-    bool needsAutoBlockEnable();
+    virtual bool needsAutoBlockEnable();
+};
+
+// If the regulator's heartbeat mode is INCREMENT and the regulators control mode is SetPoint,
+// then the AutoBlockEnable command should NOT be sent in the SendKeepAlive() method. In this 
+// case the struct below will be used.
+struct IncrementingKeepAlivePolicy_SuppressAutoBlock : IncrementingKeepAlivePolicy_SendAutoBlock
+{
+
+protected:
+
+    bool needsAutoBlockEnable() override;
 };
 
 }
