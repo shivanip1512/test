@@ -35,6 +35,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.jobs.model.JobRunStatus;
 import com.cannontech.util.Validator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.Person;
@@ -119,10 +120,23 @@ public class StyleGuideController {
         }
     }
     
+    public class JobFilterBean {
+        private JobRunStatus[] statuses = new JobRunStatus[] { JobRunStatus.FAILED, JobRunStatus.COMPLETED };
+        
+        public JobRunStatus[] getStatus() {
+            return statuses;
+        }
+        
+        public void setStatus(JobRunStatus[] statuses) {
+            this.statuses = statuses;
+        }
+    }
+    
     @RequestMapping("/styleguide/buttons")
     public String buttons(ModelMap model) {
         
         model.addAttribute("bean", new ButtonBean());
+        model.addAttribute("jobfilter", new JobFilterBean());
         
         return "styleguide/buttons.jsp";
     }

@@ -64,7 +64,7 @@
                     <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
-                <form:checkbox class="switch-btn-checkbox" path="${path}" id="${id}" onclick="${onclick}" disabled="${disabled}"/>
+                <form:checkbox class="switch-btn-checkbox" path="${path}" value="${value}" id="${id}" onclick="${onclick}" disabled="${disabled}"/>
             </c:otherwise>
         </c:choose>
         <span class="button ${pageScope.classes} yes">

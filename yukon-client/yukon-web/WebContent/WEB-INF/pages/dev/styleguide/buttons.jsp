@@ -382,6 +382,68 @@
 &lt;/form:form&gt;
 </pre>
 
+<h2 id="radio-buttons-example">Check Buttons</h2>
+
+<p class="description">
+    A set of checkboxes built with <span class="label label-attr">&lt;tags:check&gt;</span>.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <tags:check name="bacon" label="Bacon"/>
+
+        <tags:check name="lettuce" label="Lettuce" classes="left"/>
+        <tags:check name="tomato" label="Tomato" classes="right" checked="true"/>
+        
+        <tags:check name="taco" label="Taco" classes="left"/>
+        <tags:check name="burrito" label="Burrito" classes="middle" checked="true"/>
+        <tags:check name="enchilada" label="Enchilada" classes="middle" disabled="true"/>
+        <tags:check name="churro" label="Churro" classes="right"/>
+        
+        <div class="button-group">
+            <tags:check name="fries" label="Fries" checked="true"/>
+            <tags:check name="soda" label="Soda"/>
+        </div>
+        
+        <form:form commandName="jobfilter" cssClass="buffered">
+            <div class="button-group">
+                <tags:check path="status" value="CANCELLED" key=".jobRunStatus.CANCELLED"/>
+                <tags:check path="status" value="COMPLETED" key=".jobRunStatus.COMPLETED"/>
+                <tags:check path="status" value="FAILED" key=".jobRunStatus.FAILED" disabled="true"/>
+                <tags:check path="status" value="RESTARTED" key=".jobRunStatus.RESTARTED"/>
+                <tags:check path="status" value="STARTED" key=".jobRunStatus.STARTED"/>
+            </div>
+        </form:form>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;tags:check name="bacon" label="Bacon"/&gt;
+
+&lt;tags:check name="lettuce" label="Lettuce" classes="left"/&gt;
+&lt;tags:check name="tomato" label="Tomato" classes="right" checked="true"/&gt;
+
+&lt;tags:check name="taco" label="Taco" classes="left"/&gt;
+&lt;tags:check name="burrito" label="Burrito" classes="middle" checked="true"/&gt;
+&lt;tags:check name="enchilada" label="Enchilada" classes="middle" disabled="true"/&gt;
+&lt;tags:check name="churro" label="Churro" classes="right"/&gt;
+
+&lt;div class="button-group"&gt;
+  &lt;tags:check name="fries" label="Fries" checked="true"/&gt;
+  &lt;tags:check name="soda" label="Soda"/&gt;
+&lt;/div&gt;
+
+&lt;form:form commandName="jobfilter" cssClass="buffered"&gt;
+  &lt;div class="button-group"&gt;
+      &lt;tags:check path="jobRunStatus" value="CANCELLED" key=".jobRunStatus.CANCELLED"/&gt;
+      &lt;tags:check path="jobRunStatus" value="COMPLETED" key=".jobRunStatus.COMPLETED"/&gt;
+      &lt;tags:check path="jobRunStatus" value="FAILED" key=".jobRunStatus.FAILED" disabled="true"/&gt;
+      &lt;tags:check path="jobRunStatus" value="RESTARTED" key=".jobRunStatus.RESTARTED"/&gt;
+      &lt;tags:check path="jobRunStatus" value="STARTED" key=".jobRunStatus.STARTED"/&gt;
+  &lt;/div&gt;
+&lt;/form:form&gt;
+</pre>
+
 <h2 id="primary-buttons-example">Primary Buttons</h2>
 
 <p class="description">
