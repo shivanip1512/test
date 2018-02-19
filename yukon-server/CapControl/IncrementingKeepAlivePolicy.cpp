@@ -9,7 +9,7 @@ namespace Cti           {
 namespace CapControl    {
     
 IncrementingKeepAlivePolicy::IncrementingKeepAlivePolicy( AutoBlock autoBlock )
-    :_autoBlockBehavior( autoBlock )
+    :   _autoBlockBehavior( autoBlock )
 {
     // empty...
 }
