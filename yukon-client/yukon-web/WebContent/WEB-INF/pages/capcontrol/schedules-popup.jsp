@@ -76,7 +76,7 @@ $('.js-remove-schedule').click(function(event) {
                     </select>
                 </td>
                 <td>
-                    <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value">
+                    <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value" style="width:100%;">
                         <option value=""><i:inline key=".schedules.pleaseSelect"/></option>
                         <c:forEach var="commandOption" items="${scheduleCommands}">
                             <option value="${commandOption.commandName}"
@@ -97,7 +97,7 @@ $('.js-remove-schedule').click(function(event) {
                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove-schedule"/>
             </td>
             <td>
-                <select name="schedules[${idx}].scheduleID">
+                <select name="schedules[${idx}].scheduleID" style="width:100%;>
                     <option value="-1"><i:inline key=".schedules.pleaseSelect"/></option>
                     <c:forEach var="scheduleOption" items="${allSchedules}">
                         <option value="${scheduleOption.id}">
@@ -106,7 +106,7 @@ $('.js-remove-schedule').click(function(event) {
                 </select>
             </td>
             <td>
-                <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value">
+                <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value" style="width:100%;>
                     <option value="-1"><i:inline key=".schedules.pleaseSelect"/></option>
                      <c:forEach var="commandOption" items="${scheduleCommands}">
                         <option value="${commandOption.commandName}">

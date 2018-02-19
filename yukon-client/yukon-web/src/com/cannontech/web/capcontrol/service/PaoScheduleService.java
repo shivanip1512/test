@@ -41,7 +41,7 @@ public interface PaoScheduleService {
      * @return {@link AssignmentStatus#SUCCESS} when this operation is successful,
      * other {@link AssignmentStatus} values for error reasons. 
      */
-    AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds);
+    AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds, String cmdInput);
     
     /**
      * Removes an assignment by id (eventId is the primary key for ScheduleAssignment)

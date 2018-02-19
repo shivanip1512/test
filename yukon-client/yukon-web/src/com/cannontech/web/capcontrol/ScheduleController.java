@@ -342,11 +342,11 @@ public class ScheduleController {
     }
 
     @RequestMapping(value="addPao")
-    public String addPao(int scheduleId, ScheduleCommand cmd, String paoIdList, FlashScope flash) {
+    public String addPao(int scheduleId, ScheduleCommand cmd, String paoIdList, String cmdInput, FlashScope flash) {
         
         List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
         
-        AssignmentStatus result = scheduleService.assignCommand(scheduleId, cmd, paoIds);
+        AssignmentStatus result = scheduleService.assignCommand(scheduleId, cmd, paoIds, cmdInput);
         
         switch (result) {
         case DUPLICATE:

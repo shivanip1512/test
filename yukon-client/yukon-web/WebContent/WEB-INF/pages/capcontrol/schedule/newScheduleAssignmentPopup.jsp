@@ -23,7 +23,7 @@
             <tr>
                 <td>Commands:</td>
                 <td>
-                    <select name="cmd" id="cmd">
+                    <select name="cmd" id="cmd" style="width: 100%">
                         <c:forEach var="aCommand" items="${commandList}">
                             <c:choose>
                                 <c:when test="${param.command == 'All'}">
@@ -35,6 +35,13 @@
                             </c:choose>
                         </c:forEach>
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <input name="cmdInput" id="cmdInput" type="text" value="${commandList[0].commandName}" size="50"></input>
                 </td>
             </tr>
         </table>

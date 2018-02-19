@@ -130,7 +130,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
     
     
     @Override
-    public AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds) {
+    public AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds, String cmdInput) {
         
         if (cmd == null) {
             return AssignmentStatus.INVALID;
@@ -143,7 +143,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
             
             for (Integer paoId : paoIds) {
                 PaoScheduleAssignment newAssignment = new PaoScheduleAssignment();
-                newAssignment.setCommandName(cmd.getCommandName());
+                newAssignment.setCommandName(cmdInput);
                 newAssignment.setPaoId(paoId);
                 newAssignment.setScheduleId(scheduleId);
                 newAssignment.setDisableOvUv("N");

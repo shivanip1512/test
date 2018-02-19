@@ -12,7 +12,7 @@ public enum ScheduleCommand {
 	VerifyFailedAndQuestionable("Verify Failed and Questionable CapBanks", CommandType.VERIFY_FQ_BANKS.getCommandId()),
 	VerifyStandalone("Verify Standalone CapBanks", CommandType.VERIFY_SA_BANKS.getCommandId()),
 	VerifyQuestionable("Verify Questionable CapBanks", CommandType.VERIFY_Q_BANKS.getCommandId()),
-	VerifyNotOperatedIn("Verify CapBanks that have not operated in", CommandType.VERIFY_INACTIVE_BANKS.getCommandId()),
+	VerifyNotOperatedIn("Verify CapBanks that have not operated in 0 min 0 hr 0 day 0 wk", CommandType.VERIFY_INACTIVE_BANKS.getCommandId()),
     ConfirmSub("Confirm Sub", CommandType.CONFIRM_SUBSTATION_BUS.getCommandId()),
     SendTimeSyncs("Send Time Syncs", CommandType.SEND_TIME_SYNC.getCommandId()),
     SendSyncCBCCapbankStates("Sync CapBank States", CommandType.SEND_SYNC_CBC_CAPBANK_STATE.getCommandId());

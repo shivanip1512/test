@@ -38,6 +38,12 @@ yukon.da.scheduleAssignments = (function () {
                 });
                 
             });
+            
+            $(document).on('change', '#cmd', function (ev) {
+                var value = this.options[this.selectedIndex].text;
+                $('#cmdInput').val(value);
+            });
+            
             /** Click detection to start schedule. */
             $(document).on('click', '.stop-schedule', function (ev) {
                 var deviceName = $(ev.target).closest('li').attr('data-device-name');
