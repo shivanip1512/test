@@ -1,7 +1,7 @@
 yukon.namespace('yukon.da.dmvtest');
 
 /**
- * This module is used for the Demand Management and Verification Test feature.
+ * This module is used for the Demand Measurement and Verification Test feature.
  * @requires JQUERY
  * @requires yukon
  */
