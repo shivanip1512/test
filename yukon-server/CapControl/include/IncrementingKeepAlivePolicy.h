@@ -32,7 +32,7 @@ protected:
     long readKeepAliveValue();
     long getNextKeepAliveValue();
     virtual bool needsAutoBlockEnable();
-    const AutoBlock autoBlockBehavior;
+    const AutoBlock _autoBlockBehavior;
 };
 
 }

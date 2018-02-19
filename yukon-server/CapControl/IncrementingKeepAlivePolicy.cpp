@@ -9,7 +9,7 @@ namespace Cti           {
 namespace CapControl    {
     
 IncrementingKeepAlivePolicy::IncrementingKeepAlivePolicy( AutoBlock autoBlock )
-    :autoBlockBehavior( autoBlock )
+    :_autoBlockBehavior( autoBlock )
 {
     // empty...
 }
@@ -128,7 +128,7 @@ catch ( UninitializedPointValue & )
 bool IncrementingKeepAlivePolicy::needsAutoBlockEnable()
 try
 {
-    return autoBlockBehavior == AutoBlock::Send && getValueByAttribute( Attribute::AutoBlockEnable ) == 0.0;
+    return _autoBlockBehavior == AutoBlock::Send && getValueByAttribute( Attribute::AutoBlockEnable ) == 0.0;
 }
 catch ( UninitializedPointValue & )
 {
