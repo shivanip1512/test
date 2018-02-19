@@ -14,19 +14,6 @@
     }
     $(document).ready(function() {
         $(".optional").prop("placeholder", "optional");
-
-        $(".button-group button")
-           .has("input[type=checkbox]:checked")
-           .addClass("on");
-
-       $(".button-group button").on("click", function(){
-             var checkbox = $(this).find("input[type=checkbox]");
-             if (checkbox) {
-                 $(this).toggleClass("on");
-                 checkbox.prop("checked", !checkbox.prop("checked"));
-                 return false;
-             }
-         });
     });
 </script>
 
@@ -90,10 +77,10 @@
                             <td>Quadrants:</td>
                             <td>
                                 <div class="button-group">
-                                    <button>1<form:checkbox path="modifiers[quad1]" cssClass="dn"/></button> 
-                                    <button>2<form:checkbox path="modifiers[quad2]" cssClass="dn"/></button>
-                                    <button>3<form:checkbox path="modifiers[quad3]" cssClass="dn"/></button>
-                                    <button>4<form:checkbox path="modifiers[quad4]" cssClass="dn"/></button>
+                                    <tags:check label="1" path="modifiers" value="quad1"/> 
+                                    <tags:check label="2" path="modifiers" value="quad2"/> 
+                                    <tags:check label="3" path="modifiers" value="quad3"/> 
+                                    <tags:check label="4" path="modifiers" value="quad4"/> 
                                 </div>
                             </td>
                         </tr>
@@ -101,10 +88,10 @@
                             <td>Min/max:</td>
                             <td>
                                 <div class="button-group">
-                                    <button>Max<form:checkbox path="modifiers[max]" cssClass="dn"/></button>
-                                    <button>Min<form:checkbox path="modifiers[min]" cssClass="dn"/></button>
-                                    <button>Average<form:checkbox path="modifiers[avg]" cssClass="dn"/></button>
-                                    <button>Daily Max<form:checkbox path="modifiers[dailyMax]" cssClass="dn"/></button>
+                                    <tags:check label="Max" path="modifiers" value="max"/>
+                                    <tags:check label="Min" path="modifiers" value="min"/>
+                                    <tags:check label="Average" path="modifiers" value="avg"/>
+                                    <tags:check label="Daily Max" path="modifiers" value="dailyMax"/>
                                 </div>
                             </td>
                         </tr>  
@@ -112,9 +99,9 @@
                             <td>Phases:</td>
                             <td>
                                 <div class="button-group">
-                                    <button>A<form:checkbox path="modifiers[phaseA]" cssClass="dn"/></button> 
-                                    <button>B<form:checkbox path="modifiers[phaseB]" cssClass="dn"/></button> 
-                                    <button>C<form:checkbox path="modifiers[phaseC]" cssClass="dn"/></button> 
+                                    <tags:check label="A" path="modifiers" value="phaseA"/> 
+                                    <tags:check label="B" path="modifiers" value="phaseB"/> 
+                                    <tags:check label="C" path="modifiers" value="phaseC"/> 
                                 </div>
                             </td>
                         </tr>
@@ -122,11 +109,11 @@
                             <td>TOU Rates:</td>
                             <td>
                                 <div class="button-group">
-                                    <button>A<form:checkbox path="modifiers[touRateA]" cssClass="dn"/></button>
-                                    <button>B<form:checkbox path="modifiers[touRateB]" cssClass="dn"/></button>
-                                    <button>C<form:checkbox path="modifiers[touRateC]" cssClass="dn"/></button>
-                                    <button>D<form:checkbox path="modifiers[touRateD]" cssClass="dn"/></button>
-                                    <button>E<form:checkbox path="modifiers[touRateE]" cssClass="dn"/></button>
+                                    <tags:check label="A" path="modifiers" value="touRateA"/>
+                                    <tags:check label="B" path="modifiers" value="touRateB"/>
+                                    <tags:check label="C" path="modifiers" value="touRateC"/>
+                                    <tags:check label="D" path="modifiers" value="touRateD"/>
+                                    <tags:check label="E" path="modifiers" value="touRateE"/>
                                 </div>
                             </td>
                         </tr> 
@@ -134,28 +121,18 @@
                             <td>Other:</td>
                             <td>
                                 <div class="button-group">
-                                    <button>Net Flow<form:checkbox path="modifiers[netFlow]" cssClass="dn"/></button>
-                                    <button>Coincident<form:checkbox path="modifiers[coincident]" cssClass="dn"/></button>
-                                    <button>Harmonic<form:checkbox path="modifiers[harmonic]" cssClass="dn"/></button>
-                                    <button>Cumulative<form:checkbox path="modifiers[cumulative]" cssClass="dn"/></button>
-                                    <button>tenths<form:checkbox path="modifiers[tenths]" cssClass="dn"/></button>
-                                    <button>Phase Neutral->Ground<form:checkbox path="modifiers[neutralToGround]" cssClass="dn"/></button>
+                                    <tags:check label="Net Flow" path="modifiers" value="netFlow"/>
+                                    <tags:check label="Coincident" path="modifiers" value="coincident"/>
+                                    <tags:check label="Harmonic" path="modifiers" value="harmonic"/>
+                                    <tags:check label="Cumulative" path="modifiers" value="cumulative"/>
+                                    <tags:check label="tenths" path="modifiers" value="tenths"/>
+                                    <tags:check label="Phase Neutral to Ground" path="modifiers" value="neutralToGround"/>
                                 </div>
                             </td>
                         </tr>
                     </table>
                 </tags:nameValue>
                 
-                <tags:nameValue name="Value">
-                    <form:input id="value" path="value" disabled="${meterReading.random}" />
-                    <label><form:checkbox id="random" path="random" onclick="enableByCheckbox('value', 'random')" />Random</label>
-                </tags:nameValue>
-                
-                <tags:nameValue name="Reading Time">
-                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}" />
-                    <label><form:checkbox id="now" path="now" onclick="enableByCheckbox('timestamp', 'now')" />Now</label>
-                </tags:nameValue>
-
                 <tags:nameValue name="Type">
                     <form:select path="type">
                         <form:option value="INTERVAL">Interval</form:option>
@@ -164,6 +141,16 @@
                         <form:option value="STATUS">Status</form:option>
                         <form:option value="PROFILE">Profile</form:option>
                     </form:select>
+                </tags:nameValue>
+                
+                <tags:nameValue name="Reading Time">
+                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}" />
+                    <tags:check id="now" path="now" label="Now" onclick="enableByCheckbox('timestamp', 'now')"/>
+                </tags:nameValue>
+
+                <tags:nameValue name="Value">
+                    <form:input id="value" path="value" size="15" cssClass="fl" disabled="${meterReading.random}" />
+                    <tags:check id="random" path="random" label="Random" onclick="enableByCheckbox('value', 'random')"/>
                 </tags:nameValue>
                 
             </tags:nameValueContainer>

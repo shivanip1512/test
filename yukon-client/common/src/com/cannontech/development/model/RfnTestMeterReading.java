@@ -1,12 +1,12 @@
 package com.cannontech.development.model;
 
-import java.util.Map;
+import java.util.List;
 
-import org.apache.commons.collections4.map.DefaultedMap;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.google.common.collect.Lists;
 
 public class RfnTestMeterReading {
     private int serialFrom = 1000;
@@ -17,15 +17,10 @@ public class RfnTestMeterReading {
     private Double value = 271828.18;
     private boolean random;
     private String uom; // V
-    private Map<String, Boolean> uomModifiers = new DefaultedMap<>(false);
+    private List<String> uomModifiers = Lists.newArrayList("quad1", "quad4");
     private RfnMeterReadingType type;
     private Instant timestamp = new Instant();
     private boolean now = true;
-    
-    public RfnTestMeterReading() {
-        uomModifiers.put("quad1", true);
-        uomModifiers.put("quad4", true);
-    }
     
     public int getSerialFrom() {
         return serialFrom;
@@ -63,10 +58,10 @@ public class RfnTestMeterReading {
     public void setUom(String uom) {
         this.uom = uom;
     }
-    public Map<String, Boolean> getModifiers() {
+    public List<String> getModifiers() {
         return uomModifiers;
     }
-    public void setModifiers(Map<String, Boolean> uomModifiers) {
+    public void setModifiers(List<String> uomModifiers) {
         this.uomModifiers = uomModifiers;
     }
     public Double getValue() {
