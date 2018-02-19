@@ -58,9 +58,9 @@ std::unique_ptr<KeepAlivePolicy> resolveKeepAlivePolicy( const std::string & pol
     {
         if ( controlMode == VoltageRegulator::ControlMode::SetPoint )
         {
-            return std::make_unique<IncrementingKeepAlivePolicy_SuppressAutoBlock>();
+            return std::make_unique<IncrementingKeepAlivePolicy>( IncrementingKeepAlivePolicy::AutoBlock::Suppress );
         }
-        return std::make_unique<IncrementingKeepAlivePolicy_SendAutoBlock>();
+        return std::make_unique<IncrementingKeepAlivePolicy>( IncrementingKeepAlivePolicy::AutoBlock::Send );
     }
 
     return std::make_unique<NoKeepAlivePolicy>();
