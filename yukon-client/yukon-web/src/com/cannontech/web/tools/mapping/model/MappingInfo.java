@@ -25,6 +25,7 @@ public abstract class MappingInfo {
     private boolean gatewayType;
     private String deviceDetailUrl;
     private String primaryGateway;
+    private String primaryGatewayUrl;
     private String macAddress;
     private String ipAddress;
     private String meterNumber;
@@ -149,6 +150,14 @@ public abstract class MappingInfo {
 
     public void setMeterNumber(String meterNumber) {
         this.meterNumber = meterNumber;
+    }
+
+    public String getPrimaryGatewayUrl() {
+        return primaryGatewayUrl;
+    }
+
+    public void setPrimaryGatewayUrl(String primaryGatewayUrl) {
+        this.primaryGatewayUrl = primaryGatewayUrl;
     }
 
 }

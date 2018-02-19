@@ -379,4 +379,14 @@ public class StubServerDatabaseCache implements IDatabaseCache {
         throw new MethodNotImplementedException("Method not implemented yet.");
     }
 
+    @Override
+    public List<LiteYukonPAObject> getAllGateways() {
+        throw new MethodNotImplementedException("Method not implemented yet.");
+    }
+
+    @Override
+    public LiteYukonPAObject getGatewayByName(String name) {
+        throw new MethodNotImplementedException("Method not implemented yet.");
+    }
+
 }

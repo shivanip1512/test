@@ -191,4 +191,8 @@ public interface IDatabaseCache {
     List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
 
     Map<Integer, LiteYukonImage> getImages();
+
+    List<LiteYukonPAObject> getAllGateways();
+
+    LiteYukonPAObject getGatewayByName(String name);
 }

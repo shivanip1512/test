@@ -56,6 +56,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -158,7 +159,9 @@ public class MapController {
                 RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(id);
                 Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
                 model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
-                model.addAttribute("primaryGateway", metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata));
+                String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
+                LiteYukonPAObject primaryGateway = databaseCache.getGatewayByName(primaryGatewayName);
+                model.addAttribute("primaryGateway", primaryGateway);
             } catch (NmCommunicationException e) {
                 log.error("Failed to get metadata for " + id, e);           
             } catch (NotFoundException e) {
