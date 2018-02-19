@@ -382,7 +382,7 @@
 &lt;/form:form&gt;
 </pre>
 
-<h2 id="radio-buttons-example">Check Buttons</h2>
+<h2 id="check-buttons-example">Check Buttons</h2>
 
 <p class="description">
     A set of checkboxes built with <span class="label label-attr">&lt;tags:check&gt;</span>.
