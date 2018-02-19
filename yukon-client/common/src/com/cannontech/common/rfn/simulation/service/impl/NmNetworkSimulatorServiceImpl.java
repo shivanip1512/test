@@ -175,9 +175,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             metadata.put(RfnMetadata.NODE_TYPE, "Nodetype (Sim)");
                             metadata.put(RfnMetadata.NUM_ASSOCIATIONS, 3);
                             String primaryGateway = "Primary Gateway (Sim)";
-                            List<LiteYukonPAObject> gateways = cache.getAllGateways();
+                            List<RfnDevice> gateways = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
                             if (gateways.size() > 0) {
-                                primaryGateway = gateways.get(0).getPaoName();
+                                primaryGateway = gateways.get(0).getName();
                             }
                             metadata.put(RfnMetadata.PRIMARY_GATEWAY, primaryGateway);
                             metadata.put(RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT, settings.getRouteData().getHopCount().intValue());

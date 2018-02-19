@@ -112,7 +112,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     
     private List<LiteGraphDefinition> allGraphDefinitions;
     private List<LiteYukonPAObject> allMcts;
-    private List<LiteYukonPAObject> allGateways;
     private List<LiteHolidaySchedule> allHolidaySchedules;
     private List<LiteBaseline> allBaselines;
     private List<LiteConfig> allConfigs;
@@ -275,32 +274,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         }
         
         return allDevices;
-    }
-    
-    @Override
-    public synchronized List<LiteYukonPAObject> getAllGateways() {
-        
-        if (allGateways == null) {
-            allGateways = new ArrayList<>();
-            
-            for (LiteYukonPAObject pao : getAllYukonPAObjects()) {
-                if (pao.getPaoType().isRfGateway()) {
-                    allGateways.add(pao);
-                }
-            }
-        }
-        
-        return allGateways;
-    }
-    
-    @Override
-    public synchronized LiteYukonPAObject getGatewayByName(String name) {
-        LiteYukonPAObject gateway = null;
-        Optional<LiteYukonPAObject> optional = getAllGateways().stream().filter(g -> g.getPaoName().equals(name)).findFirst();
-        if (optional.isPresent()) {
-            gateway = (LiteYukonPAObject) optional.get();
-        }
-        return gateway;
     }
     
     @Override

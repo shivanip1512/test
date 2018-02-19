@@ -46,6 +46,7 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
@@ -90,6 +91,7 @@ public class MapController {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private PaoDao paoDao;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -160,8 +162,10 @@ public class MapController {
                 Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
                 model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
                 String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
-                LiteYukonPAObject primaryGateway = databaseCache.getGatewayByName(primaryGatewayName);
-                model.addAttribute("primaryGateway", primaryGateway);
+                List<LiteYukonPAObject> gateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
+                if (gateways.size() > 0) {
+                    model.addAttribute("primaryGateway", gateways.get(0));
+                }
             } catch (NmCommunicationException e) {
                 log.error("Failed to get metadata for " + id, e);           
             } catch (NotFoundException e) {

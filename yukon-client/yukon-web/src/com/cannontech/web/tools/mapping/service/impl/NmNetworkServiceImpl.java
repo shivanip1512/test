@@ -50,6 +50,7 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.tools.mapping.model.MappingInfo;
@@ -59,7 +60,6 @@ import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -88,7 +88,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Autowired private RfnDeviceMetadataService metadataService;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MeterDao meterDao;
-    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private PaoDao paoDao;
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
@@ -360,9 +360,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 }
                 String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
                 info.setPrimaryGateway(primaryGatewayName);
-                LiteYukonPAObject primaryGateway = databaseCache.getGatewayByName(primaryGatewayName);
-                if (primaryGateway != null) {
-                    info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(primaryGateway));
+                List<LiteYukonPAObject> gateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
+                if (gateways.size() > 0) {
+                    info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateways.get(0)));
                 }
                 info.setMacAddress(metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
             } catch (NmCommunicationException e) {
