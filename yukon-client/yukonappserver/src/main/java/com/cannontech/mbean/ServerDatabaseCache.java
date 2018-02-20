@@ -1393,6 +1393,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             break;
 
         case DELETE:
+            // Create dummy object so dbChangeMsgs can be processed to update dbEditor (YUK-17882)
+            lBase = new LitePoint(id);
             break;
 
         default:
