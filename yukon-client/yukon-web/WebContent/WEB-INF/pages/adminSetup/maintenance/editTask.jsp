@@ -12,7 +12,8 @@
     
     <form:form id="maintenance-task-form" action="updateTask" commandName="maintenanceEditorBean" method="post">
         <cti:csrfToken/>
-        <form:hidden path="taskDetails.taskType"/><hr>
+        <form:hidden path="taskDetails.taskType"/>
+            <tags:sectionContainer2 nameKey="${maintenanceEditorBean.taskDetails.taskType}">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".status">
                     <c:if test="${!maintenanceEditorBean.taskDetails.enabled}">
@@ -32,7 +33,9 @@
                     </c:if>
                 </c:forEach>
             </tags:nameValueContainer2>
+            </tags:sectionContainer2>
         <br>
+        <!-- Check if there are any other settings other than(hence > 1) the task status -->
         <c:if test="${not empty maintenanceEditorBean.settings && fn:length(maintenanceEditorBean.settings) > 1}">
             <cti:button nameKey="update" type="submit" classes="primary action js-update-task" data-ok-event="yukon:maintenance:update-task"/>
         </c:if>

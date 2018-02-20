@@ -5,10 +5,9 @@
 
 <cti:standardPage module="adminSetup" page="maintenance">
 
-    <table class="compact-results-table has-alerts">
+    <table class="compact-results-table">
         <thead>
             <tr>
-                <th>&nbsp;</th>
                 <th><i:inline key=".tableHeader.scheduleName"/></th>
                 <th><i:inline key=".tableHeader.scheduleDescription"/></th>
                 <th></th>
@@ -22,11 +21,6 @@
                     <cti:url var="editScheduleDetailsUrl" value="/admin/maintenance/edit">
                         <cti:param name="jobId" value="${job.id}"/>
                     </cti:url>
-                    <td>
-                        <a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>">
-                            <i class="icon icon-script"></i>
-                        </a>
-                    </td>
                     <td>
                         <a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>">
                             <i:inline key=".${job.beanName}.title"/>
