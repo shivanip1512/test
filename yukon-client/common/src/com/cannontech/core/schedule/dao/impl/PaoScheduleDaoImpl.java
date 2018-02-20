@@ -70,7 +70,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
             sink.addValue("LastRunTime", schedule.getLastRunTime());
             sink.addValue("IntervalRate", schedule.getRepeatSeconds());
             sink.addValue("ScheduleName", schedule.getName());
-            sink.addValue("Disabled", schedule.isDisabled() ? YNBoolean.YES : YNBoolean.NO);
+            sink.addValue("Disabled", YNBoolean.valueOf(schedule.isDisabled()));
         }
 
         @Override
