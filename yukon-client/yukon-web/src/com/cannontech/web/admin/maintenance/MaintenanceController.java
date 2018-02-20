@@ -123,8 +123,11 @@ public class MaintenanceController {
     @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext userContext) throws ExecutionException{
         List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
-        // This is done for hiding rph duplicate deletion job on UI.
-       /*jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));*/
+        // TODO This is done for hiding rph duplicate deletion job on UI (YUK-17919). Need to remove later.
+        boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
+        if (devMode) {
+            jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
+        }
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
         jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
         if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {

@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -19,11 +18,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.maintenance.MaintenanceScheduler;
-import com.cannontech.maintenance.MaintenanceTaskType;
 import com.cannontech.maintenance.service.MaintenanceTaskService;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -37,7 +33,6 @@ public class MaintenanceSchedulerRunner {
     private final ScheduledExecutorService scheduledExecutorService =
         Executors.newScheduledThreadPool(MaintenanceScheduler.values().length);
 
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired MaintenanceTaskRunner taskRunner;
     @Autowired MaintenanceTaskService maintenanceService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
@@ -158,16 +153,6 @@ public class MaintenanceSchedulerRunner {
                         + endOfRunWindow.toDate());
                     // Get only those task which will run in this scheduler
                     List<MaintenanceTask> tasks = maintenanceService.getEnabledMaintenanceTasks(scheduler);
-
-                    // TODO Remove this check after 7.0.0 build
-                    boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
-                    if (!devMode) {
-                        tasks = tasks.stream().filter(
-                            task -> MaintenanceTaskType.DR_RECONCILIATION != task.getMaintenanceTaskType()
-                                && MaintenanceTaskType.DUPLICATE_POINT_DATA_PRUNING != task.getMaintenanceTaskType()).collect(
-                                    Collectors.toList());
-                    }
-
                     if (tasks.size() == 0) {
                         log.info("No task to run for " + scheduler);
                         rescheduleScheduler.put(scheduler, true);

@@ -29,18 +29,8 @@
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
-                        <c:set var="developementMode" value="${false}"/>
                         <c:forEach var="task" items="${tasks}">
                             <cti:msg2 var="taskTypeMsg" key=".${task.taskType}.title"/>
-                            <c:if test="${task.taskType=='DUPLICATE_POINT_DATA_PRUNING'}">
-                                <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                                    <c:set var="developementMode" value="${true}"/>
-                                </cti:checkGlobalRolesAndProperties>
-                            </c:if>
-                            
-                            <!-- This check is to be removed after 7.0.0 build -->
-                            <c:if test="${developementMode || (task.taskType!='DUPLICATE_POINT_DATA_PRUNING' &&
-                                            task.taskType!='DR_RECONCILIATION')}">
                                 <tr>
                                     <cti:url var="editTaskDetailsUrl" value="/admin/maintenance/editTask" >
                                         <cti:param name="taskType" value="${task.taskType}"/>
@@ -71,7 +61,6 @@
                                              data-confirm-disable-message="${fn:escapeXml(confirmDisableMessage)}"></div>
                                     </td>
                                 </tr>
-                            </c:if>
                         </c:forEach>
                     </tbody>
                 </table>
