@@ -43,7 +43,7 @@
         data-event="yukon.vv.schedules.add"
         data-title="<cti:msg2 key=".add.label"/>" 
         data-url="${newAssignmentsUrl}" 
-        data-width="500" class="dn"></div>
+        data-width="600" class="dn"></div>
     
     <div id="page-buttons" class="dn">
          <cti:button nameKey="filter" classes="js-show-filter" icon="icon-filter" data-popup="#filter-popup"/>

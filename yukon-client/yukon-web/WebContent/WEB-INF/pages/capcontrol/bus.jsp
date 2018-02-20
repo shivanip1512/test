@@ -460,7 +460,7 @@
     data-ok-text="<cti:msg2 key="yukon.common.save"/>"
     data-url="<cti:url value="/capcontrol/buses/${bus.id}/schedules/edit"/>"
     data-event="yukon:vv:schedule:save"
-    data-width="750"></div>
+    data-width="890"></div>
     
 
 </cti:standardPage>

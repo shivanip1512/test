@@ -76,7 +76,7 @@ $('.js-remove-schedule').click(function(event) {
                     </select>
                 </td>
                 <td>
-                    <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value" style="width:100%;">
+                    <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value">
                         <option value=""><i:inline key=".schedules.pleaseSelect"/></option>
                         <c:forEach var="commandOption" items="${scheduleCommands}">
                             <option value="${commandOption.commandName}"
@@ -84,7 +84,7 @@ $('.js-remove-schedule').click(function(event) {
                                 ${fn:escapeXml(commandOption.commandName)}</option>
                         </c:forEach>
                     </select>
-                    <tags:input path="schedules[${idx}].command" size="40"/>
+                    <tags:input path="schedules[${idx}].command" size="54"/>
                 </td>
                 <td>
                     <tags:switchButton name="schedules[${idx}].disableOvUvBoolean" checked="${schedule.disableOvUvBoolean}" />
@@ -97,7 +97,7 @@ $('.js-remove-schedule').click(function(event) {
                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove-schedule"/>
             </td>
             <td>
-                <select name="schedules[${idx}].scheduleID" style="width:100%;>
+                <select name="schedules[${idx}].scheduleID">
                     <option value="-1"><i:inline key=".schedules.pleaseSelect"/></option>
                     <c:forEach var="scheduleOption" items="${allSchedules}">
                         <option value="${scheduleOption.id}">
@@ -106,14 +106,14 @@ $('.js-remove-schedule').click(function(event) {
                 </select>
             </td>
             <td>
-                <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value" style="width:100%;>
+                <select name="schedules[${idx}].commandName" onchange="this.nextElementSibling.value=this.value">
                     <option value="-1"><i:inline key=".schedules.pleaseSelect"/></option>
                      <c:forEach var="commandOption" items="${scheduleCommands}">
                         <option value="${commandOption.commandName}">
                             ${fn:escapeXml(commandOption.commandName)}</option>
                     </c:forEach>
                 </select>
-                <tags:input path="schedules[${idx}].command" size="40"/>
+                <tags:input path="schedules[${idx}].command" size="54"/>
             </td>
             <td>
                 <tags:switchButton name="schedules[${idx}].disableOvUvBoolean" onClasses="fn"/>
