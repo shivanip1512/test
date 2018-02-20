@@ -543,6 +543,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\capcontroller.h" />
     <ClInclude Include="include\CapControlPao.h" />
     <ClInclude Include="include\CapControlPointDataHandler.h" />
+    <ClInclude Include="include\CapControlPredicates.h" />
     <ClInclude Include="include\cbcHeartbeatPolicy.h" />
     <ClInclude Include="include\cc_message_serialization.h" />
     <ClInclude Include="include\ccarea.h" />

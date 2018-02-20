@@ -44,6 +44,11 @@
 #include "win_helper.h"
 #include "MessageCounter.h"
 #include "database_reader.h"
+#include "CapControlPredicates.h"
+
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/algorithm/partition.hpp>
 
 extern void refreshGlobalCParms();
 
@@ -872,112 +877,56 @@ void CtiCapController::controlLoop()
 
             // This is the main spot for sending the CBC heartbeats out for banks that are not
             //  under IVVC control.  If all the hierarchy is enabled then we send the heartbeat message 
-            //  for the banks.  If any part of the heirarchy is disabled then we stop the heartbeat.
+            //  for the banks.  If any part of the heirarchy is disabled or orphaned then we stop the heartbeat.
             {
                 CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
-                for ( auto & bus : *store->getCCSubstationBuses() )
-                {
-                    // skip busses with no strategy assigned, handle IVVC strategies elsewhere.
-                    if ( bus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar
-                            || bus->getStrategy()->getUnitType() == ControlStrategy::None )
-                    {
-                        continue;
-                    }
+                using boost::adaptors::filtered;
+                using namespace Cti::CapControl;
 
+                const auto stopHeartbeat = []( auto bank ) { bank->executeStopHeartbeat( SystemUser ); };
+                const auto sendHeartbeat = []( auto bank ) { bank->executeSendHeartbeat( SystemUser ); };
+
+                const auto nonIvvcBuses = *store->getCCSubstationBuses() | filtered( notIvvcStrategy );
+
+                for ( auto bus : nonIvvcBuses )
+                {
                     long stationID, areaID, spAreaID;
+
                     store->getSubBusParentInfo( bus, spAreaID, areaID, stationID );
 
-                    bool sendStop = true;
+                    bool hierarchyEnabled = false;
 
-                    if ( ! bus->getDisableFlag() )
+                    if ( isEnabled( bus ) && existsAndEnabled( store->findSubstationByPAObjectID( stationID ) ) )
                     {
-                        if ( auto station = store->findSubstationByPAObjectID( stationID ) )
+                        if ( areaID > 0 )
                         {
-                            if ( ! station->getDisableFlag() )
-                            {
-                                if ( areaID > 0 )
-                                {
-                                    if ( auto area = store->findAreaByPAObjectID( areaID ) )
-                                    {
-                                        if ( ! area->getDisableFlag() )
-                                        {
-                                            sendStop = false;   // bus, station, area are all enabled
-                                        }
-                                    }
-                                }
-                                if ( spAreaID > 0 )
-                                {
-                                    if ( auto area = store->findSpecialAreaByPAObjectID( spAreaID ) )
-                                    {
-                                        if ( ! area->getDisableFlag() )
-                                        {
-                                            sendStop = false;   // bus, station, special area are all enabled
-                                        }
-                                    }
-                                }
-                            }
+                            hierarchyEnabled |= existsAndEnabled( store->findAreaByPAObjectID( areaID ) );
+                        }
+                        if ( spAreaID > 0 )
+                        {
+                            hierarchyEnabled |= existsAndEnabled( store->findSpecialAreaByPAObjectID( spAreaID ) );
                         }
                     }
 
-                    /*
-                        If we made it here we must have a strategy on our bus, that means we have one on our feeder as
-                            well because the bus one will cascade to the feeder if the feeder doesn't have one of
-                            its own.  So we don't need to check if:
-                                feeder->getStrategy()->getUnitType() == ControlStrategy::None
-                    */
+                    const auto nonIvvcFeeders = bus->getCCFeeders() | filtered( notIvvcStrategy );
 
-                    if ( sendStop )     // someone up top was disabled so send a stop to all this busses capbanks
+                    for ( auto feeder : nonIvvcFeeders )
                     {
-                        for ( auto feeder : bus->getCCFeeders() )
+                        if( hierarchyEnabled && isEnabled( feeder ) && ( hasStrategy( bus ) || hasStrategy( feeder ) ) )
                         {
-                            if ( feeder->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
-                            {
-                                continue;   // don't handle IVVC controlled feeders here
-                            }
+                            auto banks = feeder->getAllCapBanks();
+                            
+                            auto enabled_end = std::partition( banks.begin(), banks.end(), isEnabled );
 
-                            for ( auto bank : feeder->getCCCapBanks() )
-                            {
-                                if ( ! bank->getDisableFlag() )
-                                {
-                                    bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
-                                }
-                            }
+                            std::for_each( banks.begin(), enabled_end, sendHeartbeat );
+                            std::for_each( enabled_end,   banks.end(), stopHeartbeat );
                         }
-                    }
-                    else    // everyone above the feeder is enabled so check feeder status and send messages to banks accordingly
-                    {
-                        for ( auto feeder : bus->getCCFeeders() )
+                        else  
                         {
-                            if ( feeder->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
-                            {
-                                continue;   // don't handle IVVC controlled feeders here
-                            }
+                            auto enabledBanks = feeder->getCCCapBanks() | filtered( isEnabled );
 
-                            if ( feeder->getDisableFlag() )     // this feeder is disabled so stop heartbeats to its banks
-                            {
-                                for ( auto bank : feeder->getCCCapBanks() )
-                                {
-                                    if ( ! bank->getDisableFlag() )
-                                    {
-                                        bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
-                                    }
-                                }
-                            }
-                            else    // feeder is enabled so send heartbeats to enabled banks
-                            {
-                                for ( auto bank : feeder->getCCCapBanks() )
-                                {
-                                    if ( ! bank->getDisableFlag() )
-                                    {
-                                        bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
-                                    }
-                                    else
-                                    {
-                                        bank->executeStopHeartbeat(Cti::CapControl::SystemUser);
-                                    }
-                                }
-                            }
+                            boost::for_each( enabledBanks, stopHeartbeat );
                         }
                     }
                 }
@@ -2721,7 +2670,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             CTILOG_ERROR(dout, "No Watt Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
                         }
 
-                        if ( currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::IntegratedVoltVar )
+                        if ( Cti::CapControl::notIvvcStrategy( currentSubstationBus ) )
                         {
                             currentSubstationBus->figureAndSetTargetVarValue();
                         }
