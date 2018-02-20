@@ -25,6 +25,7 @@ import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
@@ -45,7 +46,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         rtu.setName(pao.getPaoName());
         rtu.setId(pao.getPaoIdentifier().getPaoId());
         rtu.setPaoType(pao.getPaoType());
-        rtu.setDisableFlag(pao.getDisableFlag().equals("Y") ? true : false);
+        rtu.setDisableFlag(pao.getDisableFlag().equals(YNBoolean.YES.getDatabaseRepresentation()));
         DBPersistent dbPersistent = dbPersistentDao.retrieveDBPersistent(pao);
         DNPBase dnpBase = (DNPBase) dbPersistent;
         rtu.setDeviceScanRateMap(dnpBase.getDeviceScanRateMap());
