@@ -877,7 +877,7 @@ void CtiCapController::controlLoop()
 
             // This is the main spot for sending the CBC heartbeats out for banks that are not
             //  under IVVC control.  If all the hierarchy is enabled then we send the heartbeat message 
-            //  for the banks.  If any part of the heirarchy is disabled or orphaned then we stop the heartbeat.
+            //  for the banks.  If any part of the hierarchy is disabled or orphaned then we stop the heartbeat.
             {
                 CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
@@ -913,7 +913,7 @@ void CtiCapController::controlLoop()
 
                     for ( auto feeder : nonIvvcFeeders )
                     {
-                        if( hierarchyEnabled && isEnabled( feeder ) && ( hasStrategy( bus ) || hasStrategy( feeder ) ) )
+                        if ( hierarchyEnabled && isEnabled( feeder ) && ( hasStrategy( bus ) || hasStrategy( feeder ) ) )
                         {
                             auto banks = feeder->getAllCapBanks();
                             

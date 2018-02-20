@@ -4,22 +4,22 @@
 namespace Cti {
 namespace CapControl {
 
-inline bool isEnabled(CapControlPao * pao)
+inline bool isEnabled( const CapControlPao * pao )
 {
-    return !pao->getDisableFlag();
+    return ! pao->getDisableFlag();
 }
 
-inline bool existsAndEnabled(CapControlPao * pao)
+inline bool existsAndEnabled( const CapControlPao * pao )
 {
-    return pao && isEnabled(pao);
+    return pao && isEnabled( pao );
 }
 
-inline bool notIvvcStrategy(const Controllable * controllable)
+inline bool notIvvcStrategy( const Controllable * controllable )
 {
     return controllable->getStrategy()->getUnitType() != ControlStrategy::IntegratedVoltVar;
 }
 
-inline bool hasStrategy(const Controllable * controllable)
+inline bool hasStrategy( const Controllable * controllable )
 {
     return controllable->getStrategy()->getUnitType() != ControlStrategy::None;
 }
