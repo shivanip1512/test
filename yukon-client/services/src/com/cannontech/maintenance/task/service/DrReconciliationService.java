@@ -4,8 +4,8 @@ import org.joda.time.Instant;
 
 public interface DrReconciliationService {
     /**
-     * Method to send appropriate message to LCR's.
+     * Method to start DR reconciliation.
      */
-    boolean doDrReconcillation(Instant processEndTime);
+    boolean startDRReconciliation(Instant processEndTime);
 
 }

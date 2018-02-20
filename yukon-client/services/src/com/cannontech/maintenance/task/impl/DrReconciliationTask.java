@@ -13,7 +13,7 @@ public class DrReconciliationTask implements MaintenanceTask {
 
     @Override
     public boolean doTask(Instant processEndTime) {
-        return drReconciliationService.doDrReconcillation(processEndTime);
+        return drReconciliationService.startDRReconciliation(processEndTime);
     }
 
     @Override

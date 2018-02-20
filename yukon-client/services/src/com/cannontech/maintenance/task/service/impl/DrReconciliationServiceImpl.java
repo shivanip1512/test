@@ -76,6 +76,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     @Autowired public AsyncDynamicDataSource asyncDynamicDataSource;
 
     private static final Logger log = YukonLogManager.getLogger(DrReconciliationServiceImpl.class);
+    private final List<ScheduledFuture<?>> schedulersFuture = new ArrayList<>();
 
     private long minimumExecutionTime = 300000;
     private static final int calculationCycleMinutes = 12;
@@ -305,7 +306,37 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     }
     
     @Override
-    public boolean doDrReconcillation(Instant processEndTime) {
+    public boolean startDRReconciliation(Instant processEndTime) {
+        long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
+
+        try {
+            stopSchedulers();
+            if (!doDRReconciliation()) {
+                return true;
+            }
+            Thread.sleep(drReconEndTime);
+            stopSchedulers();
+        } catch (InterruptedException e) {
+            log.debug("DR reconciliation thread was interrupted");
+            stopSchedulers();
+            return true;
+        }
+        return true;
+    }
+    
+    /**
+     * Stops the schedulers which are created to do DR reconciliation.
+     */
+    private void stopSchedulers() {
+        schedulersFuture.stream().forEach(future -> {
+            future.cancel(true);
+        });
+    }
+
+    /**
+     * This method send the appropriate messages to LCR.
+     */
+    private boolean doDRReconciliation() {
 
         ScheduledFuture<?> futureSchdTwelveMin, futureSchdOneMin;
         BlockingQueue<LCRCommandHolder> queue = new ArrayBlockingQueue<>(10000);
@@ -411,16 +442,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
             }
             log.debug("Have send message " + messagesSend + " in this minute");
         }, perMinuteScheduling, perMinuteScheduling, TimeUnit.MINUTES);
-
-        // This will execute until there is time to process and will exist after canceling the schedulers.
-        while (Instant.now().isBefore(processEndTime)) {
-            if (Instant.now().isAfter(processEndTime.minus(minimumExecutionTime))) {
-                log.debug("Timeup cancelling both schedulers");
-                futureSchdTwelveMin.cancel(false);
-                futureSchdOneMin.cancel(false);
-                break;
-            }
-        }
+        
+        schedulersFuture.add(futureSchdTwelveMin);
+        schedulersFuture.add(futureSchdOneMin);
         return true;
     }
 
