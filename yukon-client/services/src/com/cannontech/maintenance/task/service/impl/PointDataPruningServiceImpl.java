@@ -1,5 +1,6 @@
 package com.cannontech.maintenance.task.service.impl;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -69,14 +70,18 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 60);
         int noOfMonthsConfigured = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
         // Forcing noOfMonths to max 12 in case user configures above value more than 12 months.
-        int noOfMonths = noOfMonthsConfigured > 12 ? 12 : noOfMonthsConfigured;
-        Duration monthInDuration = Period.months(noOfMonths).toDurationTo(Instant.now());
+        int noOfMonths = NumberUtils.min(noOfMonthsConfigured, 12);
+        log.debug("Configurations for duplicate point data deletion are - ");
+        log.debug("MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION : " + daysInDuration);
+        log.debug("MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED : " + noLockRequired);
+        log.debug("No Of Months for which duplicate data is to be deleted : " + noOfMonths);
+        Instant start = Instant.now();
+        Duration monthInDuration = Period.months(noOfMonths).toDurationTo(start);
         Instant fromTimestamp = Instant.now();
-        Instant limit = Instant.now().minus(monthInDuration);
+        Instant limit = start.minus(monthInDuration);
         log.debug(
             "Overall duration for which duplicate records should be deleted = From " + limit + " To " + fromTimestamp);
-        Instant start = new Instant();
-        log.debug("Duplicate point data deletion started at " + start.toDate());
+        log.debug("Duplicate point data deletion started.");
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
             Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
             Instant toTimestamp = fromTimestamp.minus(deletionDuration);
@@ -86,8 +91,8 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             fromTimestamp = toTimestamp;
         }
         Instant finish = new Instant();
-        log.debug("Duplicate point data deletion finished at " + finish.toDate());
-        log.debug("Total duplicate rows deleted == " + totalRowsdeleted);
+        log.debug("Duplicate point data deletion finished.");
+        log.debug("Total duplicate rows deleted = " + totalRowsdeleted);
         Seconds secondsTaken = Seconds.secondsBetween(start, finish);
         log.debug("Total execution time = " + secondsTaken.getSeconds() + " Seconds");
 
