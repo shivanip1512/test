@@ -68,30 +68,31 @@
 
         <div class="column-12-12">
             <div class="column one">
-				    <tags:widget bean="meterInformationWidget" />
-	
-					<tags:widget bean="waterMeterReadingsWidget" />
-                    
-                    <c:if test="${showRfMetadata}">
-                        <tags:widget bean="rfnDeviceMetadataWidget"/>
-                    </c:if>
-                    
-					<c:if test="${cisInfoWidgetName != null}">
-						<tags:widget bean="${cisInfoWidgetName}" />
-					</c:if>
-	
-					<!-- Including deviceGroupWidget's resources here since this particular
-					     widget is being added to the page via ajax  -->
-					<cti:includeScript link="JQUERY_TREE" />
-					<cti:includeScript link="JQUERY_TREE_HELPERS" />
-					<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
-	                <tags:widget bean="deviceGroupWidget"/>
+                <tags:widget bean="meterInformationWidget" />
+                <tags:widget bean="waterMeterReadingsWidget" />
+
+                <c:if test="${showRfMetadata}">
+                    <tags:widget bean="rfnDeviceMetadataWidget" />
+                </c:if>
+
+                <c:if test="${cisInfoWidgetName != null}">
+                    <tags:widget bean="${cisInfoWidgetName}" />
+                </c:if>
+
+                <!-- Including deviceGroupWidget's resources here since this particular widget is being added to the page via ajax  -->
+                <cti:includeScript link="JQUERY_TREE" />
+                <cti:includeScript link="JQUERY_TREE_HELPERS" />
+                <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css" />
+                <tags:widget bean="deviceGroupWidget" />
             </div>
             <div class="column two nogutter">
-                <c:set var="whatsThis" value="<div id='trendWidgetWhatsThisText'></div>"/>
+                <c:set var="whatsThis" value="<div id='trendWidgetWhatsThisText'></div>" />
                 <div id="trendWidget">
-                   <tags:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${whatsThis}"/>
+                    <tags:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport"
+                        helpText="${whatsThis}" />
                 </div>
+
+                <c:if test="${showEvents}"><tags:widget bean="meterEventsWidget"/></c:if>
                 <c:if test="${deviceConfigSupported}"><tags:widget bean="configWidget"/></c:if>
             </div>
         </div>

@@ -72,6 +72,10 @@ public class WaterMeterController {
             mav.addObject("porterCommandRequestsSupported", true);
         }
         
+        if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.RFN_EVENTS)) {
+            mav.addObject("showEvents", true);
+        }
+        
         if (deviceType == PaoType.RFW201 || deviceType == PaoType.RFW205) {
         	mav.addObject("deviceConfigSupported", true);
         	mav.addObject("configurableDevice", true);
