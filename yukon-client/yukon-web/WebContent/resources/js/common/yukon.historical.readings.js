@@ -30,9 +30,14 @@ yukon.historical.readings = (function () {
                     pointId = container.attr('data-pointId'),
                     value = container.attr('data-value'),
                     timestamp = container.attr('data-timestamp'),
-                    valuesTable = $('#valuesTable_' + pointId),
-                    valuesDialog = valuesTable.closest('.ui-dialog-content');
-
+                    valuesTable = $('.js-values-table-' + pointId + ":visible"),
+                    valuesDialog = valuesTable.closest('.ui-dialog-content'),
+                    btns = container.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+                
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
                 $.ajax({ 
                     url: yukon.url('/meter/historicalReadings/delete'),
                     data: {
@@ -42,6 +47,7 @@ yukon.historical.readings = (function () {
                     },
                     method : 'POST'
                 }).done(function (details) {
+                    container.dialog('destroy');
                     valuesTable.html(details);
                     valuesDialog.scrollTop(0);
                 });             
@@ -50,18 +56,27 @@ yukon.historical.readings = (function () {
             $(document).on('yukon:historical:readings:editValue', function(ev) {
                 var dialog = $(ev.target),
                     pointId = dialog.attr('data-point-id'),
-                    valuesTable = $('#valuesTable_' + pointId),
+                    valuesTable = $('.js-values-table-' + pointId + ":visible"),
                     valuesDialog = valuesTable.closest('.ui-dialog-content'),
-                    form = dialog.find('#manual-entry-form');
+                    form = dialog.find('#manual-entry-form'),
+                    btns = dialog.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
                 
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
                 form.ajaxSubmit({
                     success: function (result, status, xhr, $form) {
-                        dialog.dialog('close');
+                        dialog.dialog('destroy');
                         valuesTable.html(result);
                         valuesDialog.scrollTop(0);
                     },
                     error: function (xhr, status, error, $form) {
                         dialog.html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
                     }
                 });
             });

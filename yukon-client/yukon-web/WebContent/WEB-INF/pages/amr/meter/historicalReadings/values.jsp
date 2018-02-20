@@ -3,9 +3,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -53,9 +50,12 @@
                                         data-url="${editUrl}" data-event="yukon:historical:readings:editValue" data-point-id="${pointId}"></div>
                                     <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" data-popup=".js-edit-value-${id}"/>
                                     <cti:checkRolesAndProperties value="MANAGE_POINT_DATA" level="OWNER">
-                                        <cm:dropdownOption id="deleteValue_${id}" key="components.button.delete.label" icon="icon-cross" classes="js-hide-dropdown" 
-                                            data-ok-event="yukon:historical:readings:delete" data-timestamp="${dateTime}" data-value="${point.value}" data-pointId="${pointId}"/>
-                                        <d:confirm on="#deleteValue_${id}" nameKey="value.confirmDelete" argument="${point.pointDataTimeStamp}"/>
+                                        <cm:dropdownOption data-popup=".js-delete-value-${id}" key="components.button.delete.label" icon="icon-cross"/>
+                                        <div class="dn js-delete-value-${id}" data-dialog data-title="<cti:msg2 key=".value.confirmDelete.title"/>" 
+                                            data-ok-text="<cti:msg2 key="components.button.delete.label"/>" data-event="yukon:historical:readings:delete" 
+                                            data-timestamp="${dateTime}" data-value="${point.value}" data-pointId="${pointId}">
+                                            <i:inline key=".value.confirmDelete.message" arguments="${point.pointDataTimeStamp}"/>
+                                        </div>
                                     </cti:checkRolesAndProperties>
                                 </c:otherwise>
                             </c:choose>

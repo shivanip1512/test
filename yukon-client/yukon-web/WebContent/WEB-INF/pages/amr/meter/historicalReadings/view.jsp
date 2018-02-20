@@ -43,7 +43,7 @@ function setUrl(id) {
         <cti:url value="/meter/historicalReadings/values" var="viewUrl">
             <cti:param name="pointId" value="${pointId}"/>
         </cti:url>
-        <div id="valuesTable_${pointId}" data-url="${viewUrl}"><%@ include file="values.jsp" %></div>
+        <div data-url="${viewUrl}" class="js-values-table-${pointId}"><%@ include file="values.jsp" %></div>
     </c:otherwise>
 </c:choose>
 </cti:msgScope>
