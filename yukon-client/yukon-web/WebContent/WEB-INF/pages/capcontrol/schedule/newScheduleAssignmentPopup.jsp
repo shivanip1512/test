@@ -41,7 +41,7 @@
                 <td>
                 </td>
                 <td>
-                    <input name="cmdInput" id="cmdInput" type="text" value="${commandList[0].commandName}" size="54"></input>
+                    <input name="cmdInput" id="cmdInput" type="text" value="${commandList[0].commandName}" class="dn" size="54"></input>
                 </td>
             </tr>
         </table>

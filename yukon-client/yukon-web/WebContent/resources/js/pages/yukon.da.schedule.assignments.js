@@ -40,8 +40,16 @@ yukon.da.scheduleAssignments = (function () {
             });
             
             $(document).on('change', '#cmd', function (ev) {
-                var value = this.options[this.selectedIndex].text;
-                $('#cmdInput').val(value);
+                var text = this.options[this.selectedIndex].text,
+                value = this.options[this.selectedIndex].value;
+                if (value == 'VerifyNotOperatedIn') {
+                    $('#cmdInput').show();
+                    $('#cmdInput').val(text);
+                }
+                else {
+                    $('#cmdInput').val('');
+                    $('#cmdInput').hide();
+                }
             });
             
             /** Click detection to start schedule. */

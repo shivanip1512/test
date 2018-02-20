@@ -136,6 +136,16 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
             return AssignmentStatus.INVALID;
         }
         
+        if (cmd != ScheduleCommand.VerifyNotOperatedIn) {
+            cmdInput = cmd.getCommandName();
+        } 
+        else {
+            if (StringUtils.isEmpty(cmdInput) 
+                    || !cmdInput.toLowerCase().startsWith(ScheduleCommand.VerifyNotOperatedIn.getCommandName().toLowerCase().substring(0, 41))) {
+                return AssignmentStatus.INVALID;
+            }
+        }
+        
         if (paoIds.size() == 0) {
             return AssignmentStatus.NO_DEVICES;
         } else {
