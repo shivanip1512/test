@@ -92,6 +92,5 @@
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Voltage" init="true" attributes="VOLTAGE,VOLTAGE_PROFILE"/>
-        <pointInfo name="Voltage Phase Error" attributes="VOLTAGE_PHASE_ERROR"/>
     </pointInfos>
 </pao>

@@ -75,6 +75,5 @@
         <pointInfo name="Voltage Phase A" attributes="VOLTAGE_PHASE_A"/>
         <pointInfo name="Voltage Phase B" attributes="VOLTAGE_PHASE_B"/>
         <pointInfo name="Voltage Phase C" attributes="VOLTAGE_PHASE_C"/>
-        <pointInfo name="Voltage Phase Error" attributes="VOLTAGE_PHASE_ERROR"/>
     </pointInfos>
 </pao>
