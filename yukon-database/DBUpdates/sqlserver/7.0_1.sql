@@ -114,18 +114,10 @@ AND DeviceConfigCategoryId IN (
 
 /* Start YUK-17652 */
 /* @error ignore-begin */
-/* @start-block */
-DECLARE @count NUMERIC;
-BEGIN
-SELECT @count = (SELECT COUNT(*) FROM JOB WHERE BeanName = 'scheduledRphDuplicateDeletionExecutionJobDefinition' AND disabled='Y')
-IF (@count = 1)
-    BEGIN 
-        INSERT INTO MaintenanceTaskSettings 
-        VALUES ('DUPLICATE_POINT_DATA_PRUNING_ENABLED','false');
-    END
-END;
+IF EXISTS (SELECT Disabled from JOB 
+            WHERE BeanName = 'scheduledRphDuplicateDeletionExecutionJobDefinition' AND disabled='Y')
+INSERT INTO MaintenanceTaskSettings VALUES ('DUPLICATE_POINT_DATA_PRUNING_ENABLED','false');
 GO
-/* @end-block */
 /* @error ignore-end */
 /* End YUK-17652 */
 	
