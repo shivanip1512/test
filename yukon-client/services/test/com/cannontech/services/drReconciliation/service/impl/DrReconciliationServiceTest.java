@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
 import com.cannontech.core.dao.PaoDao;
@@ -34,6 +35,8 @@ import com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl;
 import com.cannontech.maintenance.task.dao.DrReconciliationDao;
 import com.cannontech.maintenance.task.service.impl.DrReconciliationServiceImpl;
 import com.cannontech.message.dispatch.message.LitePointData;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -173,6 +176,33 @@ public class DrReconciliationServiceTest {
             }
         }).anyTimes();
 
+        InventoryBaseDao inventoryBaseDao = createNiceMock(InventoryBaseDao.class);
+        inventoryBaseDao.getHardwareByDeviceId(EasyMock.anyInt());
+        expectLastCall().andAnswer(() -> {
+            Integer deviceId = (Integer) getCurrentArguments()[0];
+            LiteLmHardwareBase lmhb = new LiteLmHardwareBase();
+            switch (deviceId) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+                lmhb.setManufacturerSerialNumber(deviceId.toString());
+                break;
+            }
+            return lmhb;
+        }).anyTimes();
+
+        SystemEventLogService systemEventLogService = createNiceMock(SystemEventLogService.class);
+        systemEventLogService.groupConflictLCRDetected(EasyMock.anyObject());
+        expectLastCall().anyTimes();
+
         drReconciliationDao.getEnrolledRfnLcrForGroup(EasyMock.anyInt());
         expectLastCall().andAnswer(new IAnswer<Object>() {
             @Override
@@ -239,8 +269,12 @@ public class DrReconciliationServiceTest {
 
         replay(drReconciliationDao);
         replay(lmGroupDaoImpl);
+        replay(inventoryBaseDao);
+        replay(systemEventLogService);
         ReflectionTestUtils.setField(dr, "drReconciliationDao", drReconciliationDao);
         ReflectionTestUtils.setField(dr, "lmGroupDaoImpl", lmGroupDaoImpl);
+        ReflectionTestUtils.setField(dr, "inventoryBaseDao", inventoryBaseDao);
+        ReflectionTestUtils.setField(dr, "systemEventLogService", systemEventLogService);
 
         List<LiteYukonPAObject> paos = new ArrayList<>(7);
         PaoDao paoDao = createNiceMock(PaoDao.class);
