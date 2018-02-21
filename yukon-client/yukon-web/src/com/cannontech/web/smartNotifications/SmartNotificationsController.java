@@ -214,9 +214,11 @@ public class SmartNotificationsController {
         List<SmartNotificationSubscription> itemList = Lists.newArrayList(subscriptions);
         List<DeviceDataMonitor> deviceDataMonitorList = monitorCacheService.getDeviceDataMonitors();
 
-        Comparator<SmartNotificationSubscription> comparator =
-            (o1, o2) -> o1.getTypeAndDeviceDataMonitorName(deviceDataMonitorList).compareToIgnoreCase(
-                o2.getTypeAndDeviceDataMonitorName(deviceDataMonitorList));
+        Comparator<SmartNotificationSubscription> comparator = (o1, o2) -> {
+            return SmartNotificationSubscriptionService.getSubscriptionTypeAndName(o1,
+                deviceDataMonitorList).compareToIgnoreCase(
+                    SmartNotificationSubscriptionService.getSubscriptionTypeAndName(o2, deviceDataMonitorList));
+        };
         if (sortBy == SubscriptionSortBy.frequency) {
             comparator = (o1, o2) -> o1.getFrequency().toString().compareTo(o2.getFrequency().toString());
         } else if (sortBy == SubscriptionSortBy.media) {

@@ -1,0 +1,75 @@
+package com.cannontech.common.smartNotification.service;
+
+import static org.junit.Assert.*;
+
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
+import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+
+import static org.junit.Assert.assertEquals;
+
+public class SmartNotificationSubscriptionServiceTest {
+
+    private List<DeviceDataMonitor> deviceDataMonitorList = Lists.newArrayList();
+    private DeviceDataMonitor deviceDataMonitor = null;
+
+    @Before
+    public void setUp() throws Exception {
+        SmartNotificationSubscription smartNotificationSubscriptionIW = new SmartNotificationSubscription();
+        smartNotificationSubscriptionIW.setType(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+        deviceDataMonitor = new DeviceDataMonitor();
+        deviceDataMonitor.setName("DDM1");
+        deviceDataMonitor.setId(32);
+        deviceDataMonitorList.add(deviceDataMonitor);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        deviceDataMonitorList.clear();
+    }
+
+    @Test
+    public final void test_getSubscription_Type_And_Name_For_DeviceDataMonitor_validMonitor() {
+        SmartNotificationSubscription smartNotificationSubscriptionDDM = new SmartNotificationSubscription();
+        smartNotificationSubscriptionDDM.setType(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+        smartNotificationSubscriptionDDM.setParameters(
+            ImmutableMap.<String, Object> builder().put(DeviceDataMonitorEventAssembler.MONITOR_ID, 32).build());
+        assertEquals(SmartNotificationSubscriptionService.getSubscriptionTypeAndName(smartNotificationSubscriptionDDM,
+            deviceDataMonitorList), "DEVICE_DATA_MONITORDDM1");
+    }
+
+    @Test
+    public final void test_getSubscription_Type_And_Name_For_InfrastructureWarning_validIW() {
+        SmartNotificationSubscription smartNotificationSubscriptionIW = new SmartNotificationSubscription();
+        smartNotificationSubscriptionIW.setType(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+        assertEquals(SmartNotificationSubscriptionService.getSubscriptionTypeAndName(smartNotificationSubscriptionIW,
+            deviceDataMonitorList), "INFRASTRUCTURE_WARNING");
+    }
+
+    @Test
+    public final void test_getSubscription_Type_And_Name_For_DeviceDataMonitor_inValidMonitor() {
+        SmartNotificationSubscription smartNotificationSubscriptionDDM = new SmartNotificationSubscription();
+        smartNotificationSubscriptionDDM.setType(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+        smartNotificationSubscriptionDDM.setParameters(
+            ImmutableMap.<String, Object> builder().put(DeviceDataMonitorEventAssembler.MONITOR_ID, 45).build());
+        assertNotEquals(SmartNotificationSubscriptionService.getSubscriptionTypeAndName(
+            smartNotificationSubscriptionDDM, deviceDataMonitorList), "DEVICE_DATA_MONITORDDM1");
+    }
+
+    @Test
+    public final void test_getSubscription_Type_And_Name_For_InfrastructureWarning_inValidIW() {
+        SmartNotificationSubscription smartNotificationSubscriptionIW = new SmartNotificationSubscription();
+        smartNotificationSubscriptionIW.setType(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
+        assertNotEquals(SmartNotificationSubscriptionService.getSubscriptionTypeAndName(smartNotificationSubscriptionIW,
+            deviceDataMonitorList), "INFRASTRUCTURE_WARNINGDUMMY");
+    }
+}

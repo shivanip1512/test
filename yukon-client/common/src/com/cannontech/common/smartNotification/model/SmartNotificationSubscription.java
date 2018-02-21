@@ -2,14 +2,10 @@ package com.cannontech.common.smartNotification.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 
 public class SmartNotificationSubscription implements Serializable {
     private int id;
@@ -115,13 +111,4 @@ public class SmartNotificationSubscription implements Serializable {
         return true;
     }
 
-    public String getTypeAndDeviceDataMonitorName(List<DeviceDataMonitor> deviceDataMonitor) {
-        if (!deviceDataMonitor.isEmpty() && !parameters.isEmpty()) {
-            Integer monitorId = Integer.parseInt(parameters.get(DeviceDataMonitorEventAssembler.MONITOR_ID).toString());
-            Optional<DeviceDataMonitor> deviceDataMonitorName =
-                deviceDataMonitor.stream().filter(monitor -> monitor.getId().equals(monitorId)).findFirst();
-            return type.toString() + deviceDataMonitorName.get().getName();
-        }
-        return type.toString();
-    }
 }
