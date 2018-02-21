@@ -101,7 +101,7 @@ public class CapControlUnsolicitedMessagesModel extends BareDatedReportModelBase
             sql.append(", st.text state ");
             sql.append(", el.additionalinfo ipAddress ");
             sql.append("from (select * from cceventlog ");
-            sql.append("where text like '%unsolicited%' ");
+            sql.append("where LOWER(text) like '%unsolicited%' ");
             sql.append("and datetime > ? ");
             sql.append("and datetime <= ? ) el ");
             sql.append("join point p on p.pointid = el.pointid ");
