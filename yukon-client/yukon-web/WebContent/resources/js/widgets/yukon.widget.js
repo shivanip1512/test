@@ -160,13 +160,13 @@ function YukonWidget(shortName, parameters) {
             var widgetErrorDiv = $('<div>'),
                 errorMessage,
                 errorTitle;
-            if(jqXHR.status == "500"){
+            if (jqXHR.status === 500) {
                 errorMessage = yg.text.internalServerError;
                 errorTitle = (yg.text.ajaxError).replace(".", " : ");
-            } else if (jqXHR.status == "503") {
+            } else if (jqXHR.status === 503) {
                 errorMessage = yg.text.serviceUnavailableError;
                 errorTitle = (yg.text.ajaxError).replace(".", " : ");
-            } else if (jqXHR.status == "403") {
+            } else if (jqXHR.status === 403) {
                 errorMessage = yg.text.forbiddenError;
                 errorTitle = (yg.text.ajaxError).replace(".", " : ");
             } else {
