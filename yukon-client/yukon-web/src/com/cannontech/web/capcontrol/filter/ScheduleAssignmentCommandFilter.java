@@ -35,7 +35,12 @@ public class ScheduleAssignmentCommandFilter implements
                 //of VerifyNotOperatedIn command is variable, depending on what 
                 //min/hr/day/wk values are
                 SqlStatementBuilder retVal = new SqlStatementBuilder();
-                retVal.append("sa.Command").startsWith(command.getCommandName());
+                if (command == ScheduleCommand.VerifyNotOperatedIn) {
+                    retVal.append("sa.Command").startsWith(command.getCommandName().substring(0,41));
+                }
+                else {
+                    retVal.append("sa.Command").startsWith(command.getCommandName());
+                }
                 return retVal;
             }
         });

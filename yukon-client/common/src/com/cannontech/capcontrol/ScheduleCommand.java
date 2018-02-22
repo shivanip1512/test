@@ -3,6 +3,8 @@ package com.cannontech.capcontrol;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.message.capcontrol.model.CommandType;
 
 public enum ScheduleCommand {
@@ -71,9 +73,16 @@ public enum ScheduleCommand {
 	    return verifyList;
 	}
 	
-
+	static public ScheduleCommand getEnum(String value) {
+	    if (StringUtils.isNotEmpty(value) && value.contains(VerifyNotOperatedIn.getCommandName().substring(0,41))) {
+	        return VerifyNotOperatedIn;
+	    }
+	    return valueOf(value);
+	}
+	
     public static List<ScheduleCommand> getRequiredCommands() {
         return requiredCommands;
     }
+
 
 }

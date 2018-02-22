@@ -87,7 +87,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
         List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
         
         if (StringUtils.isNotEmpty(command) && !command.equals(NO_FILTER)) {
-            filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.valueOf(command)));
+            filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.getEnum(command)));
         }
         if (StringUtils.isNotEmpty(schedule) && !schedule.equals(NO_FILTER)) {
             filters.add(new ScheduleAssignmentFilter(schedule));
@@ -141,11 +141,10 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
         if (cmd != ScheduleCommand.VerifyNotOperatedIn) {
             cmdInput = cmd.getCommandName();
         } 
-        else {
-            if (StringUtils.isEmpty(cmdInput) 
-                    || !cmdInput.toLowerCase().startsWith(ScheduleCommand.VerifyNotOperatedIn.getCommandName().toLowerCase().substring(0, 41))) {
-                return AssignmentStatus.INVALID;
-            }
+        else if (StringUtils.isEmpty(cmdInput)
+                || !cmdInput.toLowerCase().startsWith(ScheduleCommand.VerifyNotOperatedIn.getCommandName().toLowerCase().substring(0, 41))) {
+            
+            return AssignmentStatus.INVALID;
         }
         
         if (paoIds.size() == 0) {
