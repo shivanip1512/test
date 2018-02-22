@@ -605,7 +605,16 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     // send regulator heartbeat messages as long as we are communicating
     if ( ! state->isCommsLost() )
     {
-        sendKeepAlive( subbus );
+        if ( subbus->isBusPerformingVerification() )
+        {
+            // This does nothing if remote control is already disabled
+            sendDisableRemoteControl( subbus );
+            state->setState( IVVCState::IVVC_WAIT );
+        }
+        else
+        {
+            sendKeepAlive( subbus );
+        }
     }
 
     stopDisabledDeviceHeartbeats( subbus );
