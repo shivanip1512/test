@@ -1062,9 +1062,6 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             case "enableNonUpdatedOnFailedScan":
                 dnpConfiguration.setEnableNonUpdatedOnFailedScan(Boolean.valueOf(item.getValue()));
                 break;
-            case "localTime":
-                dnpConfiguration.setLocalTime(Boolean.valueOf(item.getValue()));
-                break;
             case "timeOffset":
                 dnpConfiguration.setTimeOffset(item.getValue());
                 break;

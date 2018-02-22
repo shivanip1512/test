@@ -152,8 +152,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
     private JLabel internalRetriesLabel = null;
     private JLabel internalRetriesValueLabel = null;
-    private JLabel localTimeLabel = null;
-    private JLabel localTimeValueLabel = null;
+    private JLabel timeOffsetLabel = null;
+    private JLabel timeOffsetValueLabel = null;
     private JLabel timesyncLabel = null;
     private JLabel timesyncValueLabel = null;
     private JLabel omitTimeRequestLabel = null;
@@ -519,8 +519,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             GridBagConstraints assignedConfigLabelConstraints = new GridBagConstraints();
             GridBagConstraints retriesLabelConstraints = new GridBagConstraints();
             GridBagConstraints retriesValueLabelConstraints = new GridBagConstraints();
-            GridBagConstraints localTimeLabelConstraints = new GridBagConstraints();
-            GridBagConstraints localTimeValueLabelConstraints = new GridBagConstraints();
+            GridBagConstraints timeOffsetLabelConstraints = new GridBagConstraints();
+            GridBagConstraints timeOffsetValueLabelConstraints = new GridBagConstraints();
             GridBagConstraints timesyncLabelConstraints = new GridBagConstraints();
             GridBagConstraints timesyncValueLabelConstraints = new GridBagConstraints();
             GridBagConstraints omitTimeRequestLabelConstraints = new GridBagConstraints();
@@ -550,16 +550,16 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             retriesValueLabelConstraints.gridx = 1;
             retriesValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
 
-            localTimeLabelConstraints.insets = new Insets(3, 3, 3, 3);
-            localTimeLabelConstraints.gridy = 2;
-            localTimeLabelConstraints.gridx = 0;
-            localTimeLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            timeOffsetLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            timeOffsetLabelConstraints.gridy = 2;
+            timeOffsetLabelConstraints.gridx = 0;
+            timeOffsetLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
 
-            localTimeValueLabelConstraints.insets = new Insets(3, 3, 3, 3);
-            localTimeValueLabelConstraints.fill = GridBagConstraints.HORIZONTAL;
-            localTimeValueLabelConstraints.gridy = 2;
-            localTimeValueLabelConstraints.gridx = 1;
-            localTimeValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            timeOffsetValueLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            timeOffsetValueLabelConstraints.fill = GridBagConstraints.HORIZONTAL;
+            timeOffsetValueLabelConstraints.gridy = 2;
+            timeOffsetValueLabelConstraints.gridx = 1;
+            timeOffsetValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
 
             timesyncLabelConstraints.insets = new Insets(3, 3, 3, 3);
             timesyncLabelConstraints.gridy = 3;
@@ -599,8 +599,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             dnpConfigPanel.add(getAssignedDnpConfigLabel(), assignedConfigLabelConstraints);
             dnpConfigPanel.add(getInternalRetriesLabel(), retriesLabelConstraints);
             dnpConfigPanel.add(getInternalRetriesValueLabel(), retriesValueLabelConstraints);
-            dnpConfigPanel.add(getLocaltimeLabel(), localTimeLabelConstraints);
-            dnpConfigPanel.add(getLocaltimeValueLabel(), localTimeValueLabelConstraints);
+            dnpConfigPanel.add(getTimeOffsetLabel(), timeOffsetLabelConstraints);
+            dnpConfigPanel.add(getTimeOffsetValueLabel(), timeOffsetValueLabelConstraints);
             dnpConfigPanel.add(getTimesyncLabel(), timesyncLabelConstraints);
             dnpConfigPanel.add(getTimesyncValueLabel(), timesyncValueLabelConstraints);
             dnpConfigPanel.add(getOmitTimeRequestLabel(), omitTimeRequestLabelConstraints);
@@ -710,34 +710,34 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         return internalRetriesValueLabel;
     }
 
-    private JLabel getLocaltimeLabel() {
-        if (localTimeLabel == null) {
-            localTimeLabel = new JLabel();
-            localTimeLabel.setName("LocalTimeLabel");
-            localTimeLabel.setFont(new Font("dialog", 0, 14));
-            localTimeLabel.setText("Use Local Time: ");
-            localTimeLabel.setVisible(true);
-            localTimeLabel.setPreferredSize(new Dimension(172, 19));
-            localTimeLabel.setMaximumSize(new Dimension(172, 19));
-            localTimeLabel.setMinimumSize(new Dimension(172, 19));
-            localTimeLabel.setFont(new Font("Arial", 0, 14));
+    private JLabel getTimeOffsetLabel() {
+        if (timeOffsetLabel == null) {
+            timeOffsetLabel = new JLabel();
+            timeOffsetLabel.setName("TimeOffsetLabel");
+            timeOffsetLabel.setFont(new Font("dialog", 0, 14));
+            timeOffsetLabel.setText("Time Offset: ");
+            timeOffsetLabel.setVisible(true);
+            timeOffsetLabel.setPreferredSize(new Dimension(172, 19));
+            timeOffsetLabel.setMaximumSize(new Dimension(172, 19));
+            timeOffsetLabel.setMinimumSize(new Dimension(172, 19));
+            timeOffsetLabel.setFont(new Font("Arial", 0, 14));
         }
 
-        return localTimeLabel;
+        return timeOffsetLabel;
     }
 
-    private JLabel getLocaltimeValueLabel() {
-        if (localTimeValueLabel == null) {
-            localTimeValueLabel = new JLabel();
-            localTimeValueLabel.setFont(new Font("dialog", 0, 14));
-            localTimeValueLabel.setText(CtiUtilities.STRING_NONE);
-            localTimeValueLabel.setPreferredSize(new Dimension(172, 19));
-            localTimeValueLabel.setMaximumSize(new Dimension(172, 19));
-            localTimeValueLabel.setMinimumSize(new Dimension(172, 19));
-            localTimeValueLabel.setFont(new Font("Arial", 0, 14));
+    private JLabel getTimeOffsetValueLabel() {
+        if (timeOffsetValueLabel == null) {
+            timeOffsetValueLabel = new JLabel();
+            timeOffsetValueLabel.setFont(new Font("dialog", 0, 14));
+            timeOffsetValueLabel.setText(CtiUtilities.STRING_NONE);
+            timeOffsetValueLabel.setPreferredSize(new Dimension(172, 19));
+            timeOffsetValueLabel.setMaximumSize(new Dimension(172, 19));
+            timeOffsetValueLabel.setMinimumSize(new Dimension(172, 19));
+            timeOffsetValueLabel.setFont(new Font("Arial", 0, 14));
         }
 
-        return localTimeValueLabel;
+        return timeOffsetValueLabel;
     }
 
     private JLabel getTimesyncLabel() {
@@ -2781,7 +2781,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getAssignedDnpConfigLabel().setText(dnpConfig.getName());
 
                 int internalRetries = dnpConfig.getInternalRetries();
-                boolean localTime = dnpConfig.isLocalTime();
+                String timeOffset = dnpConfig.getTimeOffset();
                 boolean enableTimesyncs = dnpConfig.isEnableDnpTimesyncs();
                 boolean omitTimeRequest = dnpConfig.isOmitTimeRequest();
                 boolean unsolicitedEnabled1 = dnpConfig.isEnableUnsolicitedMessageClass1();
@@ -2790,7 +2790,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 String unsolicitedEnabled = Joiner.on(", ").join(unsolicitedEnabled1, unsolicitedEnabled2, unsolicitedEnabled3);
                 
                 getInternalRetriesValueLabel().setText(Integer.toString(internalRetries));
-                getLocaltimeValueLabel().setText(Boolean.toString(localTime));
+                getTimeOffsetValueLabel().setText(timeOffset);
                 getTimesyncValueLabel().setText(Boolean.toString(enableTimesyncs));
                 getOmitTimeRequestValueLabel().setText(Boolean.toString(omitTimeRequest));
                 getUnsolicitedValueLabel().setText(unsolicitedEnabled);
@@ -2799,8 +2799,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getAssignedDnpConfigLabel().setForeground(Color.RED);
                 getInternalRetriesValueLabel().setText("MISSING!");
                 getInternalRetriesValueLabel().setForeground(Color.RED);
-                getLocaltimeValueLabel().setText("MISSING!");
-                getLocaltimeValueLabel().setForeground(Color.RED);
+                getTimeOffsetValueLabel().setText("MISSING!");
+                getTimeOffsetValueLabel().setForeground(Color.RED);
                 getTimesyncValueLabel().setText("MISSING!");
                 getTimesyncValueLabel().setForeground(Color.RED);
                 getOmitTimeRequestValueLabel().setText("MISSING!");

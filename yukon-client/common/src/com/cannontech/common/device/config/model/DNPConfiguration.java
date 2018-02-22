@@ -9,7 +9,6 @@ public class DNPConfiguration extends LightDeviceConfiguration {
     private final static long serialVersionUID = 1L;
 
     private int internalRetries = 2;
-    private boolean localTime = false;
     private boolean enableDnpTimesyncs = false;
     private boolean omitTimeRequest = false;
     private boolean enableUnsolicitedMessageClass1 = true;
@@ -28,14 +27,6 @@ public class DNPConfiguration extends LightDeviceConfiguration {
 
     public void setInternalRetries(int internalRetries) {
         this.internalRetries = internalRetries;
-    }
-
-    public boolean isLocalTime() {
-        return localTime;
-    }
-
-    public void setLocalTime(boolean localTime) {
-        this.localTime = localTime;
     }
 
     public boolean isEnableDnpTimesyncs() {
