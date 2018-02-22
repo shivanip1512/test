@@ -30,9 +30,24 @@ struct test_DnpDevice : Cti::Devices::DnpDevice
         return pointHelper.getCachedStatusPointByControlOffset(offset);
     }
 
+    CtiPointSPtr getDeviceAnalogOutputPoint(int offset) override
+    {
+        return pointHelper.getCachedAnalogOutputPointByOffset(offset);
+    }
+
     void initControlPointOffset(int offset, CtiControlType_t controlType)
     {
         pointHelper.getCachedStatusPointByControlOffset(offset, controlType);
+    }
+
+    void initAnalogOutput(int offset)
+    {
+        pointHelper.points[AnalogPointType].emplace(5000 + offset, Cti::Test::makeAnalogPoint(-1, 112358, offset + 10'000));
+    }
+
+    void initAnalogOutput(int offset, int analogOutput, bool controlInhibited)
+    {
+        pointHelper.points[AnalogPointType].emplace(5000 + analogOutput, Cti::Test::makeAnalogOutputPoint(-1, 112358, offset, analogOutput, controlInhibited));
     }
 
     CtiPointSPtr getDevicePointByID(int pointId) override
@@ -507,6 +522,108 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_pointid_controloffset)
     BOOST_CHECK_EQUAL_RANGES(expected, output);
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_offset_pointoffset)
+{
+    //  set up the control point - rely on the analog output's offset
+    dev.initAnalogOutput(99);
+
+    CtiCommandParser parse("putvalue analog 99 182");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK(vgList.empty());
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+    BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+    BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+    const byte_str expected(
+        "05 64 12 C4 D2 04 01 00 0c B8 "
+        "C0 C1 05 29 02 28 01 00 62 00 B6 00 00 9D FE");
+
+    //  copy them into int vectors so they display nicely
+    const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+    BOOST_CHECK_EQUAL_RANGES(expected, output);
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_offset_controloffset)
+{
+    //  set up the control point - rely on the analog's control offset
+    dev.initAnalogOutput(13, 99, false);
+
+    CtiCommandParser parse("putvalue analog 99 182");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK(vgList.empty());
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+    BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+    BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+    const byte_str expected(
+        "05 64 12 C4 D2 04 01 00 0c B8 "
+        "C0 C1 05 29 02 28 01 00 62 00 B6 00 00 9D FE");
+
+    //  copy them into int vectors so they display nicely
+    const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+    BOOST_CHECK_EQUAL_RANGES(expected, output);
+}
+/*
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_offset_no_point)
+{
+    CtiCommandParser parse("putvalue analog 99 182");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_REQUIRE_EQUAL(outList.size(), 1);
+    BOOST_CHECK(vgList.empty());
+    BOOST_CHECK(retList.empty());
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.recvCommRequest(outList.front()));
+
+    delete_container(outList);  outList.clear();
+    delete_container(vgList);   vgList.clear();
+
+    CtiXfer xfer;
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dev.generate(xfer));
+
+    BOOST_CHECK_EQUAL(false, dev.isTransactionComplete());
+    BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+    const byte_str expected(
+        "05 64 12 C4 D2 04 01 00 0c B8 "
+        "C0 C1 05 29 02 28 01 00 62 00 B6 00 00 9D FE");
+
+    //  copy them into int vectors so they display nicely
+    const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+    BOOST_CHECK_EQUAL_RANGES(expected, output);
+}
+*/
 BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_point_lookup_failed)
 {
     CtiCommandParser parse("putvalue analog value 1776 select pointid 112358");
@@ -559,7 +676,7 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_no_control_information)
         "Test DNP device / Analog point has no control offset");
 }
 
-BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_control_inhibited)
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_pointid_control_inhibited)
 {
     CtiCommandParser parse("putvalue analog value 1776 select pointid 112358");
 
@@ -583,7 +700,38 @@ BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_control_inhibited)
     BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::ControlInhibitedOnPoint);
     BOOST_CHECK_EQUAL(ret->DeviceId(), -1);
     BOOST_CHECK_EQUAL(ret->ResultString(),
-        "Test DNP device / Control is inhibited for the specified analog point");
+        "Test DNP device / Control is inhibited for the specified analog point"
+        "\nPoint ID   : 112358"
+        "\nPoint name : Analog15");
+}
+
+BOOST_AUTO_TEST_CASE(test_dev_dnp_putvalue_analog_fail_offset_control_inhibited)
+{
+    CtiCommandParser parse("putvalue analog 99 1776");
+
+    dev.initAnalogOutput(13, 99, true);
+
+    BOOST_CHECK_EQUAL(ClientErrors::ControlInhibitedOnPoint, dev.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+    BOOST_CHECK(outList.empty());
+    BOOST_CHECK(vgList.empty());
+    BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+    const auto msg = retList.front();
+
+    BOOST_REQUIRE(msg);
+
+    const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
+
+    BOOST_REQUIRE(ret);
+
+    BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
+    BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::ControlInhibitedOnPoint);
+    BOOST_CHECK_EQUAL(ret->DeviceId(), -1);
+    BOOST_CHECK_EQUAL(ret->ResultString(),
+        "Test DNP device / Control is inhibited for the specified analog point"
+        "\nPoint ID   : 112358"
+        "\nPoint name : Analog13");
 }
 
 BOOST_AUTO_TEST_CASE(test_dev_dnp_control_fail_no_control_information)

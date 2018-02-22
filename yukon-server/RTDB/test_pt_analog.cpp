@@ -69,6 +69,9 @@ BOOST_AUTO_TEST_CASE(test_adjustStaticTags)
         //  analog, no control offset, no control available, all base flags off and on
         { "1234",    "AA",        "analog",       "99",         "31",           "7",           "N",           "N",            "R",          "None",        "8",               "9",     "10",            "11",            "12",       "13",         "14",         "15",       APR::getNullString(), APR::getNullString() },
         { "1234",    "AA",        "analog",       "99",         "31",           "7",           "Y",           "Y",            "P",          "None",        "8",               "9",     "10",            "11",            "12",       "13",         "14",         "15",       APR::getNullString(), APR::getNullString() },
+        //  analog, no control offset, point offset > 10,000 so control is available,  all base flags off and on
+        { "1234",    "AA",        "analog",       "99",         "31",           "10007",       "N",           "N",            "R",          "None",        "8",               "9",     "10",            "11",            "12",       "13",         "14",         "15",       APR::getNullString(), APR::getNullString() },
+        { "1234",    "AA",        "analog",       "99",         "31",           "10007",       "Y",           "Y",            "P",          "None",        "8",               "9",     "10",            "11",            "12",       "13",         "14",         "15",       APR::getNullString(), APR::getNullString() },
         //  analog output type, so control is available
         { "1234",    "AA",        "analogoutput", "99",         "31",           "7",           "N",           "N",            "R",          "None",        "8",               "9",     "10",            "11",            "12",       "13",         "14",         "15",       APR::getNullString(), APR::getNullString() },
         { "1234",    "AA",        "analogoutput", "99",         "31",           "7",           "Y",           "Y",            "P",          "None",        "8",               "9",     "10",            "11",            "12",       "13",         "14",         "15",       APR::getNullString(), APR::getNullString() },
@@ -91,6 +94,8 @@ BOOST_AUTO_TEST_CASE(test_adjustStaticTags)
     const std::vector<PointAttributes> pa_expected {
         { 0xcffffff8, AnalogPointType,       _, _, _, boost::none },   //  no flags
         { 0xeffffffb, AnalogPointType,       X, X, X, boost::none },   //  base flags
+        { 0xdffffff8, AnalogPointType,       _, _, _, boost::none },   //  control available
+        { 0xfffffffb, AnalogPointType,       X, X, X, boost::none },   //  control available + base flags
         { 0xdffffff8, AnalogOutputPointType, _, _, _, boost::none },   //  control available
         { 0xfffffffb, AnalogOutputPointType, X, X, X, boost::none },   //  control available + base flags
         { 0xdffffff8, AnalogPointType,       _, _, _, CP { 16, _ } },  //  control available
@@ -117,7 +122,6 @@ BOOST_AUTO_TEST_CASE(test_adjustStaticTags)
         BOOST_CHECK_EQUAL(p.getName(), "AA");
         BOOST_CHECK_EQUAL(p.getDeviceID(), 99);
         BOOST_CHECK_EQUAL(p.getStateGroupID(), 31);
-        BOOST_CHECK_EQUAL(p.getPointOffset(), 7);
         BOOST_CHECK_EQUAL(p.getArchiveType(), ArchiveTypeNone);
         BOOST_CHECK_EQUAL(p.getArchiveInterval(), 8);
         BOOST_CHECK_EQUAL(p.getPointUnits().getUnitID(), 9);

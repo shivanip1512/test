@@ -143,21 +143,11 @@ try
         }
         case PutValueRequest:
         {
-            int offset;
-
-            long control_offset = 0;
-
             if( parse.isKeyValid("analog") )
             {
-                if( parse.isKeyValid("analogoffset") )
+                if( parse.isKeyValid("analogoffset") || parse.isKeyValid("point") )
                 {
-                    throw YukonErrorException {
-                        ClientErrors::PointLookupFailed,
-                        "Analog outputs to CBC Logical must be sent to point IDs" };
-                }
-                if( parse.isKeyValid("point") )
-                {
-                    //  parent device will do point ID validation
+                    //  parent device will do point validation
                     return executeRequestOnParent(pReq->CommandString(), *pReq, retList);
                 }
             }

@@ -717,16 +717,37 @@ void CtiPointManager::addPoint( CtiPointBase *point )
         _pao_pointids.insert(std::make_pair(point->getDeviceID(), point->getPointID()));
 
         //  if it's a control point, add it into the control offset lookup map
-        if( point->getType() == StatusPointType )
+        switch( point->getType() )
         {
-            CtiPointStatus *pStatus = static_cast<CtiPointStatus *>(point);
-
-            if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+            case StatusPointType:
             {
-                if( controlParameters->getControlOffset() )
+                CtiPointStatus & status = static_cast<CtiPointStatus &>(*point);
+
+                if( const auto controlParameters = status.getControlParameters() )
                 {
-                    _control_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), controlParameters->getControlOffset()), point->getPointID()));
+                    if( controlParameters->getControlOffset() )
+                    {
+                        _control_offsets.emplace(pao_offset_t(status.getDeviceID(), controlParameters->getControlOffset()), status.getPointID());
+                    }
                 }
+                return;
+            }
+            case AnalogPointType:
+            {
+                CtiPointAnalog & analog = static_cast<CtiPointAnalog &>(*point);
+
+                if( const auto controlParameters = analog.getControl() )
+                {
+                    if( controlParameters->getControlOffset() )
+                    {
+                        _analog_outputs.emplace(pao_offset_t(analog.getDeviceID(), controlParameters->getControlOffset()), analog.getPointID());
+                    }
+                }
+                else if( analog.getPointOffset() > CtiPointAnalog::AnalogOutputOffset )
+                {
+                    _analog_outputs.emplace(pao_offset_t(analog.getDeviceID(), analog.getPointOffset() % CtiPointAnalog::AnalogOutputOffset), analog.getPointID());
+                }
+                return;
             }
         }
     }
@@ -912,33 +933,38 @@ boost::optional<long> CtiPointManager::getIdForOffsetAndType(long pao, int offse
 
 CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)
 {
-    ptr_type p;
-    ptr_type pRet;
-
     loadPao(pao, CALLSITE);
 
+    return lookupByPaoOffset(pao, Offset, _control_offsets);
+}
+
+CtiPointManager::ptr_type CtiPointManager::getAnalogOutput(LONG pao, INT Offset)
+{
+    loadPao(pao, CALLSITE);
+
+    return lookupByPaoOffset(pao, Offset, _analog_outputs);
+}
+
+CtiPointManager::ptr_type CtiPointManager::lookupByPaoOffset(long pao, int offset, std::map<pao_offset_t, long>& paoOffsetLookup)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    if( auto pointId = Cti::mapFind(paoOffsetLookup, pao_offset_t(pao, offset)) )
     {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        std::map<pao_offset_t, long>::const_iterator control_itr = _control_offsets.find(pao_offset_t(pao, Offset));
-
-        if( control_itr != _control_offsets.end() )
+        if( auto p = getPoint(*pointId) )
         {
-            if( p = getPoint(control_itr->second) )
+            if( p->getUpdatedFlag() )
             {
-                if( p->getUpdatedFlag() )
-                {
-                    pRet = p;
-                }
-                else
-                {
-                    CTILOG_WARN(dout, "Device ID: "<< p->getDeviceID() <<" : "<< p->getName()<<" point is non-updated");
-                }
+                return p;
+            }
+            else
+            {
+                CTILOG_WARN(dout, "Device ID: " << p->getDeviceID() << " : " << p->getName() << " point is non-updated");
             }
         }
     }
 
-    return pRet;
+    return nullptr;
 }
 
 

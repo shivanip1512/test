@@ -143,6 +143,7 @@ YukonError_t DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &par
 
 
 YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+try
 {
     YukonError_t nRet = ClientErrors::NoMethod;
 
@@ -181,18 +182,12 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                 if ( ! point )
                 {
-                    std::string errorMessage = "The specified point is not on the device";
-                    insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
-
-                    return ClientErrors::PointLookupFailed;
+                    throw YukonErrorException(ClientErrors::PointLookupFailed, "The specified point is not on the device");
                 }
 
                 if( ! point->isStatus() )
                 {
-                    std::string errorMessage = "The specified point is not Status type";
-                    insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
-
-                    return ClientErrors::PointLookupFailed;
+                    throw YukonErrorException(ClientErrors::PointLookupFailed, "The specified point is not Status type");
                 }
 
                 pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
@@ -285,10 +280,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 }
                 else
                 {
-                    std::string errorMessage = "The specified point has no control information";
-                    insertReturnMsg(ClientErrors::NoPointControlConfiguration, OutMessage, retList, errorMessage);
-
-                    return ClientErrors::NoPointControlConfiguration;
+                    throw YukonErrorException(ClientErrors::NoPointControlConfiguration, "The specified point has no control information");
                 }
             }
             else if( offset )
@@ -385,9 +377,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
             {
                 CTILOG_ERROR(dout, "DNP configuration missing for DNP device \""<< getName() <<"\"");
 
-                insertReturnMsg(ClientErrors::MissingConfig, OutMessage, retList, "DNP configuration missing for DNP device");
-
-                return ClientErrors::MissingConfig;
+                throw YukonErrorException(ClientErrors::MissingConfig, "DNP configuration missing for DNP device");
             }
 
             const bool omitTimeRequest = ciStringEqual(deviceConfig->getValueFromKey(DNPStrings::omitTimeRequest), "true");
@@ -435,78 +425,88 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
         case PutValueRequest:
         {
-            int offset;
+            static auto getAnalogControl = [](const CtiPointSPtr& point) 
+            {
+                if( point->getType() != AnalogPointType )
+                {
+                    throw YukonErrorException(ClientErrors::PointLookupFailed, "The specified point is not Analog type");
+                }
 
-            long control_offset = 0;
+                auto pAnalog = boost::static_pointer_cast<const CtiPointAnalog>(point);
+
+                const auto control = pAnalog->getControl();
+
+                if( control && control->isControlInhibited() )
+                {
+                    throw YukonErrorException(ClientErrors::ControlInhibitedOnPoint, "Control is inhibited for the specified analog point" + FormattedList::of(
+                        "Point ID",   point->getPointID(),
+                        "Point name", point->getName()));
+                }
+
+                return control;
+            };
 
             if( parse.isKeyValid("analog") )
             {
+                long control_offset = 0;
+
                 if( parse.isKeyValid("analogoffset") )
                 {
-                    control_offset = parse.getiValue("analogoffset");
+                    const auto analogoffset = parse.getiValue("analogoffset");
+
+                    if( const auto point = getDeviceAnalogOutputPoint(analogoffset) )
+                    {
+                        getAnalogControl(point);
+                    }
+
+                    control_offset = analogoffset;
                 }
                 else if( parse.isKeyValid("point") )
                 {
-                    const long pointid = parse.getiValue("point");
-
-                    const CtiPointSPtr point = getDevicePointByID(pointid);
-
-                    if ( ! point )
+                    if( const auto point = getDevicePointByID(parse.getiValue("point")) )
                     {
-                        std::string errorMessage = "The specified point is not on the device";
-                        insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
-
-                        return ClientErrors::PointLookupFailed;
-                    }
-
-                    if( point->getType() == AnalogPointType )
-                    {
-                        CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
-
-                        if( const CtiTablePointControl *control = pAnalog->getControl() )
+                        if( const auto control = getAnalogControl(point) )
                         {
-                            if( control->isControlInhibited() )
-                            {
-                                CTILOG_WARN(dout, "control inhibited for device \""<< getName() <<"\" point \""<< pAnalog->getName());
-
-                                std::string temp = "Control is inhibited for the specified analog point";
-
-                                insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
-
-                                return ClientErrors::ControlInhibitedOnPoint;
-                            }
                             control_offset = control->getControlOffset();
                         }
-                        else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
+                        else if( point->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
                         {
                             control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
                         }
                         else
                         {
-                            insertReturnMsg(ClientErrors::NoPointControlConfiguration, OutMessage, retList, "Analog point has no control offset");
-
-                            return ClientErrors::NoPointControlConfiguration;
+                            throw YukonErrorException(ClientErrors::NoPointControlConfiguration, "Analog point has no control offset");
                         }
                     }
+                    else 
+                    {
+                        throw YukonErrorException(ClientErrors::PointLookupFailed, "The specified point is not on the device");
+                    }
                 }
-
-                if( control_offset > 0 )
+                else
                 {
-                    controlout.control_offset = control_offset - 1;  //  convert to DNP's 0-based indexing
-
-                    if (parse.isKeyValid("analogfloatvalue"))
-                    {
-                        controlout.type = DnpProtocol::AnalogOutputFloatPointType;
-                    }
-                    else
-                    {
-                        controlout.type = DnpProtocol::AnalogOutputPointType;
-                    }
-
-                    controlout.aout.value     = parse.getdValue("analogvalue");
-
-                    command = DnpProtocol::Command_SetAnalogOut;
+                    break;
                 }
+
+                if( control_offset <= 0 )
+                {
+                    throw YukonErrorException(ClientErrors::BadParameter, "Invalid analog output offset (" + std::to_string(control_offset) + ")");
+                }
+
+                controlout.control_offset = control_offset - 1;  //  convert to DNP's 0-based indexing
+
+                if (parse.isKeyValid("analogfloatvalue"))
+                {
+                    controlout.type = DnpProtocol::AnalogOutputFloatPointType;
+                }
+                else
+                {
+                    controlout.type = DnpProtocol::AnalogOutputPointType;
+                }
+
+                controlout.aout.value     = parse.getdValue("analogvalue");
+
+                command = DnpProtocol::Command_SetAnalogOut;
             }
 
             break;
@@ -593,6 +593,12 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     }
 
     return nRet;
+}
+catch( YukonErrorException & ex )
+{
+    insertReturnMsg(ex.error_code, OutMessage, retList, ex.error_description);
+
+    return ex.error_code;
 }
 
 

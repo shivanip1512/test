@@ -311,6 +311,16 @@ CtiPointSPtr CtiDeviceBase::getDeviceControlPointOffsetEqual(INT offset)
     return pPoint;
 }
 
+CtiPointSPtr CtiDeviceBase::getDeviceAnalogOutputPoint(INT offset)
+{
+    if( _pointMgr )
+    {
+        return _pointMgr->getAnalogOutput( getID(), offset );
+    }
+
+    return nullptr;
+}
+
 CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type)
 {
     CtiPointSPtr pPoint;

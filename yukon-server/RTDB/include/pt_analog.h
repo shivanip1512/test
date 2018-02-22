@@ -21,6 +21,10 @@ class IM_EX_PNTDB CtiPointAnalog : public CtiPointNumeric
 
 public:
 
+    enum {
+        AnalogOutputOffset = 10'000
+    };
+
     //  NOTE - no WHERE clause, you will need to add your own!
     static std::string getSQLCoreStatement()
     {
@@ -69,7 +73,7 @@ public:
         tag &= ~TAG_MASK_CONTROL;
 
         tag |= makeStaticControlTags(
-                    _pointControl || getType() == AnalogOutputPointType,
+                    _pointControl || getType() == AnalogOutputPointType || getPointOffset() > AnalogOutputOffset,
                     _pointControl && _pointControl->isControlInhibited());
 
         return Inherited::adjustStaticTags(tag);

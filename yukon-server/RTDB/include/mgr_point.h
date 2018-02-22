@@ -43,6 +43,7 @@ private:
     };
 
     std::map     < pao_offset_t, long >  _control_offsets;  //  this map contains all control point offsets
+    std::map     < pao_offset_t, long >  _analog_outputs;   //  this map contains all analog output offsets
     std::multimap< pao_offset_t, long >  _type_offsets;     //  this map contains all point offsets
     std::multimap< long, long >          _pao_pointids;     //  this map contains the loaded pointids that belong to each pao
 
@@ -54,6 +55,8 @@ private:
     void loadPao(const long paoId, const Cti::CallSite cs);
 
     void removePoint(ptr_type pTempCtiPoint);
+
+    ptr_type lookupByPaoOffset(long pao, int offset, std::map<pao_offset_t, long>& paoOffsetLookup);
 
 protected:
     //  returns true if it encounters any reader errors occur during point loading
@@ -85,6 +88,7 @@ public:
 
     virtual ptr_type getPoint(LONG Pt, LONG pao = 0);
     virtual ptr_type getControlOffsetEqual(LONG pao, INT Offset);
+    virtual ptr_type getAnalogOutput(LONG pao, INT Offset);
     virtual ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqualByName(LONG pao, const std::string& pname);
     virtual void     getEqualByPAO(long pao, std::vector<ptr_type> &points);

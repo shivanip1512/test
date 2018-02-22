@@ -323,6 +323,32 @@ struct DevicePointHelper
         return getCachedStatusPointByControlOffset(controlOffset, ControlType_Normal);
     }
 
+    CtiPointSPtr getCachedAnalogOutputPointByOffset(const int analogOutputOffset)
+    {
+        const CtiPointType_t type = AnalogPointType;
+        int offset = analogOutputOffset + 5000;
+
+        CtiPointSPtr &point = points[type][offset];
+
+        if( point )
+        {
+            return point;
+        }
+
+        unsigned pointId = 0;
+
+        for( const auto &p : points )
+        {
+            pointId += p.second.size();
+        }
+
+        const unsigned long deviceId = reinterpret_cast<unsigned long>(&points);
+
+        point.reset(makeAnalogOutputPoint(deviceId, pointId, offset, analogOutputOffset, false));
+
+        return point;
+    }
+
     CtiPointSPtr getCachedStatusPointByControlOffset(const int controlOffset, const CtiControlType_t controlType)
     {
         const CtiPointType_t type = StatusPointType;

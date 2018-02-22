@@ -193,6 +193,7 @@ public:
     virtual CtiPointSPtr getDevicePointByName(const std::string& pname);
     virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type);
     virtual CtiPointSPtr getDeviceControlPointOffsetEqual(INT offset);
+    virtual CtiPointSPtr getDeviceAnalogOutputPoint(INT offset);
     virtual boost::optional<long> getPointIdForOffsetAndType(int offset, CtiPointType_t type);
 
     virtual CtiTransmitterInfo* getTrxInfo(); // Porter side info to retrieve transmitter device bookkeeping!

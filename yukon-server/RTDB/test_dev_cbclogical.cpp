@@ -424,6 +424,28 @@ BOOST_AUTO_TEST_CASE(test_command_success)
     delete_container(retList);
     retList.clear();
 
+    //  putvalue analog with offset
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog 117 17.5"));
+
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto msg = retList.front();
+
+        BOOST_REQUIRE(msg);
+
+        const auto req = dynamic_cast<const CtiRequestMsg*>(msg);
+
+        BOOST_REQUIRE(req);
+
+        BOOST_CHECK_EQUAL(req->DeviceId(), 1729);
+        BOOST_CHECK_EQUAL(req->CommandString(), "putvalue analog 117 17.5");
+    }
+    delete_container(retList);
+    retList.clear();
+
     //  control point required for control with offset or pointid
     dev.logicalPoint.reset(Cti::Test::makeControlPoint(1729, 17, 172, 3458, ControlType_Normal));
 
@@ -792,31 +814,6 @@ BOOST_AUTO_TEST_CASE(test_command_fail)
             "\nOverride device ID      : 2"
             "\nOverride control offset : -17"
             "\nAttribute               : CONTROL_POINT");
-    }
-    delete_container(retList);
-    retList.clear();
-
-    //  putvalue analog with offset
-    {
-        BOOST_CHECK_EQUAL(ClientErrors::None, execute(dev, "putvalue analog 117 17.5"));
-
-        BOOST_CHECK(outList.empty());
-        BOOST_CHECK(vgList.empty());
-        BOOST_REQUIRE_EQUAL(retList.size(), 1);
-
-        const auto msg = retList.front();
-
-        BOOST_REQUIRE(msg);
-
-        const auto ret = dynamic_cast<const CtiReturnMsg*>(msg);
-
-        BOOST_REQUIRE(ret);
-
-        BOOST_CHECK_EQUAL(ret->ExpectMore(), false);
-        BOOST_CHECK_EQUAL(ret->Status(), ClientErrors::PointLookupFailed);
-        BOOST_CHECK_EQUAL(ret->DeviceId(), 1776);
-        BOOST_CHECK_EQUAL(ret->ResultString(),
-            "George Washington / Analog outputs to CBC Logical must be sent to point IDs");
     }
     delete_container(retList);
     retList.clear();
