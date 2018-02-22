@@ -156,6 +156,38 @@ function YukonWidget(shortName, parameters) {
             if (button.length > 0) { // if the cotainer included the button, it won't be there anymore
                 yukon.ui.unbusy(button);
             }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            var widgetErrorDiv = $('<div>'),
+                errorMessage,
+                errorTitle;
+            if(jqXHR.status == "500"){
+                errorMessage = yg.text.internalServerError;
+                errorTitle = (yg.text.ajaxError).replace(".", " : ");
+            } else if (jqXHR.status == "503") {
+                errorMessage = yg.text.serviceUnavailableError;
+                errorTitle = (yg.text.ajaxError).replace(".", " : ");
+            } else if (jqXHR.status == "403") {
+                errorMessage = yg.text.forbiddenError;
+                errorTitle = (yg.text.ajaxError).replace(".", " : ");
+            } else {
+                errorTitle = yg.text.ajaxError;
+            }
+            
+            var errorTitle = $('<div>', {
+                class : 'fwb error',
+                text: errorTitle
+            });
+            widgetErrorDiv.append(errorTitle);
+            
+            if (errorMessage.length > 0) {
+                var errorMsgDiv = $('<div>', {
+                    text: errorMessage,
+                    class: 'stacked-md'
+                });
+                widgetErrorDiv.append(errorMsgDiv);
+            }
+            
+            $(document.getElementById(args.containerID)).html(widgetErrorDiv.html());
         });
     };
 
