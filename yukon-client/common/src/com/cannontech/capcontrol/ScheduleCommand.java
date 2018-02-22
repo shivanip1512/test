@@ -15,15 +15,24 @@ public enum ScheduleCommand {
 	VerifyNotOperatedIn("Verify CapBanks that have not operated in 0 min 0 hr 0 day 0 wk", CommandType.VERIFY_INACTIVE_BANKS.getCommandId()),
     ConfirmSub("Confirm Sub", CommandType.CONFIRM_SUBSTATION_BUS.getCommandId()),
     SendTimeSyncs("Send Time Syncs", CommandType.SEND_TIME_SYNC.getCommandId()),
-    SendSyncCBCCapbankStates("Sync CapBank States", CommandType.SEND_SYNC_CBC_CAPBANK_STATE.getCommandId());
+    SendSyncCBCCapbankStates("Sync CapBank States", CommandType.SEND_SYNC_CBC_CAPBANK_STATE.getCommandId()),
+    DmvTest("DMV Test", CommandType.SCHEDULE_DMV_TEST.getCommandId());
 
-	private static List<ScheduleCommand> verifyList = null;
+    private static List<ScheduleCommand> verifyList = null;
+    private static List<ScheduleCommand> requiredCommands = null;
 	
 	static {
 	    verifyList = new ArrayList<ScheduleCommand>();
         for(ScheduleCommand command : ScheduleCommand.values()){
             if(command.commandName.startsWith("Verify")){
                 verifyList.add(command);
+            }
+        }
+        
+        requiredCommands = new ArrayList<ScheduleCommand>();
+        for (ScheduleCommand command : ScheduleCommand.values()) {
+            if (command != DmvTest) {
+                requiredCommands.add(command);
             }
         }
 	}
@@ -61,4 +70,10 @@ public enum ScheduleCommand {
 	static public List<ScheduleCommand> getVerifyCommandsList(){
 	    return verifyList;
 	}
+	
+
+    public static List<ScheduleCommand> getRequiredCommands() {
+        return requiredCommands;
+    }
+
 }

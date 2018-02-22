@@ -79,6 +79,9 @@
 <entry key="yukon.web.picker.user.userId">User Id</entry>
 <entry key="yukon.web.picker.userPicker.dialogTitle">Select User</entry>
 
+<!-- DMVTest Picker -->
+<entry key="yukon.web.picker.dmvTest.name">DMV Test</entry>
+<entry key="yukon.web.picker.dmvTestPicker.dialogTitle">Select DMV Test</entry>
 
 <!-- Monitor Picker -->
 <entry key="yukon.web.picker.monitor.name">Monitor</entry>

@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.capcontrol.ScheduleCommand;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -63,6 +65,7 @@ public class ScheduleController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private ConfigurationSource configurationSource;
     
     private static final String baseKey = "yukon.web.modules.capcontrol.scheduleAssignments";
 
@@ -91,8 +94,9 @@ public class ScheduleController {
         //Filter, sort and get search results
         List<PaoScheduleAssignment> assignments = scheduleService.getAssignmentsByFilter(command, schedule);
         model.addAttribute("assignments", assignments);
-        
-        model.addAttribute("commandList", ScheduleCommand.values());
+
+        setDMVTestCommand(model);
+
         model.addAttribute("verifyCommandsList", ScheduleCommand.getVerifyCommandsList());
 
         List<PaoSchedule> schedules = paoScheduleDao.getAll(); 
@@ -342,11 +346,11 @@ public class ScheduleController {
     }
 
     @RequestMapping(value="addPao")
-    public String addPao(int scheduleId, ScheduleCommand cmd, String paoIdList, String cmdInput, FlashScope flash) {
+    public String addPao(int scheduleId, ScheduleCommand cmd, String paoIdList, FlashScope flash, String cmdInput, Integer dmvTestId) {
         
         List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
         
-        AssignmentStatus result = scheduleService.assignCommand(scheduleId, cmd, paoIds, cmdInput);
+        AssignmentStatus result = scheduleService.assignCommand(scheduleId, cmd, paoIds, cmdInput, dmvTestId);
         
         switch (result) {
         case DUPLICATE:
@@ -361,6 +365,9 @@ public class ScheduleController {
         case INVALID:
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".noScheduleOrCommand"));
             break;
+        case NO_DMVTEST:
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".noDmvTestCommand"));
+            break;
         }
     
         return "redirect:assignments";
@@ -374,13 +381,12 @@ public class ScheduleController {
             @RequestParam(defaultValue="All") String schedule,
             @RequestParam(defaultValue="All") String command) {
 
-        List<PaoSchedule> schedList = paoScheduleDao.getAll();
+        setDMVTestCommand(map);
 
+        List<PaoSchedule> schedList = paoScheduleDao.getAll();
         map.addAttribute("schedule", schedule);
         map.addAttribute("command", command);
-        map.addAttribute("commandList", ScheduleCommand.values());
         map.addAttribute("scheduleList", schedList);
-        
         return "schedule/startMultiScheduleAssignmentPopup.jsp";
     }
     
@@ -409,17 +415,27 @@ public class ScheduleController {
     public String newScheduleAssignmentPopup(ModelMap map,
             @RequestParam(defaultValue="All") String schedule,
             @RequestParam(defaultValue="All") String command) {
-
+        setDMVTestCommand(map);
         List<PaoSchedule> schedList = paoScheduleDao.getAll();
-        
+
         map.addAttribute("schedule", schedule);
         map.addAttribute("command", command);
-        map.addAttribute("commandList", ScheduleCommand.values());
         map.addAttribute("scheduleList", schedList);
         
         return "schedule/newScheduleAssignmentPopup.jsp";
     }
-    
+
+    private void setDMVTestCommand(ModelMap map) {
+        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(
+            configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+
+        if (usesDmvTest) {
+            map.addAttribute("dmvTestCommand", ScheduleCommand.DmvTest);
+            map.addAttribute("commandList", ScheduleCommand.values());
+        } else {
+            map.addAttribute("commandList", ScheduleCommand.getRequiredCommands());
+        }
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {

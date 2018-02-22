@@ -57,5 +57,20 @@
                 </tr>
             </table>
         </div>
+        <div id="dmvTestDiv" class="dn">
+            <table>
+                <tr>
+                    <td>DMV Test:&nbsp;</td>
+                    <td>
+                        <input type="hidden" name="dmvTestCommand" value="${dmvTestCommand}"/>  
+                        <tags:pickerDialog type="dmvTestPicker"
+                                           id="dmvTestPicker" 
+                                           destinationFieldName="dmvTestId"
+                                           linkType="selection" 
+                                           selectionProperty="dmvTestName" />
+                    </td>
+                </tr>
+            </table>
+        </div>
     </form>
 </cti:msgScope>

@@ -75,7 +75,8 @@ public enum CommandType implements DisplayableEnum {
     VOLTAGE_REGULATOR_KEEP_ALIVE_ENABLE(75),
     VOLTAGE_REGULATOR_KEEP_ALIVE_DISABLE(76),
     
-    DYNAMIC(77);
+    DYNAMIC(77),
+    SCHEDULE_DMV_TEST(80);
     
     private int commandId;
     

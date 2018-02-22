@@ -16,6 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.capcontrol.ScheduleCommand;
+import com.cannontech.capcontrol.dao.DmvTestDao;
 import com.cannontech.cbc.commands.CapControlCommandExecutor;
 import com.cannontech.cbc.commands.CommandHelper;
 import com.cannontech.clientutils.YukonLogManager;
@@ -49,6 +50,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private FilterDao filterDao;
     @Autowired private PaoScheduleDao paoScheduleDao;
+    @Autowired private DmvTestDao dmvTestDao;
     
     private static final String NO_FILTER = "All";
     private static PeriodFormatter periodFormatter;
@@ -130,7 +132,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
     
     
     @Override
-    public AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds, String cmdInput) {
+    public AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds, String cmdInput, Integer dmvTestId) {
         
         if (cmd == null) {
             return AssignmentStatus.INVALID;
@@ -150,10 +152,21 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
             return AssignmentStatus.NO_DEVICES;
         } else {
             List<PaoScheduleAssignment> assignments = new ArrayList<PaoScheduleAssignment>();
-            
+
+            if (cmd == ScheduleCommand.DmvTest && dmvTestId == null) {
+                return AssignmentStatus.NO_DMVTEST;
+            }
+
             for (Integer paoId : paoIds) {
                 PaoScheduleAssignment newAssignment = new PaoScheduleAssignment();
-                newAssignment.setCommandName(cmdInput);
+
+                if (cmd == ScheduleCommand.DmvTest) {
+                    String dmvTestCommand= dmvTestDao.getDmvTestById(dmvTestId).getName();
+                    newAssignment.setCommandName(cmd.getCommandName() + ": " + dmvTestCommand);
+                } else {
+                    newAssignment.setCommandName(cmdInput);
+                }
+                
                 newAssignment.setPaoId(paoId);
                 newAssignment.setScheduleId(scheduleId);
                 newAssignment.setDisableOvUv("N");

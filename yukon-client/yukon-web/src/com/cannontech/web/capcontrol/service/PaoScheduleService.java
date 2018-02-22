@@ -34,14 +34,14 @@ public interface PaoScheduleService {
      * Enumeration of possible statuses when attempting to assign a command
      *
      */
-    enum AssignmentStatus { SUCCESS, NO_DEVICES, DUPLICATE, INVALID }
+    enum AssignmentStatus { SUCCESS, NO_DEVICES, DUPLICATE, INVALID , NO_DMVTEST }
     
     /**
      * Assigns command to schedule for a list of pao ids, and sends out DB updates for each assigned object.
      * @return {@link AssignmentStatus#SUCCESS} when this operation is successful,
      * other {@link AssignmentStatus} values for error reasons. 
      */
-    AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds, String cmdInput);
+    AssignmentStatus assignCommand(int scheduleId, ScheduleCommand cmd, List<Integer> paoIds, String cmdInput, Integer dmvTestId);
     
     /**
      * Removes an assignment by id (eventId is the primary key for ScheduleAssignment)
