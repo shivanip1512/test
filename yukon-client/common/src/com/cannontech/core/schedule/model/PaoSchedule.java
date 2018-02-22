@@ -82,6 +82,8 @@ public class PaoSchedule {
         SEVEN_DAYS(Duration.standardDays(7)),
         FOURTEEN_DAYS(Duration.standardDays(14)),
         THIRTY_DAYS(Duration.standardDays(30)),
+        NINETY_DAYS(Duration.standardDays(90)),
+        THREE_HUNDRED_SIXTY_FIVE_DAYS(Duration.standardDays(365)),
         ;
 
         private Duration duration;
