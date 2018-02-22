@@ -137,6 +137,11 @@ INSERT INTO MaintenanceTaskSettings (SettingType, Value)
 /* @error ignore-end */
 /* End YUK-17652 */
 
+/* Start YUK-17955 */
+UPDATE PAOSchedule SET Disabled = 'Y' WHERE Disabled = '1';
+UPDATE PAOSchedule SET Disabled = 'N' WHERE Disabled = '0';
+/* End YUK-17955 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
