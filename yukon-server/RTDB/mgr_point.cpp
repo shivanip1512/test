@@ -1027,6 +1027,7 @@ void CtiPointManager::ClearList(void)
     _pao_pointids.clear();
     _type_offsets.clear();
     _control_offsets.clear();
+    _analog_outputs.clear();
 
     _paoids_loaded.clear();
     _all_paoids_loaded = false;
@@ -1151,9 +1152,25 @@ void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
 
             if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
             {
-                if( controlParameters->getControlOffset() )
+                if( const auto controlOffset = controlParameters->getControlOffset() )
                 {
-                    _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), controlParameters->getControlOffset()));
+                    _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), controlOffset));
+                }
+            }
+        }
+        else if( pTempCtiPoint->getType() == AnalogPointType )
+        {
+            const auto & analog = static_cast<const CtiPointAnalog&>(*pTempCtiPoint);
+
+            if( auto control = analog.getControl() )
+            {
+                if( const auto offset = control->getControlOffset() )
+                {
+                    _analog_outputs.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), offset));
+                }
+                else if( analog.getPointOffset() > CtiPointAnalog::AnalogOutputOffset )
+                {
+                    _analog_outputs.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), analog.getPointOffset() % CtiPointAnalog::AnalogOutputOffset));
                 }
             }
         }
