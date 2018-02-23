@@ -27,6 +27,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
     public static final String DISABLE_OVUVSTATE = "subOVUVDisabled";
     private CapControlSubstationBus capControlSubstationBus = null;
     private List<CCFeederSubAssignment> ccFeederList = null;
+    private boolean verificationFlag = false;
     
     public CapControlSubBus() {
         super(PaoType.CAP_CONTROL_SUBBUS);
@@ -252,6 +253,14 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
         }
 
         return completeBus;
+    }
+
+    public boolean isVerificationFlag() {
+        return verificationFlag;
+    }
+
+    public void setVerificationFlag(boolean verificationFlag) {
+        this.verificationFlag = verificationFlag;
     }
 
 }

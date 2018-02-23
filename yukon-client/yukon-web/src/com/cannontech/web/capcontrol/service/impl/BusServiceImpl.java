@@ -25,6 +25,7 @@ import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.models.Assignment;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
@@ -74,6 +75,8 @@ public class BusServiceImpl implements BusService {
          */
 
         bus.setSchedules(assigns);
+        SubBus ccBus = ccCache.getSubBus(id);
+        bus.setVerificationFlag(ccBus.getVerificationFlag());
         return bus;
     }
 

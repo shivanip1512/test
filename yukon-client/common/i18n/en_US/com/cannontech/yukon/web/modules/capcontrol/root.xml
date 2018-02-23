@@ -611,6 +611,7 @@
     <entry key="yukon.web.modules.capcontrol.bus.saved">Bus was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.bus.delete.success">Bus {0} deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.bus.noAssignedFeeders">No Assigned Feeders</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.verificationStatusDisabled">Bus cannot be enabled during verification.</entry>
     
     <entry key="yukon.web.modules.capcontrol.edit.capbanks">Add/Remove CapBanks</entry>
     <entry key="yukon.web.modules.capcontrol.edit.capbanks.label">Add/Remove CapBanks</entry>

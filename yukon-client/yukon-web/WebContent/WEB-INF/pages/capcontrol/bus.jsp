@@ -63,8 +63,11 @@
                             <tags:input path="name" maxlength="60" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".status">
-                            <tags:switchButton path="disabled" inverse="${true}"
-                                offNameKey=".disabled.label" onNameKey=".enabled.label" />
+                            <c:if test="${bus.verificationFlag}">
+                                <cti:msg2 var="statusDisabled" key=".verificationStatusDisabled"/>
+                            </c:if>
+                            <span title="${statusDisabled}"><tags:switchButton path="disabled" inverse="${true}" disabled="${bus.verificationFlag}" 
+                                offNameKey=".disabled.label" onNameKey=".enabled.label" /></span>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".geoName">
                             <tags:input path="geoAreaName" maxlength="60"/>

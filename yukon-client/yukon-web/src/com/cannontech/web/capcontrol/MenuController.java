@@ -136,7 +136,9 @@ public class MenuController {
         List<CommandType> commands = Lists.newArrayList();
         commands.add(CommandType.CONFIRM_SUBSTATION_BUS);
         if (subBus.getCcDisableFlag()) {
-            commands.add(CommandType.ENABLE_SUBSTATION_BUS);
+            if (!subBus.getVerificationFlag()) {
+                commands.add(CommandType.ENABLE_SUBSTATION_BUS);
+            }
         } else {
             commands.add(CommandType.DISABLE_SUBSTATION_BUS);
         }
