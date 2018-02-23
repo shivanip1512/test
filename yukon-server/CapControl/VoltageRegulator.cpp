@@ -486,32 +486,44 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
     }
     else    // set point calculations...
     {
-        const double currentVoltage       = getVoltage();
-        const double currentSetPoint      = _controlPolicy->getSetPointValue();
         const double currentHalfBandwidth = _controlPolicy->getSetPointBandwidth() / 2.0;
 
-        const bool withinBandwidth =
-            ( ( ( currentSetPoint - currentHalfBandwidth ) < currentVoltage ) &&
-            ( currentVoltage < ( currentSetPoint + currentHalfBandwidth ) ) );
-
-        const double voltageWindow = currentVoltage - currentSetPoint;
-
-        if ( withinBandwidth )
+        if ( adjuster == Single )   // old way for normal IVVC ops
         {
-            if ( changeAmount > 0 )
-            {
-                const int Ntaps = std::abs( 1 +
-                    ( ( currentHalfBandwidth + voltageWindow ) / voltageChangePerTap ) );
+            const double currentVoltage       = getVoltage();
+            const double currentSetPoint      = _controlPolicy->getSetPointValue();
 
-                return Ntaps * voltageChangePerTap;
-            }
-            else
-            {
-                const int Ntaps = std::abs( 1 +
-                    ( ( currentHalfBandwidth - voltageWindow ) / voltageChangePerTap ) );
+            const bool withinBandwidth =
+                ( ( ( currentSetPoint - currentHalfBandwidth ) < currentVoltage ) &&
+                ( currentVoltage < ( currentSetPoint + currentHalfBandwidth ) ) );
 
-                return -Ntaps * voltageChangePerTap;
+            const double voltageWindow = currentVoltage - currentSetPoint;
+
+            if ( withinBandwidth )
+            {
+                if ( changeAmount > 0 )
+                {
+                    const int Ntaps = std::abs( 1 +
+                        ( ( currentHalfBandwidth + voltageWindow ) / voltageChangePerTap ) );
+
+                    return Ntaps * voltageChangePerTap;
+                }
+                else
+                {
+                    const int Ntaps = std::abs( 1 +
+                        ( ( currentHalfBandwidth - voltageWindow ) / voltageChangePerTap ) );
+
+                    return -Ntaps * voltageChangePerTap;
+                }
             }
+        }
+        else
+        {
+            const double adjustment =  std::abs( changeAmount ) + currentHalfBandwidth - voltageChangePerTap;
+
+            return ( changeAmount > 0 )
+                        ? adjustment
+                        : -adjustment;
         }
     }
 

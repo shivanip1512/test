@@ -197,20 +197,20 @@ unsigned long IVVCState::getCommsRetryCount() const
 
 bool IVVCState::hasDmvTestState()
 {
-    return static_cast<bool>(_DmvTestData);
+    return static_cast<bool>(_dmvTestData);
 }
 
 void IVVCState::setDmvTestState( std::unique_ptr<DmvTestData> testData )
 {
-    _DmvTestData = std::move( testData );
+    _dmvTestData = std::move( testData );
 }
 
 void IVVCState::deleteDmvState()
 {
-    _DmvTestData.reset();
+    _dmvTestData.reset();
 }
 
-std::unique_ptr<DmvTestData> & IVVCState::getDmvTestData()
+DmvTestData & IVVCState::getDmvTestData()
 {
-    return _DmvTestData;
+    return *_dmvTestData;
 }

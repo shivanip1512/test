@@ -180,6 +180,37 @@ struct gang_operated_voltage_regulator_fixture_setpoint
 
 BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap, gang_operated_voltage_regulator_fixture_direct_tap )
 
+BOOST_AUTO_TEST_CASE(test_requestVoltageChange)
+{
+    regulator->loadAttributes( &attributes );
+
+    BOOST_CHECK_EQUAL( 0.75, regulator->requestVoltageChange( 0.75 ) );
+
+    BOOST_CHECK_EQUAL( 0.75, regulator->requestVoltageChange( 0.75, VoltageRegulator::Single ) );
+    BOOST_CHECK_EQUAL( 0.75, regulator->requestVoltageChange( 1.50, VoltageRegulator::Single ) );
+
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 1.50, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 2.25, regulator->requestVoltageChange( 2.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 3.00, regulator->requestVoltageChange( 2.50, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 1.50, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 2.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 2.25, regulator->requestVoltageChange( 2.50, VoltageRegulator::Exclusive ) );
+
+    BOOST_CHECK_EQUAL( -0.75, regulator->requestVoltageChange( -0.75 ) );
+
+    BOOST_CHECK_EQUAL( -0.75, regulator->requestVoltageChange( -0.75, VoltageRegulator::Single ) );
+    BOOST_CHECK_EQUAL( -0.75, regulator->requestVoltageChange( -1.50, VoltageRegulator::Single ) );
+
+    BOOST_CHECK_EQUAL( -1.50, regulator->requestVoltageChange( -1.50, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -2.25, regulator->requestVoltageChange( -2.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -3.00, regulator->requestVoltageChange( -2.50, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( -1.50, regulator->requestVoltageChange( -1.50, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -1.50, regulator->requestVoltageChange( -2.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -2.25, regulator->requestVoltageChange( -2.50, VoltageRegulator::Exclusive ) );
+}
+
 BOOST_AUTO_TEST_CASE(test_IntegrityScan_Fail)
 {
     BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingAttribute );
@@ -773,6 +804,108 @@ BOOST_AUTO_TEST_SUITE_END()
 
 
 BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_SetPoint, gang_operated_voltage_regulator_fixture_setpoint )
+
+BOOST_AUTO_TEST_CASE(test_requestVoltageChange)
+{
+    regulator->loadAttributes( &attributes );
+
+    {
+        const std::vector<CtiPointDataMsg>    incomingPointData
+        {
+            { 2203, 120.0,  NormalQuality,  AnalogPointType },      // Load side voltage is 120 volts
+            { 7000, 120.0,  NormalQuality,  AnalogPointType },      // Forward SetPoint is 120 volts
+            { 7100,   2.0,  NormalQuality,  AnalogPointType },      // Forward Bandwidth is 2 volts
+            { 3500,   3.0,  NormalQuality,  AnalogPointType }       // Tap is in position +3
+        };
+
+        for ( auto message : incomingPointData )
+        {
+            regulator->handlePointData( message );
+        }
+    }
+
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 0.75 ) );
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 1.25 ) );
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 2.50 ) );
+
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 0.75, VoltageRegulator::Single ) );
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 1.25, VoltageRegulator::Single ) );
+    BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 2.50, VoltageRegulator::Single ) );
+
+    BOOST_CHECK_EQUAL( 3.25, regulator->requestVoltageChange( 3.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 4.25, regulator->requestVoltageChange( 4.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 5.25, regulator->requestVoltageChange( 5.00, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( 3.25, regulator->requestVoltageChange( 3.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 4.25, regulator->requestVoltageChange( 4.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 5.25, regulator->requestVoltageChange( 5.00, VoltageRegulator::Exclusive ) );
+
+    BOOST_CHECK_EQUAL( -1.50, regulator->requestVoltageChange( -0.75 ) );
+    BOOST_CHECK_EQUAL( -1.50, regulator->requestVoltageChange( -1.25 ) );
+    BOOST_CHECK_EQUAL( -1.50, regulator->requestVoltageChange( -2.50 ) );
+
+    BOOST_CHECK_EQUAL( -3.25, regulator->requestVoltageChange( -3.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -4.25, regulator->requestVoltageChange( -4.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -5.25, regulator->requestVoltageChange( -5.00, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( -3.25, regulator->requestVoltageChange( -3.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -4.25, regulator->requestVoltageChange( -4.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -5.25, regulator->requestVoltageChange( -5.00, VoltageRegulator::Exclusive ) );
+
+
+    regulator->handlePointData( { 2203, 120.8,  NormalQuality,  AnalogPointType } );    // Load side voltage is 120.8 volts
+
+    BOOST_CHECK_EQUAL( 2.25, regulator->requestVoltageChange( 0.75 ) );
+    BOOST_CHECK_EQUAL( 2.25, regulator->requestVoltageChange( 1.25 ) );
+    BOOST_CHECK_EQUAL( 2.25, regulator->requestVoltageChange( 2.50 ) );
+
+    BOOST_CHECK_EQUAL( 3.25, regulator->requestVoltageChange( 3.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 4.25, regulator->requestVoltageChange( 4.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 5.25, regulator->requestVoltageChange( 5.00, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( 3.25, regulator->requestVoltageChange( 3.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 4.25, regulator->requestVoltageChange( 4.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 5.25, regulator->requestVoltageChange( 5.00, VoltageRegulator::Exclusive ) );
+
+    BOOST_CHECK_EQUAL( -0.75, regulator->requestVoltageChange( -0.75 ) );
+    BOOST_CHECK_EQUAL( -0.75, regulator->requestVoltageChange( -1.25 ) );
+    BOOST_CHECK_EQUAL( -0.75, regulator->requestVoltageChange( -2.55 ) );
+
+    BOOST_CHECK_EQUAL( -3.25, regulator->requestVoltageChange( -3.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -4.25, regulator->requestVoltageChange( -4.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -5.25, regulator->requestVoltageChange( -5.00, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( -3.25, regulator->requestVoltageChange( -3.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -4.25, regulator->requestVoltageChange( -4.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -5.25, regulator->requestVoltageChange( -5.00, VoltageRegulator::Exclusive ) );
+
+
+    regulator->handlePointData( { 2203, 119.2,  NormalQuality,  AnalogPointType } );    // Load side voltage is 119.2 volts
+
+    BOOST_CHECK_EQUAL( 0.75, regulator->requestVoltageChange( 0.75 ) );
+    BOOST_CHECK_EQUAL( 0.75, regulator->requestVoltageChange( 1.25 ) );
+    BOOST_CHECK_EQUAL( 0.75, regulator->requestVoltageChange( 2.50 ) );
+
+    BOOST_CHECK_EQUAL( 3.25, regulator->requestVoltageChange( 3.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 4.25, regulator->requestVoltageChange( 4.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( 5.25, regulator->requestVoltageChange( 5.00, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( 3.25, regulator->requestVoltageChange( 3.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 4.25, regulator->requestVoltageChange( 4.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( 5.25, regulator->requestVoltageChange( 5.00, VoltageRegulator::Exclusive ) );
+
+    BOOST_CHECK_EQUAL( -2.25, regulator->requestVoltageChange( -0.75 ) );
+    BOOST_CHECK_EQUAL( -2.25, regulator->requestVoltageChange( -1.25 ) );
+    BOOST_CHECK_EQUAL( -2.25, regulator->requestVoltageChange( -2.55 ) );
+
+    BOOST_CHECK_EQUAL( -3.25, regulator->requestVoltageChange( -3.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -4.25, regulator->requestVoltageChange( -4.00, VoltageRegulator::Inclusive ) );
+    BOOST_CHECK_EQUAL( -5.25, regulator->requestVoltageChange( -5.00, VoltageRegulator::Inclusive ) );
+
+    BOOST_CHECK_EQUAL( -3.25, regulator->requestVoltageChange( -3.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -4.25, regulator->requestVoltageChange( -4.00, VoltageRegulator::Exclusive ) );
+    BOOST_CHECK_EQUAL( -5.25, regulator->requestVoltageChange( -5.00, VoltageRegulator::Exclusive ) );
+}
 
 BOOST_AUTO_TEST_CASE(test_GangOperatedVoltageRegulator_RaiseSetPoint_Fail)
 {

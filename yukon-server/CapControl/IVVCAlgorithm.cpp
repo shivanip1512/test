@@ -51,8 +51,10 @@ extern unsigned long _MAX_KVAR;
 long GetDmvTestExecutionID( Cti::Database::DatabaseConnection & connection );
 void updateDmvTestStatus( const long            executionID,
                           const long            testID,
-                          const CtiTime &       stopTime,
+                          const CtiTime         stopTime,
                           const std::string &   status );
+unsigned validateTapOpSolution( const IVVCState::TapOperationZoneMap & tapOp );
+
 
 bool processDmvScanData( IVVCStatePtr state, const std::string & busName );
 
@@ -627,7 +629,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             auto & testDataPtr = state->getDmvTestData();
 
-            CTILOG_INFO( dout, "Preparing to execute DMV test: " << testDataPtr->TestName << " on Bus: " << subbus->getPaoName() );
+            CTILOG_INFO( dout, "Preparing to execute DMV test: " << testDataPtr.TestName << " on Bus: " << subbus->getPaoName() );
 
             long    spAreaID,   // unused...
                     areaID,
@@ -638,7 +640,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 Cti::Database::DatabaseConnection   connection;
 
-                testDataPtr->ExecutionID = GetDmvTestExecutionID( connection );
+                testDataPtr.ExecutionID = GetDmvTestExecutionID( connection );
 
                 static const std::string sql =
                     "INSERT INTO "
@@ -649,8 +651,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 Cti::Database::DatabaseWriter   writer( connection, sql );
 
                 writer
-                    << testDataPtr->ExecutionID
-                    << testDataPtr->TestId
+                    << testDataPtr.ExecutionID
+                    << testDataPtr.TestId
                     << areaID
                     << substationID
                     << subbus->getPaoId()
@@ -669,9 +671,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             auto & testDataPtr = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr->DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr.DataGatheringDuration );    // DataGatheringDuration in minutes   
 
+            state->dmvTestStatusMessage.clear();
             state->feasibilityData.clear();
+
+            state->setCommsRetryCount( 0 );
 
             state->setState( IVVCState::DMV_TEST_PRESCAN );
             break;
@@ -689,16 +694,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
             {
                 // Configuration Error
-                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "Bus Configuration Error";
+                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
             // Set the current and expiration times for the polling interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + testDataPtr->PollingInterval );
+            state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -739,11 +745,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! processDmvScanData( state, subbus->getPaoName() ) )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
                 CTILOG_INFO( dout, request->createStatusReport() );
 
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "Bus Incomplete Data";
+                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
@@ -791,10 +798,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( request->requestSize() != state->feasibilityData.size() )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "Incomplete Feasibility Data";
+                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
@@ -821,11 +829,11 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }                   
                 }
 
-                if ( feasibility.second.first - testDataPtr->StepSize < Vmin )  // undervoltage
+                if ( feasibility.second.first - testDataPtr.StepSize < Vmin )  // undervoltage
                 {
                     canBumpDown = false;
                 }
-                if ( feasibility.second.second + testDataPtr->StepSize > Vmax ) // overvoltage
+                if ( feasibility.second.second + testDataPtr.StepSize > Vmax ) // overvoltage
                 {
                     canBumpUp = false;
                 }
@@ -835,20 +843,21 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 // Bail out of the bump test since the StepSize is too big for the existing conditions
 
-                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName()
                                     << ". Test StepSize is too large for the current bus conditions." );
 
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "StepSize Too Large";
+                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
             state->bumpDirection = ( canBumpUp ? IVVCState::Up : IVVCState::Down );
 
-            state->setState( IVVCState::DMV_TEST_ISSUE_CONTROLS );
+            state->setState( IVVCState::DMV_TEST_CALCULATE_BUMPS );
             break;
         }
-        case IVVCState::DMV_TEST_ISSUE_CONTROLS:
+        case IVVCState::DMV_TEST_CALCULATE_BUMPS:
         {
             auto & testDataPtr = state->getDmvTestData();
 
@@ -861,11 +870,15 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             ZoneManager::SharedPtr  rootZone = zoneManager.getZone( rootZoneId );
 
+            // get ready for some data
 
-            std::map<long, double> storedSetPoints;
+            state->_tapOps.clear();
+            state->_undoTapOps.clear();
+            state->storedSetPoints.clear();
 
-            std::map<  std::pair<Cti::CapControl::Phase, long>, double>     actualAdjustments;
-            std::map<  std::pair<Cti::CapControl::Phase, long>, double>     downlineAdjustments;
+            // temp maps for calculated data
+
+            std::map<std::pair<Cti::CapControl::Phase, long>, double>   headAdjustments;
 
             // the root zone regulators
 
@@ -878,18 +891,21 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     VoltageRegulatorManager::SharedPtr  regulator
                         = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
-                    if ( regulator->getControlMode() == VoltageRegulator::SetPoint )
-                    {
-                        storedSetPoints[ regulatorID ] = regulator->getSetPointValue();
-                    }
+                    const double adjustment = regulator->requestVoltageChange(
+                        ( state->bumpDirection == IVVCState::Up ? 1.0 : -1.0 ) * testDataPtr.StepSize,
+                        Cti::CapControl::VoltageRegulator::Exclusive );
 
-                    actualAdjustments[ mapping ] =
-                        regulator->requestVoltageChange( ( state->bumpDirection == IVVCState::Up ? 1.0 : -1.0 ) * testDataPtr->StepSize,
-                                                         Cti::CapControl::VoltageRegulator::Exclusive );
+                    state->storedSetPoints[ regulatorID ] =
+                        ( regulator->getControlMode() == VoltageRegulator::SetPoint )
+                            ? regulator->getSetPointValue()
+                            : adjustment;
+
+                    headAdjustments[ mapping ]    = adjustment;     // scratchpad for downline reg lookup
+                    state->_tapOps[ regulatorID ] = adjustment;     // record the head changes for the regulator
                 }
                 catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
                 {
-                    CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+                    CTILOG_EXCEPTION_ERROR( dout, noRegulator );
                 }
             }
 
@@ -897,57 +913,114 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             //      if direct tap driven do nothing
             //      if set point then record the current and set the new setpoint to the old + adjustment value...
 
-            Zone::IdSet allChildren = zoneManager.getAllChildrenOfZone( rootZoneId );
-
-            for ( const auto & zoneID : allChildren )
+            for ( const auto & zoneID : zoneManager.getAllChildrenOfZone( rootZoneId ) )
             {
                 ZoneManager::SharedPtr  zone = zoneManager.getZone( zoneID );
 
                 for ( const auto & mapping : zone->getRegulatorIds() )
                 {
-                    const long regulatorID = mapping.second;
+                    const auto currentRegulatorPhase = mapping.first;
+                    const long regulatorID           = mapping.second;
 
                     VoltageRegulatorManager::SharedPtr  regulator
                         = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
                     if ( regulator->getControlMode() == VoltageRegulator::SetPoint )
                     {
-                        storedSetPoints[ regulatorID ] = regulator->getSetPointValue();
+                        state->storedSetPoints[ regulatorID ] = regulator->getSetPointValue();
 
-                        // to determine the amount of adjustment we need to search 'actualAdjustments' to find the regulator
-                        //  on the same phase and then add its adjustment to the current regulators set point
+                        // to determine the amount of adjustment we need to search 'actualAdjustments' to find the
+                        //  root zone regulator on the same phase and then store its adjustment for the current regulator
 
-                        const auto currentRegulatorPhase = mapping.first;
-
-                        for ( const auto thing   :    actualAdjustments  )
+                        for ( const auto lookup : headAdjustments )
                         {
+                            const auto phase = lookup.first.first;
 
-                            if ( thing.first.first == currentRegulatorPhase
-                                 || thing.first.first == Cti::CapControl::Phase_Poly )
+                            if ( phase == currentRegulatorPhase || phase == Cti::CapControl::Phase_Poly )
                             {
-
-                                downlineAdjustments[ mapping ] = thing.second;
-
+                                state->_tapOps[ regulatorID ] = lookup.second;
                             }
-                            
                         }
-                        
                     }
-
                 }
-
             }
 
-// you are here
+            state->setState( IVVCState::DMV_TEST_ISSUE_CONTROLS );
 
-            state->setState( IVVCState::DMV_POST_BUMP_TEST_DATA_GATHERING_START );
+            // Verify regulators and regulator attributes we need are available
+            //  If we have some errors - clear out the tapOp mapping... (cancel pending operations)
+
+            if ( validateTapOpSolution( state->_tapOps ) > 0 )
+            {
+                state->_tapOps.clear();
+
+                CTILOG_ERROR( dout, "DMV Test '" << testDataPtr.TestName
+                                    << "' cannot execute on bus: " << subbus->getPaoName()
+                                    << ". Cancelling Tap Operations.  One or more regulators is missing, or is missing a required attribute." );
+
+                state->dmvTestStatusMessage = "Invalid Regulator Setup";
+                state->setState( IVVCState::DMV_TEST_END_TEST );
+            }
+            break;
+        }
+        case IVVCState::DMV_TEST_ISSUE_CONTROLS:
+        {
+            // 5 second delay between consecutive tap ops on same regulator
+            if ( ( state->_tapOpDelay + 5 ) < timeNow )
+            {
+                auto & testDataPtr = state->getDmvTestData();
+
+                state->_tapOpDelay = timeNow;
+
+                // Send the tap commands
+
+                for ( const auto & operation : state->_tapOps )
+                {
+                    long   regulatorID       = operation.first;
+                    double voltageAdjustment = operation.second;
+
+                    try
+                    {
+                        if ( voltageAdjustment != 0 )
+                        {
+                            VoltageRegulatorManager::SharedPtr  regulator
+                                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
+
+                            const double actualChange = regulator->adjustVoltage( voltageAdjustment );
+
+                            state->_tapOps[ regulatorID ]     -= actualChange;
+                            state->_undoTapOps[ regulatorID ] -= actualChange;
+
+                            CTILOG_INFO( dout, "DMV Test '" << testDataPtr.TestName
+                                            << " - Adjusting Voltage on Regulator: " << regulator->getPaoName() );
+                        }
+                    }
+                    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+                    {
+                        CTILOG_EXCEPTION_ERROR( dout, noRegulator );
+                    }
+                    catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+                    {
+                        if ( missingAttribute.complain() )
+                        {
+                            CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+                        }
+                    }
+                }
+
+                if ( ! hasTapOpsRemaining( state->_tapOps ) )   // are we done yet?
+                {
+                    state->setLastTapOpTime( timeNow );
+                    state->setState( IVVCState::DMV_POST_BUMP_TEST_DATA_GATHERING_START );
+                }
+            }
             break;
         }
         case IVVCState::DMV_POST_BUMP_TEST_DATA_GATHERING_START:
         {
             auto & testDataPtr = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr->DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr.DataGatheringDuration );    // DataGatheringDuration in minutes   
 
             state->setState( IVVCState::DMV_POST_BUMP_TEST_SCAN );
             break;
@@ -963,19 +1036,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
             {
                 // Configuration Error
-                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
-//////////////////////////// 
-///     we need to return to the pre test regulator set points 
-
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "Bus Configuration Error";
+                state->setState( IVVCState::DMV_TEST_RETURN_BUMP_ISSUE_CONTROLS );
                 break;
             }
 
             // Set the current and expiration times for the polling interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + testDataPtr->PollingInterval );
+            state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -1016,14 +1087,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! processDmvScanData( state, subbus->getPaoName() ) )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
                 CTILOG_INFO( dout, request->createStatusReport() );
 
-//////////////////////////// 
-///     we need to return to the pre test regulator set points 
-
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "Bus Incomplete Data";
+                state->setState( IVVCState::DMV_TEST_RETURN_BUMP_ISSUE_CONTROLS );
                 break;
             }
 
@@ -1036,19 +1105,64 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
         case IVVCState::DMV_TEST_RETURN_BUMP_ISSUE_CONTROLS:
         {
+            // 5 second delay between consecutive tap ops on same regulator
+            if ( ( state->_tapOpDelay + 5 ) < timeNow )
+            {
+                auto & testDataPtr = state->getDmvTestData();
 
-            // undo the bump
+                state->_tapOpDelay = timeNow;
 
+                // Send the tap commands
 
+                for ( const auto & operation : state->_undoTapOps )
+                {
+                    long   regulatorID       = operation.first;
+                    double voltageAdjustment = operation.second;
 
-            state->setState( IVVCState::DMV_RETURN_BUMP_TEST_DATA_GATHERING_START );
+                    try
+                    {
+                        if ( voltageAdjustment != 0 )
+                        {
+                            VoltageRegulatorManager::SharedPtr  regulator
+                                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
+
+                            const double actualChange = regulator->adjustVoltage( voltageAdjustment );
+
+                            state->_undoTapOps[ regulatorID ] -= actualChange;
+
+                            CTILOG_INFO( dout, "DMV Test '" << testDataPtr.TestName
+                                            << " - Adjusting Voltage on Regulator: " << regulator->getPaoName() );
+                        }
+                    }
+                    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+                    {
+                        CTILOG_EXCEPTION_ERROR( dout, noRegulator );
+                    }
+                    catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+                    {
+                        if ( missingAttribute.complain() )
+                        {
+                            CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+                        }
+                    }
+                }
+
+                if ( ! hasTapOpsRemaining( state->_undoTapOps ) )       // are we done yet?
+                {
+                    state->setLastTapOpTime( timeNow );
+
+                    state->setState( ( state->dmvTestStatusMessage.size() > 0 )
+                                        ? IVVCState::DMV_TEST_END_TEST          // some error condition got us here - go to end
+                                        : IVVCState::DMV_RETURN_BUMP_TEST_DATA_GATHERING_START );   // continue on
+                }
+            }
             break;
         }
         case IVVCState::DMV_RETURN_BUMP_TEST_DATA_GATHERING_START:
         {
             auto & testDataPtr = state->getDmvTestData();
 
-            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr->DataGatheringDuration );    // DataGatheringDuration in minutes   
+            state->dataGatheringEndTime = timeNow + ( 60 * testDataPtr.DataGatheringDuration );    // DataGatheringDuration in minutes   
 
             state->setState( IVVCState::DMV_RETURN_BUMP_TEST_SCAN );
             break;
@@ -1064,19 +1178,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
             {
                 // Configuration Error
-                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
 
-//////////////////////////// 
-///     we need to return to the pre test regulator set points 
-
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "Bus Configuration Error";
+                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
             // Set the current and expiration times for the polling interval
             state->setTimeStamp( timeNow );
-            state->setNextControlTime( timeNow + testDataPtr->PollingInterval );
+            state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
@@ -1117,43 +1229,33 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             if ( ! processDmvScanData( state, subbus->getPaoName() ) )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
-                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr->TestName
+                CTILOG_ERROR( dout, "Incomplete Data: DMV Test '" << testDataPtr.TestName
                                     << "' cannot execute on bus: " << subbus->getPaoName() );
                 CTILOG_INFO( dout, request->createStatusReport() );
 
-//////////////////////////// 
-///     we need to return to the pre test regulator set points 
-
-                state->setState( IVVCState::DMV_TEST_EXIT_FAILURE );
+                state->dmvTestStatusMessage = "Bus Incomplete Data";
+                state->setState( IVVCState::DMV_TEST_END_TEST );
                 break;
             }
 
             // what's our next state?
-            state->setState( timeNow < state->dataGatheringEndTime
-                                ? IVVCState::DMV_RETURN_BUMP_TEST_SCAN
-                                : IVVCState::DMV_TEST_EXIT_SUCCESS );
-            break;
-        }
-        case IVVCState::DMV_TEST_EXIT_FAILURE:
-        {
-            auto & testDataPtr = state->getDmvTestData();
 
-            updateDmvTestStatus( testDataPtr->ExecutionID, testDataPtr->TestId, timeNow, "FAIL" );
-
-            state->setState( IVVCState::DMV_TEST_END_TEST );
-            break;
-        }
-        case IVVCState::DMV_TEST_EXIT_SUCCESS:
-        {
-            auto & testDataPtr = state->getDmvTestData();
-
-            updateDmvTestStatus( testDataPtr->ExecutionID, testDataPtr->TestId, timeNow, "SUCCESS" );
-
+            if ( timeNow < state->dataGatheringEndTime )
+            {
+                state->setState( IVVCState::DMV_RETURN_BUMP_TEST_SCAN );
+                break;
+            }
+            
+            state->dmvTestStatusMessage = "DMV Test Success";
             state->setState( IVVCState::DMV_TEST_END_TEST );
             break;
         }
         case IVVCState::DMV_TEST_END_TEST:
         {
+            auto & testDataPtr = state->getDmvTestData();
+
+            updateDmvTestStatus( testDataPtr.ExecutionID, testDataPtr.TestId, timeNow, state->dmvTestStatusMessage );
+
             state->deleteDmvState();
             state->setState( IVVCState::IVVC_WAIT );
             break;
@@ -1536,37 +1638,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 // Verify that the regulators and regulator attributes we need are available
 
-                unsigned errorCount = 0;
-
-                for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
-                {
-                    long   regulatorId       = operation.first;
-                    double voltageAdjustment = operation.second;
-
-                    try
-                    {
-                        if ( voltageAdjustment != 0 )
-                        {
-                            VoltageRegulatorManager::SharedPtr  regulator
-                                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
-
-                            regulator->canExecuteVoltageRequest( voltageAdjustment );
-                        }
-                    }
-                    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-                    {
-                        errorCount++;
-                        CTILOG_EXCEPTION_ERROR(dout, noRegulator);
-                    }
-                    catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
-                    {
-                        errorCount++;
-                        if (missingAttribute.complain())
-                        {
-                            CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
-                        }
-                    }
-                }
+                unsigned errorCount = validateTapOpSolution( state->_tapOps );
 
                 // If we have some errors - clear out the tapOp mapping... (cancel pending operations)
 
@@ -1584,7 +1656,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 for each ( const IVVCState::TapOperationZoneMap::value_type & operation in state->_tapOps )
                 {
-                    long   regulatorId       = operation.first;
+                    long   regulatorID       = operation.first;
                     double voltageAdjustment = operation.second;
 
                     try
@@ -1592,9 +1664,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         if ( voltageAdjustment != 0 )
                         {
                             VoltageRegulatorManager::SharedPtr  regulator
-                                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
+                                = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
-                            state->_tapOps[ regulatorId ] -= regulator->adjustVoltage( voltageAdjustment );
+                            state->_tapOps[ regulatorID ] -= regulator->adjustVoltage( voltageAdjustment );
 
                             if (_CC_DEBUG & CC_DEBUG_IVVC)
                             {
@@ -1610,7 +1682,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                                                                     ? Scenario_TapRaiseOperation
                                                                                     : Scenario_TapLowerOperation,
                                                                                 timeNow,
-                                                                                regulatorId ) );
+                                                                                regulatorID ) );
                         }
                     }
                     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -3746,7 +3818,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
             if ( theMaxVoltage > 0.0 )
             {
                 // tapping down so this should be negative and is Inclusive because we want to make sure we change
-                //  yhe voltage by at least the requested amount.
+                //  the voltage by at least the requested amount.
 
                 realVoltageChange[ phase ]  =
                     solution[ regulatorID ] =
@@ -4367,7 +4439,7 @@ long GetDmvTestExecutionID( Cti::Database::DatabaseConnection & connection )
 
 void updateDmvTestStatus( const long            executionID,
                           const long            testID,
-                          const CtiTime &       stopTime,
+                          const CtiTime         stopTime,
                           const std::string &   status )
 {
     static const std::string sql =
@@ -4406,16 +4478,39 @@ bool completionCheck( PointDataRequestPtr   request,
         {   BusPowerRequestType,    "bus telemetry"         }
     };
 
-    const double complete = request->ratioComplete( requestType );
+    const double complete = 100.0 * request->ratioComplete( requestType );
 
     if ( complete < thresholdPercentage )
     {
-        CTILOG_ERROR( dout, "Incomplete Data: Have " << complete << "%% of " << description.at( requestType ) << " data." );
+        CTILOG_ERROR( dout, "Incomplete Data: Have " << complete << "% of " << description.at( requestType ) << " data." );
 
         return false;
     }
 
-    CTILOG_INFO( dout, "Complete Data: Have " << complete << "%% of " << description.at( requestType ) << " data." );
+    CtiTime   staleTime;    staleTime -= ( _POINT_AGE * 60 );
+
+    auto collection = request->getPointValues( requestType );
+
+    long staleCount = 0;
+
+    for ( auto entry : collection )
+    {
+        if ( entry.second.timestamp <= staleTime )
+        {
+            staleCount++;
+        }
+    }
+    
+    const double nonStale = 100.0 * ( collection.size() - staleCount ) / collection.size();
+
+    if ( nonStale < thresholdPercentage )
+    {
+        CTILOG_ERROR( dout, "Stale Data: Have " << nonStale << "% of " << description.at( requestType ) << " data." );
+
+        return false;
+    }
+
+    CTILOG_INFO( dout, "Complete Data: Have " << nonStale << "% of " << description.at( requestType ) << " data." );
 
     return true;
 }
@@ -4430,15 +4525,15 @@ bool processDmvScanData( IVVCStatePtr           state,
 
     PointDataRequestPtr request = state->getGroupRequest();
 
-    CTILOG_INFO( dout, "Processing Data: DMV Test '" << testDataPtr->TestName
+    CTILOG_INFO( dout, "Processing Data: DMV Test '" << testDataPtr.TestName
                         << "' on bus: " << busName
                         << ". Minimum complete data percentage is "
-                        << testDataPtr->CommSuccessPercentage << "%%." );
+                        << testDataPtr.CommSuccessPercentage << "%." );
 
-    allGood &= completionCheck( request, RegulatorRequestType, testDataPtr->CommSuccessPercentage );
-    allGood &= completionCheck( request, CbcRequestType,       testDataPtr->CommSuccessPercentage );
-    allGood &= completionCheck( request, OtherRequestType,     testDataPtr->CommSuccessPercentage );
-    allGood &= completionCheck( request, BusPowerRequestType,  testDataPtr->CommSuccessPercentage );
+    allGood &= completionCheck( request, RegulatorRequestType, testDataPtr.CommSuccessPercentage );
+    allGood &= completionCheck( request, CbcRequestType,       testDataPtr.CommSuccessPercentage );
+    allGood &= completionCheck( request, OtherRequestType,     testDataPtr.CommSuccessPercentage );
+    allGood &= completionCheck( request, BusPowerRequestType,  testDataPtr.CommSuccessPercentage );
 
     // record the point data in the database
     {
@@ -4455,17 +4550,73 @@ bool processDmvScanData( IVVCStatePtr           state,
         for ( auto pointData : request->getPointValues() )
         {                    
             writer
-                << testDataPtr->ExecutionID
+                << testDataPtr.ExecutionID
                 << pointData.first
                 << pointData.second.timestamp
                 << pointData.second.quality
                 << pointData.second.value
                     ;
 
-            Cti::Database::executeWriter( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+            try
+            {
+                Cti::Database::executeWriter( writer, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
+            }
+            catch ( ... )
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
+            }
         }
     }
 
-    return allGood;
+    if ( ! allGood )
+    {
+        state->setCommsRetryCount( state->getCommsRetryCount() + 1 );
+
+        return state->getCommsRetryCount() < _IVVC_COMMS_RETRY_COUNT;
+    }
+
+    state->setCommsRetryCount( 0 );
+    
+    return true;
+}
+
+// Verify that the regulators and regulator attributes we need are available
+unsigned validateTapOpSolution( const IVVCState::TapOperationZoneMap & tapOp )
+{
+    unsigned errorCount = 0;
+
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    for ( const auto & operation : tapOp )
+    {
+        const long   regulatorId       = operation.first;
+        const double voltageAdjustment = operation.second;
+
+        try
+        {
+            if ( voltageAdjustment != 0 )
+            {
+                VoltageRegulatorManager::SharedPtr  regulator
+                    = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
+
+                regulator->canExecuteVoltageRequest( voltageAdjustment );
+            }
+        }
+        catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+        {
+            errorCount++;
+            CTILOG_EXCEPTION_ERROR( dout, noRegulator );
+        }
+        catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+        {
+            errorCount++;
+            if ( missingAttribute.complain() )
+            {
+                CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+            }
+        }
+    }
+
+    return errorCount;
 }
 

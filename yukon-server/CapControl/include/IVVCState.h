@@ -50,6 +50,7 @@ class IVVCState
             DMV_TEST_PRESCAN_LOOP,
             DMV_TEST_POSTSCAN_PROCESSING,
             DMV_TEST_DECIDE_BUMP_DIRECTION,
+            DMV_TEST_CALCULATE_BUMPS,
             DMV_TEST_ISSUE_CONTROLS,
             DMV_POST_BUMP_TEST_DATA_GATHERING_START,
             DMV_POST_BUMP_TEST_SCAN,
@@ -60,14 +61,16 @@ class IVVCState
             DMV_RETURN_BUMP_TEST_SCAN,
             DMV_RETURN_BUMP_TEST_SCAN_LOOP,
             DMV_RETURN_BUMP_TEST_SCAN_PROCESSING,
-            DMV_TEST_EXIT_SUCCESS,
-            DMV_TEST_EXIT_FAILURE,
             DMV_TEST_END_TEST
         };
 
         CtiTime dataGatheringEndTime;
 
         std::map< long, std::pair< double, double > >   feasibilityData;    // pointID -> { min, max } voltages
+
+        std::map<long, double>  storedSetPoints;
+
+        std::string dmvTestStatusMessage;
 
         enum
         {
@@ -82,6 +85,8 @@ class IVVCState
 
         TapOperationZoneMap     _tapOps;
         CtiTime                 _tapOpDelay;
+        TapOperationZoneMap     _undoTapOps;    // keeps track of bump restoration to original state
+
 
         IVVCState();
 
@@ -91,7 +96,7 @@ class IVVCState
         bool hasDmvTestState();
         void setDmvTestState( std::unique_ptr<DmvTestData> testData );
         void deleteDmvState();
-        std::unique_ptr<DmvTestData> & getDmvTestData();
+        DmvTestData & getDmvTestData();
 
         bool isScannedRequest();
         void setScannedRequest(bool scannedRequest);
@@ -194,7 +199,7 @@ class IVVCState
 
         std::set<long> _reportedControllers;
 
-        std::unique_ptr<DmvTestData> _DmvTestData;
+        std::unique_ptr<DmvTestData> _dmvTestData;
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;
