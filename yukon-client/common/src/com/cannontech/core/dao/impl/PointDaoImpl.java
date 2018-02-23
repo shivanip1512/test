@@ -687,7 +687,7 @@ public class PointDaoImpl implements PointDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("WITH Duplicates AS (");
         sql.append("    SELECT dp.PointOffset, dp.PointType");
-        sql.append("    FROM POINT as dp");
+        sql.append("    FROM POINT dp");
         sql.append("    WHERE PAObjectId").in(paoIds);
         sql.append("    AND dp.PSEUDOFLAG").neq("P");
         sql.append("    AND dp.PointOffset").neq(0);
