@@ -16,4 +16,6 @@ public interface DmvTestDao {
 
     boolean delete(int id);
 
+    List<DmvTest> getDmvTestByTestNames(List<String> testNames);
+
 }

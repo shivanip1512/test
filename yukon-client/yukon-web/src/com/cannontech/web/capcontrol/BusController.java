@@ -3,6 +3,7 @@ package com.cannontech.web.capcontrol;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,11 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.ScheduleCommand;
+import com.cannontech.capcontrol.dao.DmvTestDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
-import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -38,6 +41,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.capcontrol.DmvTest;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.season.SeasonSchedule;
@@ -62,7 +66,6 @@ public class BusController {
 
     @Autowired private BusService busService;
     @Autowired private BusValidator validator;
-    @Autowired private CapControlCache ccCache;
     @Autowired private HolidayScheduleDao hoidayScheduleDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
@@ -74,6 +77,8 @@ public class BusController {
     @Autowired private SubstationDao substationDao;
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private SubstationService substationService;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DmvTestDao dmvTestDao;
 
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -189,7 +194,13 @@ public class BusController {
         
         List<PaoSchedule> schedules = paoScheduleDao.getAll();
         model.addAttribute("allSchedules", schedules);
-        model.addAttribute("scheduleCommands", ScheduleCommand.values());
+        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(
+            configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+        if (usesDmvTest) {
+            model.addAttribute("scheduleCommands", ScheduleCommand.values());
+        } else {
+            model.addAttribute("scheduleCommands", ScheduleCommand.getRequiredCommands());
+        }
 
         return "bus.jsp";
     }
@@ -283,8 +294,21 @@ public class BusController {
         CapControlSubBus bus = busService.get(busId);
         model.addAttribute("bus", bus);
         model.addAttribute("allSchedules", paoScheduleDao.getAll());
-        model.addAttribute("scheduleCommands", ScheduleCommand.values());
 
+        boolean usesDmvTest = MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED.getKey().equals(
+            configurationSource.getString("DEMAND_MEASUREMENT_VERIFICATION_ENABLED"));
+        if (usesDmvTest) {
+            List<String> testNames= bus.getSchedules().stream()
+                                                            .filter(c-> c.getCommand().startsWith(ScheduleCommand.DmvTest.getCommandName()))
+                                                            .map(c-> c.getCommand().split(":")[1].trim())
+                                                            .collect(Collectors.toList());
+            List<DmvTest> dmvTests = dmvTestDao.getDmvTestByTestNames(testNames);
+            model.addAttribute("dmvCommandPrefix", ScheduleCommand.DmvTest.getCommandName());
+            model.addAttribute("dmvTests", dmvTests);
+            model.addAttribute("scheduleCommands", ScheduleCommand.values());
+        } else {
+            model.addAttribute("scheduleCommands", ScheduleCommand.getRequiredCommands());
+        }
         return "schedules-popup.jsp";
     }
     
@@ -295,6 +319,12 @@ public class BusController {
         busService.saveSchedules(bus);
         flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".schedules.updated"));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
+    }
+
+    @RequestMapping(value = "buses/{selectIndex}/addDmvTestPickerRow", method=RequestMethod.GET)
+    public String addDmvTestPickerRow(@PathVariable int selectIndex, ModelMap model) {
+        model.addAttribute("nextIndex", selectIndex);
+        return "dmvTestPicker.jsp";
     }
 
     @RequestMapping(value="buses/{busId}/feeders", method=RequestMethod.POST)

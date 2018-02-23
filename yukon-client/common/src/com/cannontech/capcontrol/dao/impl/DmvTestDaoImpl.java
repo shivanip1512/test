@@ -73,6 +73,17 @@ public class DmvTestDaoImpl implements DmvTestDao {
         
         return jdbcTemplate.query(sql, rowMapper);
     }
+    
+    @Override
+    public List<DmvTest> getDmvTestByTestNames(List<String> testNames) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DmvTestId, DmvTestName, PollingInterval, DataGatheringDuration, StepSize, CommSuccessPercentage");
+        sql.append("FROM DmvTest");
+        sql.append("WHERE DmvTestName").in(testNames);
+        sql.append("ORDER By DmvTestName");
+
+        return jdbcTemplate.query(sql, rowMapper);
+    }
 
     @Override
     public DmvTest getDmvTestById(int id) {

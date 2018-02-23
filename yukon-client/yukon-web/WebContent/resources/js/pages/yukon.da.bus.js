@@ -13,6 +13,13 @@ yukon.da.bus = (function () {
 
     mod = {
 
+        addDMVPrefixInCommand : function (selectedItems, picker) {
+            var pickerId = picker.pickerId.replace('dmvTestPicker','');
+            var commandName = selectedItems[0].dmvTestName;
+            var dmvTestCommand = $("input[name=dmvCommandPrefix]").val();
+            $('[name="schedules[' + pickerId + '].command"]').val(dmvTestCommand + ": " + commandName);
+        },
+
         /** Initialize this module. */
         init: function () {
 
@@ -71,6 +78,60 @@ yukon.da.bus = (function () {
                     $('#altBusError').hide();
                 }
 
+            });
+            
+            /** Schedules popup **/
+            $(document).on('click', '.js-add-schedule', function () {
+                var idx = $('#schedules-table tr').length - 1;
+                var lastIndex = idx - 1;
+                var indexString = "[" + lastIndex + "]";
+                var nextIndexString = "[" + idx + "]";
+                
+                var original = $('.js-schedule-add-row');
+                var clone = $('.js-schedule-add-row').clone(true);
+                clone.removeClass('js-schedule-add-row dn');
+                clone.addClass('js-schedule-row');
+                clone.insertBefore(original);
+                
+                //change the name of the elements so it's ready for the next add
+                original.find('select, input').each(function(index, item){
+                    var name = item.name;
+                    var newName = name.replace(indexString, nextIndexString);
+                    item.name = newName;
+                });
+                //also need to change the id for the switch button
+                var checkbox = original.find('.switch-btn-checkbox')[0];
+                var newId = checkbox.id + "-2";
+                checkbox.id = newId;
+                original.find('.left, .right').each(function(index, item){
+                    item.htmlFor = newId;
+                });
+            });
+
+            $(document).on('click', '.js-remove-schedule', function () {
+                $(this).closest(".js-schedule-row").remove();
+            });
+
+
+            $(document).on('change', '.js-command-options', function () {
+                var row = $(this).closest('tr');
+                var dmvTestCommand = $("input[name=dmvCommandPrefix]").val();
+                var selectIndex = $(this).closest('tr').index();
+
+                if (dmvTestCommand === this.value) {
+                    $.ajax({
+                    url: yukon.url('/capcontrol/buses/' + selectIndex + '/addDmvTestPickerRow'),
+                    method: 'get'
+                }).done( function(data) {
+                      row.find('.js-command').append(data);
+                      $('[name="schedules[' + selectIndex + '].command"]').addClass('dn');
+                    });
+                } else {
+                    var rowData = row.find('.js-command');
+                    rowData.find('.dmv-test-picker-' + selectIndex).remove();
+                    $('[name="schedules[' + selectIndex + '].command"]').removeClass('dn');
+                    this.nextElementSibling.value = this.value;
+                }
             });
             
             yukon.ui.highlightErrorTabs();
