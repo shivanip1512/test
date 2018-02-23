@@ -42,11 +42,13 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.NotFoundException;
@@ -89,6 +91,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MeterDao meterDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private RfnGatewayService rfnGatewayService;
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
@@ -360,9 +363,19 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 }
                 String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
                 info.setPrimaryGateway(primaryGatewayName);
-                List<LiteYukonPAObject> gateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
-                if (gateways.size() > 0) {
-                    info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateways.get(0)));
+                //primary gateway from NM contains the IP Address too
+                List<LiteYukonPAObject> foundGateways;
+                foundGateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
+                if (foundGateways.size() > 0) {
+                    info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(foundGateways.get(0)));
+                } else {
+                    List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                    for (RfnGateway gateway : gateways) {
+                        if (gateway.getNameWithIPAddress().equals(primaryGatewayName)) {
+                            info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
+                            break;
+                        }
+                    }
                 }
                 info.setMacAddress(metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
             } catch (NmCommunicationException e) {

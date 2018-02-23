@@ -22,7 +22,7 @@
         <tags:nameValue2 nameKey=".serialNbr">${fn:escapeXml(serialNumber)}</tags:nameValue2>
     </c:if>
     <c:if test="${!empty primaryGateway}">
-        <tags:nameValue2 nameKey=".primaryGateway"><cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGateway.paoName)}</cti:paoDetailUrl></tags:nameValue2>
+        <tags:nameValue2 nameKey=".primaryGateway"><cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl></tags:nameValue2>
     </c:if>
     <tags:nameValue2 nameKey=".type">${fn:escapeXml(pao.paoIdentifier.paoType.paoTypeName)}</tags:nameValue2>
     <tags:nameValue2 nameKey=".status" nameClass="dn js-status-display" valueClass="dn js-status js-status-display"></tags:nameValue2>

@@ -55,6 +55,8 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -87,6 +89,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Autowired private LocationService locationService;
     @Autowired private IDatabaseCache cache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private RfnGatewayService rfnGatewayService;
     private JmsTemplate jmsTemplate;
     
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -175,9 +178,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             metadata.put(RfnMetadata.NODE_TYPE, "Nodetype (Sim)");
                             metadata.put(RfnMetadata.NUM_ASSOCIATIONS, 3);
                             String primaryGateway = "Primary Gateway (Sim)";
-                            List<RfnDevice> gateways = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
+                            List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
                             if (gateways.size() > 0) {
-                                primaryGateway = gateways.get(0).getName();
+                                primaryGateway = gateways.get(0).getNameWithIPAddress();
                             }
                             metadata.put(RfnMetadata.PRIMARY_GATEWAY, primaryGateway);
                             metadata.put(RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT, settings.getRouteData().getHopCount().intValue());

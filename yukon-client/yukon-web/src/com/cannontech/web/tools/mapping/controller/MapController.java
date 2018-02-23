@@ -42,9 +42,11 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateGroupDao;
@@ -70,6 +72,7 @@ import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -92,6 +95,7 @@ public class MapController {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private PaoDao paoDao;
+    @Autowired private RfnGatewayService rfnGatewayService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -162,9 +166,20 @@ public class MapController {
                 Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
                 model.addAttribute("macAddress", metadataService.getMetaDataValueAsString(RfnMetadata.NODE_ADDRESS, metadata));
                 String primaryGatewayName = metadataService.getMetaDataValueAsString(RfnMetadata.PRIMARY_GATEWAY, metadata);
-                List<LiteYukonPAObject> gateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
-                if (gateways.size() > 0) {
-                    model.addAttribute("primaryGateway", gateways.get(0));
+                model.addAttribute("primaryGatewayName", primaryGatewayName);
+                //primary gateway from NM contains the IP Address too
+                List<LiteYukonPAObject> foundGateways;
+                foundGateways = paoDao.getLiteYukonPaoByName(primaryGatewayName, false);
+                if (foundGateways.size() > 0) {
+                    model.addAttribute("primaryGateway", foundGateways.get(0));
+                } else {
+                    List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                    for (RfnGateway gateway : gateways) {
+                        if (gateway.getNameWithIPAddress().equals(primaryGatewayName)) {
+                            model.addAttribute("primaryGateway", gateway);
+                            break;
+                        }
+                    }
                 }
             } catch (NmCommunicationException e) {
                 log.error("Failed to get metadata for " + id, e);           
