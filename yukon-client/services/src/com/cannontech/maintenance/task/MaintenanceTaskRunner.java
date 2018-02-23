@@ -29,7 +29,6 @@ public class MaintenanceTaskRunner {
             runTasks(tasks, timeSliceLength);
             int remainingTasks = tasks.size() - completedMaintenanceTask.size();
             if (remainingTasks == 0) {
-                log.info("All scheduled maintenance task are completed.");
                 return true;
             } else if (!isEnoughTimeAvailable(endOfRunWindow)) {
                 log.info("Not enough time to run maintenance tasks.");

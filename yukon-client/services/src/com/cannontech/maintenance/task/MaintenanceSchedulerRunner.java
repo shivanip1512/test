@@ -134,18 +134,21 @@ public class MaintenanceSchedulerRunner {
 
         long millisecondsUntilRun = getMillisecondsUntilRun(scheduler);
         ScheduledFuture<?> future_scheduler;
-
+        
+        if (millisecondsUntilRun > minimumRunWindow && !isForceReschedule(scheduler)) {
+            log.info("Maintenance scheduler " + scheduler + " will start at " + DurationFormatUtils.formatDuration(
+                millisecondsUntilRun + Instant.now().getMillis(), "HH:mm:ss.SSS", true));
+        }
+        
         future_scheduler = scheduledExecutorService.schedule(() -> {
             if (isForceReschedule(scheduler)) {
                 forceReschedule.put(scheduler, false);
-                rescheduleScheduler.remove(scheduler, false);
-                log.info("Force Rescheduling " + scheduler);
-                reschedule(scheduler);
+                rescheduleScheduler.put(scheduler, false);
             } else {
                 Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
 
                 if (!isEnoughTimeAvailable(endOfRunWindow)) {
-                    log.info("Not enough time to run maintenance scheduler. Rescheduling " + scheduler);
+                    log.info("Not enough time to run "+scheduler);
                     rescheduleScheduler.put(scheduler, true);
                 } else {
 
@@ -198,8 +201,6 @@ public class MaintenanceSchedulerRunner {
         if (millisecondsUntilRun < 0) {
             millisecondsUntilRun = 0;
         }
-        log.info("Maintenance scheduler " + scheduler + " will start after "
-            + DurationFormatUtils.formatDuration(millisecondsUntilRun, "HH:mm:ss.SSS", true) + " hours");
         return millisecondsUntilRun;
     }
 
@@ -224,7 +225,6 @@ public class MaintenanceSchedulerRunner {
             millisecondsUntilRun = (endOfRunWindow.getMillis() - Instant.now().getMillis());
             forceReschedule.put(scheduler, true);
         }
-        log.info("No task or no time window to run. Rescheduling scheduler " + scheduler);
         return millisecondsUntilRun;
     }
 

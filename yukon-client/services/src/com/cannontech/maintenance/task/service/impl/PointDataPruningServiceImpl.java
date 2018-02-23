@@ -43,16 +43,16 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         int numDeleted = 1;
         int totalEntriesDeleted = 0;
         Instant start = new Instant();
-        log.info("Point data deletion started at " + start.toDate());
+        log.info("Point data deletion started will delete data up to "+deleteUpto);
         while (isEnoughTimeAvailable(processEndTime) && numDeleted != 0) {
-            log.debug("Point data deletion started");
+            log.trace("Point data deletion started");
             numDeleted = pointDataPruningDao.deletePointData(deleteUpto);
-            log.debug("Point data deletion ended by deleting " + numDeleted + " records");
+            log.trace("Point data deletion ended by deleting " + numDeleted + " records");
             // Total number of entries deleted during Point data deletion task.
             totalEntriesDeleted += numDeleted;
         }
         Instant finish = new Instant();
-        log.info("Point data deletion finished at " + finish.toDate());
+        log.info("Point data deletion finished. Deleted "+totalEntriesDeleted+ " records.");
         systemEventLogService.deletePointDataEntries(totalEntriesDeleted, start, finish);
         return numDeleted;
     }
@@ -81,7 +81,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant limit = start.minus(monthInDuration);
         log.debug(
             "Overall duration for which duplicate records should be deleted = From " + limit + " To " + fromTimestamp);
-        log.debug("Duplicate point data deletion started.");
+        log.info("Duplicate point data deletion started.");
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
             Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
             Instant toTimestamp = fromTimestamp.minus(deletionDuration);
@@ -91,11 +91,8 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             fromTimestamp = toTimestamp;
         }
         Instant finish = new Instant();
-        log.debug("Duplicate point data deletion finished.");
-        log.debug("Total duplicate rows deleted = " + totalRowsdeleted);
         Seconds secondsTaken = Seconds.secondsBetween(start, finish);
-        log.debug("Total execution time = " + secondsTaken.getSeconds() + " Seconds");
-
+        log.info("Duplicate point data deletion finished. Deleted "+totalRowsdeleted+" records in "+secondsTaken.getSeconds()+" seconds");
         systemEventLogService.rphDeleteDuplicates(totalRowsdeleted, start, finish);
         return totalRowsdeleted;
     }
