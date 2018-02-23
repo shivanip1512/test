@@ -407,7 +407,7 @@
     <entry key="yukon.web.modules.capcontrol.type.LTC">Load Tap Changer</entry>
     <entry key="yukon.web.modules.capcontrol.type.GO_REGULATOR">Gang Operated Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.type.PO_REGULATOR">Phase Operated Regulator</entry>
-    <entry key="yukon.web.modules.capcontrol.type.DMVTEST">Demand Measurement and Verification Test</entry>
+    <entry key="yukon.web.modules.capcontrol.type.DMVTEST">DMV Test</entry>
 
     <entry key="yukon.web.modules.capcontrol.edit.strategy">Edit Strategy Assignment</entry>
     

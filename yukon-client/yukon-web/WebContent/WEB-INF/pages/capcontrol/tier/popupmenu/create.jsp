@@ -12,6 +12,9 @@
             <div class="stacked"><a href="<cti:url value="/capcontrol/substations/create"/>"><i:inline key=".type.SUBSTATION"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/buses/create"/>"><i:inline key=".type.SUBBUS"/></a></div>
             <div class="stacked"><a href="<cti:url value="/capcontrol/feeders/create"/>"><i:inline key=".type.FEEDER"/></a></div>
+            <c:if test = "${usesDmvTest}"> 
+                <div class="stacked"><a href="<cti:url value="/capcontrol/dmvTest/create"/>"><i:inline key=".type.DMVTEST"/></a></div>
+            </c:if>
         </div>
         <div class="column two nogutter">
             <div class="stacked"><a href="<cti:url value="/capcontrol/capbanks/create"/>"><i:inline key=".type.CAPBANK"/></a></div>
@@ -22,8 +25,5 @@
             <cti:url var="createUrl" value="/capcontrol/schedules/create" />
             <div id="schedule-create-popup" data-url="${createUrl}" data-dialog data-load-event="yukon:da:schedules:create" data-event="yukon:da:schedules:edit:submit" class="dn"></div>
         </div>
-        <c:if test = "${usesDmvTest}"> 
-            <div class="stacked"><a href="<cti:url value="/capcontrol/dmvTest/create"/>"><i:inline key=".type.DMVTEST"/></a></div>
-        </c:if>
     </div>
 </cti:msgScope>
