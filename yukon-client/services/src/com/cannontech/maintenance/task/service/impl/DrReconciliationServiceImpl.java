@@ -307,13 +307,12 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
     
     @Override
     public boolean startDRReconciliation(Instant processEndTime) {
-        long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
-
         try {
             stopSchedulers();
             if (!doDRReconciliation()) {
                 return true;
             }
+            long drReconEndTime = processEndTime.minus(minimumExecutionTime).getMillis() - Instant.now().getMillis();
             Thread.sleep(drReconEndTime);
             stopSchedulers();
         } catch (InterruptedException e) {
@@ -331,6 +330,7 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         schedulersFuture.stream().forEach(future -> {
             future.cancel(true);
         });
+        schedulersFuture.clear();
     }
 
     /**
