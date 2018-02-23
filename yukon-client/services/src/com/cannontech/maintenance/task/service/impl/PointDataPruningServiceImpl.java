@@ -43,7 +43,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         int numDeleted = 1;
         int totalEntriesDeleted = 0;
         Instant start = new Instant();
-        log.info("Point data deletion started will delete data up to "+deleteUpto);
+        log.info("Point data deletion started will delete data up to " + deleteUpto);
         while (isEnoughTimeAvailable(processEndTime) && numDeleted != 0) {
             log.trace("Point data deletion started");
             numDeleted = pointDataPruningDao.deletePointData(deleteUpto);
@@ -52,7 +52,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             totalEntriesDeleted += numDeleted;
         }
         Instant finish = new Instant();
-        log.info("Point data deletion finished. Deleted "+totalEntriesDeleted+ " records.");
+        log.info("Point data deletion finished. Deleted " + totalEntriesDeleted + " records.");
         systemEventLogService.deletePointDataEntries(totalEntriesDeleted, start, finish);
         return numDeleted;
     }
@@ -92,7 +92,8 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         }
         Instant finish = new Instant();
         Seconds secondsTaken = Seconds.secondsBetween(start, finish);
-        log.info("Duplicate point data deletion finished. Deleted "+totalRowsdeleted+" records in "+secondsTaken.getSeconds()+" seconds");
+        log.info("Duplicate point data deletion finished. Deleted " + totalRowsdeleted + " records in "
+            + secondsTaken.getSeconds() + " seconds");
         systemEventLogService.rphDeleteDuplicates(totalRowsdeleted, start, finish);
         return totalRowsdeleted;
     }
