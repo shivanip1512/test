@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.user.YukonUserContext;
 
@@ -34,7 +35,7 @@ public interface SmartNotificationSubscriptionService {
      * Fetch Subscription Type and Name. Return only Type for Subscription other than Device Data monitor.
      */
     static String getSubscriptionTypeAndName(SmartNotificationSubscription subscription, List<DeviceDataMonitor> deviceDataMonitorList) {
-        if (subscription.getType().equals(SmartNotificationEventType.DEVICE_DATA_MONITOR)) {
+        if (subscription.getType() == SmartNotificationEventType.DEVICE_DATA_MONITOR) {
             Integer monitorId = DeviceDataMonitorEventAssembler.getMonitorId(subscription.getParameters());
             Optional<DeviceDataMonitor> deviceDataMonitor =
                 deviceDataMonitorList.stream().filter(m -> m.getId().equals(monitorId)).findFirst();
@@ -45,6 +46,19 @@ public interface SmartNotificationSubscriptionService {
         }
         return subscription.getType().toString();
     }
-    
+
+    /**
+     * Get Frequency of Subscription . For Daily Smart Notification Subscription also considering the time for sorting.
+     */
+    static String getFrequency(SmartNotificationSubscription subscription) {
+        if (subscription.getFrequency() == SmartNotificationFrequency.DAILY_DIGEST) {
+            String sendTime = subscription.getParameters().get("sendTime").toString();
+            //Expected sendTime Format in HH:mm . where mm is always 00, and getting HH in 24 hour format.
+            String[] sendTimeSplittedArray = sendTime.split(":");
+            int hourAsciiValue = Integer.parseInt(sendTimeSplittedArray[0]) + 65;
+            return subscription.getFrequency().toString() + (char) hourAsciiValue;
+        }
+        return subscription.getFrequency().toString();
+    }
 }
 

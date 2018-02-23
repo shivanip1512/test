@@ -220,7 +220,10 @@ public class SmartNotificationsController {
                     SmartNotificationSubscriptionService.getSubscriptionTypeAndName(o2, deviceDataMonitorList));
         };
         if (sortBy == SubscriptionSortBy.frequency) {
-            comparator = (o1, o2) -> o1.getFrequency().toString().compareTo(o2.getFrequency().toString());
+            comparator = (o1, o2) -> {
+                return SmartNotificationSubscriptionService.getFrequency(o1).compareToIgnoreCase(
+                    SmartNotificationSubscriptionService.getFrequency(o2));
+            };
         } else if (sortBy == SubscriptionSortBy.media) {
             comparator = (o1, o2) -> o1.getMedia().compareTo(o2.getMedia());
         } else if (sortBy == SubscriptionSortBy.recipient) {

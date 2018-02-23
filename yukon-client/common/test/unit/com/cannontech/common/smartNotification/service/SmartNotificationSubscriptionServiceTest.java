@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssembler;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
+import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -71,5 +72,37 @@ public class SmartNotificationSubscriptionServiceTest {
         smartNotificationSubscriptionIW.setType(SmartNotificationEventType.INFRASTRUCTURE_WARNING);
         assertNotEquals(SmartNotificationSubscriptionService.getSubscriptionTypeAndName(smartNotificationSubscriptionIW,
             deviceDataMonitorList), "INFRASTRUCTURE_WARNINGDUMMY");
+    }
+
+    @Test
+    public final void test_getFrequencyDailyFrequency_valid() {
+        SmartNotificationSubscription smartNotificationSubscriptionDailyFrequency = new SmartNotificationSubscription();
+        smartNotificationSubscriptionDailyFrequency.setFrequency(SmartNotificationFrequency.DAILY_DIGEST);;
+        smartNotificationSubscriptionDailyFrequency.setParameters(
+            ImmutableMap.<String, Object> builder().put("sendTime", "02:00").build());
+        assertEquals(SmartNotificationSubscriptionService.getFrequency(smartNotificationSubscriptionDailyFrequency), "DAILY_DIGESTC");
+    }
+
+    @Test
+    public final void test_getFrequencyDailyFrequency_Invalid() {
+        SmartNotificationSubscription smartNotificationSubscriptionDailyFrequency = new SmartNotificationSubscription();
+        smartNotificationSubscriptionDailyFrequency.setFrequency(SmartNotificationFrequency.DAILY_DIGEST);;
+        smartNotificationSubscriptionDailyFrequency.setParameters(
+            ImmutableMap.<String, Object> builder().put("sendTime", "02:00").build());
+        assertNotEquals(SmartNotificationSubscriptionService.getFrequency(smartNotificationSubscriptionDailyFrequency), "IMMEDIATE");
+    }
+
+    @Test
+    public final void test_getFrequencyImmediate_valid() {
+        SmartNotificationSubscription smartNotificationSubscriptionDailyFrequency = new SmartNotificationSubscription();
+        smartNotificationSubscriptionDailyFrequency.setFrequency(SmartNotificationFrequency.IMMEDIATE);;
+        assertEquals(SmartNotificationSubscriptionService.getFrequency(smartNotificationSubscriptionDailyFrequency), "IMMEDIATE");
+    }
+
+    @Test
+    public final void test_getFrequencyImmediate_Invalid() {
+        SmartNotificationSubscription smartNotificationSubscriptionDailyFrequency = new SmartNotificationSubscription();
+        smartNotificationSubscriptionDailyFrequency.setFrequency(SmartNotificationFrequency.IMMEDIATE);;
+        assertNotEquals(SmartNotificationSubscriptionService.getFrequency(smartNotificationSubscriptionDailyFrequency), "DAILY_DIGEST");
     }
 }
