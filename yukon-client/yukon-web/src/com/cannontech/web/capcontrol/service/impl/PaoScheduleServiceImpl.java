@@ -293,8 +293,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
             
             try {
                 schedCommand = ScheduleCommand.getScheduleCommand(assignment.getCommandName());
-                if (schedCommand == ScheduleCommand.ConfirmSub || schedCommand == ScheduleCommand.SendTimeSyncs
-                    || schedCommand == ScheduleCommand.DmvTest) {
+                if (schedCommand == ScheduleCommand.ConfirmSub || schedCommand == ScheduleCommand.SendTimeSyncs) {
                     //stop is not applicable to schedules with these commands
                     stopApplicable = false;
                     log.info("Schedule assignment stop ignored.  Command: " + assignment.getCommandName() + 

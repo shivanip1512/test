@@ -352,7 +352,7 @@ public class ScheduleController {
     }
 
     @RequestMapping(value="addPao")
-    public String addPao(int scheduleId, ScheduleCommand cmd, String paoIdList, FlashScope flash, String cmdInput, Integer dmvTestId) {
+    public String addPao(int scheduleId, ScheduleCommand cmd, String paoIdList, String cmdInput, Integer dmvTestId, FlashScope flash) {
         
         List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
         
