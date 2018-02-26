@@ -80,7 +80,7 @@ $('#viewCommentsOption').click(function(event) {
                     </li>
                 </c:when>
                 <c:otherwise>
-                    <li class="menuOption" title="<i:inline key=".pointNotFound"/>">
+                    <li class="menuOption" title="<i:inline key="${command.disabledTextKey}"/>">
                         <a href="javascript:void(0);" class="disabled-look">${commandName}</a>
                     </li>
                 </c:otherwise>
