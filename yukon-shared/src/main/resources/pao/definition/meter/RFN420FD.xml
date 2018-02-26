@@ -30,11 +30,7 @@
     </configuration>
     <pointInfos>
         <pointInfo name="Amps Phase A" init="true" attributes="CURRENT_PHASE_A"/>
-        <pointInfo name="Amps Phase B" attributes="CURRENT_PHASE_B"/>
-        <pointInfo name="Amps Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Avg Volts Phase A"/>
-        <pointInfo name="Avg Volts Phase B"/>
-        <pointInfo name="Avg Volts Phase C"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
@@ -49,12 +45,8 @@
         <pointInfo name="Disconnect Status" init="true" attributes="DISCONNECT_STATUS"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Max Volts Phase A"/>
-        <pointInfo name="Max Volts Phase B"/>
-        <pointInfo name="Max Volts Phase C"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
         <pointInfo name="Min Volts Phase A"/>
-        <pointInfo name="Min Volts Phase B"/>
-        <pointInfo name="Min Volts Phase C"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
         <pointInfo name="Net kWh" attributes="NET_KWH"/>
         <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
@@ -82,8 +74,6 @@
         <pointInfo name="Peak kW Frozen (Rate C kW)" attributes="PEAK_DEMAND_FROZEN_RATE_C"/>
         <pointInfo name="Peak kW Frozen (Rate D kW)" attributes="PEAK_DEMAND_FROZEN_RATE_D"/>
         <pointInfo name="Power Factor Degrees Phase A" init="true"/>
-        <pointInfo name="Power Factor Degrees Phase B"/>
-        <pointInfo name="Power Factor Degrees Phase C"/>
         <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
         <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
@@ -113,11 +103,7 @@
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Volt Degrees Phase A" init="true"/>
-        <pointInfo name="Volt Degrees Phase B"/>
-        <pointInfo name="Volt Degrees Phase C"/>
         <pointInfo name="Voltage" init="true" attributes="VOLTAGE,VOLTAGE_PROFILE"/>
         <pointInfo name="Volts Phase A" init="true" attributes="VOLTAGE_PHASE_A"/>
-        <pointInfo name="Volts Phase B" attributes="VOLTAGE_PHASE_B"/>
-        <pointInfo name="Volts Phase C" attributes="VOLTAGE_PHASE_C"/>
     </pointInfos>
 </pao>

@@ -140,6 +140,38 @@ UPDATE PAOSchedule SET Disabled = 'Y' WHERE Disabled = '1';
 UPDATE PAOSchedule SET Disabled = 'N' WHERE Disabled = '0';
 /* End YUK-17955 */
 
+/* Start YUK-15572 */
+DELETE FROM DYNAMICPOINTDISPATCH WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (56, 57, 71, 72, 74, 75, 77, 78, 81, 82, 110, 111, 113, 114, 116, 117)
+    AND YP.Type IN ('RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (56, 57, 71, 72, 74, 75, 77, 78, 81, 82, 110, 111, 113, 114, 116, 117)
+    AND YP.Type IN ('RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD'));
+    
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (56, 57, 71, 72, 74, 75, 77, 78, 81, 82, 110, 111, 113, 114, 116, 117)
+    AND YP.Type IN ('RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (56, 57, 71, 72, 74, 75, 77, 78, 81, 82, 110, 111, 113, 114, 116, 117)
+    AND YP.Type IN ('RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (56, 57, 71, 72, 74, 75, 77, 78, 81, 82, 110, 111, 113, 114, 116, 117)
+    AND YP.Type IN ('RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (56, 57, 71, 72, 74, 75, 77, 78, 81, 82, 110, 111, 113, 114, 116, 117)
+    AND YP.Type IN ('RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD'));
+/* End YUK-15572 */
+    
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
