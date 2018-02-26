@@ -832,6 +832,8 @@ BOOST_AUTO_TEST_CASE(test_requestVoltageChange)
     BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 1.25, VoltageRegulator::Single ) );
     BOOST_CHECK_EQUAL( 1.50, regulator->requestVoltageChange( 2.50, VoltageRegulator::Single ) );
 
+    // Inclusive and Exclusive are the same for SetPoint controller regulators
+
     BOOST_CHECK_EQUAL( 3.25, regulator->requestVoltageChange( 3.00, VoltageRegulator::Inclusive ) );
     BOOST_CHECK_EQUAL( 4.25, regulator->requestVoltageChange( 4.00, VoltageRegulator::Inclusive ) );
     BOOST_CHECK_EQUAL( 5.25, regulator->requestVoltageChange( 5.00, VoltageRegulator::Inclusive ) );

@@ -4,6 +4,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/range/numeric.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
+#include <boost/range/algorithm/count_if.hpp>
 
 #include "IVVCAlgorithm.h"
 #include "IVVCStrategy.h"
@@ -706,9 +707,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp( timeNow );
             state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
+            // clear the request all data flag so we don't get cached data from dispatch, only new data
+            //  we could really use a custom bump test point request....
+            std::set<PointRequest> notPointRequests;
+
+            for ( auto & pointRequest : pointRequests )
+            {
+                notPointRequests.insert( { pointRequest.pointId, pointRequest.pointRequestType, false } );
+            }
+            
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
-            request->watchPoints( pointRequests );
+            request->watchPoints( notPointRequests );
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1048,9 +1058,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp( timeNow );
             state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
+            // clear the request all data flag so we don't get cached data from dispatch, only new data
+            //  we could really use a custom bump test point request....
+            std::set<PointRequest> notPointRequests;
+
+            for ( auto & pointRequest : pointRequests )
+            {
+                notPointRequests.insert( { pointRequest.pointId, pointRequest.pointRequestType, false } );
+            }
+
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
-            request->watchPoints( pointRequests );
+            request->watchPoints( notPointRequests );
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1190,9 +1209,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp( timeNow );
             state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
+            // clear the request all data flag so we don't get cached data from dispatch, only new data
+            //  we could really use a custom bump test point request....
+            std::set<PointRequest> notPointRequests;
+
+            for ( auto & pointRequest : pointRequests )
+            {
+                notPointRequests.insert( { pointRequest.pointId, pointRequest.pointRequestType, false } );
+            }
+
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
-            request->watchPoints( pointRequests );
+            request->watchPoints( notPointRequests );
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -4487,20 +4515,17 @@ bool completionCheck( PointDataRequestPtr   request,
         return false;
     }
 
-    CtiTime   staleTime;    staleTime -= ( _POINT_AGE * 60 );
+    CtiTime   staleTime { CtiTime::now() - ( _POINT_AGE * 60 ) };
 
     auto collection = request->getPointValues( requestType );
 
-    long staleCount = 0;
+    const auto staleCount = 
+        boost::count_if( collection,
+                            [ staleTime ]( const auto & entry )
+                            {
+                                return entry.second.timestamp <= staleTime;
+                            } );
 
-    for ( auto entry : collection )
-    {
-        if ( entry.second.timestamp <= staleTime )
-        {
-            staleCount++;
-        }
-    }
-    
     const double nonStale = 100.0 * ( collection.size() - staleCount ) / collection.size();
 
     if ( nonStale < thresholdPercentage )
