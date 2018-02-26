@@ -322,8 +322,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
     }
     
     private long parseSecondsNotOperatedIn(PaoScheduleAssignment assignment) {
-        String timeString = assignment.getCommandName().replaceAll(ScheduleCommand.VerifyNotOperatedIn.getCommandName() 
-                + " ", "");
+        String timeString = assignment.getCommandName().replaceAll(ScheduleCommand.VerifyNotOperatedIn.getCommandName().substring(0, 41), "").trim();
     
         //parse min/hr/day/wk value from command string
         Period period = periodFormatter.parsePeriod(timeString);
