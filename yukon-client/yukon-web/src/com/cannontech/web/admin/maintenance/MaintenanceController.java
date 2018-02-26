@@ -102,7 +102,7 @@ public class MaintenanceController {
     @Autowired private SystemEventLogService systemEventLogService;
 
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
+    // private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
     private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
     private final static String ESTIMATED_LOAD_UPDATE_CRON = "0 0 * * * ? *"; //every hour
@@ -123,11 +123,8 @@ public class MaintenanceController {
     @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext userContext) throws ExecutionException{
         List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
-        // TODO This is done for hiding rph duplicate deletion job on UI (YUK-17919). Need to remove later.
-        boolean devMode = configurationSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
-        if (devMode) {
-            jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
-        }
+        // This is done for hiding rph duplicate deletion job on UI.
+        /* jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON)); */
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
         jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
         if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {
