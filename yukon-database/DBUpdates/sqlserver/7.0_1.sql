@@ -113,12 +113,10 @@ AND DeviceConfigCategoryId IN (
 /* End YUK-17906 */
 
 /* Start YUK-17652 */
-/* @error ignore-begin */
 IF EXISTS (SELECT Disabled from JOB 
             WHERE BeanName = 'scheduledRphDuplicateDeletionExecutionJobDefinition' AND disabled='Y')
 INSERT INTO MaintenanceTaskSettings VALUES ('DUPLICATE_POINT_DATA_PRUNING_ENABLED','false');
 GO
-/* @error ignore-end */
 /* End YUK-17652 */
 	
 /* Start YUK-17955 */

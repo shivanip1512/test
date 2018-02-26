@@ -127,14 +127,12 @@ AND DeviceConfigCategoryId IN (
 /* End YUK-17906 */
 
 /* Start YUK-17652 */
-/* @error ignore-begin */
 INSERT INTO MaintenanceTaskSettings (SettingType, Value)
     SELECT 'DUPLICATE_POINT_DATA_PRUNING_ENABLED', 'false'
     FROM dual
     WHERE EXISTS (
         SELECT 1 FROM JOB 
         WHERE BeanName = 'scheduledRphDuplicateDeletionExecutionJobDefinition' AND disabled='Y' );
-/* @error ignore-end */
 /* End YUK-17652 */
 
 /* Start YUK-17955 */
