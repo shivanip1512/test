@@ -114,15 +114,11 @@ yukon.da.bus = (function () {
 
 
             $(document).on('change', '.js-command-options', function () {
-                var row = $(this).closest('tr');
-                var dmvTestCommand = $("input[name=dmvCommandPrefix]").val();
-                var selectIndex = $(this).closest('tr').index();
+                var row = $(this).closest('tr'), dmvTestCommand = $("input[name=dmvCommandPrefix]").val(), 
+                          selectIndex = row.index();
 
                 if (dmvTestCommand === this.value) {
-                    $.ajax({
-                    url: yukon.url('/capcontrol/buses/' + selectIndex + '/addDmvTestPickerRow'),
-                    method: 'get'
-                }).done( function(data) {
+                    $.ajax(yukon.url('/capcontrol/buses/' + selectIndex + '/addDmvTestPickerRow')).done( function(data) {
                       row.find('.js-command').append(data);
                       $('[name="schedules[' + selectIndex + '].command"]').addClass('dn');
                     });

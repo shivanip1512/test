@@ -51,6 +51,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
     @Autowired private FilterDao filterDao;
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private DmvTestDao dmvTestDao;
+    @Autowired private PaoScheduleServiceHelper paoScheduleServiceHelper;
     
     private static final String NO_FILTER = "All";
     private static PeriodFormatter periodFormatter;
@@ -71,6 +72,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
     public Map<String, Collection<String>> getDeviceToCommandMapForSchedule(int id) {
         List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(id);
 
+        assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
         Multimap<String,String> deviceToCommands = HashMultimap.create();
         
         for (PaoScheduleAssignment assignment : assignments) {
@@ -105,7 +107,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
         
         //Filter, sort and get search results
         List<PaoScheduleAssignment> assignments = filterDao.filter(filter, sorter, rowMapper);
-        
+        assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
         return assignments;
     }
     
@@ -291,7 +293,8 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
             
             try {
                 schedCommand = ScheduleCommand.getScheduleCommand(assignment.getCommandName());
-                if (schedCommand == ScheduleCommand.ConfirmSub || schedCommand == ScheduleCommand.SendTimeSyncs) {
+                if (schedCommand == ScheduleCommand.ConfirmSub || schedCommand == ScheduleCommand.SendTimeSyncs
+                    || schedCommand == ScheduleCommand.DmvTest) {
                     //stop is not applicable to schedules with these commands
                     stopApplicable = false;
                     log.info("Schedule assignment stop ignored.  Command: " + assignment.getCommandName() + 

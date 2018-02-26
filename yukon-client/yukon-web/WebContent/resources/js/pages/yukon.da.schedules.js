@@ -68,11 +68,7 @@ yukon.da.schedules = (function () {
             $(document).on('change', '#cmd', function() {
                 var dmvTestCommand = $("input[name=dmvTestCommand]").val();
                 var commandName = $('#cmd option:selected').val();
-                if(commandName === dmvTestCommand) {
-                    $('#dmvTestDiv').removeClass('dn');
-                } else {
-                    $('#dmvTestDiv').addClass('dn');
-                }
+                $('#dmvTestDiv').toggleClass('dn', commandName != dmvTestCommand);
             });
 
             $(document).on('yukon:da:schedules:edit:submit', function (ev) {

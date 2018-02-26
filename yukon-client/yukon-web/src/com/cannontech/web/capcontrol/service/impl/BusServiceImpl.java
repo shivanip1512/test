@@ -44,7 +44,8 @@ public class BusServiceImpl implements BusService {
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private SubstationBusDao busDao;
     @Autowired private DBPersistentDao dbPersistentDao;
-
+    @Autowired private PaoScheduleServiceHelper paoScheduleServiceHelper;
+    
     @Override
     public CapControlSubBus get(int id) {
 
@@ -56,9 +57,11 @@ public class BusServiceImpl implements BusService {
 
         CapControlSubBus bus = CapControlSubBus.of(completeBus);
 
-        List<PaoScheduleAssignment> schedules = paoScheduleDao.getByPaoId(id);
+        List<PaoScheduleAssignment> assignments = paoScheduleDao.getByPaoId(id);
 
-        List<PAOScheduleAssign> assigns = schedules.stream()
+        assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
+
+        List<PAOScheduleAssign> assigns = assignments.stream()
            .map(new Function<PaoScheduleAssignment, PAOScheduleAssign>(){
 
                 @Override

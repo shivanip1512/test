@@ -46,6 +46,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.service.PaoScheduleService;
 import com.cannontech.web.capcontrol.service.PaoScheduleService.AssignmentStatus;
+import com.cannontech.web.capcontrol.service.impl.PaoScheduleServiceHelper;
 import com.cannontech.web.capcontrol.validators.PaoScheduleValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -66,6 +67,7 @@ public class ScheduleController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private PaoScheduleServiceHelper paoScheduleServiceHelper;
     
     private static final String baseKey = "yukon.web.modules.capcontrol.scheduleAssignments";
 
@@ -93,6 +95,8 @@ public class ScheduleController {
         
         //Filter, sort and get search results
         List<PaoScheduleAssignment> assignments = scheduleService.getAssignmentsByFilter(command, schedule);
+        
+        assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
         model.addAttribute("assignments", assignments);
 
         setDMVTestCommand(model);
@@ -225,6 +229,8 @@ public class ScheduleController {
         
         int numberFailed = 0;
         String result = "";
+        
+        assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
         
         for (PaoScheduleAssignment assignment : assignments) {
             boolean success = scheduleService.sendStartCommand(assignment, context.getYukonUser());

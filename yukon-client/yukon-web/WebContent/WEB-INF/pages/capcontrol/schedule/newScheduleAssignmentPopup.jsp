@@ -9,68 +9,43 @@
         <input type="hidden" name="paoIdList" id="paoIdList" />
         <input type="hidden" name="filterCommand" value="${param.command}" />
         <input type="hidden" name="filterSchedule" value="${param.schedule}" />
-        <table class="filterSelection">
-            <tr>
-                <td>Schedules:</td>
-                <td>
-                    <select name="scheduleId" id="scheduleId">
-                        <c:forEach var="schedule" items="${scheduleList}">
-                                <option value="${schedule.id}" <c:if test="${param.schedule == schedule.name}">selected="selected" </c:if> >${fn:escapeXml(schedule.name)}</option>
-                        </c:forEach>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Commands:</td>
-                <td>
-                    <select name="cmd" id="cmd">
-                        <c:forEach var="aCommand" items="${commandList}">
-                            <c:choose>
-                                <c:when test="${param.command == 'All'}">
-                                    <option value="${aCommand}">${aCommand.commandName}</option>
-                                </c:when>
-                                <c:otherwise>
-                                    <option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${fn:escapeXml(aCommand.commandName)}</option>
-                                </c:otherwise>
-                            </c:choose>
-                        </c:forEach>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                </td>
-                <td>
-                    <input name="cmdInput" id="cmdInput" type="text" value="${commandList[0].commandName}" class="dn" size="54"></input>
-                </td>
-            </tr>
-        </table>
-        <div id="deviceSelectionDiv">
-            <table>
-                <tr>
-                    <td>Substation Bus:&nbsp;</td>
-                    <td>
-                        <tags:pickerDialog id="cbcSubBusPicker" type="cbcSubBusPicker"
-                                destinationFieldId="paoIdList" multiSelectMode="true"
-                                linkType="selection" selectionProperty="paoName"/>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div id="dmvTestDiv" class="dn">
-            <table>
-                <tr>
-                    <td>DMV Test:&nbsp;</td>
-                    <td>
-                        <input type="hidden" name="dmvTestCommand" value="${dmvTestCommand}"/>  
-                        <tags:pickerDialog type="dmvTestPicker"
-                                           id="dmvTestPicker" 
-                                           destinationFieldName="dmvTestId"
-                                           linkType="selection" 
-                                           selectionProperty="dmvTestName" />
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".schedules">
+                <select name="scheduleId" id="scheduleId">
+                    <c:forEach var="schedule" items="${scheduleList}">
+                            <option value="${schedule.id}" <c:if test="${param.schedule == schedule.name}">selected="selected" </c:if> >${fn:escapeXml(schedule.name)}</option>
+                    </c:forEach>
+                </select>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".commands">
+                <select name="cmd" id="cmd">
+                    <c:forEach var="aCommand" items="${commandList}">
+                        <c:choose>
+                            <c:when test="${param.command == 'All'}">
+                                <option value="${aCommand}">${aCommand.commandName}</option>
+                            </c:when>
+                            <c:otherwise>
+                                <option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${fn:escapeXml(aCommand.commandName)}</option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </select>
+                <br/>
+                <input name="cmdInput" id="cmdInput" type="text" value="${commandList[0].commandName}" class="dn" size="54"></input>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".substationBus">
+                <tags:pickerDialog id="cbcSubBusPicker" type="cbcSubBusPicker"
+                    destinationFieldId="paoIdList" multiSelectMode="true"
+                    linkType="selection" selectionProperty="paoName"/>
+            </tags:nameValue2>
+            <tags:nameValue2 rowId="dmvTestDiv" nameKey=".dmvTest" rowClass="dn">
+               <input type="hidden" name="dmvTestCommand" value="${dmvTestCommand}"/>  
+                <tags:pickerDialog type="dmvTestPicker"
+                   id="dmvTestPicker" 
+                   destinationFieldName="dmvTestId"
+                   linkType="selection" 
+                   selectionProperty="dmvTestName" />
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
     </form>
 </cti:msgScope>

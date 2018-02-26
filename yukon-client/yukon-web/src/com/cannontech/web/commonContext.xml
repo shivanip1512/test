@@ -365,7 +365,8 @@
     <bean class="com.cannontech.web.capcontrol.service.impl.BusServiceImpl"/>
     <bean class="com.cannontech.web.capcontrol.service.impl.FeederServiceImpl"/>
     <bean class="com.cannontech.web.capcontrol.util.service.impl.CapControlWebUtilsServiceImpl"/>
-        
+    <bean class="com.cannontech.web.capcontrol.service.impl.PaoScheduleServiceHelper"/>
+
     <bean class="com.cannontech.web.tools.device.config.dao.impl.DeviceConfigSummaryDaoImpl"/>
     
     <bean name="portPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
