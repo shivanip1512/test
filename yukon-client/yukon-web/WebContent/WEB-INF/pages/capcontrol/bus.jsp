@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <c:set var="pageName" value="bus.${mode}"/>
@@ -63,11 +64,14 @@
                             <tags:input path="name" maxlength="60" autofocus="autofocus"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".status">
-                            <c:if test="${bus.verificationFlag}">
-                                <cti:msg2 var="statusDisabled" key=".verificationStatusDisabled"/>
-                            </c:if>
-                            <span title="${statusDisabled}"><tags:switchButton path="disabled" inverse="${true}" disabled="${bus.verificationFlag}" 
-                                offNameKey=".disabled.label" onNameKey=".enabled.label" /></span>
+                            <spring:bind path="disabled">
+                                <c:if test="${bus.verificationFlag}">
+                                    <cti:msg2 var="statusDisabled" key=".verificationStatusDisabled"/>
+                                </c:if>
+                                <span title="${statusDisabled}"><tags:switchButton path="disabled" inverse="${true}" disabled="${bus.verificationFlag}" 
+                                    offNameKey=".disabled.label" onNameKey=".enabled.label" /></span>
+                                <c:if test="${status.error}"><br/><br/><form:errors path="disabled" cssClass="error"/></c:if>
+                            </spring:bind>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".geoName">
                             <tags:input path="geoAreaName" maxlength="60"/>

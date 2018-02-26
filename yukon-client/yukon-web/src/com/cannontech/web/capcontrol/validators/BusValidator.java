@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Service
@@ -17,7 +19,7 @@ public class BusValidator extends SimpleValidator<CapControlSubBus> {
 
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDao paoDao;
-
+    @Autowired private CapControlCache ccCache;
 
     public BusValidator() {
         super(CapControlSubBus.class);
@@ -33,6 +35,14 @@ public class BusValidator extends SimpleValidator<CapControlSubBus> {
             && (bus.getCapControlSubstationBus().getAltSubPAOId() == null
             || bus.getCapControlSubstationBus().getAltSubPAOId() == 0)) {
             errors.rejectValue("capControlSubstationBus.altSubPAOId", "yukon.web.modules.capcontrol.bus.noAltBusError");
+        }
+        //Do not allow a bus to be enabled when in verification
+        if (!bus.isDisabled()) {
+            SubBus ccBus = ccCache.getSubBus(bus.getId());
+            if (ccBus.getVerificationFlag()) {
+                bus.setDisabled(true);
+                errors.rejectValue("disabled", "yukon.web.modules.capcontrol.bus.verificationStatusDisabled");
+            }
         }
     }
 
