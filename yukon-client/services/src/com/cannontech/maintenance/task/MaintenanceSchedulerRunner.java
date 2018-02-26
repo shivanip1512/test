@@ -1,5 +1,7 @@
 package com.cannontech.maintenance.task;
 
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,8 +137,8 @@ public class MaintenanceSchedulerRunner {
         ScheduledFuture<?> future_scheduler;
         
         if (millisecondsUntilRun > minimumRunWindow && !isForceReschedule(scheduler)) {
-            log.info("Maintenance scheduler " + scheduler + " will start at " + DurationFormatUtils.formatDuration(
-                millisecondsUntilRun + Instant.now().getMillis(), "HH:mm:ss.SSS", true));
+            log.info("Maintenance scheduler " + scheduler + " will start at "
+                + new Date(Instant.now().getMillis() + millisecondsUntilRun));
         }
         
         future_scheduler = scheduledExecutorService.schedule(() -> {
