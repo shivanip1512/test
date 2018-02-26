@@ -9,8 +9,8 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
@@ -24,7 +24,7 @@ import com.cannontech.user.YukonUserContext;
 
 public class GroupCommanderSuccessResultsModel extends BareReportModelBase<GroupCommanderSuccessResultsModel.ModelRow> implements ReportModelMetaInfo {
 
-    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private GroupCommandExecutionService groupCommandExecutor;
     @Autowired private PointDao pointDao;
     private String resultKey;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;

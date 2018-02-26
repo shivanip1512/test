@@ -20,8 +20,6 @@ import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
-import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -58,14 +56,11 @@ public class HardwareConfigServiceImpl implements HardwareConfigService{
     
    private final static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
 
-   @Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;
    @Autowired private CommandScheduleDao commandScheduleDao;
    @Autowired private EnergyCompanyDao ecDao;
    @Autowired private EnergyCompanyService ecService;
    @Autowired private InventoryBaseDao inventoryBaseDao;
    @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
-   @Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
-   @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
    @Autowired private LmHardwareCommandService commandService;
    @Autowired private YukonListDao yukonListDao;
    @Autowired private EnrollmentDao enrollmentService;

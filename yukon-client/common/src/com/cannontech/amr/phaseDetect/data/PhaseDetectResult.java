@@ -3,13 +3,13 @@ package com.cannontech.amr.phaseDetect.data;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
-import com.cannontech.common.util.Completable;
 import com.cannontech.common.model.Phase;
+import com.cannontech.common.util.Completable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -22,7 +22,7 @@ public class PhaseDetectResult implements Completable {
     private Map<SimpleDevice, String> failureGroupMap = Maps.newHashMap();
     private Map<Integer, Map<String, PhaseDetectVoltageReading>> deviceReadingsMap = Maps.newHashMap();
     private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier;
-    private CommandCompletionCallbackAdapter<CommandRequestDevice> callback;
+    private CommandCompletionCallback<CommandRequestDevice> callback;
     private Map<SimpleDevice, DetectedPhase> detectedPhaseResultMap = Maps.newHashMap();
     private List<SimpleDevice> inputDeviceList = Lists.newArrayList();
     private PhaseDetectData testData;
@@ -72,11 +72,11 @@ public class PhaseDetectResult implements Completable {
         return deviceReadingsMap;
     }
 
-    public CommandCompletionCallbackAdapter<CommandRequestDevice> getCallback() {
+    public CommandCompletionCallback<CommandRequestDevice> getCallback() {
         return callback;
     }
 
-    public void setCallback(CommandCompletionCallbackAdapter<CommandRequestDevice> callback) {
+    public void setCallback(CommandCompletionCallback<CommandRequestDevice> callback) {
         this.callback = callback;
     }
 

@@ -2,7 +2,6 @@ package com.cannontech.amr.deviceread.service.impl;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -12,9 +11,7 @@ import com.cannontech.amr.deviceread.dao.impl.SetCoveringSolver;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -24,7 +21,6 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.IterableUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGeneratorService {
     private Logger log = YukonLogManager.getLogger(MeterReadCommandGeneratorServiceImpl.class);
@@ -35,26 +31,14 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
     public List<CommandRequestDevice> getCommandRequests(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
 
 	    List<CommandRequestDevice> result = Lists.newArrayListWithExpectedSize(IterableUtils.guessSize(pointsToRead));
-	    
-	    Map<String, CommandCallback> callbackCache = Maps.newHashMap();
-	    
+
 	    for (PaoMultiPointIdentifier pao : pointsToRead) {
 	        Set<CommandWrapper> minimalCommands = getMinimalCommandSet(pao.getPao(), pao.getPointIdentifiers());
 	        if(minimalCommands != null){
 				for (CommandWrapper wrapper : minimalCommands) {
 					List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();
-					for (String commandStr : commandStringList) {
-
-						CommandCallback commandCallback = callbackCache.get(commandStr);
-						if (commandCallback == null) {
-							commandCallback = new PorterCommandCallback(commandStr);
-							callbackCache.put(commandStr, commandCallback);
-						}
-
-						CommandRequestDevice request = new CommandRequestDevice();
-						request.setCommandCallback(commandCallback);
-						request.setDevice(new SimpleDevice(pao.getPao()));
-						result.add(request);
+					for (String commandStr : commandStringList) {;
+						result.add(new CommandRequestDevice(commandStr, new SimpleDevice(pao.getPao())));
 					}
 				}
 	        }
@@ -65,14 +49,18 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	
 	@Override
     public boolean isReadable(final Iterable<PaoMultiPointIdentifier> pointsToRead) {
-	    if (Iterables.isEmpty(pointsToRead)) return false;
+	    if (Iterables.isEmpty(pointsToRead)) {
+            return false;
+        }
 	    
         // the following loop mimics what getCommandRequests does, but because we don't need
 	    // to actually build commands, it is much shorter
 
         for (PaoMultiPointIdentifier pao : pointsToRead) {
             Set<CommandWrapper> minimalCommands = getMinimalCommandSet(pao.getPao(), pao.getPointIdentifiers());
-            if (IterableUtils.isNotEmpty(minimalCommands)) return true;
+            if (IterableUtils.isNotEmpty(minimalCommands)) {
+                return true;
+            }
         }
         
         return false;

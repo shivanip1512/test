@@ -28,8 +28,8 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -54,7 +54,7 @@ public class TamperFlagProcessingController {
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	@Autowired private TamperFlagMonitorService tamperFlagMonitorService;
 	@Autowired private AlertService alertService;
-	@Autowired private GroupCommandExecutor groupCommandExecutor;
+	@Autowired private GroupCommandExecutionService groupCommandExecutor;
 	@Autowired private GroupMetersDao groupMetersDao;
 	@Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	@Autowired private DeviceGroupService deviceGroupService;

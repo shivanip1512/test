@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
-import com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.pao.PaoType;
@@ -19,18 +19,19 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class RouteBroadcastServiceImpl implements RouteBroadcastService{
     
-    CommandRequestRouteAndDeviceExecutorImpl executor;
+    @Autowired private CommandExecutionService executionService;
     
     @Override
     public void broadcastCommand(final String command, List<Route> routes, DeviceRequestType type, final RouteBroadcastService.CompletionCallback callback, LiteYukonUser user) {
         
         ObjectMapper<Route, CommandRequestRouteAndDevice> objectMapper = new ObjectMapper<Route, CommandRequestRouteAndDevice>() {
+            @Override
             public CommandRequestRouteAndDevice map(Route from) throws ObjectMappingException {
-                return buildRequest(from, command);
+                return new CommandRequestRouteAndDevice(command , new SimpleDevice(0, PaoType.SYSTEM), from.getId());
             }
         };
         
-        CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice>() {
+        CommandCompletionCallback<CommandRequestRouteAndDevice> dummyCallback = new CommandCompletionCallback<CommandRequestRouteAndDevice>() {
             private boolean failed = false;
             private String errorMsg = "";
             @Override
@@ -54,24 +55,9 @@ public class RouteBroadcastServiceImpl implements RouteBroadcastService{
             }
         };
         
-        List<CommandRequestRouteAndDevice> commands = new MappingList<Route, CommandRequestRouteAndDevice>(routes, objectMapper);
-        
-        executor.execute(commands, dummyCallback, type, user);
-        
-    }
-    
-    private CommandRequestRouteAndDevice buildRequest(Route route, String command) {
-        CommandRequestRouteAndDevice request = new CommandRequestRouteAndDevice();
-        request.setDevice(new SimpleDevice(0, PaoType.SYSTEM));
-        request.setRouteId(route.getId());
-        
-        request.setCommandCallback(new CommandCallbackBase(command));
-        return request;
-    }
-    
-    @Autowired
-    public void setCommandRequestRouteAndDeviceExecutor(CommandRequestRouteAndDeviceExecutorImpl executor) {
-        this.executor = executor;
-    }
+        List<CommandRequestRouteAndDevice> commands = new MappingList<>(routes, objectMapper);
+          
+        executionService.execute(commands, dummyCallback, type, user);
 
+    }
 }

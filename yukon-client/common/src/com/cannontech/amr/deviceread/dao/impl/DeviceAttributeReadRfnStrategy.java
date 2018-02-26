@@ -163,8 +163,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             
             @Override
             public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
-                CommandRequestDevice command = new CommandRequestDevice();
-                command.setDevice(new SimpleDevice(pao));
+                CommandRequestDevice command = new CommandRequestDevice(new SimpleDevice(pao));
                 groupCallback.receivedLastError(command, error);
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(groupCallback.getExecution(),
                     pao.getPaoId(), error.getErrorCode());
@@ -172,23 +171,20 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             
             @Override
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
-                CommandRequestDevice command = new CommandRequestDevice();
-                command.setDevice(new SimpleDevice(pao));
+                CommandRequestDevice command = new CommandRequestDevice(new SimpleDevice(pao));
                 groupCallback.receivedValue(command, value);
             }
                  
             @Override
             public void receivedException(SpecificDeviceErrorDescription error) {
-                CommandRequestDevice command = new CommandRequestDevice();
-                groupCallback.receivedLastError(command, error);
+                groupCallback.processingExceptionOccured(error.getDescription());
             }
 
             @Override
             public void receivedLastValue(PaoIdentifier pao, String value) {
                 //ignore the last value if this device had an error
                 if (groupCallback.getErrors().get(new SimpleDevice(pao)) == null) {
-                    CommandRequestDevice command = new CommandRequestDevice();
-                    command.setDevice(new SimpleDevice(pao));
+                    CommandRequestDevice command = new CommandRequestDevice(new SimpleDevice(pao));
                     groupCallback.receivedLastResultString(command, value);
                     commandRequestExecutionResultDao.saveCommandRequestExecutionResult(groupCallback.getExecution(),
                         pao.getPaoId(), 0);

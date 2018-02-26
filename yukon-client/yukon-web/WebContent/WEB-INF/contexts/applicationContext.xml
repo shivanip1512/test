@@ -380,9 +380,7 @@
         <property name="resultsCache" ref="routeLocateResultsCache"/>
     </bean>
 
-    <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService">
-        <property name="groupCommandExecutor" ref="groupCommandExecutor"/>
-    </bean>
+    <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService"/>
 
     <bean id="backgroundProcessBackingService" class="com.cannontech.web.updater.bulk.BackgroundProcessBackingService">
         <property name="recentResultsCache" ref="recentResultsCache"/>

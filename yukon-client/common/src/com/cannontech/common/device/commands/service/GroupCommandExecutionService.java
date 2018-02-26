@@ -1,9 +1,11 @@
-package com.cannontech.common.device.commands;
+package com.cannontech.common.device.commands.service;
 
 import java.util.List;
 
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -11,7 +13,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 /**
  * Interface used to execute a command for a group of devices
  */
-public interface GroupCommandExecutor {
+public interface GroupCommandExecutionService {
 	/**
 	 * Execute a command on a collection of devices.
      * Will send standard {@link CommandRequestDevice} requests.

@@ -10,7 +10,7 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 
-public final class WaitableCommandCompletionCallback<T> implements CommandCompletionCallback<T> {
+public final class WaitableCommandCompletionCallback<T> extends CommandCompletionCallback<T> {
 
     private final Object lock = new Object();
     private Logger log = YukonLogManager.getLogger(WaitableCommandCompletionCallback.class);

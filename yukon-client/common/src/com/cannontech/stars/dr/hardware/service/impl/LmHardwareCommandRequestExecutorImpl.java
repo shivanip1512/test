@@ -1,8 +1,5 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,13 +7,10 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
-import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestRoute;
-import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.CtiUtilities;
@@ -24,12 +18,12 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandRequestExecutor;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
+import com.google.common.collect.Lists;
 
 /**
  * Implementation class for CommandRequestHardwareExecutor
@@ -37,11 +31,10 @@ import com.cannontech.stars.service.DefaultRouteService;
 public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRequestExecutor {
 	
 	@Autowired private EnergyCompanyDao ecDao;
-	@Autowired private StarsDatabaseCache starsDatabaseCache;
 	@Autowired private InventoryBaseDao inventoryBaseDao;
 	@Autowired private InventoryDao inventoryDao;
 	@Autowired private PaoDao paoDao;
-	@Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;
+	@Autowired private CommandExecutionService commandRequestService;
 	@Autowired private DefaultRouteService defaultRouteService;
 	
 	private Logger logger = YukonLogManager.getLogger(LmHardwareCommandRequestExecutorImpl.class);
@@ -51,8 +44,8 @@ public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRe
 	                    String command,
 	                    LiteYukonUser user) throws CommandCompletionException {
 	    
-	    CommandCompletionCallbackAdapter<CommandRequestRoute> callback =
-            new CommandCompletionCallbackAdapter<CommandRequestRoute>(){
+	    CommandCompletionCallback<CommandRequestRoute> callback =
+            new CommandCompletionCallback<CommandRequestRoute>(){
             @Override
             public void receivedLastError(CommandRequestRoute command, SpecificDeviceErrorDescription error) {
                 logger.error("Could not execute command for inventory with id: " + hardware.getInventoryID() + " Error: " + error.toString());
@@ -74,15 +67,15 @@ public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRe
                         CommandCompletionCallback<CommandRequestRoute> callback) throws CommandCompletionException {
         
         int routeId = getRouteId(hardware);
-        commandRequestRouteExecutor.execute(routeId, command, callback, DeviceRequestType.LM_HARDWARE_COMMAND, user);
+        CommandRequestRoute request = new CommandRequestRoute(command, routeId);
+        commandRequestService.execute(Lists.newArrayList(request), callback, DeviceRequestType.LM_HARDWARE_COMMAND, user);
     }
     
     @Override
     public void executeOnRoute(String command, int routeId, LiteYukonUser user) throws CommandCompletionException {
-        CommandResultHolder result = commandRequestRouteExecutor.execute(routeId,
-                                                                         command,
-                                                                         DeviceRequestType.LM_HARDWARE_COMMAND,
-                                                                         user);
+        CommandRequestRoute request = new CommandRequestRoute(command, routeId);
+        CommandResultHolder result =
+            commandRequestService.execute(request, DeviceRequestType.LM_HARDWARE_COMMAND, user);
         if (result.isExceptionOccured()) {
             throw new CommandCompletionException(result.getExceptionReason());
         }
@@ -93,19 +86,6 @@ public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRe
         LiteLmHardwareBase hardware = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
         this.execute(hardware, command, user);
     }
-
-	@Override
-    public void executeWithTemplate(CommandRequestExecutionTemplate<CommandRequestRoute> template,
-            LiteLmHardwareBase hardware, 
-            String command,
-            CommandCompletionCallback<CommandRequestRoute> callback) throws CommandCompletionException {
-	    
-	    CommandRequestRoute commandRequest = new CommandRequestRoute();
-        commandRequest.setCommandCallback(new CommandCallbackBase(command));
-        commandRequest.setRouteId(getRouteId(hardware));
-        List<CommandRequestRoute> commands = Collections.singletonList(commandRequest);
-        template.execute(commands, callback);
-	}
 
 	/**
 	 * Use the energy company default route if the hardware's routeId is 0.

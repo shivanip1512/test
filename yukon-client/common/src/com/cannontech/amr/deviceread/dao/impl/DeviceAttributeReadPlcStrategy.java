@@ -17,10 +17,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
@@ -33,9 +32,9 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
 
     private final static Logger log = YukonLogManager.getLogger(DeviceAttributeReadPlcStrategy.class);
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private MeterReadCommandGeneratorService meterReadCommandGeneratorService;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private CommandExecutionService commandRequestService;
     
     @Override
     public StrategyType getType() {
@@ -65,8 +64,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             log.debug("Points:" + points);
             log.debug("Commands:" + commands);
         }
-        commandRequestDeviceExecutor.createTemplateAndExecute(groupCallback.getExecution(), groupCallback, commands,
-            user, true);
+        commandRequestService.execute(commands, groupCallback, groupCallback.getExecution(), false, user);
     }
 
     @Override
@@ -74,7 +72,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             final DeviceAttributeReadStrategyCallback delegateCallback, DeviceRequestType type,
             CommandRequestExecution execution, LiteYukonUser user) {
         CommandCompletionCallback<CommandRequestDevice> groupCallback =
-            new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+            new CommandCompletionCallback<CommandRequestDevice>() {
 
                 @Override
                 public void complete() {
@@ -117,7 +115,8 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             log.debug("Points:" + points);
             log.debug("Commands:" + commands);
         }
-        commandRequestDeviceExecutor.createTemplateAndExecute(execution, groupCallback, commands, user, true);
+        commandRequestService.execute(commands, groupCallback, execution, false, user);
+
     }
 
     @Override

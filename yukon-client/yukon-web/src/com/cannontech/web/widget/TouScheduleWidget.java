@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -29,7 +31,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class TouScheduleWidget extends AdvancedWidgetControllerBase {
     
     @Autowired private MeterDao meterDao;
-    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
+    @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private CommandDao commandDao;
     @Autowired private IDatabaseCache databaseCache;
     
@@ -59,7 +61,9 @@ public class TouScheduleWidget extends AdvancedWidgetControllerBase {
         
         String command = commandDao.buildTOUScheduleCommand(scheduleId);
         PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, command, DeviceRequestType.TOU_SCHEDULE_COMMAND, userContext.getYukonUser());
+        CommandRequestDevice request = new CommandRequestDevice(command, new SimpleDevice(meter.getPaoIdentifier()));
+        CommandResultHolder result = commandExecutionService.execute(request, DeviceRequestType.TOU_SCHEDULE_COMMAND,
+            userContext.getYukonUser());
         model.put("result", result);
         
         return "common/meterReadingsResult.jsp";

@@ -19,9 +19,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
@@ -46,11 +45,11 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     private final Logger log = YukonLogManager.getLogger(DisconnectPlcServiceImpl.class);
     private final int minutesToWait;
     
-    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private AttributeService attributeService;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
-    
+    @Autowired private CommandExecutionService commandExecutionService;
+
     @Autowired
     public DisconnectPlcServiceImpl(ConfigurationSource configurationSource) {
         minutesToWait = configurationSource.getInteger(MasterConfigInteger.PLC_ACTIONS_CANCEL_TIMEOUT, 10);
@@ -59,8 +58,8 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
     @Override
     public void cancel(DisconnectResult result, YukonUserContext userContext) {
         if (result.getCommandCompletionCallback() != null) {
-            commandRequestDeviceExecutor.cancelExecution(result.getCommandCompletionCallback(),
-                                                         userContext.getYukonUser(), false);
+            commandExecutionService.cancelExecution(result.getCommandCompletionCallback(), userContext.getYukonUser(),
+                false);
         }
     }
             
@@ -72,10 +71,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
                 new Function<SimpleDevice, CommandRequestDevice>() {
                     @Override
                     public CommandRequestDevice apply(SimpleDevice meter) {
-                        CommandRequestDevice request = new CommandRequestDevice();
-                        request.setDevice(meter);
-                        request.setCommandCallback(new CommandCallbackBase(command.getPlcCommand()));
-                        return request;
+                        return new CommandRequestDevice(command.getPlcCommand(), meter);
                     }
                 };
         List<CommandRequestDevice> commands = Lists.newArrayList(Iterables.transform(meters, toCommandRequestDevice));
@@ -86,11 +82,11 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
         }			          
         Callback commandCompletionCallback = new Callback(callback, meters, command);
           
-		commandRequestDeviceExecutor.createTemplateAndExecute(execution, commandCompletionCallback, commands, user, true);
+        commandExecutionService.execute(commands, commandCompletionCallback, execution, false, user);
         return commandCompletionCallback;
     }
 
-    private class Callback implements CommandCompletionCallback<CommandRequestDevice> {
+    private class Callback extends CommandCompletionCallback<CommandRequestDevice> {
 
         private final DisconnectCallback callback;
         DisconnectCommand command;
@@ -210,15 +206,6 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             callback.failed(command.getDevice(), error);
             meters.remove(command.getDevice());
         }
-        
-        @Override
-        public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {}
-
-        @Override
-        public void receivedIntermediateResultString(CommandRequestDevice command, String value) {}
-
-        @Override
-        public void receivedLastResultString(CommandRequestDevice command, String value) {}
-    }
-    
+       
+    } 
 }

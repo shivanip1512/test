@@ -96,7 +96,6 @@ import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.databaseMigration.bean.data.ElementCategoryEnum;
 import com.cannontech.common.databaseMigration.bean.database.ReferenceTypeEnum;
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
-import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
@@ -316,7 +315,6 @@ public class SimpleImmutabilityTest {
             ChartInterval.class,
             CommStatusType.class,
             CommandRequestExecutionDefaults.class,
-            CommandRequestExecutionObjects.class,
             CommandRequestExecutionStatus.class,
             CommandRequestType.class,
             CommandRequestUnsupportedType.class,

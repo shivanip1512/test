@@ -26,9 +26,8 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
@@ -57,7 +56,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private AttributeService attributeService;
     @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
-    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     @Autowired
@@ -87,8 +86,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         Set<SimpleDevice> devices = new HashSet<>(PaoUtils.asSimpleDeviceListFromPaos(paos));
         List<CommandRequestDevice> initiatedCommands = getCommandRequests(devices, DEMAND_RESET_COMMAND);
         InitiatedCallback initiatedCallback = new InitiatedCallback(callback, paos);
-		commandRequestDeviceExecutor.createTemplateAndExecute(initiatedExecution, initiatedCallback, initiatedCommands,
-				user, true);
+        commandExecutionService.execute(initiatedCommands, initiatedCallback, initiatedExecution, false, user);
         return initiatedCallback;
     }
     
@@ -135,14 +133,13 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                 getCommandRequests(deviceToPointKeySet, LAST_RESET_TIME_COMMAND);
             VerificationCallback verificationCallback =
                 new VerificationCallback(callback, deviceToPoint, whenRequested);
-			commandRequestDeviceExecutor.createTemplateAndExecute(verificationExecution, verificationCallback,
-					verificationCommands, user, true);
-            callbacks.add(verificationCallback);
+            commandExecutionService.execute(verificationCommands, verificationCallback, verificationExecution, false,
+                user);
         }
         return callbacks;
     }
       
-    private class InitiatedCallback implements CommandCompletionCallback<CommandRequestDevice> {
+    private class InitiatedCallback extends CommandCompletionCallback<CommandRequestDevice> {
         
         private final DemandResetCallback callback;
         Set<? extends YukonPao> paos;
@@ -150,26 +147,6 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         InitiatedCallback(DemandResetCallback callback, Set<? extends YukonPao> paos) {
             this.callback = callback;
             this.paos = paos;
-        }
-
-        @Override
-        public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
-        }
-
-        @Override
-        public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-        }
-
-        @Override
-        public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-        }
-
-        @Override
-        public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
-        }
-
-        @Override
-        public void receivedLastResultString(CommandRequestDevice command, String value) {
         }
 
         @Override
@@ -181,10 +158,6 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         }
 
         @Override
-        public void cancel() {
-        }
-
-        @Override
         public void processingExceptionOccured(String reason) {
             log.debug("PLC exception (InitiatedCallback)");
             log.debug("Reason:" + reason);
@@ -192,7 +165,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         } 
     }
 
-    private class VerificationCallback implements CommandCompletionCallback<CommandRequestDevice> {
+    private class VerificationCallback extends CommandCompletionCallback<CommandRequestDevice> {
 
         private final DemandResetCallback callback;
         Set<SimpleDevice> meters = new HashSet<>();
@@ -281,24 +254,12 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             callback.cannotVerify(command.getDevice(), error);
             meters.remove(command.getDevice());
         }
-
-        @Override
-        public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-        }
-
-        @Override
-        public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
-        }
-
-        @Override
-        public void receivedLastResultString(CommandRequestDevice command, String value) {
-        }
     }
 
     @Override
     public void cancel(Set<CommandCompletionCallback<CommandRequestDevice>> toCancel, LiteYukonUser user) {
         for (CommandCompletionCallback<CommandRequestDevice> callback : toCancel) {
-            commandRequestDeviceExecutor.cancelExecution(callback, user, false);
+            commandExecutionService.cancelExecution(callback, user, false);
         }
     }
     
@@ -307,10 +268,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             new Function<SimpleDevice, CommandRequestDevice>() {
                 @Override
                 public CommandRequestDevice apply(SimpleDevice meter) {
-                    CommandRequestDevice request = new CommandRequestDevice();
-                    request.setDevice(meter);
-                    request.setCommandCallback(new CommandCallbackBase(command));
-                    return request;
+                    return new CommandRequestDevice(meter);
                 }
             };
             

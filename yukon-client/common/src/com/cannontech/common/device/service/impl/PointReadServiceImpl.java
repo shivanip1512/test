@@ -7,11 +7,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.PointReadService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
@@ -24,8 +23,8 @@ import com.google.common.collect.Ordering;
 
 public class PointReadServiceImpl implements PointReadService {
     
-    private CommandRequestDeviceExecutor executor;
-    private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private CommandExecutionService executionService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     @Override
     public void backgroundReadPoint(PaoPointIdentifier paoPointIdentifier,
@@ -35,6 +34,7 @@ public class PointReadServiceImpl implements PointReadService {
         Set<CommandDefinition> commandsThatAffectPoints = paoDefinitionDao.getCommandsThatAffectPoints(paoPointIdentifier.getPaoIdentifier().getPaoType(), pointSet);
         
         Ordering<CommandDefinition> ordering = Ordering.natural().onResultOf(new Function<CommandDefinition, Comparable<Integer>>() {
+            @Override
             public Comparable<Integer> apply(CommandDefinition arg0) {
                 return arg0.getCommandStringList().size();
             };
@@ -43,26 +43,15 @@ public class PointReadServiceImpl implements PointReadService {
         CommandDefinition commandDefinition = ordering.min(commandsThatAffectPoints);
         List<String> commandStrings = commandDefinition.getCommandStringList();
         
-        List<CommandRequestDevice> commandRequests = new ArrayList<CommandRequestDevice>();
+        List<CommandRequestDevice> commandRequests = new ArrayList<>();
         for (String commandStr : commandStrings) {
-            CommandRequestDevice request = new CommandRequestDevice();
-            request.setDevice(new SimpleDevice(paoPointIdentifier.getPaoIdentifier()));
-
-            request.setCommandCallback(new CommandCallbackBase(commandStr));
-            commandRequests.add(request);
+            commandRequests.add(
+                new CommandRequestDevice(commandStr, new SimpleDevice(paoPointIdentifier.getPaoIdentifier())));
         }
-        CommandCompletionCallbackAdapter<Object> dummyCallback = new CommandCompletionCallbackAdapter<Object>();
-        executor.execute(commandRequests, dummyCallback, type, user);
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
-    @Autowired
-    public void setCommandRequestDeviceExecutor(CommandRequestDeviceExecutor executor) {
-        this.executor = executor;
-    }
 
+        class DummyCallback extends CommandCompletionCallback<CommandRequestDevice> {
+        }   
+        
+        executionService.execute(commandRequests, new DummyCallback(), type, user);
+    }
 }

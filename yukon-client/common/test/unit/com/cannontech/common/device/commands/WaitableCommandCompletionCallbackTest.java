@@ -18,9 +18,10 @@ public class WaitableCommandCompletionCallbackTest {
         final AtomicInteger timeoutCount = new AtomicInteger(0);
         final AtomicInteger interruptCount = new AtomicInteger(0);
         Runnable runnable = new Runnable() {
+            @Override
             public void run() {
-                WaitableCommandCompletionCallback<Object> completionCallback =
-                    new WaitableCommandCompletionCallback<Object>(new CollectingCommandCompletionCallback(), 10, 20);
+                WaitableCommandCompletionCallback<CommandRequestBase> completionCallback =
+                    new WaitableCommandCompletionCallback<>(new CollectingCommandCompletionCallback(), 10, 20);
                 try {
                     completionCallback.waitForCompletion();
                     fail("completed normally");
@@ -35,7 +36,7 @@ public class WaitableCommandCompletionCallbackTest {
         };
         
         int threadsToStart = 10;
-        List<Thread> threads = new ArrayList<Thread>();
+        List<Thread> threads = new ArrayList<>();
         for (int i = 0; i < threadsToStart; ++i) {
             Thread thread = new Thread(runnable);
             threads.add(thread);

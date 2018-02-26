@@ -67,9 +67,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-    @Autowired private NextValueHelper nextValueHelper;
     @Autowired private List<DeviceAttributeReadStrategy> strategies;
-    @Autowired private DeviceAttributeReadPlcStrategy plcStrategy;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     
@@ -420,11 +418,11 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 	
 	private class DeviceCollectionSummary {
 
-        private Set<YukonPao> unsupportedDevices = new HashSet<YukonPao>();
+        private Set<YukonPao> unsupportedDevices = new HashSet<>();
         private Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy = ArrayListMultimap.create();
         private int requestCount = 0;
         private Map<PaoIdentifier, SpecificDeviceErrorDescription> errors =
-            new HashMap<PaoIdentifier, SpecificDeviceErrorDescription>();
+            new HashMap<>();
 
         public DeviceCollectionSummary(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
                 LiteYukonUser user) {

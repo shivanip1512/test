@@ -17,12 +17,12 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupReque
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dao.NotFoundException;
@@ -84,8 +84,8 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 log.debug(getJob());
             }
             final CountDownLatch taskCompletionLatch = new CountDownLatch(1);
-            CommandCompletionCallbackAdapter<CommandRequestDevice> callback =
-                new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+            CommandCompletionCallback<CommandRequestDevice> callback =
+                new CommandCompletionCallback<CommandRequestDevice>() {
                     @Override
                     public void complete() {
                         taskCompletionLatch.countDown();

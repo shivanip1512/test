@@ -5,9 +5,9 @@ import java.util.Set;
 import com.cannontech.amr.deviceread.dao.impl.DeviceCommandServiceImpl.CompletionCallback;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -20,5 +20,5 @@ public interface DeviceCommandService {
      */
     CompletionCallback execute(Set<SimpleDevice> devices, Set<? extends Attribute> attributes, String command,
             DeviceRequestType type, LiteYukonUser user, RetryParameters retryParameters,
-            CommandCompletionCallbackAdapter<CommandRequestDevice> callback, String scheduleName);
+            CommandCompletionCallback<CommandRequestDevice> callback, String scheduleName);
 }

@@ -17,15 +17,15 @@ import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
-import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
+import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
@@ -34,7 +34,6 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -53,12 +52,12 @@ import com.google.common.collect.Lists;
 public class DeviceConfigServiceImpl implements DeviceConfigService {
     private final static Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
 
-    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
+    @Autowired private CommandExecutionService commandRequestService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceConfigEventLogService eventLogService;
-    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private GroupCommandExecutionService groupCommandExecutionService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
@@ -91,14 +90,14 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
         DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
         
-        String key = groupCommandExecutor.execute(supportedCollection, command, type, callback, user);
+        String key = groupCommandExecutionService.execute(supportedCollection, command, type, callback, user);
         if(type == DeviceRequestType.GROUP_DEVICE_CONFIG_SEND){
             logInitiated(supportedCollection.getDeviceList(),  LogAction.SEND, user);
         }else if(type == DeviceRequestType.GROUP_DEVICE_CONFIG_READ){
             logInitiated(supportedCollection.getDeviceList(),  LogAction.READ, user);
         }
         
-        GroupCommandResult result = groupCommandExecutor.getResult(key);
+        GroupCommandResult result = groupCommandExecutionService.getResult(key);
         result.setHandleUnsupported(true);
         result.setUnsupportedCollection(unsupportedCollection);
         result.setDeviceCollection(deviceCollection);
@@ -174,7 +173,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             new ObjectMapper<YukonDevice, CommandRequestDevice>() {
                 @Override
                 public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
-                    return buildStandardRequest(from, commandString);
+                    return new CommandRequestDevice(commandString, new SimpleDevice(from.getPaoIdentifier()));
                 }
             };
 
@@ -203,8 +202,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         List<CommandRequestDevice> requests = new MappingList<>(deviceList, objectMapper);
 
-        CommandCompletionCallbackAdapter<CommandRequestDevice> commandCompletionCallback =
-            new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+        CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback =
+            new CommandCompletionCallback<CommandRequestDevice>() {
                 @Override
                 public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
                     SimpleDevice device = command.getDevice();
@@ -255,7 +254,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                                .map(x -> new SimpleDevice(x))
                                .collect(Collectors.toList()), LogAction.VERIFY, user);
             
-        commandRequestExecutor.execute(requests, waitableCallback, DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, user);
+        commandRequestService.execute(requests, waitableCallback, DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, user);
         try {
             waitableCallback.waitForCompletion();
             logCompleted(result.getSuccessList(), LogAction.VERIFY, true);
@@ -284,8 +283,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
         eventLogService.readConfigFromDeviceInitiated(deviceName, user);
         String commandString = "getconfig install all";
-        CommandResultHolder resultHolder =
-            commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
+        CommandRequestDevice request = new CommandRequestDevice(commandString, new SimpleDevice(device.getPaoIdentifier()));
+        CommandResultHolder resultHolder = commandRequestService.execute(request,
+            DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
         
         int status = BooleanUtils.toInteger(!resultHolder.isErrorsExist());
         eventLogService.readConfigFromDeviceCompleted(deviceName, status);
@@ -298,20 +298,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
         eventLogService.sendConfigToDeviceInitiated(deviceName, user);
+        CommandRequestDevice request = new CommandRequestDevice(commandString, new SimpleDevice(device.getPaoIdentifier()));
         CommandResultHolder resultHolder =
-            commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+                commandRequestService.execute(request, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
         
         int status = BooleanUtils.toInteger(!resultHolder.isErrorsExist());
         eventLogService.sendConfigToDeviceCompleted(deviceName, status);
         return resultHolder;
-    }
-
-    private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
-        CommandRequestDevice request = new CommandRequestDevice();
-        request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-
-        request.setCommandCallback(new PorterCommandCallback(command));
-        return request;
     }
 
     /**

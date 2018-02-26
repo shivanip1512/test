@@ -7,14 +7,17 @@ import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
@@ -39,10 +42,9 @@ public class PeakReportServiceImpl implements PeakReportService {
     private SystemDateFormattingService systemDateFormattingService = null;
     private DBPersistentDao dbPersistentDao = null;
     private PaoDao paoDao = null;
-    private CommandRequestDeviceExecutor commandRequestExecutor = null;
     private MeterDao meterDao = null;
     private PeakReportDao peakReportDao = null;
-    
+    @Autowired private CommandExecutionService commandExecutionService;
     
     @Override
     public PeakReportResult requestPeakReport(int deviceId, PeakReportPeakType peakType, PeakReportRunType runType, int channel, Date startDate, Date stopDate, boolean persist, YukonUserContext userContext) {
@@ -82,7 +84,10 @@ public class PeakReportServiceImpl implements PeakReportService {
         // run command
         CommandResultHolder commandResultHolder;
         try{
-            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), DeviceRequestType.PEAK_REPORT_COMMAND, userContext.getYukonUser());
+            CommandRequestDevice request =
+                new CommandRequestDevice(commandBuffer.toString(), new SimpleDevice(meter.getPaoIdentifier()));
+            commandResultHolder = commandExecutionService.execute(request, DeviceRequestType.PEAK_REPORT_COMMAND,
+                userContext.getYukonUser());
         }
         catch(Exception e){
             throw new PeakSummaryReportRequestException(e);
@@ -337,12 +342,6 @@ public class PeakReportServiceImpl implements PeakReportService {
     @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
-    }
-
-    @Required
-    public void setCommandRequestExecutor(
-            CommandRequestDeviceExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
     }
 
     @Required

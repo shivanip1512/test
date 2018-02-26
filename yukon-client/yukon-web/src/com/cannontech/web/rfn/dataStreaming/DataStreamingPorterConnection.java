@@ -15,16 +15,13 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
-import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.commands.impl.PorterCommandCallback;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,16 +39,16 @@ public class DataStreamingPorterConnection {
        SEND
     }
     private static final Logger log = YukonLogManager.getLogger(DataStreamingPorterConnection.class);
-    private static final CommandCallback sendCallback = new PorterCommandCallback("putconfig behavior rfndatastreaming");
-    private static final CommandCallback readCallback = new PorterCommandCallback("getconfig behavior rfndatastreaming");
+    private static final String sendCommand = "putconfig behavior rfndatastreaming";
+    private static final String readCommand = "getconfig behavior rfndatastreaming";
     private static final String porterJsonTag = "json";
     private static final String porterJsonPrefix = porterJsonTag + "{";
 
 
-    @Autowired private CommandRequestDeviceExecutor commandExecutor;
     @Autowired private DataStreamingDevSettings devSettings;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
+    @Autowired private CommandExecutionService commandExecutionService;
 
     /**
      * Build a list of data streaming configuration commands for the specified devices. Porter will use the
@@ -59,12 +56,11 @@ public class DataStreamingPorterConnection {
      */
     public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices, CommandType commandType) {
         List<CommandRequestDevice> commands = devices.stream().map(device -> {
-            CommandRequestDevice command = new CommandRequestDevice();
-            command.setDevice(device);
+            CommandRequestDevice command = null;
             if (CommandType.READ == commandType) {
-                command.setCommandCallback(readCallback);
+                command = new CommandRequestDevice(readCommand, device);
             } else if (CommandType.SEND == commandType) {
-                command.setCommandCallback(sendCallback);
+                command = new CommandRequestDevice(sendCommand, device);
             } else {
                 throw new UnsupportedOperationException(commandType + " is not supported.");
             }
@@ -85,8 +81,7 @@ public class DataStreamingPorterConnection {
             buildCallbackProxy(result.getConfigCallback());
         result.setCommandCompletionCallback(commandCompletionCallback);
         log.info("Sending data streaming configuration to Porter. " + commands);
-        commandExecutor.createTemplateAndExecute(result.getExecution(), commandCompletionCallback, commands, user,
-            false);
+        commandExecutionService.execute(commands, commandCompletionCallback, result.getExecution(), true, user);
     }
 
     /**
@@ -94,7 +89,7 @@ public class DataStreamingPorterConnection {
      * a POJO, and passes it to the nested DataStreamingConfigCallback for updating the UI and database.
      */
     private CommandCompletionCallback<CommandRequestDevice> buildCallbackProxy(DataStreamingConfigCallback configCallback) {
-        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+        CommandCompletionCallback<CommandRequestDevice> callback = new CommandCompletionCallback<CommandRequestDevice>() {
 
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
@@ -168,7 +163,7 @@ public class DataStreamingPorterConnection {
             cre.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELLED);
             commandRequestExecutionDao.saveOrUpdate(cre);
         }else{
-            commandExecutor.cancelExecution(result.getCommandCompletionCallback(), user, true);
+            commandExecutionService.cancelExecution(result.getCommandCompletionCallback(), user, true);
         }
     }
 }

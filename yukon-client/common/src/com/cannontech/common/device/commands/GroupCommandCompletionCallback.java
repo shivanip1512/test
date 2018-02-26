@@ -15,12 +15,12 @@ import com.cannontech.common.util.ExceptionStatus;
 import com.cannontech.common.util.MapList;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public class GroupCommandCompletionCallback implements
-        CommandCompletionCallback<CommandRequestDevice>, Completable, Cancelable, ExceptionStatus, MultipleDeviceResultHolder {
-    
-    private final Map<SimpleDevice,SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<SimpleDevice, SpecificDeviceErrorDescription>(100, .75f, 1);
-    private final Map<SimpleDevice,String> resultStrings = new ConcurrentHashMap<SimpleDevice, String>(100, .75f, 1);
-    private final Map<SimpleDevice, Object> allDevices = new ConcurrentHashMap<SimpleDevice, Object>(100, .75f, 1);
+public class GroupCommandCompletionCallback extends CommandCompletionCallback<CommandRequestDevice>
+        implements Completable, Cancelable, ExceptionStatus, MultipleDeviceResultHolder {
+
+    private final Map<SimpleDevice,SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
+    private final Map<SimpleDevice,String> resultStrings = new ConcurrentHashMap<>(100, .75f, 1);
+    private final Map<SimpleDevice, Object> allDevices = new ConcurrentHashMap<>(100, .75f, 1);
     private final Object PRESENT = new Object(); // used as the value for the allDevices map
     private final MapList<SimpleDevice,PointValueHolder> receivedValues = new MapList<SimpleDevice, PointValueHolder>();
     private boolean complete = false;
@@ -29,16 +29,6 @@ public class GroupCommandCompletionCallback implements
     private String processingErrorReason = "";
     protected CommandRequestExecution execution;
     
-    @Override
-    public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-        // ignore
-    }
-
-    @Override
-    public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
-        // ignore
-    }
-
     @Override
     public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
         errors.put(command.getDevice(),error);

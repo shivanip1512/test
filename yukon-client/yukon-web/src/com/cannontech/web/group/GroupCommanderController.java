@@ -35,8 +35,8 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -74,7 +74,7 @@ public class GroupCommanderController {
     @Autowired private EmailService emailService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private GroupCommandExecutionService groupCommandExecutor;
     @Autowired private SimpleReportOutputter simpleReportOutputter;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PaoCommandAuthorizationService commandAuthorizationService;

@@ -40,15 +40,13 @@ import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -71,13 +69,13 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
     private RecentResultsCache<BackgroundProcessResultHolder> bpRecentResultsCache;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private CommandRequestDeviceExecutor commandRequestExecutor;
     private RecentResultsCache<ArchiveAnalysisProfileReadResult> crdRecentResultsCache;
     private static final Map<BuiltInAttribute, Integer> lpAttributeChannelMap;
     private static final DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm");
     private ConfigurationSource configurationSource;
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     private ArchiveDataAnalysisHelper archiveDataAnalysisHelper;
+    @Autowired private CommandExecutionService executionService;
 
     static {
         Builder<BuiltInAttribute, Integer> builder = ImmutableMap.builder();
@@ -153,7 +151,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                                                                                              failureGroup, 
                                                                                              requests);
        
-        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+        CommandCompletionCallback<CommandRequestDevice> callback = new CommandCompletionCallback<CommandRequestDevice>() {
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 result.commandSucceeded(command);
@@ -178,8 +176,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         
         String resultId = crdRecentResultsCache.addResult(result);
         
-        CommandRequestExecutionTemplate<CommandRequestDevice> creTemplate = commandRequestExecutor.getExecutionTemplate(DeviceRequestType.ARCHIVE_DATA_ANALYSIS_LP_READ, user);
-        creTemplate.execute(requests, callback);
+        executionService.execute(requests, callback, DeviceRequestType.ARCHIVE_DATA_ANALYSIS_LP_READ, user);
         archiveDataAnalysisDao.updateStatus(analysisId, AdaStatus.READING, resultId);
         
         log.info("Starting ADA profile read for analysis with ID " + analysis.getAnalysisId() + ". "
@@ -215,9 +212,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
                 String datesString = getDatesString(dateRange);
                 String commandString = "getvalue lp channel " + channel + " " + datesString;
                 
-                CommandRequestDevice command = new CommandRequestDevice();
-                command.setDevice(new SimpleDevice(data.getId()));
-                command.setCommandCallback(new CommandCallbackBase(commandString));
+                CommandRequestDevice command = new CommandRequestDevice(commandString, new SimpleDevice(data.getId()));
                 commands.add(command);
             }
         }
@@ -236,7 +231,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         Instant earliestLpDateAllowed = new Instant().minus(daysBackToReadLp);
         
         //get date ranges that need reads
-        Deque<Interval> intervals = new ArrayDeque<Interval>();
+        Deque<Interval> intervals = new ArrayDeque<>();
         int intervalSkipCount = 0;
         for(ArchiveData archiveData : data.getArchiveData()) {
             Interval thisInterval = archiveData.getArchiveRange();
@@ -357,7 +352,7 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         bpRecentResultsCache.addResult(resultsId, callbackResult);
         
         //Run analysis in background process
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
         
         return resultsId;
@@ -428,11 +423,6 @@ public class ArchiveDataAnalysisServiceImpl implements ArchiveDataAnalysisServic
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
     
-    @Autowired
-    public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
-    }
-
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;

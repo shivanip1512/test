@@ -23,10 +23,10 @@ import com.cannontech.amr.phaseDetect.service.PhaseDetectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -37,7 +37,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.RouteBroadcastService;
 import com.cannontech.common.device.service.RouteBroadcastService.CompletionCallback;
 import com.cannontech.common.model.Phase;
@@ -71,7 +70,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
     private PhaseDetectState phaseDetectState = null;
     private PhaseDetectResult phaseDetectResult = null;
     
-    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
+    @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private RouteBroadcastService routeBroadcastService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -177,16 +176,14 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper = new ObjectMapper<YukonDevice, CommandRequestDevice>() {
             @Override
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
-                CommandRequestDevice request = new CommandRequestDevice();
-                request.setDevice(new SimpleDevice(from.getPaoIdentifier()));
-                request.setCommandCallback(new CommandCallbackBase(command));
+                CommandRequestDevice request = new CommandRequestDevice(command, new SimpleDevice(from.getPaoIdentifier()));
                 return request;
             }
         };
         
-        List<CommandRequestDevice> requests = new MappingList<YukonDevice, CommandRequestDevice>(devices, objectMapper);
+        List<CommandRequestDevice> requests = new MappingList<>(devices, objectMapper);
         
-        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+        CommandCompletionCallback<CommandRequestDevice> callback = new CommandCompletionCallback<CommandRequestDevice>() {
             
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
@@ -237,7 +234,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
             
         };
         
-        CommandRequestExecutionIdentifier id = commandRequestExecutor.execute(requests, callback, DeviceRequestType.PHASE_DETECT_READ, user);
+        CommandRequestExecutionIdentifier id = commandExecutionService.execute(requests, callback, DeviceRequestType.PHASE_DETECT_READ, user);
         phaseDetectResult.setCommandRequestExecutionIdentifier(id);
         phaseDetectResult.setCallback(callback);
     }
@@ -245,7 +242,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
     @Override
     public void cancelReadPhaseDetect(LiteYukonUser user) {
         try {
-            commandRequestExecutor.cancelExecution(phaseDetectResult.getCallback(), user, true);
+            commandExecutionService.cancelExecution(phaseDetectResult.getCallback(), user, true);
         } catch (Exception e) {
             log.warn("Unable to cancel phase detect read.", e);
         }
@@ -439,13 +436,17 @@ public class PhaseDetectServiceImpl implements PhaseDetectService {
     
     @Override
     public PhaseDetectState getPhaseDetectState() {
-        if (phaseDetectState == null) throw new PhaseDetectCancelledException();
+        if (phaseDetectState == null) {
+            throw new PhaseDetectCancelledException();
+        }
         return phaseDetectState;
     }
 
     @Override
     public PhaseDetectResult getPhaseDetectResult() {
-        if (phaseDetectResult == null) throw new PhaseDetectCancelledException();
+        if (phaseDetectResult == null) {
+            throw new PhaseDetectCancelledException();
+        }
         return phaseDetectResult;
     }
 

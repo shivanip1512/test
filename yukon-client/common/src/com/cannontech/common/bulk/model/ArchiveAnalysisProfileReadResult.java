@@ -5,7 +5,6 @@ import java.util.Set;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -19,7 +18,7 @@ import com.google.common.collect.Sets;
 public class ArchiveAnalysisProfileReadResult implements Completable {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    private Multimap<SimpleDevice, CommandCallback> deviceCommandMap = ArrayListMultimap.create();
+    private Multimap<SimpleDevice, String> deviceCommandMap = ArrayListMultimap.create();
     private Set<SimpleDevice> devicesWithFailure = Sets.newHashSet();
     private boolean complete = false;
     private StoredDeviceGroup successGroup;
@@ -42,7 +41,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;;
         
         for(CommandRequestDevice request : commandRequestDeviceList) {
-            deviceCommandMap.put(request.getDevice(), request.getCommandCallback());
+            deviceCommandMap.put(request.getDevice(), request.getCommand());
         }
         totalNumberOfDevicesToRead = deviceCommandMap.keySet().size();
     }
@@ -51,7 +50,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         SimpleDevice device = request.getDevice();
         
         //remove from list of pending requests
-        deviceCommandMap.remove(device, request.getCommandCallback());
+        deviceCommandMap.remove(device, request.getCommand());
         
         //see if we've finished all commands for that device
         if(deviceCommandMap.containsKey(device)) {
@@ -73,7 +72,7 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
         SimpleDevice device = request.getDevice();
         
         //remove from list of pending requests
-        deviceCommandMap.remove(device, request.getCommandCallback());
+        deviceCommandMap.remove(device, request.getCommand());
         
         //see if we've finished all commands for that device
         if(deviceCommandMap.containsKey(device)) {
@@ -88,7 +87,9 @@ public class ArchiveAnalysisProfileReadResult implements Completable {
     }
     
     public void processingExceptionOccurred(String error) {
-        if(errorList==null) errorList = Lists.newArrayList();
+        if(errorList==null) {
+            errorList = Lists.newArrayList();
+        }
         errorList.add(error);
     }
     

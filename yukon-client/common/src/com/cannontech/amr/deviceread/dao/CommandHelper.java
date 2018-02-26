@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -51,9 +50,7 @@ public class CommandHelper {
 
                         @Override
                         public CommandRequestDevice apply(SimpleDevice device) {
-                            CommandRequestDevice cmdReq = new CommandRequestDevice();
-                            cmdReq.setCommandCallback(new CommandCallbackBase(command));
-                            cmdReq.setDevice(device);
+                            CommandRequestDevice cmdReq = new CommandRequestDevice(command, device);
                             return cmdReq;
                         }
 

@@ -24,8 +24,10 @@ import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -76,11 +78,11 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
-    @Autowired private CommandRequestDeviceExecutor cre;
     @Autowired private MeterDao meterDao;
     @Autowired private MeteringEventLogService meteringEventLogService;
     @Autowired private MeterValidator meterValidator;
     @Autowired private PaoDao paoDao;
+    @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServerDatabaseCache cache;
@@ -111,7 +113,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     public String ping(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
         
         YukonMeter meter = meterDao.getForId(deviceId);
-        CommandResultHolder result = cre.execute(meter, "ping", DeviceRequestType.METER_INFORMATION_PING_COMMAND, user);
+        CommandRequestDevice request = new CommandRequestDevice("ping", new SimpleDevice(meter.getPaoIdentifier()));
+        CommandResultHolder result =
+            commandExecutionService.execute(request, DeviceRequestType.METER_INFORMATION_PING_COMMAND, user);
         model.addAttribute("isRead", true);
         model.addAttribute("result", result);
         

@@ -15,8 +15,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
-import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -26,15 +25,14 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
-
-    @Autowired private CommandRequestRouteAndDeviceExecutor commandRequestRouteAndDeviceExecutor = null;
+    
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private PaoDao paoDao;
     @Autowired private ScheduledExecutor scheduledExecutor = null;
+    @Autowired private CommandExecutionService commandRequestService;
     private Map<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>> simpleCallbacksToCommandCompleteCallbacks = 
-        new HashMap<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>>();
+        new HashMap<>();
     private List<SimpleCallback<Integer>> cancelationCallbackList = Collections.synchronizedList(new ArrayList<SimpleCallback<Integer>>()); 
-    
 
     private static int MAX_ROUTE_RETRY = 10;
     private static int NEXT_ATTEMPT_WAIT = 5;
@@ -88,13 +86,11 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                 public void run() {
 
                     // cmd
-                    CommandRequestRouteAndDevice cmdReq = new CommandRequestRouteAndDevice();
-                    cmdReq.setCommandCallback(new CommandCallbackBase(commandString));
-                    cmdReq.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-                    cmdReq.setRouteId(state.getRouteIds().get(state.getRouteIdx()));
+                    CommandRequestRouteAndDevice cmdReq = new CommandRequestRouteAndDevice(commandString,
+                        new SimpleDevice(device.getPaoIdentifier()), state.getRouteIds().get(state.getRouteIdx()));
 
                     // callback
-                    CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestRouteAndDevice>() {
+                    CommandCompletionCallback<CommandRequestRouteAndDevice> callback = new CommandCompletionCallback<CommandRequestRouteAndDevice>() {
 
                         @Override
                         public void processingExceptionOccured(String reason) {
@@ -177,7 +173,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                             simpleCallbacksToCommandCompleteCallbacks.get(state.getRouteFoundCallback());
                         
                         if(commandCompletionCallbackList == null){
-                            commandCompletionCallbackList = new ArrayList<CommandCompletionCallback<CommandRequestRouteAndDevice>>();
+                            commandCompletionCallbackList = new ArrayList<>();
                             simpleCallbacksToCommandCompleteCallbacks.put(state.getRouteFoundCallback(),commandCompletionCallbackList);
                         }
                         commandCompletionCallbackList.add(callback);
@@ -185,7 +181,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     
                     // execute
                     try {
-                        commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, DeviceRequestType.PING_DEVICE_ON_ROUTE_COMMAND, state.getUser());
+                        commandRequestService.execute(Collections.singletonList(cmdReq), callback, DeviceRequestType.PING_DEVICE_ON_ROUTE_COMMAND, state.getUser());
                     } catch (Exception e) {
                         runCallbackWithNull(state, "Unknown exception.", deviceLogStr, "", e);
                     }
@@ -248,8 +244,8 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                         
                         // Sends a cancel command to all the commands that have been sent out.
                         if(commandCompletionCallbacks != null){
-                            for ( CommandCompletionCallback<CommandRequestRouteAndDevice> commandCompletionCallback : commandCompletionCallbacks) {
-                                commandRequestRouteAndDeviceExecutor.cancelExecution(commandCompletionCallback, user, true);
+                            for (CommandCompletionCallback<CommandRequestRouteAndDevice> commandCompletionCallback : commandCompletionCallbacks) {
+                                commandRequestService.cancelExecution(commandCompletionCallback, user, true);
                             }
                         }
                     }

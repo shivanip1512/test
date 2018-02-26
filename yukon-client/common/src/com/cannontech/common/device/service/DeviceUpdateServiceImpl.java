@@ -19,9 +19,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTypeInfo;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
@@ -84,7 +84,7 @@ import com.google.common.collect.Ordering;
 
 public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
-    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private CommandExecutionService commandRequestService;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
@@ -151,15 +151,13 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                     // putconfig command
                     if (DeviceTypesFuncs.isMCT410(device.getPaoIdentifier().getPaoType())) {
 
-                        CommandRequestDevice configCmd = new CommandRequestDevice();
-                        configCmd.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-                        configCmd.setCommandCallback(new CommandCallbackBase("putconfig emetcon intervals"));
+                        CommandRequestDevice configCmd = new CommandRequestDevice("putconfig emetcon intervals", new SimpleDevice(device.getPaoIdentifier()));
 
-                        CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback =
-                            new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+                        CommandCompletionCallback<CommandRequestDevice> dummyCallback =
+                            new CommandCompletionCallback<CommandRequestDevice>() {
                             };
 
-                        commandRequestDeviceExecutor.execute(Collections.singletonList(configCmd), dummyCallback,
+                        commandRequestService.execute(Collections.singletonList(configCmd), dummyCallback,
                             DeviceRequestType.ROUTE_DISCOVERY_PUTCONFIG_COMMAND, liteYukonUser);
                     }
                 }

@@ -105,8 +105,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
             //All devices succeeded.
             Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues = initiateRead(devices);
             for (PaoIdentifier pao : devicesToPointValues.keySet()) {
-                CommandRequestDevice command = new CommandRequestDevice();
-                command.setDevice(new SimpleDevice(pao));
+                CommandRequestDevice command = new CommandRequestDevice(new SimpleDevice(pao));
                 for (PointValueHolder pointValue : devicesToPointValues.get(pao)) {
                     groupCallback.receivedValue(command, pointValue);
                 }

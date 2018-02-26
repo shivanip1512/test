@@ -27,17 +27,16 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -53,10 +52,10 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
     @Autowired private CommandHelper commandHelper;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-    @Autowired private CommandRequestDeviceExecutor deviceExecutor;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private MeteringEventLogService eventLogService;
+    @Autowired private CommandExecutionService executionService;
 
     private ScheduledExecutorService scheduledExecutorService = null;
 
@@ -66,7 +65,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
     @Override
     public CompletionCallback execute(Set<SimpleDevice> devices, Set<? extends Attribute> attributes,
             final String command, DeviceRequestType type, LiteYukonUser user, RetryParameters retryParameters,
-            CommandCompletionCallbackAdapter<CommandRequestDevice> taskCallback, String scheduleName) {
+            CommandCompletionCallback<CommandRequestDevice> taskCallback, String scheduleName) {
 
         setupTimeoutCheck();
 
@@ -88,40 +87,40 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         return new CompletionCallback(execution, retryParameters, taskCallback, commands, scheduleName, user);
     }
 
-    public class CompletionCallback extends CommandCompletionCallbackAdapter<CommandRequestDevice> {
+    public class CompletionCallback extends CommandCompletionCallback<CommandRequestDevice> {
 
         public static final String dateFormatDebugPattern = "MM/dd/yyyy HH:mm:ss.SSS";
 
         private boolean isComplete = false;
         private final Instant creationTime = new Instant();
         private Instant timeoutTime;
-        private CommandCompletionCallbackAdapter<CommandRequestDevice> taskCallback;
-        private CommandRequestExecutionTemplate<CommandRequestDevice> template;
+        private CommandCompletionCallback<CommandRequestDevice> taskCallback;
         // retry number, queued true/false
-        private final TreeMap<Integer, Boolean> retries = new TreeMap<Integer, Boolean>();
+        private final TreeMap<Integer, Boolean> retries = new TreeMap<>();
         private TryCallback currentCallback;
         private String scheduleName;
         private int contextId;
         //Name used for event log
         private String deviceRequestTypeName;
+        private LiteYukonUser user;
 
         public CompletionCallback(CommandRequestExecution execution, RetryParameters retryParameters,
-                CommandCompletionCallbackAdapter<CommandRequestDevice> scheduledTaskCallback,
+                CommandCompletionCallback<CommandRequestDevice> scheduledTaskCallback,
                 Set<CommandRequestDevice> commands, String scheduleName, LiteYukonUser user) {
             this.scheduleName = scheduleName;
             this.taskCallback = scheduledTaskCallback;
             this.contextId = execution.getContextId();
             this.deviceRequestTypeName = execution.getCommandRequestExecutionType().getShortName();
+            this.user = user;
             if (!commands.isEmpty()) {
                 callbacksAwaitingCompletion.add(this);
-                this.template = deviceExecutor.getExecutionTemplate(execution, user);
                 initRetries(retryParameters);
                 initTimeoutTime(retryParameters);
                 eventLogService.readStarted(deviceRequestTypeName, scheduleName, creationTime, timeoutTime,
                     commands.size(), contextId);
                 // first execution starts with tryNumber=0;
                 currentCallback = new TryCallback(0, this, execution, commands, scheduleName);
-                template.execute(new ArrayList<>(commands), currentCallback, execution, false);
+                executionService.execute(new ArrayList<>(commands), currentCallback, execution, true, user);
             } else {
                 eventLogService.readAttempted(deviceRequestTypeName, scheduleName, creationTime, contextId);
                 // no commands to,  send complete the execution
@@ -157,7 +156,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
             long commands = 0;
             if (!isComplete) {
                 isComplete = true;
-                commands = deviceExecutor.cancelExecution(currentCallback, user, false);
+                commands = executionService.cancelExecution(currentCallback, user, false);
                 currentCallback.completeExecution(CommandRequestExecutionStatus.CANCELLED);
                 currentCallback.markDevicesAsCanceled();
                 eventLogService.readCancelled(deviceRequestTypeName, scheduleName, currentCallback.tryNumber, user,
@@ -220,7 +219,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
             currentCallback = new TryCallback(retry.getKey(), this, retryExecution, failedCommands, scheduleName);
             log.debug(currentCallback.getLogDetails() + " try[try number, queued?]=" + retry);
             // CommandResultMessageListener will mark retry as complete
-            template.execute(new ArrayList<>(failedCommands), currentCallback, retryExecution, false, retry.getValue());
+            executionService.execute(new ArrayList<>(failedCommands), currentCallback, retryExecution, true, retry.getValue(), user);
             // log.debug("*>>>>>>>>>>>>TEST CANCEL/TIMEOUT/PORTER CRASH NOW*");
         }
 
@@ -298,10 +297,12 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         public boolean equals(Object obj) {
             CompletionCallback other = (CompletionCallback) obj;
             if (creationTime == null) {
-                if (other.creationTime != null)
+                if (other.creationTime != null) {
                     return false;
-            } else if (!creationTime.equals(other.creationTime))
+                }
+            } else if (!creationTime.equals(other.creationTime)) {
                 return false;
+            }
             return true;
         }
 
@@ -310,7 +311,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         }
     }
     
-    public class TryCallback extends CommandCompletionCallbackAdapter<CommandRequestDevice> {
+    public class TryCallback extends CommandCompletionCallback<CommandRequestDevice> {
 
         private final CompletionCallback callback;
         private final CommandRequestExecution tryExecution;
@@ -373,7 +374,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
          * canceled the request.
          */
         public void markDevicesAsCanceled() {
-            Set<SimpleDevice> canceledDevices = new HashSet<SimpleDevice>();
+            Set<SimpleDevice> canceledDevices = new HashSet<>();
             for (CommandRequestDevice command : notResponded) {
                 canceledDevices.add(command.getDevice());
             }
@@ -391,8 +392,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         public void markDevicesAsTimedOut() {
             for (CommandRequestDevice command : notResponded) {
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(tryExecution.getId(),
-                    command.getDevice().getDeviceId(), DeviceError.TIMEOUT.getCode(),
-                    command.getCommandCallback().getGeneratedCommand());
+                    command.getDevice().getDeviceId(), DeviceError.TIMEOUT.getCode(), command.getCommand());
             }
         }
 

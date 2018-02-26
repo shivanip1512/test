@@ -50,16 +50,15 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
@@ -166,7 +165,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     private BasicServerConnection porterConnection;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private AttributeService attributeService;
-    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private CommandExecutionService commandRequestService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -471,9 +470,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // Assume plc if we made it this far, validate meter can receive porter command requests and command string exists, then perform action
                 boolean supportsPing = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
                 if (supportsPing) { // build up a list of plc command requests (to be sent later)
-                    CommandRequestDevice request = new CommandRequestDevice();
-                    request.setDevice(SimpleDevice.of(meter.getPaoIdentifier()));
-                    request.setCommandCallback(new CommandCallbackBase("ping"));
+                    CommandRequestDevice request = new CommandRequestDevice("ping", SimpleDevice.of(meter.getPaoIdentifier()));
+
                     plcCommandRequests.add(request);
                     multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "InitiateOutageDetectionEventRequest", mspVendor.getCompanyName());
                 } else {
@@ -501,23 +499,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             final String transactionId, final String responseUrl) {
         
         YukonUserContext yukonUserContext = YukonUserContext.system;
-        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
-
-            @Override
-            public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-                log.warn("receivedIntermediateError for odEvent " + error.getDescription());
-            }
-
-            @Override
-            public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
-                log.debug("receivedIntermediateResultString for odEvent " + value);
-            }
-
-            @Override
-            public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
-                log.debug("receivedValue for odEvent" + value);
-            }
-
+        CommandCompletionCallback<CommandRequestDevice> callback = new CommandCompletionCallback<CommandRequestDevice>() {
             @Override
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 log.debug("receivedLastResultString for odEvent " + value);
@@ -553,7 +535,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
         };
 
-        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, yukonUserContext.getYukonUser());
+        commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, yukonUserContext.getYukonUser());
     }
 
     /**
@@ -1073,9 +1055,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                 mspVendor.getCompanyName());
                         errorObjects.add(err);
                     } else { // build up a list of plc command requests (to be sent later)
-                        CommandRequestDevice request = new CommandRequestDevice();
-                        request.setDevice(new SimpleDevice(meter));
-                        request.setCommandCallback(new CommandCallbackBase(mspLoadActionCode.getPlcCommandString()));
+                        CommandRequestDevice request = new CommandRequestDevice(mspLoadActionCode.getPlcCommandString(), new SimpleDevice(meter));
                         plcCommandRequests.add(request);
                         multispeakEventLogService.initiateCD(meter.getMeterNumber(), meter,
                             mspLoadActionCode.toString(), (cdEvent.getReasonCode() != null
@@ -1110,7 +1090,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         
         YukonUserContext yukonUserContext = YukonUserContext.system;
 
-        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+        CommandCompletionCallback<CommandRequestDevice> callback = new CommandCompletionCallback<CommandRequestDevice>() {
 
             @Override
             public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
@@ -1152,7 +1132,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
         };
 
-        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
+        commandRequestService.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
     }
 
     /**

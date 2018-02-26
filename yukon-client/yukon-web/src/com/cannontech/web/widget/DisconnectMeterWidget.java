@@ -44,8 +44,9 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -93,9 +94,9 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired MeterService meterService;
-    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
+    @Autowired private CommandExecutionService commandExecutionService;
 
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
     private final static String baseKey = "yukon.web.widgets.disconnectMeterWidget.";
@@ -411,9 +412,10 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     public String uploadConfig(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
 
         SimpleMeter meter = serverDatabaseCache.getAllMeters().get(deviceId);
+        CommandRequestDevice request =
+            new CommandRequestDevice("putconfig emetcon disconnect", new SimpleDevice(meter.getPaoIdentifier()));
         CommandResultHolder result =
-            commandRequestDeviceExecutor.execute(meter, "putconfig emetcon disconnect",
-                DeviceRequestType.DISCONNECT_COLLAR_PUT_CONFIG_COMMAND, user);
+            commandExecutionService.execute(request, DeviceRequestType.DISCONNECT_COLLAR_PUT_CONFIG_COMMAND, user);
 
         model.addAttribute("result", result);
         model.addAttribute("errors", result.getErrors());

@@ -6,7 +6,8 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
-    <bean id="commandRequestExecutorBase" abstract="true">
+       
+    <bean class="com.cannontech.common.device.commands.service.impl.CommandExecutionServiceImpl">
         <property name="loggableCommandPermissions">
             <set>
                 <value>CONTROL_COMMAND</value>
@@ -15,15 +16,8 @@
         </property>
     </bean>
 
-	<bean id="commandRequestDeviceExecutor" parent="commandRequestExecutorBase"
-        class="com.cannontech.common.device.commands.impl.CommandRequestDeviceExecutorImpl"/>
+    <bean class="com.cannontech.common.device.commands.service.impl.GroupCommandExecutionServiceImpl"/>
 
-    <bean id="commandRequestRouteExecutor" parent="commandRequestExecutorBase"
-        class="com.cannontech.common.device.commands.impl.CommandRequestRouteExecutorImpl"/>
-
-    <bean id="commandRequestRouteAndDeviceExecutor" parent="commandRequestExecutorBase"
-        class="com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl"/>
-    
     <bean id="commandRequestExecutionDao"
         class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl"/>
 
@@ -235,9 +229,6 @@
     <bean id="deviceCreationService" class="com.cannontech.common.device.creation.impl.DeviceCreationServiceImpl"/>
     
     <bean id="dlcAddressRangeService" class="com.cannontech.device.range.impl.DlcAddressRangeServiceImpl"/>
-    
-    <bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">
-    </bean>
     
     <bean id="routeLocateResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     

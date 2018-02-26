@@ -1,4 +1,4 @@
-package com.cannontech.common.device.commands.impl;
+package com.cannontech.common.device.commands.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,11 +13,11 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
-import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
+import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -33,16 +33,16 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 /**
  * Implementation class for GroupCommandExecutor
  */
-public class GroupCommandExecutorImpl implements GroupCommandExecutor {
-    private final static Logger log = YukonLogManager.getLogger(GroupCommandExecutorImpl.class);
+public class GroupCommandExecutionServiceImpl implements GroupCommandExecutionService {
+    private final static Logger log = YukonLogManager.getLogger(GroupCommandExecutionServiceImpl.class);
 
-    @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private CommandExecutionService commandExecutionService;
 
     private final RecentResultsCache<GroupCommandResult> resultsCache
-        = new RecentResultsCache<GroupCommandResult>();
+        = new RecentResultsCache<>();
 
     @Override
     public String execute(DeviceCollection deviceCollection, final String command,
@@ -56,12 +56,12 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
             new ObjectMapper<YukonDevice, CommandRequestDevice>() {
             @Override
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
-                return buildStandardRequest(from, command);
+                return new CommandRequestDevice(command, new SimpleDevice(from.getPaoIdentifier()));
             }
         };
 
         List<CommandRequestDevice> requests =
-            new MappingList<YukonDevice, CommandRequestDevice>(deviceCollection.getDeviceList(), objectMapper);
+            new MappingList<>(deviceCollection.getDeviceList(), objectMapper);
 
         return execute(deviceCollection, command, requests, commandRequestExecutionType, callback, user);
     }
@@ -120,7 +120,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         groupCommandResult.setKey(key);
 
         CommandRequestExecutionIdentifier commandRequestExecutionIdentifier =
-            commandRequestExecutor.execute(requests, commandCompletionCallback, commandRequestExecutionType, user);
+                commandExecutionService.execute(requests, commandCompletionCallback, commandRequestExecutionType, user);
         groupCommandResult.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
 
         log.debug("executing " + command + " on the " + requests.size() + " devices in " + deviceCollection);
@@ -132,17 +132,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     public long cancelExecution(String resultId, LiteYukonUser user) throws ResultExpiredException {
 
         GroupCommandResult result = getResult(resultId);
-        long commandsCanceled = commandRequestExecutor.cancelExecution(result.getCallback(), user, true);
+        long commandsCanceled = commandExecutionService.cancelExecution(result.getCallback(), user, true);
 
         return commandsCanceled;
-    }
-
-    private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {
-        CommandRequestDevice request = new CommandRequestDevice();
-        request.setDevice(new SimpleDevice(device.getPaoIdentifier()));
-
-        request.setCommandCallback(new PorterCommandCallback(command));
-        return request;
     }
 
     @Override
@@ -152,7 +144,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
     @Override
     public List<GroupCommandResult> getCompletedByType(DeviceRequestType type) {
-        List<GroupCommandResult> completedOfType = new ArrayList<GroupCommandResult>();
+        List<GroupCommandResult> completedOfType = new ArrayList<>();
         List<GroupCommandResult> completed = getCompleted();
         for (GroupCommandResult result : completed) {
             if (result.getCommandRequestExecutionType().equals(type)) {
@@ -169,7 +161,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
     @Override
     public List<GroupCommandResult> getPendingByType(DeviceRequestType type) {
-        List<GroupCommandResult> pendingOfType = new ArrayList<GroupCommandResult>();
+        List<GroupCommandResult> pendingOfType = new ArrayList<>();
         List<GroupCommandResult> pending = getPending();
         for (GroupCommandResult result : pending) {
             if (result.getCommandRequestExecutionType().equals(type)) {

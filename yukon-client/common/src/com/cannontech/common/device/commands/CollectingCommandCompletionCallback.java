@@ -11,40 +11,30 @@ import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public class CollectingCommandCompletionCallback implements
-        CommandCompletionCallback<Object>, CommandResultHolder, Completable, Cancelable {
+public class CollectingCommandCompletionCallback extends
+        CommandCompletionCallback<CommandRequestBase> implements CommandResultHolder, Completable, Cancelable {
     
 	private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = null;
     private final Set<SpecificDeviceErrorDescription> errors = new HashSet<>();
-    private final List<PointValueHolder> values = new ArrayList<PointValueHolder>();
-    private final List<String> resultStrings = new ArrayList<String>();
+    private final List<PointValueHolder> values = new ArrayList<>();
+    private final List<String> resultStrings = new ArrayList<>();
     private boolean complete = false;
     private boolean canceled = false;
     private boolean processingErrorOccured = false;
     private String processingErrorReason = "";
 
     @Override
-    public void receivedIntermediateError(Object command, SpecificDeviceErrorDescription error) {
-        // ignore
-    }
-
-    @Override
-    public void receivedIntermediateResultString(Object command, String value) {
-        // ignore
-    }
-
-    @Override
-    public void receivedLastError(Object command, SpecificDeviceErrorDescription error) {
+    public void receivedLastError(CommandRequestBase command, SpecificDeviceErrorDescription error) {
         errors.add(error);
     }
 
     @Override
-    public void receivedLastResultString(Object command, String value) {
+    public void receivedLastResultString(CommandRequestBase command, String value) {
         resultStrings.add(value);
     }
 
     @Override
-    public void receivedValue(Object command, PointValueHolder value) {
+    public void receivedValue(CommandRequestBase command, PointValueHolder value) {
         values.add(value);
     }
 

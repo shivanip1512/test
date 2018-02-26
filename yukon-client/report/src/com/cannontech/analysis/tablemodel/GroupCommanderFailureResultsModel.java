@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
+import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -13,7 +13,7 @@ import com.cannontech.user.YukonUserContext;
 
 public class GroupCommanderFailureResultsModel extends GroupFailureResultsModelBase {
     
-    private GroupCommandExecutor groupCommandExecutor;
+    private GroupCommandExecutionService groupCommandExecutor;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static String title;
     private String command;
@@ -40,7 +40,7 @@ public class GroupCommanderFailureResultsModel extends GroupFailureResultsModelB
     }
     
     @Autowired
-    public void setGroupCommandExecutor(GroupCommandExecutor groupCommandExecutor) {
+    public void setGroupCommandExecutor(GroupCommandExecutionService groupCommandExecutor) {
         this.groupCommandExecutor = groupCommandExecutor;
     }
     
