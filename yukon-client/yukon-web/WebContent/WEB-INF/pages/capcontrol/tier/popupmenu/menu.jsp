@@ -69,10 +69,10 @@ $('#viewCommentsOption').click(function(event) {
         <input type="hidden" name="paoId" value="${paoId}">
         <input type="hidden" name="warnOnCommands" value="${warnOnCommands}">
         <c:forEach var="command" items="${commands}">
-            <cti:msg2 var="commandName" key="${isBasedOnPoints ? command.key : command}"/>
-            <c:set var="commandId" value="${isBasedOnPoints ? command.key.commandId : command.commandId}"/>
-            <c:choose>
-                <c:when test="${(isBasedOnPoints && command.value) || !isBasedOnPoints}">
+             <cti:msg2 var="commandName" key="${command.commandName}"/>
+             <c:set var="commandId" value="${command.commandName.commandId}"/>
+             <c:choose>
+                <c:when test="${command.enabled}">
                     <li class="menuOption command" value="${commandId}">
                         <a href="javascript:void(0);">${commandName}</a>
                         <span class="confirmMessage dn"><i:inline key="yukon.web.modules.capcontrol.command.confirm" 
@@ -84,8 +84,8 @@ $('#viewCommentsOption').click(function(event) {
                         <a href="javascript:void(0);" class="disabled-look">${commandName}</a>
                     </li>
                 </c:otherwise>
-            </c:choose>
-        </c:forEach>
+            </c:choose> 
+        </c:forEach> 
         <%--States --%>
         <c:forEach var="state" items="${states}">
             <li class="menuOption stateChange" value="${state.stateRawState}"><a href="javascript:void(0);">${state.stateText}</a></li>

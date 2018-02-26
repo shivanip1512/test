@@ -1,7 +1,6 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -46,9 +45,9 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.models.CommandOption;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -99,97 +98,98 @@ public class MenuController {
     }
     
     private void setupAreaMenuModel(ModelMap model, StreamableCapObject area) {
-        List<CommandType> commands = Lists.newArrayList();
-        commands.add(CommandType.CONFIRM_AREA);
+        List<CommandOption> commands = Lists.newArrayList();
+        commands.add(new CommandOption(CommandType.CONFIRM_AREA, true));
         if (area.getCcDisableFlag()) {
-            commands.add(CommandType.ENABLE_AREA);
+            commands.add(new CommandOption(CommandType.ENABLE_AREA, true));
         } else {
-            commands.add(CommandType.DISABLE_AREA);
+            commands.add(new CommandOption(CommandType.DISABLE_AREA, true));
         }
-        commands.add(CommandType.SEND_OPEN_CAPBANK);
-        commands.add(CommandType.SEND_CLOSE_CAPBANK);
-        commands.add(CommandType.SEND_SCAN_2WAY_DEVICE);
-        commands.add(CommandType.SEND_TIME_SYNC);
-        commands.add(CommandType.SEND_SYNC_CBC_CAPBANK_STATE);
-        commands.add(CommandType.EMERGENCY_VERIFICATION_STOP);
+        commands.add(new CommandOption(CommandType.SEND_OPEN_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_CLOSE_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_SCAN_2WAY_DEVICE, true));
+        commands.add(new CommandOption(CommandType.SEND_TIME_SYNC, true));
+        commands.add(new CommandOption(CommandType.SEND_SYNC_CBC_CAPBANK_STATE, true));
+        commands.add(new CommandOption(CommandType.EMERGENCY_VERIFICATION_STOP, true));
         model.addAttribute("commands", commands);
     }
 
     private void setupSubstationModel(ModelMap model, SubStation substation) {
-        List<CommandType> commands = Lists.newArrayList();
-        commands.add(CommandType.CONFIRM_SUBSTATION);
+        List<CommandOption> commands = Lists.newArrayList();
+        commands.add(new CommandOption(CommandType.CONFIRM_SUBSTATION, true));
         if (substation.getCcDisableFlag()) {
-            commands.add(CommandType.ENABLE_SUBSTATION);
+            commands.add(new CommandOption(CommandType.ENABLE_SUBSTATION, true));
         } else {
-            commands.add(CommandType.DISABLE_SUBSTATION);
+            commands.add(new CommandOption(CommandType.DISABLE_SUBSTATION, true));
         }
-        commands.add(CommandType.RESET_DAILY_OPERATIONS);
-        commands.add(CommandType.SEND_OPEN_CAPBANK);
-        commands.add(CommandType.SEND_CLOSE_CAPBANK);
-        commands.add(CommandType.SEND_SCAN_2WAY_DEVICE);
-        commands.add(CommandType.SEND_TIME_SYNC);
-        commands.add(CommandType.SEND_SYNC_CBC_CAPBANK_STATE);
+        commands.add(new CommandOption(CommandType.RESET_DAILY_OPERATIONS, true));
+        commands.add(new CommandOption(CommandType.SEND_OPEN_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_CLOSE_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_SCAN_2WAY_DEVICE, true));
+        commands.add(new CommandOption(CommandType.SEND_TIME_SYNC, true));
+        commands.add(new CommandOption(CommandType.SEND_SYNC_CBC_CAPBANK_STATE, true));
         model.addAttribute("commands", commands);
     }
 
     private void setupSubBusModel(ModelMap model, SubBus subBus) {
-        List<CommandType> commands = Lists.newArrayList();
-        commands.add(CommandType.CONFIRM_SUBSTATION_BUS);
+        List<CommandOption> commands = Lists.newArrayList();
+        commands.add(new CommandOption(CommandType.CONFIRM_SUBSTATION_BUS, true));
         if (subBus.getCcDisableFlag()) {
             if (!subBus.getVerificationFlag()) {
-                commands.add(CommandType.ENABLE_SUBSTATION_BUS);
+                commands.add(new CommandOption(CommandType.ENABLE_SUBSTATION_BUS, true));
             }
         } else {
-            commands.add(CommandType.DISABLE_SUBSTATION_BUS);
+            commands.add(new CommandOption(CommandType.DISABLE_SUBSTATION_BUS, true));
         }
         
-        commands.add(CommandType.RESET_DAILY_OPERATIONS);
-        commands.add(CommandType.SEND_OPEN_CAPBANK);
-        commands.add(CommandType.SEND_CLOSE_CAPBANK);
-        commands.add(CommandType.SEND_SCAN_2WAY_DEVICE);
-        commands.add(CommandType.SEND_TIME_SYNC);
-        commands.add(CommandType.SEND_SYNC_CBC_CAPBANK_STATE);
+        commands.add(new CommandOption(CommandType.RESET_DAILY_OPERATIONS, true));
+        commands.add(new CommandOption(CommandType.SEND_OPEN_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_CLOSE_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_SCAN_2WAY_DEVICE, true));
+        commands.add(new CommandOption(CommandType.SEND_TIME_SYNC, true));
+        commands.add(new CommandOption(CommandType.SEND_SYNC_CBC_CAPBANK_STATE, true));
         if (!subBus.getVerificationFlag()) {
+
             /*
              * You shouldn't be able to Initiated any "Verify ..." commands from the subbus level
              * without a strategy attached. They require a strategy and rely on knowing VAR change
              * to determine the outcome of a control sent.
              */
+
             if (CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(subBus)) {
-                commands.add(CommandType.VERIFY_ALL_BANKS);
-                commands.add(CommandType.VERIFY_FQ_BANKS);
-                commands.add(CommandType.VERIFY_FAILED_BANKS);
-                commands.add(CommandType.VERIFY_Q_BANKS);
-                commands.add(CommandType.VERIFY_SA_BANKS);
+                commands.add(new CommandOption(CommandType.VERIFY_ALL_BANKS, true));
+                commands.add(new CommandOption(CommandType.VERIFY_FQ_BANKS, true));
+                commands.add(new CommandOption(CommandType.VERIFY_FAILED_BANKS, true));
+                commands.add(new CommandOption(CommandType.VERIFY_Q_BANKS, true));
+                commands.add(new CommandOption(CommandType.VERIFY_SA_BANKS, true));
             }
         } else {
-            commands.add(CommandType.STOP_VERIFICATION);
-            commands.add(CommandType.EMERGENCY_VERIFICATION_STOP);
+            commands.add(new CommandOption(CommandType.STOP_VERIFICATION, true));
+            commands.add(new CommandOption(CommandType.EMERGENCY_VERIFICATION_STOP, true));
         }
         model.addAttribute("commands", commands);
     }
     
     private void setupFeederModel(ModelMap model, Feeder feeder) {
-        List<CommandType> commands = Lists.newArrayList();
-        commands.add(CommandType.CONFIRM_FEEDER);
+        List<CommandOption> commands = Lists.newArrayList();
+        commands.add(new CommandOption(CommandType.CONFIRM_FEEDER, true));
         if (feeder.getCcDisableFlag()) {
-            commands.add(CommandType.ENABLE_FEEDER);
+            commands.add(new CommandOption(CommandType.ENABLE_FEEDER, true));
         } else {
-            commands.add(CommandType.DISABLE_FEEDER);
+            commands.add(new CommandOption(CommandType.DISABLE_FEEDER, true));
         }
-        commands.add(CommandType.RESET_DAILY_OPERATIONS);
-        commands.add(CommandType.SEND_OPEN_CAPBANK);
-        commands.add(CommandType.SEND_CLOSE_CAPBANK);
-        commands.add(CommandType.SEND_SCAN_2WAY_DEVICE);
-        commands.add(CommandType.SEND_TIME_SYNC);
-        commands.add(CommandType.SEND_SYNC_CBC_CAPBANK_STATE);
+        commands.add(new CommandOption(CommandType.RESET_DAILY_OPERATIONS, true));
+        commands.add(new CommandOption(CommandType.SEND_OPEN_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_CLOSE_CAPBANK, true));
+        commands.add(new CommandOption(CommandType.SEND_SCAN_2WAY_DEVICE, true));
+        commands.add(new CommandOption(CommandType.SEND_TIME_SYNC, true));
+        commands.add(new CommandOption(CommandType.SEND_SYNC_CBC_CAPBANK_STATE, true));
         model.addAttribute("commands", commands);
     }
 
     private void setupCapBankModel(ModelMap model, LiteYukonUser user, CapBankDevice capBank) {
         int cbcDeviceId = capBank.getControlDeviceID();
         LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
-        
         boolean isClosed = CapBankDevice.isInAnyCloseState(capBank);
         boolean isTwoWay = paoDefinitionDao.isTagSupported(cbcPaoObject.getPaoType(), PaoTag.TWO_WAY_DEVICE);
         boolean isLogical = cbcPaoObject.getPaoType().isLogicalCBC();
@@ -197,93 +197,98 @@ public class MenuController {
         boolean is701xDevice = DeviceTypesFuncs.is701xDevice(cbcPaoObject.getPaoType());
         boolean allowFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
         boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
-        
-        List<CommandType> commands = Lists.newArrayList();
+        List<CommandOption> commands = Lists.newArrayList();
         if (isClosed) {
-            commands.add(CommandType.CONFIRM_CLOSE);
+            commands.add(new CommandOption(CommandType.CONFIRM_CLOSE, true));
         } else {
-            commands.add(CommandType.CONFIRM_OPEN);
+            commands.add(new CommandOption(CommandType.CONFIRM_OPEN, true));
         }
-        
+
         boolean strategyAttachedToSubBus = true;
         try {
             SubBus parentSubBus = cache.getParentSubBus(capBank.getCcId());
             strategyAttachedToSubBus = CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(parentSubBus);
         } catch (NotFoundException nfe) {/* no parent subbus assigned - that's fine, move along */}
         if (strategyAttachedToSubBus) {
-            commands.add(CommandType.SEND_OPEN_CAPBANK);
-            commands.add(CommandType.SEND_CLOSE_CAPBANK);
+            commands.add(new CommandOption(CommandType.SEND_OPEN_CAPBANK, true));
+            commands.add(new CommandOption(CommandType.SEND_CLOSE_CAPBANK, true));
         }
         if (isTwoWay || isLogical) {
-            commands.add(CommandType.SEND_SCAN_2WAY_DEVICE);
+            commands.add(new CommandOption(CommandType.SEND_SCAN_2WAY_DEVICE, true));
         }
-        commands.add(CommandType.SEND_TIME_SYNC);
-        commands.add(CommandType.SEND_SYNC_CBC_CAPBANK_STATE);
-        
+        commands.add(new CommandOption(CommandType.SEND_TIME_SYNC, true));
+        commands.add(new CommandOption(CommandType.SEND_SYNC_CBC_CAPBANK_STATE, true));
+
         if (is702xDevice) {
             model.addAttribute("allowLocalControl", allowLocalControl);
             model.addAttribute("localControlTypeCBC", true);
         }
         if (allowLocalControl && !is702xDevice) {
-            commands.add(CommandType.SEND_ENABLE_OVUV);
-            commands.add(CommandType.SEND_DISABLE_OVUV);
+            if (cbcPaoObject != null && (cbcPaoObject.getPaoIdentifier().getPaoType() == PaoType.CBC_8020
+                || cbcPaoObject.getPaoIdentifier().getPaoType() == PaoType.CBC_8024)) {
+                Set<Attribute> attributes = Sets.newHashSet(BuiltInAttribute.ENABLE_OVUV_CONTROL);
+                Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(cbcPaoObject, attributes);
+                commands.add(new CommandOption(CommandType.SEND_ENABLE_OVUV,
+                    allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL)));
+                commands.add(new CommandOption(CommandType.SEND_DISABLE_OVUV,
+                    allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL)));
+            }
         }
         if (allowFlip && is701xDevice) {
-            commands.add(CommandType.FLIP_7010_CAPBANK);
+            commands.add(new CommandOption(CommandType.FLIP_7010_CAPBANK, true));
         }
-        commands.add(CommandType.VERIFY_SELECTED_BANK);
-       
+        commands.add(new CommandOption(CommandType.VERIFY_SELECTED_BANK, true));
         model.addAttribute("commands", commands);
     }
 
     @RequestMapping("localControl")
     public String localControl(ModelMap model, int id) {
-        YukonPao pao  = null;
+        YukonPao pao = null;
         StreamableCapObject capObject = cache.getCapControlPao(id);
-        
+
         Validate.notNull(capObject);
-        
+
         model.addAttribute("paoId", id);
         String paoName = capObject.getCcName();
         model.addAttribute("paoName", paoName);
-        
+
         CapControlType ccType = CapControlType.getCapControlType(capObject.getCcType());
         if (ccType == CapControlType.CAPBANK) {
             CapBankDevice capBankDevice = (CapBankDevice) capObject;
             pao = dbcache.getAllPaosMap().get(capBankDevice.getControlDeviceID());
         }
+        boolean isEnabledOvUv = true;
+        boolean isEnabledTemperature = true;
+        boolean isEnabledVar = true;
+        boolean isEnabledTime = true;
+
+        List<CommandOption> commands = Lists.newArrayList();
+
         if (pao != null && (pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8020
             || pao.getPaoIdentifier().getPaoType() == PaoType.CBC_8024)) {
-            Map<CommandType, Boolean> commands = Maps.newLinkedHashMap();
             Set<Attribute> attributes =
                 Sets.newHashSet(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL, BuiltInAttribute.ENABLE_VAR_CONTROL,
                     BuiltInAttribute.ENABLE_OVUV_CONTROL, BuiltInAttribute.ENABLE_TIME_CONTROL);
             Set<Attribute> allExistingAttributes = attributeService.getExistingAttributes(pao, attributes);
-            commands.put(CommandType.SEND_ENABLE_OVUV, allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL));
-            commands.put(CommandType.SEND_DISABLE_OVUV, allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL));
-            commands.put(CommandType.SEND_ENABLE_TEMPCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL));
-            commands.put(CommandType.SEND_DISABLE_TEMPCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL));
-            commands.put(CommandType.SEND_ENABLE_VARCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_VAR_CONTROL));
-            commands.put(CommandType.SEND_DISABLE_VARCONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_VAR_CONTROL));
-            commands.put(CommandType.SEND_ENABLE_TIMECONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TIME_CONTROL));
-            commands.put(CommandType.SEND_DISABLE_TIMECONTROL, allExistingAttributes.contains(BuiltInAttribute.ENABLE_TIME_CONTROL));
-            model.addAttribute("isBasedOnPoints", true);
-            model.addAttribute("commands", commands);
-        } else {
-            List<CommandType> commands = Lists.newArrayList();
-            commands.add(CommandType.SEND_ENABLE_OVUV);
-            commands.add(CommandType.SEND_DISABLE_OVUV);
-            commands.add(CommandType.SEND_ENABLE_TEMPCONTROL);
-            commands.add(CommandType.SEND_DISABLE_TEMPCONTROL);
-            commands.add(CommandType.SEND_ENABLE_VARCONTROL);
-            commands.add(CommandType.SEND_DISABLE_VARCONTROL);
-            commands.add(CommandType.SEND_ENABLE_TIMECONTROL);
-            commands.add(CommandType.SEND_DISABLE_TIMECONTROL);
-            model.addAttribute("commands", commands);
+            isEnabledOvUv = allExistingAttributes.contains(BuiltInAttribute.ENABLE_OVUV_CONTROL);
+            isEnabledTemperature = allExistingAttributes.contains(BuiltInAttribute.ENABLE_TEMPERATURE_CONTROL);
+            isEnabledVar = allExistingAttributes.contains(BuiltInAttribute.ENABLE_VAR_CONTROL);
+            isEnabledTime = allExistingAttributes.contains(BuiltInAttribute.ENABLE_TIME_CONTROL);
         }
+
+        commands.add(new CommandOption(CommandType.SEND_ENABLE_OVUV, isEnabledOvUv));
+        commands.add(new CommandOption(CommandType.SEND_DISABLE_OVUV, isEnabledOvUv));
+        commands.add(new CommandOption(CommandType.SEND_ENABLE_TEMPCONTROL, isEnabledTemperature));
+        commands.add(new CommandOption(CommandType.SEND_DISABLE_TEMPCONTROL, isEnabledTemperature));
+        commands.add(new CommandOption(CommandType.SEND_ENABLE_VARCONTROL, isEnabledVar));
+        commands.add(new CommandOption(CommandType.SEND_DISABLE_VARCONTROL, isEnabledVar));
+        commands.add(new CommandOption(CommandType.SEND_ENABLE_TIMECONTROL, isEnabledTime));
+        commands.add(new CommandOption(CommandType.SEND_DISABLE_TIMECONTROL, isEnabledTime));
+
+        model.addAttribute("commands", commands);
         model.addAttribute("showRecentCommands", false);
         model.addAttribute("showComments", false);
-        
+
         return "tier/popupmenu/menu.jsp";
     }
 
@@ -293,21 +298,20 @@ public class MenuController {
         model.addAttribute("paoId", id);
         String paoName = capBank.getCcName();
         model.addAttribute("paoName", paoName);
-        
-        List<CommandType> commands = Lists.newArrayList();
+        List<CommandOption> commands = Lists.newArrayList();
         if (capBank.getCcDisableFlag()) {
-            commands.add(CommandType.ENABLE_CAPBANK);
+            commands.add(new CommandOption(CommandType.ENABLE_CAPBANK, true));
         } else {
-            commands.add(CommandType.DISABLE_CAPBANK);
+            commands.add(new CommandOption(CommandType.DISABLE_CAPBANK, true));
         }
         model.addAttribute("commands", commands);
-        
+
         model.addAttribute("showResetBankOpCount", true);
         model.addAttribute("resetBankOpCount", CommandType.RESET_DAILY_OPERATIONS);
-        
+
         model.addAttribute("showChangeOpState", true);
         model.addAttribute("changeOpState", CommandType.CHANGE_OP_STATE);
-        
+
         List<LiteState> states = CapControlUtils.getCBCStateNames();
         model.addAttribute("states", states);
 
