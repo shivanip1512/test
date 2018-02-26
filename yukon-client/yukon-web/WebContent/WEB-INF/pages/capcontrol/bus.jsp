@@ -67,8 +67,9 @@
                             <spring:bind path="disabled">
                                 <c:if test="${bus.verificationFlag}">
                                     <cti:msg2 var="statusDisabled" key=".verificationStatusDisabled"/>
+                                    <form:hidden path="disabled"/>
                                 </c:if>
-                                <span title="${statusDisabled}"><tags:switchButton path="disabled" inverse="${true}" disabled="${bus.verificationFlag}" 
+                                <span title="${statusDisabled}"><tags:switchButton path="disabled" inverse="${true}" disabled="${bus.verificationFlag}"
                                     offNameKey=".disabled.label" onNameKey=".enabled.label" /></span>
                                 <c:if test="${status.error}"><br/><br/><form:errors path="disabled" cssClass="error"/></c:if>
                             </spring:bind>
