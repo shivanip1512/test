@@ -154,6 +154,9 @@ public:
     double getSetPointValue() const;
     void setSetPointValue( const double newSetPoint );
 
+    Attribute getSetPointAttribute();
+    Attribute getBandwidthAttribute();
+
 protected:
 
     bool            _recentTapOperation;

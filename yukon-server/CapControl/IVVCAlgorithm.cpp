@@ -358,6 +358,7 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
                         case ControlPolicy::LockedForward:
                         case ControlPolicy::ReverseIdle:
                         case ControlPolicy::NeutralIdle:
+                        case ControlPolicy::Bidirectional:
                         {
                             if ( regulator->isReverseFlowDetected() )
                             {

@@ -1180,31 +1180,41 @@ BOOST_AUTO_TEST_CASE(test_Mode_Documentation)
 {
     regulator->loadAttributes( &attributes );
 
-    const std::map<double, ControlPolicy::ControlModes> testCases
+    struct ControlModeAttributes
     {
-        {   -1.0,   ControlPolicy::LockedForward            },
-        {    0.0,   ControlPolicy::LockedForward            },
-        {    1.0,   ControlPolicy::LockedReverse            },
-        {    2.0,   ControlPolicy::ReverseIdle              },
-        {    3.0,   ControlPolicy::Bidirectional            },
-        {    4.0,   ControlPolicy::NeutralIdle              },
-        {    5.0,   ControlPolicy::Cogeneration             },
-        {    6.0,   ControlPolicy::ReactiveBidirectional    },
-        {    7.0,   ControlPolicy::BiasBidirectional        },
-        {    8.0,   ControlPolicy::BiasCogeneration         },
-        {    9.0,   ControlPolicy::ReverseCogeneration      },
-        {   10.0,   ControlPolicy::LockedForward            }
+        ControlPolicy::ControlModes     controlMode;
+        std::pair<Attribute, Attribute> forwardFlow;
+        std::pair<Attribute, Attribute> reverseFlow;
     };
 
-    CtiPointDataMsg message { 7450,  0.0,  NormalQuality,  AnalogPointType };
+    const std::map<double, ControlModeAttributes> testCases
+    {
+        {   -1.0,   { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    0.0,   { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    1.0,   { ControlPolicy::LockedReverse        , { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth }, { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth } } },
+        {    2.0,   { ControlPolicy::ReverseIdle          , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    3.0,   { ControlPolicy::Bidirectional        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    4.0,   { ControlPolicy::NeutralIdle          , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    5.0,   { ControlPolicy::Cogeneration         , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth } } },
+        {    6.0,   { ControlPolicy::ReactiveBidirectional, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    7.0,   { ControlPolicy::BiasBidirectional    , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    8.0,   { ControlPolicy::BiasCogeneration     , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {    9.0,   { ControlPolicy::ReverseCogeneration  , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
+        {   10.0,   { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } }
+    };
 
     for ( auto testCase : testCases )
     {
-        message.setValue( testCase.first );
+        regulator->handlePointData( { 7450, testCase.first, NormalQuality, AnalogPointType } ); //set control policy from testCases map
+        BOOST_CHECK_EQUAL(regulator->getConfigurationMode(), testCase.second.controlMode);
 
-        regulator->handlePointData( message );
+        regulator->handlePointData( { 7400, 0, NormalQuality, StatusPointType } ); // forward flow
+        BOOST_CHECK( regulator->getSetPointAttribute() == testCase.second.forwardFlow.first );
+        BOOST_CHECK( regulator->getBandwidthAttribute() == testCase.second.forwardFlow.second );
 
-        BOOST_CHECK_EQUAL( regulator->getConfigurationMode(), testCase.second );
+        regulator->handlePointData({ 7400, 1, NormalQuality, StatusPointType }); // reverse flow
+        BOOST_CHECK( regulator->getSetPointAttribute() == testCase.second.reverseFlow.first );
+        BOOST_CHECK( regulator->getBandwidthAttribute() == testCase.second.reverseFlow.second );
     }
 }
 

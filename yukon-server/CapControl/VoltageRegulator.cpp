@@ -971,6 +971,16 @@ void VoltageRegulator::setSetPointValue( const double newSetPoint )
     _controlPolicy->setSetPointValue( newSetPoint );
 }
 
+Attribute VoltageRegulator::getSetPointAttribute()
+{
+    return _controlPolicy->getSetPointAttribute();
+}
+
+Attribute VoltageRegulator::getBandwidthAttribute()
+{
+    return _controlPolicy->getBandwidthAttribute();
+}
+
 
 }
 }
