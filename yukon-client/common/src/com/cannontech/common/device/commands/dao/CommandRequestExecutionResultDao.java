@@ -47,4 +47,9 @@ public interface CommandRequestExecutionResultDao {
     void saveCommandRequestExecutionResult(int executionId, int deviceId, int errorCode, String command);
 
     void saveExecutionRequest(int executionId, List<Integer> deviceIds);
+
+    List<PaoIdentifier> getRequestedDeviceIds(int creId);
+
+    List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId,
+            List<CommandRequestUnsupportedType> types);
 }

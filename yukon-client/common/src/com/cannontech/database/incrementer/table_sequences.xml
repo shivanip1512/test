@@ -408,5 +408,11 @@
       <sequence name="SmartNotificationEvent">
         <table name="SmartNotificationEvent" identitycolumn="EventId" initsequence="true"/>
       </sequence>
+      <sequence name="CollectionAction">
+        <table name="CollectionAction" identitycolumn="CollectionActionId" initsequence="true"/>
+      </sequence>
+      <sequence name="CollectionActionRequest">
+        <table name="CollectionActionRequest" identitycolumn="CollectionActionRequestId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

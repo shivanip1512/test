@@ -134,16 +134,32 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         sql.append("  AND CRER.ErrorCode > 0");
         return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
     }
+    
+    @Override
+    public List<PaoIdentifier> getRequestedDeviceIds(int creId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT YPO.PAObjectID, YPO.Type");
+        sql.append("FROM CommandRequestExecRequest CRER");
+        sql.append("  JOIN YukonPAObject YPO on CRER.DeviceId = YPO.PAObjectID");
+        sql.append("WHERE CommandRequestExecId").eq(creId);
+        return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
+    }
 
     @Override
     public List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId,
             CommandRequestUnsupportedType type) {
+        return getUnsupportedDeviceIdsByExecutionId(commandRequestExecutionId, Lists.newArrayList(type));
+    }
+    
+    @Override
+    public List<PaoIdentifier> getUnsupportedDeviceIdsByExecutionId(int commandRequestExecutionId,
+            List<CommandRequestUnsupportedType> types) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT YPO.PAObjectID, YPO.Type");
         sql.append("FROM CommandRequestUnsupported CRER");
         sql.append("  JOIN YukonPAObject YPO on CRER.DeviceId = YPO.PAObjectID");
         sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
-        sql.append("AND CRER.Type").eq_k(type);
+        sql.append("AND CRER.Type").in_k(types);
         return jdbcTemplate.query(sql, TypeRowMapper.PAO_IDENTIFIER);
     }
 
@@ -155,7 +171,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
         return sql;
     }
-
+   
     @Override
     public void saveUnsupported(CommandRequestUnsupported unsupportedCmd) {
         unsupportedTemplate.save(unsupportedCmd);

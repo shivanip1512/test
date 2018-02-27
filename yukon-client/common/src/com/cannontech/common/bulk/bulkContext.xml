@@ -525,6 +525,7 @@
     
     <bean class="com.cannontech.common.bulk.collection.device.dao.impl.DeviceCollectionDaoImpl"/>
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.DeviceCollectionServiceImpl"/>
+     <bean class="com.cannontech.common.bulk.collection.device.dao.impl.CollectionActionDaoImpl"/>
 
     <bean class="com.cannontech.common.bulk.collection.DeviceGroupsCollectionProducer"><qualifier value="groups"/></bean>
     <bean id="deviceGroupCollectionProducer" class="com.cannontech.common.bulk.collection.DeviceGroupCollectionProducer"><qualifier value="group"/></bean>
