@@ -53,7 +53,7 @@ public class ValidationMonitorEditorController {
         return "vee/monitor/edit.jsp";
     }
 
-    @RequestMapping("create")
+    @RequestMapping(value = "create", method = RequestMethod.GET)
     public String create(ModelMap model) {
 
         ValidationMonitor validationMonitor = new ValidationMonitor();

@@ -68,7 +68,7 @@ public class TamperFlagEditorController {
         return "tamperFlagProcessing/edit.jsp";
     }
 
-    @RequestMapping("create")
+    @RequestMapping(value = "create", method = RequestMethod.GET)
     public String create(ModelMap model) {
 
         TamperFlagMonitor tamperFlagMonitor = null;
