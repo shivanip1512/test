@@ -122,15 +122,14 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 // Insert warnings into DB (overwriting previous warnings)
                 infrastructureWarningsDao.insert(warnings);
                 
-                // Add event log events for the warnings
-                warnings.forEach(warning -> {
+                // Add event log events for the new warnings that did not exist in the last calculation
+                warnings.stream().filter(warning -> !oldWarnings.contains(warning)).forEach(warning -> {
                     String warningMessage = systemMessageSourceAccessor.getMessage(warning);
                     infrastructureEventLogService.warningGenerated(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(), 
                                                                    warning.getWarningType().toString(),
                                                                    warning.getSeverity().toString(),
                                                                    warningMessage);
                 });
-                
 
                 log.info("Infrastructure warnings calculation complete");
                 
