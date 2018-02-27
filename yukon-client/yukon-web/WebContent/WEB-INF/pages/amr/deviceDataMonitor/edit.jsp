@@ -46,7 +46,7 @@
             <tags:nameValueContainer2>
 
                 <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="50" />
+                <tags:inputNameValue nameKey=".name" path="name" size="38" maxlength="60" />
                 <tags:nameValue2 nameKey=".violations">
                 
                 <c:if test="${monitor.id != null}">

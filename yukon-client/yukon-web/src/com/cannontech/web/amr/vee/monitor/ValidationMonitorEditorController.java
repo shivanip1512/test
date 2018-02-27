@@ -1,28 +1,33 @@
 package com.cannontech.web.amr.vee.monitor;
 
+import java.util.List;
+
 import javax.servlet.ServletException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.common.validation.service.ValidationMonitorService;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.amr.monitor.validators.ValidationMonitorValidator;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RequestMapping("/vee/monitor/*")
@@ -33,155 +38,88 @@ public class ValidationMonitorEditorController {
     private final static Logger log = YukonLogManager.getLogger(ValidationMonitorEditorController.class);
     @Autowired private ValidationMonitorDao validationMonitorDao;
     @Autowired private ValidationMonitorService validationMonitorService;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private ValidationMonitorValidator validator;
 
-    @RequestMapping(value = "edit", method = RequestMethod.GET)
-    public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
-                       Double threshold, Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable){
-        if(validationMonitorId == null) {
-            validationMonitorId = -1;
+    @RequestMapping(value = "{validationMonitorId}/edit", method = RequestMethod.GET)
+    public String edit(ModelMap model, @PathVariable int validationMonitorId) {
+
+        ValidationMonitor validationMonitor = validationMonitorDao.getById(validationMonitorId);
+
+        model.addAttribute("mode", PageEditMode.EDIT);
+        if (model.containsAttribute("validationMonitor")) {
+            validationMonitor = (ValidationMonitor) model.get("validationMonitor");
         }
-        ValidationMonitor validationMonitor = null;
-        try {
-            if( validationMonitorId > -1 ) {
-                validationMonitor = validationMonitorDao.getById(validationMonitorId);
-                model.addAttribute("mode", PageEditMode.EDIT);
-            } else {
-                validationMonitor = new ValidationMonitor();
-                model.addAttribute("mode", PageEditMode.CREATE);
-            }
-            
-            //Use entered values instead of existing values if present. 
-            //When validation failed, they don't have to retype everything.
-            if (name == null) {
-                name = validationMonitor.getName();
-            }
-            if (deviceGroupName == null) {
-                deviceGroupName = validationMonitor.getDeviceGroupName();
-            }
-            if (threshold == null) {
-                threshold = validationMonitor.getReasonableMaxKwhPerDay();
-            }
-            if (reread == null) {
-                reread = validationMonitor.isReReadOnUnreasonable();
-            }
-            if(slopeError == null){
-                slopeError = validationMonitor.getKwhSlopeError();
-            }
-            if(peakHeightMinimum == null){
-                peakHeightMinimum = validationMonitor.getPeakHeightMinimum();
-            }
-            if(setQuestionable == null){
-                setQuestionable = validationMonitor.isSetQuestionableOnPeak();
-            }
-        } catch (ValidationMonitorNotFoundException e ){
-            model.addAttribute("editError", e.getMessage());
-            return "redirect:edit";
-        }
-        
-        model.addAttribute("editError", editError);
-        model.addAttribute("validationMonitorId", validationMonitorId);
-        model.addAttribute("name", name);
-        model.addAttribute("editPageDesc", name);
-        model.addAttribute("deviceGroupName", deviceGroupName);
-        model.addAttribute("threshold", threshold);
-        model.addAttribute("reread", reread);
-        model.addAttribute("slopeError", slopeError);
-        model.addAttribute("peakHeightMinimum", peakHeightMinimum);
-        model.addAttribute("setQuestionable", setQuestionable);
-        
         model.addAttribute("validationMonitor", validationMonitor);
-        
         return "vee/monitor/edit.jsp";
     }
-    
-    @RequestMapping(value="update", method=RequestMethod.POST)
-    public String update(ModelMap model, int validationMonitorId, String name, String deviceGroupName, Double threshold,
-                         Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable, YukonUserContext userContext) throws Exception, ServletException {
-        
-        String editError = null;
-        
+
+    @RequestMapping("create")
+    public String create(ModelMap model) {
+
+        ValidationMonitor validationMonitor = new ValidationMonitor();
+        model.addAttribute("mode", PageEditMode.CREATE);
+        if (model.containsAttribute("validationMonitor")) {
+            validationMonitor = (ValidationMonitor) model.get("validationMonitor");
+        }
+        model.addAttribute("validationMonitor", validationMonitor);
+        return "vee/monitor/edit.jsp";
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    public String update(@ModelAttribute("validationMonitor") ValidationMonitor validationMonitor, BindingResult result,
+            FlashScope flash, RedirectAttributes attrs) {
+
         boolean isNewMonitor = true;
-        ValidationMonitor validationMonitor;
         try {
-            if (validationMonitorId < 0) {
-                validationMonitor = new ValidationMonitor();
-            } else {
-                validationMonitor = validationMonitorDao.getById(validationMonitorId);
+            if (validationMonitor.getValidationMonitorId() != null) {
                 isNewMonitor = false;
             }
         } catch (ValidationMonitorNotFoundException e) {
-            model.addAttribute("editError", e.getMessage());
-            return "redirect:edit";
+            return "redirect:/meter/start";
         }
-        
+
         /* Enable the monitor. */
         if (isNewMonitor) {
             validationMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
         }
-        
+
         /* Validate inputs. */
-        if (StringUtils.isBlank(name)) {
-            editError = "Name required.";
-        } else if (isNewMonitor && validationMonitorDao.processorExistsWithName(name)) { /* New monitor, check name. */
-            editError = "Validation Monitor with name \"" + name + "\" already exists.";
-        } else if (!isNewMonitor && !validationMonitor.getName().equals(name) && validationMonitorDao.processorExistsWithName(name)) { /* Existing monitor, new name, check name. */
-            editError = "Validation Monitor with name \"" + name + "\" already exists.";
-        } else if (!DeviceGroupUtil.isValidName(name)) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            editError = accessor.getMessage("yukon.web.error.deviceGroupName.containsIllegalChars");
-        } else if (deviceGroupService.findGroupName(deviceGroupName) == null) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            editError = accessor.getMessage("yukon.web.modules.amr.invalidGroupName");
-        } else if (threshold == null || threshold < 0) {
-            editError= "Unreasonable Threshold must be greater than or equal to 0.";
-        } else if (slopeError == null || slopeError < 0) {
-            editError = "Slope Error must be greater than or equal to 0.";
-        } else if (peakHeightMinimum == null || peakHeightMinimum < 0) {
-            editError = "Peak Height Minimum must be greater than or equal to 0.";
+        validator.validate(validationMonitor, result);
+
+        if (result.hasErrors()) {
+            /* Editing error. redirect to edit page with error. */
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flash.setMessage(messages, FlashScopeMessageType.ERROR);
+            return bindAndForward(validationMonitor, result, attrs);
         }
-        
-        /* Editing error. redirect to edit page with error. */
-        if (editError != null) {
-            model.addAttribute("editError", editError);
-            model.addAttribute("validationMonitorId", validationMonitorId);
-            model.addAttribute("name", name);
-            model.addAttribute("deviceGroupName", deviceGroupName);
-            model.addAttribute("threshold", threshold);
-            model.addAttribute("reread", reread);
-            model.addAttribute("reread", reread == null ? false : true);
-            model.addAttribute("slopeError", slopeError);
-            model.addAttribute("peakHeightMinimum", peakHeightMinimum);
-            model.addAttribute("setQuestionable", setQuestionable == null ? false : true);
-            return "redirect:edit";
-            
-        /* Input validation passed, save or update. */
+
+        attrs.addFlashAttribute("validationMonitor", validationMonitor);
+
+        log.debug("Saving validationMonitor: isNewMonitor=" + isNewMonitor + ", validationMonitor="
+            + validationMonitor.toString());
+        if (isNewMonitor) {
+            validationMonitorService.create(validationMonitor);
         } else {
-            validationMonitor.setName(name);
-            validationMonitor.setDeviceGroupName(deviceGroupName);
-            validationMonitor.setReasonableMaxKwhPerDay(threshold);
-            validationMonitor.setReReadOnUnreasonable(reread == null ? false : true);
-            validationMonitor.setKwhSlopeError(slopeError);
-            validationMonitor.setPeakHeightMinimum(peakHeightMinimum);
-            validationMonitor.setQuestionableOnPeak(setQuestionable == null ? false : true);
-            
-            log.debug("Saving validationMonitor: isNewMonitor=" + isNewMonitor + ", validationMonitor=" + validationMonitor.toString());
-            if (isNewMonitor) {
-                validationMonitorService.create(validationMonitor);
-            } else {
-                validationMonitorService.update(validationMonitor);
-            }
-            return "redirect:/meter/start";
+            validationMonitorService.update(validationMonitor);
         }
+        return "redirect:/meter/start";
     }
     
+    private String bindAndForward(ValidationMonitor validationMonitor, BindingResult result, RedirectAttributes attrs) {
+        
+        attrs.addFlashAttribute("validationMonitor", validationMonitor);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.validationMonitor", result);
+        if (validationMonitor.getValidationMonitorId() == null) {
+            return "redirect:create";
+        }
+        return "redirect:"+validationMonitor.getValidationMonitorId()+"/edit";
+    }
     @RequestMapping(value="delete", method=RequestMethod.POST)
     public String delete(ModelMap model, int deleteValidationMonitorId) throws Exception, ServletException {
         
         if(!validationMonitorService.delete(deleteValidationMonitorId)){
             model.addAttribute("editError", "Could not delete validation monitor.  Monitor with id: " + deleteValidationMonitorId + " not found.");
-            return "redirect:edit";
+            return "redirect:"+deleteValidationMonitorId+"/edit";
         }
         return "redirect:/meter/start";
     }
@@ -195,6 +133,7 @@ public class ValidationMonitorEditorController {
             model.addAttribute("editError", e.getMessage());
         }
         
-        return "redirect:edit";
+        return "redirect:"+validationMonitorId+"/edit";
     }
+    
 }

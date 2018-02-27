@@ -168,6 +168,13 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         }
     }
 
+    @Override
+    public boolean processorExistsWithName(String name) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM DeviceDataMonitor WHERE Name").eq(name);
+        return yukonJdbcTemplate.queryForInt(sql) > 0;
+    }
+
     private final AdvancedFieldMapper<DeviceDataMonitor> monitorFieldMapper = new AdvancedFieldMapper<DeviceDataMonitor>() {
         @Override
         public void extractValues(SqlParameterChildSink p, DeviceDataMonitor monitor) {

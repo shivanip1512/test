@@ -22,9 +22,6 @@ import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -45,7 +42,6 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
@@ -56,9 +52,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -68,6 +62,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.amr.monitor.validators.DeviceDataMonitorValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.pao.PaoPopupHelper;
@@ -92,7 +87,7 @@ public class DeviceDataMonitorController {
     @Autowired private StateIdPairingPropertyEditor stateIdPairingPropertyEditor;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
+    @Autowired private DeviceDataMonitorValidator validator;
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorController.class);
     
     private final int MAX_ROWS_FROM_ATTRIBUTE_POINT_QUERY = 3500;
@@ -103,20 +98,6 @@ public class DeviceDataMonitorController {
     
     private static final String baseKey = "yukon.web.modules.amr.deviceDataMonitor";
   
-    private final Validator validator = new SimpleValidator<DeviceDataMonitor>(DeviceDataMonitor.class) {
-        @Override
-        public void doValidation(DeviceDataMonitor monitor, Errors errors) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", baseKey + ".empty");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 100);
-            if (!DeviceGroupUtil.isValidName(monitor.getName())) {
-                errors.rejectValue("name", "yukon.web.error.deviceGroupName.containsIllegalChars");
-            }
-            if (deviceGroupService.findGroupName(monitor.getGroupName()) == null) {
-                errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
-            }
-        }
-    };
-    
     @RequestMapping(method = RequestMethod.GET, value = "deviceDataMonitor/view")
     public String view(int monitorId, ModelMap model) {
         
@@ -165,13 +146,6 @@ public class DeviceDataMonitorController {
         
         try {
             monitor = monitorService.create(monitor);
-        } catch (DuplicateException e) {
-            
-            setupDuplicateMonitorError(monitor, result, flash);
-            setupCreateModelMap(monitor, model, userContext);
-            
-            return "deviceDataMonitor/edit.jsp";
-            
         } catch (RemoteAccessException e) {
             
             log.error("Cannot create monitor. Yukon Service Manager is down " 
@@ -209,13 +183,6 @@ public class DeviceDataMonitorController {
         
         try {
             monitorService.update(monitor);
-        } catch (DuplicateException e) {
-            
-            setupDuplicateMonitorError(monitor, result, flash);
-            setupEditModelMap(monitor, model, userContext);
-            
-            return "deviceDataMonitor/edit.jsp";
-            
         } catch (RemoteAccessException e) {
             
             log.error("Cannot update monitor. Yukon Service Manager is down " 
@@ -296,14 +263,6 @@ public class DeviceDataMonitorController {
         DeviceDataMonitor monitor = deviceDataMonitorDao.getMonitorById(monitorId);
         monitorService.recaclulate(monitor);
         resp.setStatus(HttpStatus.NO_CONTENT.value());
-    }
-    
-    private void setupDuplicateMonitorError(DeviceDataMonitor monitor, BindingResult result, FlashScope flash) {
-        
-        log.info("caught error when trying to save device data monitor with duplicate name: " + monitor.getName());
-        result.rejectValue("name", baseKey + ".alreadyExists");
-        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
-        flash.setMessage(messages, FlashScopeMessageType.ERROR);
     }
     
     private List<DeviceDataMonitorProcessor> getRemainingProcessors(List<DeviceDataMonitorProcessor> processors) {

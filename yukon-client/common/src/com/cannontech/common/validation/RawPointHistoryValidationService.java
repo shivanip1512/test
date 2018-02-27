@@ -528,7 +528,7 @@ public class RawPointHistoryValidationService {
             }
         }
         
-        if (validationMonitor.isSetQuestionableOnPeak() && analysisResult.peakInTheMiddle) {
+        if (validationMonitor.isQuestionableOnPeak() && analysisResult.peakInTheMiddle) {
             long changeId = values.get(1).changeId; // peak in the "middle" means the 1 value
             rawPointHistoryDao.changeQuality(changeId, PointQuality.Questionable);
             

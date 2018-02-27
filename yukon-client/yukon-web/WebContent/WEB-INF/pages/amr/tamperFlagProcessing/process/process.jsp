@@ -90,9 +90,7 @@
                 </tags:nameValueContainer2>
                 
                 <div class="page-action-area">
-                    <cti:url var="editUrl" value="/amr/tamperFlagProcessing/edit">
-                        <cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>
-                    </cti:url>
+                    <cti:url var="editUrl" value="/amr/tamperFlagProcessing/${tamperFlagMonitor.tamperFlagMonitorId}/edit"/>
                     <cti:button nameKey="edit" href="${editUrl}" icon="icon-pencil"/>
                 </div>
                 

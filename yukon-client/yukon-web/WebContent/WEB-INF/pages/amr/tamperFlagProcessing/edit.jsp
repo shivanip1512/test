@@ -3,8 +3,9 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:url value="/amr/tamperFlagProcessing/delete" var="monitorDeleteURL"/>
 <cti:url value="/amr/tamperFlagProcessing/toggleEnabled" var="toggleEnabledURL"/>
@@ -50,10 +51,12 @@
         </form>
         
         <%-- UPDATE FORM --%>
-        <form id="updateForm" action="${updateURL}" method="post">
+       <form:form id="updateForm" action="${updateURL}" method="post" commandName="tamperFlagMonitor">
             <cti:csrfToken/>        
-            <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
-            
+            <c:if test="${not empty tamperFlagMonitorId}">
+                <form:hidden path="tamperFlagMonitorId" />
+            </c:if>
+            <form:hidden path="evaluatorStatus" />
             <cti:msg2 var="setupSectionText" key=".section.setup"/>
             <cti:msg2 var="editSetupSectionText" key=".section.editSetup"/>  
             <c:set var="setupSectionTitle" value="${setupSectionText}"/>
@@ -67,15 +70,15 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <input type="text" name="name" size="50" value="${fn:escapeXml(name)}" onkeyup="rewriteTamperFlagGroupName(this);" onchange="rewriteTamperFlagGroupName(this);">
+                    <tags:input path="tamperFlagMonitorName" maxlength="60" onkeyup="rewriteTamperFlagGroupName(this);" onchange="rewriteTamperFlagGroupName(this);"/>
                 </tags:nameValue2>
                 
                 <%-- device group --%>
                 <tags:nameValue2 nameKey=".label.deviceGroup">
                     
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-                    <tags:deviceGroupNameSelector fieldName="deviceGroupName" 
-                                                  fieldValue="${deviceGroupName}" 
+                    <tags:deviceGroupNameSelector fieldName="groupName" 
+                                                  fieldValue="${tamperFlagMonitor.groupName}" 
                                                   dataJson="${groupDataJson}"
                                                   linkGroupName="true"/>
                     <cti:msg2 var="deviceGroupText" key=".label.deviceGroup"/>
@@ -87,7 +90,7 @@
             
                 <%-- tamper flag group --%>
                 <tags:nameValue2 nameKey=".label.tamperFlagGroup">
-                    <div id="tamperFlagGroupNameDiv">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(name)}</div>            
+                    <div id="tamperFlagGroupNameDiv">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</div>            
                 </tags:nameValue2>
             
                 <%-- enable/disable monitoring --%>
@@ -129,5 +132,5 @@
                 <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons"/>
                 
             </div>
-        </form>
+       </form:form>
 </cti:standardPage>

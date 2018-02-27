@@ -18,7 +18,7 @@ public class ValidationMonitor implements PointMonitor, Comparable<ValidationMon
     private double kwhSlopeError = 4.0;
     private double peakHeightMinimum = 1.0;
     private boolean reReadOnUnreasonable = false;
-    private boolean setQuestionableOnPeak = false;
+    private boolean questionableOnPeak = false;
 
     public void setReasonableMaxKwhPerDay(double reasonableMaxKwhPerDay) {
         this.reasonableMaxKwhPerDay = reasonableMaxKwhPerDay;
@@ -76,12 +76,12 @@ public class ValidationMonitor implements PointMonitor, Comparable<ValidationMon
         return name;
     }
 
-    public void setQuestionableOnPeak(boolean setQuestionableOnPeak) {
-        this.setQuestionableOnPeak = setQuestionableOnPeak;
+    public boolean isQuestionableOnPeak() {
+        return questionableOnPeak;
     }
 
-    public boolean isSetQuestionableOnPeak() {
-        return setQuestionableOnPeak;
+    public void setQuestionableOnPeak(boolean questionableOnPeak) {
+        this.questionableOnPeak = questionableOnPeak;
     }
 
     public void setValidationMonitorId(int validationMonitorId) {
@@ -113,7 +113,7 @@ public class ValidationMonitor implements PointMonitor, Comparable<ValidationMon
                         name, deviceGroupName, evaluatorStatus,
                         validationMonitorId, reasonableMaxKwhPerDay,
                         kwhReadingError, kwhSlopeError, peakHeightMinimum,
-                        reReadOnUnreasonable, setQuestionableOnPeak);
+                        reReadOnUnreasonable, questionableOnPeak);
     }
     
 }

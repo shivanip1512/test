@@ -19,6 +19,7 @@
 <cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING">
 <cti:msgScope paths="widgetClasses.DeviceDataMonitorsWidget">
     <c:if test="${not empty deviceDataMonitors}">
+     <div class="scroll-lg">
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-undo-text="${undoText}">
         <thead>
             <tr>
@@ -61,12 +62,14 @@
             </c:forEach>
         </tbody>
     </table>
+    </div>
     </c:if>
 </cti:msgScope>
 </cti:checkRolesAndProperties>
 <cti:checkRolesAndProperties value="OUTAGE_PROCESSING">
 <cti:msgScope paths="widgets.outageMonitorsWidget">
     <c:if test="${not empty outageMonitors}">
+     <div class="scroll-lg">
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
@@ -111,6 +114,7 @@
             </c:forEach>
         </tbody>
     </table>
+    </div>
     </c:if>
 </cti:msgScope>
 </cti:checkRolesAndProperties>
@@ -121,6 +125,7 @@
     </c:if>
 
     <c:if test="${not empty tamperFlagMonitors}">
+     <div class="scroll-lg">
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
@@ -166,6 +171,7 @@
             </c:forEach>
         </tbody>
     </table>
+    </div>
     </c:if>
 </cti:msgScope>
 </cti:checkRolesAndProperties>
@@ -175,6 +181,7 @@
         <div class="error"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
     </c:if>
     <c:if test="${not empty statusPointMonitors}">
+     <div class="scroll-lg">
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
@@ -215,6 +222,7 @@
         </c:forEach>
         </tbody>
     </table>
+    </div>
     </c:if>
 </cti:msgScope>
 </cti:checkRolesAndProperties>
@@ -225,6 +233,7 @@
     </c:if>
 
     <c:if test="${not empty porterResponseMonitors}">
+     <div class="scroll-lg">
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
@@ -257,6 +266,7 @@
         </c:forEach>
         </tbody>
     </table>
+    </div>
     </c:if>
 </cti:msgScope>
 </cti:checkRolesAndProperties>
@@ -267,6 +277,7 @@
     </c:if>
 
     <c:if test="${not empty validationMonitors}">
+     <div class="scroll-lg">
     <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
@@ -287,9 +298,7 @@
                 <%-- monitor name --%>
                 <td>
 
-                    <cti:url var="viewValidationMonitorEditorUrl" value="/amr/vee/monitor/edit">
-                        <cti:param name="validationMonitorId" value="${monitorId}"/>
-                    </cti:url>
+                    <cti:url var="viewValidationMonitorEditorUrl" value="/amr/vee/monitor/${monitorId}/edit"/>
                     <a href="${viewValidationMonitorEditorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitorName)}"/>" >
                         ${fn:escapeXml(monitorName)}
                     </a>
@@ -314,6 +323,7 @@
         </c:forEach>
         </tbody>
     </table>
+    </div>
     </c:if>
 </cti:msgScope>
 </cti:checkRolesAndProperties>
@@ -351,7 +361,7 @@
                 <cm:dropdownOption key="widgets.outageMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="TAMPER_FLAG_PROCESSING">
-                <cti:url var="url" value="/amr/tamperFlagProcessing/edit"/>
+                <cti:url var="url" value="/amr/tamperFlagProcessing/create"/>
                 <cm:dropdownOption key="widgets.tamperFlagMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="STATUS_POINT_MONITORING">
@@ -363,7 +373,7 @@
                 <cm:dropdownOption key="widgets.porterResponseMonitorsWidget.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="VALIDATION_ENGINE">
-                <cti:url var="url" value="/amr/vee/monitor/edit"/>
+                <cti:url var="url" value="/amr/vee/monitor/create"/>
                 <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
         </cm:dropdown>

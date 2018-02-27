@@ -171,7 +171,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao  {
             p.addValue("SlopeError", validationMonitor.getKwhSlopeError());
             p.addValue("ReadingError", validationMonitor.getKwhReadingError());
             p.addValue("PeakHeightMinimum", validationMonitor.getPeakHeightMinimum());
-            p.addValue("QuestionableQuality", validationMonitor.isSetQuestionableOnPeak() ? 1 : 0);
+            p.addValue("QuestionableQuality", validationMonitor.isQuestionableOnPeak() ? 1 : 0);
             p.addValue("EvaluatorStatus", validationMonitor.getEvaluatorStatus().name());
             
         }

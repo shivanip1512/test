@@ -21,4 +21,6 @@ public interface DeviceDataMonitorDao {
     public List<DeviceDataMonitor> getAllMonitors();
 
     public boolean deleteMonitor(DeviceDataMonitor monitor);
+
+    boolean processorExistsWithName(String name);
 }
