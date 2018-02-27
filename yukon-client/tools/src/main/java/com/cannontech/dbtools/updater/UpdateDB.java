@@ -336,12 +336,13 @@ public class UpdateDB
 	}
 
 	/**
-	 * Handles any include statements by reading in the included file
+	 * When the stars token is found, find a matching stars file and return that file
 	 * @param token
-	 * @param file
+	 * @param sqlFilesLocation The location of our database update files, must contain a /stars folder
+	 * @param sqlFileName The name of the file being currently run, used to find the proper stars.sql file
 	 * @return
 	 */	
-	private UpdateLine[] handleIncludeMeta( final String token, final File file )
+	private UpdateLine[] handleIncludeStarsMeta( final String token, final String sqlFilesLocation, final String sqlFileName )
 	{
 		UpdateLine[] starsLines = null;
 
@@ -353,8 +354,8 @@ public class UpdateDB
 			try
 			{
 				//d:/eclipse/head/yukon-database/dbupdates/sqlserver
-				File starsFile = new File( file.getParent() + "/stars/" +
-					file.getName().substring(0, file.getName().length()-4) + "-stars.sql" );					
+				File starsFile = new File( sqlFilesLocation + "/stars/" +
+				        sqlFileName.substring(0, sqlFileName.length()-4) + "-stars.sql" );					
 
 				UpdateDB newUp = new UpdateDB( getIMessageFrame() );
 				starsLines = newUp.readFile( starsFile );						
@@ -372,7 +373,14 @@ public class UpdateDB
 		return starsLines;
 	}
 
-	private UpdateLine[] handleCreateStarsMeta( final String token, final File file )
+	/**
+     * When the stars token is found, find a matching stars file and return that file
+     * @param token
+     * @param sqlFilesLocation The location of our database update files, must contain a /stars folder
+     * @param sqlFileName The name of the file being currently run, used to find the proper stars.sql file
+     * @return
+     */ 
+	private UpdateLine[] handleCreateStarsMeta( final String token, final String sqlFilesLocation, final String sqlFileName )
 	{
 		UpdateLine[] starsLines = null;
 
@@ -384,8 +392,8 @@ public class UpdateDB
 			try
 			{
 				//d:/eclipse/head/yukon-database/dbupdates/sqlserver
-				File starsFile = new File( file.getParent() + "/stars/" +
-					file.getName().substring(0, file.getName().length()-4) + "-createstars.sql" );					
+				File starsFile = new File( sqlFilesLocation + "/stars/" +
+				        sqlFileName.substring(0, sqlFileName.length()-4) + "-createstars.sql" );					
 
 				UpdateDB newUp = new UpdateDB( getIMessageFrame() );
 				starsLines = newUp.readFile( starsFile );
@@ -419,157 +427,18 @@ public class UpdateDB
 		{
 			try
 			{
-				List<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
+			    // Convert the file to a list of strings
+				List<String> fileStrings = new ArrayList<String>(512);
 				java.io.RandomAccessFile fileReader = new java.io.RandomAccessFile(file, "r");
-				String token = "";
-				UpdateLine updLine = new UpdateLine();
-				boolean commentState = false;
-				boolean blockState = false;
-				boolean cparmState = false;
-				String cparmToken = "";
-				ConfigurationSource config = null;
-				Matcher cparmMatcher = null;
-
 				while( fileReader.getFilePointer() < fileReader.length() )
-				{
-					token = fileReader.readLine().trim();
-					cparmMatcher = cparmPattern.matcher(token);
-
-					if( isValidString(token) )
-					{
-                        // Check to see if we're handling a cparm.
-					    // This can happen in a block, so check it first.
-                        if ( cparmState ) {
-                            if (token.endsWith(DBMSDefines.END_CPARM)) {
-                                // We are done processing this cparm. Grab the next line.
-                                cparmState = false;
-                                continue;
-                            }
-                            
-                            if (config == null) {
-                                config = MasterConfigHelper.getConfiguration();
-                            }
-                            
-                            String configValue = config.getString(cparmToken);
-                            if (configValue != null) {
-                                Matcher sqlServerMatcher = SQLServerVarPattern.matcher(token);
-                                Matcher oracleMatcher = OracleVarPattern.matcher(token);
-                                if (sqlServerMatcher.find()) {
-                                    token = token.replace(sqlServerMatcher.group(1), configValue);
-                                }
-                                if (oracleMatcher.find()) {
-                                    token = token.replace(oracleMatcher.group(1), configValue);
-                                }
-                            }
-
-                            // The line gets added regardless of whether we found the cparm
-                            // in master.cfg.
-                            updLine.getValue().append(token);
-                            updLine.getValue().append(" ");
-                                    
-                            // We're done with this line, move on.
-                            continue;
-                        } else if( cparmMatcher.matches() ) {
-                            cparmState = true;
-                            cparmToken = cparmMatcher.group(1);
-                            continue;
-                        }
-                        
-					    // Checks to see if its an end block
-						if ( blockState ) {
-						    // Checks to see if the file is using a slash and skips to the next line
-	                        if (token.equals(DBMSDefines.PROCESS_COMMAND_CHARACTER)) {
-	                            continue;
-	                        }
-	                        
-                            blockState = !token.endsWith(DBMSDefines.END_BLOCK);
-                            if(blockState) {
-                                updLine.getValue().append( token );
-                                updLine.getValue().append(" ");
-                            }
-                            //block is done, move on
-                            else {
-                                updLine.getValue().append(DBMSDefines.END_BLOCK);
-                                validLines.add( updLine );
-                                updLine = new UpdateLine();
-                                continue;
-                            }
-                        }
-						// Checks to see if its a start block
-                        else if( token.startsWith(DBMSDefines.START_BLOCK) ) {
-                            //if we have a END_BLOCK, this comment is terminated
-                            blockState = !token.endsWith(DBMSDefines.END_BLOCK);
-                            if(blockState) {
-                                // @error warn_once should work with blocks. Blocks otherwise would clear this setting and do not work with @error ignore-begin
-                                UpdateLine oldUpdLine = updLine;
-                                updLine = new UpdateLine();
-                                
-                                if(oldUpdLine.isWarnOnce()) { 
-                                    
-                                    updLine.setWarnOnce();
-                                } 
-                                if (oldUpdLine.isIgnoreEnd()){
-                                    updLine.setIgnoreEnd();
-                                }
-                                
-                                updLine.getValue().append(DBMSDefines.START_BLOCK + " ");
-                                continue;
-                            }
-                            //single line block, so must be from a *valids file.
-                            else {
-                                updLine.getValue().append(token);
-                                validLines.add( updLine );
-                                updLine = new UpdateLine();
-                                continue;
-                            }
-                        }
-                        //are we handling a comment
-					    else if( commentState )
-						{
-							commentState = !token.endsWith(DBMSDefines.COMMENT_END);
-							handleComment( token, updLine );
-						}
-						else if( token.startsWith(DBMSDefines.COMMENT_BEGIN) )
-						{
-							//if we have a COMMENT_END, this comment is terminated
-							commentState = !token.endsWith(DBMSDefines.COMMENT_END);
-								
-							if( token.indexOf(DBMSDefines.META_TAG + DBMSDefines.META_INCLUDE) > 0 )
-							{
-								UpdateLine[] extraLines = handleIncludeMeta( token, file );
-
-								//if we have lines from the include, add them to our VALIDs list
-								//Stars updates extra lines
-								if( extraLines != null )
-									for( int i = 0; i < extraLines.length; i++ ) {
-										validLines.add( extraLines[i] );
-									}
-								//Stars Creation extra lines
-								extraLines = handleCreateStarsMeta( token, file );
-								if( extraLines != null )
-									for( int i = 0; i < extraLines.length; i++ ) {
-										validLines.add( extraLines[i] );
-									}
-							} else {
-								handleComment( token, updLine );
-							}
-						} else {
-							updLine.getValue().append( token );
-
-							if( updLine.getValue().toString().indexOf(DBMSDefines.LINE_TERM) >= 0) { //white space follows the LINE_TERM
-								updLine.setValue(new StringBuffer(updLine.getValue().toString().trim()));
-							}
-							if( updLine.getValue().toString().endsWith(DBMSDefines.LINE_TERM) ) {
-								validLines.add( updLine );
-								updLine = new UpdateLine();
-							} else {
-								updLine.getValue().append(" "); //add a blank to separate the lines (just in case)
-							}
-						}
-					}
-				}	
-
+                {
+				    String token = "";
+                    token = fileReader.readLine().trim();
+                    fileStrings.add(token);
+                }
 				fileReader.close();
+				
+				List<UpdateLine> validLines = convertToUpdateLines(fileStrings, file.getParent(), file.getName());
 
 				//file open/closed and read successfully
 				UpdateLine[] cmds = new UpdateLine[ validLines.size() ];
@@ -584,7 +453,159 @@ public class UpdateDB
 			throw new DBUpdateException( "Unable to find file '" + file +"'" );
 		}
 
-	}	
+	}
+
+
+	// Given a file in string list format (fileStrings), output parsed UpdateLines
+	// sqlFilesLocation and sqlFileName are used for special STARS annotations in Yukon 4.0.3 and previous
+    public List<UpdateLine> convertToUpdateLines(List<String> fileStrings, final String sqlFilesLocation, final String sqlFileName) {
+        List<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
+        UpdateLine updLine = new UpdateLine();
+        boolean commentState = false;
+        boolean blockState = false;
+        boolean cparmState = false;
+        String cparmToken = "";
+        ConfigurationSource config = null;
+        Matcher cparmMatcher = null;
+
+        for (String token : fileStrings) {
+        	cparmMatcher = cparmPattern.matcher(token);
+
+        	if( isValidString(token) )
+        	{
+                // Check to see if we're handling a cparm.
+        	    // This can happen in a block, so check it first.
+                if ( cparmState ) {
+                    if (token.endsWith(DBMSDefines.END_CPARM)) {
+                        // We are done processing this cparm. Grab the next line.
+                        cparmState = false;
+                        continue;
+                    }
+                    
+                    if (config == null) {
+                        config = MasterConfigHelper.getConfiguration();
+                    }
+                    
+                    String configValue = config.getString(cparmToken);
+                    if (configValue != null) {
+                        Matcher sqlServerMatcher = SQLServerVarPattern.matcher(token);
+                        Matcher oracleMatcher = OracleVarPattern.matcher(token);
+                        if (sqlServerMatcher.find()) {
+                            token = token.replace(sqlServerMatcher.group(1), configValue);
+                        }
+                        if (oracleMatcher.find()) {
+                            token = token.replace(oracleMatcher.group(1), configValue);
+                        }
+                    }
+
+                    // The line gets added regardless of whether we found the cparm
+                    // in master.cfg.
+                    updLine.getValue().append(token);
+                    updLine.getValue().append(" ");
+                            
+                    // We're done with this line, move on.
+                    continue;
+                } else if( cparmMatcher.matches() ) {
+                    cparmState = true;
+                    cparmToken = cparmMatcher.group(1);
+                    continue;
+                }
+                
+        	    // Checks to see if its an end block
+        		if ( blockState ) {
+        		    // Checks to see if the file is using a slash and skips to the next line
+                    if (token.equals(DBMSDefines.PROCESS_COMMAND_CHARACTER)) {
+                        continue;
+                    }
+                    
+                    blockState = !token.endsWith(DBMSDefines.END_BLOCK);
+                    if(blockState) {
+                        updLine.getValue().append( token );
+                        updLine.getValue().append(" ");
+                    }
+                    //block is done, move on
+                    else {
+                        updLine.getValue().append(DBMSDefines.END_BLOCK);
+                        validLines.add( updLine );
+                        updLine = new UpdateLine();
+                        continue;
+                    }
+                }
+        		// Checks to see if its a start block
+                else if( token.startsWith(DBMSDefines.START_BLOCK) ) {
+                    //if we have a END_BLOCK, this comment is terminated
+                    blockState = !token.endsWith(DBMSDefines.END_BLOCK);
+                    if(blockState) {
+                        // @error warn_once should work with blocks. Blocks otherwise would clear this setting and do not work with @error ignore-begin
+                        UpdateLine oldUpdLine = updLine;
+                        updLine = new UpdateLine();
+                        
+                        if(oldUpdLine.isWarnOnce()) { 
+                            
+                            updLine.setWarnOnce();
+                        } 
+                        if (oldUpdLine.isIgnoreEnd()){
+                            updLine.setIgnoreEnd();
+                        }
+                        
+                        updLine.getValue().append(DBMSDefines.START_BLOCK + " ");
+                        continue;
+                    }
+                    //single line block, so must be from a *valids file.
+                    else {
+                        updLine.getValue().append(token);
+                        validLines.add( updLine );
+                        updLine = new UpdateLine();
+                        continue;
+                    }
+                }
+                //are we handling a comment
+        	    else if( commentState )
+        		{
+        			commentState = !token.endsWith(DBMSDefines.COMMENT_END);
+        			handleComment( token, updLine );
+        		}
+        		else if( token.startsWith(DBMSDefines.COMMENT_BEGIN) )
+        		{
+        			//if we have a COMMENT_END, this comment is terminated
+        			commentState = !token.endsWith(DBMSDefines.COMMENT_END);
+        				
+        			if( token.indexOf(DBMSDefines.META_TAG + DBMSDefines.META_INCLUDE) > 0 )
+        			{
+        				UpdateLine[] extraLines = handleIncludeStarsMeta( token, sqlFilesLocation, sqlFileName );
+
+        				//if we have lines from the include, add them to our VALIDs list
+        				//Stars updates extra lines
+        				if( extraLines != null )
+        					for( int i = 0; i < extraLines.length; i++ ) {
+        						validLines.add( extraLines[i] );
+        					}
+        				//Stars Creation extra lines
+        				extraLines = handleCreateStarsMeta( token, sqlFilesLocation, sqlFileName );
+        				if( extraLines != null )
+        					for( int i = 0; i < extraLines.length; i++ ) {
+        						validLines.add( extraLines[i] );
+        					}
+        			} else {
+        				handleComment( token, updLine );
+        			}
+        		} else {
+        			updLine.getValue().append( token );
+
+        			if( updLine.getValue().toString().indexOf(DBMSDefines.LINE_TERM) >= 0) { //white space follows the LINE_TERM
+        				updLine.setValue(new StringBuffer(updLine.getValue().toString().trim()));
+        			}
+        			if( updLine.getValue().toString().endsWith(DBMSDefines.LINE_TERM) ) {
+        				validLines.add( updLine );
+        				updLine = new UpdateLine();
+        			} else {
+        				updLine.getValue().append(" "); //add a blank to separate the lines (just in case)
+        			}
+        		}
+        	}
+        }
+        return validLines;
+    }	
 
 	/**
 	 * This is where our output goes to
