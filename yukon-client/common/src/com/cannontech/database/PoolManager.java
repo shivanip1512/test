@@ -4,6 +4,8 @@ import static com.cannontech.common.config.MasterConfigBoolean.*;
 import static com.cannontech.common.config.MasterConfigInteger.*;
 import static com.cannontech.common.config.MasterConfigString.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +26,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.util.ApplicationId;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.debug.LoggingDataSource;
 
@@ -34,7 +38,9 @@ public class PoolManager {
 	
     private static final int defaultMaxIdleForClient = 4;
     private static final int defaultMaxIdleForOther = 15;
-    
+
+    private static ApplicationId application;
+
     public static final String[] ALL_DRIVERS = { 
         "oracle.jdbc.OracleDriver",
         "com.microsoft.sqlserver.jdbc.SQLServerDriver",
@@ -97,8 +103,24 @@ public class PoolManager {
             throw new BadConfigurationException("Unrecognized database type (DB_TYPE) in master.cfg: " + dbTypeName);
         }
 
+        String appName = CtiUtilities.getJvmProcessName(); // default in case appName urlEncoding fails  
+        try {
+            appName = URLEncoder.encode(application.getApplicationName(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error("Could not urlencode application name: " + application, e);
+        }
+
         String jdbcUrl = configSource.getString(DB_JAVA_URL);
         if (StringUtils.isNotBlank(jdbcUrl)) {
+            if (StringUtils.startsWithIgnoreCase(jdbcUrl, "jdbc:jtds:sqlserver://")) {
+                if (StringUtils.containsIgnoreCase(jdbcUrl, ";APPNAME=")) {
+                    log.debug("Replacing existing appname in URL - appName=" + appName + ", jdbcUrl=" + jdbcUrl);
+                    jdbcUrl = jdbcUrl.replaceFirst("(?i)APPNAME=[^;]+", "APPNAME=yukon-client " + appName);
+                } else {
+                    log.debug("Appending appname to URL - appName=" + appName + ", jdbcUrl=" + jdbcUrl);
+                    jdbcUrl = jdbcUrl + ";APPNAME=yukon-client " + appName;
+                }
+            }
             log.debug("Using DB_JAVA_URL=" + jdbcUrl);
             return new ConnectionDescription(jdbcUrl, dbType);
         }
@@ -117,12 +139,12 @@ public class PoolManager {
                     host = matcher.group(1);
                 }
                 url.append(host);
-                url.append(":1433;APPNAME=yukon-client;TDS=8.0");
+                url.append(":1433;APPNAME=yukon-client " + appName + ";TDS=8.0");
                 //setup the connection for SSL
                 if(configSource.getBoolean(DB_SSL_ENABLED, false)){
                     url.append(";ssl=require;socketKeepAlive=true");
                 }
-                log.debug("Found MSSQL");
+                log.debug("Found MSSQL, url=" + url);
                 return new ConnectionDescription(url.toString(), dbType);
             case ORACLE_DATABASE:
             case ORACLE12_DATABASE:
@@ -307,6 +329,9 @@ public class PoolManager {
     private void init() {
         if (configSource == null) {
             configSource = MasterConfigHelper.getConfiguration();
+        }
+        if (application == null) {
+            application = BootstrapUtils.getApplicationId();
         }
 
         loadDrivers();

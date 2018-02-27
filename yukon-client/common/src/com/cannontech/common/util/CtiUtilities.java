@@ -664,6 +664,7 @@ public final class CtiUtilities {
         out.println("JAVA_ENDORSED_DIRS: " + SystemUtils.JAVA_ENDORSED_DIRS);
         out.println("JAVA_VM_NAME: " + SystemUtils.JAVA_VM_NAME);
         out.println("JAVA_VM_INPUT_ARGS: " + CtiUtilities.getJvmInputArgs());
+        out.println("JAVA_PROCESS_NAME: " + CtiUtilities.getJvmProcessName());
 
         return sw.toString();
     }
@@ -691,6 +692,10 @@ public final class CtiUtilities {
             sb.append(arg + " ");
         }
         return sb.toString().trim();
+    }
+    
+    public static String getJvmProcessName() {
+        return ManagementFactory.getRuntimeMXBean().getName();
     }
 
     /**
