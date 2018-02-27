@@ -121,6 +121,8 @@ void CtiMCService::Run()
 
     CtiMCScript::setScriptPath(gConfigParms.getValueAsPath("CTL_SCRIPTS_DIR", "server\\macsscripts"));
 
+    Cti::identifyExecutable(CompileInfo);
+    
     // Make sure the database is available before we try to load anything from it.
     {
         bool writeLogMessage = true;

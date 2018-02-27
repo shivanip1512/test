@@ -6,23 +6,36 @@
 #include "dllbase.h"
 #include "guard.h"
 
+#include "dbaccess.h"
+
 using std::endl;
 
 namespace Cti {
 
-/**
- *  Used by the logging to identify each module at startup
- */
 void identifyProject(const compileinfo_t &info)
 {
-    if(isDebugLudicrous() && info.date)      // DEBUGLEVEL added 012903 CGP
+    if( isDebugLudicrous() && info.date )
     {
-        CTILOG_INFO(dout, info.project <<" [Version "<< info.version <<"]"<<" [Version Details: "<< info.details <<", "<< info.date <<"]");
+        CTILOG_INFO(dout, info.project << " [Version " << info.version << "]" << " [Version Details: " << info.details << ", " << info.date << "]");
     }
     else
     {
-        CTILOG_INFO(dout, info.project <<" [Version "<< info.version <<"]"<<" [Version Details: "<< info.details <<"]");
+        CTILOG_INFO(dout, info.project << " [Version " << info.version << "]" << " [Version Details: " << info.details << "]");
     }
+}
+
+//  Log the executable name and set the database application name.
+void identifyExecutable(const compileinfo_t &info)
+{
+    identifyProject(info);
+
+    Database::setApplicationName(info.project);
+}
+
+//  Just log the DLL name.
+void identifyLibrary(const compileinfo_t &info)
+{
+    identifyProject(info);
 }
 
 /**

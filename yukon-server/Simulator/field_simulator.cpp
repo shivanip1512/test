@@ -60,6 +60,8 @@ int SimulatorMainFunction(int argc, char **argv)
 
     std::vector<int> portList;
 
+    Cti::identifyExecutable(CompileInfo);
+
     switch( argc )
     {
         case 4:  strategy = atoi(argv[3]);
@@ -110,8 +112,6 @@ int SimulatorMainFunction(int argc, char **argv)
     port_max = std::max(port_max, port_min);
 
     SimulatorLogger logger(dout);
-
-    Cti::identifyProject(CompileInfo);
 
     if( port_min && port_max )
     {

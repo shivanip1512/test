@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
    doutManager.setToStdOut      ( true );
    doutManager.start();     // fire up the logger thread
 
-   Cti::identifyProject(CompileInfo);
+   Cti::identifyExecutable(CompileInfo);
 
    if( Cti::setConsoleTitle(CompileInfo) )
    {

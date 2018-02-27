@@ -49,7 +49,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
     {
         case DLL_PROCESS_ATTACH:
         {
-            Cti::identifyProject(CompileInfo);
+            Cti::identifyLibrary(CompileInfo);
 
             try
             {

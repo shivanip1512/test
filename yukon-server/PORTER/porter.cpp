@@ -731,7 +731,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     CHAR              Char;
 
     /* Print out the program name and revison */
-    Cti::identifyProject(CompileInfo);
+    Cti::identifyExecutable(CompileInfo);
 
     SetThreadName(-1, "PortrMain");
 

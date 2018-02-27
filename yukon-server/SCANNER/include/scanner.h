@@ -13,5 +13,4 @@
 #define TARDY_TIME_DELAY        3600L
 
 /* Prototypes from SCANNER.C */
-void ResultThread (PVOID);
 void ScannerCleanUp (void);

@@ -42,13 +42,13 @@ log4cxx::LevelPtr getLogLevel(Logger::Level levelIn)
  *  The formatting will be completed by log4cxx::LocationInfo::getMethodName()
  *
  *  Example:
- *  "void __cdecl Cti::identifyProject(const struct Cti::compileinfo_t &)"
+ *  "void __cdecl Cti::foobar(const BazQuux &)"
  *  will be formatted to:
- *  "::Cti::identifyProject(const struct Cti::compileinfo_t &)"
+ *  "::Cti::foobar(const BazQuux &)"
  *
  *  formatting done by log4cxx::LocationInfo::getMethodName() removes the initial double colons "::"
  *  and arguments:
- *  "Cti::identifyProject"
+ *  "Cti::foobar"
  */
 std::string preformatMethodName(const char * func)
 {

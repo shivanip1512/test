@@ -17,7 +17,8 @@ struct compileinfo_t
    const char *date;
 };
 
-IM_EX_CTIBASE void identifyProject(const compileinfo_t &info);
+IM_EX_CTIBASE void identifyExecutable(const compileinfo_t &info);
+IM_EX_CTIBASE void identifyLibrary   (const compileinfo_t &info);
 
 IM_EX_CTIBASE bool setConsoleTitle(const compileinfo_t &info);
 

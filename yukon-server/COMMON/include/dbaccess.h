@@ -15,6 +15,9 @@ IM_EX_CTIBASE
 void setDatabaseParams(const std::string& dbType, const std::string& dbName,
                        const std::string& dbUser, const std::string& dbPassword );
 
+IM_EX_CTIBASE
+void setApplicationName(const std::string& applicationName);
+
 IM_EX_CTIBASE extern std::function<SAConnection*(void)> gDatabaseConnectionFactory;  //  to override in unit tests
 
 IM_EX_CTIBASE std::string assignSQLPlaceholders(const std::string &sql);

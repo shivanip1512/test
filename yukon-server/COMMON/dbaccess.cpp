@@ -7,6 +7,8 @@
 #include "guard.h"
 #include "critical_section.h"
 
+#include "module_util.h"
+
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <SQLAPI.h>
@@ -20,6 +22,7 @@ std::string dbType;
 std::string dbServer;
 std::string dbUser;
 std::string dbPassword;
+std::string dbApplicationName = "PID " + std::to_string(GetCurrentProcessId());  //  just the default in case setApplicationName() is not called
 
 // This lock serializes access to the database,connection
 CtiCriticalSection DbMutex;
@@ -41,6 +44,17 @@ void setDatabaseParams(const std::string& type, const std::string& name,
     dbServer   = name;
     dbUser     = user;
     dbPassword = password;
+}
+
+/**
+ Set the application name used in the ODBC connection string.
+**/
+DLLEXPORT
+void setApplicationName(const std::string& applicationName)
+{
+    CtiLockGuard<CtiCriticalSection> guard(DbMutex);
+
+    dbApplicationName = applicationName;
 }
 
 /**
@@ -154,6 +168,9 @@ SAConnection* createDBConnection()
                 //    No database name specified, so make sure the server string is interpreted as a server name.
                 server += "@";
             }
+
+            server += ";APP=yukon-server ";
+            server += dbApplicationName;
         }
 
         connection->Connect(server.c_str(), dbUser.c_str(), dbPassword.c_str());

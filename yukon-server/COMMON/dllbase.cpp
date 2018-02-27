@@ -80,7 +80,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     {
         case DLL_PROCESS_ATTACH:
         {
-            Cti::identifyProject(CompileInfo);
+            Cti::identifyLibrary(CompileInfo);
 
             Cti::Encryption::initialize( getYukonBase() );
 

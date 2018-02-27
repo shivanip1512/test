@@ -84,18 +84,15 @@ CtiTime  TimeOfNextRemoteScan(void);
 CtiTime  TimeOfNextLPScan(void);
 static CtiTime  TimeOfNextWindow( void );
 
-void    NexusThread(void *Arg);
+void    NexusThread(Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus);
+void    ResultThread(Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus);
 INT     RecordDynamicData();
 void    InitScannerGlobals(void);
 void    DumpRevision(void);
-INT     MakePorterRequests(list< OUTMESS* > &outList);
+INT     MakePorterRequests(list< OUTMESS* > &outList, Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus);
 
 Cti::ScannableDeviceManager ScannerDeviceManager;
 CtiPointManager             ScannerPointManager;
-
-Cti::StreamAmqConnection<CtiOutMessage, INMESS> PorterNexus(
-        Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerOutMessages,
-        Cti::Messaging::ActiveMQ::Queues::InboundQueue ::ScannerInMessages);
 
 extern BOOL ScannerQuit;
 
@@ -353,7 +350,7 @@ static void applyGenerateScannerDataRows(const long key, CtiDeviceSPtr Device, v
 
 INT ScannerMainFunction (INT argc, CHAR **argv)
 {
-    Cti::identifyProject(CompileInfo);
+    Cti::identifyExecutable(CompileInfo);
 
     Cti::DynamicPaoInfoManager::setOwner(Cti::Application_Scanner);
 
@@ -395,6 +392,10 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             return -1;
         }
     }
+
+    Cti::StreamAmqConnection<CtiOutMessage, INMESS> PorterNexus(
+        Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerOutMessages,
+        Cti::Messaging::ActiveMQ::Queues::InboundQueue::ScannerInMessages);
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::ScannerCPU);
@@ -482,17 +483,9 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     if(!ScannerQuit)
     {
-        if(_beginthread (NexusThread, RESULT_THREAD_STK_SIZE, (void *)SCANNER_REGISTRATION_NAME) == -1)
-        {
-            CTILOG_ERROR(dout, "Could not start Nexus Thread");
-            return -1;
-        }
+        std::thread { NexusThread, std::ref( PorterNexus ) }.detach();
 
-        if(_beginthread (ResultThread, RESULT_THREAD_STK_SIZE, (void *)SCANNER_REGISTRATION_NAME) == -1)
-        {
-            CTILOG_ERROR(dout, "Could not starting Result Thread");
-            return -1;
-        }
+        std::thread { ResultThread, std::ref( PorterNexus ) }.detach();
 
         if(_beginthread (DispatchMsgHandlerThread, 0, NULL) == -1)
         {
@@ -664,7 +657,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             ScannerDeviceManager.apply(applyGenerateScanRequests, (void*)(&outList) );
 
             // Send any requests over to porter for processing
-            MakePorterRequests(outList);
+            MakePorterRequests(outList, PorterNexus);
 
             NextScan[REMOTE_SCAN] = TimeOfNextRemoteScan();
             NextScan[WINDOW_OPENS] = TimeOfNextWindow();
@@ -677,7 +670,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             ScannerDeviceManager.apply(applyDLCLPScan,(void*)&outList);
 
             // Send any requests over to porter for processing
-            MakePorterRequests(outList);
+            MakePorterRequests(outList, PorterNexus);
 
             NextScan[DLC_LP_SCAN] = TimeOfNextLPScan();
         }
@@ -707,7 +700,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
 
 /* The following thread handles results coming back from field devices */
-void ResultThread (void *Arg)
+void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
 {
     acquireMutex(CALLSITE);
 
@@ -825,7 +818,7 @@ void ResultThread (void *Arg)
                         CTILOG_DEBUG(dout, "outList has OUTMESS");
                     }
 
-                    MakePorterRequests(outList);
+                    MakePorterRequests(outList, PorterNexus);
 
                     // Write any results generated back to VanGogh
                     while(!retList.empty())
@@ -890,7 +883,7 @@ void waitForScannerQuitEvent(const unsigned long millis)
 
 } // namespace anonymous
 
-void NexusThread (void *Arg)
+void NexusThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
 {
     /* Misc. definitions */
     ULONG       i = 0;
@@ -1467,7 +1460,7 @@ void DatabaseHandlerThread(void *Arg)
     Cti::DynamicPaoInfoManager::writeInfo();
 }
 
-INT MakePorterRequests(list< OUTMESS* > &outList)
+INT MakePorterRequests(list< OUTMESS* > &outList, Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
 {
     INT   i, j = 0;
     INT   status = ClientErrors::None;

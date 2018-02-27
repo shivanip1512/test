@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     }
 
 //    InitYukonBaseGlobals();
-//    identifyProject(CompileInfo);
+//    identifyExecutable(CompileInfo);
 
     if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
     {
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
             doutManager.start();     // fire up the logger thread
 
-            Cti::identifyProject(CompileInfo);
+            Cti::identifyExecutable(CompileInfo);
 
             CTILOG_INFO(dout, "Starting "<< CompileInfo.project <<" in console mode");
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
         doutManager.start();     // fire up the logger thread
 
-        Cti::identifyProject(CompileInfo);
+        Cti::identifyExecutable(CompileInfo);
 
         CTILOG_INFO(dout, "Starting "<< CompileInfo.project << " as service");
 
