@@ -112,19 +112,21 @@ public class ValidationMonitorEditorController {
         if (validationMonitor.getValidationMonitorId() == null) {
             return "redirect:create";
         }
-        return "redirect:"+validationMonitor.getValidationMonitorId()+"/edit";
+        return "redirect:" + validationMonitor.getValidationMonitorId() + "/edit";
     }
-    @RequestMapping(value="delete", method=RequestMethod.POST)
+
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
     public String delete(ModelMap model, int deleteValidationMonitorId) throws Exception, ServletException {
         
-        if(!validationMonitorService.delete(deleteValidationMonitorId)){
-            model.addAttribute("editError", "Could not delete validation monitor.  Monitor with id: " + deleteValidationMonitorId + " not found.");
-            return "redirect:"+deleteValidationMonitorId+"/edit";
+        if (!validationMonitorService.delete(deleteValidationMonitorId)) {
+            model.addAttribute("editError",
+                "Could not delete validation monitor.  Monitor with id: " + deleteValidationMonitorId + " not found.");
+            return "redirect:" + deleteValidationMonitorId + "/edit";
         }
         return "redirect:/meter/start";
     }
     
-    @RequestMapping(value="toggleEnabled", method=RequestMethod.POST)
+    @RequestMapping(value = "toggleEnabled", method = RequestMethod.POST)
     public String toggleEnabled(ModelMap model, int validationMonitorId) throws Exception, ServletException {
         try {
         	validationMonitorService.toggleEnabled(validationMonitorId);
@@ -133,7 +135,7 @@ public class ValidationMonitorEditorController {
             model.addAttribute("editError", e.getMessage());
         }
         
-        return "redirect:"+validationMonitorId+"/edit";
+        return "redirect:" + validationMonitorId + "/edit";
     }
     
 }

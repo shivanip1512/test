@@ -193,6 +193,6 @@ public class TamperFlagEditorController {
             model.addAttribute("editError", e.getMessage());
         }
 
-        return "redirect:"+tamperFlagMonitorId+"/edit";
+        return "redirect:" + tamperFlagMonitorId + "/edit";
     }
 }
