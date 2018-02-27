@@ -60,16 +60,16 @@ public class CompleteYukonPaoEqualsTest {
         pao2.setPaoName("pao 2");
         assertNotEquals("objects with different names matched", pao1, pao2);
 
-        pao1.setAlternateOpen(5);
-        pao2.setAlternateOpen(7);
+        pao1.setMasterAddress(5);
+        pao2.setMasterAddress(7);
         pao2.setPaoName("pao 1");
-        assertNotEquals("objects with different alternateOpen matched", pao1, pao2);
+        assertNotEquals("objects with different masterAddress matched", pao1, pao2);
 
-        pao2.setAlternateOpen(5);
+        pao2.setMasterAddress(5);
         assertEquals("objects with different names matched", pao1, pao2);
 
         pao2.setPaoName("something different");
-        assertNotEquals("objects with different alternateOpen matched", pao1, pao2);
+        assertNotEquals("objects with different names matched", pao1, pao2);
     }
 
     @Test

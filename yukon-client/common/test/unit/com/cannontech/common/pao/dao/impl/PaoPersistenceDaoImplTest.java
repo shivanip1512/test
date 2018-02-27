@@ -152,7 +152,7 @@ public class PaoPersistenceDaoImplTest {
         pao.setAlarmInhibit(true);
         pao.setControlInhibit(true);
         pao.setStatistics("some stats");
-        pao.setAlternateOpen(5);
+        pao.setMasterAddress(5);
 
         PaoIdentifier expectedPaoIdentifier = new PaoIdentifier(cbc7020PaoId_create, PaoType.CBC_7020);
 
@@ -173,7 +173,7 @@ public class PaoPersistenceDaoImplTest {
         pao.setAlarmInhibit(true);
         pao.setControlInhibit(true);
         pao.setStatistics("some stats");
-        pao.setAlternateOpen(5);
+        pao.setMasterAddress(5);
 
         PaoIdentifier expectedPaoIdentifier = new PaoIdentifier(cbc7020PaoId_update, PaoType.CBC_7020);
 
@@ -236,7 +236,7 @@ public class PaoPersistenceDaoImplTest {
         pao.setAlarmInhibit(true);
         pao.setControlInhibit(true);
         pao.setStatistics("some stats");
-        pao.setAlternateOpen(5);
+        pao.setMasterAddress(5);
 
         PaoIdentifier expectedPaoIdentifier = new PaoIdentifier(cbc7020PaoId_delete, PaoType.CBC_7020);
 
