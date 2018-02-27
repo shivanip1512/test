@@ -10,7 +10,7 @@ import com.google.common.base.Objects;
     PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP})
 public class CompleteTwoWayCbc extends CompleteCbcBase {
     private CompleteDeviceScanRate completeDeviceScanRate = null;
-    private final CompleteDeviceWindow completeDeviceWindow = null;
+    private CompleteDeviceWindow completeDeviceWindow = null;
     private final CompleteDeviceDirectCommSettings completeDeviceDirectCommSettings =
         new CompleteDeviceDirectCommSettings();
     private final CompleteDeviceAddress completeDeviceAddress = new CompleteDeviceAddress();
@@ -42,6 +42,10 @@ public class CompleteTwoWayCbc extends CompleteCbcBase {
     @YukonPaoField
     public CompleteDeviceWindow getCompleteDeviceWindow() {
         return completeDeviceWindow;
+    }
+
+    public void setCompleteDeviceWindow(CompleteDeviceWindow completeDeviceWindow) {
+        this.completeDeviceWindow = completeDeviceWindow;
     }
 
     @YukonPaoField
