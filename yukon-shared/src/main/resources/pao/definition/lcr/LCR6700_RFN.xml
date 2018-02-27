@@ -22,5 +22,25 @@
         <pointInfo name="Service Status" init="true" attributes="SERVICE_STATUS"/>
         <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
+        <pointInfo name="LOF Trigger Period" attributes="LOF_TRIGGER"/>
+        <pointInfo name="LOF Restore Period" attributes="LOF_RESTORE"/>
+        <pointInfo name="LOF Trigger Time" attributes="LOF_TRIGGER_TIME"/>
+        <pointInfo name="LOF Restore Time" attributes="LOF_RESTORE_TIME"/>
+        <pointInfo name="Total LOF Event Count" attributes="TOTAL_LOF_COUNT"/>
+        <pointInfo name="LOF Start Random Time" attributes="LOF_START_RANDOM_TIME"/>
+        <pointInfo name="LOF End Random Time" attributes="LOF_END_RANDOM_TIME"/>
+        <pointInfo name="LOF Min Event Duration" attributes="LOF_MIN_EVENT_DURATION"/>
+        <pointInfo name="LOF Max Event Duration" attributes="LOF_MAX_EVENT_DURATION"/>
+        <pointInfo name="LOV Trigger" attributes="LOV_TRIGGER"/>
+        <pointInfo name="LOV Restore" attributes="LOV_RESTORE"/>
+        <pointInfo name="LOV Trigger Time" attributes="LOV_TRIGGER_TIME"/>
+        <pointInfo name="LOV Restore Time" attributes="LOV_RESTORE_TIME"/>
+        <pointInfo name="Total LOV Event Count" attributes="TOTAL_LOV_COUNT"/>
+        <pointInfo name="LOV Start Random Time" attributes="LOV_START_RANDOM_TIME"/>
+        <pointInfo name="LOV End Random Time" attributes="LOV_END_RANDOM_TIME"/>
+        <pointInfo name="LOV Min Event Duration" attributes="LOV_MIN_EVENT_DURATION"/>
+        <pointInfo name="LOV Max Event Duration" attributes="LOV_MAX_EVENT_DURATION"/>
+        <pointInfo name="Minimum PQR Event Separation" attributes="MINIMUM_EVENT_SEPARATION"/>
+        <pointInfo name="Power Quality Response Enabled" attributes="POWER_QUALITY_RESPONSE_ENABLED"/>
     </pointInfos>
 </pao>

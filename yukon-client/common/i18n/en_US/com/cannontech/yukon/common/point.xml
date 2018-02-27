@@ -559,6 +559,27 @@
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_BANDWIDTH">Reverse Bandwidth</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_SET_POINT">Reverse Set Point</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_FLOW_INDICATOR">Reverse Flow Indicator</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LOF_COUNT">Total LOF Event Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LOV_COUNT">Total LOV Event Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_TRIGGER">LOF Trigger</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_RESTORE">LOF Restore</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_TRIGGER_TIME">LOF Trigger Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_RESTORE_TIME">LOF Restore Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_START_RANDOM_TIME">LOF Start Randomization Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_END_RANDOM_TIME">LOF End Randomization Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_MIN_EVENT_DURATION">LOF Minimum Event Duration</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOF_MAX_EVENT_DURATION">LOF Maximum Event Duration</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_TRIGGER">LOV Trigger</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_RESTORE">LOV Restore</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_TRIGGER_TIME">LOV Trigger Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_RESTORE_TIME">LOV Restore Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_START_RANDOM_TIME">LOV Start Randomization Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_END_RANDOM_TIME">LOV End Randomization Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_MIN_EVENT_DURATION">LOV Minimum Event Duration</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOV_MAX_EVENT_DURATION">LOV Maximum Event Duration</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_EVENT_SEPARATION">Minimum PQR Event Separation</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POWER_QUALITY_RESPONSE_ENABLED">Power Quality Response Enabled</entry>
+    
     <!-- BuiltInAttribute see note above about changing values -->
 
     <entry key="yukon.common.point.manualEntry.title">Manual Entry</entry>

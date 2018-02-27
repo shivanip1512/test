@@ -103,6 +103,125 @@
         <unitofmeasure value="SECONDS"/>
         <decimalplaces value="0"/>
     </point>
+    
+    <!-- Power Quality Response (GridBallast) Points -->
+    <point offset="900" type="Analog">
+        <name>LOF Trigger Period</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="901" type="Analog">
+        <name>LOF Restore Period</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="902" type="Analog">
+        <name>LOF Trigger Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="903" type="Analog">
+        <name>LOF Restore Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="904" type="Analog">
+        <name>Total LOF Event Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="905" type="Analog">
+        <name>LOF Start Random Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="906" type="Analog">
+        <name>LOF End Random Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="907" type="Analog">
+        <name>LOF Min Event Duration</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="908" type="Analog">
+        <name>LOF Max Event Duration</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="909" type="Analog">
+        <name>LOV Trigger</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="910" type="Analog">
+        <name>LOV Restore</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="911" type="Analog">
+        <name>LOV Trigger Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="912" type="Analog">
+        <name>LOV Restore Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="913" type="Analog">
+        <name>Total LOV Event Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="914" type="Analog">
+        <name>LOV Start Random Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="915" type="Analog">
+        <name>LOV End Random Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="916" type="Analog">
+        <name>LOV Min Event Duration</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="917" type="Analog">
+        <name>LOV Max Event Duration</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="918" type="Analog">
+        <name>Minimum PQR Event Separation</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!-- Warning: GridBallast points have offsets in the 900s. 
+         If adding new general-purpose LCR points, add them above GridBallast, with a reasonable offset.-->
+         
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Status">
         <name>Control Status</name>
@@ -111,5 +230,9 @@
     <point offset="2" type="Status">
         <name>Service Status</name>
         <stategroup value="LCR Service Status"/>
+    </point>
+    <point offset="900" type="Status">
+        <name>Power Quality Response Enabled</name>
+        <stategroup value="TrueFalse"/>
     </point>
 </points>
