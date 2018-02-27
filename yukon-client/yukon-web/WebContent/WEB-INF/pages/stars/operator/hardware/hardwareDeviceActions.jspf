@@ -15,12 +15,12 @@
     <cti:url var="enableUrl" value="/stars/operator/inventory/enable">
         <cti:param name="inventoryId" value="${param.inventoryId}"/>
     </cti:url>
-    <cm:dropdownOption key=".sendEnable.label" data-href="${enableUrl}" icon="icon-accept" id="enable-hardware-btn"/>
-    <d:confirm on="#enable-hardware-btn" nameKey="confirmEnable" argument="${hardware.displayName}"/>
+    <cm:dropdownOption key=".sendInService.label" data-href="${enableUrl}" icon="icon-accept" id="enable-hardware-btn"/>
+    <d:confirm on="#enable-hardware-btn" nameKey="confirmSendInService" argument="${hardware.displayName}"/>
 
     <cti:url var="disableUrl" value="/stars/operator/inventory/disable">
         <cti:param name="inventoryId" value="${param.inventoryId}"/>
     </cti:url>
-    <cm:dropdownOption key=".sendDisable.label" data-href="${disableUrl}" icon="icon-delete" id="disable-hardware-btn"/>
-    <d:confirm on="#disable-hardware-btn" nameKey="confirmDisable" argument="${hardware.displayName}"/>
+    <cm:dropdownOption key=".sendOutOfService.label" data-href="${disableUrl}" icon="icon-delete" id="disable-hardware-btn"/>
+    <d:confirm on="#disable-hardware-btn" nameKey="confirmSendOutOfService" argument="${hardware.displayName}"/>
 </c:if>
