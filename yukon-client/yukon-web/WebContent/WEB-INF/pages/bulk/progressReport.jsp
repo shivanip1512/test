@@ -6,10 +6,15 @@
 <cti:standardPage module="tools" page="bulk.progressReport">
 
     <input type="hidden" id="key" value="${result.cacheKey}"/>
+    <c:forEach var="detail" items="${details}">
+        <cti:msg2 var="detailText" key="${detail.formatKey}"/>
+        <input type="hidden" id="detail-${detail}" value="${detailText}"/>
+    </c:forEach>
 
     <tags:sectionContainer2 nameKey="inputs" hideEnabled="true">
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".action"><i:inline key=".collectionAction.${result.action}"/>
+            <tags:nameValue2 nameKey=".action">
+                <i:inline key="${result.action.formatKey}"/>
             </tags:nameValue2>
             <c:forEach var="input" items="${result.inputs.inputs}">
                 <tr>
@@ -32,16 +37,18 @@
             <tags:nameValue2 nameKey=".startDateTime">
                 <cti:formatDate type="BOTH" value="${result.startTime}"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".stopDateTime">
+            <tags:nameValue2 nameKey=".stopDateTime" valueClass="js-stop-time">
                 <cti:formatDate type="BOTH" value="${result.stopTime}"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
     
     <c:set var="controls">
-        <cti:msg2 var="creText" key=".creText"/>
-        <cti:url var="creLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.execution.id}"/>
-        <cti:button renderMode="image" icon="icon-report" title="${creText}" href="${creLink}"/>
+        <c:if test="${result.execution}">
+            <cti:msg2 var="creText" key=".creText"/>
+            <cti:url var="creLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.execution.id}"/>
+            <cti:button renderMode="image" icon="icon-report" title="${creText}" href="${creLink}"/>
+        </c:if>
         <cti:msg2 var="logText" key=".logText"/>
         <cti:url var="logLink" value="/bulk/progressReport/log?key=${result.cacheKey}"/>
         <cti:button renderMode="image" icon="icon-script" title="${logText}" href="${logLink}"/>
@@ -60,7 +67,7 @@
                 <cti:button nameKey="cancel" classes="js-cancel fn"/>
             </c:if>
         </div>
-        <div style="max-height: 220px;max-width:500px;" class="js-pie-chart js-initialize"></div>
+        <div style="max-height:220px;max-width:500px;" class="js-pie-chart js-initialize"></div>
     </tags:sectionContainer2>
 
     <cti:includeScript link="HIGH_STOCK"/>

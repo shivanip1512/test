@@ -1157,6 +1157,17 @@
     <entry key="yukon.web.modules.tools.bulk.collectionAction.REMOVE_POINTS">Remove Points</entry>
     <entry key="yukon.web.modules.tools.bulk.collectionAction.ASSIGN_CONFIG">Assign Config</entry>
     <entry key="yukon.web.modules.tools.bulk.collectionAction.UNNASSGN_CONFIG">Unassign Config</entry>
+    
+    <!-- Collection Action Detail Types -->
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.SUCCESS">Success</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.FAILURE">Failure</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.UNSUPPORTED">Not Supported</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.CONNECTED">Connected</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.ARMED">Armed</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.DISCONNECTED">Disconnected</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.NOT_CONFIGURED">Not Configured</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.CANCELED">Canceled</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.CONFIRMED">Confirmed</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.UNCONFIRMED">Unconfirmed</entry>
 
-   
 </properties>

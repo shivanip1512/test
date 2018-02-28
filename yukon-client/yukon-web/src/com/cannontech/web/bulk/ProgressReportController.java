@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao.SortBy;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilteredResult;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
@@ -44,6 +45,7 @@ public class ProgressReportController {
         //CollectionActionResult result = collectionActionService.getResult(key);
         CollectionActionResult result = createMockedResult();
         model.addAttribute("result", result);
+        model.addAttribute("details", CollectionActionDetail.values());
         return "progressReport.jsp";
     }
     

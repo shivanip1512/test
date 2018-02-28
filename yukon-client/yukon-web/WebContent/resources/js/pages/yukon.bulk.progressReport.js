@@ -22,17 +22,17 @@ yukon.bulk.progressReport = (function () {
         Object.keys(data.details).forEach(function(key) {
             var item = {},
                 value = data.details[key];
-            item.name = key;
+            item.name = $('#detail-' + key).val();
             item.x = value.devices.deviceCount;
             item.y = value.devices.deviceCount / data.counts.completed;
             item.displayPercentage = yukon.percent(value.devices.deviceCount, data.counts.completed, 1);
             item.url = yukon.url("/bulk/collectionActions?" + $.param(value.devices.collectionParameters));
-            if (item.name == 'SUCCESS') {
+            if (key == 'SUCCESS') {
                 item.color = '#009933'
-            } else if (item.name == 'FAILURE') {
+            } else if (key == 'FAILURE') {
                 item.color = '#d14836';
                 item.color = '#ec971f';
-            } else if (item.name == 'UNSUPPORTED') {
+            } else if (key == 'UNSUPPORTED') {
                 item.color = '#888888';
             }
             legendItems.push(item);
@@ -129,6 +129,20 @@ yukon.bulk.progressReport = (function () {
                     _buildChart(chart, data.result);
                 } else {
                     _updateChart(chart, _getData(data.result));
+                }
+                
+                //update stop time and stop updating page when complete
+                if (data.result.counts.percentCompleted == 100) {
+                    //clearTimeout(_updateTimeout);
+                    if (data.result.stopTime) {
+                        var timeText = moment(data.result.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
+                        $('.js-stop-time').text(timeText);
+                    }
+                }
+                //if execution exception occurred show error and stop updating
+                if (data.result.executionExceptionText) {
+                    yukon.ui.alertError(data.result.executionExceptionText);
+                    clearTimeout(_updateTimeout);
                 }
             }
         });

@@ -20,9 +20,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.Sets;
 
-public enum CollectionAction {
+public enum CollectionAction implements DisplayableEnum {
     
     SEND_COMMAND(CRE, SUCCESS, FAILURE, CANCELED),
     READ_ATTRIBUTE(CRE, SUCCESS, FAILURE, UNSUPPORTED),
@@ -93,5 +94,10 @@ public enum CollectionAction {
             break;
         }
         return detail;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.tools.bulk.collectionAction." + name();
     }
 }

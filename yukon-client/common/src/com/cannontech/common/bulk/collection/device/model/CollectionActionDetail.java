@@ -1,8 +1,12 @@
 package com.cannontech.common.bulk.collection.device.model;
 
-import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public enum CollectionActionDetail {
+import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+
+public enum CollectionActionDetail implements DisplayableEnum {
     SUCCESS(CollectionActionDetailSummary.SUCCESS, null),
     FAILURE(CollectionActionDetailSummary.FAILURE, null),
     UNSUPPORTED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.UNSUPPORTED),
@@ -16,6 +20,7 @@ public enum CollectionActionDetail {
 
     private CollectionActionDetailSummary summary;
     private CommandRequestUnsupportedType unsupportedType;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private CollectionActionDetail(CollectionActionDetailSummary summary, CommandRequestUnsupportedType unsupportedType) {
         this.summary = summary;
@@ -28,5 +33,10 @@ public enum CollectionActionDetail {
     
     public CommandRequestUnsupportedType getCreUnsupportedType() {
         return unsupportedType;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.tools.bulk.collectionActionDetail." + name();
     }
 }
