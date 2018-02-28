@@ -71,6 +71,11 @@ void CtiConnectionManager::setRequestId(int rid)
     _serverRequestId = rid;
 }
 
+YukonError_t CtiConnectionManager::WriteConnQue( std::unique_ptr<CtiMessage> pMsg, Cti::CallSite cs, unsigned millitimeout, int payload_status, std::string payload_string )
+{
+    return WriteConnQue(pMsg.release(), cs, millitimeout, payload_status, payload_string);
+}
+
 YukonError_t CtiConnectionManager::WriteConnQue( CtiMessage *pMsg, Cti::CallSite cs, unsigned millitimeout, int payload_status, std::string payload_string )
 {
     CtiMessage *pWrite = pMsg;  // Default to sending the original message.

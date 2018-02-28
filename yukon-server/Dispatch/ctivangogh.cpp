@@ -2338,7 +2338,7 @@ YukonError_t CtiVanGogh::processMessage(CtiMessage *pMsg)
 
 void CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<long> &ptIds, const bool tag_as_moa)
 {
-    CtiMultiMsg    *pMulti  = CTIDBG_new CtiMultiMsg;
+    auto pMulti = std::make_unique<CtiMultiMsg>();
 
     CtiVanGoghConnectionManager *VGCM = (CtiVanGoghConnectionManager*)(CM.get());
 
@@ -2348,7 +2348,7 @@ void CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<lon
     {
         CTILOG_INFO(dout, "Client Connection "<< CM->getClientName() <<" on "<< CM->getPeer()<< " registered for everything");
     }
-    else if( pMulti != NULL )
+    else if( pMulti )
     {
         pMulti->setMessagePriority(15);
 
@@ -2390,12 +2390,12 @@ void CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<lon
                             *pMulti);
                 }
 
-                if(CM->WriteConnQue( pMulti, CALLSITE, 5000 ))
+                if(CM->WriteConnQue( std::move(pMulti), CALLSITE, 5000 ))
                 {
                    CTILOG_ERROR(dout, "Connection is having issues : "<< CM->getClientName() <<" / "<< CM->getClientAppId());
                 }
 
-                pMulti  = CTIDBG_new CtiMultiMsg;
+                pMulti = std::make_unique<CtiMultiMsg>();
             }
         }
 
@@ -2403,21 +2403,16 @@ void CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<lon
         // full of all alarms active/unacknowledged on all points
         if( ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
         {
-            CtiMultiMsg *pSigMulti = _signalManager.getAllAlarmSignals();
-
-            if(pSigMulti)
+            if( CtiMultiMsg *pSigMulti = _signalManager.getAllAlarmSignals() )
             {
                 pMulti->getData().push_back(pSigMulti);
             }
         }
 
         // We add all the assigned tags into the multi as well.
+        if(CtiMultiMsg *pTagMulti = _tagManager.getAllPointTags())
         {
-            CtiMultiMsg *pTagMulti = _tagManager.getAllPointTags();
-            if(pTagMulti)
-            {
-                pMulti->getData().push_back(pTagMulti);
-            }
+            pMulti->getData().push_back(pTagMulti);
         }
 
         if(pMulti->getCount() > 0)
@@ -2428,14 +2423,10 @@ void CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<lon
                         *pMulti);
             }
 
-            if(CM->WriteConnQue( pMulti, CALLSITE, 5000 ))
+            if(CM->WriteConnQue( std::move(pMulti), CALLSITE, 5000 ))
             {
                 CTILOG_ERROR(dout, "Connection is having issues: " << CM->getClientName() << " / " << CM->getClientAppId());
             }
-        }
-        else
-        {
-            delete pMulti;
         }
     }
 }
