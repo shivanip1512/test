@@ -22,6 +22,8 @@
 
 #include <unordered_map>
 
+using Cti::Logging::Set::operator<<;
+
 namespace Cti {
 namespace Dispatch {
 
@@ -73,12 +75,12 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
         return false;
     }
 
-    if( wm == WriteMode_WriteChunkIfOverThreshold && rowsWaiting < MinRowsToWrite )
+    if( wm == WriteMode::Threshold && rowsWaiting < MinRowsToWrite )
     {
         return false;
     }
 
-    auto rowsToWrite = getFilteredRows(wm == WriteMode_WriteAll ? rowsWaiting : ChunkSize);
+    auto rowsToWrite = getFilteredRows(wm == WriteMode::All ? rowsWaiting : ChunkSize);
 
     if( rowsToWrite.empty() )
     {
@@ -117,19 +119,30 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
     FormattedList duplicates;
 
-    const auto now = std::time(nullptr);
+    std::set<long> ancient, future, beyondCache;
 
-    while( maximum-- && itr.base() != _archiverQueue.end() )
+    for( const auto now = std::time(nullptr); maximum-- && itr.base() != _archiverQueue.end(); ++itr )
     {
-        if( ! wasPreviouslyArchived(**itr, now) )
+        const auto status = getArchiveStatus(**itr, now);
+
+        if( status == ArchiveStatus::Duplicate )
         {
-            rows.push_back(*itr);
+            duplicates.add(std::to_string((*itr)->pointId)) << (*itr)->time << " - " << (*itr)->value;
+            continue;
         }
-        else
+
+        std::set<long>* classification =
+            status == ArchiveStatus::Ancient     ? &ancient :
+            status == ArchiveStatus::BeyondCache ? &beyondCache :
+            status == ArchiveStatus::Future      ? &future :
+            nullptr;
+
+        if( classification )
         {
-            duplicates.add(std::to_string((*itr)->pointId)) << (*itr)->time << " - " << (*itr)->value; 
+            classification->insert((*itr)->pointId);
         }
-        ++itr;
+
+        rows.push_back(*itr);
     }
 
     _archiverQueue.erase(_archiverQueue.begin(), itr.base());
@@ -138,12 +151,24 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
     {
         CTILOG_INFO(dout, "Detected duplicates:" << duplicates);
     }
+    if( ! future.empty() )
+    {
+        CTILOG_DEBUG(dout, "Received pointids more than 1 day in the future " << future);
+    }
+    if( ! ancient.empty() )
+    {
+        CTILOG_DEBUG(dout, "Received pointids more than 1 year old " << ancient);
+    }
+    if( ! beyondCache.empty() )
+    {
+        CTILOG_DEBUG(dout, "Received pointids beyond cache depth " << beyondCache);
+    }
 
     return rows;
 }
 
 
-bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistory& row, const time_t now)
+auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& row, const time_t now) -> ArchiveStatus
 {
     enum {
         MinutesPerYear = 365 * 24 * 60,
@@ -176,7 +201,7 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
     //  don't cache rows with millis or non-integral minutes
     if( row.millis || (utcSeconds % 60) )
     {
-        return false;
+        return ArchiveStatus::NotInCache;
     }
 
     // Sanity check on this data - it might be far-flung-future
@@ -187,9 +212,9 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         l.add("Incoming timestamp") << row.time;
         l.add("Incoming pointid") << row.pointId;
 
-        CTILOG_WARN(dout, "Recieved pointdata more than 1 day in the future" << l);
+        CTILOG_TRACE(dout, "Received pointdata more than 1 day in the future" << l);
 
-        return false;
+        return ArchiveStatus::Future;
     }
 
     const auto utcMinutes = utcSeconds / 60;
@@ -201,9 +226,9 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         l.add("Incoming timestamp") << row.time;
         l.add("Incoming pointid") << row.pointId;
 
-        CTILOG_WARN(dout, "Recieved pointdata older than epoch" << l);
+        CTILOG_TRACE(dout, "Received pointdata older than epoch" << l);
 
-        return false;
+        return ArchiveStatus::Ancient;
     }
 
     unsigned long long epochMinutes = utcMinutes - ArchiveEpoch;
@@ -233,13 +258,13 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
     {
         value_cache.emplace(row.pointId, last_seen{ epochMinutes, 0, 1 });  //  just saw it, mark the first occurrence
 
-        return false;
+        return ArchiveStatus::NotInCache;
     }
 
     //  timestamp was equal, we've seen it
     if( epochMinutes == record->latest_timestamp )
     {
-        return true;
+        return ArchiveStatus::Duplicate;
     }
 
     unsigned long long minutesApart = 
@@ -254,7 +279,7 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         record->latest_timestamp = std::max<long long>(epochMinutes, record->latest_timestamp);
         record->intervals <<= minutesApart / record->interval_minutes;
 
-        return false;
+        return ArchiveStatus::NotInCache;
     }
 
     //  If the records aren't a multiple of the interval apart, recalculate the interval
@@ -278,7 +303,7 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         const auto log_level =
             (new_intervals < 5)
             ? Cti::Logging::Logger::Warn
-            : Cti::Logging::Logger::Info;
+            : Cti::Logging::Logger::Debug;
 
         CTILOG_LOG(log_level, dout, "New interval detected" << l);
 
@@ -294,13 +319,13 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         record->latest_timestamp = epochMinutes;
         record->intervals <<= intervals;
 
-        return false;
+        return ArchiveStatus::NotInCache;
     }
 
     const auto intervals = (record->latest_timestamp - epochMinutes) / record->interval_minutes;
 
     //  we only go back 37 intervals
-    if( intervals > IntervalBits )
+    if( intervals >= IntervalBits )
     {
         Cti::FormattedList l;
         l.add("Incoming timestamp") << row.time;
@@ -309,9 +334,9 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         l.add("Cache") << std::hex << std::setw((IntervalBits + 3) / 4) << record->intervals;
         l.add("Interval bits") << IntervalBits;
 
-        CTILOG_DEBUG(dout, "Incoming value older than cache depth" << l)
+        CTILOG_TRACE(dout, "Incoming value older than cache depth" << l)
 
-        return false;
+        return ArchiveStatus::BeyondCache;
     }
 
     const auto mask = 0x1ull << intervals;  //  declare the 1 as unsigned long long so it can shift more than 32
@@ -320,7 +345,9 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
 
     record->intervals |= mask;
 
-    return seen;
+    return seen 
+        ? ArchiveStatus::Duplicate
+        : ArchiveStatus::NotInCache;
 }
 
 
@@ -388,14 +415,14 @@ void RawPointHistoryArchiver::mainThread()
             {
                 try
                 {
-                    WriteMode wm = WriteMode_WriteChunkIfOverThreshold;
+                    WriteMode wm = WriteMode::Threshold;
 
                     if( loopTimer > ThirtySeconds )
                     {
                         loopTimer %= ThirtySeconds;
 
                         //  guaranteed write once every 30 seconds
-                        wm = WriteMode_WriteChunk;
+                        wm = WriteMode::Chunk;
 
                         if( ShutdownOnThreadTimeout )
                         {
@@ -426,7 +453,7 @@ void RawPointHistoryArchiver::mainThread()
                     CTILOG_INFO(dout, "Interrupted, shutting down");
 
                     //  Write anything remaining before we exit.
-                    writeArchiveDataToDB(conn, WriteMode_WriteAll);
+                    writeArchiveDataToDB(conn, WriteMode::All);
 
                     // get out of here...
                     CTILOG_INFO(dout, "Dispatch RawPointHistory Writer Thread shutting down");

@@ -37,18 +37,27 @@ public:
 
 protected:
 
-    enum WriteMode
+    enum class WriteMode
     {
-        WriteMode_WriteChunkIfOverThreshold,
-        WriteMode_WriteChunk,
-        WriteMode_WriteAll
+        Threshold,
+        Chunk,
+        All
     };
 
     bool writeArchiveDataToDB(Cti::Database::DatabaseConnection& conn, const WriteMode wm);
 
     std::vector<std::unique_ptr<CtiTableRawPointHistory>> getFilteredRows(size_t maximum);
 
-    bool wasPreviouslyArchived(const CtiTableRawPointHistory& row, const time_t now);
+    enum class ArchiveStatus
+    {
+        Ancient,
+        BeyondCache,
+        Duplicate,
+        NotInCache,
+        Future
+    };
+
+    ArchiveStatus getArchiveStatus(const CtiTableRawPointHistory& row, const time_t now);
 
 private:
 
