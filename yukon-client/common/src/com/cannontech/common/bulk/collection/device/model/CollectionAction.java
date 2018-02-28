@@ -10,31 +10,29 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
-
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 public enum CollectionAction implements DisplayableEnum {
     
     SEND_COMMAND(CRE, SUCCESS, FAILURE, CANCELED),
     READ_ATTRIBUTE(CRE, SUCCESS, FAILURE, UNSUPPORTED),
-    LOCAL_ROUTE(CRE, SUCCESS, FAILURE, CANCELED),
+    LOCATE_ROUTE(CRE, SUCCESS, FAILURE, CANCELED),
     CONNECT(CRE, CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     DISCONNECT(CRE, CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     ARM(CRE, CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     DEMAND_RESET(CRE, CONFIRMED, UNCONFIRMED, FAILURE, UNSUPPORTED, CANCELED),
     SEND_CONFIG(CRE, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     READ_CONFIG(CRE, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
-    ARCHIVE_DATA_ANALISYS(DB, SUCCESS, FAILURE),
+    ARCHIVE_DATA_ANALYSIS(DB, SUCCESS, FAILURE),
     MASS_CHANGE(DB, SUCCESS, FAILURE),
     CHANGE_TYPE(DB, SUCCESS, FAILURE),
     MASS_DELETE(DB, SUCCESS, FAILURE),
@@ -42,18 +40,18 @@ public enum CollectionAction implements DisplayableEnum {
     UPDATE_POINTS(DB, SUCCESS, FAILURE),
     REMOVE_POINTS(DB,SUCCESS, FAILURE),
     ASSIGN_CONFIG(DB, SUCCESS, FAILURE),
-    UNNASSGN_CONFIG(DB, SUCCESS, FAILURE);
+    UNASSIGN_CONFIG(DB, SUCCESS, FAILURE);
     
     private CollectionActionProcess process;
     
-    private Set<CollectionActionDetail> details;
+    private List<CollectionActionDetail> details;
 
     private CollectionAction(CollectionActionProcess process, CollectionActionDetail... details) {
         this.process = process;
-        this.details = Collections.unmodifiableSet(Sets.newHashSet(details));
+        this.details = Collections.unmodifiableList(Lists.newArrayList(details));
     }
 
-    public Set<CollectionActionDetail> getDetails() {
+    public List<CollectionActionDetail> getDetails() {
         return details;
     }
 
