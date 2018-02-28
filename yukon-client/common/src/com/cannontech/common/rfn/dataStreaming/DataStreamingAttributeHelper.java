@@ -348,6 +348,9 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
+                BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.DELIVERED_KVA,   //metric 49
+                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.DELIVERED_KVAR,  //metric 32
                 BuiltInAttribute.RECEIVED_KVAR,   //metric 33

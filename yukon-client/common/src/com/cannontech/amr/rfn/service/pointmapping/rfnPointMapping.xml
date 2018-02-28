@@ -1454,7 +1454,7 @@
             </modifiers>
         </point>
         
-        <!-- The following only applies to A3K -->
+        <!-- The following only applies to the A3K and A3R -->
         <point name="Delivered kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
