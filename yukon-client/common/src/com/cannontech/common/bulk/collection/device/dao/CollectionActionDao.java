@@ -22,7 +22,8 @@ public interface CollectionActionDao {
         SUCCESS("c.SuccessCount"),
         FAILURE("c.FailedCount"),
         NOT_ATTEMPTED("c.NotAttemptedCount"),
-        STATUS("ca.Status");
+        STATUS("ca.Status"),
+        USER_NAME("ca.UserName");
         
         private SortBy(String dbString) {
             this.dbString = dbString;

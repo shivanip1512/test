@@ -146,7 +146,8 @@ public class CollectionActionServiceImpl implements CollectionActionService{
         editorDao.addDevices(tempGroup, subset);
 
         CollectionActionInputs inputs = new CollectionActionInputs(devices, userInputs);
-        CollectionActionResult result = createResult(action, inputs, new LiteYukonUser(1, "test"));
+
+        CollectionActionResult result = createResult(action, inputs, new LiteYukonUser(1, String.valueOf((char)(rand.nextInt(26)+'a'))));
 
         if (status == CommandRequestExecutionStatus.STARTED || status == CommandRequestExecutionStatus.CANCELING) {
             stopTime = null;

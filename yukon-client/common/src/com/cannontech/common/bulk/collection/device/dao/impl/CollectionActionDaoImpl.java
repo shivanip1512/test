@@ -153,7 +153,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         if (sortBy == null) {
             sql.append( "SELECT count(ca.CollectionActionId)");
         } else {
-            sql.append( "SELECT ca.CollectionActionId, ca.Action, ca.StartTime, ca.StopTime, ca.Status, c.FailedCount, c.SuccessCount, c.NotAttemptedCount");
+            sql.append( "SELECT ca.CollectionActionId, ca.Action, ca.StartTime, ca.StopTime, ca.Status, c.FailedCount, c.SuccessCount, c.NotAttemptedCount, ca.UserName");
         }
         sql.append("FROM CollectionAction ca");
         sql.append("JOIN Counts AS c ON ca.CollectionActionId = c.CollectionActionId");
@@ -162,6 +162,10 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             filter.getStatuses().add(CommandRequestExecutionStatus.CANCELING);
         }
         sql.append("AND ca.Status").in_k(filter.getStatuses());
+        
+        if (filter.getUserName() != null) {
+            sql.append("AND ca.UserName").eq(filter.getUserName());
+        }
         
         Range<Instant> dateRange = filter.getRange();
         Instant startDate = dateRange == null ? null : dateRange.getMin();
@@ -181,7 +185,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             }
         }
        
-       if (sortBy != null) {
+        if (sortBy != null) {
             sql.append("ORDER BY");
             sql.append(sortBy.getDbString());
             sql.append(direction);
