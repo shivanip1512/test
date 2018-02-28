@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,10 +59,10 @@ public class MasterConfigMap implements ConfigurationSource {
         // (If updateFile is false, we know that nothing needed to be encrypted so we can leave
         // the file alone.)
         StringBuilder tempWriter = new StringBuilder();
-        String line = null;
         int lineNum = 0;
+        List <String> lines = masterCfgReader.lines().collect(Collectors.toList());
 
-        while ((line = masterCfgReader.readLine()) != null) {
+        for (String line : lines) {
             lineNum++;
             Matcher extCharMatcher = extCharPattern.matcher(line);
 
