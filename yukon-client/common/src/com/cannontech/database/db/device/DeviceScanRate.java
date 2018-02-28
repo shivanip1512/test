@@ -19,7 +19,7 @@ public class DeviceScanRate extends com.cannontech.database.db.DBPersistent
 	private String scanType = TYPE_GENERAL;
 	private Integer intervalRate = new Integer(300);
 	private Integer scanGroup = new Integer(0);
-	private Integer alternateRate = new Integer(300);
+	private Integer alternateRate = new Integer(0);
 
 	public static final String TYPE_GENERAL = "General";
 	public static final String TYPE_STATUS = "Status";

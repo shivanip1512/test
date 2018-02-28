@@ -185,6 +185,7 @@ public class CbcController {
             
         model.addAttribute("paoTypes", cbcTypes);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
+        model.addAttribute("altTimeIntervals", TimeIntervals.getAnalysisIntervals());
         model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
         model.addAttribute("availablePorts", dbCache.getAllPorts());
 

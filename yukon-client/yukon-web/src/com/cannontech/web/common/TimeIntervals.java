@@ -157,7 +157,7 @@ public enum TimeIntervals {
         return archiveIntervals;
     }
 
-    private static final Set<TimeIntervals> updateRate = ImmutableSet.of(
+    private static final Set<TimeIntervals> updateAndScanRate = ImmutableSet.of(
         SECONDS_1,
         SECONDS_2,
         SECONDS_5,
@@ -178,10 +178,10 @@ public enum TimeIntervals {
         DAYS_1);
 
     /**
-     * Used for {@link Point#getUpdateRate()}
+     * Used for {@link Point#getUpdateRate() and RTUs}
      */
-    public static Set<TimeIntervals> getUpdateRate() {
-        return updateRate;
+    public static Set<TimeIntervals> getUpdateAndScanRate() {
+        return updateAndScanRate;
     }
 
     private static final Set<TimeIntervals> capControlIntervals = ImmutableSet.of(
@@ -239,4 +239,60 @@ public enum TimeIntervals {
     public static Set<TimeIntervals> getShedRestoreTimeOptions() {
         return shedRestoreTimeOptions;
     }
+    
+    private static final Set<TimeIntervals> altIntervals = ImmutableSet.of(
+        NONE,
+        SECONDS_1,
+        SECONDS_2,
+        SECONDS_5,
+        SECONDS_10,
+        SECONDS_15,
+        SECONDS_30,
+        MINUTES_1,
+        MINUTES_2,
+        MINUTES_3,
+        MINUTES_5,
+        MINUTES_10,
+        MINUTES_15,
+        MINUTES_30,
+        HOURS_1,
+        HOURS_2,
+        HOURS_6,
+        HOURS_12,
+        DAYS_1);
+    
+    /**
+     * Used for RTU Alt Intervals 
+     */
+    
+    public static Set<TimeIntervals> getAltIntervals() {
+        return altIntervals;
+    }
+    
+    private static final Set<TimeIntervals> scanIntervals = ImmutableSet.of(
+        SECONDS_5,
+        SECONDS_10,
+        SECONDS_15,
+        SECONDS_30,
+        MINUTES_1,
+        MINUTES_2,
+        MINUTES_3,
+        MINUTES_5,
+        MINUTES_10,
+        MINUTES_15,
+        MINUTES_30,
+        HOURS_1,
+        HOURS_2,
+        HOURS_6,
+        HOURS_12,
+        DAYS_1);
+    
+    /**
+     * Used for RTU Intervals for Class 0,1,2,3
+     */
+    
+    public static Set<TimeIntervals> getScanIntervals() {
+        return scanIntervals;
+    }
+
 }

@@ -61,7 +61,9 @@ public class RtuController {
     @RequestMapping(value = "rtu/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
+        model.addAttribute("threeClassTimeIntervals", TimeIntervals.getUpdateAndScanRate());
+        model.addAttribute("fourClassTimeIntervals", TimeIntervals.getScanIntervals());
+        model.addAttribute("altTimeIntervals", TimeIntervals.getAltIntervals());
         model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
         model.addAttribute("availablePorts", cache.getAllPorts());
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);

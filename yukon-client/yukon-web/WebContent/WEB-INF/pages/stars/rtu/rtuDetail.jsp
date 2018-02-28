@@ -54,12 +54,12 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".interval" data-toggle-group="integrity">
                             <tags:intervalDropdown path="deviceScanRateMap['Integrity'].intervalRate"
-                                intervals="${timeIntervals}"
+                                intervals="${fourClassTimeIntervals}"
                                 id="scan1" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".altInterval" data-toggle-group="integrity">
                             <tags:intervalDropdown path="deviceScanRateMap['Integrity'].alternateRate"
-                                intervals="${timeIntervals}" />
+                                intervals="${altTimeIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".scanGroup" data-toggle-group="integrity">
                             <div class="button-group">
@@ -79,11 +79,11 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".interval" data-toggle-group="exception">
                             <tags:intervalDropdown path="deviceScanRateMap['Exception'].intervalRate"
-                                intervals="${timeIntervals}" />
+                                intervals="${threeClassTimeIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".altInterval" data-toggle-group="exception">
                             <tags:intervalDropdown path="deviceScanRateMap['Exception'].alternateRate"
-                                intervals="${timeIntervals}" />
+                                intervals="${altTimeIntervals}" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".scanGroup" data-toggle-group="exception">
                             <div class="button-group">
