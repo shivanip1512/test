@@ -31,6 +31,9 @@ public abstract class CommandRequestBase {
         if (params.isNoqueue() && !StringUtils.containsIgnoreCase(command, " noqueue")) {
             command += " noqueue";
         }
+        if (!StringUtils.containsIgnoreCase(command, " update")) {
+            command += " update";
+        }
         request.setCommandString(command);
         return request;
     }
