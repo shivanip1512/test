@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
@@ -154,5 +154,13 @@ public class CollectionActionResult {
 
     public void setStartTime(Instant startTime) {
         this.startTime = startTime;
+    }
+
+    public Map<CollectionActionDetail, CollectionActionDetailGroup> getDetails() {
+        return details;
+    }
+
+    public void setDetails(Map<CollectionActionDetail, CollectionActionDetailGroup> details) {
+        this.details = details;
     }
 }

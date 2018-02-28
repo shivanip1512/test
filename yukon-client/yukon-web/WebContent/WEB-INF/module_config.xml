@@ -458,6 +458,8 @@
           </page>
           <page name="bulk.bulkImporter" type="BASIC">
           </page>
+          <page name="bulk.progressReport" type="BASIC" hideFavorite="true">
+          </page>
         </pages>
       </page>
       <page name="schedules.all" type="BASIC">
