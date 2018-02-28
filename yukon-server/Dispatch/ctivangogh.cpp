@@ -541,48 +541,48 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
 {
     CTILOG_ENTRY(dout, "pCM->getConnectionId()=" << pCM->getConnectionId() << ", aReg.getFlags()=" << aReg.getFlags());
 
-    CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)pCM.get();
+    auto& VGCM = static_cast<CtiVanGoghConnectionManager&>(*pCM);
 
-    if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
+    if( gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS )
     {
         CTILOG_DEBUG(dout, displayConnections());
     }
 
     try
     {
-        if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
+        if( gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION )
         {
-            CTILOG_DEBUG(dout, "Registration: " << CM->getClientName());
+            CTILOG_DEBUG(dout, "Registration: " << VGCM.getClientName());
         }
 
         /*
          * We need to set up our CtiVanGoghConnectionManager according to the request!
          */
 
-        if(aReg.isRequestingAllPoints())
+        if( aReg.isRequestingAllPoints() )
         {
-            CM->setAllPoints(TRUE);
+            VGCM.setAllPoints(TRUE);
             if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
             {
-                CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for ALL points");
+                CTILOG_DEBUG(dout, VGCM.getClientName() <<" has registered for ALL points");
             }
         }
 
-        if(aReg.isRequestingEvents())
+        if( aReg.isRequestingEvents() )
         {
-            CM->setEvent(TRUE);
+            VGCM.setEvent(TRUE);
             if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
             {
-                CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for EVENTS");
+                CTILOG_DEBUG(dout, VGCM.getClientName() <<" has registered for EVENTS");
             }
         }
 
-        if(aReg.isRequestingAlarms())
+        if( aReg.isRequestingAlarms() )
         {
-            CM->setAlarm(TRUE);
+            VGCM.setAlarm(TRUE);
             if(gDispatchDebugLevel & DISPATCH_DEBUG_REGISTRATION)
             {
-                CTILOG_DEBUG(dout, CM->getClientName() <<" has registered for ALARMS ");
+                CTILOG_DEBUG(dout, VGCM.getClientName() <<" has registered for ALARMS ");
             }
         }
 
@@ -595,9 +595,9 @@ void CtiVanGogh::registration(CtiServer::ptr_type &pCM, const CtiPointRegistrati
                          CtiPointClientManager::DebugPrint::False));
         CTILOG_DEBUG(dout, "Post Point Mgr Insert pCM->getConnectionId()=" << pCM->getConnectionId() << ", use_count=" << pCM.use_count());
 
-        if(!(aReg.isDecliningUpload() || aReg.isAddingPoints() || aReg.isRemovingPoints()))
+        if( ! (aReg.isDecliningUpload() || aReg.isAddingPoints() || aReg.isRemovingPoints()) )
         {
-            postMOAUploadToConnection(pCM, ptSet, aReg.isRequestingMoaTag());
+            postMOAUploadToConnection(VGCM, ptSet, aReg.isRequestingMoaTag());
         }
     }
     catch(...)
@@ -2336,97 +2336,94 @@ YukonError_t CtiVanGogh::processMessage(CtiMessage *pMsg)
     return ClientErrors::None;
 }
 
-void CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, std::set<long> &ptIds, const bool tag_as_moa)
+void CtiVanGogh::postMOAUploadToConnection(CtiVanGoghConnectionManager& VGCM, std::set<long> &ptIds, const bool tag_as_moa)
 {
+    // Is this connection asking for everything?
+    if( VGCM.isRegForAll() )
+    {
+        CTILOG_INFO(dout, "Client Connection "<< VGCM.getClientName() <<" on "<< VGCM.getPeer()<< " registered for everything");
+
+        return;
+    }
+
     auto pMulti = std::make_unique<CtiMultiMsg>();
 
-    CtiVanGoghConnectionManager *VGCM = (CtiVanGoghConnectionManager*)(CM.get());
+    pMulti->setMessagePriority(15);
 
-    bool isFullBoat = ((const CtiVanGoghConnectionManager *)CM.get())->isRegForAll();                   // Is this connection asking for everything?
-
-    if(isFullBoat)
+    for( const auto ptId : ptIds )
     {
-        CTILOG_INFO(dout, "Client Connection "<< CM->getClientName() <<" on "<< CM->getPeer()<< " registered for everything");
-    }
-    else if( pMulti )
-    {
-        pMulti->setMessagePriority(15);
-
-        for( const auto ptId : ptIds )
+        if( auto TempPoint = PointMgr.getPoint(ptId) )
         {
-            if( auto TempPoint = PointMgr.getPoint(ptId) )
+            if( const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*TempPoint) )
             {
-                if( const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*TempPoint) )
+                auto pDat = 
+                        std::make_unique<CtiPointDataMsg>(
+                                TempPoint->getID(),
+                                pDyn->getValue(),
+                                pDyn->getQuality(),
+                                TempPoint->getType(),
+                                string(),
+                                pDyn->getDispatch().getTags());
+
+                if( tag_as_moa )
                 {
-                    auto pDat = 
-                            std::make_unique<CtiPointDataMsg>(
-                                    TempPoint->getID(),
-                                    pDyn->getValue(),
-                                    pDyn->getQuality(),
-                                    TempPoint->getType(),
-                                    string(),
-                                    pDyn->getDispatch().getTags());
-
-                    if( tag_as_moa )
-                    {
-                        pDat->setTags(TAG_POINT_MOA_REPORT);
-                    }
-
-                    // Make the time match the entered time
-                    pDat->setTime( pDyn->getTimeStamp() );
-                    pDat->setSource(DISPATCH_APPLICATION_NAME);
-                    pMulti->getData().push_back(pDat.release());
-                }
-            }
-
-            /*
-             *  Block the MOA into 1000 element multis.
-             */
-            if( pMulti->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_MULTI_MOA", 1000) )
-            {
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
-                {
-                    CTILOG_DEBUG(dout, "MOA UPLOAD - Client Connection "<< CM->getClientName() <<" on "<< CM->getPeer()<<
-                            *pMulti);
+                    pDat->setTags(TAG_POINT_MOA_REPORT);
                 }
 
-                if(CM->WriteConnQue( std::move(pMulti), CALLSITE, 5000 ))
-                {
-                   CTILOG_ERROR(dout, "Connection is having issues : "<< CM->getClientName() <<" / "<< CM->getClientAppId());
-                }
-
-                pMulti = std::make_unique<CtiMultiMsg>();
+                // Make the time match the entered time
+                pDat->setTime( pDyn->getTimeStamp() );
+                pDat->setSource(DISPATCH_APPLICATION_NAME);
+                pMulti->getData().push_back(pDat.release());
             }
         }
 
-        //This now gets all alarms in the known universe.
-        // full of all alarms active/unacknowledged on all points
-        if( ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
+        /*
+        *  Block the MOA into 1000 element multis.
+        */
+        if( pMulti->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_MULTI_MOA", 1000) )
         {
-            if( CtiMultiMsg *pSigMulti = _signalManager.getAllAlarmSignals() )
+            if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
             {
-                pMulti->getData().push_back(pSigMulti);
-            }
-        }
-
-        // We add all the assigned tags into the multi as well.
-        if(CtiMultiMsg *pTagMulti = _tagManager.getAllPointTags())
-        {
-            pMulti->getData().push_back(pTagMulti);
-        }
-
-        if(pMulti->getCount() > 0)
-        {
-            if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)    // Temp debug
-            {
-                CTILOG_DEBUG(dout, "MOA UPLOAD - Client Connection "<< CM->getClientName() <<" on "<< CM->getPeer() <<
+                CTILOG_DEBUG(dout, "MOA UPLOAD - Client Connection "<< VGCM.getClientName() <<" on "<< VGCM.getPeer()<<
                         *pMulti);
             }
 
-            if(CM->WriteConnQue( std::move(pMulti), CALLSITE, 5000 ))
+            if( VGCM.WriteConnQue( std::move(pMulti), CALLSITE, 5000 ) )
             {
-                CTILOG_ERROR(dout, "Connection is having issues: " << CM->getClientName() << " / " << CM->getClientAppId());
+                CTILOG_ERROR(dout, "Connection is having issues : "<< VGCM.getClientName() <<" / "<< VGCM.getClientAppId());
             }
+
+            pMulti = std::make_unique<CtiMultiMsg>();
+        }
+    }
+
+    //This now gets all alarms in the known universe.
+    // full of all alarms active/unacknowledged on all points
+    if( VGCM.getAlarm() )
+    {
+        if( CtiMultiMsg *pSigMulti = _signalManager.getAllAlarmSignals() )
+        {
+            pMulti->getData().push_back(pSigMulti);
+        }
+    }
+
+    // We add all the assigned tags into the multi as well.
+    if( CtiMultiMsg *pTagMulti = _tagManager.getAllPointTags() )
+    {
+        pMulti->getData().push_back(pTagMulti);
+    }
+
+    if( pMulti->getCount() > 0 )
+    {
+        if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)    // Temp debug
+        {
+            CTILOG_DEBUG(dout, "MOA UPLOAD - Client Connection "<< VGCM.getClientName() <<" on "<< VGCM.getPeer() <<
+                    *pMulti);
+        }
+
+        if( VGCM.WriteConnQue( std::move(pMulti), CALLSITE, 5000 ) )
+        {
+            CTILOG_ERROR(dout, "Connection is having issues: " << VGCM.getClientName() << " / " << VGCM.getClientAppId());
         }
     }
 }
