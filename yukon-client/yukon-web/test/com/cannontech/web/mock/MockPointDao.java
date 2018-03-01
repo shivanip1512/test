@@ -247,4 +247,9 @@ public class MockPointDao implements PointDao {
     public List<LitePoint> getDuplicatePoints(List<Integer> paoIds, List<PointIdentifier> points) {
         return null;
     }
+
+    @Override
+    public List<LitePoint> getLitePointsByPaObjectIdAndPointType(int paobjectId, PointType type) {
+        return null;
+    }
 }

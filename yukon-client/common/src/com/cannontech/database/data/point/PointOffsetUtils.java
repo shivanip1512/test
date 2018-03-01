@@ -22,12 +22,13 @@ public class PointOffsetUtils {
         return true;
     }
 
-    public static int getValidPointOffset(Integer paoId) {
-        return getMaxPointOffsetForDevice(paoId) + 1;
+    public static int getValidPointOffset(Integer paoId, PointType type) {
+        return getMaxPointOffsetForDevice(paoId, type) + 1;
     }
 
-    public static int getMaxPointOffsetForDevice(Integer paoId) {
-        List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectId(paoId);
+    public static int getMaxPointOffsetForDevice(Integer paoId, PointType type) {
+        List<LitePoint> points =
+            YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectIdAndPointType(paoId, type);
         if (points.isEmpty()) {
             return 0;
         } else {

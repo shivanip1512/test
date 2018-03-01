@@ -259,6 +259,17 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
+    public List<LitePoint> getLitePointsByPaObjectIdAndPointType(int paobjectId, PointType type) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
+        sql.append("WHERE PAObjectId").eq(paobjectId);
+        sql.append("AND p.PointType").eq(type);
+
+        List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
+        return points;
+    }
+
+    @Override
     public int[][] getAllPointIDsAndTypesForPAObject(int paobjectId) {
 
         List<LitePoint> points = getLitePointsByPaObjectId(paobjectId);

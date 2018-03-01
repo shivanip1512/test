@@ -205,7 +205,8 @@ public final class PointFactory {
         ((AccumulatorPoint) point).setPointAccumulator(accumPt);
 
         // defaults - pointUnit
-        ((AccumulatorPoint) point).setPointUnit(new PointUnit(pointID, pointUnit, decimalPlaces, 0.0, 0.0, 0));
+        ((AccumulatorPoint) point).setPointUnit(new PointUnit(pointID, pointUnit, decimalPlaces,
+            CtiUtilities.INVALID_MAX_DOUBLE, CtiUtilities.INVALID_MIN_DOUBLE, 0));
 
         return point;
     }

@@ -44,8 +44,7 @@ public class PointUtil {
 
         // Service flag of 'Y' means disabled, 'N' means enabled.
         char disabledChar = disabled ? CtiUtilities.trueChar : CtiUtilities.falseChar;
-        int validPointOffset = PointOffsetUtils.getValidPointOffset(paoId);
-
+        int validPointOffset = PointOffsetUtils.getValidPointOffset(paoId, PointType.getForId(type));
         switch (type) {
         case PointTypes.ANALOG_POINT:
             point = PointFactory.createAnalogPoint(name,
@@ -70,9 +69,9 @@ public class PointUtil {
             point = PointFactory.createPulseAccumPoint(name,
                                                        paoId,
                                                        null,
-                                                       0,
+                                                       validPointOffset,
                                                        UnitOfMeasure.UNDEF.getId(),
-                                                       0.1,
+                                                       1.0,
                                                        StateGroupUtils.STATEGROUP_ANALOG,
                                                        PointUnit.DEFAULT_DECIMAL_PLACES,
                                                        PointArchiveType.NONE,
