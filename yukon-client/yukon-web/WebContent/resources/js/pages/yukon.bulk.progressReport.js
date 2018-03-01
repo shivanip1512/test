@@ -23,18 +23,11 @@ yukon.bulk.progressReport = (function () {
             var item = {},
                 value = data.details[key];
             item.name = $('#detail-' + key).val();
+            item.color = $('#color-' + key).val();
             item.x = value.devices.deviceCount;
             item.y = value.devices.deviceCount / data.counts.completed;
             item.displayPercentage = yukon.percent(value.devices.deviceCount, data.counts.completed, 1);
             item.url = yukon.url("/bulk/collectionActions?" + $.param(value.devices.collectionParameters));
-            if (key == 'SUCCESS') {
-                item.color = '#009933'
-            } else if (key == 'FAILURE') {
-                item.color = '#d14836';
-                item.color = '#ec971f';
-            } else if (key == 'UNSUPPORTED') {
-                item.color = '#888888';
-            }
             legendItems.push(item);
         });
         return legendItems;

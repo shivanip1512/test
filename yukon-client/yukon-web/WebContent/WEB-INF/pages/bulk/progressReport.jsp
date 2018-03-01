@@ -9,6 +9,7 @@
     <c:forEach var="detail" items="${details}">
         <cti:msg2 var="detailText" key="${detail.formatKey}"/>
         <input type="hidden" id="detail-${detail}" value="${detailText}"/>
+        <input type="hidden" id="color-${detail}" value="${detail.color}"/>
     </c:forEach>
 
     <tags:sectionContainer2 nameKey="inputs" hideEnabled="true">
