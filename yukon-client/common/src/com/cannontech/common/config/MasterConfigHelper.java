@@ -15,7 +15,7 @@ import com.cannontech.encryption.CryptoException;
 public class MasterConfigHelper {
     private static File masterCfgLocation;
     private static final Logger log = YukonLogManager.getLogger(MasterConfigHelper.class);
-    private static MasterConfigMap localConfig = null;
+    private static ConfigurationSource localConfig = null;
     
 
     static {
