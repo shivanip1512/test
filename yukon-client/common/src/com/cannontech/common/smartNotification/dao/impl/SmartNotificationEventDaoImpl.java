@@ -236,10 +236,10 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT sne.Timestamp As Timestamp, sne.EventId, sne.Type, snep.paoId As DeviceId, snep.MonitorState As Status, snep.MonitorId, ypo.PAOName As DeviceName ");
-        sql.append("FROM dbo.SmartNotificationEvent sne");
+        sql.append("FROM SmartNotificationEvent sne");
         sql.append("    INNER JOIN ("); 
         sql.append("        SELECT * FROM (");
-        sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
         sql.append("        ) snep");
         if (isOracle) {
             sql.append("        PIVOT ( Max(Value) FOR Name IN ('paoId' AS paoId, 'MonitorState' AS MonitorState, 'MonitorId' AS MonitorId)) P");
@@ -271,10 +271,10 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
-        sql.append("FROM dbo.SmartNotificationEvent sne");
+        sql.append("FROM SmartNotificationEvent sne");
         sql.append("    INNER JOIN ("); 
         sql.append("        SELECT * FROM (");
-        sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
         sql.append("        ) snep");
         if (isOracle) {
             sql.append("        PIVOT ( Max(Value) FOR Name IN ('paoId' AS paoId, 'MonitorState' AS MonitorState, 'MonitorId' AS MonitorId)) P");
@@ -312,10 +312,10 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT sne.Timestamp As Timestamp, sne.EventId, sne.Type, snep.paoId As DeviceId, snep.WarningType As Status, snep.WarningSeverity As Severity, "
                 + "snep.Argument1 As Argument1, snep.Argument2 As Argument2, snep.Argument3 As Argument3, ypo.Type AS DeviceType, ypo.PAOName As DeviceName");
-        sql.append("FROM dbo.SmartNotificationEvent sne");
+        sql.append("FROM SmartNotificationEvent sne");
         sql.append("    INNER JOIN ("); 
         sql.append("        SELECT * FROM (");
-        sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
         sql.append("        ) snep");
         if (isOracle) {
             sql.append("        PIVOT ( Max(Value) FOR Name IN ('paoId' AS paoId, 'WarningType' AS WarningType, 'WarningSeverity' As WarningSeverity, "
@@ -346,10 +346,10 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         boolean isOracle = databaseVendor.isOracle();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
-        sql.append("FROM dbo.SmartNotificationEvent sne");
+        sql.append("FROM SmartNotificationEvent sne");
         sql.append("    INNER JOIN ("); 
         sql.append("        SELECT * FROM (");
-        sql.append("            SELECT EventId, Name, Value FROM dbo.SmartNotificationEventParam");
+        sql.append("            SELECT EventId, Name, Value FROM SmartNotificationEventParam");
         sql.append("        ) snep");
         if (isOracle) {
             sql.append("        PIVOT ( Max(Value) FOR Name IN ('paoId' AS paoId, 'WarningType' AS WarningType)) P");
