@@ -27,6 +27,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
@@ -228,30 +230,36 @@ private void initConnections()
 		{
 			if( !dialog.isShowing() )
 			{
-				FND_PANEL.setValue( new Character(e.getActionCommand().charAt(0)));
-						
-				dialog.setSize(250, 120);
-				dialog.setLocationRelativeTo( TreeViewPanel.this );
-				dialog.show();
-		
-				if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+				String actionCommand = e.getActionCommand();
+
+				// actionCommand can be empty for certain keys, like F13
+				if( StringUtils.isNotEmpty(actionCommand) ) 
 				{
-			
-					Object value = FND_PANEL.getValue(null);
-							
-					if( value != null )
-					{
-						boolean found = searchFirstLevelString(value.toString());
-	
-						if( !found )
-							javax.swing.JOptionPane.showMessageDialog(
-								TreeViewPanel.this, "Unable to find your selected item", "Item Not Found",
-								javax.swing.JOptionPane.INFORMATION_MESSAGE );
-					}
-				}
+					FND_PANEL.setValue( new Character(actionCommand.charAt(0)));
+
+					dialog.setSize(250, 120);
+					dialog.setLocationRelativeTo( TreeViewPanel.this );
+					dialog.show();
 		
-				dialog.setVisible(false);
-                dialog.dispose();
+					if( dialog.getButtonPressed() == OkCancelDialog.OK_PRESSED )
+					{
+			
+						Object value = FND_PANEL.getValue(null);
+							
+						if( value != null )
+						{
+							boolean found = searchFirstLevelString(value.toString());
+	
+							if( !found )
+								javax.swing.JOptionPane.showMessageDialog(
+									TreeViewPanel.this, "Unable to find your selected item", "Item Not Found",
+									javax.swing.JOptionPane.INFORMATION_MESSAGE );
+						}
+					}
+		
+					dialog.setVisible(false);
+					dialog.dispose();
+				}
 			}
 		}
 	};
