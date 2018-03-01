@@ -1137,6 +1137,11 @@
     <entry key="yukon.web.modules.tools.bulk.progressReport.creText">Command Request Execution</entry>
     <entry key="yukon.web.modules.tools.bulk.progressReport.logText">Log</entry>
     <entry key="yukon.web.modules.tools.bulk.progressReport.cancelSuccess">Collection Action has been successfully canceled.</entry>
+    <entry key="yukon.web.modules.tools.bulk.progressReport.collectionActions">Collection Actions</entry>
+    <entry key="yukon.web.modules.tools.bulk.progressReport.mapDevices">Map Devices</entry>
+    <entry key="yukon.web.modules.tools.bulk.progressReport.readAttribute">Read Attribute</entry>
+    <entry key="yukon.web.modules.tools.bulk.progressReport.sendCommand">Send Command</entry>
+    <entry key="yukon.web.modules.tools.bulk.progressReport.deviceReport">Device Report</entry>
     
     <!-- Collection Action Types -->
     <entry key="yukon.web.modules.tools.bulk.collectionAction.SEND_COMMAND">Send Command</entry>

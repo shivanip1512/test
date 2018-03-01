@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -25,15 +26,38 @@
             </c:forEach>
             <tags:nameValue2 nameKey=".devices">
                 ${result.inputs.collection.deviceCount}
-                <tags:selectedDevicesPopup deviceCollection="${result.inputs.collection}"/>
-                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                    <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
-                        <cti:param name="${cp.key}" value="${cp.value}"/>
-                    </c:forEach>
-                </cti:url>
-                <cti:msg2 var="titleText" key=".newOperationText"/>
-                <input type="hidden" id="newOperationText" value="${titleText}"/>
-                <cti:button renderMode="image" href="${collectionActionsUrl}" icon="icon-cog-go" classes="fn" title="${titleText}"/>
+                <cm:dropdown icon="icon-cog" triggerClasses="js-cog-menu" style="padding-left:10px;">
+                    <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                        <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
+                            <cti:param name="${cp.key}" value="${cp.value}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <cm:dropdownOption key=".collectionActions" icon="icon-cog-go" href="${collectionActionsUrl}"/> 
+                    <cti:url var="deviceReportUrl" value="/bulk/deviceCollectionReport">
+                        <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
+                            <cti:param name="${cp.key}" value="${cp.value}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <cm:dropdownOption key=".deviceReport" icon="icon-report" href="${deviceReportUrl}"/>
+                    <cti:url var="mapDevicesUrl" value="/tools/map">
+                        <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
+                            <cti:param name="${cp.key}" value="${cp.value}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapDevicesUrl}"/>
+                    <cti:url var="readAttributeUrl" value="/group/groupMeterRead/homeCollection">
+                        <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
+                            <cti:param name="${cp.key}" value="${cp.value}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readAttributeUrl}"/>
+                    <cti:url var="sendCommandUrl" value="/group/commander/collectionProcessing">
+                        <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
+                            <cti:param name="${cp.key}" value="${cp.value}"/>
+                        </c:forEach>
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${sendCommandUrl}"/>
+                </cm:dropdown>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".startDateTime">
                 <cti:formatDate type="BOTH" value="${result.startTime}"/>

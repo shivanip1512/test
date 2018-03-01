@@ -21,13 +21,25 @@ yukon.bulk.progressReport = (function () {
         var legendItems = [];
         Object.keys(data.details).forEach(function(key) {
             var item = {},
-                value = data.details[key];
+                value = data.details[key],
+                cogMenu = $('.js-cog-menu').clone();
+            cogMenu.removeClass('js-cog-menu');
             item.name = $('#detail-' + key).val();
             item.color = $('#color-' + key).val();
             item.x = value.devices.deviceCount;
             item.y = value.devices.deviceCount / data.counts.completed;
             item.displayPercentage = yukon.percent(value.devices.deviceCount, data.counts.completed, 1);
             item.url = yukon.url("/bulk/collectionActions?" + $.param(value.devices.collectionParameters));
+            //change the urls for the menu to be the correct devices
+            cogMenu.find('a').each(function() {
+                var href = $(this).attr('href');
+                if (href) {
+                    var url = href.substring(0, href.indexOf('?') + 1);
+                    url = url + $.param(value.devices.collectionParameters);
+                    $(this).attr('href', url);
+                }
+            });
+            item.cog = cogMenu;
             legendItems.push(item);
         });
         return legendItems;
@@ -56,10 +68,8 @@ yukon.bulk.progressReport = (function () {
                 borderWidth: 0,
                 useHTML: true,
                 labelFormatter: function (point) {
-                    var newOperationText = $('#newOperationText').val();
                     var spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
-                    var cogText = '<button role="button" type="button" class="button naked fn" style="padding-left:5px;" title="' + newOperationText + '"data-href="' + this.url + '"><i class="icon icon-cog-go"></i>';
-                    return spanText + this.name + ': ' + this.displayPercentage + cogText;
+                    return spanText + this.name + ': ' + this.displayPercentage + this.cog[0].outerHTML;
                 },
                 layout: 'vertical',
                 verticalAlign: 'middle'
@@ -126,7 +136,7 @@ yukon.bulk.progressReport = (function () {
                 
                 //update stop time and stop updating page when complete
                 if (data.result.counts.percentCompleted == 100) {
-                    //clearTimeout(_updateTimeout);
+                    clearTimeout(_updateTimeout);
                     if (data.result.stopTime) {
                         var timeText = moment(data.result.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
                         $('.js-stop-time').text(timeText);
