@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -18,11 +17,6 @@ import com.google.common.collect.ListMultimap;
 
 public class RfnLcrTlvDataMappingServiceTest {
     private RfnLcrTlvDataMappingServiceImpl service = new RfnLcrTlvDataMappingServiceImpl();;
-    
-    @Before
-    public void init() {
-        
-    }
     
     @Test
     public void test_isValidTimeOfReading_withValidDate() {

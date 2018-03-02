@@ -47,7 +47,7 @@ public enum RfnLcrTlvPointDataType {
     private final boolean isPowerQualityResponse;
     
     private static final Logger log = YukonLogManager.getLogger(RfnLcrTlvPointDataType.class);
-    private static final Set<RfnLcrTlvPointDataType> lcr6700PointDataMap = ImmutableSet.copyOf(values());
+    private static final Set<RfnLcrTlvPointDataType> lcr6700PointDataTypes = ImmutableSet.copyOf(values());
     
     RfnLcrTlvPointDataType(BuiltInAttribute attribute, FieldType fieldType) {
         this(attribute, fieldType, null);
@@ -67,11 +67,11 @@ public enum RfnLcrTlvPointDataType {
         this.isPowerQualityResponse = isPowerQualityResponse;
     }
 
-    public static Set<RfnLcrTlvPointDataType> getPointDataMapByPaoType(PaoType paoType) {
+    public static Set<RfnLcrTlvPointDataType> getPointDataTypesByPaoType(PaoType paoType) {
         if (paoType == PaoType.LCR6700_RFN) {
-            return lcr6700PointDataMap;
+            return lcr6700PointDataTypes;
         } else {
-            log.error("No RFN LCR point mapping data found for pao type: " + paoType.getPaoTypeName());
+            log.error("No RFN LCR point data types found for pao type: " + paoType.getPaoTypeName());
             throw new IllegalArgumentException();
         }
     }

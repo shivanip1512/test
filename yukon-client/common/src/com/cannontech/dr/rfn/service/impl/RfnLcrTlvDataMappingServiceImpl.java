@@ -93,7 +93,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     }
 
     private List<PointData> generatePointData(RfnDevice device, ListMultimap<FieldType, byte[]> data, Instant timeOfReading) {
-        Set<RfnLcrTlvPointDataType> rfnLcrPointDataMap = RfnLcrTlvPointDataType.getPointDataMapByPaoType(device.getPaoIdentifier().getPaoType());
+        Set<RfnLcrTlvPointDataType> rfnLcrPointDataMap = RfnLcrTlvPointDataType.getPointDataTypesByPaoType(device.getPaoIdentifier().getPaoType());
         
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         for (RfnLcrTlvPointDataType entry : rfnLcrPointDataMap) {
