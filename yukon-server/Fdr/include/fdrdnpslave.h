@@ -109,6 +109,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         int processUnsupportedRequest         (ConnectionProtocol cp);
         int processUnsolicitedDisableRequest  (ConnectionProtocol cp);
         int processUnsolicitedEnableRequest   (ConnectionProtocol cp);
+        int processWriteTimeRequest           (ConnectionProtocol cp);
+        int processDelayMeasurementRequest    (ConnectionProtocol cp);
 
         int doComms(ConnectionProtocol cp, const std::string& messageType);
 

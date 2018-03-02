@@ -45,6 +45,28 @@ YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 }
 
 
+std::string describeBlocks(const std::vector<std::unique_ptr<ObjectBlock>>& blocks)
+{
+    Cti::FormattedTable tbl;
+
+    tbl.setCell(0, 0) << "Index";
+    tbl.setCell(0, 1) << "Group";
+    tbl.setCell(0, 2) << "Variation";
+
+    unsigned idx = 0;
+
+    for( const auto &block : blocks )
+    {
+        tbl.setCell(idx + 1, 0) << idx;
+        tbl.setCell(idx + 1, 1) << block->getGroup();
+        tbl.setCell(idx + 1, 2) << block->getVariation();
+        ++idx;
+    }
+
+    return tbl.toString();
+}
+
+
 auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) -> std::pair<Commands, ObjectBlockPtr>
 {
     auto Invalid = std::make_pair(Commands::Invalid, nullptr);
@@ -126,6 +148,24 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
         {
             return { Commands::DelayMeasurement, nullptr };
         }
+        case ApplicationLayer::RequestWrite:
+        {
+            auto blocks =
+                ApplicationLayer::restoreObjectBlocks(
+                    application_payload.data() + 2,
+                    application_payload.size() - 2);
+
+            if( blocks.size() == 1
+                && blocks[0]->getGroup() == Time::Group
+                && blocks[0]->getVariation() == Time::T_TimeAndDate )
+            {
+                return { Commands::WriteTime, nullptr };
+            }
+
+            CTILOG_WARN(dout, "Unknown write, returning Unsupported" << describeBlocks(blocks));
+
+            return { Commands::Unsupported, nullptr };
+        }
         case ApplicationLayer::RequestEnableUnsolicited:
         {
             return { Commands::UnsolicitedEnable, nullptr };
@@ -161,23 +201,7 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
             }
             else
             {
-                Cti::FormattedTable tbl;
-
-                tbl.setCell(0, 0) << "Index";
-                tbl.setCell(0, 1) << "Group";
-                tbl.setCell(0, 2) << "Variation";
-
-                unsigned idx = 0;
-
-                for( const auto &block : blocks )
-                {
-                    tbl.setCell(idx + 1, 0) << idx;
-                    tbl.setCell(idx + 1, 1) << block->getGroup();
-                    tbl.setCell(idx + 1, 2) << block->getVariation();
-                    ++idx;
-                }
-
-                CTILOG_WARN(dout, "Unknown read, returning class 1230 poll anyway" << tbl);
+                CTILOG_WARN(dout, "Unknown read, returning class 1230 poll anyway" << describeBlocks(blocks));
             }
 
             return { Commands::Class1230Read, nullptr };
@@ -392,6 +416,17 @@ void DnpSlaveProtocol::setDelayMeasurementCommand( const std::chrono::millisecon
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
             ObjectBlock::makeRangedBlock(std::move(td), 0));
+
+    _application.initForSlaveOutput();
+}
+
+
+void DnpSlaveProtocol::setWriteTimeCommand()
+{
+    _command = Commands::WriteTime;
+
+    _application.setCommand(
+            ApplicationLayer::ResponseResponse);
 
     _application.initForSlaveOutput();
 }

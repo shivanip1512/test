@@ -32,6 +32,7 @@ public:
         SetDigitalOut_Operate,
         SetDigitalOut_Direct,
         DelayMeasurement,
+        WriteTime,
         UnsolicitedEnable,
         UnsolicitedDisable,
         LinkStatus,
@@ -49,6 +50,7 @@ public:
     void setControlCommand( const DnpSlave::control_request &control );
     void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
     void setDelayMeasurementCommand( const std::chrono::milliseconds delay );
+    void setWriteTimeCommand();
     void setUnsupportedCommand();
     void setUnsolicitedDisableCommand();
     void setUnsolicitedEnableCommand();

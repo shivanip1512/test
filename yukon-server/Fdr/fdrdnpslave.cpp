@@ -291,8 +291,12 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
                 [&] { return processUnsupportedRequest(cp); }}},
 
         { Cmd::DelayMeasurement,
-            { "an unsupported DNP delay measurement request",
-                [&] { return processUnsupportedRequest(cp); }}},
+            { "a DNP delay measurement request",
+                [&] { return processDelayMeasurementRequest(cp); }}},
+
+        { Cmd::WriteTime,
+            { "a DNP write time request",
+                [&] { return processWriteTimeRequest(cp); } } },
 
         { Cmd::LinkStatus,
             { "a DNP data link status request",
@@ -417,6 +421,22 @@ int DnpSlave::processUnsolicitedEnableRequest(ConnectionProtocol cp)
     cp.dnpSlave.setUnsolicitedEnableCommand();
 
     return doComms(cp, "unsolicited enable");
+}
+
+
+int DnpSlave::processDelayMeasurementRequest(ConnectionProtocol cp)
+{
+    cp.dnpSlave.setDelayMeasurementCommand(std::chrono::milliseconds::zero());
+
+    return doComms(cp, "delay measurement");
+}
+
+
+int DnpSlave::processWriteTimeRequest(ConnectionProtocol cp)
+{
+    cp.dnpSlave.setWriteTimeCommand();
+
+    return doComms(cp, "write time");
 }
 
 

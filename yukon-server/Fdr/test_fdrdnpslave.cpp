@@ -254,8 +254,28 @@ BOOST_AUTO_TEST_CASE( test_delay_measurement )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-        "05 64 0a 44 02 00 1e 00 cd c7 "
-        "c0 ca 81 00 01 44 e3");  //  IIN has Unsupported Function Code set
+        "05 64 11 44 02 00 1e 00 80 b6 "
+        "c0 ca 81 00 00 34 02 00 00 00 00 00 d3 2c");  //  0 millisecond delay
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+}
+
+BOOST_AUTO_TEST_CASE( test_write_time )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    const byte_str request(
+        "05 64 12 c4 01 00 e8 03 2d a4 "
+        "c0 c1 02 32 01 07 01 e8 a8 7e dd 61 01 70 ee");  //  write time
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+        "05 64 0a 44 e8 03 01 00 db ee "
+        "c0 c1 81 00 00 74 2a");  //  success, no IIN bits set
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
     BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());

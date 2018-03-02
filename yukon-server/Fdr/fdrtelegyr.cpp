@@ -21,8 +21,6 @@ Things to note about telegyr learned the hard way...
 
 #include "ctitime.h"
 #include "ctidate.h"
-#include <boost/tokenizer.hpp>
-#include <boost/regex.hpp>
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -46,6 +44,10 @@ Things to note about telegyr learned the hard way...
 
 // this class header
 #include "fdrtelegyr.h"
+
+#include <boost/range/adaptor/map.hpp>
+#include <boost/regex.hpp>
+#include <boost/tokenizer.hpp>
 
 /*
  * The telgyr library was built on an earlier version of Visual Studio.  In VS2015 
@@ -928,10 +930,10 @@ bool CtiFDRTelegyr::loadGroupLists( void )
        CTILOG_INFO(dout, "Loading And Building Groups");
 
        // make a list with all received points
-      CtiFDRManager *pointList = new CtiFDRManager( getInterfaceName(), string( FDR_INTERFACE_RECEIVE ) );
+      CtiFDRManager pointList( getInterfaceName(), string( FDR_INTERFACE_RECEIVE ) );
 
       // if status is ok, we were able to read the database at least
-      if( pointList->loadPointList() )
+      if( pointList.loadPointList() )
       {
          if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
          {
@@ -944,12 +946,9 @@ bool CtiFDRTelegyr::loadGroupLists( void )
          //empty the 2 entry thing is completly arbitrary
          //===================================================================================
 
-         if( pointList->entries() >= 0 )
+         if( pointList.entries() >= 0 )
          {
-             CTILOG_INFO(dout, "Found "<< pointList->entries() <<" Telegyr points");
-
-            // get iterator on list
-            CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
+             CTILOG_INFO(dout, "Found "<< pointList.entries() <<" Telegyr points");
 
             //FIXME
             //for some reason, we need to wipe the old list first
@@ -961,26 +960,23 @@ bool CtiFDRTelegyr::loadGroupLists( void )
             }
 
             //iterate through all our points in the list
-            for( ; myIterator != pointList->getMap().end(); ++myIterator )
+            for( auto& point : pointList.getMap() | boost::adaptors::map_values )
             {
                foundPoint = true;
-               successful = translatePoint(myIterator->second);
+               successful = translatePoint(point);
             }
 
             {
                 Cti::FormattedList loglist;
-                for (std::vector< CtiTelegyrGroup >::iterator group = _groupList.begin(); group != _groupList.end(); group++)
+                for ( auto& group : _groupList )
                 {
-                    loglist.add(group->getGroupName()) << group->getPointList().size();
+                    loglist.add(group.getGroupName()) << group.getPointList().size();
                 }
 
                 CTILOG_INFO(dout, loglist);
             }
 
             _reloadPending = true;
-
-            delete pointList;
-            pointList = NULL;
 
             if( !successful )
             {
