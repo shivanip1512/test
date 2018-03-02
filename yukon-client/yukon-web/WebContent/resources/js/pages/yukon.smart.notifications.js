@@ -123,6 +123,31 @@ yukon.smart.notifications = (function () {
         });
     },
     
+    saveSubscription = function (form) {
+        form.ajaxSubmit({
+            success: function (data, status, xhr, $form) {
+                form.closest('.js-smart-notifications-popup').dialog('close');
+                var existingSubscriptionsTable = $('.js-existing-subscriptions:visible');
+                //refresh subscriptions if on profile page
+                if ($('#filter-form').is(":visible")) {
+                    updateSubscriptions();
+                }
+                //refresh subscriptions in Existing Subscriptions popup
+                if (existingSubscriptionsTable.length > 0) {
+                    refreshExistingSubscriptions(existingSubscriptionsTable, data);
+                } else {
+                    yukon.ui.alertSuccess(data.successMessage);
+                }
+                
+            },
+            error: function (xhr, status, error, $form) {
+                form.html(xhr.responseText);
+                initializeTimeSlider(form);
+                updateTypeFields(form);
+            }
+        });
+    },
+    
     mod = {
             
         initTimeSlider : function () {
@@ -145,32 +170,17 @@ yukon.smart.notifications = (function () {
                 updateTypeFields(popup);
             });
             
+            $(document).on('submit', '#notification-details', function (ev) {
+                var form = $(ev.target);
+                saveSubscription(form);
+                return false;
+            });
+            
             /** 'Save' button clicked on the notifications popup. */
             $(document).on('yukon:notifications:save', function (ev) {
                 var popup = $(ev.target),
                     form = popup.find('#notification-details');
-                form.ajaxSubmit({
-                    success: function (data, status, xhr, $form) {
-                        popup.dialog('close');
-                        var existingSubscriptionsTable = $('.js-existing-subscriptions:visible');
-                        //refresh subscriptions if on profile page
-                        if ($('#filter-form').is(":visible")) {
-                            updateSubscriptions();
-                        }
-                        //refresh subscriptions in Existing Subscriptions popup
-                        if (existingSubscriptionsTable.length > 0) {
-                            refreshExistingSubscriptions(existingSubscriptionsTable, data);
-                        } else {
-                            yukon.ui.alertSuccess(data.successMessage);
-                        }
-                        
-                    },
-                    error: function (xhr, status, error, $form) {
-                        form.html(xhr.responseText);
-                        initializeTimeSlider(popup);
-                        updateTypeFields(popup);
-                    }
-                });
+                saveSubscription(form);
             });
             
             $(document).on('yukon:notifications:remove', function (ev) {
