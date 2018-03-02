@@ -127,7 +127,8 @@ public final class PointFactory {
         point.getPoint().setStateGroupID(stateGroupId);
 
         // defaults - pointUnit
-        ((AnalogPoint) point).setPointUnit(new PointUnit(pointID, pointUnit, decimalPlaces, 0.0, 0.0, 0));
+        ((AnalogPoint) point).setPointUnit(new PointUnit(pointID, pointUnit, decimalPlaces,
+            CtiUtilities.INVALID_MAX_DOUBLE, CtiUtilities.INVALID_MIN_DOUBLE, 0));
 
         ((AnalogPoint) point).getPointAnalog().setMultiplier(multiplier);
         ((AnalogPoint) point).getPointAnalog().setDataOffset(dataOffset);
