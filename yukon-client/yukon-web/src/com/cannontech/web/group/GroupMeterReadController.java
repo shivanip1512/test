@@ -27,12 +27,9 @@ import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
@@ -53,35 +50,11 @@ import com.google.common.collect.Maps;
 public class GroupMeterReadController {
 
 	@Autowired private AlertService alertService;
-	@Autowired private DeviceGroupService deviceGroupService;
-	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	@Autowired private AttributeSelectorHelperService attributeSelectorHelperService;
 	@Autowired private AttributeService attributeService;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     private DeviceCollectionFactory deviceCollectionFactory;
-
-	@RequestMapping("homeGroup")
-	public ModelAndView homeGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadHomeGroup.jsp");
-		
-		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
-		String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
-		
-		mav.addObject("errorMsg", errorMsg);
-		mav.addObject("groupName", groupName);
-		mav.addObject("selectedAttributes", selectedAttributes);
-		
-		Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
-	    Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
-	            getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
-		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
-		
-		return mav;
-	}
 	
     @RequestMapping(value = "homeCollection", method = RequestMethod.GET)
 	public ModelAndView homeCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -105,25 +78,6 @@ public class GroupMeterReadController {
 		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
 		
 		return mav;
-	}
-	
-	@RequestMapping(value="readGroup", method=RequestMethod.POST)
-	public ModelAndView readGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		String errorPage = "homeGroup";
-		ModelAndView errorMav = new ModelAndView("redirect:" + errorPage);
-		
-		// device group
-		String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-		if (StringUtils.isBlank(groupName)) {
-		    addErrorStateToMav(errorMav, "No Device Group Selected", null, makeSelectedAttributeStrsParameter(attributeSelectorHelperService.getAttributeSet(request, null, null)));
-		    return errorMav;
-		}
-		
-		DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(groupName);
-		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(deviceGroup);
-		
-		return read(request, response, deviceCollection, errorPage, groupName);
 	}
 	
 	@RequestMapping("readCollection")

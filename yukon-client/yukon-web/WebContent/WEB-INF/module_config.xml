@@ -212,17 +212,11 @@
           </page>
         </pages>
       </page>
-      <page name="deviceGroupsCommander" type="BASIC"/>
-      <page name="groupMeterReadHome" type="BASIC">
-        <link>/group/groupMeterRead/homeGroup</link>
+      <page name="groupMeterRead.results" type="BASIC"/>
+      <page name="groupCommand.results" type="BASIC">
+        <link>/group/commander/resultList</link>
         <pages>
-            <page name="groupMeterRead.results" type="BASIC"/>
-            <page name="groupCommand.results" type="BASIC">
-              <link>/group/commander/resultList</link>
-              <pages>
-                <page name="groupCommand.details" type="BASIC"/>
-              </pages>
-            </page>
+            <page name="groupCommand.details" type="BASIC"/>
         </pages>
       </page>
       <page name="deviceGroupUpload" type="BASIC"/>

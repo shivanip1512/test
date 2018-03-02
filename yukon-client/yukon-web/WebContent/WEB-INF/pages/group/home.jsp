@@ -12,14 +12,6 @@
         <c:url value="/group/editor/home" />
     </cti:linkTab>
 
-    <cti:linkTab selectorKey="yukon.web.deviceGroups.commander.tab.title">
-        <c:url value="/group/commander/groupProcessing" />
-    </cti:linkTab>
-
-    <cti:linkTab selectorKey="yukon.common.device.groupMeterRead.home.tab.title">
-        <c:url value="/group/groupMeterRead/homeGroup" />
-    </cti:linkTab>
-
     <cti:linkTab selectorKey="yukon.web.modules.amr.deviceGroupUpload.tab.title">
         <c:url value="/group/updater/upload" />
     </cti:linkTab>

@@ -59,7 +59,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
-import com.google.common.collect.ImmutableList;
 
 @Controller
 @RequestMapping("/commander/*")
@@ -100,34 +99,6 @@ public class GroupCommanderController {
         model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
         boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
         model.addAttribute("isSmtpConfigured", isSmtpConfigured);
-    }
-
-    @RequestMapping("groupProcessing")
-    public void groupProcessing(YukonUserContext userContext, ModelMap model) {
-
-        /*
-         * This is just to get the commandSelector tag to render the dropdown we need.
-         * Once a group is selected, this list will be replaced with the actual options via ajax.
-         */
-        LiteCommand command = new LiteCommand(-1, "placeholder", "placeholder", "placeholder");
-        List<LiteCommand> commands = ImmutableList.of(command);
-        model.addAttribute("commands", commands);
-
-        model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
-        boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
-        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
-    }
-    
-    @RequestMapping(value="executeGroupCommand", method=RequestMethod.POST)
-    public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, boolean sendEmail, YukonUserContext userContext, ModelMap map) {
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, groupName, userContext, map);
-        if (success) {
-            return "redirect:resultDetail";
-        } else {
-            return "redirect:groupProcessing";
-        }
     }
 
     @RequestMapping(value="executeCollectionCommand", method=RequestMethod.POST)
