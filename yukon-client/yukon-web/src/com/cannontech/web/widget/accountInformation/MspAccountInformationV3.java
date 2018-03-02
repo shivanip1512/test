@@ -56,6 +56,8 @@ public class MspAccountInformationV3 implements MspAccountInformation {
         mav.addObject("homePhone", phoneNumberFormattingService.formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()));
         mav.addObject("dayPhone", phoneNumberFormattingService.formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()));
 
+        List<String> emailAddresses = multispeakCustomerInfoService.getEmailAddresses(mspCustomer, userContext);
+        mav.addObject("mspEmailAddresses", emailAddresses);
         mav.addObject("mspServLoc", mspServLoc);
         mav.addObject("mspMeter", mspMeter);
        

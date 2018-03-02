@@ -17,8 +17,6 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.Contact;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
 import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
 import com.cannontech.msp.beans.v5.multispeak.BillingStatusInformation;
 import com.cannontech.msp.beans.v5.multispeak.ContactInfo;
@@ -35,7 +33,6 @@ public class MspAccountInformationV5 implements MspAccountInformation {
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
-    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private MultispeakFuncs multispeakFuncs;
 
     public ModelAndView getMspInformation(YukonMeter meter, MultispeakVendor mspVendor, ModelAndView mav,
@@ -51,9 +48,15 @@ public class MspAccountInformationV5 implements MspAccountInformation {
             List<Address> servLocAddresses = multispeakFuncs.getAddressList(mspServLoc.getContactInfo().getAddressItems());
             mav.addObject("servLocAddresses", servLocAddresses.get(0));
         }
-        Map<PhoneTypeKind, String> primaryContact = getPrimaryContacts(mspCustomer);
+        Map<PhoneTypeKind, String> primaryContact = multispeakFuncs.getPrimaryContacts(mspCustomer);
         mav.addObject("homePhone", primaryContact.get(PhoneTypeKind.HOME));
         mav.addObject("dayPhone", primaryContact.get(PhoneTypeKind.BUSINESS));
+
+        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getEMailAddresses() != null) {
+            List<String> emailAddresses = multispeakCustomerInfoService.getEmailAddresses(
+                mspCustomer.getContactInfo().getEMailAddresses(), userContext);
+            mav.addObject("mspEmailAddresses", emailAddresses);
+        }
 
         if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getAddressItems() != null) {
             List<Address> custAddressInfo = multispeakFuncs.getAddressList(mspCustomer.getContactInfo().getAddressItems());
@@ -130,7 +133,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
 
         List<Info> infoList = new ArrayList<Info>();
 
-        Map<PhoneTypeKind, String> primaryContact = getPrimaryContacts(mspCustomer);
+        Map<PhoneTypeKind, String> primaryContact = multispeakFuncs.getPrimaryContacts(mspCustomer);
 
         add("Identifier", mspCustomer.getPrimaryIdentifier(), false, infoList, userContext);
         add("Last Name", mspCustomer.getLastName(), false, infoList, userContext);
@@ -263,28 +266,6 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 }
             });
         return customerAccountPriorityMap;
-    }
-
-    // Returns phone number (Home and Business) of the primary contact
-    private Map<PhoneTypeKind, String> getPrimaryContacts(Customer mspCustomer) {
-        Map<PhoneTypeKind, String> allPhoneNumbers = new HashMap<>();
-
-        List<PhoneNumber> phoneNumber = new ArrayList<>();
-        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getPhoneNumbers() != null) {
-            phoneNumber = mspCustomer.getContactInfo().getPhoneNumbers().getPhoneNumber();
-
-            phoneNumber.forEach(phNo -> {
-                if (phNo.getPhoneType() != null) {
-                    if (phNo.getPhoneType().getValue() == PhoneTypeKind.HOME
-                        || phNo.getPhoneType().getValue() == PhoneTypeKind.BUSINESS) {
-
-                        allPhoneNumbers.put(phNo.getPhoneType().getValue(), phoneNumberFormattingService.formatPhone(
-                            phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
-                    }
-                }
-            });
-        }
-        return allPhoneNumbers;
     }
 
     // Get the customer alternate contact information
@@ -703,16 +684,17 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                         add("Gas Drive Size",
                             gasServicePoint.getGasMeter().getGasNameplate().getGearDriveSize().value(), true, info,
                             userContext);
+                        add("Gas Internal Pipe Diameter",
+                            gasServicePoint.getGasMeter().getGasNameplate().getInternalPipeDiameter().value(), true, info,
+                            userContext);
+                        add("Gas Temperature Compensation Type",
+                            gasServicePoint.getGasMeter().getGasNameplate().getTemperatureCompensationType().value(), true, info,
+                            userContext);
+                        add("Gas Pressure Compensation Type",
+                            gasServicePoint.getGasMeter().getGasNameplate().getPressureCompensationType().value(), true, info,
+                            userContext);
                     }
-                    add("Gas Internal Pipe Diameter",
-                        gasServicePoint.getGasMeter().getGasNameplate().getInternalPipeDiameter().value(), true, info,
-                        userContext);
-                    add("Gas Temperature Compensation Type",
-                        gasServicePoint.getGasMeter().getGasNameplate().getTemperatureCompensationType().value(), true, info,
-                        userContext);
-                    add("Gas Pressure Compensation Type",
-                        gasServicePoint.getGasMeter().getGasNameplate().getPressureCompensationType().value(), true, info,
-                        userContext);
+
                 }
 
             });

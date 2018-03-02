@@ -1,6 +1,7 @@
 package com.cannontech.web.amr.waterLeakReport.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.ui.ModelMap;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
+import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -73,6 +75,10 @@ public class MspWaterLeakReportV5 extends MspWaterLeakReport {
             List<Address> servLocAddresses = multispeakFuncs.getAddressList(mspMeterAccountInfo.mspServLoc.getContactInfo().getAddressItems());
             model.addAttribute("servLocAddresses", servLocAddresses.get(0));
         }
+        
+        Map<PhoneTypeKind, String> primaryContact = multispeakFuncs.getPrimaryContacts(mspMeterAccountInfo.mspCustomer);
+        model.addAttribute("homePhone", primaryContact.get(PhoneTypeKind.HOME));
+        model.addAttribute("dayPhone", primaryContact.get(PhoneTypeKind.BUSINESS));
 
         setupMspVendorModelInfo(userContext, model);
         return "waterLeakReport/accountInfoAjax.jsp";

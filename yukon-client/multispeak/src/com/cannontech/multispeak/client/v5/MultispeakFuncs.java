@@ -1,8 +1,10 @@
 package com.cannontech.multispeak.client.v5;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.xml.bind.JAXBElement;
@@ -40,6 +42,7 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -49,7 +52,10 @@ import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.msp.beans.v5.commontypes.AddressItems;
 import com.cannontech.msp.beans.v5.commontypes.CSUnitsKind;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
+import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
+import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
 import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
+import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.MspMeter;
@@ -75,6 +81,8 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     @Autowired public DeviceGroupService deviceGroupService;
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    
     @Resource(name="domainMarshallerV5") Jaxb2Marshaller jaxb2Marshaller;
 
     private static final QName QNAME_CALLER = new QName("http://www.multispeak.org/V5.0/ws/request", "Caller");
@@ -565,5 +573,27 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             }
         });
         return addressList;
+    }
+    
+    // Returns phone number (Home and Business) of the primary contact
+    public Map<PhoneTypeKind, String> getPrimaryContacts(Customer mspCustomer) {
+        Map<PhoneTypeKind, String> allPhoneNumbers = new HashMap<>();
+
+        List<PhoneNumber> phoneNumber = new ArrayList<>();
+        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getPhoneNumbers() != null) {
+            phoneNumber = mspCustomer.getContactInfo().getPhoneNumbers().getPhoneNumber();
+
+            phoneNumber.forEach(phNo -> {
+                if (phNo.getPhoneType() != null) {
+                    if (phNo.getPhoneType().getValue() == PhoneTypeKind.HOME
+                        || phNo.getPhoneType().getValue() == PhoneTypeKind.BUSINESS) {
+
+                        allPhoneNumbers.put(phNo.getPhoneType().getValue(), phoneNumberFormattingService.formatPhone(
+                            phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
+                    }
+                }
+            });
+        }
+        return allPhoneNumbers;
     }
 }

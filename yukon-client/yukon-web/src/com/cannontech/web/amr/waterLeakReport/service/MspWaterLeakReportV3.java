@@ -9,6 +9,7 @@ import org.springframework.ui.ModelMap;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
@@ -23,6 +24,7 @@ public class MspWaterLeakReportV3 extends MspWaterLeakReport {
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MultispeakCustomerInfoService mspCustomerInfoService;
     @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 
     private Cache<Integer, MspMeterAccountInfo> mspMeterAccountInfoMap =
         CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
@@ -52,6 +54,9 @@ public class MspWaterLeakReportV3 extends MspWaterLeakReport {
                 mspCustomerInfoService.getEmailAddresses(mspMeterAccountInfo.mspCustomer, userContext);
             mspMeterAccountInfoMap.put(paoId, mspMeterAccountInfo);
         }
+
+        model.addAttribute("homePhone", phoneNumberFormattingService.formatPhone(mspMeterAccountInfo.mspCustomer.getHomeAc(), mspMeterAccountInfo.mspCustomer.getHomePhone()));
+        model.addAttribute("dayPhone", phoneNumberFormattingService.formatPhone(mspMeterAccountInfo.mspCustomer.getDayAc(), mspMeterAccountInfo.mspCustomer.getDayPhone()));
 
         model.addAttribute("mspPhoneNumbers", mspMeterAccountInfo.phoneNumbers);
         model.addAttribute("mspEmailAddresses", mspMeterAccountInfo.emailAddresses);

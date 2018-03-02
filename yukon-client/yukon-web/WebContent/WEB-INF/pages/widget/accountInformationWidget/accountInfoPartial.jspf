@@ -30,6 +30,9 @@
         <c:if test="${not empty dayPhone}">
             <tags:nameValue2 nameKey=".dayPhoneNumber">${fn:escapeXml(dayPhone)}</tags:nameValue2>
         </c:if>
+        <c:if test="${not empty mspEmailAddresses}">
+           <tags:nameValue2 nameKey=".emailAddresses">${cti:join(mspEmailAddresses,", ")}</tags:nameValue2>
+        </c:if>
     </tags:nameValueContainer2>
 </tags:sectionContainer>
 

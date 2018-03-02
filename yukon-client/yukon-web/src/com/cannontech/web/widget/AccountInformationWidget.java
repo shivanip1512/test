@@ -13,13 +13,8 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
-import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.service.v3.MultispeakCustomerInfoService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -33,14 +28,9 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 @Controller
 @RequestMapping("/accountInformationWidget/*")
 @CheckRole(YukonRole.METERING)
-public class AccountInformationWidget extends WidgetControllerBase{
+public class AccountInformationWidget extends WidgetControllerBase {
     
-    @Autowired private MspObjectDao mspObjectDao;
-    @Autowired private MultispeakFuncs multispeakFuncs;
-    @Autowired private MultispeakDao multispeakDao;
     @Autowired private MeterDao meterDao;
-    @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MspHandler mspHandler;
     
