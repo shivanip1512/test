@@ -23,10 +23,10 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.service.ParsingService;
+import com.cannontech.dr.rfn.service.ParsingService.Schema;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.dr.rfn.service.RfnLcrParsingStrategy;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
-import com.cannontech.dr.rfn.service.ParsingService.Schema;
 import com.cannontech.dr.rfn.tlv.FieldType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ListMultimap;
@@ -54,6 +54,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
             log.debug("decoding: " + rfnDevice);
         }
         decodedPayload = parsingService.parseRfLcrReading(rfnDevice.getRfnIdentifier(), payload);
+        
         // Handle broadcast verification messages
         Schema schema = ParsingService.getSchema(payload);
         if (schema.supportsBroadcastVerificationMessages()) {
@@ -84,6 +85,14 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
 
             if (CollectionUtils.isNotEmpty(commonAddressingFields)) {
                 rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+            }
+            
+            if(schema.supportsPowerQualityResponse()) {
+                List<byte[]> pqrLogBlob = decodedPayload.get(FieldType.POWER_QUALITY_RESPONSE_LOG_BLOB);
+                //TODO: YUK-17794
+                //List<PqrEvent> pqrEvents = pqrEventLogParsingService.parseLogBlob(pqrLogBlob);
+                //TODO: YUK-17796
+                //pqrEventLogDao.saveEvents(pqrEvents);
             }
         }
 

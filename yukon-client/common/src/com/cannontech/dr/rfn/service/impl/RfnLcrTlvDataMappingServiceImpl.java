@@ -21,7 +21,6 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
@@ -36,8 +35,8 @@ import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
-import com.cannontech.dr.rfn.model.RfnLcr6700PointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcr6700RelayMap;
+import com.cannontech.dr.rfn.model.RfnLcrTlvPointDataType;
 import com.cannontech.dr.rfn.tlv.FieldType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ListMultimap;
@@ -59,11 +58,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, ListMultimap<FieldType, byte[]>  data) {
 
         Long timeInSec = ByteUtil.getLong(data.get(FieldType.UTC).get(0));
-        Instant instantOfReading = new Instant(timeInSec * 1000);
-        Date timeOfReading = instantOfReading.toDate();
-
-        List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
-        Set<RfnLcr6700PointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
+        Instant timeOfReading = new Instant(timeInSec * 1000);
 
         RfnDevice device = rfnDeviceLookupService.getDevice(request.getRfnIdentifier());
 
@@ -76,41 +71,16 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
          * This could be improved by getting the timestamp from the gateway if/when Yukon
          * and Network Manager share that information.
          */
-        assetAvailabilityTimes.setLastCommunicationTime(instantOfReading);
+        assetAvailabilityTimes.setLastCommunicationTime(timeOfReading);
 
-        rfnLcrPointDataMap = RfnLcr6700PointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
-
-        for (RfnLcr6700PointDataMap entry : rfnLcrPointDataMap) {
-
-            PaoPointIdentifier paoPointIdentifier = null;
-            Integer pointId = null;
-
-            try {
-                paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(device, entry.getAttribute());
-                pointId = pointDao.getPointId(paoPointIdentifier);
-            } catch (IllegalUseOfAttribute e) {
-                log.warn("The attribute: " + entry.getAttribute().toString() + " is not defined for the device: "
-                    + device.getName() + " of type: " + device.getPaoIdentifier().getPaoType());
-                continue;
-            } catch (NotFoundException e) {
-                log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: "
-                    + device.getName());
-                continue;
-            }
-
-            Double value = evaluateArchiveReadValue(data, entry);
-
-            if (value != null) {
-                PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, pointId, timeOfReading);
-                messagesToSend.add(pointData);
-            }
-        }
+        // Generate point data from raw TLV data. Create missing points if necessary.
+        List<PointData> messagesToSend = generatePointData(device, data, timeOfReading);
 
         /**
          * This may be useful some day
          * boolean readNow = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
          */
-
+        
         List<PointData> intervalData = mapIntervalData(data, device, assetAvailabilityTimes);
         if (intervalData != null) {
             messagesToSend.addAll(intervalData);
@@ -122,7 +92,47 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         return messagesToSend;
     }
 
-    private Double evaluateArchiveReadValue(ListMultimap<FieldType, byte[]> data, RfnLcr6700PointDataMap entry) {
+    private List<PointData> generatePointData(RfnDevice device, ListMultimap<FieldType, byte[]> data, Instant timeOfReading) {
+        Set<RfnLcrTlvPointDataType> rfnLcrPointDataMap = RfnLcrTlvPointDataType.getPointDataMapByPaoType(device.getPaoIdentifier().getPaoType());
+        
+        List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
+        for (RfnLcrTlvPointDataType entry : rfnLcrPointDataMap) {
+
+            Double value = evaluateArchiveReadValue(data, entry);
+            
+            if (value != null) {
+                
+                // Check if the device supports this attribute
+                if (!attributeService.isAttributeSupported(device, entry.getAttribute())) {
+                    log.warn("The attribute: " + entry.getAttribute().toString() + " is not defined for the device: "
+                            + device.getName() + " of type: " + device.getPaoIdentifier().getPaoType());
+                    continue;
+                }
+                
+                // If the point is missing, and it's PQR data, create the point automatically
+                if (!attributeService.pointExistsForAttribute(device, entry.getAttribute()) && entry.isPowerQualityResponse()) {
+                    log.info("Creating point for PQR attribute (" + entry.getAttribute() + ") on device: " 
+                             + device.getName() + ".");
+                    attributeService.createPointForAttribute(device, entry.getAttribute());
+                }
+                
+                // Generate the point data
+                try {
+                    PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(device, entry.getAttribute());
+                    Integer pointId = pointDao.getPointId(paoPointIdentifier);
+                    PointData pointData = getPointData(entry.getAttribute(), value, paoPointIdentifier, pointId, timeOfReading.toDate());
+                    messagesToSend.add(pointData);
+                } catch (NotFoundException e) {
+                    log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: "
+                            + device.getName());
+                    continue;
+                }
+            }
+        }
+        return messagesToSend;
+    }
+    
+    private Double evaluateArchiveReadValue(ListMultimap<FieldType, byte[]> data, RfnLcrTlvPointDataType entry) {
 
         Number value = null;
         if (entry.getFieldType() == FieldType.RELAY_N_REMAINING_CONTROLTIME) {
@@ -139,11 +149,12 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             }
         } else {
             if (CollectionUtils.isNotEmpty(data.get(entry.getFieldType()))) {
-                if (entry.getFieldType() == FieldType.LUF_EVENTS || entry.getFieldType() == FieldType.LUV_EVENTS) {
-                    value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
-                } else if (entry.getFieldType() == FieldType.CONTROL_STATE) {
+                if (entry.getFieldType() == FieldType.CONTROL_STATE) {
                     // if control status value is 0xFF then it is in control otherwise its value is 0
                     value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0)) & 0x01;
+                } else if (entry.getFieldType() == FieldType.POWER_QUALITY_RESPONSE_ENABLED) {
+                    int rawValue = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
+                    value = (rawValue != 0 ? 1 : 0); //map any non-zero value to 1
                 } else {
                     value = ByteUtil.getInteger(data.get(entry.getFieldType()).get(0));
                 }
@@ -321,7 +332,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
                 }
             });
         }
-        address.setRelays(new HashSet<ExpressComReportedAddressRelay>(relays.values()));
+        address.setRelays(new HashSet<>(relays.values()));
 
         log.debug(String.format("Received LM Address for %s - ", address, device.getName()));
         
@@ -366,7 +377,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             // Remove minutes and seconds from time of reading.
             Instant timeOfReading = new DateTime(timeInSec * 1000).hourOfDay().roundFloorCopy().toInstant();
             Instant earliestStartTime = new Instant(intervalStartTime * 1000);
-            range = new Range<Instant>(earliestStartTime, true, timeOfReading, true);
+            range = new Range<>(earliestStartTime, true, timeOfReading, true);
 
             log.debug("Created range: Min: " + earliestStartTime.toDate() + "(earliest relay start time)       Max: "
                 + timeOfReading.toDate() + "(utc truncated to an hour)");
@@ -381,7 +392,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         Long timeInSec = ByteUtil.getLong(data.get(FieldType.UTC).get(0));
         DateTime timeOfReading = new DateTime(timeInSec * 1000);
         boolean isValid = timeOfReading.isAfter(year2001);
-        log.debug("time of reading:" + timeOfReading.toDate() + "    after 1/1/2001 =" + isValid);
+        log.debug("time of reading:" + timeOfReading.toDate() + " after 1/1/2001 =" + isValid);
 
         return isValid;
 

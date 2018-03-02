@@ -14,7 +14,8 @@ public interface ParsingService<T> {
     public enum Schema {
         SCHEMA_0_0_2("0.0.2", "rfnLcrExiMessageSchema_v0_0_2.xsd"),
         SCHEMA_0_0_3("0.0.3", "rfnLcrExiMessageSchema_v0_0_3.xsd"),
-        SCHEMA_0_0_4("0.0.4", "null");
+        SCHEMA_0_0_4("0.0.4", "null"),
+        SCHEMA_0_0_5("0.0.5", "null");
 
         private final String version;
         private final String schema;
@@ -43,9 +44,13 @@ public interface ParsingService<T> {
         }
 
         public boolean supportsBroadcastVerificationMessages() {
-            return (this == SCHEMA_0_0_3 || this == SCHEMA_0_0_4);
+            return (this == SCHEMA_0_0_3 || this == SCHEMA_0_0_4 || this == SCHEMA_0_0_5);
         }
 
+        public boolean supportsPowerQualityResponse() {
+            return this == SCHEMA_0_0_5;
+        }
+        
         public static Schema getSchema(String schemaVersion) {
             return lookupByVersion.get(schemaVersion);
         }
@@ -63,7 +68,7 @@ public interface ParsingService<T> {
     public T parseRfLcrReading(RfnIdentifier rfnId, byte[] payload) throws ParseException;
 
     /**
-     * Parse the schema version from the header and return a schema(TLV format supports 0.0.4 version and
+     * Parse the schema version from the header and return a schema(TLV format supports 0.0.4+ version and
      * binary format support 0.0.2 or 0.0.3)
      */
     public static Schema getSchema(byte[] payload) {
