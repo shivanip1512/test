@@ -8,6 +8,7 @@
 #include "port_udp.h"
 #include "EncodingFilterFactory.h"
 #include "socket_helper.h"
+#include "dnpLookup.h"
 
 #define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
 
@@ -29,18 +30,16 @@ private:
     Cti::ServerSockets _udp_sockets;
     unsigned short _connected_port;
 
-    typedef std::pair<unsigned short, unsigned short> dnp_address_pair;
     //typedef std::pair<unsigned short, unsigned short> uecp_address_pair;  //  Not using UECP unsolicited inbounds
     typedef std::pair<unsigned short, unsigned long>  gpuff_type_serial_pair;
 
-    static dnp_address_pair       makeDnpAddressPair     (const CtiDeviceSingle &device);
     static gpuff_type_serial_pair makeGpuffTypeSerialPair(const CtiDeviceSingle &device);
 
     typedef boost::bimap<gpuff_type_serial_pair, long> type_serial_id_bimap;
-    typedef boost::bimap<dnp_address_pair,       long> dnp_address_id_bimap;
 
     type_serial_id_bimap _typeAndSerial_to_id;
-    dnp_address_id_bimap _dnpAddress_to_id;
+
+    DnpLookup _dnpLookup;
 
     typedef std::map<long, std::string>  ip_map;
     typedef std::map<long, u_short> port_map;
@@ -62,7 +61,6 @@ private:
     void handleDnpPacket  (ip_packet *&p);
     void handleGpuffPacket(ip_packet *&p);
 
-    device_record *getDeviceRecordByDnpAddress           ( unsigned short master, unsigned short slave );
     device_record *getDeviceRecordByGpuffDeviceTypeSerial( unsigned short device_type, unsigned long serial );
 
     void updateDeviceIpAndPort( device_record &dr, const ip_packet &p );

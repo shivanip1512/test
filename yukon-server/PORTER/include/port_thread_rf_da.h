@@ -4,6 +4,7 @@
 #include "unsolicited_handler.h"
 #include "port_rf_da.h"
 #include "rfn_e2e_messenger.h"
+#include "dnpLookup.h"
 
 namespace Cti    {
 namespace Porter {
@@ -14,9 +15,9 @@ class RfDaPortHandler : public UnsolicitedHandler
 {
     Ports::RfDaPortSPtr _rf_da_port;
 
-    boost::optional<long> _device_id;
+    DnpLookup _dnpLookup;
 
-    typedef std::vector<Messaging::Rfn::E2eMessenger::Indication> IndicationQueue;
+    using IndicationQueue = std::vector<Messaging::Rfn::E2eMessenger::Indication>;
 
     CtiCriticalSection _indicationMux;
     IndicationQueue _indications;
@@ -24,10 +25,11 @@ class RfDaPortHandler : public UnsolicitedHandler
     struct rf_packet : packet
     {
         RfnIdentifier rfnid;
+        DnpLookup::dnp_addresses dnpAddress;
 
         virtual std::string describeAddress() const
         {
-            return rfnid.manufacturer + "_" + rfnid.model +"_" + rfnid.serialNumber;
+            return dnpAddress.toString() + "@" + rfnid.manufacturer + "_" + rfnid.model +"_" + rfnid.serialNumber;
         }
     };
 
@@ -51,7 +53,7 @@ protected:
     void loadDeviceProperties(const std::vector<const CtiDeviceSingle *> &devices) override;
 
     void addDeviceProperties   (const CtiDeviceSingle &device) override;
-    void updateDeviceProperties(const CtiDeviceSingle &device) override {}
+    void updateDeviceProperties(const CtiDeviceSingle &device) override;
     void deleteDeviceProperties(const CtiDeviceSingle &device) override;
 
     void updatePortProperties() override {}  //  no properties

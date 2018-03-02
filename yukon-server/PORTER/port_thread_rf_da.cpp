@@ -155,7 +155,17 @@ std::string RfDaPortHandler::describeDeviceAddress( const long device_id ) const
 {
     const RfnIdentifier &rfnid = _rf_da_port->getRfnIdentifier();
 
-    return rfnid.manufacturer + "_" + rfnid.model + "_" + rfnid.serialNumber;
+    std::string device_address = "(no address)";
+
+    if( auto record = getDeviceRecordById(device_id) )
+    {
+        if( record->device )
+        {
+            device_address = DnpLookup::getDnpAddresses(*record->device).toString();
+        }
+    }
+
+    return device_address + "@" + rfnid.manufacturer + "_" + rfnid.model + "_" + rfnid.serialNumber;
 }
 
 
@@ -175,11 +185,11 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
         return false;
     }
 
-    if( ! _device_id )
+    if( _dnpLookup.empty() )
     {
         if( ! recentIndications.empty() && gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
         {
-            CTILOG_DEBUG(dout, "_device_id not set, logging packets");
+            CTILOG_DEBUG(dout, "No DNP devices registered on port, logging packets");
         }
 
         for each( const Messaging::Rfn::E2eMessenger::Indication & ind in recentIndications )
@@ -188,20 +198,6 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
             traceInbound("(unhandled)", ClientErrors::None, &ind.payload.front(), ind.payload.size());
         }
 
-        return false;
-    }
-
-    device_record *dr = getDeviceRecordById(*_device_id);
-
-    if( ! dr || ! dr->device )
-    {
-        CTILOG_ERROR(dout, "can't find device with ID ("<< *_device_id <<")");
-        return false;
-    }
-
-    if( dr->device->isInhibited() )
-    {
-        CTILOG_ERROR(dout, "device \""<< dr->device->getName() <<"\" is inhibited, discarding packets");
         return false;
     }
 
@@ -222,7 +218,33 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
 
         auto output_itr = stdext::make_checked_array_iterator(p->data, p->len);
 
-        std::copy(ind.payload.begin(), ind.payload.end(), output_itr);
+        boost::copy(ind.payload, output_itr);
+
+        p->dnpAddress = {
+            static_cast<unsigned short>(p->data[4] | (p->data[5] << 8)),
+            static_cast<unsigned short>(p->data[6] | (p->data[7] << 8)) };
+
+        auto id = _dnpLookup.getDeviceIdForAddress(p->dnpAddress);
+
+        if( !id )
+        {
+            CTILOG_ERROR(dout, "can't find device ID for DNP addresses " << p->dnpAddress.toString());
+            return false;
+        }
+
+        device_record *dr = getDeviceRecordById(*id);
+
+        if( !dr || !dr->device )
+        {
+            CTILOG_ERROR(dout, "can't find device with id " << *id);
+            return false;
+        }
+
+        if( dr->device->isInhibited() )
+        {
+            CTILOG_ERROR(dout, "device \"" << dr->device->getName() << "\" is inhibited, discarding packets");
+            return false;
+        }
 
         addInboundWork(*dr, p);
     }
@@ -235,30 +257,48 @@ void RfDaPortHandler::loadDeviceProperties(const std::vector<const CtiDeviceSing
 {
     for( const auto dev : devices )
     {
-        if( dev )
-        {
-            //  just grab the first one - we're only supposed to have one device assigned
-            _device_id = dev->getID();
-
-            return;
-        }
+        addDeviceProperties(*dev);
     }
 }
 
 
 void RfDaPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 {
-    //  just grab the ID - we're only supposed to have one device assigned
-    _device_id = device.getID();
+    if( isDnpDeviceType(device.getType()) )
+    {
+        if( ! _dnpLookup.addDevice(device) )
+        {
+            // The insert didn't occur! Complain.
+            CTILOG_ERROR(dout, "DNP lookup insert failed for device " << device.getName() <<
+                ". Please update the master/slave values for this device to be unique.");
+        }
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Ignoring non-DNP device on RF-DA port" << FormattedList::of(
+            "Device ID",   device.getID(),
+            "Device name", device.getName()));
+    }
 }
 
 
 void RfDaPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
 {
-    //  no more devices
-    _device_id.reset();
+    _dnpLookup.deleteDevice(device.getID());
 }
 
+
+void RfDaPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
+{
+    if( isDnpDeviceType(device.getType()) )
+    {
+        _dnpLookup.updateDevice(device);
+    }
+    else
+    {
+        _dnpLookup.deleteDevice(device.getID());
+    }
+}
 
 }
 }

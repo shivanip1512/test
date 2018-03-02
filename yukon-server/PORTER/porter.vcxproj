@@ -357,6 +357,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="disp_thd.cpp">
     </ClCompile>
+    <ClCompile Include="dnpLookup.cpp" />
     <ClCompile Include="EncodingFilterFactory.cpp">
     </ClCompile>
     <ClCompile Include="encryption_lantronix.cpp">
@@ -429,6 +430,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\c_port_interface.h" />
+    <ClInclude Include="include\dnpLookup.h" />
     <ClInclude Include="include\EncodingFilter.h" />
     <ClInclude Include="include\EncodingFilterFactory.h" />
     <ClInclude Include="include\encryption_lantronix.h" />
@@ -456,6 +458,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\tcp_connection.h" />
     <ClInclude Include="include\tcp_connection_manager.h" />
     <ClInclude Include="include\unsolicited_handler.h" />
+    <ClInclude Include="include\unsolicited_handler_dnp.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

@@ -145,10 +145,7 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
     }
     else if( isDnpDeviceType(device.getType()) )
     {
-        std::pair<dnp_address_id_bimap::iterator, bool> insertResult =
-            _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
-
-        if (!insertResult.second)
+        if ( ! _dnpLookup.addDevice(device) )
         {
             // The insert didn't occur! Complain.
             CTILOG_ERROR(dout, "properties insert failed for device "<< device.getName() <<
@@ -187,7 +184,7 @@ void UdpPortHandler::deleteDeviceProperties(const CtiDeviceSingle &device)
     _ports       .erase(device_id);
 
     _typeAndSerial_to_id.right.erase(device_id);
-    _dnpAddress_to_id   .right.erase(device_id);
+    _dnpLookup.deleteDevice(device_id);
 }
 
 
@@ -220,38 +217,12 @@ void UdpPortHandler::updateDeviceProperties(const CtiDeviceSingle &device)
     }
     else if( isDnpDeviceType(device.getType()) )
     {
-        dnp_address_id_bimap::right_iterator itr = _dnpAddress_to_id.right.find(device_id);
-
-        if( itr != _dnpAddress_to_id.right.end() )
-        {
-            const dnp_address_pair old_address = itr->second;
-            const dnp_address_pair new_address = makeDnpAddressPair(device);
-
-            //  have the addresses changed?
-            if( old_address != new_address )
-            {
-                _dnpAddress_to_id.right.erase(itr);
-
-                _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(new_address, device_id));
-            }
-        }
-        else
-        {
-            // Add the device.
-            addDeviceProperties(device);
-        }
+        _dnpLookup.updateDevice(device);
     }
     else if( isRdsDevice(device) )
     {
         loadStaticRdsIPAndPort(device);
     }
-}
-
-
-UdpPortHandler::dnp_address_pair UdpPortHandler::makeDnpAddressPair(const CtiDeviceSingle &device)
-{
-    return dnp_address_pair((unsigned short)device.getMasterAddress(),
-                            (unsigned short)device.getAddress());
 }
 
 
@@ -755,10 +726,22 @@ void UdpPortHandler::distributePacket(ip_packet *p)
 
 void UdpPortHandler::handleDnpPacket(ip_packet *&p)
 {
-    unsigned short slave_address  = p->data[6] | (p->data[7] << 8);
-    unsigned short master_address = p->data[4] | (p->data[5] << 8);
+    DnpLookup::dnp_addresses incoming_address {
+        static_cast<unsigned short>(p->data[4] | (p->data[5] << 8)),
+        static_cast<unsigned short>(p->data[6] | (p->data[7] << 8)) };
 
-    device_record *dr = getDeviceRecordByDnpAddress(master_address, slave_address);
+    auto id = _dnpLookup.getDeviceIdForAddress(incoming_address);
+
+    if( ! id )
+    {
+        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        {
+            CTILOG_WARN(dout, "Can't find device ID for DNP address " << incoming_address.toString());
+        }
+        return;
+    }
+    
+    device_record *dr = getDeviceRecordById( *id );
 
     //  do we have a device yet?
     if( dr && dr->device )
@@ -778,7 +761,7 @@ void UdpPortHandler::handleDnpPacket(ip_packet *&p)
     }
     else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CTILOG_DEBUG(dout, "can't find DNP master/slave ("<< master_address <<"/"<< slave_address <<")");
+        CTILOG_DEBUG(dout, "can't find device for ID " << *id);
     }
 }
 
@@ -832,19 +815,6 @@ void UdpPortHandler::handleGpuffPacket(ip_packet *&p)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-}
-
-
-UdpPortHandler::device_record *UdpPortHandler::getDeviceRecordByDnpAddress( unsigned short master, unsigned short slave )
-{
-    dnp_address_id_bimap::left_const_iterator itr = _dnpAddress_to_id.left.find(make_pair(master, slave));
-
-    if( itr == _dnpAddress_to_id.left.end() )
-    {
-        return 0;
-    }
-
-    return getDeviceRecordById(itr->second);
 }
 
 

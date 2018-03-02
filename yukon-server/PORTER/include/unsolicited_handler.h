@@ -207,7 +207,7 @@ protected:
 
     virtual std::string describeDeviceAddress( const long device_id ) const = 0;
 
-    device_record *getDeviceRecordById( long device_id );
+    device_record* getDeviceRecordById( long device_id ) const;
 
     void addInboundWork(device_record &dr, packet *p);
 

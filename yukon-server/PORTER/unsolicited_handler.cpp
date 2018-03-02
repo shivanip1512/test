@@ -935,16 +935,9 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
 }
 
 
-UnsolicitedHandler::device_record *UnsolicitedHandler::getDeviceRecordById( long device_id )
+UnsolicitedHandler::device_record *UnsolicitedHandler::getDeviceRecordById( long device_id ) const
 {
-    device_record_map::iterator itr = _device_records.find(device_id);
-
-    if( itr == _device_records.end() )
-    {
-        return 0;
-    }
-
-    return itr->second;
+    return mapFindOrDefault(_device_records, device_id, nullptr);
 }
 
 
