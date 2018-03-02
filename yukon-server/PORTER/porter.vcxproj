@@ -458,7 +458,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\tcp_connection.h" />
     <ClInclude Include="include\tcp_connection_manager.h" />
     <ClInclude Include="include\unsolicited_handler.h" />
-    <ClInclude Include="include\unsolicited_handler_dnp.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />

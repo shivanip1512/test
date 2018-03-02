@@ -218,9 +218,6 @@
     <ClInclude Include="include\porter_message_serialization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\unsolicited_handler_dnp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\dnpLookup.h">
       <Filter>Header Files</Filter>
     </ClInclude>

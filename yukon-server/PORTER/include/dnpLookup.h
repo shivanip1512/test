@@ -1,7 +1,5 @@
 #pragma once
 
-#include "loggable.h"
-
 #include <boost/bimap.hpp>
 #include <boost/optional.hpp>
 
