@@ -959,8 +959,7 @@ void CtiLMControlAreaStore::reset()
                     {
                         if( boost::optional<CtiLMProgramBaseSPtr> programToPutGearIn = Cti::mapFind( directProgramHashMap, newDirectGear->getProgramPAOId() ) )
                         {
-                            vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(*programToPutGearIn)->getLMProgramDirectGears();
-                            lmProgramDirectGearList.push_back(newDirectGear);
+                            boost::static_pointer_cast< CtiLMProgramDirect>(*programToPutGearIn)->addGear(newDirectGear);
                         }
                     }
                     else // Currently this is only hit if the EcobeeThermostat gear, SEPTemperatureOffset gear or BeatThePeak gear is misconfigured.

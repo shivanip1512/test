@@ -77,7 +77,8 @@ _notify_inactive_time(gInvalidCtiTime),
 _startedrampingout(gInvalidCtiTime),
 _constraint_override(false),
 _announced_program_constraint_violation(false),
-_adjustment_notification_pending(false)
+_adjustment_notification_pending(false),
+_hasBeatThePeakGear(false)
 {
     restore(rdr);
 }
@@ -346,19 +347,23 @@ bool CtiLMProgramDirect::getIsRampingOut()
     return false;
 }
 
-/*---------------------------------------------------------------------------
-    getLMProgramDirectGears
-
-    Returns the pointer to a list of gears for this direct program
----------------------------------------------------------------------------*/
-vector<CtiLMProgramDirectGear*>& CtiLMProgramDirect::getLMProgramDirectGears()
+const vector<CtiLMProgramDirectGear*>& CtiLMProgramDirect::getLMProgramDirectGears() const
 {
     return _lmprogramdirectgears;
 }
 
-const vector<CtiLMProgramDirectGear*>& CtiLMProgramDirect::getLMProgramDirectGears() const
+void CtiLMProgramDirect::addGear(CtiLMProgramDirectGear* gear)
 {
-    return _lmprogramdirectgears;
+    if ( gear != NULL )
+    {
+        _lmprogramdirectgears.push_back(gear);
+
+        if( ciStringEqual( gear->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
+        {
+            _hasBeatThePeakGear = true;
+        }
+    }
+    
 }
 
 /*---------------------------------------------------------------------------
@@ -5268,14 +5273,11 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _startedrampingout = right._startedrampingout;
         _constraint_override = right._constraint_override;
         _announced_program_constraint_violation = right._announced_program_constraint_violation;
+        _hasBeatThePeakGear = right._hasBeatThePeakGear;
 
         for each( CtiLMProgramDirectGear *gear in right._lmprogramdirectgears )
         {
             _lmprogramdirectgears.push_back( gear->replicate() );
-            if( ciStringEqual( gear->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
-            {
-                setHasBeatThePeakGear(true);
-            }
         }
 
         _lmprogramdirectgroups = right._lmprogramdirectgroups;

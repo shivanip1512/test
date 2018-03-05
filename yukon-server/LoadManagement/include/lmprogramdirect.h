@@ -50,8 +50,9 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     bool getIsRampingIn();
     bool getIsRampingOut();
 
-    std::vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears();
     const std::vector<CtiLMProgramDirectGear*>& getLMProgramDirectGears() const;
+
+    void addGear(CtiLMProgramDirectGear * gear);
 
     CtiLMGroupVec& getLMProgramDirectGroups();
     const CtiLMGroupVec& getLMProgramDirectGroups() const;
