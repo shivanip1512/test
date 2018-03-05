@@ -17,14 +17,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
-import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
@@ -44,11 +45,12 @@ public class DisconnectController {
     @Autowired private DisconnectService disconnectService;
     @Autowired private AlertService alertService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CollectionActionService collectionActionService;
 
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, DeviceCollection deviceCollection) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
-        if (disconnectService.supportsArm(deviceCollection)) {
+        if (disconnectService.supportsArm(deviceCollection.getDeviceList())) {
             model.addAttribute("displayArmLink", "true");
         }
        
@@ -61,7 +63,7 @@ public class DisconnectController {
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("command", command);   
         if (StringUtils.isNotBlank(key)) {
-            model.addAttribute("result", disconnectService.getResult(key));
+            model.addAttribute("result", collectionActionService.getResult(Integer.parseInt(key)));
         }
         
         return "disconnect/resultDetail.jsp";
@@ -73,42 +75,37 @@ public class DisconnectController {
                       DeviceCollection deviceCollection,
                       YukonUserContext userContext, 
                       DisconnectCommand command) throws ServletException {
-        DisconnectResult result = disconnectService.execute(command,
+        CollectionActionResult result = disconnectService.execute(command,
                                       deviceCollection,
                                       new AlertCallback(userContext, request),
-                                      userContext);
-        model.addAttribute("deviceCollection", deviceCollection);
-        model.addAllAttributes(deviceCollection.getCollectionParameters());
-        model.addAttribute("key", result.getKey());
-        model.addAttribute("command", command);   
-        
-        return "redirect:action";
+                                      userContext.getYukonUser());
+        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
 
     @RequestMapping("recentResults")
     public String recentResults(ModelMap model) throws ServletException {
-        model.addAttribute("results", disconnectService.getResults()); 
+     //   model.addAttribute("results", disconnectService.getResults()); 
         
         return "disconnect/results.jsp";
     }
 
     @RequestMapping("resultDetail")
     public String resultDetail(ModelMap model, String resultKey, DisconnectCommand command) throws ServletException {
-        DisconnectResult result = disconnectService.getResult(resultKey);
-        model.addAttribute("result", result);
-        model.addAttribute("command", command);
+        CollectionActionResult result = collectionActionService.getResult(Integer.parseInt(resultKey));
+     /*   model.addAttribute("result", result);
+        model.addAttribute("command", command);*/
         
         return "disconnect/resultDetail.jsp";
     }
 
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     public @ResponseBody Map<String, String> cancel(String key, YukonUserContext userContext, DisconnectCommand command) {
-        disconnectService.cancel(key, userContext, command);
+        disconnectService.cancel(new Integer(key), userContext.getYukonUser(), command);
         
         return Collections.singletonMap("success", "true");
     }
 
-    private class AlertCallback implements SimpleCallback<DisconnectResult> {
+    private class AlertCallback implements SimpleCallback<CollectionActionResult> {
         private MessageSourceAccessor accessor;
         private String partialUrl;
 
@@ -118,44 +115,31 @@ public class DisconnectController {
         }
 
         @Override
-        public void handle(DisconnectResult result) {
-            log.debug("Alert Callback");
+        public void handle(CollectionActionResult result) {
+           /* log.debug("Alert Callback");
             ResolvableTemplate template;
-            int successCount = result.getSuccessCount();
-
-            if (log.isDebugEnabled()) {
-                log.debug("successCount=" + result.getSuccessCount());
-                log.debug("failureCount=" +  result.getFailedCount());
-                log.debug("completedCount=" + result.getCompletedCount());
-            }
-            int percentSuccess =
-                result.getCompletedCount() > 0 ? successCount * 100 / result.getCompletedCount() : 0;
-            if (result.isExceptionOccured()) {
+            double percentSuccess = result.getCounts().getPercentSuccess();
+            if (result.isFailed()) {
                 template = new ResolvableTemplate("yukon.common.alerts.disconnectCompletion.failed");
-                int shouldHaveCompleted = result.getTotalCount() - result.getNotAttemptedCount();  
-                int notCompletedCount = shouldHaveCompleted - result.getCompletedCount();
-                if (log.isDebugEnabled()) {
-                    log.debug("shouldHaveCompleted=" + shouldHaveCompleted + " notCompletedCount" + notCompletedCount);
-                }
-                String exceptionReason = result.getExceptionReason();
-                template.addData("notCompletedCount", notCompletedCount);
+                String exceptionReason = result.getExecutionExceptionText();
+                template.addData("notCompletedCount", result.getCounts().getNotCompleted());
                 template.addData("exceptionReason", exceptionReason);
             } else {
                 template = new ResolvableTemplate("yukon.common.alerts.disconnectCompletion");
             }
-            String url = partialUrl + "?resultKey=" + result.getKey() + "&command=" + result.getCommand();
+            String url = partialUrl + "?resultKey=" + result.getCacheKey();
             template.addData("url", url);
-            template.addData("command", accessor.getMessage(result.getCommand()));
+            template.addData("command", accessor.getMessage(result.getAction().toString()));
             template.addData("percentSuccess", percentSuccess);
-            template.addData("completedCount", result.getCompletedCount());
+            template.addData("completedCount", result.getCounts().getCompleted());
 
             Alert alert = new BaseAlert(new Date(), template) {
                 @Override
                 public com.cannontech.common.alert.model.AlertType getType() {
                     return AlertType.DISCONNECT_COMPLETION;
                 };
-            };
-            alertService.add(alert);
+            };*/
+            //alertService.add(alert);
         }
     };
 }

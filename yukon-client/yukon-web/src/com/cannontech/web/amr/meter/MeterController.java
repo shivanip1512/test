@@ -93,6 +93,7 @@ import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
 import com.cannontech.web.widget.meterInfo.model.CreateMeterModel.PointCreation;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -270,7 +271,7 @@ public class MeterController {
         boolean streamableDevice = dataStreamingEnabled && !dataStreamingAttributeHelper.getSupportedAttributes(type).isEmpty();
         boolean outageSupported = outageDevice && (outageLogAttribute || blinkCountAttribute);
         // Device has internal disconnect or a disconnect collar attached
-        boolean disconnectDevice = disconnectService.supportsDisconnect(Collections.singleton(device), true);
+        boolean disconnectDevice = disconnectService.supportsDisconnect(Lists.newArrayList(device), true);
         boolean voltageAndTouDevice = (mct4xxDevice || rfDevice) 
                 && (voltageAttribute || voltageThreePhaseDevice || currentThreePhaseDevice);
         

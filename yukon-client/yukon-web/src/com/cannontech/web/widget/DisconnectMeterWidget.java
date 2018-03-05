@@ -260,7 +260,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         DisconnectMeterResult result = disconnectService.execute(
                 DisconnectCommand.CONNECT,
                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
-                userContext);
+                userContext.getYukonUser());
         addDisconnectResultToModel(model, result);
         
         return "disconnectMeterWidget/render.jsp";
@@ -276,7 +276,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         DisconnectMeterResult result = disconnectService.execute(
                 DisconnectCommand.DISCONNECT,
                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
-                userContext);
+                userContext.getYukonUser());
         addDisconnectResultToModel(model, result);
         return "disconnectMeterWidget/render.jsp";
     }
@@ -291,7 +291,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         DisconnectMeterResult result = disconnectService.execute(
                 DisconnectCommand.ARM,
                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
-                userContext);
+                userContext.getYukonUser());
         addDisconnectResultToModel(model, result);
         
         return "disconnectMeterWidget/render.jsp";

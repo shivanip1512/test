@@ -157,9 +157,7 @@
     </bean>
     
     <bean id="tdcBackingService" class="com.cannontech.web.updater.tdc.TdcBackingService"/>
-    
-    <bean id="disconnectBackingService" class="com.cannontech.web.updater.disconnect.DisconnectBackingService"/>
-    
+        
     <bean id="ecobeeReadBackingService" class="com.cannontech.web.updater.dr.EcobeeReadBackingService"/>
     
     <bean id="demandResetBackingService" class="com.cannontech.web.updater.demandreset.DemandResetBackingService"/>
@@ -304,9 +302,6 @@
                 </entry>
                 <entry key="TDC">
                     <ref bean="tdcBackingService"/>
-                </entry>
-                <entry key="DISCONNECT">
-                    <ref bean="disconnectBackingService"/>
                 </entry>
                 <entry key="ECOBEE_READ">
                     <ref bean="ecobeeReadBackingService"/>

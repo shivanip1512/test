@@ -69,7 +69,7 @@
     </tags:sectionContainer2>
     
     <c:set var="controls">
-        <c:if test="${result.execution}">
+        <c:if test="${result.execution != null}">
             <cti:msg2 var="creText" key=".creText"/>
             <cti:url var="creLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.execution.id}"/>
             <cti:button renderMode="image" icon="icon-report" title="${creText}" href="${creLink}"/>
@@ -88,7 +88,7 @@
             </div>
             <span class="js-percent-text"></span>
             <span class="js-completed-count" style="padding-left:10px;"></span>
-            <c:if test="${result.action.cancelable}">
+            <c:if test="${result.isCancelable()}">
                 <cti:button nameKey="cancel" classes="js-cancel fn"/>
             </c:if>
         </div>

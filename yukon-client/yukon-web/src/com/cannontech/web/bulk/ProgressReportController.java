@@ -42,8 +42,7 @@ public class ProgressReportController {
     
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     public String detail(ModelMap model, Integer key) {
-        //CollectionActionResult result = collectionActionService.getResult(key);
-        CollectionActionResult result = createMockedResult();
+        CollectionActionResult result = collectionActionService.getResult(key);
         model.addAttribute("result", result);
         model.addAttribute("details", CollectionActionDetail.values());
         return "progressReport.jsp";
@@ -58,8 +57,7 @@ public class ProgressReportController {
     @RequestMapping(value = "updateProgressReport", method = RequestMethod.GET)
     public @ResponseBody Map<String, Object> updateProgressReport(Integer key) {
         Map<String, Object> json = new HashMap<>();
-        //CollectionActionResult result = collectionActionService.getResult(key);
-        CollectionActionResult result = createMockedResult();
+        CollectionActionResult result = collectionActionService.getResult(key);
         json.put("result",  result);
         return json;
     }
