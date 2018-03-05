@@ -20,8 +20,11 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.pao.YukonPao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Sets;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class CollectionActionResult {
     private int cacheKey;
     private CollectionAction action;
@@ -35,6 +38,7 @@ public class CollectionActionResult {
     private String executionExceptionText;
     private CollectionActionCounts counts;
     private Map<CollectionActionDetail, CollectionActionDetailGroup> details = new HashMap<>();
+    @JsonIgnore
     private CommandCompletionCallback<?> cancelationCallback;
     private boolean isCanceled;
 
