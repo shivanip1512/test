@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import org.joda.time.Instant;
 
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionInputs;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
@@ -17,11 +16,13 @@ public interface CollectionActionService {
 
     CollectionActionResult getResult(int key);
 
-    CollectionActionResult createResult(CollectionAction action, CollectionActionInputs inputs, LiteYukonUser user);
 
     CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, CommandRequestType commandRequestType, DeviceRequestType deviceRequestType,
             LiteYukonUser user);
+    
+    CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
+            DeviceCollection collection, LiteYukonUser user);
     
     
     
@@ -52,6 +53,9 @@ public interface CollectionActionService {
     void compareCacheAndGB(int key);
 
     void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status);
+
+
+
 
 
 

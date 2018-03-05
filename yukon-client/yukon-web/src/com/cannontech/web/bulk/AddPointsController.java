@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
@@ -31,6 +32,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -48,6 +50,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
 
     // HOME
+    @Override
     @RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
 
@@ -59,7 +62,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         final String identifyingPointData = ServletRequestUtils.getStringParameter(request, "pointTypeOffsets");
         final String pointTypeOffsets[] =
             StringUtils.isBlank(identifyingPointData) ? null : identifyingPointData.split(",");
-        final List<String> ptos = pointTypeOffsets == null ? new ArrayList<String>() : Arrays.asList(pointTypeOffsets);
+        final List<String> ptos = pointTypeOffsets == null ? new ArrayList<>() : Arrays.asList(pointTypeOffsets);
         model.addAttribute(VARIABLE_PRESELECTED_POINT_ARRAY, ptos);
 
         // options
@@ -100,6 +103,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     }
     
     // EXECUTE ADD
+    @Override
     @RequestMapping(value = "execute", method = RequestMethod.POST)
     public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
 
@@ -132,13 +136,11 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         if (pointTemplatesMap.isEmpty()) {
             return redirectWithError(model, "noPointsSuppliedMsg", deviceCollection);
         }
-
+        
         // start processor
-        String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS);
+        int key = startBulkProcessor(CollectionAction.ADD_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS, new LiteYukonUser(1, "test"));
 
-        // redirect to results page
-        model.addAttribute("resultsId", id);
-        return "redirect:addPointsResults";
+        return "redirect:/bulk/progressReport/detail?key=" + key;
     }
     
     // add points processor

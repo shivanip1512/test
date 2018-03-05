@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
@@ -29,6 +30,7 @@ import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
@@ -147,11 +149,9 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         }
 
         // start processor
-        String id = startBulkProcessor(deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.REMOVE_POINTS);
+        int key = startBulkProcessor(CollectionAction.REMOVE_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.REMOVE_POINTS, new LiteYukonUser(1, "test"));
 
-        // redirect to results page
-        model.addAttribute("resultsId", id);
-        return "redirect:removePointsResults";
+        return "redirect:/bulk/progressReport/detail?key=" + key;
     }
 
     // remove points processor

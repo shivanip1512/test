@@ -21,7 +21,6 @@ import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionInputs;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionProcess;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -34,11 +33,13 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class CollectionActionServiceImpl implements CollectionActionService{
     
@@ -61,28 +62,25 @@ public class CollectionActionServiceImpl implements CollectionActionService{
             LiteYukonUser user) {
         CommandRequestExecution execution =
             executionDao.createStartedExecution(commandRequestType, deviceRequestType, 0, user);
-        CollectionActionInputs actionInputs = new CollectionActionInputs(collection, inputs);
+        Set<YukonPao> paos = Sets.newHashSet(collection.getDeviceList());
         CollectionActionResult result =
-            new CollectionActionResult(action, actionInputs, execution, editorDao, tempGroupService, groupHelper);
+            new CollectionActionResult(action, paos, inputs, execution, editorDao, tempGroupService, groupHelper);
         result.setExecution(execution);
-        collectionActionDao.createCollectionAction(result, user);
-        cache.put(result.getCacheKey(), result);
-        log.debug("Created new collecton action result:");
-        result.log(log);
+        saveAndLogResult(result, user);
         return result;
     }
 
     @Transactional
     @Override
-    public CollectionActionResult createResult(CollectionAction action, CollectionActionInputs inputs,
-            LiteYukonUser user) {
+    public CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
+            DeviceCollection collection, LiteYukonUser user) {
+        Set<YukonPao> paos = Sets.newHashSet(collection.getDeviceList());
         CollectionActionResult result =
-            new CollectionActionResult(action, inputs, null, editorDao, tempGroupService, groupHelper);
-        collectionActionDao.createCollectionAction(result, user);
-        cache.put(result.getCacheKey(), result);
+            new CollectionActionResult(action, paos, inputs, editorDao, tempGroupService, groupHelper);
+        saveAndLogResult(result, user);
         return result;
     }
-    
+        
     @Transactional
     @Override
     public void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status) {
@@ -112,6 +110,12 @@ public class CollectionActionServiceImpl implements CollectionActionService{
         return cachedResult == null ? collectionActionDao.loadResultFromDb(key) : cachedResult;
     }
     
+    private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
+        collectionActionDao.createCollectionAction(result, user);
+        log.debug("Created new collecton action result:");
+        result.log(log);
+        cache.put(result.getCacheKey(), result);
+    }
     
     
     
@@ -170,11 +174,10 @@ public class CollectionActionServiceImpl implements CollectionActionService{
             }
         }
 
-        editorDao.addDevices(tempGroup, subset);
 
-        CollectionActionInputs inputs = new CollectionActionInputs(devices, userInputs);
 
-        CollectionActionResult result = createResult(action, inputs, new LiteYukonUser(1, String.valueOf((char)(rand.nextInt(26)+'a'))));
+        CollectionActionResult result = createResult(action, userInputs, devices,
+            new LiteYukonUser(1, String.valueOf((char) (rand.nextInt(26) + 'a'))));
 
         if (status == CommandRequestExecutionStatus.STARTED || status == CommandRequestExecutionStatus.CANCELING) {
             stopTime = null;

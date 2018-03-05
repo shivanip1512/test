@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -38,6 +40,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     @Autowired private UpdatePointsProcessorFactory updatePointsProcessorFactory;
 
     // HOME
+    @Override
     @RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
 
@@ -84,6 +87,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     }
 
     // EXECUTE ADD
+    @Override
     @RequestMapping(value = "execute", method = RequestMethod.POST)
     public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
 
@@ -139,12 +143,10 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         }
 
         // start processor
-        String id =
-            startBulkProcessor(deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS);
+        int key  =
+            startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, new LiteYukonUser(1, "test"));
 
-        // redirect to results page
-        model.addAttribute("resultsId", id);
-        return "redirect:updatePointsResults";
+        return "redirect:/bulk/progressReport/detail?key=" + key;
     }
 
     /**

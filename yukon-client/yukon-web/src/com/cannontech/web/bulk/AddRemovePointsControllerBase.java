@@ -3,13 +3,13 @@ package com.cannontech.web.bulk;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -24,13 +24,18 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.callbackResult.AddRemovePointsCallbackResult;
-import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
+import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
+import com.cannontech.common.bulk.processor.ProcessorCallbackException;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -44,11 +49,11 @@ import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -73,9 +78,10 @@ public abstract class AddRemovePointsControllerBase {
     @Autowired protected DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired protected PointDao pointDao;
     @Autowired protected PaoDao paoDao;
+    @Autowired protected CollectionActionService collectionActionService;
     
     @Resource(name="transactionPerItemProcessor") protected BulkProcessor bulkProcessor;
-    @Resource(name="recentResultsCache") protected RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+
     
     private Logger log = YukonLogManager.getLogger(AddRemovePointsControllerBase.class);
     
@@ -90,29 +96,49 @@ public abstract class AddRemovePointsControllerBase {
     }
     
     // START BULK PROCESSOR
-    public String startBulkProcessor(DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType) {
+    public int startBulkProcessor(CollectionAction action, DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType, LiteYukonUser user) {
+             
         
-        // CALLBACK
-    	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-    	StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
-        
-        AddRemovePointsCallbackResult callbackResult = new AddRemovePointsCallbackResult(backgroundProcessType,
-																					resultsId,
-																					deviceCollection, 
-																					successGroup, 
-																					processingExceptionGroup, 
-																					deviceGroupMemberEditorDao,
-																					deviceGroupCollectionHelper);
-        
-        // CACHE
-        recentResultsCache.addResult(resultsId, callbackResult);
+        CollectionActionResult result = collectionActionService.createResult(action, null,
+            deviceCollection, user);
         
         // PROCESS
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         
-        return resultsId;
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, new BulkProcessorCallback<SimpleDevice, SimpleDevice>() {
+
+            @Override
+            public void processingStarted(Date startDateTime) {
+            }
+
+            @Override
+            public void receivedProcessingException(int rowNumber, SimpleDevice device, ProcessorCallbackException e) {
+                result.addDeviceToGroup(CollectionActionDetail.FAILURE, device);
+            }
+
+            @Override
+            public void processedObject(int rowNumber, SimpleDevice device) {
+                result.addDeviceToGroup(CollectionActionDetail.SUCCESS, device);
+                
+            }
+
+            @Override
+            public void processingSucceeded() {
+                collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
+                log.debug("Result completed");
+                result.log(log);
+                
+            }
+
+            @Override
+            public void processingFailed(Exception e) {
+                collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
+                log.debug("Result completed");
+                result.log(log);
+            }
+        });
+        
+        return result.getCacheKey();
     }
     
     // PREP RESULTS PAGE
@@ -120,11 +146,11 @@ public abstract class AddRemovePointsControllerBase {
     	
     	// result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        AddRemovePointsCallbackResult callbackResult = (AddRemovePointsCallbackResult)recentResultsCache.getResult(resultsId);
+   /*     AddRemovePointsCallbackResult callbackResult = (AddRemovePointsCallbackResult)recentResultsCache.getResult(resultsId);
         model.addAttribute("callbackResult", callbackResult);
         model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
         // device collection
-        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
+        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());*/
     }
     
     // MISC LIST/MAP ORGANIZING HELPERS
@@ -144,7 +170,7 @@ public abstract class AddRemovePointsControllerBase {
     	Map<PaoType, DeviceCollection> deviceTypeDeviceCollectionMap = Maps.newLinkedHashMap();
         for (PaoType paoType : paoTypeSet) {
         	
-        	List<SimpleDevice> devicesOfType = new ArrayList<SimpleDevice>();
+        	List<SimpleDevice> devicesOfType = new ArrayList<>();
         	StoredDeviceGroup typeGroup = temporaryDeviceGroupService.createTempGroup();
         	for (SimpleDevice device : devices) {
         		
@@ -190,7 +216,7 @@ public abstract class AddRemovePointsControllerBase {
     	};
     	
         Map<PointTemplate, Boolean> resultUnsorted = Maps.transformValues(sharedPointTemplateMasks.asMap(), func);
-        return new TreeMap<PointTemplate, Boolean>(resultUnsorted);
+        return new TreeMap<>(resultUnsorted);
     }
     
     /**
@@ -303,7 +329,7 @@ public abstract class AddRemovePointsControllerBase {
             PaoTypeMasks paoTypeMasks = new PaoTypeMasks();
             paoTypeMasks.setPaoType(paoType);
             TreeMap<PointTemplate, Boolean> pointTemplateMaskMapSorted = 
-                new TreeMap<PointTemplate, Boolean>(pointTemplateMaskMapUnsorted);
+                new TreeMap<>(pointTemplateMaskMapUnsorted);
             paoTypeMasks.setPointTemplateMaskMap(pointTemplateMaskMapSorted);
             paoTypeMasksList.add(paoTypeMasks);
             

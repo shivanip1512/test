@@ -42,12 +42,6 @@ public class CollectionActionResult {
     private CommandCompletionCallback<?> cancelationCallback;
     private boolean isCanceled;
 
-    public CollectionActionResult(CollectionAction action, CollectionActionInputs inputs,
-            CommandRequestExecution execution, DeviceGroupMemberEditorDao editorDao,
-            TemporaryDeviceGroupService tempGroupService, DeviceGroupCollectionHelper groupHelper) {
-        init(action, inputs, execution, editorDao, tempGroupService, groupHelper);
-    }
-
     public CollectionActionResult(CollectionAction action, Set<YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
             DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
@@ -55,23 +49,16 @@ public class CollectionActionResult {
         StoredDeviceGroup tempGroup = tempGroupService.createTempGroup();
         editorDao.addDevices(tempGroup, allDevices);
         DeviceCollection allDeviceCollection = groupHelper.buildDeviceCollection(tempGroup);
-        init(action, new CollectionActionInputs(allDeviceCollection, inputs), execution, editorDao, tempGroupService,
-            groupHelper);
-    }
-
-    private void init(CollectionAction action, CollectionActionInputs inputs, CommandRequestExecution execution,
-            DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
-            DeviceGroupCollectionHelper groupHelper) {
+        this.inputs = new CollectionActionInputs(allDeviceCollection, inputs);
         this.setStartTime(new Instant());
         this.editorDao = editorDao;
-        this.inputs = inputs;
         this.execution = execution;
         this.action = action;
         counts = new CollectionActionCounts(this);
         action.getDetails().forEach(detail -> {
-            StoredDeviceGroup tempGroup = tempGroupService.createTempGroup();
-            DeviceCollection devices = groupHelper.buildDeviceCollection(tempGroup);
-            details.put(detail, new CollectionActionDetailGroup(devices, tempGroup));
+            StoredDeviceGroup group = tempGroupService.createTempGroup();
+            DeviceCollection devices = groupHelper.buildDeviceCollection(group);
+            details.put(detail, new CollectionActionDetailGroup(devices, group));
         });
 
         if (execution != null) {
@@ -84,6 +71,12 @@ public class CollectionActionResult {
         }
     }
 
+    public CollectionActionResult(CollectionAction action, Set<YukonPao> allDevices, LinkedHashMap<String, String> inputs,
+            DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
+            DeviceGroupCollectionHelper groupHelper) {
+       this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper);
+    }
+    
     public boolean isCancelable() {
         return action.isCancelable() && status != null && status == CommandRequestExecutionStatus.STARTED;
     }
