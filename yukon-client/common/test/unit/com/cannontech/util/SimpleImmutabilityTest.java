@@ -600,7 +600,6 @@ public class SimpleImmutabilityTest {
             DataSelection.class,
             DetectedPhase.class,
             Direction.class,
-            DisconnectCommand.class,
             DisconnectDeviceState.class,
             FieldType.class,
             MeterDisplayFieldEnum.class,
