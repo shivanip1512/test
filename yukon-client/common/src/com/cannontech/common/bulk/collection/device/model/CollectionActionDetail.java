@@ -1,7 +1,7 @@
 package com.cannontech.common.bulk.collection.device.model;
 
+import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -35,6 +35,42 @@ public enum CollectionActionDetail implements DisplayableEnum {
     
     public CommandRequestUnsupportedType getCreUnsupportedType() {
         return unsupportedType;
+    }
+    
+    public static CollectionActionDetail getSuccessDetail(CollectionAction action) {
+        CollectionActionDetail detail = CollectionActionDetail.SUCCESS;
+        switch (action) {
+        case CONNECT:
+            detail = CollectionActionDetail.CONNECTED;
+            break;
+        case DISCONNECT:
+            detail = CollectionActionDetail.DISCONNECTED;
+            break;
+        case ARM:
+            detail = CollectionActionDetail.ARMED;
+            break;
+        default:
+            break;
+        }
+        return detail;
+    }
+    
+    public static CollectionActionDetail getDisconnectDetail(DisconnectCommand command){
+        CollectionActionDetail detail = null;
+        switch (command) {
+        case CONNECT:
+            detail = CollectionActionDetail.CONNECTED;
+            break;
+        case DISCONNECT:
+            detail = CollectionActionDetail.DISCONNECTED;
+            break;
+        case ARM:
+            detail = CollectionActionDetail.ARMED;
+            break;
+        default:
+            break;
+        }
+        return detail;
     }
 
     public String getColor() {

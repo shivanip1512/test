@@ -125,9 +125,7 @@
     <bean class="com.cannontech.amr.monitors.impl.MonitorCacheServiceImpl"/>
 
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectServiceImpl" />
-    <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectPlcStrategy" />
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectPlcServiceImpl" />
-    <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectRfnStrategy" />
     <bean class="com.cannontech.amr.disconnect.service.impl.DisconnectRfnServiceImpl" />
     
     <bean class="com.cannontech.amr.rfn.impl.NmSyncServiceImpl" />

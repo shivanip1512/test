@@ -7,6 +7,7 @@ import static com.cannontech.common.device.commands.CommandRequestExecutionStatu
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilteredResult;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionProcess;
@@ -82,7 +84,9 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 "PAObjectID", "Result").values(values);
             jdbcTemplate.yukonBatchUpdate(sql);
         }
-        saveInputs(caId, result.getInputs().getInputs());
+        if(result.getInputs().getInputs() != null) {
+            saveInputs(caId, result.getInputs().getInputs());
+        }
         result.setCacheKey(caId);
     }
     
@@ -233,7 +237,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     
     @Override
     public void updateCollectionActionStatus(int collectionActionId, CommandRequestExecutionStatus newStatus,
-            Instant stopTime) {
+            Date stopTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.update("CollectionAction");
         sink.addValue("Status", newStatus);
@@ -294,7 +298,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         if (action == CollectionAction.DEMAND_RESET) {
             throw new RuntimeException("Not implemented");
         } else {
-            result.addDevicesToGroup(action.getSuccessDetail(), succeeded);
+            result.addDevicesToGroup(CollectionActionDetail.getSuccessDetail(action), succeeded);
         }
         return result;
     }

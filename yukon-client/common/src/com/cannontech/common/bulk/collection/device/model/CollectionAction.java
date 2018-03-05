@@ -75,24 +75,6 @@ public enum CollectionAction implements DisplayableEnum {
                 .filter(d -> d.getCreUnsupportedType() == unsupportedType)
                 .findFirst().get();
     }
-    
-    public CollectionActionDetail getSuccessDetail() {
-        CollectionActionDetail detail = CollectionActionDetail.SUCCESS;
-        switch (this) {
-        case CONNECT:
-            detail = CollectionActionDetail.CONNECTED;
-            break;
-        case DISCONNECT:
-            detail = CollectionActionDetail.DISCONNECTED;
-            break;
-        case ARM:
-            detail = CollectionActionDetail.ARMED;
-            break;
-        default:
-            break;
-        }
-        return detail;
-    }
 
     @Override
     public String getFormatKey() {

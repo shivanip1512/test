@@ -1,48 +1,29 @@
 package com.cannontech.amr.disconnect.service;
 
+import java.util.List;
+
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectMeterResult;
-import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface DisconnectService {
 
     /**
-     * Executes connect, disconnect or arm commands
-     */
-    DisconnectResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
-            SimpleCallback<DisconnectResult> callback, YukonUserContext userContext);
-
-    /**
-     * Returns result for the key provided.
-     */
-    DisconnectResult getResult(String key);
-
-    /**
-     * Attempts to cancel the command sent.
-     */
-    void cancel(String key, YukonUserContext userContext, DisconnectCommand command);
-
-    /**
-     * Returns the list of completed and pending results
-     */
-    Iterable<DisconnectResult> getResults();
-
-    /**
      * Returns true if the devices can be armed.
      */
-    boolean supportsArm(Iterable<SimpleDevice> meters);
+    boolean supportsArm(List<SimpleDevice> meters);
 
     /**
      * Returns true if at least one of the devices supports disconnect.
      * Supports disconnect means the device has integrated disconnect OR disconnect collar configured.
      */
-    boolean supportsDisconnect(Iterable<SimpleDevice> meters);
+    boolean supportsDisconnect(List<SimpleDevice> meters);
 
     /**
      * Returns true if at least one of the devices supports disconnect.
@@ -53,7 +34,7 @@ public interface DisconnectService {
      * @param meters
      * @return
      */
-    boolean supportsDisconnect(Iterable<SimpleDevice> meters, boolean includeNotConfigured);
+    boolean supportsDisconnect(List<SimpleDevice> meters, boolean includeNotConfigured);
 
     /**
      * Executes connect, disconnect or arm commands and waits for the result.
@@ -63,6 +44,13 @@ public interface DisconnectService {
      * @throws UnsupportedOperationException if the device doesn't support disconnect.
      */
     DisconnectMeterResult execute(DisconnectCommand command, DeviceRequestType type, YukonMeter meter,
-            YukonUserContext userContext);
+            LiteYukonUser user);
 
+    CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
+            SimpleCallback<CollectionActionResult> callback, LiteYukonUser user);
+
+    /**
+     * Attempts to cancel the command sent.
+     */
+    void cancel(int key, LiteYukonUser user, DisconnectCommand command);
 }

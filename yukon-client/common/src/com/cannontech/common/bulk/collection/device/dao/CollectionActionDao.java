@@ -1,8 +1,7 @@
 package com.cannontech.common.bulk.collection.device.dao;
 
+import java.util.Date;
 import java.util.List;
-
-import org.joda.time.Instant;
 
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter;
@@ -44,8 +43,7 @@ public interface CollectionActionDao {
 
     void updateDbRequestStatus(int collectionActionId, int deviceId, CommandRequestExecutionStatus newStatus);
 
-    void updateCollectionActionStatus(int collectionActionId, CommandRequestExecutionStatus newStatus,
-            Instant stopTime);
+    void updateCollectionActionStatus(int collectionActionId, CommandRequestExecutionStatus newStatus, Date stopTime);
 
     SearchResults<CollectionActionFilteredResult> getCollectionActionFilteredResults(CollectionActionFilter filter,
             PagingParameters paging, SortBy sortBy, Direction direction);

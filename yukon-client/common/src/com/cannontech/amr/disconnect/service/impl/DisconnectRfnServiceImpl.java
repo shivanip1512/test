@@ -1,8 +1,16 @@
 package com.cannontech.amr.disconnect.service.impl;
 
+import static com.cannontech.amr.disconnect.model.DisconnectCommand.ARM;
+import static com.cannontech.amr.disconnect.model.DisconnectCommand.CONNECT;
+import static com.cannontech.amr.disconnect.model.DisconnectCommand.DISCONNECT;
+
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -11,9 +19,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
-import com.cannontech.amr.disconnect.model.DisconnectResult;
+import com.cannontech.amr.disconnect.model.FilteredDevices;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
-import com.cannontech.amr.disconnect.service.DisconnectRfnService;
+import com.cannontech.amr.disconnect.service.DisconnectStrategyService;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -27,17 +35,25 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.YukonLogManager.RfnLogger;
+import com.cannontech.common.bulk.collection.device.model.Strategy;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.config.RfnMeterDisconnectArming;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class DisconnectRfnServiceImpl implements DisconnectRfnService {
-    
+public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
+
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private MeterDao meterDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
@@ -45,19 +61,44 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     @Autowired @Qualifier("longRunning") private Executor executor;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
     @Autowired private IDatabaseCache databaseCache;
-    
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private ConfigurationSource configurationSource;
+        
     private static final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
     private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
     
-    @Override
-    public void cancel(DisconnectResult result, YukonUserContext userContext) {
-       //For RF devices, it is not possible to cancel for the devices that were already sent to NM
+    private RfnMeterDisconnectArming mode;
+    private Set<PaoType> validTypes;
+
+    @PostConstruct
+    public void init() {
+        mode = RfnMeterDisconnectArming.getForCparm(
+            configurationSource.getString(MasterConfigString.RFN_METER_DISCONNECT_ARMING, "FALSE"));
+        validTypes = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_RFN).stream()
+                .map(d -> d.getType())
+                .collect(Collectors.toSet());
     }
     
     @Override
-    public void execute(final DisconnectCommand command, final Set<SimpleDevice> meters,
-                        final DisconnectCallback disconnectCallback,
-                        final CommandRequestExecution execution, YukonUserContext userContext) {
+    public FilteredDevices filter(List<SimpleDevice> meters) {
+        FilteredDevices filteredDevices = new FilteredDevices();
+        filteredDevices.addValid(meters.stream()
+            .filter(meter -> validTypes.contains(meter.getDeviceType()))
+            .collect(Collectors.toList()));
+        return filteredDevices;
+    }
+
+    @Override
+    public boolean supportsArm(List<SimpleDevice> meters) {
+        return (mode == RfnMeterDisconnectArming.ARM || mode == RfnMeterDisconnectArming.BOTH)
+            && meters.stream()
+            .filter(meter -> meter.getDeviceType().isRfMeter())
+            .findFirst().isPresent();
+    }
+    
+    @Override
+    public void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback disconnectCallback,
+            CommandRequestExecution execution, LiteYukonUser user) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -65,22 +106,24 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                 PendingRequests pendingRequests = new PendingRequests(meters.size());
                 for (YukonMeter meter : yukonMeters) {
                     Callback callback = new Callback(meter, disconnectCallback, pendingRequests, execution);
-                    if (disconnectCallback.isCanceled()) {
+                    if (disconnectCallback.getResult().isCanceled()) {
                         callback.cancel();
                     } else {
                         if (rfnLogger.isDebugEnabled()) {
-                            rfnLogger.debug("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType() + " to " + ((RfnMeter) meter).getRfnIdentifier());
+                            rfnLogger.debug("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType()
+                                + " to " + ((RfnMeter) meter).getRfnIdentifier());
                         }
-                        rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(), callback);
+                        rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(),
+                            callback);
                     }
                 }
             }
         };
         executor.execute(runnable);
     }
-    
+
     private class PendingRequests {
-        private final AtomicInteger pendingRequests;
+        private AtomicInteger pendingRequests;
 
         PendingRequests(int deviceCount) {
             pendingRequests = new AtomicInteger(deviceCount);
@@ -96,19 +139,19 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     }
 
     public class Callback implements RfnMeterDisconnectCallback {
-        private final DisconnectCallback callback;
-        private final SimpleDevice meter;
-        private final PendingRequests pendingRequests;
-        private final CommandRequestExecution execution;
+        private DisconnectCallback callback;
+        private SimpleDevice meter;
+        private PendingRequests pendingRequests;
+        private CommandRequestExecution execution;
 
         Callback(YukonMeter meter, DisconnectCallback callback, PendingRequests pendingRequests,
-                 CommandRequestExecution execution) {
+                CommandRequestExecution execution) {
             this.callback = callback;
             this.meter = new SimpleDevice(meter);
             this.pendingRequests = pendingRequests;
             this.execution = execution;
         }
-        
+
         public void cancel() {
             if (rfnLogger.isInfoEnabled()) {
                 rfnLogger.info("RFN send canceled:" + meter);
@@ -124,12 +167,13 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         }
 
         @Override
-        public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
+        public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state,
+                RfnMeterDisconnectConfirmationReplyType replyType) {
             log.debug("RFN receivedError");
             proccessResult(state, null, message, replyType);
-            
+
         }
-        
+
         @Override
         public void processingExceptionOccured(MessageSourceResolvable message) {
             log.debug("RFN exception (RfnMeterDisconnectCallback)");
@@ -146,13 +190,13 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             }
             int remaining = pendingRequests.decrementAndGet();
             if (remaining <= 0) {
-                callback.complete();
+                callback.complete(getStrategy());
                 log.debug("RFN Complete (RfnMeterDisconnectCallback)");
             }
         }
 
-       
-        private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData, MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
+        private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData,
+                MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
             if (rfnLogger.isInfoEnabled()) {
                 rfnLogger.info("RFN proccessState:" + meter + " state:" + state);
             }
@@ -161,34 +205,42 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
              * state is null if there was an error sending the command
              */
             if (message == null) {
-                message =
-                    YukonMessageSourceResolvable.createSingleCodeWithArguments(
-                        "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", state);
+                message = YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                    "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", state);
             }
-            
+
             int errorCode = 0;
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
-            
+
             if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
-                disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(YukonUserContext.system.getYukonUser(), databaseCache.getAllPaosMap().get(meter.getDeviceId()).getPaoName());
-                error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
-                                                           YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected"));
+                disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(
+                    YukonUserContext.system.getYukonUser(),
+                    databaseCache.getAllPaosMap().get(meter.getDeviceId()).getPaoName());
+                error = new SpecificDeviceErrorDescription(
+                    deviceErrorTranslatorDao.translateErrorCode(
+                        DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                        "yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected"));
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
-            }else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD) {
-                error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD),
-                                                           YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageHigherThanThreshold"));
+            } else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD) {
+                error = new SpecificDeviceErrorDescription(
+                    deviceErrorTranslatorDao.translateErrorCode(
+                        DeviceError.FAILURE_REJECTED_COMMAND_LOAD_SIDE_VOLTAGE_HIGHER_THAN_THRESHOLD),
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                        "yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageHigherThanThreshold"));
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
-            }
-            else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
-                error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT), 
-                                                           YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.noLoadSideVoltageDetectedWhileConnected"));
+            } else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
+                error = new SpecificDeviceErrorDescription(
+                    deviceErrorTranslatorDao.translateErrorCode(
+                        DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT),
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                        "yukon.web.widgets.disconnectMeterWidget.error.noLoadSideVoltageDetectedWhileConnected"));
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
-            }
-            else if (state == null) {
+            } else if (state == null) {
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
             } else {
@@ -204,20 +256,25 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                 case CONNECTED_DEMAND_THRESHOLD_ACTIVE:
                 case DISCONNECTED_CYCLING_ACTIVE:
                 case CONNECTED_CYCLING_ACTIVE:
-                    callback.disconnected(meter, timestamp);
+                    callback.success(DISCONNECT, meter, timestamp);
                     break;
                 case ARMED:
-                    callback.armed(meter, timestamp);
+                    callback.success(ARM, meter, timestamp);
                     break;
                 case CONNECTED:
-                    callback.connected(meter, timestamp);
-                    break;                    
+                    callback.success(CONNECT, meter, timestamp);
+                    break;
                 default:
                     throw new UnsupportedOperationException(state + " is not supported");
                 }
             }
-            commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, meter.getDeviceId(), errorCode);
+            commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, meter.getDeviceId(),
+                errorCode);
         }
     }
-   
+
+    @Override
+    public Strategy getStrategy() {
+        return Strategy.RF;
+    }
 }

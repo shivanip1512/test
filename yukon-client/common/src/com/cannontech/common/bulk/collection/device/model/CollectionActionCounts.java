@@ -2,6 +2,7 @@ package com.cannontech.common.bulk.collection.device.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetailSummary.*;
 
 public class CollectionActionCounts {
 
@@ -9,18 +10,32 @@ public class CollectionActionCounts {
     public CollectionActionCounts(CollectionActionResult result){
         this.result = result;
     }
-
-    public double getPercentage(CollectionActionDetail detail) {
-        int detailTotal = result.getDeviceCollection(detail).getDeviceCount();
-        return calculate(detailTotal);
+  
+    public int getNotAttemptedCount() {
+        return getCount(NOT_ATTEMPTED);
+    }
+    
+    public int getSuccessCount() {
+        return getCount(SUCCESS);
+    }
+    
+    public int getFailedCount() {
+        return getCount(FAILURE);
+    }
+    
+    public int getTotalCount() {
+        return result.getInputs().getCollection().getDeviceCount();
+    }
+    
+    private int getCount(CollectionActionDetailSummary summary) {
+        return result.getAction().getDetails().stream()
+                .filter(detail -> detail.getSummary() == summary)
+                .mapToInt(detail -> result.getDeviceCollection(detail).getDeviceCount())
+                .sum(); 
     }
     
     public double getPercentSuccess() {
-        int successTotal = result.getAction().getDetails().stream().filter(
-            detail -> detail.getSummary() == CollectionActionDetailSummary.SUCCESS)
-                .mapToInt(detail -> result.getDeviceCollection(detail).getDeviceCount())
-                .sum();
-        return calculate(successTotal);
+        return calculate(getSuccessCount());
     }
     
     public double getPercentProgress() {
@@ -31,8 +46,7 @@ public class CollectionActionCounts {
     }
 
     public double getPercentCompleted() {
-        int completedTotal = getCompleted();
-        return calculate(completedTotal);
+        return calculate(getCompleted());
     }
 
     public int getCompleted() {
@@ -56,5 +70,10 @@ public class CollectionActionCounts {
         int total = result.getInputs().getCollection().getDeviceCount();
         return new BigDecimal(subset).divide(new BigDecimal(total), 2, RoundingMode.HALF_EVEN).multiply(
             new BigDecimal(100)).doubleValue();
+    }
+
+    public double getPercentage(CollectionActionDetail detail) {
+        int detailTotal = result.getDeviceCollection(detail).getDeviceCount();
+        return calculate(detailTotal);
     }
 }
