@@ -113,25 +113,6 @@
             </div>
             
             <div class="column two nogutter">
-            
-                <tags:sectionContainer2 nameKey="points"
-                    styleClass="stacked-lg">
-                    <div class="scroll-md">
-                        <%@ include file="/WEB-INF/pages/capcontrol/pointsTable.jsp" %>
-                    </div>
-                    <c:set var="isPointCreate" value= "false" />
-                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                        <c:set var="isPointCreate" value= "true" />
-                    </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
-                        <c:set var="isPointCreate" value= "true" />
-                    </cti:checkRolesAndProperties>
-                    <c:if test="${isPointCreate}">
-                        <div class="action-area">
-                            <tags:pointCreation paoId="${rtu.id}" />
-                        </div>
-                    </c:if>
-                </tags:sectionContainer2>
                 
                 <c:set var="dnpConfig" value="${rtu.dnpConfig}"/>
                 <c:if test="${not empty dnpConfig}">
@@ -175,7 +156,6 @@
 
     </form:form>
     
-    
     <cti:tabs>
         <cti:msg2 var="childrenTab" key=".childrenTab"/>
         <cti:tab title="${childrenTab}">
@@ -194,6 +174,19 @@
         
         <cti:msg2 var="allPointsTab" key=".allPointsTab"/>
         <cti:tab title="${allPointsTab}" headerClasses="js-all-points-tab">
+            <c:set var="isPointCreate" value= "false" />
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">     
+                <c:set var="isPointCreate" value= "true" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
+                <c:set var="isPointCreate" value= "true" />
+            </cti:checkRolesAndProperties>
+            <c:if test="${isPointCreate}">
+                <div class="stacked-lg">
+                    <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam"/></span>
+                </div>
+                <hr>
+            </c:if>
             <cti:url var="dataUrl" value="/stars/rtu/${rtu.id}/allPoints"/>
             <div class="js-all-points" data-url="${dataUrl}"></div>
         </cti:tab>

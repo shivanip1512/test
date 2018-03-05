@@ -30,7 +30,7 @@
     <entry key="yukon.web.modules.operator.rtuDetail.winOpen">Open</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.winClose">Close</entry>
     
-    <entry key="yukon.web.modules.operator.rtuDetail.points.title">RTU Points</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.rtuPoints">RTU Points:</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.childPoints">Points</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.noChildDevices">No child devices were found on this RTU.</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.noPoints">No points were returned.</entry>
