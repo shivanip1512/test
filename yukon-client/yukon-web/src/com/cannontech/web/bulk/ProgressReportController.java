@@ -21,13 +21,11 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -38,13 +36,12 @@ public class ProgressReportController {
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private final static String baseKey = "yukon.web.modules.tools.bulk.progressReport.";
-    
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     public String detail(ModelMap model, Integer key) {
         CollectionActionResult result = collectionActionService.getResult(key);
         model.addAttribute("result", result);
         model.addAttribute("details", CollectionActionDetail.values());
+        model.addAttribute("status", CommandRequestExecutionStatus.values());
         return "progressReport.jsp";
     }
     
@@ -63,11 +60,9 @@ public class ProgressReportController {
     }
     
     @RequestMapping(value = "cancel", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> cancel(Integer key, YukonUserContext userContext) {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+    public @ResponseBody Map<String, Object> cancel(Integer key) {
         Map<String, Object> json = new HashMap<>();
         //TODO: Cancel the collection action
-        json.put("successMsg", accessor.getMessage(baseKey + "cancelSuccess"));
         return json;
     }
     

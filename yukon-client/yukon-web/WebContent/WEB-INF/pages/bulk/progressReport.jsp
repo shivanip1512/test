@@ -12,7 +12,11 @@
         <input type="hidden" id="detail-${detail}" value="${detailText}"/>
         <input type="hidden" id="color-${detail}" value="${detail.color}"/>
     </c:forEach>
-
+    <c:forEach var="executionStatus" items="${status}">
+        <cti:msg2 var="statusText" key="${executionStatus.formatKey}"/>
+        <input type="hidden" id="status-${executionStatus}" value="${statusText}"/>
+    </c:forEach>
+    
     <tags:sectionContainer2 nameKey="inputs" hideEnabled="true">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".action">
@@ -63,7 +67,9 @@
                 <cti:formatDate type="BOTH" value="${result.startTime}"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".stopDateTime" valueClass="js-stop-time">
-                <cti:formatDate type="BOTH" value="${result.stopTime}"/>
+                <c:if test="${result.stopTime != null}">
+                    <cti:formatDate type="BOTH" value="${result.stopTime}"/>
+                </c:if>
             </tags:nameValue2>
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
@@ -88,8 +94,9 @@
             </div>
             <span class="js-percent-text"></span>
             <span class="js-completed-count" style="padding-left:10px;"></span>
+            <span class="js-status" style="padding-left:10px"></span>
             <c:if test="${result.isCancelable()}">
-                <cti:button nameKey="cancel" classes="js-cancel fn"/>
+                <cti:button nameKey="cancel" classes="js-cancel fn" busy="true"/>
             </c:if>
         </div>
         <div style="max-height:220px;max-width:500px;" class="js-pie-chart js-initialize"></div>

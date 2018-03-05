@@ -14,7 +14,7 @@ yukon.bulk.progressReport = (function () {
     _initialized = false,
     _key,
     /** @type {number} - The setTimeout reference for periodic updating of the pie chart. */
-    _updateInterval = 6000,
+    _updateInterval = 3000,
     _updateTimeout = null,
     
     _getData = function (data) {
@@ -24,23 +24,25 @@ yukon.bulk.progressReport = (function () {
                 value = data.details[key],
                 cogMenu = $('.js-cog-menu').clone();
             cogMenu.removeClass('js-cog-menu');
-            item.name = $('#detail-' + key).val();
-            item.color = $('#color-' + key).val();
-            item.x = value.devices.deviceCount;
-            item.y = value.devices.deviceCount / data.counts.completed;
-            item.displayPercentage = yukon.percent(value.devices.deviceCount, data.counts.completed, 1);
-            item.url = yukon.url("/bulk/collectionActions?" + $.param(value.devices.collectionParameters));
-            //change the urls for the menu to be the correct devices
-            cogMenu.find('a').each(function() {
-                var href = $(this).attr('href');
-                if (href) {
-                    var url = href.substring(0, href.indexOf('?') + 1);
-                    url = url + $.param(value.devices.collectionParameters);
-                    $(this).attr('href', url);
-                }
-            });
-            item.cog = cogMenu;
-            legendItems.push(item);
+            if (value.devices.deviceCount > 0) {
+                item.name = $('#detail-' + key).val();
+                item.color = $('#color-' + key).val();
+                item.x = value.devices.deviceCount;
+                item.y = value.devices.deviceCount / data.counts.completed;
+                item.displayPercentage = yukon.percent(value.devices.deviceCount, data.counts.completed, 1);
+                item.url = yukon.url("/bulk/collectionActions?" + $.param(value.devices.collectionParameters));
+                //change the urls for the menu to be the correct devices
+                cogMenu.find('a').each(function() {
+                    var href = $(this).attr('href');
+                    if (href) {
+                        var url = href.substring(0, href.indexOf('?') + 1);
+                        url = url + $.param(value.devices.collectionParameters);
+                        $(this).attr('href', url);
+                    }
+                });
+                item.cog = cogMenu;
+                legendItems.push(item);
+            }
         });
         return legendItems;
     },
@@ -126,6 +128,8 @@ yukon.bulk.progressReport = (function () {
                 .toggleClass('progress-bar-striped', data.result.counts.percentCompleted < 100);
                 progressText.text(percent);
                 $('.js-completed-count').text(data.result.counts.completed + "/" + data.result.inputs.collection.deviceCount);
+                var statusValue = $('#status-' + data.result.status).val();
+                $('.js-status').text(statusValue);
                 
                 //update pie chart
                 if (chart.is('.js-initialize')) {
@@ -142,10 +146,9 @@ yukon.bulk.progressReport = (function () {
                         $('.js-stop-time').text(timeText);
                     }
                 }
-                //if execution exception occurred show error and stop updating
+                //if execution exception occurred show error
                 if (data.result.executionExceptionText) {
                     yukon.ui.alertError(data.result.executionExceptionText);
-                    clearTimeout(_updateTimeout);
                 }
             }
         });
