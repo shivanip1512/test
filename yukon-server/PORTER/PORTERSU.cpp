@@ -44,6 +44,24 @@ extern CtiDeviceManager DeviceManager;
 
 HCTIQUEUE*   QueueHandle(LONG pid);
 
+YukonError_t CheckIfOutMessageIsExpired(OUTMESS *&OutMessage, const CtiTime now)
+{
+    if( ! OutMessage )
+    {
+        return ClientErrors::Memory;
+    }
+
+    if( OutMessage->ExpirationTime != 0 && OutMessage->ExpirationTime < now.seconds() )
+    {
+        // This OM has expired and should not be acted upon!
+        SendError(OutMessage, ClientErrors::RequestExpired);
+
+        return ClientErrors::RequestExpired;
+    }
+
+    return ClientErrors::None;
+}
+
 /* Routine to send error message back to originating process */
 YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *PassedInMessage)
 {

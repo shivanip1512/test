@@ -23,6 +23,7 @@ INT IDLCAlgStat (PBYTE, PUSHORT);
 void APIENTRY PorterCleanUp (ULONG);
 
 /* Prototypes from PORTERSU.C */
+YukonError_t CheckIfOutMessageIsExpired(OUTMESS *&OutMessage, const CtiTime now);
 YukonError_t SendError(OUTMESS *&, YukonError_t, INMESS *InMessage = NULL);
 
 /* Prototypes from PORTFILL.C */
@@ -42,7 +43,7 @@ YukonError_t CCUResponseDecode (INMESS &, CtiDeviceSPtr , OUTMESS *OutMessage);
 void KickerThread();
 YukonError_t DeQueue(const INMESS &);
 INT QueueFlush       (CtiDeviceSPtr Dev);
-INT BuildLGrpQ       (CtiDeviceSPtr Dev);
+INT BuildLGrpQ       (CtiDeviceSPtr Dev, const CtiTime now);
 INT BuildActinShed   (CtiDeviceSPtr Dev);
 
 /* Prototypes from PORTTIME.C */

@@ -181,7 +181,7 @@ struct buildLGRPQ
 
                             if( !pInfo->getStatus(INLGRPQ) )
                             {
-                                BuildLGrpQ(ccu_device);
+                                BuildLGrpQ(ccu_device, CtiTime::now());
                             }
                         }
                     }
@@ -1228,7 +1228,7 @@ INT QueueFlush (CtiDeviceSPtr Dev)
 }
 
 
-INT BuildLGrpQ (CtiDeviceSPtr Dev)
+INT BuildLGrpQ (CtiDeviceSPtr Dev, const CtiTime now)
 {
     ULONG Length;
     ULONG Count;
@@ -1304,6 +1304,11 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                 CTILOG_ERROR(dout, "Could not Read Device Queue of "<< Dev->getName());
 
                 return ClientErrors::QueueRead;
+            }
+
+            if( CheckIfOutMessageIsExpired(MyOutMessage, now) )
+            {
+                continue;
             }
 
             /* if this is first in the group get memory for it */

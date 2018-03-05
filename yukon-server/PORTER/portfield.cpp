@@ -228,7 +228,7 @@ void PortThread(void *pid)
              *  Must verify that the outmessage has not expired.  The OM will be consumed and error returned to any
              *   requesting client.
              */
-            if( CheckIfOutMessageIsExpired(OutMessage) )
+            if( CheckIfOutMessageIsExpired(OutMessage, nowTime) )
             {
                 continue;
             }
@@ -3913,33 +3913,6 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
     return mayExecute;
 }
 
-
-/*----------------------------------------------------------------------------*
- * This function is responsible for verifying that the message is good and will
- * not cause any immediate problems in the Porter internals.
- *----------------------------------------------------------------------------*/
-INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
-{
-    YukonError_t nRet = ClientErrors::None;
-
-    if(OutMessage != NULL)
-    {
-        CtiTime  now;
-
-        if(OutMessage->ExpirationTime != 0 && OutMessage->ExpirationTime < now.seconds())
-        {
-            // This OM has expired and should not be acted upon!
-            nRet = ClientErrors::RequestExpired;
-            SendError( OutMessage, nRet );
-        }
-    }
-    else
-    {
-        nRet = ClientErrors::Memory;
-    }
-
-    return nRet;
-}
 
 YukonError_t ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device)
 {

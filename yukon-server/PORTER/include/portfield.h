@@ -32,7 +32,6 @@ void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage 
 INT GetPreferredProtocolWrap( const CtiPortSPtr &Port, const CtiDeviceSPtr &Device );
 BOOL findExclusionFreeOutMessage(void *data, void* d);
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device );
-INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
 YukonError_t ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device);
 INT ProcessPortPooling(CtiPortSPtr Port);
 YukonError_t ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device);
