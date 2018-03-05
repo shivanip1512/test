@@ -8,8 +8,6 @@
 <cti:standardMenu menuSelection="devicegroups|commander"/>
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/dashboard" title="Home" />
-   	    <cti:crumbLink url="/group/commander/groupProcessing" title="Group Processing" />
-	    &gt; Command Executing
 	</cti:breadCrumbs>
 
 	Your group request has been started:<br/><br/>

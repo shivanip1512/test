@@ -157,14 +157,4 @@
 <entry key="yukon.web.deviceGroups.deviceGroupComposedCompositionType.UNION">Any</entry>
 <entry key="yukon.web.deviceGroups.deviceGroupComposedCompositionType.INTERSECTION">All</entry>
 
-<!-- Group Command Processing -->
-<entry key="yukon.web.modules.tools.deviceGroupsCommander.pageName">Device Groups</entry>
-<entry key="yukon.web.modules.tools.deviceGroupsCommander.noGroup">Select a device group.</entry>
-<entry key="yukon.web.modules.tools.deviceGroupsCommander.noCommands">No commands available for selected device group</entry>
-<entry key="yukon.web.deviceGroups.commander.title">Group Command Processing</entry>
-<entry key="yukon.web.deviceGroups.commander.pageTitle">Group Processing</entry>
-<entry key="yukon.web.deviceGroups.commander.tab.title">Command Processing</entry>
-<entry key="yukon.web.deviceGroups.commander.groupSelectionLabel">Group:</entry>
-<entry key="yukon.web.deviceGroups.commander.recentResultsLabel">Recent Results</entry>
-
 </properties>
