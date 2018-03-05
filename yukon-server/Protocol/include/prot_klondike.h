@@ -24,14 +24,16 @@ public:
     enum PLCProtocols;
     //enum ProtocolWrap;
 
+    using QueueTiming = std::chrono::system_clock::time_point;
+
     struct queue_result_t
     {
         void *requester;
         KlondikeErrors error;
-        unsigned long timestamp;
+        QueueTiming timestamp;
         byte_buffer_t message;
 
-        queue_result_t(void *requester_, KlondikeErrors error_, unsigned long timestamp_, const byte_buffer_t &message_) :
+        queue_result_t(void *requester_, KlondikeErrors error_, QueueTiming timestamp_, const byte_buffer_t &message_) :
             requester(requester_),
             error    (error_),
             timestamp(timestamp_),
@@ -42,10 +44,12 @@ public:
         queue_result_t() :
             requester(0),
             error(Error_None),
-            timestamp(0)
+            timestamp(NoExpiration)
         {
         };
     };
+
+    static const QueueTiming NoExpiration;
 
 private:
 
@@ -100,6 +104,7 @@ private:
         static long long global_id;
         long long id;
         unsigned priority;
+        QueueTiming expiration;
         PLCProtocols protocol;
         unsigned char dlc_parms;
         unsigned char stages;
@@ -107,15 +112,16 @@ private:
         unsigned resubmissions;
         void *requester;
 
-        queue_entry_t(const byte_buffer_t &outbound_, unsigned priority_, unsigned char dlc_parms_, unsigned char stages_, void *requester_) :
+        queue_entry_t(const byte_buffer_t &outbound_, unsigned priority_, QueueTiming expiration_, unsigned char dlc_parms_, unsigned char stages_, void *requester_) :
             id(++global_id),
-            protocol (PLCProtocol_Emetcon),
-            outbound (outbound_),
-            priority (priority_),
-            dlc_parms(dlc_parms_),
-            stages   (stages_),
+            protocol  (PLCProtocol_Emetcon),
+            outbound  (outbound_),
+            priority  (priority_),
+            expiration(expiration_),
+            dlc_parms (dlc_parms_),
+            stages    (stages_),
             resubmissions(0),
-            requester(requester_)
+            requester (requester_)
         { }
     };
 
@@ -354,8 +360,8 @@ public:
     // --  these functions may be called at any time by another thread, meaning that their data must be muxed
     std::string describeCurrentStatus(void) const;
 
-    bool hasQueuedWork()  const;
-    bool addQueuedWork(void *requester, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages);
+    bool hasQueuedWork() const;
+    bool addQueuedWork(void *requester, const byte_buffer_t &payload, unsigned priority, QueueTiming expiration, unsigned char dlc_parms, unsigned char stages);
     bool removeQueuedWork(void *requester);
 
     bool hasRemoteWork()  const;
@@ -427,6 +433,7 @@ public:
         Error_TransmitterOverheating,
         Error_QueueFull,
         Error_QueueEntryLost,
+        Error_QueueEntryExpired,
 
         Error_Unknown
     };

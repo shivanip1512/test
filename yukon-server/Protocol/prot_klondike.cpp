@@ -17,6 +17,9 @@ const KlondikeProtocol::command_state_map_t KlondikeProtocol::_command_states;
 
 long long KlondikeProtocol::queue_entry_t::global_id;
 
+using std::chrono::system_clock;
+
+const system_clock::time_point KlondikeProtocol::NoExpiration = system_clock::from_time_t(0);
 
 KlondikeProtocol::KlondikeProtocol() :
     _wrap(&_idlc_wrap),
@@ -27,7 +30,7 @@ KlondikeProtocol::KlondikeProtocol() :
     _device_queue_sequence(numeric_limits<unsigned int>::max()),
     _device_queue_entries_available(numeric_limits<unsigned int>::max()),
     _read_toggle(0x00),
-    _dtran_queue_entry(byte_buffer_t(), 0, 0, 0, 0)
+    _dtran_queue_entry(byte_buffer_t(), 0, NoExpiration, 0, 0, 0)
 {
     _device_status.as_ushort = 0;
     _current_command.command = Command_Invalid;
@@ -145,7 +148,7 @@ bool KlondikeProtocol::commandStateValid()
                         queue_result_t(
                             failed_entry.requester,
                             Error_QueueEntryLost,
-                            ::time(0),
+                            system_clock::now(),
                             byte_buffer_t()));
 
                     remote_itr = _remote_requests.erase(remote_itr);
@@ -224,7 +227,7 @@ YukonError_t KlondikeProtocol::setCommand( int command, byte_buffer_t payload, u
 
         case Command_DirectTransmission:
         {
-            _dtran_queue_entry = queue_entry_t(payload, priority, dlc_parms, stages, 0);
+            _dtran_queue_entry = queue_entry_t(payload, priority, NoExpiration, dlc_parms, stages, 0);
             _dtran_in_expected = in_expected;
 
             break;
@@ -366,35 +369,45 @@ void KlondikeProtocol::doOutput(CommandCode command_code)
 
             int processed = 0;
 
+            const auto now = system_clock::now();
+
             while( waiting_itr != waiting_end && processed < _device_queue_entries_available )
             {
-                if( waiting_itr->second.requester )
-                {
-                    if( outbound.size() + QueueEntryHeaderLength + waiting_itr->second.outbound.size() > _wrap->getMaximumPayload() )
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        outbound.push_back(waiting_itr->second.priority);
-                        outbound.push_back(waiting_itr->second.dlc_parms);
-                        outbound.push_back(waiting_itr->second.stages);
-                        outbound.push_back(waiting_itr->second.outbound.size());
+                const auto queue_entry_priority = waiting_itr->first;
+                const auto& queue_entry = waiting_itr->second;
 
-                        outbound.insert(outbound.end(), waiting_itr->second.outbound.begin(),
-                                                        waiting_itr->second.outbound.end());
-
-                        _pending_requests.insert(make_pair(_device_queue_sequence + processed, waiting_itr->first));
-
-                        processed++;
-                    }
-
-                    waiting_itr++;
-                }
-                else
+                if( ! queue_entry.requester )
                 {
                     waiting_itr = _waiting_requests.erase(waiting_itr);
+                    continue;
                 }
+                if( queue_entry.expiration != NoExpiration && queue_entry.expiration < now )
+                {
+                    _plc_results.push_back(
+                        queue_result_t(
+                            queue_entry.requester, Error_QueueEntryExpired, now, {}));
+
+                    waiting_itr = _waiting_requests.erase(waiting_itr);
+                    continue;
+                }
+                if( outbound.size() + QueueEntryHeaderLength + queue_entry.outbound.size() > _wrap->getMaximumPayload() )
+                {
+                    break;
+                }
+
+                outbound.push_back(queue_entry.priority);
+                outbound.push_back(queue_entry.dlc_parms);
+                outbound.push_back(queue_entry.stages);
+                outbound.push_back(queue_entry.outbound.size());
+
+                outbound.insert(outbound.end(), queue_entry.outbound.begin(),
+                                                queue_entry.outbound.end());
+
+                _pending_requests.insert(make_pair(_device_queue_sequence + processed, queue_entry_priority));
+
+                processed++;
+
+                waiting_itr++;
             }
 
             outbound[queue_count_pos] = processed;
@@ -836,7 +849,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                                                 queue_result_t(
                                                     rejected_entry.requester,
                                                     error,
-                                                    ::time(0),
+                                                    system_clock::now(),
                                                     byte_buffer_t()));
                                         }
 
@@ -1004,8 +1017,8 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                                 _plc_results.push_back(
                                     queue_result_t(
                                         remote_itr->second.requester,
-                                        Error_None,  //  we'll eventually need to plug an error code in here,
-                                        q.timestamp, //    but right now, q.result is poorly defined
+                                        Error_None,  //  we'll eventually need to plug an error code in here, but q.result is poorly defined as yet
+                                        system_clock::from_time_t(q.timestamp),
                                         q.message));
                             }
 
@@ -1082,11 +1095,11 @@ KlondikeProtocol::KlondikeErrors KlondikeProtocol::errorCode() const
 
 
 
-bool KlondikeProtocol::addQueuedWork(void *requester, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages)
+bool KlondikeProtocol::addQueuedWork(void *requester, const byte_buffer_t &payload, unsigned priority, QueueTiming expiration, unsigned char dlc_parms, unsigned char stages)
 {
     sync_guard_t guard(_sync);
 
-    queue_entry_t new_entry(payload, priority, dlc_parms, stages, requester);
+    queue_entry_t new_entry(payload, priority, expiration, dlc_parms, stages, requester);
     id_priority key = { new_entry.id, new_entry.priority };
 
     _waiting_requests.insert(make_pair(key, new_entry));

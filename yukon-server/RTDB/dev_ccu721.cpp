@@ -413,10 +413,11 @@ YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *d
         _klondike.addQueuedWork(static_cast<void *>(OutMessage),  //  just a handle to the OM
                                 queued_message,
                                 OutMessage->Priority,
+                                std::chrono::system_clock::from_time_t(OutMessage->ExpirationTime),
                                 KlondikeProtocol::DLCParms_None | OutMessage->Buffer.BSt.DlcRoute.Bus + 1,
                                 OutMessage->Buffer.BSt.DlcRoute.Stages);
 
-        OutMessage = 0;  //  the OutMessage is ours now
+        OutMessage = nullptr;  //  the OutMessage is ours now
 
         *dqcnt = _queued_outmessages.size();
 
@@ -606,6 +607,7 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
                 _klondike.addQueuedWork(this,  //  so we can filter out the timesync requests
                                         timesync,
                                         MAXPRIORITY,
+                                        KlondikeProtocol::NoExpiration,
                                         KlondikeProtocol::DLCParms_BroadcastFlag,
                                         0);
 
@@ -653,7 +655,7 @@ YukonError_t Ccu721Device::sendCommResult(INMESS &InMessage)
                         im->Remote    = om->Remote;
 
                         im->ErrorCode = translateKlondikeError(result.error);
-                        im->Time      = result.timestamp;
+                        im->Time      = std::chrono::system_clock::to_time_t(result.timestamp);
                         im->InLength  = result.message.size();
 
                         copy(result.message.begin(), result.message.end(), im->Buffer.InMessage);
@@ -690,6 +692,7 @@ YukonError_t Ccu721Device::translateKlondikeError(KlondikeProtocol::KlondikeErro
         case KlondikeProtocol::Error_InvalidSequence:           return ClientErrors::BadSequence;
         case KlondikeProtocol::Error_NoRoutes:                  return ClientErrors::RouteNotFound;
         case KlondikeProtocol::Error_QueueEntryLost:            return ClientErrors::CcuQueueFlushed;
+        case KlondikeProtocol::Error_QueueEntryExpired:         return ClientErrors::RequestExpired;
         case KlondikeProtocol::Error_TransmitterOverheating:    return ClientErrors::TransmitterOverheating;
 
         default:

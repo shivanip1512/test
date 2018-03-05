@@ -10,7 +10,9 @@ using Cti::Protocols::KlondikeProtocol;
 
 using Cti::Test::byte_str;
 
-BOOST_AUTO_TEST_SUITE( test_prot_klondike )
+BOOST_AUTO_TEST_SUITE(test_prot_klondike)
+
+static const auto NoExpiration = std::chrono::system_clock::from_time_t(0);
 
 struct Test_Wrap : public Cti::Protocols::Wrap
 {
@@ -118,6 +120,7 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
     test_klondike.addQueuedWork(this,
                                 timesync_standin,
                                 MAXPRIORITY,
+                                NoExpiration,
                                 KlondikeProtocol::DLCParms_BroadcastFlag,
                                 0);
 
@@ -182,8 +185,8 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_unhandled_queueid)
     const KlondikeProtocol::byte_buffer_t payload1(bytes1.begin(), bytes1.end());
     const KlondikeProtocol::byte_buffer_t payload2(bytes2.begin(), bytes2.end());
 
-    test_klondike.addQueuedWork(&requester, payload1, 13, 2, 0);
-    test_klondike.addQueuedWork(&requester, payload1, 13, 3, 0);
+    test_klondike.addQueuedWork(&requester, payload1, 13, NoExpiration, 2, 0);
+    test_klondike.addQueuedWork(&requester, payload1, 13, NoExpiration, 3, 0);
 
     BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadQueue), ClientErrors::None);
 
@@ -193,9 +196,9 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_unhandled_queueid)
     do_xfer(test_klondike, test_wrap, xfer, byte_str("13 3b 66 02 0d 02 00 04 8f f0 b2 78 0d 03 00 04 8f f0 b2 78"),
                                             byte_str("c1 13 89 00 00 3d 66 01 3c 66 04 47 22"));
 
-    test_klondike.addQueuedWork(&requester, payload2, 13, 2, 1);
-    test_klondike.addQueuedWork(&requester, payload1, 13, 1, 0);
-    test_klondike.addQueuedWork(&requester, payload1, 13, 2, 0);
+    test_klondike.addQueuedWork(&requester, payload2, 13, NoExpiration, 2, 1);
+    test_klondike.addQueuedWork(&requester, payload1, 13, NoExpiration, 1, 0);
+    test_klondike.addQueuedWork(&requester, payload1, 13, NoExpiration, 2, 0);
 
     BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadQueue), ClientErrors::None);
 
