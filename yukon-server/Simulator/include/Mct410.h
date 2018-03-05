@@ -23,11 +23,11 @@ class Mct410Sim
 {
 private:
 
-    typedef std::function<bytes (Mct410Sim *)>          function_read_t;
+    typedef std::function<bytes (Mct410Sim&)>           function_read_t;
     typedef function_read_t                             data_read_t;
     typedef std::function<void (Mct410Sim *, bytes)>    function_write_t;
     typedef function_write_t                            data_write_t;
-    typedef std::function<void (Mct410Sim *)>           command_t;
+    typedef std::function<void (Mct410Sim&)>            command_t;
 
     typedef std::map<unsigned, function_read_t>  function_reads_t;
     typedef std::map<unsigned, function_write_t> function_writes_t;
@@ -38,7 +38,7 @@ private:
 
     static const function_reads_t  _function_reads;
     static       function_reads_t  initFunctionReads();
-    static       function_reads_t  makeFunctionReadRange(unsigned readMin, unsigned readMax, std::function<bytes (Mct410Sim *, unsigned)> fn);
+    static       function_reads_t  makeFunctionReadRange(unsigned readMin, unsigned readMax, std::function<bytes (Mct410Sim&, unsigned)> fn);
 
     static const function_writes_t _function_writes;
     static       function_writes_t initFunctionWrites();
@@ -112,6 +112,7 @@ private:
     bytes getDisplayParameters();
     bytes getLcdConfiguration1();
     bytes getLcdConfiguration2();
+    bytes getDisconnectStatus();
     bytes getLongLoadProfile(const unsigned offset);
     bytes getLoadProfile(const unsigned offset, const unsigned channel);
 
@@ -122,6 +123,8 @@ private:
 
     void putPointOfInterest(const bytes &payload);
 
+    void connect();
+    void disconnect();
     void clearEventFlags();
 
     enum Numerics
@@ -138,6 +141,8 @@ private:
 
     enum Commands
     {
+        C_Connect = 0x4C,
+        C_Disconnect = 0x4D,
         C_PutFreezeOne = 0x51,
         C_PutFreezeTwo = 0x52,
         C_SetLpIntervalFiveMin = 0x70,
@@ -174,6 +179,7 @@ private:
         FR_DisplayParameters       = 0xf3,
         FR_LcdConfiguration1       = 0xf6,
         FR_LcdConfiguration2       = 0xf7,
+        FR_DisconnectStatus        = 0xfe,
     };
 
     enum FunctionWrites
@@ -204,6 +210,7 @@ private:
         MM_EventFlags2  = 0x07,
         MM_MeterAlarms1 = 0x08,
         MM_EventFlags1AlarmMask = 0x0A,
+        MM_Status2Flags = 0x0E,
         MM_DemandInterval = 0x1a,
         MM_LoadProfileInterval = 0x1b,
         MM_VoltageDemandInterval = 0x1c,

@@ -82,10 +82,10 @@ Mct410Sim::Mct410Sim(int address) :
         unsigned long lastFreezeSeconds = CtiTime(CtiDate() - 365).seconds();  //  last freeze 1 year ago
 
         const bytes lastFreezeBytes = {
-                lastFreezeSeconds >> 24 & 0xff,
-                lastFreezeSeconds >> 16 & 0xff,
-                lastFreezeSeconds >>  8 & 0xff,
-                lastFreezeSeconds       & 0xff};
+                static_cast<unsigned char>(lastFreezeSeconds >> 24),
+                static_cast<unsigned char>(lastFreezeSeconds >> 16),
+                static_cast<unsigned char>(lastFreezeSeconds >>  8),
+                static_cast<unsigned char>(lastFreezeSeconds      )};
 
         _memory.writeDataToMemoryMap(MM_LastFreezeTimestamp, lastFreezeBytes);
 
@@ -99,13 +99,13 @@ Mct410Sim::Mct410Sim(int address) :
     }
 }
 
-Mct410Sim::function_reads_t Mct410Sim::makeFunctionReadRange(unsigned readMin, unsigned readMax, std::function<bytes(Mct410Sim*, unsigned)> fn)
+Mct410Sim::function_reads_t Mct410Sim::makeFunctionReadRange(unsigned readMin, unsigned readMax, std::function<bytes(Mct410Sim&, unsigned)> fn)
 {
     function_reads_t range;
 
     for( unsigned offset = 0; offset <= (readMax - readMin); ++offset )
     {
-        range[readMin + offset] = boost::bind(fn, _1, offset);
+        range.emplace(readMin + offset, [=](Mct410Sim& mct) { return fn(mct, offset); });
     }
 
     return range;
@@ -116,43 +116,45 @@ Mct410Sim::function_reads_t Mct410Sim::initFunctionReads()
     function_reads_t reads;
     function_reads_t read_range;
 
-    reads[FR_AllCurrentMeterReadings]      = function_read_t(&Mct410Sim::getAllCurrentMeterReadings);
-    reads[FR_AllRecentDemandReadings]      = function_read_t(&Mct410Sim::getAllRecentDemandReadings);
-    reads[FR_AllCurrentPeakDemandReadings] = function_read_t(&Mct410Sim::getAllCurrentPeakDemandReadings);
-    reads[FR_GetFrozen_kWh]                = function_read_t(&Mct410Sim::getFrozenKwh);
-    reads[FR_AllFrozenChannel1Readings]    = function_read_t(&Mct410Sim::getAllFrozenChannel1Readings);
-    reads[FR_AllCurrentVoltageReadings]    = function_read_t(&Mct410Sim::getAllCurrentVoltageReadings);
-    reads[FR_FrozenMinMaxVoltageReadings]  = function_read_t(&Mct410Sim::getFrozenMinMaxVoltageReadings);
-    reads[FR_DisplayParameters]            = function_read_t(&Mct410Sim::getDisplayParameters);
-    reads[FR_LcdConfiguration1]            = function_read_t(&Mct410Sim::getLcdConfiguration1);
-    reads[FR_LcdConfiguration2]            = function_read_t(&Mct410Sim::getLcdConfiguration2);
+    reads.emplace(FR_AllCurrentMeterReadings,      [](Mct410Sim& mct) { return mct.getAllCurrentMeterReadings();        });
+    reads.emplace(FR_AllRecentDemandReadings,      [](Mct410Sim& mct) { return mct.getAllRecentDemandReadings();        });
+    reads.emplace(FR_AllCurrentPeakDemandReadings, [](Mct410Sim& mct) { return mct.getAllCurrentPeakDemandReadings();   });
+    reads.emplace(FR_GetFrozen_kWh,                [](Mct410Sim& mct) { return mct.getFrozenKwh();                      });
+    reads.emplace(FR_AllFrozenChannel1Readings,    [](Mct410Sim& mct) { return mct.getAllFrozenChannel1Readings();      });
+    reads.emplace(FR_AllCurrentVoltageReadings,    [](Mct410Sim& mct) { return mct.getAllCurrentVoltageReadings();      });
+    reads.emplace(FR_FrozenMinMaxVoltageReadings,  [](Mct410Sim& mct) { return mct.getFrozenMinMaxVoltageReadings();    });
+    reads.emplace(FR_DisplayParameters,            [](Mct410Sim& mct) { return mct.getDisplayParameters();              });
+    reads.emplace(FR_LcdConfiguration1,            [](Mct410Sim& mct) { return mct.getLcdConfiguration1();              });
+    reads.emplace(FR_LcdConfiguration2,            [](Mct410Sim& mct) { return mct.getLcdConfiguration2();              });
+    reads.emplace(FR_DisconnectStatus,             [](Mct410Sim& mct) { return mct.getDisconnectStatus();               });
 
     read_range = makeFunctionReadRange(FR_LongLoadProfileTableMin,
-                                       FR_LongLoadProfileTableMax, &Mct410Sim::getLongLoadProfile);
+                                       FR_LongLoadProfileTableMax, 
+                                       [](Mct410Sim& mct, unsigned offset) { return mct.getLongLoadProfile(offset); } );
 
     reads.insert(read_range.begin(), read_range.end());
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel1Min,
                                        FR_LoadProfileChannel1Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 1));
+                                       [](Mct410Sim& mct, unsigned offset) { return mct.getLoadProfile(offset, 1); });
 
     reads.insert(read_range.begin(), read_range.end());
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel2Min,
                                        FR_LoadProfileChannel2Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 2));
+                                       [](Mct410Sim& mct, unsigned offset) { return mct.getLoadProfile(offset, 2); });
 
     reads.insert(read_range.begin(), read_range.end());
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel3Min,
                                        FR_LoadProfileChannel3Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 3));
+                                       [](Mct410Sim& mct, unsigned offset) { return mct.getLoadProfile(offset, 3); });
 
     reads.insert(read_range.begin(), read_range.end());
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel4Min,
                                        FR_LoadProfileChannel4Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 4));
+                                       [](Mct410Sim& mct, unsigned offset) { return mct.getLoadProfile(offset, 4); });
 
     reads.insert(read_range.begin(), read_range.end());
 
@@ -192,17 +194,17 @@ Mct410Sim::data_writes_t Mct410Sim::initDataWrites()
 
 Mct410Sim::commands_t Mct410Sim::initCommands()
 {
-    commands_t commands;
-
-    commands[C_ClearAllEventFlags]      = command_t(&Mct410Sim::clearEventFlags);
-    commands[C_PutFreezeOne]            = command_t(boost::bind(&Mct410Sim::putFreeze, _1, 1));
-    commands[C_PutFreezeTwo]            = command_t(boost::bind(&Mct410Sim::putFreeze, _1, 2));
-    commands[C_SetLpIntervalFiveMin]    = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 5));
-    commands[C_SetLpIntervalFifteenMin] = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 15));
-    commands[C_SetLpIntervalThirtyMin]  = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 30));
-    commands[C_SetLpIntervalSixtyMin]   = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 60));
-
-    return commands;
+    return {
+        { C_Connect,                    [](Mct410Sim &mct) { mct.connect();         } },
+        { C_Disconnect,                 [](Mct410Sim &mct) { mct.disconnect();      } },
+        { C_ClearAllEventFlags,         [](Mct410Sim &mct) { mct.clearEventFlags(); } },
+        { C_PutFreezeOne,               [](Mct410Sim &mct) { mct.putFreeze(1);      } },
+        { C_PutFreezeTwo,               [](Mct410Sim &mct) { mct.putFreeze(2);      } },
+        { C_SetLpIntervalFiveMin,       [](Mct410Sim &mct) { mct.setLpInterval(5);  } },
+        { C_SetLpIntervalFifteenMin,    [](Mct410Sim &mct) { mct.setLpInterval(15); } },
+        { C_SetLpIntervalThirtyMin,     [](Mct410Sim &mct) { mct.setLpInterval(30); } },
+        { C_SetLpIntervalSixtyMin,      [](Mct410Sim &mct) { mct.setLpInterval(60); } },
+    };
 }
 
 void Mct410Sim::initBehaviors(Logger &logger)
@@ -346,11 +348,9 @@ bytes Mct410Sim::processRead(bool function_read, unsigned function, Logger &logg
 
     if( function_read )
     {
-        function_reads_t::const_iterator fn_itr = _function_reads.find(function);
-
-        if( fn_itr != _function_reads.end() )
+        if( auto functionRead = mapFind(_function_reads, function) )
         {
-            bytes function_read_bytes = fn_itr->second(this);
+            bytes function_read_bytes = (*functionRead)(*this);
 
             copy(function_read_bytes.begin(),
                  function_read_bytes.begin() + min(function_read_bytes.size(), (bytes::size_type)ReadLength),
@@ -360,11 +360,9 @@ bytes Mct410Sim::processRead(bool function_read, unsigned function, Logger &logg
     else
     {
         // Data Read
-        data_reads_t::const_iterator data_itr = _data_reads.find(function);
-
-        if( data_itr != _data_reads.end() )
+        if( auto dataRead = mapFind(_data_reads, function) )
         {
-            bytes data_read_bytes = data_itr->second(this);
+            bytes data_read_bytes = (*dataRead)(*this);
 
             copy(data_read_bytes.begin(),
                  data_read_bytes.begin() + min(data_read_bytes.size(), (bytes::size_type)ReadLength),
@@ -463,7 +461,7 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
 
         if( cmd_itr != _commands.end() )
         {
-            cmd_itr->second(this);
+            cmd_itr->second(*this);
         }
     }
     else if( !function_write && (data.size() > 0) )
@@ -1109,6 +1107,11 @@ bytes Mct410Sim::getLcdConfiguration2()
     return _memory.getValueVectorFromMemoryMap(MM_LcdConfiguration2, MML_LcdConfiguration2);
 }
 
+bytes Mct410Sim::getDisconnectStatus()
+{
+    return _memory.getValueVectorFromMemoryMap(MM_Status2Flags, 1);
+}
+
 double Mct410Sim::getConsumptionMultiplier(const unsigned address)
 {
     unsigned address_range = address % 1000;
@@ -1343,6 +1346,16 @@ void Mct410Sim::putPointOfInterest(const bytes &payload)
 bytes Mct410Sim::getValueVectorFromMemory(unsigned pos, unsigned length)
 {
     return _memory.getValueVectorFromMemoryMap(pos, length);
+}
+
+void Mct410Sim::connect()
+{
+    _memory.writeValueToMemoryMap(MM_Status2Flags, 0x00);
+}
+
+void Mct410Sim::disconnect()
+{
+    _memory.writeValueToMemoryMap(MM_Status2Flags, 0x03);
 }
 
 void Mct410Sim::clearEventFlags()
