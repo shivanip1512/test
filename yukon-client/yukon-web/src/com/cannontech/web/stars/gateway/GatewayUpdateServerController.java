@@ -65,6 +65,9 @@ public class GatewayUpdateServerController {
         public GatewayUpdateModelList(List<GatewayUpdateModel> list) {
             setList(list);
         }
+        
+        /** Constructor Needed for UI **/
+        public GatewayUpdateModelList() {}
 
         public List<GatewayUpdateModel> getList() {
             return list;
