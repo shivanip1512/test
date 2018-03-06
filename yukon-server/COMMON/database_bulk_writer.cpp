@@ -134,7 +134,7 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
 
     boost::optional<DatabaseTransaction> transaction;
 
-    CTILOG_INFO(dout, "Writing " << rows.size() << " records to " << _destTable);
+    CTILOG_DEBUG(dout, "Writing " << rows.size() << " records to " << _destTable);
 
     try
     {
@@ -190,7 +190,7 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
 
         DatabaseWriter finalizer{ conn, getFinalizeSql() };
 
-        CTILOG_INFO(dout, "Finalizing records for " << _destTable);
+        CTILOG_DEBUG(dout, "Finalizing records for " << _destTable);
 
         finalizer.executeWithDatabaseException();
     }
