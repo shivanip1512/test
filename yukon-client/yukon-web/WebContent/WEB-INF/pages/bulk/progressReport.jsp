@@ -6,6 +6,8 @@
 
 <cti:standardPage module="tools" page="bulk.progressReport">
 
+    <cti:toJson id="resultsjson" object="${result}"/>
+
     <input type="hidden" id="key" value="${result.cacheKey}"/>
     <c:forEach var="detail" items="${details}">
         <cti:msg2 var="detailText" key="${detail.formatKey}"/>

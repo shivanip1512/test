@@ -14,7 +14,7 @@ yukon.bulk.progressReport = (function () {
     _initialized = false,
     _key,
     /** @type {number} - The setTimeout reference for periodic updating of the pie chart. */
-    _updateInterval = 3000,
+    _updateInterval = 6000,
     _updateTimeout = null,
     
     _getData = function (data) {
@@ -111,52 +111,56 @@ yukon.bulk.progressReport = (function () {
     
     /** Update the page every so many seconds */
     _update = function () {
-        var chart = $('.js-pie-chart');
         $.ajax({
             url: yukon.url('/bulk/progressReport/updateProgressReport'),
             data: {
                 key: _key,
             }
         }).done(function (data) {
-            if (data.result != null) {
-                //update progress bar
-                var percent = yukon.percent(data.result.counts.percentCompleted, 100, 2);
-                var progress = $('.js-progress');
-                var progressText = $('.js-percent-text');
-                
-                progress.find('.progress-bar').css({ width: percent })
-                .toggleClass('progress-bar-striped', data.result.counts.percentCompleted < 100);
-                progressText.text(percent);
-                $('.js-completed-count').text(data.result.counts.completed + "/" + data.result.inputs.collection.deviceCount);
-                var statusValue = $('#status-' + data.result.status).val();
-                $('.js-status').text(statusValue);
-                
-                //update pie chart
-                if (chart.is('.js-initialize')) {
-                    _buildChart(chart, data.result);
-                } else {
-                    _updateChart(chart, _getData(data.result));
-                }
-                
-                //update stop time and stop updating page when complete
-                if (data.result.counts.percentCompleted == 100) {
-                    clearTimeout(_updateTimeout);
-                    if (data.result.stopTime) {
-                        var timeText = moment(data.result.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
-                        $('.js-stop-time').text(timeText);
-                    }
-                }
-                //if execution exception occurred show error
-                if (data.result.executionExceptionText) {
-                    yukon.ui.alertError(data.result.executionExceptionText);
-                }
-            }
+            _updatePage(data.result);
         });
         if (_updateTimeout) {
             clearTimeout(_updateTimeout);
         }
         _updateTimeout = setTimeout(_update, _updateInterval);
         
+    },
+    
+    _updatePage = function (data) {
+        var chart = $('.js-pie-chart');
+        if (data != null) {
+            //update progress bar
+            var percent = yukon.percent(data.counts.percentCompleted, 100, 2);
+            var progress = $('.js-progress');
+            var progressText = $('.js-percent-text');
+            
+            progress.find('.progress-bar').css({ width: percent })
+            .toggleClass('progress-bar-striped', data.counts.percentCompleted < 100);
+            progressText.text(percent);
+            $('.js-completed-count').text(data.counts.completed + "/" + data.inputs.collection.deviceCount);
+            var statusValue = $('#status-' + data.status).val();
+            $('.js-status').text(statusValue);
+            
+            //update pie chart
+            if (chart.is('.js-initialize')) {
+                _buildChart(chart, data);
+            } else {
+                _updateChart(chart, _getData(data));
+            }
+            
+            //update stop time and stop updating page when complete
+            if (data.counts.percentCompleted == 100) {
+                clearTimeout(_updateTimeout);
+                if (data.stopTime) {
+                    var timeText = moment(data.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
+                    $('.js-stop-time').text(timeText);
+                }
+            }
+            //if execution exception occurred show error
+            if (data.executionExceptionText) {
+                yukon.ui.alertError(data.executionExceptionText);
+            }
+        }
     },
     
     mod = {
@@ -167,8 +171,12 @@ yukon.bulk.progressReport = (function () {
             if (_initialized) return;
             
             _key = $('#key').val();
-
-            _update();
+            var resultsData = yukon.fromJson('#resultsjson');
+            
+            _updatePage(resultsData);
+            if (resultsData.counts.percentCompleted < 100) {
+                _update();
+            }
             
             $(document).on('click', '.js-cancel', function() {
                 $.ajax({
