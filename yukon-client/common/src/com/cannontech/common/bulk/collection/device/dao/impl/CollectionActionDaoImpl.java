@@ -7,6 +7,7 @@ import static com.cannontech.common.device.commands.CommandRequestExecutionStatu
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -251,7 +252,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     private CollectionActionResult buildDbResult(CollectionAction action, int key) {
         Set<YukonPao> failed = new HashSet<>();
         Set<YukonPao> succeeded = new HashSet<>();
-        Set<YukonPao> allDevices = new HashSet<>();
+        List<YukonPao> allDevices = new ArrayList<>();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YPO.PAObjectID, YPO.Type, Result");
         sql.append("FROM CollectionActionRequest CAR");
@@ -281,7 +282,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     
     private CollectionActionResult buildCreResult(CollectionAction action, int key) {
         CommandRequestExecution exec = commandRequestExecutionDao.getById(getCreId(key));
-        Set<YukonPao> allDevices = new HashSet<>(crerDao.getRequestedDeviceIds(exec.getId()));
+        List<PaoIdentifier> allDevices = crerDao.getRequestedDeviceIds(exec.getId());
         CollectionActionResult result = new CollectionActionResult(action, allDevices, loadInputs(key),
             exec, editorDao, tempGroupService, groupHelper);
         
