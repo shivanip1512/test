@@ -2,12 +2,14 @@ package com.cannontech.infrastructure.model;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.google.common.collect.Sets;
 
 /**
  * Represents a single infrastructure warning for a particular device.
@@ -113,5 +115,13 @@ public class InfrastructureWarning implements Displayable, Serializable {
         }
         return true;
     }
-    
+
+    public boolean equalsWithArgs(Object obj) {
+        return equals(obj) && Sets.newHashSet(((InfrastructureWarning) obj).getArguments())
+                                                                           .stream()
+                                                                           .map(Object::toString)
+                                                                           .collect(Collectors.toSet())
+                                                                           .equals(Sets.newHashSet((this.getArguments())));
+    }
+
 }

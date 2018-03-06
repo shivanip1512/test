@@ -121,10 +121,16 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 
                 // Insert warnings into DB (overwriting previous warnings)
                 infrastructureWarningsDao.insert(warnings);
+                
+                // Add event log entries only for warnings that are new in this calculation. Warning arguments checked for equality.
+                List<InfrastructureWarning> eventLogWarnings = getAndLogEventLogWarnings(oldWarnings, warnings);
+                
+                // Used for smart notifications. Warning arguments NOT checked for equality.
+                List<InfrastructureWarning> smartNotificationWarnings = getSmartNotificationWarnings(oldWarnings, eventLogWarnings);
 
                 log.info("Infrastructure warnings calculation complete");
                 
-                sendSmartNotifications(oldWarnings, warnings);
+                sendSmartNotifications(smartNotificationWarnings);
                 sendCacheRefreshRequest(lastRun);
                 
                 isRunning.set(false);
@@ -152,27 +158,18 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
      * Send smart notification events for warnings. Events will only be sent for warnings that weren't in the old list,
      * but are in the new list.
      */
-    private void sendSmartNotifications(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
+    private void sendSmartNotifications(List<InfrastructureWarning> smartNotificationWarnings) {
         Instant now = Instant.now();
-        List<SmartNotificationEvent> events = getNotificationEventsForNewWarnings(oldWarnings, newWarnings, now);
+        List<SmartNotificationEvent> events = getNotificationEventsForNewWarnings(smartNotificationWarnings, now);
         smartNotificationEventCreationService.send(SmartNotificationEventType.INFRASTRUCTURE_WARNING, events);
     }
     
-    private List<SmartNotificationEvent> getNotificationEventsForNewWarnings(List<InfrastructureWarning> oldWarnings, 
-                                                                             List<InfrastructureWarning> newWarnings,
+    private List<SmartNotificationEvent> getNotificationEventsForNewWarnings(List<InfrastructureWarning> smartNotificationWarnings,
                                                                              Instant now) {
         
-        return newWarnings.stream()
-                .filter(warning -> !oldWarnings.contains(warning))
-                .peek(warning -> { // Add event log events for the new warnings
-                    String warningMessage = systemMessageSourceAccessor.getMessage(warning);
-                    infrastructureEventLogService.warningGenerated(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(), 
-                                                                   warning.getWarningType().toString(),
-                                                                   warning.getSeverity().toString(),
-                                                                   warningMessage);
-                })
-                .map(warning -> InfrastructureWarningsEventAssembler.assemble(now, warning))
-                .collect(Collectors.toList());
+        return smartNotificationWarnings.stream()
+                                        .map(warning -> InfrastructureWarningsEventAssembler.assemble(now, warning))
+                                        .collect(Collectors.toList());
     }
     
     private List<PaoType> getCurrentWarnableTypes() {
@@ -180,6 +177,33 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                                   .stream()
                                   .filter(type -> warnableTypes.contains(type))
                                   .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get the list of warnings that are not repeats from the previous calculation (without comparing arguments)
+     */
+    private List<InfrastructureWarning> getSmartNotificationWarnings(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
+        return newWarnings.stream()
+                          .filter(warning -> !oldWarnings.contains(warning))
+                          .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get the list of warnings that are not repeats from the previous calculation (comparing arguments),
+     * log them in the event log, and return the list of non-repeated warnings.
+     */
+    private List<InfrastructureWarning> getAndLogEventLogWarnings(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
+        return newWarnings.stream()
+                       .filter(warning -> oldWarnings.stream()
+                                                     .noneMatch(oldWarning -> oldWarning.equalsWithArgs(warning)))
+                       .peek(warning -> {
+                           String warningMessage = systemMessageSourceAccessor.getMessage(warning);
+                           infrastructureEventLogService.warningGenerated(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(), 
+                                                                          warning.getWarningType().toString(),
+                                                                          warning.getSeverity().toString(),
+                                                                          warningMessage);
+                       })
+                       .collect(Collectors.toList());
     }
     
     @Autowired
