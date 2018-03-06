@@ -1179,42 +1179,83 @@ BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Cogeneration_ReverseFlow_Success)
 BOOST_AUTO_TEST_CASE(test_Mode_Documentation)
 {
     regulator->loadAttributes( &attributes );
+    // give set points an initial value so regulator->setSetPointValue() can be called directly during the test
+    regulator->handlePointData({ 7000, 120.0,  NormalQuality,  AnalogPointType }); 
+    regulator->handlePointData({ 7200, 120.0,  NormalQuality,  AnalogPointType });
 
     struct ControlModeAttributes
     {
         ControlPolicy::ControlModes     controlMode;
-        std::pair<Attribute, Attribute> forwardFlow;
-        std::pair<Attribute, Attribute> reverseFlow;
+        Attribute forwardFlowSetPoint;
+        Attribute reverseFlowSetPoint;
     };
 
     const std::map<double, ControlModeAttributes> testCases
     {
-        {   -1.0,   { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    0.0,   { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    1.0,   { ControlPolicy::LockedReverse        , { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth }, { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth } } },
-        {    2.0,   { ControlPolicy::ReverseIdle          , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    3.0,   { ControlPolicy::Bidirectional        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    4.0,   { ControlPolicy::NeutralIdle          , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    5.0,   { ControlPolicy::Cogeneration         , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth } } },
-        {    6.0,   { ControlPolicy::ReactiveBidirectional, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    7.0,   { ControlPolicy::BiasBidirectional    , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    8.0,   { ControlPolicy::BiasCogeneration     , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {    9.0,   { ControlPolicy::ReverseCogeneration  , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {   10.0,   { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } }
+        { -1.0, { ControlPolicy::LockedForward        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  0.0, { ControlPolicy::LockedForward        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  1.0, { ControlPolicy::LockedReverse        ,  Attribute::ReverseSetPoint,  Attribute::ReverseSetPoint } },
+        {  2.0, { ControlPolicy::ReverseIdle          ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  3.0, { ControlPolicy::Bidirectional        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  4.0, { ControlPolicy::NeutralIdle          ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  5.0, { ControlPolicy::Cogeneration         ,  Attribute::ForwardSetPoint,  Attribute::ReverseSetPoint } },
+        {  6.0, { ControlPolicy::ReactiveBidirectional,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  7.0, { ControlPolicy::BiasBidirectional    ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  8.0, { ControlPolicy::BiasCogeneration     ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        {  9.0, { ControlPolicy::ReverseCogeneration  ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
+        { 10.0, { ControlPolicy::LockedForward        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } }
     };
 
     for ( auto testCase : testCases )
     {
-        regulator->handlePointData( { 7450, testCase.first, NormalQuality, AnalogPointType } ); //set control policy from testCases map
+        // set control policy from testCases map
+        regulator->handlePointData({ 7450, testCase.first, NormalQuality, AnalogPointType });
         BOOST_CHECK_EQUAL(regulator->getConfigurationMode(), testCase.second.controlMode);
 
-        regulator->handlePointData( { 7400, 0, NormalQuality, StatusPointType } ); // forward flow
-        BOOST_CHECK( regulator->getSetPointAttribute() == testCase.second.forwardFlow.first );
-        BOOST_CHECK( regulator->getBandwidthAttribute() == testCase.second.forwardFlow.second );
+        for ( auto i = 0.0; i < 2.0; i++ )
+        {
+            // forward flow when i = 0.0, reverse flow when i = 1.0
+            regulator->handlePointData({ 7400, i, NormalQuality, AnalogPointType });
 
-        regulator->handlePointData({ 7400, 1, NormalQuality, StatusPointType }); // reverse flow
-        BOOST_CHECK( regulator->getSetPointAttribute() == testCase.second.reverseFlow.first );
-        BOOST_CHECK( regulator->getBandwidthAttribute() == testCase.second.reverseFlow.second );
+            // issue set point control with regulator
+            auto actions = regulator->setSetPointValue(120.0);
+            BOOST_REQUIRE(actions.first && actions.second);
+
+            // litePoint to use for comparison in this iteration, out of bounds exception if attribute not in _attr map
+            auto litePoint = attributes._attr.at(regulator->isReverseFlowDetected() ? testCase.second.reverseFlowSetPoint : testCase.second.forwardFlowSetPoint);
+
+            // validate that the set point control went to the correct pointId using the signal message
+            const auto signalMsg = dynamic_cast<CtiSignalMsg *>(actions.first.get());
+            BOOST_REQUIRE(signalMsg);
+            BOOST_CHECK_EQUAL(litePoint.getPointId(), signalMsg->getId()); // ID of SetPoint associated w/ current control mode and flow
+
+            // validate that the set point control went to the correct pointId using the request message
+            const auto requestMsg = actions.second.get();
+            BOOST_REQUIRE(requestMsg);
+            BOOST_CHECK_EQUAL(litePoint.getPaoId(), requestMsg->DeviceId()); // PaoID of SetPoint associated w/ current control mode and flow
+
+            if ( regulator->getConfigurationMode() == ControlPolicy::ControlModes::Cogeneration )
+            {
+                if ( regulator->isReverseFlowDetected() )
+                {
+                    // set reverseBandwidth to a small value
+                    regulator->handlePointData({ 7300, 1, NormalQuality, AnalogPointType });
+                    // issue reverseSetPoint control and save new value
+                    double reverseChangeDistance = std::abs(regulator->requestVoltageChange(0.75, VoltageRegulator::Exclusive));
+                    
+                    // back to forward flow
+                    regulator->handlePointData({ 7400, 0, NormalQuality, AnalogPointType });
+                    // set forwardBandwidth to a large value
+                    regulator->handlePointData({ 7100, 10, NormalQuality, AnalogPointType });
+                    // issue reverseSetPoint control and save new value
+                    double forwardChangeDistance = std::abs(regulator->requestVoltageChange(0.75, VoltageRegulator::Exclusive));
+                    
+                    // assert that distance between original setpoint and reverseBandwidth is smaller than between
+                    // the original setpoint and the forwardBandwidth
+                    BOOST_CHECK_LT(reverseChangeDistance, forwardChangeDistance);
+                }
+            }
+        }
     }
 }
 

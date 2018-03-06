@@ -547,6 +547,7 @@
     <ClCompile Include="test_ccSubstations.cpp" />
     <ClCompile Include="test_ccutil.cpp">
     </ClCompile>
+    <ClCompile Include="test_ControlPolicy.cpp" />
     <ClCompile Include="test_ControlStrategies.cpp">
     </ClCompile>
     <ClCompile Include="test_GangOperatedVoltageRegulator.cpp">

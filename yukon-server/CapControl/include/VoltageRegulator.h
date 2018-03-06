@@ -152,10 +152,7 @@ public:
     ControlPolicy::ControlModes getConfigurationMode();
 
     double getSetPointValue() const;
-    void setSetPointValue( const double newSetPoint );
-
-    Attribute getSetPointAttribute();
-    Attribute getBandwidthAttribute();
+    Policy::Action setSetPointValue( const double newSetPoint );
 
 protected:
 

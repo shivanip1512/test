@@ -371,6 +371,9 @@
     <ClCompile Include="test_LoadTapChanger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_ControlPolicy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\capcontrol_test_helpers.h">
