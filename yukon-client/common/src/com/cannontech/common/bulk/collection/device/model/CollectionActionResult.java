@@ -2,6 +2,7 @@ package com.cannontech.common.bulk.collection.device.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public class CollectionActionResult {
     private CommandCompletionCallback<?> cancelationCallback;
     private boolean isCanceled;
 
-    public CollectionActionResult(CollectionAction action, Set<YukonPao> allDevices,
+    public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
             DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
             DeviceGroupCollectionHelper groupHelper) {
@@ -71,10 +72,10 @@ public class CollectionActionResult {
         }
     }
 
-    public CollectionActionResult(CollectionAction action, Set<YukonPao> allDevices, LinkedHashMap<String, String> inputs,
-            DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
-            DeviceGroupCollectionHelper groupHelper) {
-       this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper);
+    public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
+            LinkedHashMap<String, String> inputs, DeviceGroupMemberEditorDao editorDao,
+            TemporaryDeviceGroupService tempGroupService, DeviceGroupCollectionHelper groupHelper) {
+        this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper);
     }
     
     public boolean isCancelable() {

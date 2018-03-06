@@ -33,13 +33,11 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class CollectionActionServiceImpl implements CollectionActionService{
     
@@ -62,9 +60,8 @@ public class CollectionActionServiceImpl implements CollectionActionService{
             LiteYukonUser user) {
         CommandRequestExecution execution =
             executionDao.createStartedExecution(commandRequestType, deviceRequestType, 0, user);
-        Set<YukonPao> paos = Sets.newHashSet(collection.getDeviceList());
-        CollectionActionResult result =
-            new CollectionActionResult(action, paos, inputs, execution, editorDao, tempGroupService, groupHelper);
+        CollectionActionResult result = new CollectionActionResult(action, collection.getDeviceList(), inputs,
+            execution, editorDao, tempGroupService, groupHelper);
         result.setExecution(execution);
         saveAndLogResult(result, user);
         return result;
@@ -74,9 +71,8 @@ public class CollectionActionServiceImpl implements CollectionActionService{
     @Override
     public CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, LiteYukonUser user) {
-        Set<YukonPao> paos = Sets.newHashSet(collection.getDeviceList());
-        CollectionActionResult result =
-            new CollectionActionResult(action, paos, inputs, editorDao, tempGroupService, groupHelper);
+        CollectionActionResult result = new CollectionActionResult(action, collection.getDeviceList(), inputs,
+            editorDao, tempGroupService, groupHelper);
         saveAndLogResult(result, user);
         return result;
     }
