@@ -1603,7 +1603,7 @@ void CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMultiMsg_vec
     Check if we can operate this bank based on its 'Max Daily Ops' settings.  If we would exceed our setting then
         disable the bank and return true, else return false.
 */
-bool CtiCCCapBank::checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges )
+bool CtiCCCapBank::checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges, Cti::CapControl::EventLogEntries & events )
 {
     if (    getMaxDailyOps() > 0
          && ! getMaxDailyOpsHitFlag()
@@ -1662,6 +1662,33 @@ bool CtiCCCapBank::checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges 
                 pSig->setCondition( CtiTablePointAlarming::highReasonability );
 
                 pointChanges.push_back( pSig.release() );
+            }
+
+            // write to the event log
+            {
+                long    stationID, areaID, specialAreaID;
+
+                CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+                if ( CtiCCFeederPtr feeder = store->findFeederByPAObjectID( getParentId() ) )
+                {
+                    store->getFeederParentInfo( feeder, specialAreaID, areaID, stationID );
+
+                    CtiCapController::submitEventLogEntry(
+                        EventLogEntry( 0,
+                                       getStatusPointId() > 0
+                                            ? getStatusPointId()
+                                            : SYS_PID_CAPCONTROL,
+                                       specialAreaID, areaID, stationID,
+                                       feeder->getParentId(),
+                                       getParentId(),
+                                       capControlDisable,
+                                       feeder->getEventSequence(),
+                                       0,
+                                       "CapBank Disabled - Exceeded Max Daily Operations",
+                                       Cti::CapControl::SystemUser ) );
+                }
             }
         }
 

@@ -1947,7 +1947,7 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             CtiMultiMsg_vec pointChanges;
             EventLogEntries ccEvents;
 
-            if ( ! bank->checkMaxDailyOpCountExceeded( pointChanges ) )
+            if ( ! bank->checkMaxDailyOpCountExceeded( pointChanges, ccEvents ) )
             {
                 double beforeKvar = subbus->getCurrentVarLoadPointValue();
                 double varValueA = subbus->getPhaseAValue();

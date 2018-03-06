@@ -429,22 +429,38 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
                     CtiCCSubstationBusStore::getInstance()->UpdatePaoDisableFlagInDB(currentCapBank, true);
 
                     text = string("CapBank Disabled");
-                    additional = string("CapBank: ");
-                    additional += getPaoName();
-                    if (_LOG_MAPID_INFO)
-                    {
-                        additional += " MapID: ";
-                        additional += currentCapBank->getMapLocationId();
-                        additional += " (";
-                        additional += currentCapBank->getPaoDescription();
-                        additional += ")";
-                    }
                     if (currentCapBank->getOperationAnalogPointId() > 0)
                     {
                         CtiSignalMsg* pSig = new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
                                                               TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, currentCapBank->getCurrentDailyOperations() );
                         pSig->setCondition(CtiTablePointAlarming::highReasonability);
                         pointChanges.push_back(pSig);
+                    }
+
+                    // write to the event log
+                    {
+                        long    stationID, areaID, specialAreaID;
+
+                        {
+                            CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+                            CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+                            store->getFeederParentInfo( this, specialAreaID, areaID, stationID );
+                        }
+
+                        CtiCapController::submitEventLogEntry(
+                            EventLogEntry( 0,
+                                           currentCapBank->getStatusPointId() > 0
+                                                ? currentCapBank->getStatusPointId()
+                                                : SYS_PID_CAPCONTROL,
+                                           specialAreaID, areaID, stationID,
+                                           getParentId(),
+                                           getPaoId(),
+                                           capControlDisable,
+                                           getEventSequence(),
+                                           0,
+                                           "CapBank Disabled - Exceeded Max Daily Operations",
+                                           Cti::CapControl::SystemUser ) );
                     }
 
                     if (!getStrategy()->getEndDaySettings().compare("Trip") && (solution == BankOperation_Open))
@@ -3880,7 +3896,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             }
 
                             //Check other monitor point responses using this potential capbank
-                            if ( ! parentBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                            if ( ! parentBank->checkMaxDailyOpCountExceeded( pointChanges, ccEvents ) &&
                                  areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Close))
                             {
                                 double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
@@ -3943,7 +3959,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                         CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Close");
                                     }
                                     //Check other monitor point responses using this potential capbank
-                                    if ( ! currentCapBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                                    if ( ! currentCapBank->checkMaxDailyOpCountExceeded( pointChanges, ccEvents ) &&
                                          areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Close))
                                     {
                                         double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
@@ -4003,7 +4019,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                 CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Open");
                             }
                             //Check other monitor point responses using this potential capbank
-                            if ( ! parentBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                            if ( ! parentBank->checkMaxDailyOpCountExceeded( pointChanges, ccEvents ) &&
                                  areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Open))
                             {
                                 double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
@@ -4066,7 +4082,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                         CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Open");
                                     }
                                     //Check other monitor point responses using this potential capbank
-                                    if ( ! currentCapBank->checkMaxDailyOpCountExceeded( pointChanges ) &&
+                                    if ( ! currentCapBank->checkMaxDailyOpCountExceeded( pointChanges, ccEvents ) &&
                                          areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Open))
                                     {
                                         double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )

@@ -11,6 +11,7 @@
 #include "PointResponseManager.h"
 #include "pointdefs.h"
 #include "cbcHeartbeatPolicy.h"
+#include "EventLogEntry.h"
 
 #include <boost/scoped_ptr.hpp>
 
@@ -243,7 +244,7 @@ public:
     bool getInsertDynamicDataFlag() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    bool checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges );
+    bool checkMaxDailyOpCountExceeded( CtiMultiMsg_vec & pointChanges, Cti::CapControl::EventLogEntries & events );
 
     /**
      * Uses the passed in connection to dump the data.
