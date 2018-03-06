@@ -213,6 +213,11 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
                         log.debug(buildLogString(execution) + " sent request to porter:" + requestHolder.request);
                     }
                 }
+                
+                if (nothingWritten && !listener.isCanceled()) {
+                    completeRequestAndRemoveListeners(listener, COMPLETE, params.updateExecutionStatus());
+                }
+                
             } catch (ConnectionException e) {
                 String error = buildLogString(execution) + "No porter connection.";
                 log.error(error, e);
@@ -220,7 +225,6 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
                 commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), params.getContextId(),
                     params.getType(), commandToSend, error, params.getUser());
                 completeRequestAndRemoveListeners(listener, FAILED, true);
-
             } catch (Exception e) {
                 log.error(buildLogString(execution), e);
                 callback.processingExceptionOccured(e.getMessage());
@@ -230,9 +234,6 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
             } finally {
                 if (execution.getCommandRequestExecutionType().isPersistedRequestRequired()) {
                     commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIdsProcessed);
-                }
-                if (nothingWritten && !listener.isCanceled()) {
-                    completeRequestAndRemoveListeners(listener, COMPLETE, params.updateExecutionStatus());
                 }
                 listener.getCommandsAreWritingLatch().countDown();
             }
