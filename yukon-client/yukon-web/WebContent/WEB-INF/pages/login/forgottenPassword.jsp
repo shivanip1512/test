@@ -7,8 +7,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page import="com.cannontech.common.version.VersionTools" %>
 
-<%@ page import="net.tanesha.recaptcha.ReCaptcha" %>
-<%@ page import="net.tanesha.recaptcha.ReCaptchaFactory" %>
 
 <!DOCTYPE html>
 <c:set var="module" value="login" />
@@ -38,7 +36,7 @@
                     <form:input autocomplete="off" path="forgottenPasswordField" autofocus="autofocus" size="50"/>
                 </div>
                 
-                <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
+                <tags:captcha captchaSiteKey="${captchaSiteKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
                 <div class="page-action-area">
                     <cti:button type="submit" nameKey="resetPassword" name="resetPassword" classes="js-disable-after-click primary action"/>
                     <cti:url value="/login.jsp" var="loginPage"/>

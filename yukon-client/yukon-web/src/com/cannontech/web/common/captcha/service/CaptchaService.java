@@ -11,8 +11,8 @@ public interface CaptchaService {
     public CaptchaResponse checkCaptcha(Captcha captcha);
 
     /**
-     * This method returns the public key needed to create a Captcha.
+     * This method returns the Site key needed to create a Captcha.
      */
-    public String getPublicKey();
+    public String getSiteKey();
 
 }

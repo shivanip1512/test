@@ -1,6 +1,5 @@
 package com.cannontech.web.common.captcha.model;
 
-import net.tanesha.recaptcha.ReCaptchaResponse;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -13,7 +12,7 @@ public class CaptchaResponse {
         this.error = error;
     }
     public CaptchaResponse(ReCaptchaResponse reCaptchaResponse) {
-        this.error = CaptchaErrorCode.getByCaptchaResponse(reCaptchaResponse.getErrorMessage());
+        this.error = CaptchaErrorCode.getByCaptchaResponse(reCaptchaResponse.getErrorCodes());
     }
 
     public CaptchaErrorCode getError() {

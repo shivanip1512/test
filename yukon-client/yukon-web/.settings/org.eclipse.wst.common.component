@@ -88,9 +88,6 @@
         <dependent-module archiveName="mx4j.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mx4j.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="recaptcha4j-0.0.7.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/recaptcha4j-0.0.7.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="commons-digester-1.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/commons-digester-1.6.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>

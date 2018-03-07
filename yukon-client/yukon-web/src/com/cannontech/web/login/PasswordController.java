@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -52,9 +53,9 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.util.TextView;
 import com.cannontech.web.util.YukonUserContextResolver;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
-import net.tanesha.recaptcha.ReCaptchaException;
 
 @Controller
 public class PasswordController {
@@ -103,68 +104,70 @@ public class PasswordController {
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.POST)
     public String forgottenPasswordRequest(HttpServletRequest request, ModelMap model, FlashScope flash,
                                            @ModelAttribute ForgottenPassword forgottenPassword,
-                                           String recaptcha_challenge_field,
-                                           String recaptcha_response_field)
-    throws Exception {
-        
+            @RequestParam("g-recaptcha-response") String gRecaptchaResponse) throws Exception {
+        if (Strings.isNullOrEmpty(gRecaptchaResponse)) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "captcha.missingInputResponse"));
+            setupModelMap(model, request);
+            return "forgottenPassword.jsp";
+        }
         globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
-        
         // Process Captcha
         CaptchaResponse captchaResponse;
         try {
-            Captcha captcha = new Captcha(request.getRemoteAddr(), recaptcha_challenge_field, recaptcha_response_field);
+            Captcha captcha = new Captcha(request.getServerName(), gRecaptchaResponse);
             captchaResponse = captchaService.checkCaptcha(captcha);
-        } catch (ReCaptchaException e) {
+        } catch (Exception e) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "changePassword.captchaTimeout"));
             setupModelMap(model, request);
             return "forgottenPassword.jsp";
         }
-        
-        // The Captcha failed.  return the user the forgotten password page
+
+        // The Captcha failed. return the user the forgotten password page
         if (captchaResponse.isError()) {
-            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
-                    captchaResponse.getError().getFormatKey());
-            
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request,
+                captchaResponse.getError().getFormatKey());
+
             return "forgottenPassword.jsp";
         }
-        
+
         // Getting the need password reset information.
-        PasswordResetInfo passwordResetInfo = 
-                passwordResetService.getPasswordResetInfo(forgottenPassword.getForgottenPasswordField());
-        
+        PasswordResetInfo passwordResetInfo =
+            passwordResetService.getPasswordResetInfo(forgottenPassword.getForgottenPasswordField());
+
         // Validate the request.
         if (!passwordResetInfo.isPasswordResetInfoValid()) {
-            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
-                    baseKey + "forgottenPassword.invalidProvidedInformation");
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request,
+                baseKey + "forgottenPassword.invalidProvidedInformation");
             return "forgottenPassword.jsp";
         }
-        
+
         // Are we allowed to set this password?
         UserAuthenticationInfo userAuthenticationInfo =
-                userDao.getUserAuthenticationInfo(passwordResetInfo.getUser().getUserID());
+            userDao.getUserAuthenticationInfo(passwordResetInfo.getUser().getUserID());
         if (!authService.supportsPasswordSet(userAuthenticationInfo.getAuthenticationCategory())) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "passwordChange.passwordChangeNotSupported"));
             return "redirect:login.jsp";
         }
-        
-        String passwordResetUrl = 
-                passwordResetService.getPasswordResetUrl(passwordResetInfo.getUser().getUsername(), request, true);
-        YukonUserContext passwordResetUserContext = contextResolver.resolveContext(passwordResetInfo.getUser(), request);
-        
+
+        String passwordResetUrl =
+            passwordResetService.getPasswordResetUrl(passwordResetInfo.getUser().getUsername(), request, true);
+        YukonUserContext passwordResetUserContext =
+            contextResolver.resolveContext(passwordResetInfo.getUser(), request);
+
         // Send out the forgotten password email
         try {
-            passwordResetService.sendPasswordResetEmail(passwordResetUrl, passwordResetInfo.getContact(), 
-                    passwordResetUserContext);
+            passwordResetService.sendPasswordResetEmail(passwordResetUrl, passwordResetInfo.getContact(),
+                passwordResetUserContext);
         } catch (NotFoundException e) {
-            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
-                    baseKey + "forgottenPassword.emailNotFound"); 
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request,
+                baseKey + "forgottenPassword.emailNotFound");
             return "forgottenPassword.jsp";
         } catch (EmailException e) {
-            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
-                    baseKey + "forgottenPassword.emailConnectionIssues"); 
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request,
+                baseKey + "forgottenPassword.emailConnectionIssues");
             return "forgottenPassword.jsp";
         }
-        
+
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "forgottenPassword.forgottenPasswordEmailSent"));
         return "redirect:/login.jsp";
     }
@@ -360,9 +363,9 @@ public class PasswordController {
     private void setupModelMap(ModelMap model, HttpServletRequest request) {
         boolean captchaEnabled = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_CAPTCHAS);
         
-        model.addAttribute("captchaPublicKey", captchaService.getPublicKey());
+        model.addAttribute("captchaSiteKey", captchaService.getSiteKey());
         model.addAttribute("captchaEnabled", captchaEnabled);
-        model.addAttribute("locale", RequestContextUtils.getLocale(request));
+        model.addAttribute("locale", RequestContextUtils.getLocale(request).getLanguage());
     }
     
 }
