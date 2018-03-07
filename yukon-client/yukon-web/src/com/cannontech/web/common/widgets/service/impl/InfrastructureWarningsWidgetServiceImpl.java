@@ -16,22 +16,27 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.web.common.widgets.service.InfrastructureWarningsWidgetService;
 
-public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWarningsWidgetService, MessageListener {
+public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWarningsWidgetService, MessageListener, DBChangeListener {
 
     private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsWidgetServiceImpl.class);
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private InfrastructureWarningsDao infrastructureWarningsDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     private JmsTemplate jmsTemplate;
     private static List<InfrastructureWarning> cachedWarnings;
     private static InfrastructureWarningSummary cachedSummary;
@@ -52,6 +57,7 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
         nextRunTime = lastRunTime.toDateTime().plusMinutes(minimumTimeBetweenRuns).toInstant();
         refreshWarnings = true;
         refreshSummary = true;
+        asyncDynamicDataSource.addDBChangeListener(this);
     }
     
     @Override
@@ -117,5 +123,21 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setDeliveryPersistent(false);
-    }  
+    }
+    
+    @Override
+    public void dbChangeReceived(DBChangeMsg dbChange) {
+        switch (dbChange.getDbChangeType()) {
+        case UPDATE:
+        case DELETE:
+            if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+                if (dbChange.getCategory().equalsIgnoreCase(PaoCategory.DEVICE.getDbString()) && 
+                        cachedWarnings.stream().anyMatch(warning -> warning.getPaoIdentifier().getPaoId() == dbChange.getId())) {
+                    initiateRecalculation();
+                }
+            }
+        default:
+            break;
+        }
+    }
 }
