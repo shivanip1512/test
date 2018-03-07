@@ -23,7 +23,13 @@ public interface CollectionActionService {
     
     CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, LiteYukonUser user);
+    /**
+     * Attempts to cancel execution.
+     */
+    void cancel(int key, LiteYukonUser user);
     
+    void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status);
+
     
     
     
@@ -52,8 +58,7 @@ public interface CollectionActionService {
 
     void compareCacheAndGB(int key);
 
-    void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status);
-
+    
 
 
 

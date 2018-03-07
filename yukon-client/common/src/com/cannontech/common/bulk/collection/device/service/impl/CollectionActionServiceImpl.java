@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail
 import com.cannontech.common.bulk.collection.device.model.CollectionActionProcess;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -39,7 +41,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
-public class CollectionActionServiceImpl implements CollectionActionService{
+public class CollectionActionServiceImpl implements CollectionActionService {
     
     @Autowired private TemporaryDeviceGroupService tempGroupService;
     @Autowired private DeviceGroupMemberEditorDao editorDao;
@@ -47,6 +49,7 @@ public class CollectionActionServiceImpl implements CollectionActionService{
     @Autowired private IDatabaseCache dbCache;
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired private CommandRequestExecutionDao executionDao;
+    @Autowired private List<CollectionActionCancellationService> cancellationService;
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionServiceImpl.class);
     
@@ -75,6 +78,18 @@ public class CollectionActionServiceImpl implements CollectionActionService{
             editorDao, tempGroupService, groupHelper);
         saveAndLogResult(result, user);
         return result;
+    }
+    
+    @Override
+    public void cancel(int key, LiteYukonUser user) {
+        CollectionActionResult cachedResult = cache.getIfPresent(key);
+        if(cachedResult != null) {
+            Optional<CollectionActionCancellationService> service =
+                cancellationService.stream().filter(s -> s.isCancellable(cachedResult.getAction())).findFirst();
+            if(service.isPresent()) {
+                service.get().cancel(cachedResult.getCacheKey(), user);
+            }
+        }
     }
         
     @Transactional

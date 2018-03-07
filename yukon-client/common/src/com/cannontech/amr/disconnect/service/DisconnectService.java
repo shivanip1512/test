@@ -48,9 +48,4 @@ public interface DisconnectService {
 
     CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
             SimpleCallback<CollectionActionResult> callback, LiteYukonUser user);
-
-    /**
-     * Attempts to cancel the command sent.
-     */
-    void cancel(int key, LiteYukonUser user, DisconnectCommand command);
 }

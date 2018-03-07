@@ -1,5 +1,7 @@
 package com.cannontech.amr.disconnect.model;
 
+import java.util.stream.Stream;
+
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -22,6 +24,13 @@ public enum DisconnectCommand implements DisplayableEnum {
 
     public String getPlcCommand() {
         return plcCommand;
+    }
+    
+    public static DisconnectCommand getDisconnectCommand(CollectionAction action) {
+        return Stream.of(DisconnectCommand.values())
+                .filter(command -> command.getCollectionAction() == action)
+                .findFirst()
+                .get();
     }
 
     public CollectionAction getCollectionAction() {

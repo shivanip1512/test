@@ -218,6 +218,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                     result = buildDbResult(action, key);
                 }
                 result.setCacheKey(key);
+                result.setCached(false);
                 result.setStatus(rs.getEnum("Status", CommandRequestExecutionStatus.class));
                 result.setStartTime(rs.getInstant("StartTime"));
                 result.setStopTime(rs.getInstant("StopTime"));

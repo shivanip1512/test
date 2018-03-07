@@ -42,6 +42,8 @@ public class CollectionActionResult {
     @JsonIgnore
     private CommandCompletionCallback<?> cancelationCallback;
     private boolean isCanceled;
+    //result is in cache
+    private boolean isCached = true;
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
@@ -79,7 +81,7 @@ public class CollectionActionResult {
     }
     
     public boolean isCancelable() {
-        return action.isCancelable() && status != null && status == CommandRequestExecutionStatus.STARTED;
+        return isCached && action.isCancelable() && status != null && status == CommandRequestExecutionStatus.STARTED;
     }
 
     public CollectionActionDetailGroup getDetail(CollectionActionDetail detail) {
@@ -222,5 +224,13 @@ public class CollectionActionResult {
             }
             log.debug("status=" + getStatus() + "----------------------------------------------------------------------");
         }
+    }
+
+    public boolean isCached() {
+        return isCached;
+    }
+
+    public void setCached(boolean isCached) {
+        this.isCached = isCached;
     }
 }

@@ -100,7 +100,7 @@ public class DisconnectController {
 
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     public @ResponseBody Map<String, String> cancel(String key, YukonUserContext userContext, DisconnectCommand command) {
-        disconnectService.cancel(new Integer(key), userContext.getYukonUser(), command);
+      //  disconnectService.cancel(new Integer(key), userContext.getYukonUser(), command);
         
         return Collections.singletonMap("success", "true");
     }

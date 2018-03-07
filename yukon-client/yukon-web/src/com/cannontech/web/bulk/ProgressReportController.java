@@ -26,6 +26,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -60,9 +61,9 @@ public class ProgressReportController {
     }
     
     @RequestMapping(value = "cancel", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> cancel(Integer key) {
+    public @ResponseBody Map<String, Object> cancel(Integer key, YukonUserContext context) {
         Map<String, Object> json = new HashMap<>();
-        //TODO: Cancel the collection action
+        collectionActionService.cancel(key, context.getYukonUser());
         return json;
     }
     

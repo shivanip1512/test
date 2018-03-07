@@ -30,9 +30,11 @@ import com.cannontech.amr.disconnect.service.DisconnectStrategyService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.Strategy;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -48,7 +50,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class DisconnectServiceImpl implements DisconnectService {
+public class DisconnectServiceImpl implements DisconnectService, CollectionActionCancellationService {
 
     private final Logger log = YukonLogManager.getLogger(DisconnectServiceImpl.class);
 
@@ -288,9 +290,9 @@ public class DisconnectServiceImpl implements DisconnectService {
     }
 
     @Override
-    public void cancel(int key, LiteYukonUser user, DisconnectCommand command) {
-        disconnectEventLogService.groupCancelAttempted(user, command);
+    public void cancel(int key, LiteYukonUser user) {
         CollectionActionResult result = collectionActionService.getResult(key);
+        disconnectEventLogService.groupCancelAttempted(user, DisconnectCommand.getDisconnectCommand(result.getAction()));
         collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
         result.setCanceled(true);
         for (DisconnectStrategyService strategy : strategies) {
@@ -330,5 +332,11 @@ public class DisconnectServiceImpl implements DisconnectService {
             }
             return false;
         });
+    }
+
+    @Override
+    public boolean isCancellable(CollectionAction action) {
+        return action == CollectionAction.CONNECT || action == CollectionAction.ARM
+            || action == CollectionAction.DISCONNECT;
     }
 }
