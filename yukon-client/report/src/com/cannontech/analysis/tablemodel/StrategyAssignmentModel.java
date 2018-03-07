@@ -26,6 +26,7 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
     
     // member variables
     private final List<ModelRow> data = new ArrayList<ModelRow>();
+    private final String SEASON_SPLIT_FIRST_HALF = "&1&";
 
     private List<Integer> strategyIds;
 
@@ -66,26 +67,30 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
 
     @Override
     public void doLoadData() {
-        
-            
+
         String sql = buildSQLStatement();
-        
+
         jdbcTemplate.query(sql, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                
                 StrategyAssignmentModel.ModelRow row = new StrategyAssignmentModel.ModelRow();
-
                 row.strategyName = rs.getString("strategyName");
                 row.paoName = rs.getString("paoName");
                 row.type = rs.getString("type");
                 row.controlMethod = rs.getString("controlMethod");
                 row.seasonName = rs.getString("seasonName");
-                LocalDate today = new LocalDate(DateTimeZone.forTimeZone(systemDateFormattingService.getSystemTimeZone()));
-                LocalDate startDate = getLocalDate(rs.getString("seasonstartmonth"), rs.getString("seasonstartday"), today);
+                LocalDate today =
+                    new LocalDate(DateTimeZone.forTimeZone(systemDateFormattingService.getSystemTimeZone()));
+                LocalDate startDate =
+                    getLocalDate(rs.getString("seasonstartmonth"), rs.getString("seasonstartday"), today);
                 LocalDate endDate = getLocalDate(rs.getString("seasonendmonth"), rs.getString("seasonendday"), today);
-
-                if ( startDate.isBefore(today) && endDate.isAfter(today) ) {
+                if (row.seasonName.startsWith(SEASON_SPLIT_FIRST_HALF)) {
+                    row.seasonName = row.seasonName.replaceFirst(SEASON_SPLIT_FIRST_HALF, "");
+                    startDate = startDate.minusYears(1);
+                    row.seasonStartDate = startDate.toString();
+                    row.seasonEndDate = endDate.toString();
+                    data.add(row);
+                } else {
                     row.seasonStartDate = startDate.toString();
                     row.seasonEndDate = endDate.toString();
                     data.add(row);
@@ -104,26 +109,30 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
     }
     
     public String buildSQLStatement() {
-        String query = "select ";
-        query += "yp.paobjectid, ";
-        query += "strat.strategyname, ";
-        query += "yp.paoname, ";
-        query += "yp.type, ";
-        query += "strat.controlmethod, ";
-        query += "sa.seasonname, ";
-        query += "dos.seasonstartmonth, ";
-        query += "dos.seasonstartday, ";
-        query += "dos.seasonendmonth, ";
-        query += "dos.seasonendday ";
-        query += "from ccseasonstrategyassignment sa, ";
-        query += "yukonpaobject yp, ";
-        query += "capcontrolstrategy strat, ";
-        query += "dateofseason dos ";
-        query += "where yp.paobjectid = sa.paobjectid ";
-        query += "and strat.strategyid = sa.strategyid ";
-        query += "and sa.seasonscheduleid = dos.seasonscheduleid ";
-        query += "and sa.seasonname = dos.seasonname ";
-        query += "and strat.strategyid <> 0  ";
+        String query = " SELECT ";
+        query += "yp.PaObjectId, ";
+        query += "strat.StrategyName, ";
+        query += "yp.PaoName, ";
+        query += "yp.Type, ";
+        query += "strat.ControlMethod, ";
+        query += "sa.SeasonName, ";
+        query += "dos.SeasonStartMonth, ";
+        query += "dos.SeasonStartDay, ";
+        query += "ds.SeasonEndMonth, ";
+        query += "ds.SeasonEndDay ";
+        query += "FROM YukonPaObject yp ";
+        query += "JOIN CcSeasonStrategyAssignment sa ";
+        query += "ON yp.PaObjectId = sa.PaObjectId ";
+        query += "JOIN CapControlStrategy strat ";
+        query += "ON strat.StrategyId = sa.StrategyId ";
+        query += "JOIN DateOfSeason dos ";
+        query += "ON sa.SeasonScheduleId = dos.SeasonScheduleId ";
+        query += "AND sa.SeasonName = dos.SeasonName ";
+        query += "JOIN DateOfSeason ds ";
+        query += "ON dos.SeasonScheduleId = ds.SeasonScheduleId ";
+        query += "AND dos.SeasonName NOT LIKE '&2&%' ";
+        query += "AND ds.SeasonName NOT LIKE '&1&%' ";
+        query += "WHERE strat.StrategyId <> 0  ";
         
         //Filter here by Selected Strategy
         if( strategyIds.size() > 0) {
