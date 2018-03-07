@@ -1,9 +1,17 @@
 package com.cannontech.web.bulk;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +27,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilteredResult;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.model.Direction;
@@ -27,6 +36,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -35,6 +45,7 @@ public class ProgressReportController {
 
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private CollectionActionDao collectionActionDao;
+    @Autowired private CollectionActionLogDetailService collectionActionLogService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping(value = "detail", method = RequestMethod.GET)
@@ -57,6 +68,10 @@ public class ProgressReportController {
         Map<String, Object> json = new HashMap<>();
         CollectionActionResult result = collectionActionService.getResult(key);
         json.put("result",  result);
+        
+        //toggle icon display
+        collectionActionLogService.hasLog(key);
+        
         return json;
     }
     
@@ -68,8 +83,17 @@ public class ProgressReportController {
     }
     
     @RequestMapping(value = "log", method = RequestMethod.GET)
-    public String log(Integer key) {
-        //TODO: Get log file
+    public String log(HttpServletResponse response, FlashScope flashScope, Integer key) {
+        try (OutputStream output = response.getOutputStream();
+            InputStream input = new FileInputStream(collectionActionLogService.getLog(key))) {
+            response.setContentType("text/csv csv CSV");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + key +".csv\"");
+            IOUtils.copy(input, output);
+        } catch (FileNotFoundException e) {
+            // flashScope.setError
+        } catch (IOException e) {
+            // flashScope.setError
+        }
         return null;
     }
     
