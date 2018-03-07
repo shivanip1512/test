@@ -38,6 +38,7 @@ public:
 
     ptr_type getPortById(LONG pid);
 
+    INT writeQueue(std::unique_ptr<OUTMESS> OutMessage);
     INT writeQueue(OUTMESS *OutMessage);
     INT writeQueueWithPriority(OUTMESS *OutMessage, INT Priority);
 

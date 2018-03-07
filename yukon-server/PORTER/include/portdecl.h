@@ -43,7 +43,8 @@ YukonError_t CCUResponseDecode (INMESS &, CtiDeviceSPtr , OUTMESS *OutMessage);
 void KickerThread();
 YukonError_t DeQueue(const INMESS &);
 INT QueueFlush       (CtiDeviceSPtr Dev);
-INT BuildLGrpQ       (CtiDeviceSPtr Dev, const CtiTime now);
+YukonError_t BuildLGrpQToken(CtiDeviceBase& Dev);
+YukonError_t LoadLGrpQMessage(CtiDeviceBase &Dev, OUTMESS& OutMessage, const CtiTime now);
 INT BuildActinShed   (CtiDeviceSPtr Dev);
 
 /* Prototypes from PORTTIME.C */

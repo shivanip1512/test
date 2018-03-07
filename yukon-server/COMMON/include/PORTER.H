@@ -136,6 +136,7 @@ class CtiDeviceBase;
 #define VERSACOM        0x0400
 #define TSYNC           0x0800
 #define FISHERPIERCE    0x1000
+#define LGRPQ_TOKEN     0x2000
 #define ENCODED         0x4000
 
 

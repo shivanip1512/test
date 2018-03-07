@@ -317,6 +317,19 @@ void CtiPortManager::RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr)
 
 
 
+INT CtiPortManager::writeQueue(std::unique_ptr<OUTMESS> OutMessage)
+{
+    auto result = writeQueue(OutMessage.get());
+
+    if( ! result )
+    {
+        OutMessage.release();  //  successful write, release the OM
+    }
+
+    return result;
+}
+
+    
 INT CtiPortManager::writeQueue(OUTMESS *OutMessage)
 {
     ptr_type pPort = getPortById(OutMessage->Port);

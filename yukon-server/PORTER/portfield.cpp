@@ -895,7 +895,7 @@ YukonError_t DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
         {
         case TYPE_CCU711:
             {
-                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Device->getTrxInfo();
+                auto& trxInfo = static_cast<CtiTransmitter711Info&>(*Device->getTrxInfo());
 
                 /* check if we need to load the time into a time sync */
                 if(OutMessage->EventCode & TSYNC)
@@ -909,22 +909,33 @@ YukonError_t DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                         LoadXTimeMessage (OutMessage->Buffer.OutMessage);
                     }
                 }
+                else if(OutMessage->EventCode & LGRPQ_TOKEN)
+                {
+                    if( auto error = LoadLGrpQMessage(*Device, *OutMessage, CtiTime::now()) )
+                    {
+                        trxInfo.clearStatus(INLGRPQ);
+
+                        return error;
+                    }
+
+                    OutMessage->EventCode &= ~LGRPQ_TOKEN;  //  clear the token in case we have retries, which should resend the message as-is
+                }
 
                 /* Broadcasts do not need CCU preprocessing */
                 if(Device->getAddress() == CCUGLOBAL)
                     break;
 
-                pInfo->reduceEntsConts(OutMessage->EventCode & RCONT);
+                trxInfo.reduceEntsConts(OutMessage->EventCode & RCONT);
 
                 /* Check if we are in an RCONT condition */
-                if(pInfo->getStatus(INRCONT))
+                if(trxInfo.getStatus(INRCONT))
                 {
                     if(OutMessage->EventCode & RCONT)
                     {
                         /* Check out what the message is... if it is not RCOLQ we need to set lengths */
                         if(OutMessage->Command != CMND_RCOLQ)
                         {
-                            OutMessage->InLength = pInfo->RContInLength;
+                            OutMessage->InLength = trxInfo.RContInLength;
                         }
                     }
                 }

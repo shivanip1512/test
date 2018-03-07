@@ -181,7 +181,7 @@ struct buildLGRPQ
 
                             if( !pInfo->getStatus(INLGRPQ) )
                             {
-                                BuildLGrpQ(ccu_device, CtiTime::now());
+                                BuildLGrpQToken(*ccu_device);
                             }
                         }
                     }
@@ -1228,297 +1228,328 @@ INT QueueFlush (CtiDeviceSPtr Dev)
 }
 
 
-INT BuildLGrpQ (CtiDeviceSPtr Dev, const CtiTime now)
+YukonError_t BuildLGrpQToken (CtiDeviceBase& Dev)
 {
-    ULONG Length;
-    ULONG Count;
-    OUTMESS *MyOutMessage, *OutMessage = 0;
-    ULONG i, j;
-    USHORT Offset;
-    USHORT SETLPos, QueTabEnt;
-    BYTE Priority = 7;
-    USHORT QueueEntrySequence = 0;
+    unsigned long Count;
 
-    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Dev->getTrxInfo();
+    auto& trxInfo = static_cast<CtiTransmitter711Info&>(*Dev.getTrxInfo());
 
-    if(QueryQueue (pInfo->QueueHandle, &Count))
+    if(QueryQueue (trxInfo.QueueHandle, &Count))
     {
-        CTILOG_ERROR(dout, "Could not Query Queue Port: "<< Dev->getPortID() <<" Remote: "<< Dev->getAddress());
+        CTILOG_ERROR(dout, "Could not Query Queue Port: "<< Dev.getPortID() <<" Remote: "<< Dev.getAddress());
 
         return ClientErrors::Abnormal;
     }
 
-    if(Count)
+    if( ! Count )
     {
-        /* Handle the scenario of a broadcast entry */
-        if(Dev->getAddress() == CCUGLOBAL)
+        return ClientErrors::None;
+    }
+
+    /* Handle the scenario of a broadcast entry */
+    if(Dev.getAddress() == CCUGLOBAL)
+    {
+        /* This is a no no so throw em away (for now) */
+        for(int i = 0; i < Count; i++)
         {
-            /* This is a no no so throw em away (for now) */
-            for(i = 0; i < Count; i++)
+            OUTMESS* drain;
+            unsigned long Length;
+            unsigned char Priority;
+
+            if(ReadFrontElement(trxInfo.QueueHandle, &Length, (PVOID *) &drain, DCWW_WAIT, &Priority))
             {
-                if(ReadFrontElement(pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
-                {
-                    CTILOG_ERROR(dout, "Could not Read Queue");
-
-                    return ClientErrors::QueueRead;
-                }
-
-                delete (MyOutMessage);
-
-                CTILOG_INFO(dout, "Broadcast Entry Received on Queue Queue for Port: "<< Dev->getPortID());
-            }
-            return ClientErrors::None;
-        }
-
-        /* Check how many entries we can handle on this CCU */
-        if(pInfo->FreeSlots <= pInfo->ReadyN)
-        {
-            if(Count > pInfo->FreeSlots)
-                Count = pInfo->FreeSlots;
-        }
-        else
-        {
-            if(Count > pInfo->ReadyN)
-                Count = pInfo->ReadyN;
-        }
-
-        /* Count now indicates the number of queue entries we will submit to the CCU for execution! */
-
-        /*
-         *  QueSequence is always >= 0x8000.  This "bit" is used to indicate items AND CtiOutMessages which
-         *  are queued on the CCU.  The original Sequence is stored in the CtiTransmitterInfo (pInfo).
-         */
-        if(Count)
-        {
-            QueueEntrySequence = QueSequence++;
-            if(!(QueSequence & 0x8000)) QueSequence = 0x8000;
-        }
-
-        /* Zero out the block counter */
-        Offset = PREIDL;                  // First entry starts here.
-        for(i = 1; i <= Count && !pInfo->getStatus(INLGRPQ); i++)       /* limit to one Lgrpq per ccu on queue at a time */
-        {
-            /* get the client submitted entry from the queue */
-            if(ReadFrontElement(pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
-            {
-                CTILOG_ERROR(dout, "Could not Read Device Queue of "<< Dev->getName());
+                CTILOG_ERROR(dout, "Could not Read Queue");
 
                 return ClientErrors::QueueRead;
             }
 
-            if( CheckIfOutMessageIsExpired(MyOutMessage, now) )
+            delete drain;
+
+            CTILOG_INFO(dout, "Broadcast Entry Received on Queue Queue for Port: "<< Dev.getPortID());
+        }
+        return ClientErrors::None;
+    }
+
+    /* Check how many entries we can handle on this CCU */
+    if(trxInfo.FreeSlots <= trxInfo.ReadyN)
+    {
+        if(Count > trxInfo.FreeSlots)
+            Count = trxInfo.FreeSlots;
+    }
+    else
+    {
+        if(Count > trxInfo.ReadyN)
+            Count = trxInfo.ReadyN;
+    }
+
+    /* Count now indicates the number of queue entries we will submit to the CCU for execution! */
+
+    if( Count )
+    {
+        OUTMESS* MyOutMessage;
+        unsigned long Length, Element;
+        unsigned char Priority;
+
+        if( PeekQueue(trxInfo.QueueHandle, &Length, (PVOID *)&MyOutMessage, &Element, DCWW_WAIT, &Priority) )
+        {
+            CTILOG_ERROR(dout, "Could not Peek Queue");
+
+            return ClientErrors::QueueRead;
+        }
+
+        /*
+        *  QueSequence is always >= 0x8000.  This "bit" is used to indicate items AND CtiOutMessages which
+        *  are queued on the CCU.  The original Sequence is stored in the CtiTransmitterInfo (pInfo).
+        */
+        const auto QueueEntrySequence = QueSequence++;
+        if( !(QueSequence & 0x8000) ) QueSequence = 0x8000;
+
+        auto OutMessage = std::make_unique<OUTMESS>(*MyOutMessage);  //  use the copy constructor to make a clean copy
+
+        OutMessage->Priority       = Priority;
+        OutMessage->DeviceID       = Dev.getID();
+        OutMessage->TargetID       = Dev.getID();
+        OutMessage->Remote         = Dev.getAddress();
+        OutMessage->Port           = Dev.getPortID();
+        OutMessage->Sequence       = QueueEntrySequence;              // Tells us on return that we are queued ( >= 0x8000 )
+        OutMessage->ExpirationTime = 0;
+        OutMessage->Request.UserID = QUEUED_MSG_REQ_ID_BASE + Dev.getAddress();
+        OutMessage->EventCode      = NOWAIT | RESULT | RCONT | LGRPQ_TOKEN;
+        OutMessage->TimeOut        = TIMEOUT;
+        OutMessage->Retry          = 2;
+        OutMessage->InLength       = 0;
+
+        OutMessage->Source         = 0;
+        OutMessage->Destination    = DEST_QUEUE;
+        OutMessage->Command        = CMND_LGRPQ;
+        OutMessage->ReturnNexus    = nullptr;                    // This message IS NOT reportable to the requesting client!
+
+        /* Check the priority and do not let it be less than 11 */
+        OutMessage->Priority = std::max(OutMessage->Priority, gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY", 11));
+
+        PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
+        if( PortManager.writeQueue(std::move(OutMessage)) )
+        {
+            CTILOG_ERROR(dout, "Could not write to queue for Port " << Dev.getPortID());
+            return ClientErrors::PortWrite;
+        }
+
+        trxInfo.setStatus(INLGRPQ);              // This should break our for loop too.
+        trxInfo.PortQueueEnts++;
+        trxInfo.PortQueueConts++;
+    }
+
+    return ClientErrors::None;
+}
+
+YukonError_t LoadLGrpQMessage(CtiDeviceBase &Dev, OUTMESS& OutMessage, const CtiTime now)
+{
+    auto& trxInfo = static_cast<CtiTransmitter711Info &>(*Dev.getTrxInfo());
+
+    unsigned long Count;
+
+    if( QueryQueue(trxInfo.QueueHandle, &Count) )
+    {
+        CTILOG_ERROR(dout, "Could not Query Queue Port: " << Dev.getPortID() << " Remote: " << Dev.getAddress());
+
+        return ClientErrors::Abnormal;
+    }
+
+    if( ! Count )
+    {
+        return ClientErrors::NoRequestsForCcu;
+    }
+
+    /* Check how many entries we can handle on this CCU */
+    if( trxInfo.FreeSlots <= trxInfo.ReadyN )
+    {
+        if( Count > trxInfo.FreeSlots )
+            Count = trxInfo.FreeSlots;
+    }
+    else
+    {
+        if( Count > trxInfo.ReadyN )
+            Count = trxInfo.ReadyN;
+    }
+
+    OutMessage.EventCode &= ~LGRPQ_TOKEN;  //  clear the token
+
+    /* Zero out the block counter */
+    unsigned Offset = PREIDL;                  // First entry starts here.
+    for(int i = 1; i <= Count; i++)
+    {
+        OUTMESS* MyOutMessage;
+        unsigned long Length;
+        unsigned char Priority;
+
+        /* get the client submitted entry from the queue */
+        if(ReadFrontElement(trxInfo.QueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
+        {
+            CTILOG_ERROR(dout, "Could not Read Device Queue of "<< Dev.getName());
+
+            return ClientErrors::QueueRead;
+        }
+
+        if( CheckIfOutMessageIsExpired(MyOutMessage, now) )
+        {
+            continue;
+        }
+
+        int QueTabEnt = 0;
+
+        /* Find the first open entry in the QueTable */
+        for(; QueTabEnt < MAXQUEENTRIES; QueTabEnt++)
+        {
+            if(!trxInfo.QueTable[QueTabEnt].InUse)
+                break;
+        }
+
+        /*
+            *  20020703 CGP
+            *  In a perfect world, the loop above will never have NOT found an open slot...  What if we didn't though?
+            *  It is never nice to stomp memory.  The block below will attempt something new and exciting.
+            *  This "could" happen if FreeSlots had gone south.
+            */
+        if(QueTabEnt == MAXQUEENTRIES)
+        {
+            CTILOG_WARN(dout, Dev.getName() <<"'s CCU QueTable is already full.  Cannot do a LGrpQ. Requeuing the command for later execution.");
+
+            // Replace the MyOutMessage at the rear of its priority on the CCU Queue.
+            if(WriteQueue(trxInfo.QueueHandle, MyOutMessage->Request.GrpMsgID, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
             {
-                continue;
-            }
+                CTILOG_ERROR(dout, "Unable to requeue OM to the CCU->QueueHandle* ");
 
-            /* if this is first in the group get memory for it */
-            if(Offset == PREIDL)
-            {
-                OutMessage = new OUTMESS(*MyOutMessage);
-
-                OutMessage->Priority       = Priority;
-                OutMessage->DeviceID       = Dev->getID();
-                OutMessage->TargetID       = Dev->getID();
-                OutMessage->Remote         = Dev->getAddress();
-                OutMessage->Port           = Dev->getPortID();
-                OutMessage->Sequence       = QueueEntrySequence;              // Tells us on return that we are queued ( >= 0x8000 )
-                OutMessage->ExpirationTime = 0;
-                OutMessage->Request.UserID = QUEUED_MSG_REQ_ID_BASE + Dev->getAddress();
-                OutMessage->EventCode      = NOWAIT | RESULT | RCONT;
-                OutMessage->TimeOut        = TIMEOUT;
-                OutMessage->Retry          = 2;
-                OutMessage->InLength       = 0;
-
-                OutMessage->Source         = 0;
-                OutMessage->Destination    = DEST_QUEUE;
-                OutMessage->Command        = CMND_LGRPQ;
-                OutMessage->ReturnNexus    = NULL;                    // This message IS NOT reportable to the requesting client!
-            }
-
-            /* Find the first open entry in the QueTable */
-            for(QueTabEnt = 0; QueTabEnt < MAXQUEENTRIES; QueTabEnt++)
-            {
-                if(!pInfo->QueTable[QueTabEnt].InUse)
-                    break;
-            }
-
-            /*
-             *  20020703 CGP
-             *  In a perfect world, the loop above will never have NOT found an open slot...  What if we didn't though?
-             *  It is never nice to stomp memory.  The block below will attempt something new and exciting.
-             *  This "could" happen if FreeSlots had gone south.
-             */
-            if(QueTabEnt == MAXQUEENTRIES)
-            {
-                CTILOG_WARN(dout, Dev->getName() <<"'s CCU QueTable is already full.  Cannot do a LGrpQ. Requeuing the command for later execution.");
-
-                // Replace the MyOutMessage at the rear of its priority on the CCU Queue.
-                if(WriteQueue(pInfo->QueueHandle, MyOutMessage->Request.GrpMsgID, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
-                {
-                    CTILOG_ERROR(dout, "Unable to requeue OM to the CCU->QueueHandle* ");
-
-                    delete MyOutMessage;
-                }
-                else
-                {
-                    CTILOG_INFO(dout, "re-queued an OM to the CCU->QueueHandle. Count = "<< Count <<" iteration "<< i);
-                }
+                delete MyOutMessage;
             }
             else
             {
-                /* save where to put the length of this entry */
-                SETLPos = Offset++;
-
-                /* tick off free slots available */
-                --pInfo->FreeSlots;
-                pInfo->QueTable[QueTabEnt].InUse |= INUSE;
-                pInfo->QueTable[QueTabEnt].TimeSent = LongTime();          // Erroneous, but not totally evil.  20020703 CGP.  pInfo->QueTable[i].TimeSent = LongTime();
-
-                /* and load the entry */
-                pInfo->QueTable[QueTabEnt].TargetID       = MyOutMessage->TargetID;
-                pInfo->QueTable[QueTabEnt].ReturnNexus    = MyOutMessage->ReturnNexus;
-                pInfo->QueTable[QueTabEnt].EventCode      = MyOutMessage->EventCode;
-                pInfo->QueTable[QueTabEnt].Priority       = MyOutMessage->Priority;
-                pInfo->QueTable[QueTabEnt].Address        = MyOutMessage->Buffer.BSt.Address;
-                pInfo->QueTable[QueTabEnt].Request        = MyOutMessage->Request;
-                pInfo->QueTable[QueTabEnt].MessageFlags   = MyOutMessage->MessageFlags;
-                pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence  = MyOutMessage->Sequence;            // The orignial requestor's sequence.
-                pInfo->QueTable[QueTabEnt].QueueEntrySequence          = QueueEntrySequence;                // The tatoo which makes this entry (QueTabEnt) identifiable with this OUT/INMESS pair.
-
-                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueTabEnt) & 0x007f;
-                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (MyOutMessage->Sequence);
-
-                OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (QueueEntrySequence);
-                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (QueueEntrySequence);
-
-                /* Load the Priority */
-                OutMessage->Buffer.OutMessage[Offset++] = Priority;
-
-                /* Make sure the outmessage priority keeps up */
-                if(OutMessage->Priority < Priority)
-                    OutMessage->Priority = Priority;
-
-                /* Load the Remote */
-                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (HIUSHORT (MyOutMessage->Buffer.BSt.Address));
-                OutMessage->Buffer.OutMessage[Offset++] = HIBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
-                OutMessage->Buffer.OutMessage[Offset++] = LOBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
-
-                /* Load the bus */
-                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Bus;
-
-                /* Load repeater control */
-                OutMessage->Buffer.OutMessage[Offset++] = (MyOutMessage->Buffer.BSt.DlcRoute.RepVar << 5) | (MyOutMessage->Buffer.BSt.DlcRoute.RepFixed & 0x001f);
-
-                /* Load number of repeaters */
-                OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Stages;
-
-                /* Load the number of functions that will be involved */
-                if(MyOutMessage->Buffer.BSt.IO & Cti::Protocols::EmetconProtocol::IO_Read)
-                {
-                    //  we are going to ignore the arm request
-                    OutMessage->Buffer.OutMessage[Offset++] = 1;
-
-                    //  Select B word, single transmit, & read
-                    if(Double)
-                        OutMessage->Buffer.OutMessage[Offset++] = 0xa8;
-                    else
-                        OutMessage->Buffer.OutMessage[Offset++] = 0x88;
-
-                    //  Select the type of read
-                    if(MyOutMessage->Buffer.BSt.IO & 0x02)
-                        OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
-
-                    OutMessage->Buffer.OutMessage[Offset++] = 0;
-
-                    //  select the Remote
-                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
-
-                    //  Select the number of bytes to read
-                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
-                    //  Save the number of bytes to be read
-                    pInfo->QueTable[QueTabEnt].Length = MyOutMessage->Buffer.BSt.Length;
-                }
-                else
-                {
-                    //  NFUNC set to 1...  perhaps get smarter about combining ARM commands into a single write?
-                    //  This is how things used to be, but to unify the queuing code with DTRAN, they're now two seperate submissions.
-                    //    This isn't ideal, but it works.
-                    OutMessage->Buffer.OutMessage[Offset++] = 1;
-
-                    //  Select B word, single transmit & write
-                    OutMessage->Buffer.OutMessage[Offset++] = 0x80;
-
-                    if(Double)
-                        OutMessage->Buffer.OutMessage[Offset - 1] |= 0x20;
-
-                    //  If it's a function write
-                    if(MyOutMessage->Buffer.BSt.IO & 0x02)
-                        OutMessage->Buffer.OutMessage[Offset - 1] |= 0x10;
-
-                    OutMessage->Buffer.OutMessage[Offset++] = 0;
-
-                    //  select the address / function
-                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
-
-                    //  select the length of the write
-                    OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
-
-                    //  if this is a write copy message to buffer
-                    if(MyOutMessage->Buffer.BSt.Length)
-                    {
-                        for(j = 0; j < MyOutMessage->Buffer.BSt.Length; j++)
-                            OutMessage->Buffer.OutMessage[Offset++] = MyOutMessage->Buffer.BSt.Message[j];
-                    }
-
-                    pInfo->QueTable[QueTabEnt].Length = 0;
-                }
-
-                //  we are done with the request message
-                delete (MyOutMessage);
-
-                //  Now load the setl length for this guy
-                OutMessage->Buffer.OutMessage[SETLPos] = Offset - SETLPos;
-            }
-
-            /* Check if this is the last one or buffer full */
-            if(i == Count || Offset > (MaxOcts - MAXQUEENTLEN - 2))
-            {
-                OutMessage->Buffer.OutMessage[Offset] = 0;
-                OutMessage->OutLength = Offset - PREIDLEN + 2;
-
-                /* Check the priority and do not let it be less than 11 */
-                if(OutMessage->Priority < gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11))
-                    OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
-
-                PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
-                if(PortManager.writeQueue(OutMessage))
-                {
-                    CTILOG_ERROR(dout, "Could not write to queue for Port "<< OutMessage->Port);
-
-                    delete OutMessage;                      // Starting over, so we'd better bop the OM.
-                    OutMessage = 0;
-                    Offset = PREIDL;
-                    continue;
-                }
-                else
-                {
-                    OutMessage = 0;                         // Passed on the memory now!
-                    /* Update the port entries count */
-                    pInfo->setStatus(INLGRPQ);              // This should break our for loop too.
-                    pInfo->PortQueueEnts++;
-                    pInfo->PortQueueConts++;
-                }
-
-                Offset = PREIDL;
+                CTILOG_INFO(dout, "re-queued an OM to the CCU->QueueHandle. Count = "<< Count <<" iteration "<< i);
             }
         }
-
-        if(OutMessage)
+        else
         {
-            delete OutMessage;
-            OutMessage = 0;
+            /* save where to put the length of this entry */
+            int SETLPos = Offset++;
+
+            /* tick off free slots available */
+            --trxInfo.FreeSlots;
+            trxInfo.QueTable[QueTabEnt].InUse |= INUSE;
+            trxInfo.QueTable[QueTabEnt].TimeSent = LongTime();
+
+            /* and load the entry */
+            trxInfo.QueTable[QueTabEnt].TargetID       = MyOutMessage->TargetID;
+            trxInfo.QueTable[QueTabEnt].ReturnNexus    = MyOutMessage->ReturnNexus;
+            trxInfo.QueTable[QueTabEnt].EventCode      = MyOutMessage->EventCode;
+            trxInfo.QueTable[QueTabEnt].Priority       = MyOutMessage->Priority;
+            trxInfo.QueTable[QueTabEnt].Address        = MyOutMessage->Buffer.BSt.Address;
+            trxInfo.QueTable[QueTabEnt].Request        = MyOutMessage->Request;
+            trxInfo.QueTable[QueTabEnt].MessageFlags   = MyOutMessage->MessageFlags;
+            trxInfo.QueTable[QueTabEnt].OriginalOutMessageSequence  = MyOutMessage->Sequence;            // The orignial requestor's sequence.
+            trxInfo.QueTable[QueTabEnt].QueueEntrySequence          = OutMessage.Sequence;                // The tatoo which makes this entry (QueTabEnt) identifiable with this OUT/INMESS pair.
+
+            OutMessage.Buffer.OutMessage[Offset++] = LOBYTE (QueTabEnt) & 0x007f;
+            OutMessage.Buffer.OutMessage[Offset++] = LOBYTE (MyOutMessage->Sequence);
+
+            OutMessage.Buffer.OutMessage[Offset++] = HIBYTE (OutMessage.Sequence);
+            OutMessage.Buffer.OutMessage[Offset++] = LOBYTE (OutMessage.Sequence);
+
+            /* Load the Priority */
+            OutMessage.Buffer.OutMessage[Offset++] = Priority;
+
+            /* Make sure the outmessage priority keeps up */
+            if(OutMessage.Priority < Priority)
+                OutMessage.Priority = Priority;
+
+            /* Load the Remote */
+            OutMessage.Buffer.OutMessage[Offset++] = LOBYTE (HIUSHORT (MyOutMessage->Buffer.BSt.Address));
+            OutMessage.Buffer.OutMessage[Offset++] = HIBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
+            OutMessage.Buffer.OutMessage[Offset++] = LOBYTE (LOUSHORT (MyOutMessage->Buffer.BSt.Address));
+
+            /* Load the bus */
+            OutMessage.Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Bus;
+
+            /* Load repeater control */
+            OutMessage.Buffer.OutMessage[Offset++] = (MyOutMessage->Buffer.BSt.DlcRoute.RepVar << 5) | (MyOutMessage->Buffer.BSt.DlcRoute.RepFixed & 0x001f);
+
+            /* Load number of repeaters */
+            OutMessage.Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Stages;
+
+            /* Load the number of functions that will be involved */
+            if(MyOutMessage->Buffer.BSt.IO & Cti::Protocols::EmetconProtocol::IO_Read)
+            {
+                //  we are going to ignore the arm request
+                OutMessage.Buffer.OutMessage[Offset++] = 1;
+
+                //  Select B word, single transmit, & read
+                if(Double)
+                    OutMessage.Buffer.OutMessage[Offset++] = 0xa8;
+                else
+                    OutMessage.Buffer.OutMessage[Offset++] = 0x88;
+
+                //  Select the type of read
+                if(MyOutMessage->Buffer.BSt.IO & 0x02)
+                    OutMessage.Buffer.OutMessage[Offset - 1] |= 0x10;
+
+                OutMessage.Buffer.OutMessage[Offset++] = 0;
+
+                //  select the Remote
+                OutMessage.Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
+
+                //  Select the number of bytes to read
+                OutMessage.Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
+                //  Save the number of bytes to be read
+                trxInfo.QueTable[QueTabEnt].Length = MyOutMessage->Buffer.BSt.Length;
+            }
+            else
+            {
+                //  NFUNC set to 1...  perhaps get smarter about combining ARM commands into a single write?
+                //  This is how things used to be, but to unify the queuing code with DTRAN, they're now two seperate submissions.
+                //    This isn't ideal, but it works.
+                OutMessage.Buffer.OutMessage[Offset++] = 1;
+
+                //  Select B word, single transmit & write
+                OutMessage.Buffer.OutMessage[Offset++] = 0x80;
+
+                if(Double)
+                    OutMessage.Buffer.OutMessage[Offset - 1] |= 0x20;
+
+                //  If it's a function write
+                if(MyOutMessage->Buffer.BSt.IO & 0x02)
+                    OutMessage.Buffer.OutMessage[Offset - 1] |= 0x10;
+
+                OutMessage.Buffer.OutMessage[Offset++] = 0;
+
+                //  select the address / function
+                OutMessage.Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Function;
+
+                //  select the length of the write
+                OutMessage.Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.Length;
+
+                //  if this is a write copy message to buffer
+                if(MyOutMessage->Buffer.BSt.Length)
+                {
+                    for(int j = 0; j < MyOutMessage->Buffer.BSt.Length; j++)
+                        OutMessage.Buffer.OutMessage[Offset++] = MyOutMessage->Buffer.BSt.Message[j];
+                }
+
+                trxInfo.QueTable[QueTabEnt].Length = 0;
+            }
+
+            //  we are done with the request message
+            delete (MyOutMessage);
+
+            //  Now load the setl length for this guy
+            OutMessage.Buffer.OutMessage[SETLPos] = Offset - SETLPos;
         }
     }
+
+    if( Offset == PREIDL )
+    {
+        return ClientErrors::NoRequestsForCcu;
+    }
+
+    OutMessage.Buffer.OutMessage[Offset] = 0;
+    OutMessage.OutLength = Offset - PREIDLEN + 2;
 
     return ClientErrors::None;
 }
