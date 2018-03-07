@@ -219,7 +219,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
                 }
                 
             } catch (ConnectionException e) {
-                String error = buildLogString(execution) + "No porter connection.";
+                String error = "No porter connection.";
                 log.error(error, e);
                 callback.processingExceptionOccured(error);
                 commandRequestExecutorEventLogService.commandFailedToTransmit(execution.getId(), params.getContextId(),

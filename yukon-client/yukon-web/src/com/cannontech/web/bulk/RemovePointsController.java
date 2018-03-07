@@ -30,9 +30,9 @@ import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.HashMultimap;
@@ -149,7 +149,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         }
 
         // start processor
-        int key = startBulkProcessor(CollectionAction.REMOVE_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.REMOVE_POINTS, new LiteYukonUser(1, "test"));
+        int key = startBulkProcessor(CollectionAction.REMOVE_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.REMOVE_POINTS, YukonUserContext.system);
 
         return "redirect:/bulk/progressReport/detail?key=" + key;
     }

@@ -6,10 +6,10 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.getDisconnectDetail;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +30,13 @@ import com.cannontech.amr.disconnect.service.DisconnectStrategyService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.Strategy;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
@@ -46,6 +49,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -60,21 +64,22 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
     @Autowired private DisconnectEventLogService disconnectEventLogService;
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private CollectionActionLogDetailService logService;
 
     @Override
     public CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
-            SimpleCallback<CollectionActionResult> alertCallback, LiteYukonUser user) {
+            SimpleCallback<CollectionActionResult> alertCallback, YukonUserContext context) {
 
-        disconnectEventLogService.groupDisconnectAttempted(user, command);
+        disconnectEventLogService.groupDisconnectAttempted(context.getYukonUser(), command);
         CollectionActionResult result = collectionActionService.createResult(command.getCollectionAction(), null,
-            deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.GROUP_CONNECT_DISCONNECT, user);
+            deviceCollection, CommandRequestType.DEVICE, DeviceRequestType.GROUP_CONNECT_DISCONNECT, context);
         List<SimpleDevice> allDevices = deviceCollection.getDeviceList();
         /*
          * Start with all the devices, for each strategy remove "not configured" and "valid"
          * devices. The remaining devices will be unsupported.
          */
-        Set<SimpleDevice> unsupportedDevices = Sets.newHashSet(deviceCollection.getDeviceList());
-        Set<SimpleDevice> notConfiguredDevices = new HashSet<>();
+        List<SimpleDevice> unsupportedDevices = deviceCollection.getDeviceList();
+        List<SimpleDevice> notConfiguredDevices = new ArrayList<>();
 
         /*
          * Map holds valid devices for each strategy
@@ -90,16 +95,9 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         
         log.debug("validMetersByStrategy=" + validMetersByStrategy);
 
-        if (!unsupportedDevices.isEmpty()) {
-            result.addDevicesToGroup(UNSUPPORTED, unsupportedDevices);
-            commandRequestExecutionResultDao.saveUnsupported(unsupportedDevices, result.getExecution().getId(),
-                UNSUPPORTED.getCreUnsupportedType());
-        }
-        if (!notConfiguredDevices.isEmpty()) {
-            result.addDevicesToGroup(NOT_CONFIGURED, notConfiguredDevices);
-            commandRequestExecutionResultDao.saveUnsupported(notConfiguredDevices, result.getExecution().getId(),
-                NOT_CONFIGURED.getCreUnsupportedType());
-        }
+        addUnsupportedToResult(UNSUPPORTED, result, unsupportedDevices);
+        addUnsupportedToResult(NOT_CONFIGURED, result, notConfiguredDevices);
+
         if (!unsupportedDevices.isEmpty() || !notConfiguredDevices.isEmpty()) {
             log.debug("Updated result with unsupported and not configured devices:");
             result.log(log);
@@ -112,17 +110,19 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
             @Override
             public void success(DisconnectCommand command, SimpleDevice device, Instant timestamp) {
-                result.addDeviceToGroup(getDisconnectDetail(command), device);
+                CollectionActionLogDetail detail = new CollectionActionLogDetail(device, getDisconnectDetail(command));
+                detail.setTime(timestamp);
+                result.addDeviceToGroup(getDisconnectDetail(command), device, detail);
             }
 
             @Override
             public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
-                result.addDeviceToGroup(FAILURE, device);
+                result.addDeviceToGroup(FAILURE, device, new CollectionActionLogDetail(device, FAILURE));
             }
 
             @Override
             public void canceled(SimpleDevice device) {
-                result.addDeviceToGroup(CANCELED, device);
+                result.addDeviceToGroup(CANCELED, device, new CollectionActionLogDetail(device, CANCELED));
             }
 
             @Override
@@ -132,9 +132,9 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 if (pendingStrategies.isEmpty()) {
                     collectionActionService.updateResult(result, !result.isCanceled()
                         ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
-                    disconnectEventLogService.groupActionCompleted(user, command, result.getCounts().getTotalCount(),
-                        result.getCounts().getSuccessCount(), result.getCounts().getFailedCount(),
-                        result.getCounts().getNotAttemptedCount());
+                    disconnectEventLogService.groupActionCompleted(context.getYukonUser(), command,
+                        result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
+                        result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
                     result.log(log);
                     try {
                         alertCallback.handle(result);
@@ -146,7 +146,9 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
             @Override
             public void processingExceptionOccured(String reason) {
-                result.setExecutionExceptionText(reason);
+                CollectionActionLogDetail log = new CollectionActionLogDetail(null, null);
+                log.setExecutionExceptionText(reason);
+                result.setExecutionExceptionText(reason, log);
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
             }
 
@@ -163,9 +165,9 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 callback.complete(strategy.getStrategy());
             } else {
                 requestCount += meters.size();
-                meters.forEach(meter -> disconnectEventLogService.disconnectInitiated(user, command,
+                meters.forEach(meter -> disconnectEventLogService.disconnectInitiated(context.getYukonUser(), command,
                     dbCache.getAllPaosMap().get(meter.getPaoIdentifier().getPaoId()).getPaoName()));
-                strategy.execute(command, meters, callback, result.getExecution(), user);
+                strategy.execute(command, meters, callback, result.getExecution(), context.getYukonUser());
             }
         }
 
@@ -178,6 +180,12 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         return result;
     }
 
+    private void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
+            List<SimpleDevice> unsupportedDevices) {
+        result.addDevicesToGroup(detail, unsupportedDevices, logService.buildLogDetails(unsupportedDevices, detail));
+        commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(unsupportedDevices),
+            result.getExecution().getId(), detail.getCreUnsupportedType());
+    }
     @Override
     public DisconnectMeterResult execute(DisconnectCommand command, final DeviceRequestType type, YukonMeter meter,
             final LiteYukonUser user) {

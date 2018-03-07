@@ -10,49 +10,64 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_ERROR_TEXT;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.TIMESTAMP;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public enum CollectionAction implements DisplayableEnum {
-    
-    SEND_COMMAND(CRE, SUCCESS, FAILURE, CANCELED),
-    READ_ATTRIBUTE(CRE, SUCCESS, FAILURE, UNSUPPORTED),
-    LOCATE_ROUTE(CRE, SUCCESS, FAILURE, CANCELED),
-    CONNECT(CRE, CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
-    DISCONNECT(CRE, CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
-    ARM(CRE, CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
-    DEMAND_RESET(CRE, CONFIRMED, UNCONFIRMED, FAILURE, UNSUPPORTED, CANCELED),
-    SEND_CONFIG(CRE, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
-    READ_CONFIG(CRE, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
-    ARCHIVE_DATA_ANALYSIS(DB, SUCCESS, FAILURE),
-    MASS_CHANGE(DB, SUCCESS, FAILURE),
-    CHANGE_TYPE(DB, SUCCESS, FAILURE),
-    MASS_DELETE(DB, SUCCESS, FAILURE),
-    ADD_POINTS(DB, SUCCESS, FAILURE),
-    UPDATE_POINTS(DB, SUCCESS, FAILURE),
-    REMOVE_POINTS(DB,SUCCESS, FAILURE),
-    ASSIGN_CONFIG(DB, SUCCESS, FAILURE),
-    UNASSIGN_CONFIG(DB, SUCCESS, FAILURE);
-    
-    private CollectionActionProcess process;
-    
-    private List<CollectionActionDetail> details;
 
-    private CollectionAction(CollectionActionProcess process, CollectionActionDetail... details) {
+    SEND_COMMAND(CRE, null, SUCCESS, FAILURE, CANCELED),
+    READ_ATTRIBUTE(CRE, null, SUCCESS, FAILURE, UNSUPPORTED),
+    LOCATE_ROUTE(CRE, null, SUCCESS, FAILURE, CANCELED),
+    CONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
+    DISCONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
+    ARM(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
+    DEMAND_RESET(CRE, null, CONFIRMED, UNCONFIRMED, FAILURE, UNSUPPORTED, CANCELED),
+    SEND_CONFIG(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
+    READ_CONFIG(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
+    ARCHIVE_DATA_ANALYSIS(DB, null, SUCCESS, FAILURE),
+    MASS_CHANGE(DB, null, SUCCESS, FAILURE),
+    CHANGE_TYPE(DB, null, SUCCESS, FAILURE),
+    MASS_DELETE(DB, null, SUCCESS, FAILURE),
+    ADD_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
+    UPDATE_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
+    REMOVE_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
+    ASSIGN_CONFIG(DB, null, SUCCESS, FAILURE),
+    UNASSIGN_CONFIG(DB, null, SUCCESS, FAILURE);
+
+    private CollectionActionProcess process;
+
+    private List<CollectionActionDetail> details;
+    private Set<CollectionActionOptionalLogEntry> optionalLogEntries;
+
+    private CollectionAction(CollectionActionProcess process, Set<CollectionActionOptionalLogEntry> optionalLogEntries,
+            CollectionActionDetail... details) {
         this.process = process;
         this.details = Collections.unmodifiableList(Lists.newArrayList(details));
+        this.optionalLogEntries = optionalLogEntries;
+    }
+
+    private static Set<CollectionActionOptionalLogEntry> getLogEntries(CollectionActionOptionalLogEntry... entries) {
+        return Collections.unmodifiableSet(Sets.newHashSet(entries));
     }
 
     public List<CollectionActionDetail> getDetails() {
         return details;
+    }
+
+    public boolean contains(CollectionActionOptionalLogEntry entry) {
+        return optionalLogEntries != null && optionalLogEntries.contains(entry);
     }
 
     public boolean isCancelable() {
@@ -61,19 +76,16 @@ public enum CollectionAction implements DisplayableEnum {
 
     public CollectionActionProcess getProcess() {
         return process;
-    } 
-    
-    public List<CommandRequestUnsupportedType> getCreUnsupportedTypes() {
-        return this.getDetails().stream()
-            .filter(detail -> detail.getSummary() == CollectionActionDetailSummary.NOT_ATTEMPTED)
-            .map(detail -> detail.getCreUnsupportedType())
-            .collect(Collectors.toList());
     }
-    
+
+    public List<CommandRequestUnsupportedType> getCreUnsupportedTypes() {
+        return this.getDetails().stream().filter(
+            detail -> detail.getSummary() == CollectionActionDetailSummary.NOT_ATTEMPTED).map(
+                detail -> detail.getCreUnsupportedType()).collect(Collectors.toList());
+    }
+
     public CollectionActionDetail getDetail(CommandRequestUnsupportedType unsupportedType) {
-        return this.getDetails().stream()
-                .filter(d -> d.getCreUnsupportedType() == unsupportedType)
-                .findFirst().get();
+        return this.getDetails().stream().filter(d -> d.getCreUnsupportedType() == unsupportedType).findFirst().get();
     }
 
     @Override

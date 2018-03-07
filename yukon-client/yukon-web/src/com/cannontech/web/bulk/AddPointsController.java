@@ -32,12 +32,12 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.common.flashScope.FlashScope;
 
@@ -138,7 +138,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         }
         
         // start processor
-        int key = startBulkProcessor(CollectionAction.ADD_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS, new LiteYukonUser(1, "test"));
+        int key = startBulkProcessor(CollectionAction.ADD_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS, YukonUserContext.system);
 
         return "redirect:/bulk/progressReport/detail?key=" + key;
     }

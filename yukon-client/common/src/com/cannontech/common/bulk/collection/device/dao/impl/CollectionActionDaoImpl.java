@@ -9,11 +9,9 @@ import static com.cannontech.common.device.commands.CommandRequestExecutionStatu
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.joda.time.Instant;
@@ -251,8 +249,8 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     }
     
     private CollectionActionResult buildDbResult(CollectionAction action, int key) {
-        Set<YukonPao> failed = new HashSet<>();
-        Set<YukonPao> succeeded = new HashSet<>();
+        List<YukonPao> failed = new ArrayList<>();
+        List<YukonPao> succeeded = new ArrayList<>();
         List<YukonPao> allDevices = new ArrayList<>();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YPO.PAObjectID, YPO.Type, Result");
@@ -273,11 +271,11 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             }
         });
         CollectionActionResult result = new CollectionActionResult(action, allDevices, loadInputs(key),
-            null, editorDao, tempGroupService, groupHelper);
+            null, editorDao, tempGroupService, groupHelper, null, null);
         //failure bucket
-        result.addDevicesToGroup(FAILURE, failed);
+        result.addDevicesToGroup(FAILURE, failed, null);
         //success bucket
-        result.addDevicesToGroup(SUCCESS, succeeded);
+        result.addDevicesToGroup(SUCCESS, succeeded, null);
         return result;
     }
     
@@ -285,22 +283,22 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         CommandRequestExecution exec = commandRequestExecutionDao.getById(getCreId(key));
         List<PaoIdentifier> allDevices = crerDao.getRequestedDeviceIds(exec.getId());
         CollectionActionResult result = new CollectionActionResult(action, allDevices, loadInputs(key),
-            exec, editorDao, tempGroupService, groupHelper);
+            exec, editorDao, tempGroupService, groupHelper, null, null);
         
-        Set<YukonPao> failed = new HashSet<>(crerDao.getFailDeviceIdsByExecutionId(exec.getId()));
-        Set<YukonPao> succeeded = new HashSet<>(crerDao.getSucessDeviceIdsByExecutionId(exec.getId()));
+        List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
+        List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());
         
         Map<CommandRequestUnsupportedType, List<PaoIdentifier>> unsupported = action.getCreUnsupportedTypes()
                 .stream().collect(Collectors.toMap(type -> type, type -> crerDao.getUnsupportedDeviceIdsByExecutionId(exec.getId(), type)));
         //failure bucket
-        result.addDevicesToGroup(FAILURE, failed);
+        result.addDevicesToGroup(FAILURE, failed, null);
         //unsupported buckets
-        unsupported.forEach((k, v) -> result.addDevicesToGroup(action.getDetail(k), new HashSet<>(v)));
+        unsupported.forEach((k, v) -> result.addDevicesToGroup(action.getDetail(k), new ArrayList<>(v), null));
         //success bucket
         if (action == CollectionAction.DEMAND_RESET) {
             throw new RuntimeException("Not implemented");
         } else {
-            result.addDevicesToGroup(CollectionActionDetail.getSuccessDetail(action), succeeded);
+            result.addDevicesToGroup(CollectionActionDetail.getSuccessDetail(action), succeeded, null);
         }
         return result;
     }

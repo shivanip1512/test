@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -14,6 +13,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -21,15 +21,17 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CollectionActionResult {
     private int cacheKey;
     private CollectionAction action;
     private DeviceGroupMemberEditorDao editorDao;
+    private CollectionActionLogDetailService logService;
     private CollectionActionInputs inputs;
     private Instant startTime;
     private Instant stopTime;
@@ -44,11 +46,13 @@ public class CollectionActionResult {
     private boolean isCanceled;
     //result is in cache
     private boolean isCached = true;
+    private YukonUserContext context;
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
             DeviceGroupMemberEditorDao editorDao, TemporaryDeviceGroupService tempGroupService,
-            DeviceGroupCollectionHelper groupHelper) {
+            DeviceGroupCollectionHelper groupHelper, CollectionActionLogDetailService logService,
+            YukonUserContext context) {
         StoredDeviceGroup tempGroup = tempGroupService.createTempGroup();
         editorDao.addDevices(tempGroup, allDevices);
         DeviceCollection allDeviceCollection = groupHelper.buildDeviceCollection(tempGroup);
@@ -57,6 +61,8 @@ public class CollectionActionResult {
         this.editorDao = editorDao;
         this.execution = execution;
         this.action = action;
+        this.logService = logService;
+        this.context = context;
         counts = new CollectionActionCounts(this);
         action.getDetails().forEach(detail -> {
             StoredDeviceGroup group = tempGroupService.createTempGroup();
@@ -76,10 +82,11 @@ public class CollectionActionResult {
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, DeviceGroupMemberEditorDao editorDao,
-            TemporaryDeviceGroupService tempGroupService, DeviceGroupCollectionHelper groupHelper) {
-        this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper);
+            TemporaryDeviceGroupService tempGroupService, DeviceGroupCollectionHelper groupHelper,
+            CollectionActionLogDetailService logService, YukonUserContext context) {
+        this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper, logService, context);
     }
-    
+
     public boolean isCancelable() {
         return isCached && action.isCancelable() && status != null && status == CommandRequestExecutionStatus.STARTED;
     }
@@ -96,14 +103,16 @@ public class CollectionActionResult {
         return execution;
     }
 
-    public void addDevicesToGroup(CollectionActionDetail detail, Set<? extends YukonPao> paos) {
+    public void addDevicesToGroup(CollectionActionDetail detail, List<? extends YukonPao> paos,
+            List<CollectionActionLogDetail> log) {
         if (!paos.isEmpty()) {
             editorDao.addDevices(details.get(detail).getGroup(), paos);
+            logService.appendToLog(this, log);
         }
     }
 
-    public void addDeviceToGroup(CollectionActionDetail detail, YukonPao pao) {
-        addDevicesToGroup(detail, Sets.newHashSet(pao));
+    public void addDeviceToGroup(CollectionActionDetail detail, YukonPao pao, CollectionActionLogDetail log) {
+        addDevicesToGroup(detail, Lists.newArrayList(pao), Lists.newArrayList(log));
     }
 
     public void setExecution(CommandRequestExecution execution) {
@@ -122,8 +131,9 @@ public class CollectionActionResult {
         return executionExceptionText;
     }
 
-    public void setExecutionExceptionText(String executionExceptionText) {
+    public void setExecutionExceptionText(String executionExceptionText, CollectionActionLogDetail log) {
         this.executionExceptionText = executionExceptionText;
+        logService.appendToLog(this, log);
     }
 
     public CollectionActionInputs getInputs() {
@@ -190,12 +200,25 @@ public class CollectionActionResult {
     public Map<CollectionActionDetail, CollectionActionDetailGroup> getDetails() {
         return details;
     }
+    
+    public boolean isCached() {
+        return isCached;
+    }
+
+    public void setCached(boolean isCached) {
+        this.isCached = isCached;
+    }
+
+    public YukonUserContext getContext() {
+        return context;
+    }
 
     public void log(Logger log) {
         if (log.isDebugEnabled()) {
             DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
             df.withZone(DateTimeZone.getDefault());
             log.debug("Key=" + getCacheKey() + "----------------------------------------------------------------------");
+            log.debug("Cached=" + isCached());
             log.debug("Start Time:" + startTime.toString(df));
             log.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
             if (execution != null) {
@@ -224,13 +247,5 @@ public class CollectionActionResult {
             }
             log.debug("status=" + getStatus() + "----------------------------------------------------------------------");
         }
-    }
-
-    public boolean isCached() {
-        return isCached;
-    }
-
-    public void setCached(boolean isCached) {
-        this.isCached = isCached;
     }
 }

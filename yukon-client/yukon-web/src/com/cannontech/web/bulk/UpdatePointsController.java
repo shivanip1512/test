@@ -23,7 +23,6 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -144,7 +143,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
         // start processor
         int key  =
-            startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, new LiteYukonUser(1, "test"));
+            startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, YukonUserContext.system);
 
         return "redirect:/bulk/progressReport/detail?key=" + key;
     }

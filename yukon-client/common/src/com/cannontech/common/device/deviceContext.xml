@@ -19,6 +19,7 @@
     <bean class="com.cannontech.common.device.commands.service.impl.GroupCommandExecutionServiceImpl"/>
   
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionServiceImpl"/>
+    <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionLogDetailServiceImpl"/>
     
     <bean id="commandRequestExecutionDao"
         class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionDaoImpl"/>

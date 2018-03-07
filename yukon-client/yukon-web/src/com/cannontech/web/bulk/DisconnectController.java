@@ -1,7 +1,6 @@
 package com.cannontech.web.bulk;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -19,15 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.alert.model.Alert;
-import com.cannontech.common.alert.model.AlertType;
-import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -78,7 +73,7 @@ public class DisconnectController {
         CollectionActionResult result = disconnectService.execute(command,
                                       deviceCollection,
                                       new AlertCallback(userContext, request),
-                                      userContext.getYukonUser());
+                                      userContext);
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
 

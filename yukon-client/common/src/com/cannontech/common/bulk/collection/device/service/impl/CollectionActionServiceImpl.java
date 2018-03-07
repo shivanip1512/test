@@ -26,6 +26,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionProces
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -36,6 +37,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -49,6 +51,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired private CommandRequestExecutionDao executionDao;
+    @Autowired private CollectionActionLogDetailService logService;
     @Autowired private List<CollectionActionCancellationService> cancellationService;
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionServiceImpl.class);
@@ -60,23 +63,23 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, CommandRequestType commandRequestType, DeviceRequestType deviceRequestType,
-            LiteYukonUser user) {
+            YukonUserContext context) {
         CommandRequestExecution execution =
-            executionDao.createStartedExecution(commandRequestType, deviceRequestType, 0, user);
+            executionDao.createStartedExecution(commandRequestType, deviceRequestType, 0, context.getYukonUser());
         CollectionActionResult result = new CollectionActionResult(action, collection.getDeviceList(), inputs,
-            execution, editorDao, tempGroupService, groupHelper);
+            execution, editorDao, tempGroupService, groupHelper, logService, context);
         result.setExecution(execution);
-        saveAndLogResult(result, user);
+        saveAndLogResult(result, context.getYukonUser());
         return result;
     }
 
     @Transactional
     @Override
     public CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
-            DeviceCollection collection, LiteYukonUser user) {
+            DeviceCollection collection, YukonUserContext context) {
         CollectionActionResult result = new CollectionActionResult(action, collection.getDeviceList(), inputs,
-            editorDao, tempGroupService, groupHelper);
-        saveAndLogResult(result, user);
+            editorDao, tempGroupService, groupHelper, logService, context);
+        saveAndLogResult(result, context.getYukonUser());
         return result;
     }
     
@@ -186,9 +189,9 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         }
 
 
-
-        CollectionActionResult result = createResult(action, userInputs, devices,
-            new LiteYukonUser(1, String.valueOf((char) (rand.nextInt(26) + 'a'))));
+        YukonUserContext context = YukonUserContext.system;
+        context.getYukonUser().setUsername(String.valueOf((char) (rand.nextInt(26) + 'a')));
+        CollectionActionResult result = createResult(action, userInputs, devices, context);
 
         if (status == CommandRequestExecutionStatus.STARTED || status == CommandRequestExecutionStatus.CANCELING) {
             stopTime = null;
@@ -196,7 +199,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             subset.forEach(meter -> {
                 int randomIndex = rand.nextInt(action.getDetails().size());
                 CollectionActionDetail bucket = Lists.newArrayList(action.getDetails()).get(randomIndex);
-                result.addDeviceToGroup(bucket, meter);
+                result.addDeviceToGroup(bucket, meter, null);
                 if (result.getAction().getProcess() == CollectionActionProcess.DB) {
                     if (bucket == CollectionActionDetail.SUCCESS) {
                         collectionActionDao.updateDbRequestStatus(result.getCacheKey(),

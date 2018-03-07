@@ -70,6 +70,8 @@ public final class CtiUtilities {
     public static final String CURRENT_DIR = System.getProperty("user.dir")
                                              + System.getProperty("file.separator");
     public static final String EXPORT_ARCHIVE_DIR = "ExportArchive";
+    
+    public static final String COLLECTION_ACTION_DIR = "CollectionAction";
 
     public static final String STRING_NONE = "(none)";
     public static final String STRING_DEFAULT = "Default";
@@ -335,6 +337,18 @@ public final class CtiUtilities {
     
     public final static String getArchiveDirPath() {
         String path = getYukonBase() + System.getProperty("file.separator") + EXPORT_ARCHIVE_DIR;
+        File dir = new File(path);
+        if (!dir.exists()) {
+            boolean success = dir.mkdirs();
+            if (!success) {
+                throw new FileCreationException("Error creating directory " + path);
+            }
+        }
+        return path;
+    }
+    
+    public final static String getCollectionActionDirPath() {
+        String path = getArchiveDirPath() + System.getProperty("file.separator") + COLLECTION_ACTION_DIR;
         File dir = new File(path);
         if (!dir.exists()) {
             boolean success = dir.mkdirs();
@@ -848,7 +862,7 @@ public final class CtiUtilities {
         final Comparator<U> comparator = Ordering.natural();
         List<Translated<T, U>> itemsWithTranslations = new ArrayList<>();
         for (T item : items) {
-            itemsWithTranslations.add(new Translated<T, U>(item, translator.apply(item)));
+            itemsWithTranslations.add(new Translated<>(item, translator.apply(item)));
         }
         Comparator<Translated<T, U>> translatedComparator = new Comparator<Translated<T, U>>() {
             @Override

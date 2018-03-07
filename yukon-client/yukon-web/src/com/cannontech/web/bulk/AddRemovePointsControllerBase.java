@@ -29,6 +29,7 @@ import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
@@ -53,8 +54,8 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
@@ -96,11 +97,11 @@ public abstract class AddRemovePointsControllerBase {
     }
     
     // START BULK PROCESSOR
-    public int startBulkProcessor(CollectionAction action, DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType, LiteYukonUser user) {
+    public int startBulkProcessor(CollectionAction action, DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType, YukonUserContext context) {
              
         
         CollectionActionResult result = collectionActionService.createResult(action, null,
-            deviceCollection, user);
+            deviceCollection, context);
         
         // PROCESS
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -113,27 +114,30 @@ public abstract class AddRemovePointsControllerBase {
 
             @Override
             public void receivedProcessingException(int rowNumber, SimpleDevice device, ProcessorCallbackException e) {
-                result.addDeviceToGroup(CollectionActionDetail.FAILURE, device);
+                CollectionActionLogDetail log = new CollectionActionLogDetail(device, CollectionActionDetail.FAILURE);
+                log.setDeviceErrorText(e.getMessage());
+                result.addDeviceToGroup(CollectionActionDetail.FAILURE, device, log);
             }
 
-            @Override
-            public void processedObject(int rowNumber, SimpleDevice device) {
-                result.addDeviceToGroup(CollectionActionDetail.SUCCESS, device);
-                
-            }
+                @Override
+                public void processedObject(int rowNumber, SimpleDevice device) {
+                    result.addDeviceToGroup(CollectionActionDetail.SUCCESS, device,
+                        new CollectionActionLogDetail(device, CollectionActionDetail.SUCCESS));
+                }
 
             @Override
             public void processingSucceeded() {
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
                 log.debug("Result completed");
                 result.log(log);
-                
             }
 
             @Override
             public void processingFailed(Exception e) {
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
-                log.debug("Result completed");
+                CollectionActionLogDetail detailLog = new CollectionActionLogDetail(null, CollectionActionDetail.FAILURE);
+                detailLog.setExecutionExceptionText("Failed");
+                result.setExecutionExceptionText("Failed", detailLog);
                 result.log(log);
             }
         });

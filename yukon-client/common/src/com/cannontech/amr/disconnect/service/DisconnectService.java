@@ -11,6 +11,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface DisconnectService {
 
@@ -47,5 +48,5 @@ public interface DisconnectService {
             LiteYukonUser user);
 
     CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
-            SimpleCallback<CollectionActionResult> callback, LiteYukonUser user);
+            SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
 }

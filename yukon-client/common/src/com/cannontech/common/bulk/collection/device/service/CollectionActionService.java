@@ -11,6 +11,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface CollectionActionService {
 
@@ -19,10 +20,10 @@ public interface CollectionActionService {
 
     CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, CommandRequestType commandRequestType, DeviceRequestType deviceRequestType,
-            LiteYukonUser user);
+            YukonUserContext context);
     
     CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
-            DeviceCollection collection, LiteYukonUser user);
+            DeviceCollection collection, YukonUserContext context);
     /**
      * Attempts to cancel execution.
      */
