@@ -7,6 +7,9 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Holds Type ID information
  * Enum represents name of the field and holds Identifier value and is used to get field value
+ * 
+ * These entries are based on the values in the LCR TLV Report documentation at 
+ * http://teams.etn.com/es/EASEngineering/EAS%20Engineering%20Documents/Forms/AllItems.aspx?RootFolder=%2fes%2fEASEngineering%2fEAS%20Engineering%20Documents%2fEnd%20Point%20Automation%2fEndpoint%20Software%2fProtocol%20Specifications%2fDR%20Report
  */
 public enum FieldType {
 
