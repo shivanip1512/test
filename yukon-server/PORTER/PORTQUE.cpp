@@ -1372,8 +1372,6 @@ YukonError_t LoadLGrpQMessage(CtiDeviceBase &Dev, OUTMESS& OutMessage, const Cti
             Count = trxInfo.ReadyN;
     }
 
-    OutMessage.EventCode &= ~LGRPQ_TOKEN;  //  clear the token
-
     /* Zero out the block counter */
     unsigned Offset = PREIDL;                  // First entry starts here.
     for(int i = 1; i <= Count; i++)

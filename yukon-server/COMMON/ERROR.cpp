@@ -33,7 +33,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::Word1NackPadded,             ei{ ERRTYPEPROTOCOL, "Word 1 NACK Padded"                          } },
         { ClientErrors::Word2NackPadded,             ei{ ERRTYPEPROTOCOL, "Word 2 NACK Padded"                          } },
         { ClientErrors::Word3NackPadded,             ei{ ERRTYPEPROTOCOL, "Word 3 NACK Padded"                          } },
-        { ClientErrors::NoRequestsForCcu,                  ei{ ERRTYPESYSTEM,   "No Requests for CCU Queue"                   } },
+        { ClientErrors::NoRequestsForCcu,            ei{ ERRTYPESYSTEM,   "No Requests for CCU Queue"                   } },
         { ClientErrors::BadParameter,                ei{ ERRTYPESYSTEM,   "Bad Parameter"                               } },
         { ClientErrors::BadRoute,                    ei{ ERRTYPESYSTEM,   "Bad Route Specification"                     } },
         { ClientErrors::BadBusSpecification,         ei{ ERRTYPESYSTEM,   "Bad Bus Specification"                       } },
