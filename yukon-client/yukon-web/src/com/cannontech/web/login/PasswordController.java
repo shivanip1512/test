@@ -103,9 +103,12 @@ public class PasswordController {
     
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.POST)
     public String forgottenPasswordRequest(HttpServletRequest request, ModelMap model, FlashScope flash,
-                                           @ModelAttribute ForgottenPassword forgottenPassword,
-            @RequestParam("g-recaptcha-response") String gRecaptchaResponse) throws Exception {
-        if (Strings.isNullOrEmpty(gRecaptchaResponse)) {
+            @ModelAttribute ForgottenPassword forgottenPassword,
+            @RequestParam(value = "g-recaptcha-response", required = false) String gRecaptchaResponse)
+            throws Exception {
+
+        boolean isCaptchasEnabled = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_CAPTCHAS);
+        if (Strings.isNullOrEmpty(gRecaptchaResponse) && isCaptchasEnabled) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "captcha.missingInputResponse"));
             setupModelMap(model, request);
             return "forgottenPassword.jsp";
@@ -115,7 +118,7 @@ public class PasswordController {
         CaptchaResponse captchaResponse;
         try {
             Captcha captcha = new Captcha(request.getServerName(), gRecaptchaResponse);
-            captchaResponse = captchaService.checkCaptcha(captcha);
+            captchaResponse = captchaService.checkCaptcha(captcha, isCaptchasEnabled);
         } catch (Exception e) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "changePassword.captchaTimeout"));
             setupModelMap(model, request);

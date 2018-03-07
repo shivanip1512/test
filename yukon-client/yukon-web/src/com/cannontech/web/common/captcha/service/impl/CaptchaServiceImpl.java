@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.util.YukonHttpProxy;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.captcha.model.Captcha;
 import com.cannontech.web.common.captcha.model.CaptchaErrorCode;
@@ -50,10 +49,8 @@ public class CaptchaServiceImpl implements CaptchaService{
     }
     
     @Override
-    public CaptchaResponse checkCaptcha(Captcha captcha) {
-        
+    public CaptchaResponse checkCaptcha(Captcha captcha, boolean isCaptchasEnabled) {
         // The captcha service is currently turned off.  Return no errors since it's not being used.
-        boolean isCaptchasEnabled = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_CAPTCHAS);
         if (!isCaptchasEnabled) {
             return new CaptchaResponse(CaptchaErrorCode.NO_ERRORS);
         }
