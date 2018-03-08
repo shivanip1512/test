@@ -80,8 +80,18 @@ public class CollectionActionCounts {
         return calculate(detailTotal);
     }
     
+    public double getPercentageCompleted(CollectionActionDetail detail) {
+        int detailTotal = result.getDeviceCollection(detail).getDeviceCount();
+        int completed = getCompleted();
+        if (detailTotal > 0 && completed > 0) {
+            return new BigDecimal(detailTotal).divide(new BigDecimal(getCompleted()), 2, RoundingMode.HALF_EVEN).multiply(
+                new BigDecimal(100)).doubleValue();
+        }
+            return 0;
+    }
+    
     public Map<CollectionActionDetail, Double> getPercentages() {
         return result.getAction().getDetails().stream()
-                .collect(Collectors.toMap(detail -> detail, detail -> getPercentage(detail)));
+                .collect(Collectors.toMap(detail -> detail, detail -> getPercentageCompleted(detail)));
     }
 }

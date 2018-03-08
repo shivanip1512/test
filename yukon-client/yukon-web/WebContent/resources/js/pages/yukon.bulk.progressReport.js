@@ -22,15 +22,15 @@ yukon.bulk.progressReport = (function () {
         Object.keys(data.details).forEach(function(key) {
             var item = {},
                 value = data.details[key],
-                cogMenu = $('.js-cog-menu').clone();
-            cogMenu.removeClass('js-cog-menu');
-            if (value.devices.deviceCount > 0) {
+                deviceCount = value.devices.deviceCount;
+            if (deviceCount > 0) {
+                var cogMenu = $('.js-cog-menu').clone();
+                cogMenu.removeClass('js-cog-menu');
                 item.name = $('#detail-' + key).val();
                 item.color = $('#color-' + key).val();
-                item.x = value.devices.deviceCount;
-                item.y = value.devices.deviceCount / data.counts.completed;
-                item.displayPercentage = yukon.percent(value.devices.deviceCount, data.counts.completed, 1);
-                item.url = yukon.url("/bulk/collectionActions?" + $.param(value.devices.collectionParameters));
+                var percentage = data.counts.percentages[key];
+                item.x = deviceCount;
+                item.y = percentage;
                 //change the urls for the menu to be the correct devices
                 cogMenu.find('a').each(function() {
                     var href = $(this).attr('href');
@@ -71,7 +71,7 @@ yukon.bulk.progressReport = (function () {
                 useHTML: true,
                 labelFormatter: function (point) {
                     var spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
-                    return spanText + this.name + ': ' + this.displayPercentage + this.cog[0].outerHTML;
+                    return spanText + this.name + ': ' + this.y + "%" + this.cog[0].outerHTML;
                 },
                 layout: 'vertical',
                 verticalAlign: 'middle'
@@ -160,6 +160,9 @@ yukon.bulk.progressReport = (function () {
             if (data.executionExceptionText) {
                 yukon.ui.alertError(data.executionExceptionText);
             }
+            //show/hide cancel
+            $('.js-cancel').toggleClass('dn', !data.cancelable);
+            
         }
     },
     
