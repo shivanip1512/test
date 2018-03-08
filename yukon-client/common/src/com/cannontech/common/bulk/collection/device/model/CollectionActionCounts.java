@@ -2,6 +2,9 @@ package com.cannontech.common.bulk.collection.device.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetailSummary.*;
 
 public class CollectionActionCounts {
@@ -75,5 +78,10 @@ public class CollectionActionCounts {
     public double getPercentage(CollectionActionDetail detail) {
         int detailTotal = result.getDeviceCollection(detail).getDeviceCount();
         return calculate(detailTotal);
+    }
+    
+    public Map<CollectionActionDetail, Double> getPercentages() {
+        return result.getAction().getDetails().stream()
+                .collect(Collectors.toMap(detail -> detail, detail -> getPercentage(detail)));
     }
 }
