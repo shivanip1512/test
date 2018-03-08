@@ -28,7 +28,7 @@ struct TestAttributeService : public AttributeService
             }
             catch (AttributeNotFound::exception & ex)
             {
-                CTILOG_EXCEPTION_WARN(dout, ex);
+                BOOST_WARN(ex.what());
             }
         }
 
@@ -89,34 +89,42 @@ BOOST_AUTO_TEST_CASE(test_getSetPointAttribute_getBandwidthAttribute)
         } forwardFlow, reverseFlow;
     };
 
+    const auto FSP = Attribute::ForwardSetPoint;
+    const auto FBW = Attribute::ForwardBandwidth;
+    const auto RSP = Attribute::ReverseSetPoint;
+    const auto RBW = Attribute::ReverseBandwidth;
+
     const std::map<double, ControlModeAttributes> testCases
     {
-        { -1.0, { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  0.0, { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  1.0, { ControlPolicy::LockedReverse        , { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth }, { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth } } },
-        {  2.0, { ControlPolicy::ReverseIdle          , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  3.0, { ControlPolicy::Bidirectional        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  4.0, { ControlPolicy::NeutralIdle          , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  5.0, { ControlPolicy::Cogeneration         , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ReverseSetPoint, Attribute::ReverseBandwidth } } },
-        {  6.0, { ControlPolicy::ReactiveBidirectional, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  7.0, { ControlPolicy::BiasBidirectional    , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  8.0, { ControlPolicy::BiasCogeneration     , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        {  9.0, { ControlPolicy::ReverseCogeneration  , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } },
-        { 10.0, { ControlPolicy::LockedForward        , { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth }, { Attribute::ForwardSetPoint, Attribute::ForwardBandwidth } } }
+        { -1.0, { ControlPolicy::LockedForward        , { FSP, FBW }, { FSP, FBW } } },
+        {  0.0, { ControlPolicy::LockedForward        , { FSP, FBW }, { FSP, FBW } } },
+        {  1.0, { ControlPolicy::LockedReverse        , { RSP, RBW }, { RSP, RBW } } },
+        {  2.0, { ControlPolicy::ReverseIdle          , { FSP, FBW }, { FSP, FBW } } },
+        {  3.0, { ControlPolicy::Bidirectional        , { FSP, FBW }, { FSP, FBW } } },
+        {  4.0, { ControlPolicy::NeutralIdle          , { FSP, FBW }, { FSP, FBW } } },
+        {  5.0, { ControlPolicy::Cogeneration         , { FSP, FBW }, { RSP, RBW } } },
+        {  6.0, { ControlPolicy::ReactiveBidirectional, { FSP, FBW }, { FSP, FBW } } },
+        {  7.0, { ControlPolicy::BiasBidirectional    , { FSP, FBW }, { FSP, FBW } } },
+        {  8.0, { ControlPolicy::BiasCogeneration     , { FSP, FBW }, { FSP, FBW } } },
+        {  9.0, { ControlPolicy::ReverseCogeneration  , { FSP, FBW }, { FSP, FBW } } },
+        { 10.0, { ControlPolicy::LockedForward        , { FSP, FBW }, { FSP, FBW } } }
     };
 
     for ( auto testCase : testCases )
     {
-        controlPolicy->updatePointData({ 7450, testCase.first, NormalQuality, AnalogPointType }); //set control policy from testCases map
-        BOOST_CHECK_EQUAL(controlPolicy->getControlMode(), testCase.second.controlMode);
+        const auto& controlModeValue = testCase.first;
+        const auto& controlModeAttributes = testCase.second;
+
+        controlPolicy->updatePointData({ 7450, controlModeValue, NormalQuality, AnalogPointType }); //set control policy from testCases map
+        BOOST_CHECK_EQUAL(controlPolicy->getControlMode(), controlModeAttributes.controlMode);
 
         controlPolicy->updatePointData({ 7400, 0, NormalQuality, StatusPointType }); // forward flow
-        BOOST_CHECK(controlPolicy->getSetPointAttribute() == testCase.second.forwardFlow.setpoint);
-        BOOST_CHECK(controlPolicy->getBandwidthAttribute() == testCase.second.forwardFlow.bandwidth);
+        BOOST_CHECK(controlPolicy->getSetPointAttribute() == controlModeAttributes.forwardFlow.setpoint);
+        BOOST_CHECK(controlPolicy->getBandwidthAttribute() == controlModeAttributes.forwardFlow.bandwidth);
 
         controlPolicy->updatePointData({ 7400, 1, NormalQuality, StatusPointType }); // reverse flow
-        BOOST_CHECK(controlPolicy->getSetPointAttribute() == testCase.second.reverseFlow.setpoint);
-        BOOST_CHECK(controlPolicy->getBandwidthAttribute() == testCase.second.reverseFlow.bandwidth);
+        BOOST_CHECK(controlPolicy->getSetPointAttribute() == controlModeAttributes.reverseFlow.setpoint);
+        BOOST_CHECK(controlPolicy->getBandwidthAttribute() == controlModeAttributes.reverseFlow.bandwidth);
     }
 }
 

@@ -103,7 +103,7 @@ struct gang_operated_voltage_regulator_fixture_core
                 }
                 catch ( AttributeNotFound::exception & ex )
                 {
-                    CTILOG_EXCEPTION_WARN( dout, ex );
+                    BOOST_WARN(ex.what());
                 }
             }
 
@@ -1176,7 +1176,7 @@ BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Cogeneration_ReverseFlow_Success)
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_Mode_Documentation)
+BOOST_AUTO_TEST_CASE(test_Mode_Documentation_setPoint)
 {
     regulator->loadAttributes( &attributes );
     // give set points an initial value so regulator->setSetPointValue() can be called directly during the test
@@ -1190,39 +1190,45 @@ BOOST_AUTO_TEST_CASE(test_Mode_Documentation)
         Attribute reverseFlowSetPoint;
     };
 
+    const auto FSP = Attribute::ForwardSetPoint;
+    const auto RSP = Attribute::ReverseSetPoint;
+
     const std::map<double, ControlModeAttributes> testCases
     {
-        { -1.0, { ControlPolicy::LockedForward        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  0.0, { ControlPolicy::LockedForward        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  1.0, { ControlPolicy::LockedReverse        ,  Attribute::ReverseSetPoint,  Attribute::ReverseSetPoint } },
-        {  2.0, { ControlPolicy::ReverseIdle          ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  3.0, { ControlPolicy::Bidirectional        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  4.0, { ControlPolicy::NeutralIdle          ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  5.0, { ControlPolicy::Cogeneration         ,  Attribute::ForwardSetPoint,  Attribute::ReverseSetPoint } },
-        {  6.0, { ControlPolicy::ReactiveBidirectional,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  7.0, { ControlPolicy::BiasBidirectional    ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  8.0, { ControlPolicy::BiasCogeneration     ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        {  9.0, { ControlPolicy::ReverseCogeneration  ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } },
-        { 10.0, { ControlPolicy::LockedForward        ,  Attribute::ForwardSetPoint,  Attribute::ForwardSetPoint } }
+        { -1.0, { ControlPolicy::LockedForward        ,  FSP,  FSP } },
+        {  0.0, { ControlPolicy::LockedForward        ,  FSP,  FSP } },
+        {  1.0, { ControlPolicy::LockedReverse        ,  RSP,  RSP } },
+        {  2.0, { ControlPolicy::ReverseIdle          ,  FSP,  FSP } },
+        {  3.0, { ControlPolicy::Bidirectional        ,  FSP,  FSP } },
+        {  4.0, { ControlPolicy::NeutralIdle          ,  FSP,  FSP } },
+        {  5.0, { ControlPolicy::Cogeneration         ,  FSP,  RSP } },
+        {  6.0, { ControlPolicy::ReactiveBidirectional,  FSP,  FSP } },
+        {  7.0, { ControlPolicy::BiasBidirectional    ,  FSP,  FSP } },
+        {  8.0, { ControlPolicy::BiasCogeneration     ,  FSP,  FSP } },
+        {  9.0, { ControlPolicy::ReverseCogeneration  ,  FSP,  FSP } },
+        { 10.0, { ControlPolicy::LockedForward        ,  FSP,  FSP } }
     };
 
     for ( auto testCase : testCases )
     {
-        // set control policy from testCases map
-        regulator->handlePointData({ 7450, testCase.first, NormalQuality, AnalogPointType });
-        BOOST_CHECK_EQUAL(regulator->getConfigurationMode(), testCase.second.controlMode);
+        const auto& controlModeValue = testCase.first;
+        const auto& controlModeAttributes = testCase.second;
 
-        for ( auto i = 0.0; i < 2.0; i++ )
+        // set control policy from testCases map
+        regulator->handlePointData({ 7450, controlModeValue, NormalQuality, AnalogPointType });
+        BOOST_CHECK_EQUAL(regulator->getConfigurationMode(), controlModeAttributes.controlMode);
+
+        for ( auto value : { 0.0, 1.0 } )
         {
             // forward flow when i = 0.0, reverse flow when i = 1.0
-            regulator->handlePointData({ 7400, i, NormalQuality, AnalogPointType });
+            regulator->handlePointData({ 7400, value, NormalQuality, AnalogPointType });
 
             // issue set point control with regulator
             auto actions = regulator->setSetPointValue(120.0);
             BOOST_REQUIRE(actions.first && actions.second);
 
             // litePoint to use for comparison in this iteration, out of bounds exception if attribute not in _attr map
-            auto litePoint = attributes._attr.at(regulator->isReverseFlowDetected() ? testCase.second.reverseFlowSetPoint : testCase.second.forwardFlowSetPoint);
+            auto litePoint = attributes._attr.at(regulator->isReverseFlowDetected() ? controlModeAttributes.reverseFlowSetPoint : controlModeAttributes.forwardFlowSetPoint);
 
             // validate that the set point control went to the correct pointId using the signal message
             const auto signalMsg = dynamic_cast<CtiSignalMsg *>(actions.first.get());
@@ -1233,30 +1239,39 @@ BOOST_AUTO_TEST_CASE(test_Mode_Documentation)
             const auto requestMsg = actions.second.get();
             BOOST_REQUIRE(requestMsg);
             BOOST_CHECK_EQUAL(litePoint.getPaoId(), requestMsg->DeviceId()); // PaoID of SetPoint associated w/ current control mode and flow
-
-            if ( regulator->getConfigurationMode() == ControlPolicy::ControlModes::Cogeneration )
-            {
-                if ( regulator->isReverseFlowDetected() )
-                {
-                    // set reverseBandwidth to a small value
-                    regulator->handlePointData({ 7300, 1, NormalQuality, AnalogPointType });
-                    // issue reverseSetPoint control and save new value
-                    double reverseChangeDistance = std::abs(regulator->requestVoltageChange(0.75, VoltageRegulator::Exclusive));
-                    
-                    // back to forward flow
-                    regulator->handlePointData({ 7400, 0, NormalQuality, AnalogPointType });
-                    // set forwardBandwidth to a large value
-                    regulator->handlePointData({ 7100, 10, NormalQuality, AnalogPointType });
-                    // issue reverseSetPoint control and save new value
-                    double forwardChangeDistance = std::abs(regulator->requestVoltageChange(0.75, VoltageRegulator::Exclusive));
-                    
-                    // assert that distance between original setpoint and reverseBandwidth is smaller than between
-                    // the original setpoint and the forwardBandwidth
-                    BOOST_CHECK_LT(reverseChangeDistance, forwardChangeDistance);
-                }
-            }
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE(test_Mode_Documentation_bandwidth)
+{
+    regulator->loadAttributes(&attributes);
+    // give set points an initial value so regulator->setSetPointValue() can be called directly during the test
+    regulator->handlePointData({ 7000, 120.0,  NormalQuality,  AnalogPointType });
+    regulator->handlePointData({ 7200, 120.0,  NormalQuality,  AnalogPointType });
+
+    //cogen mode
+    regulator->handlePointData( { 7450, 5.0, NormalQuality, AnalogPointType } );
+    BOOST_CHECK_EQUAL( regulator->getConfigurationMode(), ControlPolicy::Cogeneration );
+
+    //reverse flow
+    regulator->handlePointData({ 7400, 1, NormalQuality, AnalogPointType });
+
+    // set reverseBandwidth to a small value
+    regulator->handlePointData({ 7300, 1, NormalQuality, AnalogPointType });
+    // issue reverseSetPoint control and save new value
+    double reverseChangeDistance = std::abs(regulator->requestVoltageChange(0.75, VoltageRegulator::Exclusive));
+
+    // back to forward flow
+    regulator->handlePointData({ 7400, 0, NormalQuality, AnalogPointType });
+    // set forwardBandwidth to a large value
+    regulator->handlePointData({ 7100, 10, NormalQuality, AnalogPointType });
+    // issue reverseSetPoint control and save new value
+    double forwardChangeDistance = std::abs(regulator->requestVoltageChange(0.75, VoltageRegulator::Exclusive));
+
+    // assert that distance between original setpoint and reverseBandwidth is smaller than between
+    // the original setpoint and the forwardBandwidth
+    BOOST_CHECK_LT(reverseChangeDistance, forwardChangeDistance);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
