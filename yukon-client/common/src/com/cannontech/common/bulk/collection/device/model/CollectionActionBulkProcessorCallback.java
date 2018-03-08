@@ -12,13 +12,11 @@ public class CollectionActionBulkProcessorCallback implements BulkProcessorCallb
 
     private CollectionActionResult result;
     private CollectionActionService collectionActionService;
-    private Logger log;
-    
+
     public CollectionActionBulkProcessorCallback(CollectionActionResult result,
-            CollectionActionService collectionActionService, Logger log) {
+            CollectionActionService collectionActionService) {
         this.result = result;
         this.collectionActionService = collectionActionService;
-        this.log = log;
     }
 
     @Override
@@ -39,7 +37,7 @@ public class CollectionActionBulkProcessorCallback implements BulkProcessorCallb
     @Override
     public void processingSucceeded() {
         collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
-        result.log(log);
+        result.log();
     }
 
     @Override
@@ -49,6 +47,6 @@ public class CollectionActionBulkProcessorCallback implements BulkProcessorCallb
             new CollectionActionLogDetail(null, CollectionActionDetail.FAILURE);
         detailLog.setExecutionExceptionText("Failed");
         result.setExecutionExceptionText("Failed", detailLog);
-        result.log(log);
+        result.log();
     }
 }

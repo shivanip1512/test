@@ -102,7 +102,7 @@ public abstract class AddRemovePointsControllerBase {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService, log));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService));
 
         return result.getCacheKey();
     }

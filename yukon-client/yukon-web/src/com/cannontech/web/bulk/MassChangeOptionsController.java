@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -65,7 +63,6 @@ public class MassChangeOptionsController {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private BulkFieldService bulkFieldService;
     @Autowired protected CollectionActionService collectionActionService;
-    private Logger log = YukonLogManager.getLogger(MassChangeOptionsController.class);
 
     @RequestMapping("massChangeOptions")
     protected String massChangeOptions(ModelMap model, HttpServletRequest request) throws Exception {
@@ -116,7 +113,7 @@ public class MassChangeOptionsController {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
 
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService, log));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService));
             
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }

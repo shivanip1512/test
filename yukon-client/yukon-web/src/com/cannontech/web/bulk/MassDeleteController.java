@@ -46,7 +46,6 @@ public class MassDeleteController {
     @Autowired private PaoPersistenceDao paoPersistenceDao;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired protected CollectionActionService collectionActionService;
-    private Logger log = YukonLogManager.getLogger(MassDeleteController.class);
     
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     @Resource(name="resubmittingBulkProcessor") private BulkProcessor bulkProcessor;
@@ -87,7 +86,7 @@ public class MassDeleteController {
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService, log));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService));
    
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }

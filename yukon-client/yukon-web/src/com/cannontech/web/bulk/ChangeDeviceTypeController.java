@@ -47,7 +47,6 @@ public class ChangeDeviceTypeController {
     @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired protected CollectionActionService collectionActionService;
-    private Logger log = YukonLogManager.getLogger(ChangeDeviceTypeController.class);
     
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
@@ -111,7 +110,7 @@ public class ChangeDeviceTypeController {
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService, log));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService));
         
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }

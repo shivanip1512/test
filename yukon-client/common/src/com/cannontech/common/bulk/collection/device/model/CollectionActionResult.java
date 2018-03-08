@@ -47,6 +47,7 @@ public class CollectionActionResult {
     //result is in cache
     private boolean isCached = true;
     private YukonUserContext context;
+    private Logger logger;
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
@@ -213,39 +214,46 @@ public class CollectionActionResult {
         return context;
     }
 
-    public void log(Logger log) {
-        if (log.isDebugEnabled()) {
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+    
+    public void log() {
+        if(logger == null) {
+            throw new RuntimeException("Logger is not initialized.");
+        }
+        if (logger.isDebugEnabled()) {
             DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
             df.withZone(DateTimeZone.getDefault());
-            log.debug("Key=" + getCacheKey() + "----------------------------------------------------------------------");
-            log.debug("Cached=" + isCached());
-            log.debug("Start Time:" + startTime.toString(df));
-            log.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
+            logger.debug("Key=" + getCacheKey() + "----------------------------------------------------------------------");
+            logger.debug("Cached=" + isCached());
+            logger.debug("Start Time:" + startTime.toString(df));
+            logger.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
             if (execution != null) {
-                log.debug("creId:" + execution.getId() + " Type:" + execution.getCommandRequestExecutionType());
+                logger.debug("creId:" + execution.getId() + " Type:" + execution.getCommandRequestExecutionType());
             }
-            log.debug(stopTime == null ? "" : "Stop Time:" +stopTime.toString(df));
-            log.debug("---Inputs---");
-            log.debug("Action:" + getAction());
+            logger.debug(stopTime == null ? "" : "Stop Time:" +stopTime.toString(df));
+            logger.debug("---Inputs---");
+            logger.debug("Action:" + getAction());
             if (getInputs().getInputs() != null) {
-                getInputs().getInputs().forEach((k, v) -> log.debug(k + ": " + v));
+                getInputs().getInputs().forEach((k, v) -> logger.debug(k + ": " + v));
             }
-            log.debug("Process:" + getAction().getProcess());
-            log.debug("Devices:" + getInputs().getCollection().getDeviceCount());
+            logger.debug("Process:" + getAction().getProcess());
+            logger.debug("Devices:" + getInputs().getCollection().getDeviceCount());
 
-            log.debug("---Results---");
-            log.debug("Cancel:" + isCancelable());
-            log.debug("Progress=" + getCounts().getPercentProgress() + "%");
+            logger.debug("---Results---");
+            logger.debug("Cancel:" + isCancelable());
+            logger.debug("Progress=" + getCounts().getPercentProgress() + "%");
 
             getAction().getDetails().forEach(detail -> {
-                log.debug("------" + detail + "    device count=" + getDeviceCollection(detail).getDeviceCount() + "   "
+                logger.debug("------" + detail + "    device count=" + getDeviceCollection(detail).getDeviceCount() + "   "
                     + getCounts().getPercentage(detail) + "%");
             });
 
             if (cancelationCallback != null) {
-                log.debug("cancelationCallback:" + cancelationCallback);
+                logger.debug("cancelationCallback:" + cancelationCallback);
             }
-            log.debug("status=" + getStatus() + "----------------------------------------------------------------------");
+            logger.debug("status=" + getStatus() + "----------------------------------------------------------------------");
         }
     }
 }

@@ -120,14 +120,19 @@ public class CollectionActionServiceImpl implements CollectionActionService {
 
     @Override
     public CollectionActionResult getResult(int key) {
-        CollectionActionResult cachedResult = cache.getIfPresent(key);
-        return cachedResult == null ? collectionActionDao.loadResultFromDb(key) : cachedResult;
+        CollectionActionResult result = cache.getIfPresent(key);
+        if(result == null) {
+            result = collectionActionDao.loadResultFromDb(key);
+            result.setLogger(log);
+        } 
+        return  result;
     }
     
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
         log.debug("Created new collecton action result:");
-        result.log(log);
+        result.setLogger(log);
+        result.log();
         cache.put(result.getCacheKey(), result);
     }
     
@@ -161,7 +166,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
 
     @Override
     public void printResult(CollectionActionResult result) {  
-        result.log(log);
+        result.log();
     }
 
     @Override

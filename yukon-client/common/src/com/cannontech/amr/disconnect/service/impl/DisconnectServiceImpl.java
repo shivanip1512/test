@@ -100,7 +100,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
         if (!unsupportedDevices.isEmpty() || !notConfiguredDevices.isEmpty()) {
             log.debug("Updated result with unsupported and not configured devices:");
-            result.log(log);
+            result.log();
         }
         
         DisconnectCallback callback = new DisconnectCallback() {
@@ -135,7 +135,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                     disconnectEventLogService.groupActionCompleted(context.getYukonUser(), command,
                         result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
                         result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
-                    result.log(log);
+                    result.log();
                     try {
                         alertCallback.handle(result);
                     } catch (Exception e) {
