@@ -149,7 +149,7 @@ yukon.bulk.progressReport = (function () {
             }
             
             //update stop time and stop updating page when complete
-            if (data.counts.percentCompleted == 100) {
+            if (data.status == 'COMPLETE') {
                 clearTimeout(_updateTimeout);
                 if (data.stopTime) {
                     var timeText = moment(data.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
@@ -177,7 +177,7 @@ yukon.bulk.progressReport = (function () {
             var resultsData = yukon.fromJson('#resultsjson');
             
             _updatePage(resultsData);
-            if (resultsData.counts.percentCompleted < 100) {
+            if (resultsData.status != 'COMPLETE') {
                 _update();
             }
             

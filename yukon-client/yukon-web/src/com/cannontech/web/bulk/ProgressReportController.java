@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,6 +35,9 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -47,6 +51,9 @@ public class ProgressReportController {
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired private CollectionActionLogDetailService collectionActionLogService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DateFormattingService dateFormattingService;
+    
+    private final static String baseKey = "yukon.web.modules.tools.bulk.progressReport.";
     
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     public String detail(ModelMap model, Integer key) {
@@ -83,29 +90,19 @@ public class ProgressReportController {
     }
     
     @RequestMapping(value = "log", method = RequestMethod.GET)
-    public String log(HttpServletResponse response, FlashScope flashScope, Integer key) {
+    public String log(HttpServletResponse response, FlashScope flashScope, Integer key, YukonUserContext userContext) {
         try (OutputStream output = response.getOutputStream();
             InputStream input = new FileInputStream(collectionActionLogService.getLog(key))) {
             response.setContentType("text/csv csv CSV");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + key +".csv\"");
+            String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+            response.setHeader("Content-Disposition", "attachment; filename=\"CollectionActionLog-" + key + "_" + now + ".csv\"");
             IOUtils.copy(input, output);
         } catch (FileNotFoundException e) {
-            // flashScope.setError
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "logFileNotFoundError"));
         } catch (IOException e) {
-            // flashScope.setError
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "logIOError"));
         }
         return null;
-    }
-    
-    private CollectionActionResult createMockedResult() {
-        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
-        userInputs.put("Attribute(s)", "Blink Count, Delivered Demand");
-        
-        DateTime stopTime = new DateTime().plusDays(1);
-        //CollectionActionResult result = collectionActionService.getResult(key);
-        CollectionActionResult result = collectionActionService.getRandomResult(60, userInputs, stopTime.toInstant(),
-            CommandRequestExecutionStatus.COMPLETE, CollectionAction.READ_ATTRIBUTE);
-        return result;
     }
    
     // http://localhost:8080/yukon/bulk/progressReport/ricky
