@@ -3,11 +3,9 @@ package com.cannontech.web.widget.support;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.user.checker.UserChecker;
@@ -83,9 +81,9 @@ public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBe
         return this;
     }
     
-    public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView(identityPath);
-        return mav;
+    @RequestMapping(value="identity", method=RequestMethod.GET)
+    public String identity() throws Exception {
+        return identityPath;
     }
 
     /**

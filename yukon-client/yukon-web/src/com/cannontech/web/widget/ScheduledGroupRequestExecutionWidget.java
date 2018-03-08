@@ -48,7 +48,6 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 	
     @Autowired
 	public ScheduledGroupRequestExecutionWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
-	    setIdentityPath("common/deviceIdentity.jsp");
         String checkRole = YukonRole.SCHEDULER.name();
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
 	}

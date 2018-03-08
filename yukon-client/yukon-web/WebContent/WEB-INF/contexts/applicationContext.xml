@@ -98,6 +98,13 @@
         <property name="description" value="the id of the Yukon device"/>
         <property name="required" value="true"/>
     </bean>
+    
+    <bean id="widgetInput.deviceGroup" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <qualifier value="widgetInput.deviceGroup"/>
+        <property name="name" value="deviceGroup"/>
+        <property name="description" value="the full name of the device group"/>
+        <property name="required" value="true"/>
+    </bean>
 
     <bean id="widgetInput.pointId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
         <property name="name" value="pointId"/>

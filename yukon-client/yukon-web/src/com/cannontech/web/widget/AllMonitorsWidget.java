@@ -53,7 +53,6 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
                                                YukonRoleProperty.PORTER_RESPONSE_MONITORING.name(),
                                                YukonRoleProperty.VALIDATION_ENGINE.name());
         
-        setIdentityPath("common/deviceIdentity.jsp");
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     

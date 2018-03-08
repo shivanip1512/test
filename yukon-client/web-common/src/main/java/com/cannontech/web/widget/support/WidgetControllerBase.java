@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
@@ -21,9 +23,9 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
     private UserChecker roleAndPropertiesChecker;
     private SmartNotificationEventType smartNotificationsEvent;
 
+    @RequestMapping(value="identity", method=RequestMethod.GET)
     public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView(identityPath);
-        return mav;
+        return new ModelAndView(identityPath);
     }
     
     final public String getShortName() {
