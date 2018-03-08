@@ -48,10 +48,12 @@ public class CollectionActionCounts {
         return calculate(successTotal);
     }
 
+    // Used by JS
     public double getPercentCompleted() {
         return calculate(getCompleted());
     }
 
+    // Used by JS
     public int getCompleted() {
         int completedTotal = result.getAction().getDetails().stream()
                 .mapToInt(detail -> result.getDeviceCollection(detail).getDeviceCount())
@@ -90,6 +92,7 @@ public class CollectionActionCounts {
             return 0;
     }
     
+    // Used by JS
     public Map<CollectionActionDetail, Double> getPercentages() {
         return result.getAction().getDetails().stream()
                 .collect(Collectors.toMap(detail -> detail, detail -> getPercentageCompleted(detail)));
