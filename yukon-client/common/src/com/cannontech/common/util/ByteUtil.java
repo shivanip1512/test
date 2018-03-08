@@ -1,9 +1,12 @@
 package com.cannontech.common.util;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.joda.time.Instant;
 
 public class ByteUtil {
 
@@ -25,7 +28,6 @@ public class ByteUtil {
      * Returns Integer value corresponds to byte array
      * 
      */
-
     public static Integer getInteger(byte[] source) {
         return new BigInteger(source).intValue();
     }
@@ -34,7 +36,6 @@ public class ByteUtil {
      * Returns Integer value corresponds to byte
      * 
      */
-
     public static Integer getInteger(byte source) {
         return source & 0xff;
     }
@@ -43,8 +44,13 @@ public class ByteUtil {
      * Returns Long value corresponds to byte array
      * 
      */
-
     public static Long getLong(byte[] source) {
         return new BigInteger(source).longValue();
+    }
+    
+    public static byte[] getTimestampBytes(Instant timestamp) {
+        int dateInSec = (int) (timestamp.getMillis() / 1000);
+        byte[] bytes = ByteBuffer.allocate(4).putInt(dateInSec).array();
+        return bytes;
     }
 }

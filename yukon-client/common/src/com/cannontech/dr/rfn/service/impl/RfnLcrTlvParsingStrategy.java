@@ -22,22 +22,26 @@ import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
+import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.service.ParsingService;
 import com.cannontech.dr.rfn.service.ParsingService.Schema;
+import com.cannontech.dr.rfn.service.PqrEventLogParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.dr.rfn.service.RfnLcrParsingStrategy;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.rfn.tlv.FieldType;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
-
+    @Autowired private InventoryDao inventoryDao;
     @Autowired private ParsingService<ListMultimap<FieldType, byte[]>> parsingService;
     @Autowired private RfnLcrDataMappingService<ListMultimap<FieldType, byte[]>> rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private PqrEventLogParsingService pqrEventLogParsingService;
     protected JmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrTlvParsingStrategy.class);
@@ -88,11 +92,15 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
             }
             
             if(schema.supportsPowerQualityResponse()) {
+                int inventoryId = inventoryDao.getYukonInventoryForDeviceId(rfnDevice.getPaoIdentifier().getPaoId())
+                                              .getInventoryId();
                 List<byte[]> pqrLogBlob = decodedPayload.get(FieldType.POWER_QUALITY_RESPONSE_LOG_BLOB);
-                //TODO: YUK-17794
-                //List<PqrEvent> pqrEvents = pqrEventLogParsingService.parseLogBlob(pqrLogBlob);
-                //TODO: YUK-17796
-                //pqrEventLogDao.saveEvents(pqrEvents);
+                if (pqrLogBlob.size() > 0) {
+                    List<PqrEvent> pqrEvents = pqrEventLogParsingService.parseLogBlob(inventoryId, pqrLogBlob.get(0));
+                    //TODO: YUK-17796
+                    //pqrEventLogDao.saveEvents(pqrEvents);
+                }
+                
             }
         }
 

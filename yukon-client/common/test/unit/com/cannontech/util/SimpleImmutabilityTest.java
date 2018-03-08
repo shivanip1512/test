@@ -1,6 +1,6 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -26,7 +26,6 @@ import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.device.ProfileAttributeChannel;
 import com.cannontech.amr.device.StrategyType;
-import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
@@ -272,11 +271,14 @@ import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
-import com.cannontech.dr.rfn.model.RfnLcrTlvPointDataType;
+import com.cannontech.dr.rfn.model.PqrEvent;
+import com.cannontech.dr.rfn.model.PqrEventType;
+import com.cannontech.dr.rfn.model.PqrResponseType;
 import com.cannontech.dr.rfn.model.RfnLcr6700RelayMap;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrReadSimulatorDeviceParameters;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
+import com.cannontech.dr.rfn.model.RfnLcrTlvPointDataType;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.stars.dr.optout.util.OptOutUtil;
 import com.cannontech.stars.dr.program.service.HardwareEnrollmentInfo;
@@ -377,12 +379,16 @@ public class SimpleImmutabilityTest {
             PointIdentifier.class,
             PointImportParameters.class,
             PointQuality.class,
+            PqrEvent.class,
+            PqrEventType.class,
+            PqrResponseType.class,
             QuestionType.class,
             Range.class,
             ReadType.class,
             ReadingType.class,
             ReferenceTypeEnum.class,
             RfnIdentifier.class,
+            RfnLcrTlvPointDataType.class,
             RfnMessageClass.class,
             RfnMetadata.class,
             RfnMetadataReplyType.class,

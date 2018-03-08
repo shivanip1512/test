@@ -70,17 +70,17 @@ public class TLVParsingServiceImpl implements ParsingService<ListMultimap<FieldT
 
         for (int postion = 0; postion < report.length - 1;) {
 
-            byte[] typeLenghtBytes = Arrays.copyOfRange(report, postion, postion = postion + 3);
-            final byte upperTypeByte = typeLenghtBytes[0];
+            byte[] typeLengthBytes = Arrays.copyOfRange(report, postion, postion = postion + 3);
+            final byte upperTypeByte = typeLengthBytes[0];
 
-            byte middleTypeLenghtByte = typeLenghtBytes[1];
-            byte upperLengthNibble = (byte) (middleTypeLenghtByte & 0xf);
-            byte lowerTypeNibble = (byte) ((middleTypeLenghtByte >> 4) & 0xf);
+            byte middleTypeLengthByte = typeLengthBytes[1];
+            byte upperLengthNibble = (byte) (middleTypeLengthByte & 0xf);
+            byte lowerTypeNibble = (byte) ((middleTypeLengthByte >> 4) & 0xf);
 
             final int type = ((upperTypeByte & 0xff) << 4) | (lowerTypeNibble & 0xf);
-            byte lowerLenghtByte = typeLenghtBytes[2];
+            byte lowerLengthByte = typeLengthBytes[2];
 
-            final int length = (lowerLenghtByte & 0xff) | ((upperLengthNibble & 0xf) << 12);
+            final int length = (lowerLengthByte & 0xff) | ((upperLengthNibble & 0xf) << 12);
 
             if (FieldType.isFieldTypeSupported(type)) {
                 final byte[] tlvValue = Arrays.copyOfRange(report, postion, postion += length);
