@@ -5,13 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +23,16 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
-import com.cannontech.common.bulk.callbackResult.MassChangeCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.field.BulkField;
-import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
@@ -42,14 +41,11 @@ import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputRoot;
@@ -68,10 +64,8 @@ public class MassChangeOptionsController {
     private @Resource(name = "resubmittingBulkProcessor") BulkProcessor bulkProcessor;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private BulkFieldService bulkFieldService;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private @Resource(name = "recentResultsCache") RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
+    @Autowired protected CollectionActionService collectionActionService;
+    private Logger log = YukonLogManager.getLogger(MassChangeOptionsController.class);
 
     @RequestMapping("massChangeOptions")
     protected String massChangeOptions(ModelMap model, HttpServletRequest request) throws Exception {
@@ -100,51 +94,36 @@ public class MassChangeOptionsController {
     }
 
     @RequestMapping(value = "massChangeOptions", method = RequestMethod.POST)
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-            @ModelAttribute("massChangeOptions") YukonDeviceDto yukonDeviceDtoObj, BindingResult result)
+    protected String onSubmit(HttpServletRequest request, HttpServletResponse response,
+            @ModelAttribute("massChangeOptions") YukonDeviceDto yukonDeviceDtoObj, YukonUserContext context, BindingResult bindingResult)
             throws Exception {
 
         // deviceCollection
-        validateHttpRequestParameters(request, yukonDeviceDtoObj, result);
+        validateHttpRequestParameters(request, yukonDeviceDtoObj, bindingResult);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
 
         // get selected bulk field
         String massChangeBulkFieldName =
             ServletRequestUtils.getRequiredStringParameter(request, "massChangeBulkFieldName");
         BulkField<?, SimpleDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
-        BulkFieldColumnHeader bulkFieldColumnHeader =
-            bulkFieldService.getColumnHeaderForFieldName(bulkField.getInputSource().getField());
 
-        // PROCESS
-        // -------------------------------------------------------------------------------
-
-        // CALLBACK
-        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
-
-        MassChangeCallbackResult callbackResult =
-            new MassChangeCallbackResult(bulkFieldColumnHeader, resultsId, deviceCollection, successGroup,
-                processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper);
-
-        // CACHE
-        recentResultsCache.addResult(resultsId, callbackResult);
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.MASS_CHANGE, null,
+            deviceCollection, context);
 
         // PROCESS
         BulkYukonDeviceFieldProcessor bulkFieldProcessor = findYukonDeviceFieldProcessor(bulkField);
         Processor<SimpleDevice> bulkUpdater = getBulkProcessor(bulkFieldProcessor, yukonDeviceDtoObj);
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
 
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
-
-        ModelAndView mav = new ModelAndView("redirect:massChange/massChangeResults");
-        mav.addObject("resultsId", resultsId);
-        return mav;
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, log));
+            
+        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
 
     private BulkYukonDeviceFieldProcessor findYukonDeviceFieldProcessor(BulkField<?, SimpleDevice> bulkField) {
 
-        Set<BulkField<?, SimpleDevice>> requiredSet = new HashSet<BulkField<?, SimpleDevice>>(1);
+        Set<BulkField<?, SimpleDevice>> requiredSet = new HashSet<>(1);
         requiredSet.add(bulkField);
 
         // the following is a naive implementation and should be changed when more
@@ -213,7 +192,7 @@ public class MassChangeOptionsController {
         Map<String, ? extends InputSource<?>> inputMap = getInputRoot(request).getInputMap();
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        List<String> notEditableFields = new ArrayList<String>();
+        List<String> notEditableFields = new ArrayList<>();
 
         // Initialize the binder for each input
 
@@ -249,7 +228,7 @@ public class MassChangeOptionsController {
 
         Input<?> inputSource = bulkField.getInputSource();
 
-        List<Input<?>> inputList = new ArrayList<Input<?>>();
+        List<Input<?>> inputList = new ArrayList<>();
         inputList.add(inputSource);
 
         InputRoot inputRoot = new InputRoot();

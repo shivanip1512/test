@@ -41,9 +41,9 @@ public interface BulkProcessorCallback<I,O> {
      */
     public void processingFailed(Exception e);
     
-    /**
-     * Method called when object processing fails
-     */
-    public void processingStarted(Date startDateTime);
+
+    public default void processingStarted(Date startDateTime) {
+
+    }
 
 }

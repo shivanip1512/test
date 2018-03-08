@@ -2,39 +2,36 @@ package com.cannontech.web.bulk;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
-import com.cannontech.common.bulk.callbackResult.ChangeDeviceTypeCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ServletRequestEnumUtils;
 import com.google.common.collect.Maps;
@@ -45,15 +42,12 @@ import com.google.common.collect.Sets;
 @RequestMapping("changeDeviceType/*")
 public class ChangeDeviceTypeController {
 
-    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     @Resource(name="resubmittingBulkProcessor") private BulkProcessor bulkProcessor;
-    
     @Autowired private PaoDefinitionService paoDefinitionService;
-    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired protected CollectionActionService collectionActionService;
+    private Logger log = YukonLogManager.getLogger(ChangeDeviceTypeController.class);
     
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
@@ -99,24 +93,12 @@ public class ChangeDeviceTypeController {
      * DO DEVICE TYPE CHANGE
      */
     @RequestMapping("changeDeviceType")
-    public String changeDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
+    public String changeDeviceType(ModelMap model, HttpServletRequest request, YukonUserContext context) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
-        // CALLBACK
-    	String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
-        
-        ChangeDeviceTypeCallbackResult callbackResult = new ChangeDeviceTypeCallbackResult(resultsId,
-																					deviceCollection, 
-																					successGroup, 
-																					processingExceptionGroup, 
-																					deviceGroupMemberEditorDao,
-																					deviceGroupCollectionHelper);
-        
-        // CACHE
-        recentResultsCache.addResult(resultsId, callbackResult);
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.CHANGE_TYPE, null,
+            deviceCollection, context);
         
         // PROCESS
         final PaoType selectedDeviceType = ServletRequestEnumUtils.getRequiredEnumParameter(request, PaoType.class, "deviceTypes"); 
@@ -127,12 +109,11 @@ public class ChangeDeviceTypeController {
             }
         };
         
-        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<SimpleDevice>();
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, callbackResult);
+        ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, log));
         
-        model.addAttribute("resultsId", resultsId);
-        
-        return "redirect:changeDeviceTypeResults";
+        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
     
     /**
@@ -142,12 +123,12 @@ public class ChangeDeviceTypeController {
     public String changeDeviceTypeResults(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // result info
-        String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
+      /*  String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         ChangeDeviceTypeCallbackResult callbackResult = (ChangeDeviceTypeCallbackResult)recentResultsCache.getResult(resultsId);
         
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
         model.addAttribute("callbackResult", callbackResult);
-        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
+        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());*/
         return "changeDeviceType/changeDeviceTypeResults.jsp";
     }
     

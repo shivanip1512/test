@@ -3,7 +3,6 @@ package com.cannontech.web.bulk;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -25,18 +24,14 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
-import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
-import com.cannontech.common.bulk.processor.ProcessorCallbackException;
-import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -106,45 +101,12 @@ public abstract class AddRemovePointsControllerBase {
         // PROCESS
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, new BulkProcessorCallback<SimpleDevice, SimpleDevice>() {
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, log));
 
-            @Override
-            public void processingStarted(Date startDateTime) {
-            }
-
-            @Override
-            public void receivedProcessingException(int rowNumber, SimpleDevice device, ProcessorCallbackException e) {
-                CollectionActionLogDetail log = new CollectionActionLogDetail(device, CollectionActionDetail.FAILURE);
-                log.setDeviceErrorText(e.getMessage());
-                result.addDeviceToGroup(CollectionActionDetail.FAILURE, device, log);
-            }
-
-                @Override
-                public void processedObject(int rowNumber, SimpleDevice device) {
-                    result.addDeviceToGroup(CollectionActionDetail.SUCCESS, device,
-                        new CollectionActionLogDetail(device, CollectionActionDetail.SUCCESS));
-                }
-
-            @Override
-            public void processingSucceeded() {
-                collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
-                log.debug("Result completed");
-                result.log(log);
-            }
-
-            @Override
-            public void processingFailed(Exception e) {
-                collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
-                CollectionActionLogDetail detailLog = new CollectionActionLogDetail(null, CollectionActionDetail.FAILURE);
-                detailLog.setExecutionExceptionText("Failed");
-                result.setExecutionExceptionText("Failed", detailLog);
-                result.log(log);
-            }
-        });
-        
         return result.getCacheKey();
     }
-    
+
     // PREP RESULTS PAGE
     protected void prepResultsView(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
     	
