@@ -53,7 +53,6 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.util.TextView;
 import com.cannontech.web.util.YukonUserContextResolver;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 
@@ -107,23 +106,10 @@ public class PasswordController {
             @RequestParam(value = "g-recaptcha-response", required = false) String gRecaptchaResponse)
             throws Exception {
 
-        boolean isCaptchasEnabled = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_CAPTCHAS);
-        if (Strings.isNullOrEmpty(gRecaptchaResponse) && isCaptchasEnabled) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "captcha.missingInputResponse"));
-            setupModelMap(model, request);
-            return "forgottenPassword.jsp";
-        }
         globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         // Process Captcha
-        CaptchaResponse captchaResponse;
-        try {
             Captcha captcha = new Captcha(request.getServerName(), gRecaptchaResponse);
-            captchaResponse = captchaService.checkCaptcha(captcha, isCaptchasEnabled);
-        } catch (Exception e) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "changePassword.captchaTimeout"));
-            setupModelMap(model, request);
-            return "forgottenPassword.jsp";
-        }
+            CaptchaResponse captchaResponse = captchaService.checkCaptcha(captcha);
 
         // The Captcha failed. return the user the forgotten password page
         if (captchaResponse.isError()) {

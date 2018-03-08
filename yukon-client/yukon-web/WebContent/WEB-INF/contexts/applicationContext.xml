@@ -841,6 +841,28 @@
     </bean>
 
     <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl"/>
+
+        <bean id="captchaRestProxyFactory" class="com.cannontech.web.common.captcha.service.impl.CaptchaRestProxyFactory">
+        <constructor-arg name="proxiedTemplate">
+            <bean class="org.springframework.web.client.RestTemplate">
+                <property name="messageConverters">
+                    <list>
+                        <bean class = "org.springframework.http.converter.StringHttpMessageConverter"/>
+                        <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
+                        <ref bean="jacksonHttpMsgConverter"/>
+                    </list>
+                </property>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean class="com.cannontech.web.common.captcha.service.impl.CaptchaRestProxyFactory"
+            factory-bean="captchaRestProxyFactory"
+            factory-method="createInstance">
+        <qualifier value="captcha"/>
+    </bean>
+
+
     <bean id="passwordResetService" class="com.cannontech.web.stars.service.impl.PasswordResetServiceImpl"/>
     <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl"/>
 

@@ -8,7 +8,7 @@ public interface CaptchaService {
     /**
      * This method checks the Captcha supplied and returns a CaptchaResponse instance that contains whether it was successful or not.
      */
-    public CaptchaResponse checkCaptcha(Captcha captcha, boolean isCaptchasEnabled);
+    public CaptchaResponse checkCaptcha(Captcha captcha);
 
     /**
      * This method returns the Site key needed to create a Captcha.
