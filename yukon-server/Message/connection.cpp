@@ -488,7 +488,7 @@ void CtiConnection::close()
         // interrupt the current or the next getQueue() call
         _outQueue.interruptBlockingRead();
 
-        _outthread.tryJoinOrTerminateFor( Chrono::seconds(30) );
+        _outthread.tryJoinOrTerminateFor( Chrono::seconds(35) );
 
         forceTermination();
 
