@@ -1,6 +1,7 @@
 package com.cannontech.web.bulk;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -18,11 +19,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.alert.model.Alert;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -111,7 +116,7 @@ public class DisconnectController {
 
         @Override
         public void handle(CollectionActionResult result) {
-           /* log.debug("Alert Callback");
+            log.debug("Alert Callback");
             ResolvableTemplate template;
             double percentSuccess = result.getCounts().getPercentSuccess();
             if (result.isFailed()) {
@@ -124,7 +129,7 @@ public class DisconnectController {
             }
             String url = partialUrl + "?resultKey=" + result.getCacheKey();
             template.addData("url", url);
-            template.addData("command", accessor.getMessage(result.getAction().toString()));
+            template.addData("command", accessor.getMessage(DisconnectCommand.getDisconnectCommand(result.getAction())));
             template.addData("percentSuccess", percentSuccess);
             template.addData("completedCount", result.getCounts().getCompleted());
 
@@ -133,8 +138,8 @@ public class DisconnectController {
                 public com.cannontech.common.alert.model.AlertType getType() {
                     return AlertType.DISCONNECT_COMPLETION;
                 };
-            };*/
-            //alertService.add(alert);
+            };
+            alertService.add(alert);
         }
     };
 }
