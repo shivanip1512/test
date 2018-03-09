@@ -1190,23 +1190,23 @@ BOOST_AUTO_TEST_CASE(test_Mode_Documentation_setPoint)
         Attribute reverseFlowSetPoint;
     };
 
-    const auto FSP = Attribute::ForwardSetPoint;
-    const auto RSP = Attribute::ReverseSetPoint;
+    const auto fwd_sp = Attribute::ForwardSetPoint;
+    const auto rev_sp = Attribute::ReverseSetPoint;
 
     const std::map<double, ControlModeAttributes> testCases
     {
-        { -1.0, { ControlPolicy::LockedForward        ,  FSP,  FSP } },
-        {  0.0, { ControlPolicy::LockedForward        ,  FSP,  FSP } },
-        {  1.0, { ControlPolicy::LockedReverse        ,  RSP,  RSP } },
-        {  2.0, { ControlPolicy::ReverseIdle          ,  FSP,  FSP } },
-        {  3.0, { ControlPolicy::Bidirectional        ,  FSP,  FSP } },
-        {  4.0, { ControlPolicy::NeutralIdle          ,  FSP,  FSP } },
-        {  5.0, { ControlPolicy::Cogeneration         ,  FSP,  RSP } },
-        {  6.0, { ControlPolicy::ReactiveBidirectional,  FSP,  FSP } },
-        {  7.0, { ControlPolicy::BiasBidirectional    ,  FSP,  FSP } },
-        {  8.0, { ControlPolicy::BiasCogeneration     ,  FSP,  FSP } },
-        {  9.0, { ControlPolicy::ReverseCogeneration  ,  FSP,  FSP } },
-        { 10.0, { ControlPolicy::LockedForward        ,  FSP,  FSP } }
+        { -1.0, { ControlPolicy::LockedForward        ,  fwd_sp,  fwd_sp } },
+        {  0.0, { ControlPolicy::LockedForward        ,  fwd_sp,  fwd_sp } },
+        {  1.0, { ControlPolicy::LockedReverse        ,  rev_sp,  rev_sp } },
+        {  2.0, { ControlPolicy::ReverseIdle          ,  fwd_sp,  fwd_sp } },
+        {  3.0, { ControlPolicy::Bidirectional        ,  fwd_sp,  fwd_sp } },
+        {  4.0, { ControlPolicy::NeutralIdle          ,  fwd_sp,  fwd_sp } },
+        {  5.0, { ControlPolicy::Cogeneration         ,  fwd_sp,  rev_sp } },
+        {  6.0, { ControlPolicy::ReactiveBidirectional,  fwd_sp,  fwd_sp } },
+        {  7.0, { ControlPolicy::BiasBidirectional    ,  fwd_sp,  fwd_sp } },
+        {  8.0, { ControlPolicy::BiasCogeneration     ,  fwd_sp,  fwd_sp } },
+        {  9.0, { ControlPolicy::ReverseCogeneration  ,  fwd_sp,  fwd_sp } },
+        { 10.0, { ControlPolicy::LockedForward        ,  fwd_sp,  fwd_sp } }
     };
 
     for ( auto testCase : testCases )
