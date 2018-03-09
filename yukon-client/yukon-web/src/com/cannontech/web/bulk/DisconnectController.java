@@ -1,20 +1,16 @@
 package com.cannontech.web.bulk;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.service.DisconnectService;
@@ -25,7 +21,6 @@ import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
@@ -45,7 +40,6 @@ public class DisconnectController {
     @Autowired private DisconnectService disconnectService;
     @Autowired private AlertService alertService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private CollectionActionService collectionActionService;
 
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, DeviceCollection deviceCollection) throws ServletException {
@@ -57,52 +51,13 @@ public class DisconnectController {
         return "disconnect/home.jsp";
     }
 
-    @RequestMapping("action")
-    public String action(ModelMap model, DeviceCollection deviceCollection, String key, DisconnectCommand command)
-            throws ServletException {
-        model.addAttribute("deviceCollection", deviceCollection);
-        model.addAttribute("command", command);   
-        if (StringUtils.isNotBlank(key)) {
-            model.addAttribute("result", collectionActionService.getResult(Integer.parseInt(key)));
-        }
-        
-        return "disconnect/resultDetail.jsp";
-    }
-
-    @RequestMapping("start")
-    public String start(HttpServletRequest request, 
-                      ModelMap model, 
-                      DeviceCollection deviceCollection,
-                      YukonUserContext userContext, 
-                      DisconnectCommand command) throws ServletException {
-        CollectionActionResult result = disconnectService.execute(command,
-                                      deviceCollection,
-                                      new AlertCallback(userContext, request),
-                                      userContext);
+    @RequestMapping(value = "start", method = RequestMethod.POST)
+    public String start(HttpServletRequest request, ModelMap model, DeviceCollection deviceCollection,
+                        YukonUserContext userContext, DisconnectCommand command) throws ServletException {
+        CollectionActionResult result = disconnectService.execute(command, deviceCollection,
+                                                                  new AlertCallback(userContext, request),
+                                                                  userContext);
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
-    }
-
-    @RequestMapping("recentResults")
-    public String recentResults(ModelMap model) throws ServletException {
-     //   model.addAttribute("results", disconnectService.getResults()); 
-        
-        return "disconnect/results.jsp";
-    }
-
-    @RequestMapping("resultDetail")
-    public String resultDetail(ModelMap model, String resultKey, DisconnectCommand command) throws ServletException {
-        CollectionActionResult result = collectionActionService.getResult(Integer.parseInt(resultKey));
-     /*   model.addAttribute("result", result);
-        model.addAttribute("command", command);*/
-        
-        return "disconnect/resultDetail.jsp";
-    }
-
-    @RequestMapping(value = "/cancel", method = RequestMethod.POST)
-    public @ResponseBody Map<String, String> cancel(String key, YukonUserContext userContext, DisconnectCommand command) {
-      //  disconnectService.cancel(new Integer(key), userContext.getYukonUser(), command);
-        
-        return Collections.singletonMap("success", "true");
     }
 
     private class AlertCallback implements SimpleCallback<CollectionActionResult> {
@@ -111,7 +66,7 @@ public class DisconnectController {
 
         AlertCallback(YukonUserContext userContext, HttpServletRequest request) {
             this.accessor = messageResolver.getMessageSourceAccessor(userContext);
-            this.partialUrl = ServletUtil.createSafeUrl(request, "/bulk/disconnect/resultDetail");
+            this.partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
         }
 
         @Override
@@ -120,16 +75,16 @@ public class DisconnectController {
             ResolvableTemplate template;
             double percentSuccess = result.getCounts().getPercentSuccess();
             if (result.isFailed()) {
-                template = new ResolvableTemplate("yukon.common.alerts.disconnectCompletion.failed");
+                template = new ResolvableTemplate("yukon.common.alerts.collectionActionCompletion.failed");
                 String exceptionReason = result.getExecutionExceptionText();
                 template.addData("notCompletedCount", result.getCounts().getNotCompleted());
                 template.addData("exceptionReason", exceptionReason);
             } else {
-                template = new ResolvableTemplate("yukon.common.alerts.disconnectCompletion");
+                template = new ResolvableTemplate("yukon.common.alerts.collectionActionCompletion");
             }
-            String url = partialUrl + "?resultKey=" + result.getCacheKey();
+            String url = partialUrl + "?key=" + result.getCacheKey();
             template.addData("url", url);
-            template.addData("command", accessor.getMessage(DisconnectCommand.getDisconnectCommand(result.getAction())));
+            template.addData("command", accessor.getMessage(result.getAction().getFormatKey()));
             template.addData("percentSuccess", percentSuccess);
             template.addData("completedCount", result.getCounts().getCompleted());
 

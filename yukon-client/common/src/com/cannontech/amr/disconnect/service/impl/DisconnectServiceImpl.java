@@ -266,7 +266,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
         @Override
         public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
-            result.setState(DisconnectDeviceState.FAILED);
+            result.setState(DisconnectDeviceState.FAILURE);
             result.setError(error);
         }
 

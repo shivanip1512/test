@@ -6,6 +6,14 @@
 
 <cti:standardPage module="tools" page="bulk.progressReport">
 
+    <table class="stacked">
+        <tr>
+            <td class="strong-label-small"><i:inline key=".note.label" /></td>
+            <cti:url var="resultsUrl" value="/bulk/recentResults"/>
+            <td class="detail"><i:inline key=".note.text" arguments="${resultsUrl}" /></td>
+        </tr>
+    </table>
+
     <cti:toJson id="resultsjson" object="${result}"/>
 
     <input type="hidden" id="key" value="${result.cacheKey}"/>

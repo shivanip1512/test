@@ -13,10 +13,10 @@ public enum DisconnectDeviceState implements DisplayableEnum {
     UNSUPPORTED,
     NOT_CONFIGURED,
     CANCELED,
-    FAILED;
+    FAILURE;
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.tools.bulk.disconnect." + name();
+        return "yukon.web.modules.tools.bulk.collectionActionDetail." + name();
     }
 }
