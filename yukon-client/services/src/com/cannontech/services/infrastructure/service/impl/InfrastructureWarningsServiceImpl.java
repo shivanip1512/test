@@ -194,16 +194,16 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
      */
     private List<InfrastructureWarning> getAndLogEventLogWarnings(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
         return newWarnings.stream()
-                       .filter(warning -> oldWarnings.stream()
-                                                     .noneMatch(oldWarning -> oldWarning.equalsWithArgs(warning)))
-                       .peek(warning -> {
-                           String warningMessage = systemMessageSourceAccessor.getMessage(warning);
-                           infrastructureEventLogService.warningGenerated(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(), 
-                                                                          warning.getWarningType().toString(),
-                                                                          warning.getSeverity().toString(),
-                                                                          warningMessage);
-                       })
-                       .collect(Collectors.toList());
+                          .filter(warning -> oldWarnings.stream()
+                                                        .noneMatch(oldWarning -> oldWarning.equalsWithArgs(warning)))
+                          .peek(warning -> {
+                              String warningMessage = systemMessageSourceAccessor.getMessage(warning);
+                              infrastructureEventLogService.warningGenerated(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(),
+                                                                             warning.getWarningType().toString(),
+                                                                             warning.getSeverity().toString(),
+                                                                             warningMessage);
+                          })
+                          .collect(Collectors.toList());
     }
     
     @Autowired
