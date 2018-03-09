@@ -21,10 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
-import com.cannontech.common.bulk.callbackResult.ConfigurationCallbackResult;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.ProcessorFactory;
@@ -57,7 +60,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class DeviceConfigController {
 
     @Resource(name="oneAtATimeProcessor") private BulkProcessor bulkProcessor;
-    @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
 
     @Autowired private ProcessorFactory processorFactory;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
@@ -69,8 +71,8 @@ public class DeviceConfigController {
     @Autowired private AlertService alertService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired protected CollectionActionService collectionActionService;
 
-    
     @RequestMapping("assignConfig")
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
@@ -90,34 +92,19 @@ public class DeviceConfigController {
     public String doAssignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        // CALLBACK
-        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
-        
-        ConfigurationCallbackResult callbackResult = 
-                new ConfigurationCallbackResult(resultsId,
-                                                deviceCollection, 
-                                                successGroup, 
-                                                processingExceptionGroup, 
-                                                deviceGroupMemberEditorDao,
-                                                deviceGroupCollectionHelper);
-        
-        // CACHE
-        recentResultsCache.addResult(resultsId, callbackResult);
-        
-        // PROCESS
+
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
         DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
         eventLogService.assignConfigInitiated(configuration.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration, userContext.getYukonUser());
-        
+
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.ASSIGN_CONFIG, null,
+            deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
-        
-        model.addAttribute("resultsId", resultsId);
-        
-        return "redirect:assignConfigResults";
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
+            new CollectionActionBulkProcessorCallback(result, collectionActionService));
+   
+        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
     
     @RequestMapping("assignConfigResults")
@@ -144,38 +131,16 @@ public class DeviceConfigController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        
-        /*
-         * Generate a unique ID string for the results of this operation. Strip the dashes of a 
-         * random UUID and use it.
-         *  i.e. bee09385-2da2-4622-863c-1e30023d9738 becomes bee093852da24622863c1e30023d9738
-         */
-        String resultsId = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
-        
-        // CALLBACK
-        StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
-        StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup();
-        
-        ConfigurationCallbackResult callbackResult = 
-                new ConfigurationCallbackResult(resultsId,
-                                                deviceCollection, 
-                                                successGroup, 
-                                                processingExceptionGroup, 
-                                                deviceGroupMemberEditorDao,
-                                                deviceGroupCollectionHelper);
-        
-        // CACHE
-        recentResultsCache.addResult(resultsId, callbackResult);
+
         
         eventLogService.unassignConfigInitiated(deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor(userContext.getYukonUser());
-        
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.UNASSIGN_CONFIG, null,
+            deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, new CollectionActionBulkProcessorCallback(result, collectionActionService));
         
-        model.addAttribute("resultsId", resultsId);
-        
-        return "redirect:unassignConfigResults";
+        return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
     
     @RequestMapping("unassignConfigResults")
@@ -190,11 +155,11 @@ public class DeviceConfigController {
      */
     private void doConfigResultsCore(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
-        String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
+      /*  String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         ConfigurationCallbackResult callbackResult = (ConfigurationCallbackResult)recentResultsCache.getResult(resultsId);
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
         model.addAttribute("callbackResult", callbackResult);
-        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
+        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());*/
     }
 
     /**

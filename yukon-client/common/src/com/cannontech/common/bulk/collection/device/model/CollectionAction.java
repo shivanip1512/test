@@ -43,8 +43,8 @@ public enum CollectionAction implements DisplayableEnum {
     ADD_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
     UPDATE_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
     REMOVE_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    ASSIGN_CONFIG(DB, null, SUCCESS, FAILURE),
-    UNASSIGN_CONFIG(DB, null, SUCCESS, FAILURE);
+    ASSIGN_CONFIG(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
+    UNASSIGN_CONFIG(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE);
 
     private CollectionActionProcess process;
 
