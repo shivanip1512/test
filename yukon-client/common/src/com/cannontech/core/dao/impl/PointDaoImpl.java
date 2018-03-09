@@ -259,14 +259,16 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePointsByPaObjectIdAndPointType(int paobjectId, PointType type) {
+    public int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
+        sql.append("SELECT MAX(p.PointOffset) + 1");
+        sql.append("FROM Point p LEFT JOIN PointUnit pu ON p.PointId = pu.PointId ");
+        sql.append("LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId ");
+        sql.append("LEFT JOIN PointAnalog pa ON p.PointId = pa.PointId ");
+        sql.append("LEFT JOIN PointAccumulator pac ON p.PointId = pac.PointId");
         sql.append("WHERE PAObjectId").eq(paobjectId);
-        sql.append("AND p.PointType").eq(type);
-
-        List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
-        return points;
+        sql.append("AND p.PointType").eq_k(type);
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override

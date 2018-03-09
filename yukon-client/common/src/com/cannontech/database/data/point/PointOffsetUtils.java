@@ -1,7 +1,5 @@
 package com.cannontech.database.data.point;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.cannontech.core.dao.PointDao;
@@ -23,21 +21,7 @@ public class PointOffsetUtils {
     }
 
     public static int getValidPointOffset(Integer paoId, PointType type) {
-        return getMaxPointOffsetForDevice(paoId, type) + 1;
+        return YukonSpringHook.getBean(PointDao.class).getNextOffsetByPaoObjectIdAndPointType(paoId, type);
     }
 
-    public static int getMaxPointOffsetForDevice(Integer paoId, PointType type) {
-        List<LitePoint> points =
-            YukonSpringHook.getBean(PointDao.class).getLitePointsByPaObjectIdAndPointType(paoId, type);
-        if (points.isEmpty()) {
-            return 0;
-        } else {
-            LitePoint maxPoint = Collections.max(points, new Comparator<LitePoint>() {
-                public int compare(LitePoint p1, LitePoint p2) {
-                    return p1.getPointOffset() - p2.getPointOffset();
-                }
-            });
-            return maxPoint.getPointOffset();
-        }
-    }
 }

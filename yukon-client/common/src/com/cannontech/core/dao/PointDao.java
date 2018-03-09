@@ -266,8 +266,8 @@ public interface PointDao {
     List<LitePoint> getDuplicatePoints(List<Integer> paoIds, List<PointIdentifier> points);
 
     /**
-     * Returns a list of all the lite points associated with the given PAO id and PointType.
+     * Returns the next available offset for the given PAO id and PointType.
      */
-    List<LitePoint> getLitePointsByPaObjectIdAndPointType(int paobjectId, PointType type);
+    int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type);
 
 }

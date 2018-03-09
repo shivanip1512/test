@@ -249,7 +249,7 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePointsByPaObjectIdAndPointType(int paobjectId, PointType type) {
-        return null;
+    public int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type) {
+        return 0;
     }
 }
