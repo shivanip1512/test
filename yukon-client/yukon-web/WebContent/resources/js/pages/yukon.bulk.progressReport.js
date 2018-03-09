@@ -78,7 +78,7 @@ yukon.bulk.progressReport = (function () {
             },
             title: { text: null },
             tooltip: {
-                pointFormat: '<b>{point.displayPercentage}, {point.x} devices</b>'
+                pointFormat: '<b>{point.y}%, {point.x} devices</b>'
             },
             plotOptions: {
                 pie: {
