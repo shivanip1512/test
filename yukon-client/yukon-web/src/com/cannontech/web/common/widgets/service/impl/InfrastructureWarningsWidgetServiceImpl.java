@@ -131,9 +131,10 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
         case UPDATE:
         case DELETE:
             if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
-                if (dbChange.getCategory().equalsIgnoreCase(PaoCategory.DEVICE.getDbString()) && 
+                if (dbChange.getCategory().equalsIgnoreCase(PaoCategory.DEVICE.getDbString()) && cachedWarnings != null &&
                         cachedWarnings.stream().anyMatch(warning -> warning.getPaoIdentifier().getPaoId() == dbChange.getId())) {
-                    initiateRecalculation();
+                    refreshWarnings = true;
+                    refreshSummary = true;
                 }
             }
         default:
