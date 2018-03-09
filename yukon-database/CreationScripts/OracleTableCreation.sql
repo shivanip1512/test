@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2018 8:12:41 AM                          */
+/* Created on:     3/9/2018 2:35:09 PM                          */
 /*==============================================================*/
 
 
@@ -1415,6 +1415,57 @@ create table CarrierRoute  (
    UserLocked           CHAR(1)                         not null,
    ResetRptSettings     CHAR(1)                         not null,
    constraint PK_CARRIERROUTE primary key (ROUTEID)
+);
+
+/*==============================================================*/
+/* Table: CollectionAction                                      */
+/*==============================================================*/
+create table CollectionAction  (
+   CollectionActionId   NUMBER                          not null,
+   Action               VARCHAR2(50)                    not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE,
+   Status               VARCHAR2(50)                    not null,
+   UserName             VARCHAR2(100)                   not null,
+   constraint PK_CollectionAction primary key (CollectionActionId)
+);
+
+/*==============================================================*/
+/* Table: CollectionActionCommandRequest                        */
+/*==============================================================*/
+create table CollectionActionCommandRequest  (
+   CollectionActionId   NUMBER                          not null,
+   CommandRequestExecId NUMBER                          not null,
+   constraint PK_CollectionActionCommandRequest primary key (CollectionActionId, CommandRequestExecId)
+);
+
+/*==============================================================*/
+/* Table: CollectionActionInput                                 */
+/*==============================================================*/
+create table CollectionActionInput  (
+   CollectionActionId   NUMBER                          not null,
+   InputOrder           NUMBER                          not null,
+   Description          VARCHAR2(50)                    not null,
+   Value                VARCHAR2(1000)                  not null,
+   constraint PK_CollectionActionInput primary key (CollectionActionId, InputOrder)
+);
+
+/*==============================================================*/
+/* Table: CollectionActionRequest                               */
+/*==============================================================*/
+create table CollectionActionRequest  (
+   CollectionActionRequestId NUMBER                          not null,
+   CollectionActionId   NUMBER                          not null,
+   PAObjectId           NUMBER                          not null,
+   Result               VARCHAR2(50)                    not null,
+   constraint PK_CollectionActionRequest primary key (CollectionActionRequestId)
+);
+
+/*==============================================================*/
+/* Index: INDX_Car_CollectionActionId                           */
+/*==============================================================*/
+create index INDX_Car_CollectionActionId on CollectionActionRequest (
+   CollectionActionId ASC
 );
 
 /*==============================================================*/
@@ -11517,6 +11568,31 @@ alter table CapControlFeeder
 alter table CarrierRoute
    add constraint FK_CarrierRoute_Route foreign key (ROUTEID)
       references Route (RouteID);
+
+alter table CollectionActionCommandRequest
+   add constraint FK_CollectionActionCR_CollectionAction foreign key (CollectionActionId)
+      references CollectionAction (CollectionActionId)
+      on delete cascade;
+
+alter table CollectionActionCommandRequest
+   add constraint FK_CollectionActionCR_CommandRequestExec foreign key (CommandRequestExecId)
+      references CommandRequestExec (CommandRequestExecId)
+      on delete cascade;
+
+alter table CollectionActionInput
+   add constraint FK_CollectionActionI_CollectionAction foreign key (CollectionActionId)
+      references CollectionAction (CollectionActionId)
+      on delete cascade;
+
+alter table CollectionActionRequest
+   add constraint FK_CollectionActionR_CollectionAction foreign key (CollectionActionId)
+      references CollectionAction (CollectionActionId)
+      on delete cascade;
+
+alter table CollectionActionRequest
+   add constraint FK_CollectionActionR_YukonPAObject foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table CommPort
    add constraint FK_COMMPORT_REF_COMPO_YUKONPAO foreign key (PORTID)
