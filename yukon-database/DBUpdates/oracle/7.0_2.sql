@@ -15,4 +15,4 @@ AND AlternateClose = 0;
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 1, SYSDATE);*/
+/*INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 2, SYSDATE);*/
