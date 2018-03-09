@@ -126,7 +126,9 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
             commands.forEach(c -> log.debug("PLC send" + c));
         }			          
         Callback commandCallback = new Callback(callback, meters, command);
-        callback.getResult().setCancelationCallback(commandCallback);
+        if(callback.getResult() != null) {
+            callback.getResult().setCancelationCallback(commandCallback);
+        }
         commandExecutionService.execute(commands, commandCallback, execution, false, user);
     }
 
@@ -169,7 +171,7 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
             if (log.isDebugEnabled()) {
                 log.debug("PLC Canceled:" + callback.getResult().isCanceled());
             }
-            if (!callback.getResult().isCanceled()) {
+            if (callback.getResult() == null || !callback.getResult().isCanceled()) {
                 log.debug("PLC Completed");
                 processUnsupported(devicesWithoutPoint);
                 callback.complete(getStrategy());
