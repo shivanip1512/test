@@ -51,7 +51,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 
     // HOME
     @Override
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
 
         // device collection
@@ -258,24 +258,6 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         };
 
         return addPointsProcessor;
-    }
-    
-    // VIEW RESULTS
-    @RequestMapping("addPointsResults")
-    public String addPointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
-
-        // prepare mav with basic results data
-        prepResultsView(model, request);
-
-        // options
-        boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
-        boolean updatePoints = ServletRequestUtils.getBooleanParameter(request, "updatePoints", false);
-        boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", false);
-        model.addAttribute("sharedPoints", sharedPoints);
-        model.addAttribute("updatePoints", updatePoints);
-        model.addAttribute("maskExistingPoints", maskExistingPoints);
-
-        return "addPoints/addPointsResults.jsp";
     }
     
 }

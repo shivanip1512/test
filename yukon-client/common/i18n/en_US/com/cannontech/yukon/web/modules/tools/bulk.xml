@@ -614,6 +614,7 @@
     <entry key="yukon.common.device.bulk.addPointsHome.header">Choose Points</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.addPointsHome.noteText"></entry>
+    <entry key="yukon.common.device.bulk.addPointsHome.options.title">Options</entry>
     
     <!-- options text -->
     <entry key="yukon.common.device.bulk.addPointsHome.maskExistingPointsOptionLabel">Existing Points</entry>
