@@ -34,7 +34,6 @@ import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.Range;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -124,7 +123,8 @@ public class ProgressReportController {
        filter.setStatuses(Lists.newArrayList(CommandRequestExecutionStatus.COMPLETE));
        DateTime min = new DateTime().minusDays(1);
        DateTime max = min.plusDays(2);
-       filter.setRange(new Range<>(min.toInstant(), true, max.toInstant(), false));
+       filter.setStartDate(min.toDate());
+       filter.setEndDate(max.toDate());
        
        
         SearchResults<CollectionActionFilteredResult> results = collectionActionDao.getCollectionActionFilteredResults(

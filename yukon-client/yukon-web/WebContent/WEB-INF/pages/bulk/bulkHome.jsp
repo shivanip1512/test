@@ -89,6 +89,17 @@
                 <td><i:inline key=".assetsImporter.description"/></td>
             </tr>
         </cti:checkRolesAndProperties>
+        
+        <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+            <tr>
+                <td>
+                    <a href="<cti:url value="/bulk/recentResults"/>">
+                        <i:inline key=".recentResults"/>
+                    </a>
+                </td>
+                <td><i:inline key=".recentResults.description"/></td>
+            </tr>
+        </cti:checkRolesAndProperties>
     
     </table>
     

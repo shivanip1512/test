@@ -168,6 +168,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.ADD_REMOVE_POINTS),
     COLLECTION_ACTIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.collectionActions.pageName", "/bulk/deviceSelection",
             MatchStyle.all, YukonRole.DEVICE_ACTIONS),
+    RECENT_RESULTS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.recentResults.pageName", "/bulk/recentResults",
+                   MatchStyle.all, YukonRole.DEVICE_ACTIONS),
     FDR_TRANSLATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.fdrTranslationManagement.pageName", "/bulk/fdrTranslationManager/home",
             MatchStyle.all, YukonRoleProperty.FDR_TRANSLATION_MANAGER),
     MSP_POWER_SUPPLIER_LOADS(SiteMapCategory.TOOLS, "yukon.web.modules.dr.loadManagement.siteMapName", "/multispeak/visualDisplays/loadManagement/home",

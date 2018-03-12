@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,6 +126,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                     result.setNotAttemptedCount(rs.getInt("NotAttemptedCount"));
                     result.setFailureCount(rs.getInt("FailedCount"));
                     result.setSuccessCount(rs.getInt("SuccessCount"));
+                    result.setUserName(rs.getString("UserName"));
                     return result;
                 }
                 
@@ -161,16 +163,17 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         sql.append("FROM CollectionAction ca");
         sql.append("JOIN Counts AS c ON ca.CollectionActionId = c.CollectionActionId");
         sql.append("WHERE ca.Action").in_k(filter.getActions());
-        if(filter.getStatuses().contains(CommandRequestExecutionStatus.CANCELLED)) {
-            filter.getStatuses().add(CommandRequestExecutionStatus.CANCELING);
+        if (filter.getStatuses() != null) {
+            if (filter.getStatuses().contains(CommandRequestExecutionStatus.CANCELLED)) {
+                filter.getStatuses().add(CommandRequestExecutionStatus.CANCELING);
+            }
+            sql.append("AND ca.Status").in_k(filter.getStatuses());
         }
-        sql.append("AND ca.Status").in_k(filter.getStatuses());
-        
-        if (filter.getUserName() != null) {
+        if (StringUtils.isNotEmpty(filter.getUserName())) {
             sql.append("AND ca.UserName").eq(filter.getUserName());
         }
         
-        Range<Instant> dateRange = filter.getRange();
+        Range<Instant> dateRange = (Range<Instant>) Range.inclusiveExclusive(new Instant(filter.getStartDate()), new Instant(filter.getEndDate()));
         Instant startDate = dateRange == null ? null : dateRange.getMin();
         if (startDate != null) {
             if (dateRange.isIncludesMinValue()) {

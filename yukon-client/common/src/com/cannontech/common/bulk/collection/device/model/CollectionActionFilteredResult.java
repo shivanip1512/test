@@ -1,5 +1,7 @@
 package com.cannontech.common.bulk.collection.device.model;
 
+import java.util.Date;
+
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -13,6 +15,8 @@ public class CollectionActionFilteredResult {
     private int failureCount;
     private int notAttemptedCount;
     private int cacheKey;
+    private String userName;
+    
     public CollectionAction getAction() {
         return action;
     }
@@ -60,5 +64,19 @@ public class CollectionActionFilteredResult {
     }
     public void setNotAttemptedCount(int notAttemptedCount) {
         this.notAttemptedCount = notAttemptedCount;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    
+    public Date getFormattedStartTime(){
+        return startTime.toDate();
+    }
+    
+    public Date getFormattedStopTime(){
+        return stopTime.toDate();
     }
 }

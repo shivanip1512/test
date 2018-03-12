@@ -436,6 +436,8 @@
               </page>
             </pages>
           </page>
+          <page name="bulk.recentResults" type="BASIC">
+          </page>
           <page name="bulk.bulkImporter" type="BASIC">
           </page>
           <page name="bulk.progressReport" type="BASIC" hideFavorite="true">
