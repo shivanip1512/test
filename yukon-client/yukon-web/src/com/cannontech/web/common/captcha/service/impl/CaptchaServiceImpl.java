@@ -37,10 +37,10 @@ public class CaptchaServiceImpl implements CaptchaService{
     @PostConstruct 
     public void init() {
         RECAPTCHA_SITE_KEY =
-            configurationSource.getString(MasterConfigString.RECAPTCHA_PUBLIC_KEY,
+            configurationSource.getString(MasterConfigString.RECAPTCHA_SITE_KEY,
                 "6LfIVEkUAAAAAEtqdQcwZU8V6cYGKi0d0Yuz-ISZ");
         RECAPTCHA_SECRET_KEY =
-            configurationSource.getString(MasterConfigString.RECAPTCHA_PRIVATE_KEY,
+            configurationSource.getString(MasterConfigString.RECAPTCHA_SECRET_KEY,
                 "6LfIVEkUAAAAAFVpFbteZJ1QBP4Kq4Uzbg2udIhB");
     }
     

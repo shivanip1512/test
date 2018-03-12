@@ -30,6 +30,8 @@ public enum MasterConfigDeprecatedKey {
     CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO,  // see yuk-17611
     CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO,  // see yuk-17611
     CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO,  // see yuk-17611
+    RECAPTCHA_PUBLIC_KEY, //public key used for CAPTCHA V1 , as we moved to reCAPTCHA V2 so no longer needed.
+    RECAPTCHA_PRIVATE_KEY, //private key used for CAPTCHA V1 , as we moved to reCAPTCHA V2 so no longer needed.
 
     /* The following YUKON_DNP_* keys were intended to be deprecated but have been commented out of this enum.
      * This was done to prevent the 5.5.2 update script from throwing an exception when
