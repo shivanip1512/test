@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -54,7 +55,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
 
     @Override
     public void appendToLog(CollectionActionResult result, List<CollectionActionLogDetail> details) {
-        if (details != null && !details.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(details)) {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
             List<String> data = new ArrayList<>();
             for(CollectionActionLogDetail detail: details) {
@@ -73,7 +74,6 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 }
 
                 fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
-                System.out.println(fields);
                 data.add(String.join(",", fields));
             }
          
