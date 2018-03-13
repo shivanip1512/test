@@ -565,26 +565,6 @@
     <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeChoose.change.label">Change Device Type</entry>
     <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeChoose.noDeviceTypes">No valid Device Types exist.</entry>
     
-    <!-- changeDeviceTypeResults.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeResults.pageName">Change Device Type Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.changeDeviceTypeResults.contextualPageName">Results</entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.header">Results Of Change Device Type Operation</entry>
-    
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.noteLabel">Note: </entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.noteText"><![CDATA[
-        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
-    ]]></entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.progressLabel">Progress</entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.inProgress">In Progress...</entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.complete">Complete.</entry>
-    
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.successLabel">Successfully Changed Device Type</entry>
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.processingExceptionLabel">Failed To Change Device Type</entry>
-    
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    
-    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
-    
     <!-- ADD POINTS -->
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->

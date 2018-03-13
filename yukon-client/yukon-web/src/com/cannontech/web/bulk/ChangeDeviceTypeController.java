@@ -7,13 +7,11 @@ import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -113,22 +111,6 @@ public class ChangeDeviceTypeController {
             new CollectionActionBulkProcessorCallback(result, collectionActionService));
         
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
-    }
-    
-    /**
-     * CHANGE DEVICE TYPE RESULTS
-     */
-    @RequestMapping("changeDeviceTypeResults")
-    public String changeDeviceTypeResults(ModelMap model, HttpServletRequest request) throws ServletException {
-
-        // result info
-      /*  String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        ChangeDeviceTypeCallbackResult callbackResult = (ChangeDeviceTypeCallbackResult)recentResultsCache.getResult(resultsId);
-        
-        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
-        model.addAttribute("callbackResult", callbackResult);
-        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());*/
-        return "changeDeviceType/changeDeviceTypeResults.jsp";
     }
     
 }
