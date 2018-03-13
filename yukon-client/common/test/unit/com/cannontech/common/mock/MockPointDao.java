@@ -308,7 +308,7 @@ public class MockPointDao implements PointDao {
 
     @Override
     public int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type) {
-        return 0;
+        return 1;
     }
 
 
