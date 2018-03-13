@@ -370,9 +370,6 @@
                   </page>
                   <page name="bulk.updatePointsHome" type="BASIC">
                     <link>/bulk/updatePoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;sharedPoints=${sharedPoints}&amp;restorePoints=${restorePoints}&amp;maskMissingPoints=${maskMissingPoints}</link>
-                    <pages>
-                      <page name="bulk.updatePointsResults" type="BASIC"/>
-                    </pages>
                   </page>
                   <page name="bulk.removePointsHome" type="BASIC">
                     <link>/bulk/removePoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;sharedPoints=${sharedPoints}</link>

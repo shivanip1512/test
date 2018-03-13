@@ -190,20 +190,4 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         return errorMsg;
     }
 
-    // VIEW RESULTS
-    @RequestMapping("updatePointsResults")
-    public String updatePointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
-
-        // prepare mav with basic results data
-        prepResultsView(model, request);
-
-        // options
-        boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
-        boolean maskExistingPoints = ServletRequestUtils.getBooleanParameter(request, "maskExistingPoints", false);
-        model.addAttribute("sharedPoints", sharedPoints);
-        model.addAttribute("maskExistingPoints", maskExistingPoints);
-
-        return "updatePoints/updatePointsResults.jsp";
-    }
-
 }

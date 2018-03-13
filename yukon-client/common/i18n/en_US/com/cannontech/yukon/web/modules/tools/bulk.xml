@@ -651,6 +651,7 @@
     <entry key="yukon.common.device.bulk.updatePointsHome.header">Choose Points</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noteText"></entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.options.title">Options</entry>
     
     <!-- options text -->
     <entry key="yukon.common.device.bulk.updatePointsHome.maskExistingPointsOptionLabel">Existing Points</entry>
@@ -666,32 +667,15 @@
     <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionText">Only Shared Points</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.sharedPointsTrueOptionTooltip">Show only those points that all selected device types support.</entry>
     
+    <entry key="yukon.common.device.bulk.updatePointsHome.selectUpdateType">Select update type:</entry>
+    <entry key="yukon.common.device.bulk.updatePointsHome.value">Value:</entry>
+    
     <!-- misc -->
     <entry key="yukon.common.device.bulk.updatePointsHome.updateButton">Update</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.noPointsSuppliedMsg">Select at least one point to update.</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.validDecimalNumberMsg">Value must be a valid decimal number.</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.numberGreaterThanZeroMsg">Value must be a number greater than zero.</entry>
     <entry key="yukon.common.device.bulk.updatePointsHome.validIntegerNumberMsg">Value must be a valid integer number.</entry>
-    
-    <!-- updatePointsResults.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.updatePointsResults.pageName">Update Points Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.updatePointsResults.contextualPageName">Results</entry>
-    <entry key="yukon.common.device.bulk.updatePointsResults.header">Results Of Update Points Operation</entry>
-    
-    <entry key="yukon.common.device.bulk.updatePointsResults.noteLabel">Note: </entry>
-    <entry key="yukon.common.device.bulk.updatePointsResults.noteText"><![CDATA[
-        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
-    ]]></entry>
-    <entry key="yukon.common.device.bulk.updatePointsResults.progressLabel">Progress</entry>
-    <entry key="yukon.common.device.bulk.updatePointsResults.inProgress">In Progress...</entry>
-    <entry key="yukon.common.device.bulk.updatePointsResults.complete">Complete.</entry>
-    
-    <entry key="yukon.common.device.bulk.updatePointsResults.successLabel">Successfully Updated Points</entry>
-    <entry key="yukon.common.device.bulk.updatePointsResults.processingExceptionLabel">Failed To Update Points</entry>
-    
-    <entry key="yukon.common.device.bulk.updatePointsResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    
-    <entry key="yukon.common.device.bulk.updatePointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
     <!-- REMOVE POINTS -->
     <!-- ******************************************************************************************************************** -->
