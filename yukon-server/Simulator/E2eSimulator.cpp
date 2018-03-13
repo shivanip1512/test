@@ -360,32 +360,16 @@ std::vector<unsigned char> E2eSimulator::buildDnp3Response(const std::vector<uns
 
     if( requestId.first == Protocols::DnpSlaveProtocol::Commands::Class1230Read )
     {
-        std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> points;
+        std::vector<Protocols::DnpSlave::output_point> points;
+        using PT = Protocols::DnpSlave::PointType;
 
-        {
-            auto analog_point = std::make_unique<Protocols::DnpSlave::output_analog>();
-            analog_point->offset = 17;
-            analog_point->online = true;
-            analog_point->value = 331;
-
-            points.push_back(std::move(analog_point));
-        }
-        {
-            auto status_point = std::make_unique<Protocols::DnpSlave::output_digital>();
-            status_point->offset = 170;
-            status_point->online = true;
-            status_point->status = true;
-
-            points.push_back(std::move(status_point));
-        }
-        {
-            auto accumulator_point = std::make_unique<Protocols::DnpSlave::output_accumulator>();
-            accumulator_point->offset = 1700;
-            accumulator_point->online = true;
-            accumulator_point->value  = 3310;
-
-            points.push_back(std::move(accumulator_point));
-        }
+        points.emplace_back(17,   true,  PT::AnalogInput,  331);
+        points.emplace_back(170,  true,  PT::BinaryInput,  true);
+        points.emplace_back(1700, true,  PT::Accumulator,  3310);
+        points.emplace_back(34,   true,  PT::AnalogOutput, 662);
+        points.emplace_back(35,   false, PT::AnalogOutput, 662);
+        points.emplace_back(340,  true,  PT::BinaryOutput, true);
+        points.emplace_back(341,  false, PT::BinaryOutput, true);
 
         prot.setScanCommand(std::move(points));
     }

@@ -477,7 +477,23 @@ int DnpSlave::processScanSlaveRequest (ConnectionProtocol cp)
 {
     const CtiTime Now;
 
-    std::vector<std::unique_ptr<Protocols::DnpSlave::output_point>> outputPoints;
+    std::vector<Protocols::DnpSlave::output_point> outputPoints;
+
+    using Protocols::DnpSlave::PointType;
+
+    auto emplacePoint = 
+        [&](const DnpId dnpId, const CtiFDRPoint fdrPoint, const PointType dnpType)
+        {
+            const auto online = YukonToForeignQuality(fdrPoint.getQuality(), fdrPoint.getLastTimeStamp(), Now);
+            const auto offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
+            const auto value  = dnpId.PointType == StatusPointType 
+                ? fdrPoint.getValue() 
+                : fdrPoint.getValue() * dnpId.Multiplier;
+
+            CTILOG_DEBUG(dout, logNow() << " sending " << desolvePointType(dnpId.PointType) << " for " << dnpId.toString() << ", Value=" << value);
+            
+            outputPoints.emplace_back(offset, online, dnpType, value);
+        };
 
     {
         // This guard must happen before the _sendMux or a deadlock can occur.
@@ -494,58 +510,47 @@ int DnpSlave::processScanSlaveRequest (ConnectionProtocol cp)
                 const CtiFDRDestination &fdrdest = kv.first;
                 long fdrPointId = fdrdest.getParentPointId();
                 CtiFDRPoint fdrPoint;
-                if( !findPointIdInList( fdrPointId, getSendToList(), fdrPoint ) )
+                if( findPointIdInList( fdrPointId, getSendToList(), fdrPoint ) )
                 {
-                    continue;
+                    switch( dnpId.PointType )
+                    {
+                    case StatusPointType:             emplacePoint(dnpId, fdrPoint, PointType::BinaryInput);  break;
+                    case AnalogPointType:             emplacePoint(dnpId, fdrPoint, PointType::AnalogInput);  break;
+                    case PulseAccumulatorPointType:   emplacePoint(dnpId, fdrPoint, PointType::Accumulator);  break;
+                    case DemandAccumulatorPointType:  emplacePoint(dnpId, fdrPoint, PointType::DemandAccumulator);  break;
+                    default:
+                        CTILOG_DEBUG(dout, logNow() << " Unsupported point type " << dnpId.PointType);
+                    }
                 }
+            }
+        }
+    }
 
-                std::unique_ptr<Protocols::DnpSlave::output_point> point;
+    {
+        // This guard must happen before the _receiveMux or a deadlock can occur.
+        CTILOCKGUARD(CtiMutex, recvGuard, getReceiveFromList().getMutex());
+        // Protect _receiveMap while we use it.
+        CTILOCKGUARD(CtiMutex, guard, _receiveMux);
 
-                switch( dnpId.PointType )
+        for( const auto &kv : _receiveMap )
+        {
+            const DnpId &dnpId = kv.second;
+            if( dnpId.SlaveId == cp.dnpSlave.getSrcAddr() &&
+                dnpId.MasterId == cp.dnpSlave.getDstAddr() )
+            {
+                const CtiFDRDestination &fdrdest = kv.first;
+                long fdrPointId = fdrdest.getParentPointId();
+                CtiFDRPoint fdrPoint;
+                if( findPointIdInList( fdrPointId, getReceiveFromList(), fdrPoint ) )
                 {
-                case StatusPointType:
-                {
-                    CTILOG_DEBUG( dout, logNow() << " sending StatusPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
-                    auto s = std::make_unique<Protocols::DnpSlave::output_digital>();
-                    s->status = fdrPoint.getValue();
-                    point = std::move( s );
-                    break;
+                    switch( dnpId.PointType )
+                    {
+                    case StatusPointType:  emplacePoint(dnpId, fdrPoint, PointType::BinaryOutput);  break;
+                    case AnalogPointType:  emplacePoint(dnpId, fdrPoint, PointType::AnalogOutput);  break;
+                    default:
+                        CTILOG_DEBUG(dout, logNow() << " Unsupported point type " << dnpId.PointType);
+                    }
                 }
-                case AnalogPointType:
-                {
-                    CTILOG_DEBUG( dout, logNow() << " sending AnalogPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
-                    auto a = std::make_unique<Protocols::DnpSlave::output_analog>();
-                    a->value = fdrPoint.getValue() * dnpId.Multiplier;
-                    point = std::move( a );
-                    break;
-                }
-                case PulseAccumulatorPointType:
-                {
-                    CTILOG_DEBUG( dout, logNow() << " sending AccumulatorPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
-                    auto p = std::make_unique<Protocols::DnpSlave::output_accumulator>();
-                    p->value = fdrPoint.getValue() * dnpId.Multiplier;
-                    point = std::move( p );
-                    break;
-                }
-                case DemandAccumulatorPointType:
-                {
-                    CTILOG_DEBUG( dout, logNow() << " sending DemandAccumulatorPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
-                    auto d = std::make_unique<Protocols::DnpSlave::output_demand_accumulator>();
-                    d->value = fdrPoint.getValue() * dnpId.Multiplier;
-                    point = std::move( d );
-                    break;
-                }
-                default:
-                {
-                    CTILOG_DEBUG( dout, logNow() << " Unsupported point type " << dnpId.PointType );
-                    continue;
-                }
-                }
-
-                point->online = YukonToForeignQuality( fdrPoint.getQuality(), fdrPoint.getLastTimeStamp(), Now );
-                point->offset = dnpId.Offset - 1;  //  convert to DNP's 0-based indexing
-
-                outputPoints.emplace_back( std::move( point ) );
             }
         }
     }

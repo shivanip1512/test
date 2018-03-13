@@ -9,10 +9,6 @@ namespace Protocols {
 
 namespace DnpSlave {
     struct output_point;
-    struct output_analog;
-    struct output_digital;
-    struct output_accumulator;
-    struct output_demand_accumulator;
 
     struct analog_output_request;
     struct control_request;
@@ -46,7 +42,7 @@ public:
     std::vector<unsigned char> createDatalinkAck();
 
     std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
-    void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
+    void setScanCommand( std::vector<DnpSlave::output_point> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
     void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
     void setDelayMeasurementCommand( const std::chrono::milliseconds delay );
@@ -75,55 +71,29 @@ private:
 
 namespace DnpSlave {
 
-struct OutputPointHandler
+enum class PointType
 {
-    using analog_handler                = std::function<void (const output_analog  &)>;
-    using digital_handler               = std::function<void (const output_digital &)>;
-    using accumulator_handler           = std::function<void (const output_accumulator &)>;
-    using demand_accumulator_handler    = std::function<void (const output_demand_accumulator &)>;
-
-    virtual void handle(const output_analog  &) = 0;
-    virtual void handle(const output_digital &) = 0;
-    virtual void handle(const output_accumulator &) = 0;
-    virtual void handle(const output_demand_accumulator &) = 0;
+    AnalogInput,
+    AnalogOutput,
+    BinaryInput,
+    BinaryOutput,
+    Accumulator,
+    DemandAccumulator
 };
-
+    
 struct output_point
 {
-    virtual ~output_point() = default;
+    output_point(unsigned long offset_, bool online_, PointType type_, double value_)
+        :   offset(offset_),
+            online(online_),
+            value (value_),
+            type  (type_)
+    {}
 
     unsigned long offset;
     bool online;
-
-    virtual void identify(OutputPointHandler &) = 0;
-};
-
-struct output_analog : output_point
-{
-    void identify(OutputPointHandler &h) override { h.handle(*this); }
-
     double value;
-};
-
-struct output_digital : output_point
-{
-    void identify(OutputPointHandler &h) override { h.handle(*this); }
-
-    bool status;
-};
-
-struct output_accumulator : output_point
-{
-    void identify(OutputPointHandler &h) override { h.handle(*this); }
-
-    double value;
-};
-
-struct output_demand_accumulator : output_point
-{
-    void identify(OutputPointHandler &h) override { h.handle(*this); }
-
-    double value;
+    PointType type;
 };
 
 enum class ControlAction

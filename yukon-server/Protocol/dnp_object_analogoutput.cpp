@@ -207,6 +207,18 @@ int AnalogOutputStatus::getSerializedLen(void) const
 }
 
 
+void AnalogOutputStatus::setValue(double value)
+{
+    _doubleValue = value;
+}
+
+
+void AnalogOutputStatus::setOnlineFlag(bool online)
+{
+    _flags.online = online;
+}
+
+
 CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
 {
     double val = 0.0;

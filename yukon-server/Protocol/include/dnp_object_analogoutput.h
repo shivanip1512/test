@@ -58,6 +58,9 @@ public:
     virtual int serialize(unsigned char *buf) const;
     virtual int getSerializedLen(void) const;
 
+    void setValue(double value);
+    void setOnlineFlag(bool online);
+
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 

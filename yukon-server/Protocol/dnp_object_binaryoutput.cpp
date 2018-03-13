@@ -126,6 +126,18 @@ int BinaryOutput::getSerializedLen(void) const
 }
 
 
+void BinaryOutput::setStateValue(bool value)
+{
+    _bo.flags.state = value;
+}
+
+
+void BinaryOutput::setOnlineFlag(bool online)
+{
+    _bo.flags.online = online;
+}
+
+
 CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 {
     double val = 0.0;

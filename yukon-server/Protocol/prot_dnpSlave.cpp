@@ -277,63 +277,69 @@ std::vector<unsigned char> DnpSlaveProtocol::createDatalinkAck()
     return std::vector<unsigned char> { buf, buf + DatalinkPacket::calcPacketLength(packet.header.fmt.len) };
 }
 
-void DnpSlaveProtocol::setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints )
+template <typename Type>
+using PointMap = std::map<unsigned, std::unique_ptr<const Type>>;
+
+template <typename Object, typename Variation, typename Source>
+void emplaceNumeric(Source s, PointMap<Object>& map, Variation v)
+{
+    auto n = std::make_unique<Object>(v);
+    n->setValue(s.value);
+    n->setOnlineFlag(s.online);
+    map.emplace(s.offset, std::move(n));
+}
+
+template <typename Object, typename Source>
+void emplaceBoolean(Source s, PointMap<Object>& map, typename Object::Variation v)
+{
+    auto b = std::make_unique<Object>(v);
+    b->setStateValue(s.value);
+    b->setOnlineFlag(s.online);
+    map.emplace(s.offset, std::move(b));
+}
+
+void DnpSlaveProtocol::setScanCommand( std::vector<DnpSlave::output_point> outputPoints )
 {
     _command = Commands::Class1230Read;
 
-    struct PointSorter : DnpSlave::OutputPointHandler
+    PointMap<DNP::AnalogInput>        analog_inputs;
+    PointMap<DNP::BinaryInput>        binary_inputs;
+    PointMap<DNP::AnalogOutputStatus> analog_outputs;
+    PointMap<DNP::BinaryOutput>       binary_outputs;
+    PointMap<DNP::Counter>            accumulators;
+    PointMap<DNP::Counter>            demand_accumulators;
+
+    using DnpSlave::PointType;
+
+    std::map<PointType, std::function<void(DnpSlave::output_point)>> pointSorters {
+        { PointType::AnalogInput,       [&](auto p) { emplaceNumeric(p, analog_inputs,        AnalogInput::AI_32Bit);       } },
+        { PointType::AnalogOutput,      [&](auto p) { emplaceNumeric(p, analog_outputs,       AnalogOutput::AO_32Bit);      } },
+        { PointType::BinaryInput,       [&](auto p) { emplaceBoolean(p, binary_inputs,        BinaryInput::BI_WithStatus);  } },
+        { PointType::BinaryOutput,      [&](auto p) { emplaceBoolean(p, binary_outputs,       BinaryOutput::BO_WithStatus); } },
+        { PointType::Accumulator,       [&](auto p) { emplaceNumeric(p, accumulators,         Counter::C_Binary32Bit);      } },
+        { PointType::DemandAccumulator, [&](auto p) { emplaceNumeric(p, demand_accumulators,  Counter::C_Binary32Bit);      } },
+    };
+
+    for( const auto p : outputPoints )
     {
-        std::map<unsigned, std::unique_ptr<const DNP::AnalogInput>> analogs;
-        std::map<unsigned, std::unique_ptr<const DNP::BinaryInput>> digitals;
-        std::map<unsigned, std::unique_ptr<const DNP::Counter>>     accumulators;
-        std::map<unsigned, std::unique_ptr<const DNP::Counter>>     demand_accumulators;
-
-        void handle(const DnpSlave::output_analog &a) override
+        if( auto sorter = mapFindRef(pointSorters, p.type) )
         {
-            auto ain = std::make_unique<AnalogInput>(AnalogInput::AI_32Bit);
-            ain->setValue(a.value);
-            ain->setOnlineFlag(a.online);
-
-            analogs.emplace(a.offset, std::move(ain));
+            (*sorter)(p);
         }
-        void handle(const DnpSlave::output_digital &d) override
+        else
         {
-            auto bin = std::make_unique<BinaryInput>(BinaryInput::BI_WithStatus);
-            bin->setStateValue(d.status);
-            bin->setOnlineFlag(d.online);
-
-            digitals.emplace(d.offset, std::move(bin));
+            CTILOG_DEBUG(dout, "Unhandled point type " << static_cast<int>(p.type));
         }
-        void handle(const DnpSlave::output_accumulator &c) override
-        {
-            auto acc = std::make_unique<Counter>(Counter::C_Binary32Bit);
-            acc->setValue(c.value);
-            acc->setOnlineFlag(c.online);
-
-            accumulators.emplace(c.offset, std::move(acc));
-        }
-        void handle(const DnpSlave::output_demand_accumulator &c) override
-        {
-            auto dacc = std::make_unique<Counter>(Counter::C_Binary32Bit);
-            dacc->setValue(c.value);
-            dacc->setOnlineFlag(c.online);
-
-            demand_accumulators.emplace(c.offset, std::move(dacc));
-        }
-    }
-    ps;
-
-    for( const auto &point : outputPoints )
-    {
-        point->identify(ps);
     }
 
     std::vector<ObjectBlockPtr> dobs;
 
-    if( ! ps.analogs.empty() )              dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.analogs)));
-    if( ! ps.digitals.empty() )             dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.digitals)));
-    if( ! ps.accumulators.empty() )         dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.accumulators)));
-    if( ! ps.demand_accumulators.empty() )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.demand_accumulators)));
+    if( ! analog_inputs.empty()       )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analog_inputs)));
+    if( ! binary_inputs.empty()       )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(binary_inputs)));
+    if( ! accumulators.empty()        )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(accumulators)));
+    if( ! demand_accumulators.empty() )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(demand_accumulators)));
+    if( ! analog_outputs.empty()      )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analog_outputs)));
+    if( ! binary_outputs.empty()      )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(binary_outputs)));
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,

@@ -52,6 +52,9 @@ public:
     int serialize(unsigned char *buf) const;
     int getSerializedLen(void) const;
 
+    void setStateValue(bool value);
+    void setOnlineFlag(bool online);
+
     CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 

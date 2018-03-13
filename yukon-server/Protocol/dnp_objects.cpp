@@ -281,7 +281,9 @@ ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique
 
 //  explicit instantiations for DNP Slave (since it is used internally in ctiprot.dll, no need to export with IM_EX_PROT)
 template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const AnalogInput>> objects );
+template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const AnalogOutputStatus>> objects );
 template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const BinaryInput>> objects );
+template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const BinaryOutput>> objects );
 template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const Counter>> objects );
 
 
