@@ -640,26 +640,6 @@
     <entry key="yukon.common.device.bulk.addPointsHome.addButton">Add Points</entry>
     <entry key="yukon.common.device.bulk.addPointsHome.noPointsSuppliedMsg">Select at least one point to add.</entry>
     
-    <!-- addRemovePointsResults.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.addPointsResults.pageName">Add Points Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.addPointsResults.contextualPageName">Results</entry>
-    <entry key="yukon.common.device.bulk.addPointsResults.header">Results Of Add Points Operation</entry>
-    
-    <entry key="yukon.common.device.bulk.addPointsResults.noteLabel">Note: </entry>
-    <entry key="yukon.common.device.bulk.addPointsResults.noteText"><![CDATA[
-        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
-    ]]></entry>
-    <entry key="yukon.common.device.bulk.addPointsResults.progressLabel">Progress</entry>
-    <entry key="yukon.common.device.bulk.addPointsResults.inProgress">In Progress...</entry>
-    <entry key="yukon.common.device.bulk.addPointsResults.complete">Complete.</entry>
-    
-    <entry key="yukon.common.device.bulk.addPointsResults.successLabel">Successfully Added Points To Devices</entry>
-    <entry key="yukon.common.device.bulk.addPointsResults.processingExceptionLabel">Failed To Add Points To Devices</entry>
-    
-    <entry key="yukon.common.device.bulk.addPointsResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    
-    <entry key="yukon.common.device.bulk.addPointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
-    
     <!-- UPDATE POINTS -->
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
@@ -723,6 +703,7 @@
     <entry key="yukon.common.device.bulk.removePointsHome.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.removePointsHome.noteText"></entry>
     <entry key="yukon.common.device.bulk.removePointsHome.viewDefinitionDetailPopupTitle">View Device Definition</entry>
+    <entry key="yukon.common.device.bulk.removePointsHome.options.title">Options</entry>
     
     <!-- options text -->
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionLabel">Missing Points</entry>
@@ -741,26 +722,6 @@
     <!-- misc -->
     <entry key="yukon.common.device.bulk.removePointsHome.removeButton">Remove Points</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.noPointsSuppliedMsg">Select at least one point to remove.</entry>
-    
-    <!-- addRemovePointsResults.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.removePointsResults.pageName">Remove Points Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.removePointsResults.contextualPageName">Results</entry>
-    <entry key="yukon.common.device.bulk.removePointsResults.header">Results Of Remove Points Operation</entry>
-    
-    <entry key="yukon.common.device.bulk.removePointsResults.noteLabel">Note: </entry>
-    <entry key="yukon.common.device.bulk.removePointsResults.noteText"><![CDATA[
-        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
-    ]]></entry>
-    <entry key="yukon.common.device.bulk.removePointsResults.progressLabel">Progress</entry>
-    <entry key="yukon.common.device.bulk.removePointsResults.inProgress">In Progress...</entry>
-    <entry key="yukon.common.device.bulk.removePointsResults.complete">Complete.</entry>
-    
-    <entry key="yukon.common.device.bulk.removePointsResults.successLabel">Successfully Removed Points From Devices</entry>
-    <entry key="yukon.common.device.bulk.removePointsResults.processingExceptionLabel">Failed To Remove Points From Devices</entry>
-    
-    <entry key="yukon.common.device.bulk.removePointsResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    
-    <entry key="yukon.common.device.bulk.removePointsResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
     <!-- UPDATE -->
     <!-- ******************************************************************************************************************** -->

@@ -376,9 +376,6 @@
                   </page>
                   <page name="bulk.removePointsHome" type="BASIC">
                     <link>/bulk/removePoints/home?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;sharedPoints=${sharedPoints}</link>
-                    <pages>
-                      <page name="bulk.removePointsResults" type="BASIC"/>
-                    </pages>
                   </page>
                   <page name="bulk.addToGroup" type="BASIC"/>
                   <page name="bulk.removeFromGroup" type="BASIC"/>

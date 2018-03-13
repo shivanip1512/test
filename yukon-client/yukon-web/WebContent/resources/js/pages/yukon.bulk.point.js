@@ -9,6 +9,17 @@ yukon.bulk.point = (function () {
 
     'use strict';
     var initialized = false,
+    
+    showHideAllPoints = function () {
+        var sharedPoints = $('#sharedPoints').val();
+        if (sharedPoints == 'true') {
+            $('#sharedPointsDiv').removeClass('dn');
+            $('#allPointsDiv').addClass('dn');
+        } else {
+            $('#sharedPointsDiv').addClass('dn');
+            $('#allPointsDiv').removeClass('dn');
+        }
+   },
 
     mod = {
 
@@ -16,6 +27,8 @@ yukon.bulk.point = (function () {
             init: function () {
 
                 if (initialized) return;
+                
+                showHideAllPoints();
                 
                 //check any preselectedPointIdentifiers (used when coming from Device Data Monitors)
                 $("[name='preselectedPointIdentifiers']").each(function () {
@@ -26,9 +39,7 @@ yukon.bulk.point = (function () {
                 });
                 
                 $(document).on('change', '#sharedPoints', function () {
-                    var sharedPoints = $('#sharedPoints').val();
-                    $('#sharedPointsDiv').toggleClass('dn', !sharedPoints);
-                    $('#allPointsDiv').toggleClass('dn', sharedPoints);
+                    showHideAllPoints();
                 });
                 
                 initialized = true;

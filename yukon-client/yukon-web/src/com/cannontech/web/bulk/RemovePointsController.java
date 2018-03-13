@@ -195,19 +195,4 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         return removePointsProcessor;
     }
 
-    // VIEW RESULTS
-    @RequestMapping("removePointsResults")
-    public String removePointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
-
-        // prepare mav with basic results data
-        prepResultsView(model, request);
-
-        // options
-        boolean sharedPoints = ServletRequestUtils.getBooleanParameter(request, "sharedPoints", true);
-        boolean maskMissingPoints = ServletRequestUtils.getBooleanParameter(request, "maskMissingPoints", false);
-        model.addAttribute("sharedPoints", sharedPoints);
-        model.addAttribute("maskMissingPoints", maskMissingPoints);
-
-        return "removePoints/removePointsResults.jsp";
-    }
 }
