@@ -27,7 +27,7 @@ struct DnpId : public Cti::Loggable
 
     USHORT MasterId;
     USHORT SlaveId;
-    UINT   PointType;
+    CtiPointType_t PointType;
     USHORT Offset;
     double Multiplier;
     BOOL valid;
