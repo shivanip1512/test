@@ -766,28 +766,33 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
 
             // update our voltage data min/max pair data structure
+            // skip the BusPower points as they are not voltages...
             //      feasibilityData:     pointID -> { min, max } voltages
-            for ( auto pointData : request->getPointValues() )
+
+            for ( auto requestType : { RegulatorRequestType, CbcRequestType, OtherRequestType } )
             {
-                // if it is in the mapping, update the min and max voltages as necessary, if it isn't, add the current
-                //  value as both the min and max
-
-                if ( auto result = Cti::mapFind( state->feasibilityData, pointData.first ) )
+                for ( auto pointData : request->getPointValues( requestType ) )
                 {
-                    auto & min_max_pair = *result;
+                    // if it is in the mapping, update the min and max voltages as necessary, if it isn't, add the current
+                    //  value as both the min and max
 
-                    if ( pointData.second.value < min_max_pair.first )
+                    if ( auto result = Cti::mapFind( state->feasibilityData, pointData.first ) )
                     {
-                        min_max_pair.first = pointData.second.value;
+                        auto & min_max_pair = *result;
+
+                        if ( pointData.second.value < min_max_pair.first )
+                        {
+                            min_max_pair.first = pointData.second.value;
+                        }
+                        if ( pointData.second.value > min_max_pair.second )
+                        {
+                            min_max_pair.second = pointData.second.value;
+                        }
                     }
-                    if ( pointData.second.value > min_max_pair.second )
+                    else
                     {
-                        min_max_pair.second = pointData.second.value;
+                        state->feasibilityData[ pointData.first ] = { pointData.second.value, pointData.second.value };
                     }
-                }
-                else
-                {
-                    state->feasibilityData[ pointData.first ] = { pointData.second.value, pointData.second.value };
                 }
             }
 
@@ -804,9 +809,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            // is the feasibilityData the same size as the request? if yes then we have all the data and can proceed
+            // is the feasibilityData the same size as the collection of all non-BusPower points in the request?
+            //  if yes then we have all the data and can proceed
 
-            if ( request->requestSize() != state->feasibilityData.size() )
+            const auto busPowerPoints = request->getPointValues( BusPowerRequestType ).size();
+
+            if ( ( request->requestSize() - busPowerPoints ) != state->feasibilityData.size() )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
                 CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << testDataPtr.TestName
