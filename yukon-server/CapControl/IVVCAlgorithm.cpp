@@ -23,6 +23,7 @@
 #include "IVVCAnalysisMessage.h"
 #include "database_util.h"
 #include "database_reader.h"
+#include "tbl_pt_alarm.h"
 
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
@@ -48,6 +49,8 @@ extern bool _IVVC_STATIC_DELTA_VOLTAGES;
 extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 extern unsigned long _REFUSAL_TIMEOUT;
 extern unsigned long _MAX_KVAR;
+extern bool _LOG_MAPID_INFO;
+extern long _MAXOPS_ALARM_CATID;
 
 long GetDmvTestExecutionID( Cti::Database::DatabaseConnection & connection );
 void updateDmvTestStatus( const long            executionID,
@@ -437,13 +440,16 @@ bool IVVCAlgorithm::handleReverseFlow( CtiCCSubstationBusPtr subbus )
 */
 bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus )
 {
-    // 1. Collect a mapping of all of the switched banks on the bus.
+    // 1. Collect a mapping of all of the switched banks on the bus that are not already disabled.
 
     std::map<long, CtiCCCapBankPtr>     banks;
 
     for ( auto bank : subbus->getAllSwitchedCapBanks() )
     {
-        banks.emplace( bank->getPaoId(), bank );
+        if ( ! bank->getDisableFlag() )
+        {
+            banks.emplace(bank->getPaoId(), bank);
+        }
     }
     
     // 2. Remove the ones from the mapping that are assigned to a zone on the bus.
@@ -465,25 +471,87 @@ bool IVVCAlgorithm::checkAllBanksAreInControlZones( CtiCCSubstationBusPtr subbus
 
     // 3. Disable any banks left in the mapping.
 
-    bool anyToDisable = false;
+    CtiMultiMsg_vec     signals;
+    EventLogEntries     events;
 
     for ( auto entry : banks )
     {
         CtiCCCapBankPtr bank = entry.second;
-
-        if ( ! bank->getDisableFlag() )
-        {
             
-            CTILOG_INFO(dout, "IVVC Configuration: Bank: " << bank->getPaoName() << " on bus: " << subbus->getPaoName()
-                                << " is not assigned to a control zone. Disabling the bank." );
+        CTILOG_INFO(dout, "IVVC Configuration: Bank: " << bank->getPaoName() << " on bus: " << subbus->getPaoName()
+                            << " is not assigned to a control zone. Disabling the bank." );
 
-            store->UpdatePaoDisableFlagInDB( bank, true );
+        store->UpdatePaoDisableFlagInDB( bank, true );
 
-            anyToDisable = true;
+        std::string additional  = "CapBank: " + bank->getPaoName();
+
+        if ( _LOG_MAPID_INFO )
+        {
+            additional  += " MapID: "
+                        + bank->getMapLocationId()
+                        + " ("
+                        + bank->getPaoDescription()
+                        + ")";
+        }
+
+        if ( bank->getOperationAnalogPointId() > 0 )
+        {
+            auto pSig = std::make_unique<CtiSignalMsg>( bank->getOperationAnalogPointId(),
+                                                        5,                /* soe */
+                                                        "CapBank not assigned to IVVC Zone",
+                                                        additional,
+                                                        CapControlLogType,
+                                                        _MAXOPS_ALARM_CATID,
+                                                        Cti::CapControl::SystemUser,
+                                                        TAG_ACTIVE_ALARM, /* tags */
+                                                        0,                /* pri */
+                                                        0,                /* millis */
+                                                        bank->getCurrentDailyOperations() );
+
+            pSig->setCondition( CtiTablePointAlarming::highReasonability );
+
+            signals.push_back( pSig.release() );
+        }
+
+        // write to the event log
+
+        {
+            long    stationID, areaID, specialAreaID;
+
+            {
+                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+                store->getSubBusParentInfo( subbus, specialAreaID, areaID, stationID );
+            }
+
+            events.push_back(
+                EventLogEntry( 0,
+                               bank->getStatusPointId() > 0
+                                    ? bank->getStatusPointId()
+                                    : SYS_PID_CAPCONTROL,
+                               specialAreaID, areaID, stationID,
+                               bank->getParentId(),
+                               subbus->getPaoId(),
+                               capControlDisable,
+                               subbus->getEventSequence(),
+                               0,
+                               "CapBank Disabled - Not assigned to IVVC Zone",
+                               Cti::CapControl::SystemUser ) );
         }
     }
 
-    return anyToDisable;
+    if ( ! signals.empty() )
+    {
+        DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
+
+        sendPointChanges( dispatchConnection, signals );
+    }
+
+    if ( ! events.empty() )
+    {
+        CtiCapController::submitEventLogEntries( events );
+    }
+
+    return banks.size() > 0;
 }
 
 
