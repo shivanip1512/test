@@ -77,7 +77,7 @@ public class GroupEditorController {
     private final int maxGetDevicesSize = 1000;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView home(ModelMap model,HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
 
         ModelAndView mav = new ModelAndView("home.jsp");
@@ -92,7 +92,10 @@ public class GroupEditorController {
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         DeviceGroup group = null;
-
+        String errorMessage = ServletRequestUtils.getStringParameter(request, "errorMessage", null);
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+        }
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         model.addAttribute("rootGroup", rootGroup);
 
