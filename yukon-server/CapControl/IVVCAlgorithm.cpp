@@ -693,7 +693,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
+            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder, state->dmvWattVarPointCount ) )
             {
                 // Configuration Error
                 CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
@@ -708,18 +708,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp( timeNow );
             state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
-            // clear the request all data flag so we don't get cached data from dispatch, only new data
-            //  we could really use a custom bump test point request....
-            std::set<PointRequest> notPointRequests;
-
-            for ( auto & pointRequest : pointRequests )
-            {
-                notPointRequests.insert( { pointRequest.pointId, pointRequest.pointRequestType, false } );
-            }
-            
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
-            request->watchPoints( notPointRequests );
+            request->watchPoints( pointRequests );
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -809,12 +800,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            // is the feasibilityData the same size as the collection of all non-BusPower points in the request?
+            // is the feasibilityData the same size as the collection of all non-BusPower watt and var points in the request?
             //  if yes then we have all the data and can proceed
 
-            const auto busPowerPoints = request->getPointValues( BusPowerRequestType ).size();
-
-            if ( ( request->requestSize() - busPowerPoints ) != state->feasibilityData.size() )
+            if ( ( request->requestSize() - state->dmvWattVarPointCount ) != state->feasibilityData.size() )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
                 CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << testDataPtr.TestName
@@ -1052,7 +1041,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
+            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder, state->dmvWattVarPointCount ) )
             {
                 // Configuration Error
                 CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
@@ -1067,18 +1056,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp( timeNow );
             state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
-            // clear the request all data flag so we don't get cached data from dispatch, only new data
-            //  we could really use a custom bump test point request....
-            std::set<PointRequest> notPointRequests;
-
-            for ( auto & pointRequest : pointRequests )
-            {
-                notPointRequests.insert( { pointRequest.pointId, pointRequest.pointRequestType, false } );
-            }
-
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
-            request->watchPoints( notPointRequests );
+            request->watchPoints( pointRequests );
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -1203,7 +1183,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
+            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder, state->dmvWattVarPointCount ) )
             {
                 // Configuration Error
                 CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
@@ -1218,18 +1198,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp( timeNow );
             state->setNextControlTime( timeNow + testDataPtr.PollingInterval );
 
-            // clear the request all data flag so we don't get cached data from dispatch, only new data
-            //  we could really use a custom bump test point request....
-            std::set<PointRequest> notPointRequests;
-
-            for ( auto & pointRequest : pointRequests )
-            {
-                notPointRequests.insert( { pointRequest.pointId, pointRequest.pointRequestType, false } );
-            }
-
             // Make GroupRequest Here
             PointDataRequestPtr request( _requestFactory->createDispatchPointDataRequest( dispatchConnection ) );
-            request->watchPoints( notPointRequests );
+            request->watchPoints( pointRequests );
             state->setGroupRequest( request );
 
             //ActiveMQ message here for System Refresh
@@ -4652,5 +4623,211 @@ unsigned validateTapOpSolution( const IVVCState::TapOperationZoneMap & tapOp )
     }
 
     return errorCount;
+}
+
+
+bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
+                                             bool sendScan,
+                                             std::set<PointRequest>& pointRequests,
+                                             bool isBusOptimized,
+                                             unsigned & wattVarCount )
+{
+    bool configurationError = false;
+
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    ZoneManager & zoneManager = store->getZoneManager();
+
+    // Process each zones regulator, CBCs and extra voltage points
+
+    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    for ( const Zone::IdSet::value_type & ID : subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        // Regulator(s)
+
+        for ( const Zone::PhaseIdMap::value_type & mapping : zone->getRegulatorIds() )
+        {
+            try
+            {
+                VoltageRegulatorManager::SharedPtr  regulator
+                    = store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
+
+                pointRequests.emplace( voltagePointId, RegulatorRequestType, false );
+
+                if ( sendScan )
+                {
+                    regulator->executeIntegrityScan( Cti::CapControl::SystemUser );
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                configurationError = true;
+
+                if ( ! subbus->getDisableFlag() )
+                {
+                    CTILOG_EXCEPTION_ERROR(dout, noRegulator);
+                }
+            }
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
+            {
+                configurationError = true;
+
+                if (missingAttribute.complain())
+                {
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
+                }
+            }
+        }
+
+        // 2-way CBCs
+
+        Zone::IdSet capbankIds = zone->getBankIds();
+
+        for ( const Zone::IdSet::value_type & ID : capbankIds )
+        {
+            if ( CtiCCCapBankPtr bank = store->findCapBankByPAObjectID( ID ) )
+            {   
+                if ( ! bank->getDisableFlag() )     // only care about enabled banks
+                {
+                    for ( CtiCCMonitorPointPtr point : bank->getMonitorPoint() )
+                    {
+                        if ( point->getPointId() > 0 )
+                        {
+                            pointRequests.emplace( point->getPointId(), CbcRequestType, false );
+                        }
+                    }
+                    if ( sendScan )
+                    {
+                        CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
+                                                                                bank->getControlDeviceId() ) )->execute();
+                    }
+                }
+            }
+            else
+            {
+                // we will be building a point request that won't contain the points for this capbank, which is 
+                //  probably OK, it will just exclude this bank from the decision tree, as if it were disabled.
+
+                CTILOG_ERROR( dout, "IVVC Algorithm: Failed to find capbank with ID: " << ID
+                                        << ". Possible BusStore reset in progress." );
+            }
+        }
+
+        // Additional voltage points
+
+        for ( const Zone::PhaseToVoltagePointIds::value_type & mapping : zone->getPointIds() )
+        {
+            pointRequests.emplace( mapping.second, OtherRequestType, false );
+        }
+    }
+
+    wattVarCount = 0;
+
+    // We need the bus watt, var points and attached voltage point.
+
+    long busWattPointId = subbus->getCurrentWattLoadPointId();
+    if (busWattPointId > 0)
+    {
+        pointRequests.emplace( busWattPointId, BusPowerRequestType, false );
+        wattVarCount++;
+    }
+    else
+    {
+        configurationError = true;
+
+        if (!subbus->getDisableFlag())
+        {
+            CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Watt Point on Bus: " << subbus->getPaoName());
+        }
+    }
+
+    for ( long ID : subbus->getCurrentVarLoadPoints() )
+    {
+        if (ID > 0)
+        {
+            pointRequests.emplace( ID, BusPowerRequestType, false );
+            wattVarCount++;
+        }
+        else
+        {
+            configurationError = true;
+
+            if (!subbus->getDisableFlag())
+            {
+                CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Var Point on Bus: " << subbus->getPaoName());
+            }
+        }
+    }
+
+    // get the bus voltage point
+    //      a missing voltage point is not an error
+
+    long busVoltagePointId = subbus->getCurrentVoltLoadPointId();
+    if ( busVoltagePointId > 0 )
+    {
+        pointRequests.emplace( busVoltagePointId, BusPowerRequestType, false );
+    }
+
+    // We need the watt, var and voltage points for each feeder on the bus
+    //  -- iff control method is bus optimized
+
+    if ( isBusOptimized )
+    {
+        for ( CtiCCFeederPtr feeder : subbus->getCCFeeders() )
+        {
+            // watt point
+            long wattPoint = feeder->getCurrentWattLoadPointId();
+
+            if (wattPoint > 0)
+            {
+                pointRequests.emplace( wattPoint, BusPowerRequestType, false );
+                wattVarCount++;
+            }
+            else
+            {
+                configurationError = true;
+
+                if (!subbus->getDisableFlag())
+                {
+                    CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Watt Point on Feeder: " << feeder->getPaoName());
+                }
+            }
+
+            // var point(s)
+            for ( long varPoint : feeder->getCurrentVarLoadPoints() )
+            {
+                if (varPoint > 0)
+                {
+                    pointRequests.emplace( varPoint, BusPowerRequestType, false );
+                    wattVarCount++;
+                }
+                else
+                {
+                    configurationError = true;
+
+                    if (!subbus->getDisableFlag())
+                    {
+                        CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Var Point on Feeder: " << feeder->getPaoName());
+                    }
+                }
+            }
+
+            // get the feeder voltage point
+            //      a missing voltage point is not an error
+
+            long feederVoltagePointId = feeder->getCurrentVoltLoadPointId();
+            if ( feederVoltagePointId > 0 )
+            {
+                pointRequests.emplace( feederVoltagePointId, BusPowerRequestType, false );
+            }
+        }
+    }
+
+    return ( ! configurationError );
 }
 

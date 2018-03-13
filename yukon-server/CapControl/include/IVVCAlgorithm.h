@@ -72,7 +72,8 @@ class IVVCAlgorithm
                                      const long zoneId,
                                      bool & dataIsValid );
 
-        virtual bool determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
+        bool determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
+        bool determineDmvWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, bool isBusOptimized, unsigned & wattVarCount);
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
         double calculateVf(const PointValueMap &voltages);

@@ -72,6 +72,8 @@ class IVVCState
 
         std::string dmvTestStatusMessage;
 
+        unsigned dmvWattVarPointCount;
+
         enum
         {
             Down,
