@@ -5,14 +5,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -119,20 +117,6 @@ public class MassDeleteController {
                     device.getDeviceId());
             }
         }
-    }
-    
-    /**
-     * MASS DELETE RESULTS
-     */
-    @RequestMapping("massDeleteResults")
-    public String massDeleteResults(ModelMap model, HttpServletRequest request) throws ServletException {
-
-        // result info
-       /* String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        MassDeleteCallbackResult callbackResult = (MassDeleteCallbackResult)recentResultsCache.getResult(resultsId);
-        model.addAttribute("callbackResult", callbackResult);
-        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());*/
-        return "massDelete/massDeleteResults.jsp";
     }
 
 }

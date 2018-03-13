@@ -410,9 +410,6 @@
                   </page>
                   <page name="bulk.massDeleteConfirm" type="BASIC">
                     <link></link>
-                    <pages>
-                      <page name="bulk.massDeleteResults" type="BASIC"/>
-                    </pages>
                   </page>
                   <page name="map" type="DETAIL">
                     <labelArgument>${description}</labelArgument>
