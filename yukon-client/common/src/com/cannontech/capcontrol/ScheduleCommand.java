@@ -56,28 +56,22 @@ public enum ScheduleCommand {
 	public int getCapControlCommand(){
 	    return capControlCommand;
 	}
-		
-	static public ScheduleCommand getScheduleCommand(String commandName) {
-		for (ScheduleCommand value : ScheduleCommand.values()) {
-			//startsWith is necessary for VerifyNotOperatedIn.  The end of that command
-			//string includes several time variables, so it can't be matched exactly.
-			if (commandName.startsWith(value.commandName)) {
-				return value;
-			}
-		}
-		throw new IllegalArgumentException();
-	}
 	
 	//returns a list of all verification schedule commands
 	static public List<ScheduleCommand> getVerifyCommandsList(){
 	    return verifyList;
 	}
 	
-	static public ScheduleCommand getEnum(String value) {
-	    if (StringUtils.isNotEmpty(value) && value.contains(VerifyNotOperatedIn.getCommandName().substring(0,41))) {
+	static public ScheduleCommand getScheduleCommand(String commandName) {
+	    if (StringUtils.isNotEmpty(commandName) && commandName.contains(VerifyNotOperatedIn.getCommandName().substring(0,41))) {
 	        return VerifyNotOperatedIn;
 	    }
-	    return valueOf(value);
+	    for (ScheduleCommand command: getVerifyCommandsList()) {
+	        if (commandName != null && commandName.startsWith(command.getCommandName())) {
+	            return command;
+	        }
+	    }
+	    throw new IllegalArgumentException();
 	}
 	
     public static List<ScheduleCommand> getRequiredCommands() {

@@ -89,7 +89,7 @@ public class PaoScheduleServiceImpl implements PaoScheduleService {
         List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
         
         if (StringUtils.isNotEmpty(command) && !command.equals(NO_FILTER)) {
-            filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.getEnum(command)));
+            filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.getScheduleCommand(command)));
         }
         if (StringUtils.isNotEmpty(schedule) && !schedule.equals(NO_FILTER)) {
             filters.add(new ScheduleAssignmentFilter(schedule));
