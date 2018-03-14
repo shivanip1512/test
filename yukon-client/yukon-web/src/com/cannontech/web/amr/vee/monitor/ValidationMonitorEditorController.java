@@ -24,6 +24,7 @@ import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.common.validation.service.ValidationMonitorService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.monitor.validators.ValidationMonitorValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -39,7 +40,8 @@ public class ValidationMonitorEditorController {
     @Autowired private ValidationMonitorDao validationMonitorDao;
     @Autowired private ValidationMonitorService validationMonitorService;
     @Autowired private ValidationMonitorValidator validator;
-
+    private static final String baseKey = "yukon.web.modules.amr.validationEditor";
+    
     @RequestMapping(value = "{validationMonitorId}/edit", method = RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int validationMonitorId) {
 
@@ -116,23 +118,29 @@ public class ValidationMonitorEditorController {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String delete(ModelMap model, int deleteValidationMonitorId) throws Exception, ServletException {
-        
-        if (!validationMonitorService.delete(deleteValidationMonitorId)) {
-            model.addAttribute("editError",
-                "Could not delete validation monitor.  Monitor with id: " + deleteValidationMonitorId + " not found.");
+    public String delete(ModelMap model, int deleteValidationMonitorId, FlashScope flash)
+            throws Exception, ServletException {
+        try {
+            if (!validationMonitorService.delete(deleteValidationMonitorId)) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + ".delete.fail"));
+                return "redirect:" + deleteValidationMonitorId + "/edit";
+            }
+        } catch (ValidationMonitorNotFoundException ex) {
+            flash.setError(
+                new YukonMessageSourceResolvable(baseKey + ".delete.fail.monitorNotFound", deleteValidationMonitorId));
             return "redirect:" + deleteValidationMonitorId + "/edit";
         }
         return "redirect:/meter/start";
     }
     
     @RequestMapping(value = "toggleEnabled", method = RequestMethod.POST)
-    public String toggleEnabled(ModelMap model, int validationMonitorId) throws Exception, ServletException {
+    public String toggleEnabled(ModelMap model, int validationMonitorId, FlashScope flash)
+            throws Exception, ServletException {
         try {
-        	validationMonitorService.toggleEnabled(validationMonitorId);
+            validationMonitorService.toggleEnabled(validationMonitorId);
             model.addAttribute("validationMonitorId", validationMonitorId);
         } catch (ValidationMonitorNotFoundException e) {
-            model.addAttribute("editError", e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".monitorNotFound"));
         }
         
         return "redirect:" + validationMonitorId + "/edit";

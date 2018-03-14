@@ -158,4 +158,7 @@
     </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.deleteTagsOneYear">Delete previous 12 months of tags: </entry>
     <entry key="yukon.web.modules.amr.validation.advanced.deleteAllTags">Delete all tags: </entry>
+    <entry key="yukon.web.modules.amr.validationEditor.delete.fail.monitorNotFound">Could not delete validation monitor. Monitor with id: {0} not found.</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.delete.fail">Unable to delete.</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.monitorNotFound">Validation Monitor Does Not Exist.</entry>
 </properties>
