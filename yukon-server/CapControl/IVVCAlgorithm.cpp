@@ -735,6 +735,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
 
             state->setState( IVVCState::DMV_TEST_DATA_GATHERING_START );
+            subbus->setDmvTestRunning(true);
             break;
         }
         case IVVCState::DMV_TEST_DATA_GATHERING_START:
@@ -1334,6 +1335,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             state->deleteDmvState();
             state->setState( IVVCState::IVVC_WAIT );
+            subbus->setDmvTestRunning( false );
             break;
         }
         case IVVCState::IVVC_WAIT:
@@ -1345,6 +1347,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     break;
                 }
             }
+
+            //Just in case a DMV test falls out of the DMV loop unexpectedly
+            subbus->setDmvTestRunning(false);
 
             // toggle these flags so the log message prints again....
             state->setShowVarCheckMsg(true);

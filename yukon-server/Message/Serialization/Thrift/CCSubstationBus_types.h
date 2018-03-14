@@ -684,10 +684,10 @@ void swap(CCFeeder &a, CCFeeder &b);
 class CCSubstationBusItem {
  public:
 
-  static const char* ascii_fingerprint; // = "F3629F90F55DB453E196132122D2F284";
-  static const uint8_t binary_fingerprint[16]; // = {0xF3,0x62,0x9F,0x90,0xF5,0x5D,0xB4,0x53,0xE1,0x96,0x13,0x21,0x22,0xD2,0xF2,0x84};
+  static const char* ascii_fingerprint; // = "7946A569B010BFC98D7848F9629155DB";
+  static const uint8_t binary_fingerprint[16]; // = {0x79,0x46,0xA5,0x69,0xB0,0x10,0xBF,0xC9,0x8D,0x78,0x48,0xF9,0x62,0x91,0x55,0xDB};
 
-  CCSubstationBusItem() : _parentId(0), _strategy_maxDailyOperation(0), _strategy_maxOperationDisableFlag(0), _currentVarLoadPointId(0), _varValue(0), _currentWattLoadPointId(0), _wattValue(0), _mapLocationId(), _strategy_controlUnits(), _decimalPlaces(0), _newPointDataReceivedFlag(0), _busUpdatedflag(0), _lastCurrentVarPointUpdateTime(0), _estimatedVarLoadPointId(0), _estimatedVarLoadPointValue(0), _dailyOperationsAnalogPointId(0), _powerFactorPointId(0), _estimatedPowerFactorPointId(0), _currentDailyOperations(0), _peakTimeFlag(0), _recentlyControlledFlag(0), _lastOperationTime(0), _varValueBeforeControl(0), _powerFactorValue(0), _estimatedPowerFactorValue(0), _currentVarPointQuality(0), _waiveControlFlag(0), _strategy_peakLag(0), _strategy_offPeakLag(0), _strategy_peakLead(0), _strategy_offPeakLead(0), _currentVoltLoadPointId(0), _voltValue(0), _verificationFlag(0), _switchOverStatus(0), _currentWattPointQuality(0), _currentVoltPointQuality(0), _targetVarValue(0), _solution(), _ovUvDisabledFlag(0), _strategy_peakPFSetPoint(0), _strategy_offPeakPFSetPoint(0), _strategy_controlMethod(), _phaseAValue(0), _phaseBValue(0), _phaseCValue(0), _likeDayControlFlag(0), _displayOrder(0), _voltReductionFlag(0), _usePhaseData(0), _primaryBusFlag(0), _altSubId(0), _dualBusEnabled(0), _strategyId(0) {
+  CCSubstationBusItem() : _parentId(0), _strategy_maxDailyOperation(0), _strategy_maxOperationDisableFlag(0), _currentVarLoadPointId(0), _varValue(0), _currentWattLoadPointId(0), _wattValue(0), _mapLocationId(), _strategy_controlUnits(), _decimalPlaces(0), _newPointDataReceivedFlag(0), _busUpdatedflag(0), _lastCurrentVarPointUpdateTime(0), _estimatedVarLoadPointId(0), _estimatedVarLoadPointValue(0), _dailyOperationsAnalogPointId(0), _powerFactorPointId(0), _estimatedPowerFactorPointId(0), _currentDailyOperations(0), _peakTimeFlag(0), _recentlyControlledFlag(0), _lastOperationTime(0), _varValueBeforeControl(0), _powerFactorValue(0), _estimatedPowerFactorValue(0), _currentVarPointQuality(0), _waiveControlFlag(0), _strategy_peakLag(0), _strategy_offPeakLag(0), _strategy_peakLead(0), _strategy_offPeakLead(0), _currentVoltLoadPointId(0), _voltValue(0), _verificationFlag(0), _switchOverStatus(0), _currentWattPointQuality(0), _currentVoltPointQuality(0), _targetVarValue(0), _solution(), _ovUvDisabledFlag(0), _strategy_peakPFSetPoint(0), _strategy_offPeakPFSetPoint(0), _strategy_controlMethod(), _phaseAValue(0), _phaseBValue(0), _phaseCValue(0), _likeDayControlFlag(0), _displayOrder(0), _voltReductionFlag(0), _usePhaseData(0), _primaryBusFlag(0), _altSubId(0), _dualBusEnabled(0), _strategyId(0), _dmvTestRunningFlag(0) {
   }
 
   virtual ~CCSubstationBusItem() throw() {}
@@ -747,6 +747,7 @@ class CCSubstationBusItem {
   int32_t _altSubId;
   bool _dualBusEnabled;
   int32_t _strategyId;
+  bool _dmvTestRunningFlag;
   std::vector<CCFeeder>  _ccFeeders;
 
   void __set__baseMessage(const  ::Cti::Messaging::Serialization::Thrift::CCPao& val) {
@@ -969,6 +970,10 @@ class CCSubstationBusItem {
     _strategyId = val;
   }
 
+  void __set__dmvTestRunningFlag(const bool val) {
+    _dmvTestRunningFlag = val;
+  }
+
   void __set__ccFeeders(const std::vector<CCFeeder> & val) {
     _ccFeeders = val;
   }
@@ -1085,6 +1090,8 @@ class CCSubstationBusItem {
       return false;
     if (!(_strategyId == rhs._strategyId))
       return false;
+    if (!(_dmvTestRunningFlag == rhs._dmvTestRunningFlag))
+      return false;
     if (!(_ccFeeders == rhs._ccFeeders))
       return false;
     return true;
@@ -1106,8 +1113,8 @@ void swap(CCSubstationBusItem &a, CCSubstationBusItem &b);
 class CCSubstationBus {
  public:
 
-  static const char* ascii_fingerprint; // = "10569DEB8E59F1F64C59B4597C203F12";
-  static const uint8_t binary_fingerprint[16]; // = {0x10,0x56,0x9D,0xEB,0x8E,0x59,0xF1,0xF6,0x4C,0x59,0xB4,0x59,0x7C,0x20,0x3F,0x12};
+  static const char* ascii_fingerprint; // = "A352ADF0637143F68D428F1E8C97D5EF";
+  static const uint8_t binary_fingerprint[16]; // = {0xA3,0x52,0xAD,0xF0,0x63,0x71,0x43,0xF6,0x8D,0x42,0x8F,0x1E,0x8C,0x97,0xD5,0xEF};
 
   CCSubstationBus() : _msgInfoBitMask(0) {
   }

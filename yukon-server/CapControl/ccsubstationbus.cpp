@@ -83,6 +83,7 @@ CtiCCSubstationBus::CtiCCSubstationBus( StrategyManager * strategyManager )
         _likeDayControlFlag( false ),
         _voltReductionFlag( false ),
         _sendMoreTimeControlledCommandsFlag( false ),
+        _dmvTestRunningFlag( false ),
         _voltReductionControlId( 0 ),
         _verificationStrategy( CtiPAOScheduleManager::Undefined ),
         _disableOvUvVerificationFlag( false ),
@@ -128,6 +129,7 @@ CtiCCSubstationBus::CtiCCSubstationBus( Cti::RowReader & rdr, StrategyManager * 
         _likeDayControlFlag( false ),
         _voltReductionFlag( false ),
         _sendMoreTimeControlledCommandsFlag( false ),
+        _dmvTestRunningFlag( false ),
         _voltReductionControlId( 0 ),
         _verificationStrategy( CtiPAOScheduleManager::Undefined ),
         _disableOvUvVerificationFlag( false ),
@@ -436,6 +438,10 @@ bool CtiCCSubstationBus::getVoltReductionFlag() const
 bool CtiCCSubstationBus::getSendMoreTimeControlledCommandsFlag() const
 {
     return _sendMoreTimeControlledCommandsFlag;
+}
+bool CtiCCSubstationBus::getDmvTestRunning() const
+{
+    return _dmvTestRunningFlag;
 }
 
 
@@ -4191,6 +4197,11 @@ void CtiCCSubstationBus::setSendMoreTimeControlledCommandsFlag(bool flag)
     updateDynamicValue( _sendMoreTimeControlledCommandsFlag, flag );
 }
 
+void CtiCCSubstationBus::setDmvTestRunning(bool flag)
+{
+    updateDynamicValue( _dmvTestRunningFlag, flag );
+}
+
 void CtiCCSubstationBus::setCurrentVerificationFeederId(long feederId)
 {
     updateDynamicValue( _currentVerificationFeederId, feederId );
@@ -5015,6 +5026,7 @@ std::string CtiCCSubstationBus::formatFlags() const
     flags[ 15 ] = populateFlag( _sendMoreTimeControlledCommandsFlag );
     flags[ 16 ] = populateFlag( _disableOvUvVerificationFlag );
     flags[ 17 ] = populateFlag( _primaryBusFlag );
+    flags[ 18 ] = populateFlag( _dmvTestRunningFlag );
 
     return flags;
 }
@@ -7660,6 +7672,7 @@ void CtiCCSubstationBus::setDynamicData( Cti::RowReader & rdr )
     _sendMoreTimeControlledCommandsFlag   = deserializeFlag( flags, 15 );
     _disableOvUvVerificationFlag          = deserializeFlag( flags, 16 );
     _primaryBusFlag                       = deserializeFlag( flags, 17 );
+    _dmvTestRunningFlag                   = deserializeFlag( flags, 18 );
 
     rdr["CurrVerifyCBId"]           >> _currentVerificationCapBankId;
     rdr["CurrVerifyFeederId"]       >> _currentVerificationFeederId;

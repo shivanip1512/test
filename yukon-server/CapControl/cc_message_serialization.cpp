@@ -472,6 +472,7 @@ MessagePtr<Thrift::CCSubstationBusItem>::type populateThrift( const ::CtiCCSubst
     omsg->__set__altSubId                        ( tempAltSubId );
     omsg->__set__dualBusEnabled                  ( tempDualBusEnabled );
     omsg->__set__strategyId                      ( imsg.getStrategyId() );
+    omsg->__set__dmvTestRunningFlag              ( imsg.getDmvTestRunning() );
     omsg->__set__ccFeeders                       ( transformContainer<vector<Thrift::CCFeeder>>( imsg.getCCFeeders(), populateThrift ));
 
     return omsg;

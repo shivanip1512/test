@@ -1502,8 +1502,8 @@ void swap(CCFeeder &a, CCFeeder &b) {
   swap(a._ccCapbanks, b._ccCapbanks);
 }
 
-const char* CCSubstationBusItem::ascii_fingerprint = "F3629F90F55DB453E196132122D2F284";
-const uint8_t CCSubstationBusItem::binary_fingerprint[16] = {0xF3,0x62,0x9F,0x90,0xF5,0x5D,0xB4,0x53,0xE1,0x96,0x13,0x21,0x22,0xD2,0xF2,0x84};
+const char* CCSubstationBusItem::ascii_fingerprint = "7946A569B010BFC98D7848F9629155DB";
+const uint8_t CCSubstationBusItem::binary_fingerprint[16] = {0x79,0x46,0xA5,0x69,0xB0,0x10,0xBF,0xC9,0x8D,0x78,0x48,0xF9,0x62,0x91,0x55,0xDB};
 
 uint32_t CCSubstationBusItem::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1571,6 +1571,7 @@ uint32_t CCSubstationBusItem::read(::apache::thrift::protocol::TProtocol* iprot)
   bool isset__altSubId = false;
   bool isset__dualBusEnabled = false;
   bool isset__strategyId = false;
+  bool isset__dmvTestRunningFlag = false;
   bool isset__ccFeeders = false;
 
   while (true)
@@ -2022,6 +2023,14 @@ uint32_t CCSubstationBusItem::read(::apache::thrift::protocol::TProtocol* iprot)
         }
         break;
       case 56:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->_dmvTestRunningFlag);
+          isset__dmvTestRunningFlag = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 57:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->_ccFeeders.clear();
@@ -2159,6 +2168,8 @@ uint32_t CCSubstationBusItem::read(::apache::thrift::protocol::TProtocol* iprot)
   if (!isset__dualBusEnabled)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__strategyId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset__dmvTestRunningFlag)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__ccFeeders)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -2389,7 +2400,11 @@ uint32_t CCSubstationBusItem::write(::apache::thrift::protocol::TProtocol* oprot
   xfer += oprot->writeI32(this->_strategyId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_ccFeeders", ::apache::thrift::protocol::T_LIST, 56);
+  xfer += oprot->writeFieldBegin("_dmvTestRunningFlag", ::apache::thrift::protocol::T_BOOL, 56);
+  xfer += oprot->writeBool(this->_dmvTestRunningFlag);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("_ccFeeders", ::apache::thrift::protocol::T_LIST, 57);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->_ccFeeders.size()));
     std::vector<CCFeeder> ::const_iterator _iter11;
@@ -2463,11 +2478,12 @@ void swap(CCSubstationBusItem &a, CCSubstationBusItem &b) {
   swap(a._altSubId, b._altSubId);
   swap(a._dualBusEnabled, b._dualBusEnabled);
   swap(a._strategyId, b._strategyId);
+  swap(a._dmvTestRunningFlag, b._dmvTestRunningFlag);
   swap(a._ccFeeders, b._ccFeeders);
 }
 
-const char* CCSubstationBus::ascii_fingerprint = "10569DEB8E59F1F64C59B4597C203F12";
-const uint8_t CCSubstationBus::binary_fingerprint[16] = {0x10,0x56,0x9D,0xEB,0x8E,0x59,0xF1,0xF6,0x4C,0x59,0xB4,0x59,0x7C,0x20,0x3F,0x12};
+const char* CCSubstationBus::ascii_fingerprint = "A352ADF0637143F68D428F1E8C97D5EF";
+const uint8_t CCSubstationBus::binary_fingerprint[16] = {0xA3,0x52,0xAD,0xF0,0x63,0x71,0x43,0xF6,0x8D,0x42,0x8F,0x1E,0x8C,0x97,0xD5,0xEF};
 
 uint32_t CCSubstationBus::read(::apache::thrift::protocol::TProtocol* iprot) {
 

@@ -152,7 +152,8 @@ struct CCSubstationBusItem {
    53: required     i32                             _altSubId;
    54: required     bool                            _dualBusEnabled;
    55: required     i32                             _strategyId;
-   56: required     list<CCFeeder>                  _ccFeeders;
+   56: required     bool                            _dmvTestRunningFlag;
+   57: required     list<CCFeeder>                  _ccFeeders;
 }
 
 struct CCSubstationBus {

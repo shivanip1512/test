@@ -88,7 +88,8 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
   private static final org.apache.thrift.protocol.TField _ALT_SUB_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("_altSubId", org.apache.thrift.protocol.TType.I32, (short)53);
   private static final org.apache.thrift.protocol.TField _DUAL_BUS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("_dualBusEnabled", org.apache.thrift.protocol.TType.BOOL, (short)54);
   private static final org.apache.thrift.protocol.TField _STRATEGY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("_strategyId", org.apache.thrift.protocol.TType.I32, (short)55);
-  private static final org.apache.thrift.protocol.TField _CC_FEEDERS_FIELD_DESC = new org.apache.thrift.protocol.TField("_ccFeeders", org.apache.thrift.protocol.TType.LIST, (short)56);
+  private static final org.apache.thrift.protocol.TField _DMV_TEST_RUNNING_FLAG_FIELD_DESC = new org.apache.thrift.protocol.TField("_dmvTestRunningFlag", org.apache.thrift.protocol.TType.BOOL, (short)56);
+  private static final org.apache.thrift.protocol.TField _CC_FEEDERS_FIELD_DESC = new org.apache.thrift.protocol.TField("_ccFeeders", org.apache.thrift.protocol.TType.LIST, (short)57);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -151,6 +152,7 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
   private int _altSubId; // required
   private boolean _dualBusEnabled; // required
   private int _strategyId; // required
+  private boolean _dmvTestRunningFlag; // required
   private List<CCFeeder> _ccFeeders; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -210,7 +212,8 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     _ALT_SUB_ID((short)53, "_altSubId"),
     _DUAL_BUS_ENABLED((short)54, "_dualBusEnabled"),
     _STRATEGY_ID((short)55, "_strategyId"),
-    _CC_FEEDERS((short)56, "_ccFeeders");
+    _DMV_TEST_RUNNING_FLAG((short)56, "_dmvTestRunningFlag"),
+    _CC_FEEDERS((short)57, "_ccFeeders");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -335,7 +338,9 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
           return _DUAL_BUS_ENABLED;
         case 55: // _STRATEGY_ID
           return _STRATEGY_ID;
-        case 56: // _CC_FEEDERS
+        case 56: // _DMV_TEST_RUNNING_FLAG
+          return _DMV_TEST_RUNNING_FLAG;
+        case 57: // _CC_FEEDERS
           return _CC_FEEDERS;
         default:
           return null;
@@ -427,6 +432,7 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
   private static final int ___ALTSUBID_ISSET_ID = 47;
   private static final int ___DUALBUSENABLED_ISSET_ID = 48;
   private static final int ___STRATEGYID_ISSET_ID = 49;
+  private static final int ___DMVTESTRUNNINGFLAG_ISSET_ID = 50;
   private long __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -541,6 +547,8 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields._STRATEGY_ID, new org.apache.thrift.meta_data.FieldMetaData("_strategyId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields._DMV_TEST_RUNNING_FLAG, new org.apache.thrift.meta_data.FieldMetaData("_dmvTestRunningFlag", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields._CC_FEEDERS, new org.apache.thrift.meta_data.FieldMetaData("_ccFeeders", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, CCFeeder.class))));
@@ -607,6 +615,7 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     int _altSubId,
     boolean _dualBusEnabled,
     int _strategyId,
+    boolean _dmvTestRunningFlag,
     List<CCFeeder> _ccFeeders)
   {
     this();
@@ -715,6 +724,8 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     set_dualBusEnabledIsSet(true);
     this._strategyId = _strategyId;
     set_strategyIdIsSet(true);
+    this._dmvTestRunningFlag = _dmvTestRunningFlag;
+    set_dmvTestRunningFlagIsSet(true);
     this._ccFeeders = _ccFeeders;
   }
 
@@ -788,6 +799,7 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     this._altSubId = other._altSubId;
     this._dualBusEnabled = other._dualBusEnabled;
     this._strategyId = other._strategyId;
+    this._dmvTestRunningFlag = other._dmvTestRunningFlag;
     if (other.isSet_ccFeeders()) {
       List<CCFeeder> __this___ccFeeders = new ArrayList<CCFeeder>();
       for (CCFeeder other_element : other._ccFeeders) {
@@ -908,6 +920,8 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     this._dualBusEnabled = false;
     set_strategyIdIsSet(false);
     this._strategyId = 0;
+    set_dmvTestRunningFlagIsSet(false);
+    this._dmvTestRunningFlag = false;
     this._ccFeeders = null;
   }
 
@@ -2126,6 +2140,28 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, ___STRATEGYID_ISSET_ID, value);
   }
 
+  public boolean is_dmvTestRunningFlag() {
+    return this._dmvTestRunningFlag;
+  }
+
+  public void set_dmvTestRunningFlag(boolean _dmvTestRunningFlag) {
+    this._dmvTestRunningFlag = _dmvTestRunningFlag;
+    set_dmvTestRunningFlagIsSet(true);
+  }
+
+  public void unset_dmvTestRunningFlag() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, ___DMVTESTRUNNINGFLAG_ISSET_ID);
+  }
+
+  /** Returns true if field _dmvTestRunningFlag is set (has been assigned a value) and false otherwise */
+  public boolean isSet_dmvTestRunningFlag() {
+    return EncodingUtils.testBit(__isset_bitfield, ___DMVTESTRUNNINGFLAG_ISSET_ID);
+  }
+
+  public void set_dmvTestRunningFlagIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, ___DMVTESTRUNNINGFLAG_ISSET_ID, value);
+  }
+
   public int get_ccFeedersSize() {
     return (this._ccFeeders == null) ? 0 : this._ccFeeders.size();
   }
@@ -2606,6 +2642,14 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
       }
       break;
 
+    case _DMV_TEST_RUNNING_FLAG:
+      if (value == null) {
+        unset_dmvTestRunningFlag();
+      } else {
+        set_dmvTestRunningFlag((Boolean)value);
+      }
+      break;
+
     case _CC_FEEDERS:
       if (value == null) {
         unset_ccFeeders();
@@ -2784,6 +2828,9 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     case _STRATEGY_ID:
       return Integer.valueOf(get_strategyId());
 
+    case _DMV_TEST_RUNNING_FLAG:
+      return Boolean.valueOf(is_dmvTestRunningFlag());
+
     case _CC_FEEDERS:
       return get_ccFeeders();
 
@@ -2908,6 +2955,8 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
       return isSet_dualBusEnabled();
     case _STRATEGY_ID:
       return isSet_strategyId();
+    case _DMV_TEST_RUNNING_FLAG:
+      return isSet_dmvTestRunningFlag();
     case _CC_FEEDERS:
       return isSet_ccFeeders();
     }
@@ -3419,6 +3468,15 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
       if (!(this_present__strategyId && that_present__strategyId))
         return false;
       if (this._strategyId != that._strategyId)
+        return false;
+    }
+
+    boolean this_present__dmvTestRunningFlag = true;
+    boolean that_present__dmvTestRunningFlag = true;
+    if (this_present__dmvTestRunningFlag || that_present__dmvTestRunningFlag) {
+      if (!(this_present__dmvTestRunningFlag && that_present__dmvTestRunningFlag))
+        return false;
+      if (this._dmvTestRunningFlag != that._dmvTestRunningFlag)
         return false;
     }
 
@@ -3997,6 +4055,16 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSet_dmvTestRunningFlag()).compareTo(typedOther.isSet_dmvTestRunningFlag());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSet_dmvTestRunningFlag()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this._dmvTestRunningFlag, typedOther._dmvTestRunningFlag);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSet_ccFeeders()).compareTo(typedOther.isSet_ccFeeders());
     if (lastComparison != 0) {
       return lastComparison;
@@ -4267,6 +4335,10 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
     sb.append(this._strategyId);
     first = false;
     if (!first) sb.append(", ");
+    sb.append("_dmvTestRunningFlag:");
+    sb.append(this._dmvTestRunningFlag);
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("_ccFeeders:");
     if (this._ccFeeders == null) {
       sb.append("null");
@@ -4498,6 +4570,10 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
 
     if (!isSet_strategyId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field '_strategyId' is unset! Struct:" + toString());
+    }
+
+    if (!isSet_dmvTestRunningFlag()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field '_dmvTestRunningFlag' is unset! Struct:" + toString());
     }
 
     if (!isSet_ccFeeders()) {
@@ -4987,7 +5063,15 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 56: // _CC_FEEDERS
+          case 56: // _DMV_TEST_RUNNING_FLAG
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct._dmvTestRunningFlag = iprot.readBool();
+              struct.set_dmvTestRunningFlagIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 57: // _CC_FEEDERS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
@@ -5194,6 +5278,9 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
       oprot.writeFieldBegin(_STRATEGY_ID_FIELD_DESC);
       oprot.writeI32(struct._strategyId);
       oprot.writeFieldEnd();
+      oprot.writeFieldBegin(_DMV_TEST_RUNNING_FLAG_FIELD_DESC);
+      oprot.writeBool(struct._dmvTestRunningFlag);
+      oprot.writeFieldEnd();
       if (struct._ccFeeders != null) {
         oprot.writeFieldBegin(_CC_FEEDERS_FIELD_DESC);
         {
@@ -5278,6 +5365,7 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
       oprot.writeI32(struct._altSubId);
       oprot.writeBool(struct._dualBusEnabled);
       oprot.writeI32(struct._strategyId);
+      oprot.writeBool(struct._dmvTestRunningFlag);
       {
         oprot.writeI32(struct._ccFeeders.size());
         for (CCFeeder _iter12 : struct._ccFeeders)
@@ -5401,6 +5489,8 @@ public class CCSubstationBusItem implements org.apache.thrift.TBase<CCSubstation
       struct.set_dualBusEnabledIsSet(true);
       struct._strategyId = iprot.readI32();
       struct.set_strategyIdIsSet(true);
+      struct._dmvTestRunningFlag = iprot.readBool();
+      struct.set_dmvTestRunningFlagIsSet(true);
       {
         org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
         struct._ccFeeders = new ArrayList<CCFeeder>(_list13.size);

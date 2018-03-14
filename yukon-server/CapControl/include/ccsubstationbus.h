@@ -80,6 +80,7 @@ public:
     long getVoltReductionControlId() const;
     long getDisableBusPointId() const;
     bool getSendMoreTimeControlledCommandsFlag() const;
+    bool getDmvTestRunning() const;
 
     long getDisplayOrder() const;
 
@@ -125,6 +126,7 @@ public:
     void setVoltReductionControlId(long pointid);
     void setDisableBusPointId(long pointid);
     void setSendMoreTimeControlledCommandsFlag(bool flag);
+    void setDmvTestRunning(bool flag);
 
     void setAllAltSubValues(double volt, double var, double watt);
     void setDisplayOrder(long displayOrder);
@@ -302,6 +304,7 @@ private:
     bool _correctionNeededNoBankAvailFlag;
     bool _voltReductionFlag;
     bool _sendMoreTimeControlledCommandsFlag;
+    bool _dmvTestRunningFlag;
 
     long _voltReductionControlId;
     long _disableBusPointId;
