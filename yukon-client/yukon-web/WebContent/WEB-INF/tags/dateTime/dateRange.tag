@@ -11,8 +11,11 @@
 <%@ attribute name="cssClass" description="Classes added to the input of the widget" %>
 <%@ attribute name="cssDialogClass" description="Classes added to the outer dialog div" %>
 <%@ attribute name="wrapperClasses" description="Classes added to the element wrapping the date pickers" %>
+<%@ attribute name="toText" description="text between date range" %>
+<%@ attribute name="toStyle" description="Classes added to the element wrapping the date pickers" %>
 
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <div class="js-dateRange oh ${wrapperClasses}">
     <dt:date path="${pageScope.startPath}"
@@ -23,6 +26,9 @@
              cssDialogClass="${pageScope.cssDialogClass}"
              maxDate="${pageScope.endValue}"/>
     <jsp:doBody/>
+    <c:if test="${not empty pageScope.toText}">
+        <span class="fl" style="${pageScope.toStyle}">${pageScope.toText}</span>
+    </c:if>
 <!-- Only force includes on the first input -->
     <dt:date path="${pageScope.endPath}"
              name="${pageScope.endName}"

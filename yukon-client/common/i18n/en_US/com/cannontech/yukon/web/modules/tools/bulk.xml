@@ -1026,5 +1026,22 @@
     
     <!-- Recent Results -->
     <entry key="yukon.web.modules.tools.bulk.recentResults.pageName">Recent Results</entry>
+    <entry key="yukon.web.modules.tools.filterBy">Filter By:</entry>    
+    <entry key="yukon.web.modules.tools.action">Action</entry>
+    <entry key="yukon.web.modules.tools.dateRange">Date Range</entry>
+    <entry key="yukon.web.modules.tools.filteredResults">Filtered Results</entry>
+    <entry key="yukon.web.modules.tools.userName">User Name</entry>
+    <entry key="yukon.web.modules.tools.status">Status</entry>
+    <entry key="yukon.web.modules.tools.selectAll">Select All</entry>
+    <entry key="yukon.web.modules.tools.recentResults.action">Type</entry>
+    <entry key="yukon.web.modules.tools.recentResults.startTime">Date</entry>
+    <entry key="yukon.web.modules.tools.recentResults.success">Success</entry>
+    <entry key="yukon.web.modules.tools.recentResults.failure">Failure</entry>
+    <entry key="yukon.web.modules.tools.recentResults.notAttempted">Not Attempted</entry>
+    <entry key="yukon.web.modules.tools.recentResults.detail">Detail</entry>
+    <entry key="yukon.web.modules.tools.recentResults.status">Status</entry>
+    <entry key="yukon.web.modules.tools.recentResults.userName">User Name</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentResults">Recent Actions</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentResults.description">Searchable results from recent collection actions.</entry>
     
 </properties>

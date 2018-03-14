@@ -11,56 +11,45 @@
 
     <c:set var="urlPath" value="/bulk/filter"/>
     <cti:url var="detailUrl" value="${urlPath}"/>
-    <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter">
-            <h3><i:inline key="yukon.common.filters"/></h3>
-            <div class="column one filter-container">
-                <tags:nameValueContainer2 naturalWidth="false">
-                    <tags:nameValue2 nameKey=".action">    
-                        <select path="action">
-                            <option><i:inline key="modules.tools.selectAll"/></option>
-                            <c:forEach items="${actions}" var="action">
-                                <c:if test="${filter.action eq action.name()}">
-                                    <option value="${action}" selected><i:inline key="${action.formatKey}"/></option>
-                                </c:if>
-                                <c:if test="${filter.action != action.name()}">
-                                    <option value="${action}"><i:inline key="${action.formatKey}"/></option>
-                                </c:if>
-                            </c:forEach>
-                        </select>            
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".dateRange">
-                        <dt:dateRange startPath="startDate" endPath="endDate" startValue="${filter.startDate}" endValue="${filter.endDate}"/>
-                    </tags:nameValue2>
-                    
-                    <tags:nameValue2 nameKey=".status">
-                        <div class="button-group stacked">
-                            <c:forEach var="status" items="${statuses}">
-                                <c:set var="selected" value="${false}"/>
-                                <c:if test="${fn:contains(filter.statuses, status)}">
-                                    <c:set var="selected" value="${true}"/>
-                                </c:if>
-                                <cti:msg2 var="statusLabel" key="${status.formatKey}"/>
-                                <tags:check path="statuses" classes="M0" value="${status}" label="${statusLabel}" checked="${selected}"></tags:check>
-                            </c:forEach>
-                        </div>
-                    </tags:nameValue2>
-                    
-                    <tags:nameValue2 nameKey=".userName">
-                        <tags:pickerDialog id="userPicker" type="userPicker" destinationFieldName="userName"
-                            linkType="selection" selectionProperty="userName" initialId="${filter.userName}" 
-                            icon="icon-user" includeRemoveButton="true"/>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-
-                <div class="action-area">
-                    <cti:button classes="primary action" nameKey="filter" type="submit" busy="true"/>
-                </div>
-                
+    <hr>
+    <div><i:inline key=".filterBy"/></div>
+    <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter" class="dib full-width push-down-4">
+        <div style="display: flex !important; align-items: flex-end;">
+            <select class="fl" path="action" style="margin-right: 15px;">
+                <option><i:inline key="modules.tools.selectAll"/></option>
+                <c:forEach items="${actions}" var="action">
+                    <c:if test="${filter.action eq action.name()}">
+                        <option value="${action}" selected><i:inline key="${action.formatKey}"/></option>
+                    </c:if>
+                    <c:if test="${filter.action != action.name()}">
+                        <option value="${action}"><i:inline key="${action.formatKey}"/></option>
+                    </c:if>
+                </c:forEach>
+            </select>     
+            <div class="fl" style="margin-right: 15px;" >
+                <dt:dateRange toText="to" toStyle="margin-right:4px;margin-top:1%;" wrapperClasses="fl" startPath="startDate" endPath="endDate" startValue="${filter.startDate}" endValue="${filter.endDate}"/>
             </div>
-        </div>
+            <div class="button-group fl" style="margin-right: 15px;" >
+                <c:forEach var="status" items="${statuses}">
+                    <c:set var="selected" value="${false}"/>
+                    <c:if test="${fn:contains(filter.statuses, status)}">
+                        <c:set var="selected" value="${true}"/>
+                    </c:if>
+                    <cti:msg2 var="statusLabel" key="${status.formatKey}"/>
+                    <tags:check path="statuses" classes="M0" value="${status}" label="${statusLabel}" checked="${selected}"></tags:check>
+                </c:forEach>
+            </div>
+            <tags:pickerDialog id="userPicker" type="userPicker" destinationFieldName="userName"
+                linkType="selection" selectionProperty="userName" initialId="${filter.userName}" 
+                icon="icon-user" allowEmptySelection="true" styleClass="fl" multiSelectMode="true"/>
+            </div>
+
+            <div class="push-down-4 fr">
+                <cti:button classes="primary action" nameKey="filter" type="submit" busy="true" style="margin: 0px 0px 5px"/>
+            </div>
     </form:form>
-        
-    <span class="fwn"><i:inline key=".filteredResults"/></span>
+    <hr>    
+    <span class="fwn"><i:inline key=".filteredResults"/>
     <span class="badge">${recentActions.hitCount}</span>&nbsp;<i:inline key=".filteredResults"/>
     
     <cti:url var="pagingUrl" value="${urlPath}">
