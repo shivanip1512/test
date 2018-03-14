@@ -42,7 +42,7 @@
         <%-- MISC FORMS --%>
         <form id="monitorDeleteForm" action="${monitorDeleteURL}" method="post">
             <cti:csrfToken/>
-            <input type="hidden" id="deleteTamperFlagMonitorId" name="deleteTamperFlagMonitorId" value="${tamperFlagMonitorId}">
+            <input type="hidden" id="tamperFlagMonitorId" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
         </form>
         
         <form id="toggleEnabledForm" action="${toggleEnabledURL}" method="post">

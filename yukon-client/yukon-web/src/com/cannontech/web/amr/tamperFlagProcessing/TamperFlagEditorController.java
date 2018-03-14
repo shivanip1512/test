@@ -11,7 +11,6 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +32,7 @@ import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.monitor.validators.TamperFlagMonitorValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -98,11 +98,11 @@ public class TamperFlagEditorController {
                 isNewMonitor = false;
             }
         } catch (TamperFlagMonitorNotFoundException e) {
-           // model.addAttribute("editError", e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.tamperFlagEditor.monitorNotFound"));
             return "redirect:" + tamperFlagMonitor.getTamperFlagMonitorId() + "/edit";
         }
 
-        // editError. redirect to edit page with error
+        // redirect to edit page with error
         validator.validate(tamperFlagMonitor, result);
         if (result.hasErrors()) {
             /* Editing error. redirect to edit page with error. */
@@ -168,29 +168,28 @@ public class TamperFlagEditorController {
     
     // DELETE
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String delete(HttpServletRequest request, LiteYukonUser user, ModelMap model)
+    public String delete(HttpServletRequest request, LiteYukonUser user, ModelMap model, int tamperFlagMonitorId,
+            FlashScope flash)
             throws Exception, ServletException {
 
-        int deleteTamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "deleteTamperFlagMonitorId");
-
         try {
-            tamperFlagMonitorService.delete(deleteTamperFlagMonitorId);
+            tamperFlagMonitorService.delete(tamperFlagMonitorId);
         } catch (TamperFlagMonitorNotFoundException e) {
-            model.addAttribute("editError", e.getMessage());
-            return "redirect:edit";
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.tamperFlagEditor.monitorNotFound"));
+            return "redirect:" + tamperFlagMonitorId + "/edit";
         }
         return "redirect:/meter/start";
     }
 
     // TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED
     @RequestMapping(value = "toggleEnabled", method = RequestMethod.POST)
-    public String toggleEnabled(ModelMap model, int tamperFlagMonitorId) {
+    public String toggleEnabled(ModelMap model, int tamperFlagMonitorId, FlashScope flash) {
 
         try {
             tamperFlagMonitorService.toggleEnabled(tamperFlagMonitorId);
             model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
         } catch (OutageMonitorNotFoundException e) {
-            model.addAttribute("editError", e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.tamperFlagEditor.monitorNotFound"));
         }
 
         return "redirect:" + tamperFlagMonitorId + "/edit";
