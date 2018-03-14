@@ -81,7 +81,7 @@ public abstract class AddRemovePointsControllerBase {
     
     // ABSTRACT
     public abstract String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException;
-    public abstract String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception;
+    public abstract String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException, Exception;
     
     protected String redirectWithError(ModelMap model, String errorMsg, DeviceCollection deviceCollection) {
         model.addAllAttributes(deviceCollection.getCollectionParameters());

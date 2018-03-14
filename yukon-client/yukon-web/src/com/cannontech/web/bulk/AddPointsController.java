@@ -105,7 +105,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     // EXECUTE ADD
     @Override
     @RequestMapping(value = "execute", method = RequestMethod.POST)
-    public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
+    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException, Exception {
 
         // device collection
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -138,7 +138,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         }
         
         // start processor
-        int key = startBulkProcessor(CollectionAction.ADD_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS, YukonUserContext.system);
+        int key = startBulkProcessor(CollectionAction.ADD_POINTS, deviceCollection, addPointsProcessor, BackgroundProcessTypeEnum.ADD_POINTS, userContext);
 
         return "redirect:/bulk/progressReport/detail?key=" + key;
     }

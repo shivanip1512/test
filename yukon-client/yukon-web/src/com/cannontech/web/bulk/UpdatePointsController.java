@@ -24,7 +24,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.bulk.model.UpdatePointsFieldType;
@@ -88,10 +87,8 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     // EXECUTE ADD
     @Override
     @RequestMapping(value = "execute", method = RequestMethod.POST)
-    public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
-
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
+    public String execute(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException, Exception {
+        
         // device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
 
@@ -143,7 +140,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
         // start processor
         int key  =
-            startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, YukonUserContext.system);
+            startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, userContext);
 
         return "redirect:/bulk/progressReport/detail?key=" + key;
     }
