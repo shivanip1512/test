@@ -1,7 +1,9 @@
 package com.cannontech.web.bulk;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,8 +76,15 @@ public class RecentResultsController {
         } else {
             filter.setActions(Collections.singletonList(CollectionAction.valueOf(filter.getAction())));
         }
+        
+        List<CommandRequestExecutionStatus> statusList = new ArrayList<>();
+        statusList.add(CommandRequestExecutionStatus.STARTED);
+        statusList.add(CommandRequestExecutionStatus.COMPLETE);
+        statusList.add(CommandRequestExecutionStatus.FAILED);
+        statusList.add(CommandRequestExecutionStatus.CANCELLED);
+
         model.addAttribute("filter", filter);
-        model.addAttribute("statuses", CommandRequestExecutionStatus.getRecentResultFilterValues());
+        model.addAttribute("statuses", statusList);
         model.addAttribute("actions", Arrays.asList((CollectionAction.values())));
                 
         for (ResultSortBy columnHeader : ResultSortBy.values()) {
