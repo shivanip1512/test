@@ -81,7 +81,7 @@ public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBe
         return this;
     }
     
-    @RequestMapping(value="identity", method=RequestMethod.GET)
+    @RequestMapping(value = "identity", method = RequestMethod.GET)
     public String identity() throws Exception {
         return identityPath;
     }

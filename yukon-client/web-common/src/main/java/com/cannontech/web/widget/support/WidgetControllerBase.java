@@ -23,7 +23,7 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
     private UserChecker roleAndPropertiesChecker;
     private SmartNotificationEventType smartNotificationsEvent;
 
-    @RequestMapping(value="identity", method=RequestMethod.GET)
+    @RequestMapping(value = "identity", method = RequestMethod.GET)
     public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
         return new ModelAndView(identityPath);
     }
