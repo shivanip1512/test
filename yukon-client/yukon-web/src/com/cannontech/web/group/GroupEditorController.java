@@ -77,7 +77,7 @@ public class GroupEditorController {
     private final int maxGetDevicesSize = 1000;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
-    public ModelAndView home(ModelMap model,HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView home(ModelMap model, HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
 
         ModelAndView mav = new ModelAndView("home.jsp");
