@@ -10,6 +10,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
@@ -51,7 +52,7 @@ public class MassDeleteController {
     /**
      * CONFIRM MASS DELETE
      */
-    @RequestMapping("massDelete")
+    @RequestMapping(value = "massDelete", method = RequestMethod.GET)
     public String massDelete(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // pass along deviceCollection
@@ -67,7 +68,7 @@ public class MassDeleteController {
     /**
      * DO MASS DELETE
      */
-    @RequestMapping("doMassDelete")
+    @RequestMapping(value = "doMassDelete", method = RequestMethod.POST)
     public String doMassDelete(ModelMap model, HttpServletRequest request, YukonUserContext context) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);

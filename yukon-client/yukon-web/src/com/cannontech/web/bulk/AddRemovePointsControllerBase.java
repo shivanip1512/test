@@ -18,8 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
@@ -105,18 +103,6 @@ public abstract class AddRemovePointsControllerBase {
             new CollectionActionBulkProcessorCallback(result, collectionActionService));
 
         return result.getCacheKey();
-    }
-
-    // PREP RESULTS PAGE
-    protected void prepResultsView(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
-    	
-    	// result info
-        String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-   /*     AddRemovePointsCallbackResult callbackResult = (AddRemovePointsCallbackResult)recentResultsCache.getResult(resultsId);
-        model.addAttribute("callbackResult", callbackResult);
-        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());
-        // device collection
-        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());*/
     }
     
     // MISC LIST/MAP ORGANIZING HELPERS

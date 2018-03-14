@@ -255,27 +255,6 @@
     <entry key="yukon.common.device.bulk.massChangeOptions.enable.header">Choose To Enable Or Disable Selected Devices:</entry>
     <entry key="yukon.common.device.bulk.massChangeOptions.enable.noteLabel"></entry>
     <entry key="yukon.common.device.bulk.massChangeOptions.enable.noteText"></entry>
-    
-    <!-- massChangeResults.jsp -->
-    <entry key="yukon.web.modules.tools.bulk.massChangeResults.pageName">Mass Change Results</entry>
-    <entry key="yukon.web.modules.tools.bulk.massChangeResults.contextualPageName">Results</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.pageTitle">Mass Change Results</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.header">Results Of Mass Change Operation</entry>
-    
-    <entry key="yukon.common.device.bulk.massChangeResults.noteLabel">Note: </entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.noteText"><![CDATA[
-        Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
-    ]]></entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.progressLabel">Progress</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.inProgress">In Progress...</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.complete">Complete.</entry>
-    
-    <entry key="yukon.common.device.bulk.massChangeResults.successLabel">Successfully Changed</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionLabel">Failed To Change</entry>
-    
-    <entry key="yukon.common.device.bulk.massChangeResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
-    
-    <entry key="yukon.common.device.bulk.massChangeResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
 
     <!-- Mass Change Fields -->
     <entry key="yukon.common.device.bulk.massChange.route">Change Route</entry>

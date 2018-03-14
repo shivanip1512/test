@@ -399,9 +399,6 @@
                     <pages>
                       <page name="bulk.massChangeOptions" type="BASIC">
                         <link>/bulk/massChangeOptions?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}&amp;massChangeBulkFieldName=${massChangeBulkFieldName}</link>
-                        <pages>
-                          <page name="bulk.massChangeResults" type="BASIC"/>
-                        </pages>
                       </page>
                     </pages>
                   </page>

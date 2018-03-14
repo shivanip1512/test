@@ -53,21 +53,5 @@ public class MassChangeController {
         
         return "massChange/massChangeSelect.jsp";
     }
-    
-    // VIEW RESULTS
-    @RequestMapping("massChangeResults")
-    public String massChangeResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException  {
-
-        // result info
-      /*  String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        MassChangeCallbackResult callbackResult = (MassChangeCallbackResult)recentResultsCache.getResult(resultsId);
-        
-        // results
-        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
-        model.addAttribute("massChangeBulkFieldName", callbackResult.getMassChangeBulkFieldColumnHeader().getFieldName());
-        model.addAttribute("callbackResult", callbackResult);
-        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());*/
-        return "massChange/massChangeResults.jsp";
-    }
 
 }

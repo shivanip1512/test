@@ -64,7 +64,7 @@ public class MassChangeOptionsController {
     @Autowired private BulkFieldService bulkFieldService;
     @Autowired protected CollectionActionService collectionActionService;
 
-    @RequestMapping("massChangeOptions")
+    @RequestMapping(value = "massChangeOptions", method = RequestMethod.GET)
     protected String massChangeOptions(ModelMap model, HttpServletRequest request) throws Exception {
 
         YukonDeviceDto yukonDeviceDto = new YukonDeviceDto();
@@ -83,7 +83,6 @@ public class MassChangeOptionsController {
 
         // pass along deviceCollection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        model.put("deviceCollection", deviceCollection);
         model.put("deviceCollection", deviceCollection);
         model.put("massChangeOptions", yukonDeviceDto);
 
@@ -152,7 +151,6 @@ public class MassChangeOptionsController {
             throws Exception {
 
         Map<String, InputSource<?>> inputMap = getInputRoot(request).getInputMap();
-        List<Input<?>> inputList = getInputRoot(request).getInputList();
 
         BeanWrapper beanWrapper = new BeanWrapperImpl(command);
         Object value = null;

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -49,7 +50,7 @@ public class ChangeDeviceTypeController {
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
      */
-    @RequestMapping("chooseDeviceType")
+    @RequestMapping(value = "chooseDeviceType", method = RequestMethod.GET)
     public String chooseDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -89,7 +90,7 @@ public class ChangeDeviceTypeController {
     /**
      * DO DEVICE TYPE CHANGE
      */
-    @RequestMapping("changeDeviceType")
+    @RequestMapping(value = "changeDeviceType", method = RequestMethod.POST)
     public String changeDeviceType(ModelMap model, HttpServletRequest request, YukonUserContext context) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);

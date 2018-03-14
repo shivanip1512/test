@@ -40,7 +40,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
     // HOME
     @Override
-    @RequestMapping("home")
+    @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
 
         // device collection
