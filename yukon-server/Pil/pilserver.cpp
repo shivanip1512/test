@@ -52,7 +52,6 @@
 #include <boost/range/algorithm/count_if.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
-#include <boost/range/adaptor/indirected.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -453,16 +452,6 @@ void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &retu
 
 
 
-struct collectRfnResultDeviceIds
-{
-    std::set<long> &c;
-
-    collectRfnResultDeviceIds(std::set<long> &c_) : c(c_)  { };
-
-    void operator()(const RfnDeviceResult &result)  {  c.insert(result.request.parameters.deviceId);  };
-};
-
-
 void PilServer::resultThread()
 {
     CTILOG_INFO(dout, "PIL resultThread - Started");
@@ -503,14 +492,12 @@ void PilServer::resultThread()
 
             auto pendingRfnResultQueue = _rfnManager.getResults(inQueueBlockSize);
 
+            auto get_rfn_result_device = [](const std::unique_ptr<RfnDeviceResult> & result) { return result->request.parameters.deviceId; };
+
             set<long> paoids;
 
-            for_each(pendingInMessages.begin(),
-                     pendingInMessages.end(),
-                     collect_inmess_target_device(paoids));
-
-            boost::for_each(pendingRfnResultQueue | boost::adaptors::indirected,
-                            collectRfnResultDeviceIds(paoids));
+            boost::copy(pendingInMessages     | boost::adaptors::transformed(get_inmess_target_device), std::inserter(paoids, paoids.begin()));
+            boost::copy(pendingRfnResultQueue | boost::adaptors::transformed(get_rfn_result_device),    std::inserter(paoids, paoids.begin()));
 
             if( ! paoids.empty() )
             {
@@ -986,15 +973,17 @@ struct RequestExecuter : Devices::DeviceHandler
 {
     CtiRequestMsg *pReq;
     CtiCommandParser &parse;
+    unsigned long & rfnRequestId;
 
     CtiDeviceBase::OutMessageList outList;
     std::vector<RfnDeviceRequest> rfnRequests;
     CtiDeviceBase::CtiMessageList vgList;
     CtiDeviceBase::CtiMessageList retList;
 
-    RequestExecuter(CtiRequestMsg *pReq_, CtiCommandParser &parse_) :
+    RequestExecuter(CtiRequestMsg * pReq_, CtiCommandParser & parse_, unsigned long & rfnRequestId_) :
         pReq (pReq_),
-        parse(parse_)
+        parse(parse_),
+        rfnRequestId(rfnRequestId_)
     {}
 
     YukonError_t execute(CtiDeviceBase &dev)
@@ -1012,8 +1001,7 @@ struct RequestExecuter : Devices::DeviceHandler
             retList.push_back(new CtiReturnMsg(
                 dev.getID(),
                 pReq->CommandString(),
-                dev.getName() + string(": ") + 
-                  GetErrorString(ClientErrors::DeviceInhibited),
+                dev.getName() + ": " + GetErrorString(ClientErrors::DeviceInhibited),
                 ClientErrors::DeviceInhibited,
                 0,
                 MacroOffset::none,
@@ -1026,26 +1014,30 @@ struct RequestExecuter : Devices::DeviceHandler
 
         const YukonError_t retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
 
-        RfnDeviceRequest req;
-
-        req.parameters.deviceId         = dev.getID();
-        req.parameters.rfnIdentifier    = dev.getRfnIdentifier();
-        req.parameters.commandString    = pReq->CommandString();
-        req.parameters.priority         = pReq->getMessagePriority();
-        req.parameters.groupMessageId   = pReq->GroupMessageId();
-        req.parameters.userMessageId    = pReq->UserMessageId();
-        req.parameters.connectionHandle = pReq->getConnectionHandle();
+        RfnDeviceRequest::Parameters parameters {
+            dev.getRfnIdentifier(),
+            dev.getID(),
+            pReq->CommandString(),
+            pReq->getMessagePriority(),
+            pReq->UserMessageId(),
+            pReq->GroupMessageId(),
+            pReq->getConnectionHandle() };
 
         while( ! returnMsgList.empty() )
         {
             retList.push_back( returnMsgList.pop_front().release() );
         }
 
-        for( const Devices::Commands::RfnCommandSPtr &command : commands )
+        if( gConfigParms.getValueAsDouble("RFN_FIRMWARE") < 9.0 )
         {
-            req.command = command;
-
-            rfnRequests.push_back(req);
+            for( auto &command : commands )
+            {
+                rfnRequests.emplace_back(parameters, rfnRequestId++, std::move(command));
+            }
+        }
+        else
+        {
+            rfnRequests.emplace_back(parameters, rfnRequestId++, Devices::RfnDevice::combineRfnCommands(std::move(commands)));
         }
 
         return retVal;
@@ -1175,7 +1167,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
                 }
 
-                RequestExecuter executer(pExecReq.get(), _currentParse);
+                RequestExecuter executer(pExecReq.get(), _currentParse, _rfnRequestId);
 
                 if(Dev.isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
@@ -1195,7 +1187,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 outList.splice(outList.end(), executer.outList);
 
-                _rfnRequestId = _rfnManager.submitRequests(executer.rfnRequests, _rfnRequestId);
+                _rfnManager.submitRequests(std::move(executer.rfnRequests));
 
                 for( CtiMessage *msg : executer.retList )
                 {

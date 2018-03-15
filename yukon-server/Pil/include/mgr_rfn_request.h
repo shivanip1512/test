@@ -24,20 +24,31 @@ struct RfnDeviceRequest
         ConnectionHandle connectionHandle;
     };
 
+    RfnDeviceRequest(Parameters parameters_, unsigned long rfnRequestId_, Devices::Commands::RfnCommandPtr command_)
+        :   parameters(parameters_),
+            rfnRequestId(rfnRequestId_),
+            command(std::move(command_))
+    {}
+
+    RfnDeviceRequest(RfnDeviceRequest&&) = default;
+
+    RfnDeviceRequest& operator=(RfnDeviceRequest&&) = default;
+
     Parameters parameters;
     unsigned long rfnRequestId;
-    Devices::Commands::RfnCommandSPtr command;
+    Devices::Commands::RfnCommandPtr command;
 
-    bool operator>(const RfnDeviceRequest &rhs) const
+    bool operator<(const RfnDeviceRequest &rhs) const
     {
-        return parameters.priority > rhs.parameters.priority;
+        return (parameters.priority < rhs.parameters.priority) ||
+              !(rhs.parameters.priority < parameters.priority) && (rhs.rfnRequestId - rfnRequestId) < 0x8000'0000;  //  handle unsigned wraparound
     }
 };
 
 struct RfnDeviceResult
 {
-    RfnDeviceResult(const RfnDeviceRequest request_, Devices::Commands::RfnCommandResult commandResult_, const YukonError_t status_) :
-        request(request_),
+    RfnDeviceResult(RfnDeviceRequest request_, Devices::Commands::RfnCommandResult commandResult_, const YukonError_t status_) :
+        request(std::move(request_)),
         commandResult(commandResult_),
         status(status_)
     {
@@ -57,7 +68,7 @@ public:
 
     void tick();
 
-    unsigned long submitRequests(const RfnDeviceRequestList &requests, unsigned long requestId);
+    void submitRequests(RfnDeviceRequestList requests);
 
     ResultQueue getResults(unsigned max);
 
@@ -103,8 +114,8 @@ private:
     using IndicationQueue  = std::vector<Messaging::Rfn::E2eMessenger::Indication>;
     using ConfirmQueue     = std::vector<Messaging::Rfn::E2eMessenger::Confirm>;
     using ExpirationCauses = std::map<RfnIdentifier, YukonError_t>;
-    using RequestQueue     = std::multiset<RfnDeviceRequest, std::greater<RfnDeviceRequest>>;
-    using RfnIdToRequestQueue = std::map<RfnIdentifier, RequestQueue>;
+    using RequestHeap      = std::vector<RfnDeviceRequest>;
+    using RfnIdToRequestHeap = std::map<RfnIdentifier, RequestHeap>;
 
     using Mutex     = std::mutex;
     using LockGuard = std::lock_guard<std::mutex>;
@@ -127,7 +138,7 @@ private:
     ResultQueue _tickResults;
 
     Mutex                _pendingRequestsMux;
-    RfnIdToRequestQueue  _pendingRequests;
+    RfnIdToRequestHeap   _pendingRequests;
 
     struct RfnRequestIdentifier
     {
@@ -144,16 +155,9 @@ private:
     struct ActiveRfnRequest
     {
         RfnDeviceRequest request;
-        Devices::Commands::RfnCommand::RfnResponsePayload response;
         PacketInfo currentPacket;
-        enum
-        {
-            Submitted,
-            PendingConfirm,
-            PendingReply,
-        }
-        status;
-        CtiTime timeout;
+        std::chrono::system_clock::time_point timeout;
+        Devices::Commands::RfnCommand::RfnResponsePayload response;
     };
 
     typedef std::map<RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;

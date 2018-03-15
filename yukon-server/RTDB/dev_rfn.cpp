@@ -31,6 +31,12 @@ YukonError_t RfnDevice::invokeDeviceHandler(DeviceHandler &handler)
     return handler.execute(*this);
 }
 
+Commands::RfnCommandPtr RfnDevice::combineRfnCommands(RfnCommandList commands)
+{
+    //  TODO
+    return Commands::RfnCommandPtr();
+}
+
 void RfnDevice::extractCommandResult(const Commands::RfnCommand &command)
 {
     return command.invokeResultHandler(*this);

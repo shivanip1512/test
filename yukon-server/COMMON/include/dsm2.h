@@ -502,19 +502,11 @@ public:
     }
 };
 
-struct collect_inmess_target_device
+const auto get_inmess_target_device = [](const INMESS &im)
 {
-    std::set<long> &c;
-
-    collect_inmess_target_device(std::set<long> &c_) : c(c_)  { };
-
-    void operator()(const INMESS &im)
-    {
-        c.insert(
-            im.TargetID
-                ? im.TargetID
-                : im.DeviceID);
-    }
+    return im.TargetID
+            ? im.TargetID
+            : im.DeviceID;
 };
 
 /* Prototypes from UCTTime.C */

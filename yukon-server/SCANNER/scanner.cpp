@@ -764,9 +764,8 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
             {
                 set<long> paoids;
 
-                for_each(pendingInQueue.begin(),
-                         pendingInQueue.end(),
-                         collect_inmess_target_device(paoids));
+                boost::copy(pendingInQueue | boost::adaptors::transformed(get_inmess_target_device),
+                            std::inserter(paoids, paoids.begin()));
 
                 ScannerPointManager.refreshListByPAOIDs(paoids);
             }

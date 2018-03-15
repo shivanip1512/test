@@ -158,17 +158,16 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
 
     BOOST_CHECK_EQUAL(2, devSingle->getGroupMessageCount(11235, handle));
 
-    Cti::Pil::RfnDeviceRequest req;
-    req.parameters.deviceId = 123;
-    req.command.reset(
-            new Cti::Devices::Commands::RfnImmediateDemandFreezeCommand);
-    req.parameters.userMessageId    = 11235;
-    req.parameters.connectionHandle = handle;
+    Cti::Pil::RfnDeviceRequest::Parameters parameters;
 
-    Cti::Devices::Commands::RfnCommandResult cmdResult;
-    cmdResult.description = "This was a triumph. I'm making a note here: HUGE SUCCESS.";
+    parameters.deviceId         = 123;
+    parameters.userMessageId    = 11235;
+    parameters.connectionHandle = handle;
 
-    Cti::Pil::RfnDeviceResult result(req, cmdResult, ClientErrors::None);
+    Cti::Pil::RfnDeviceResult result(
+        { parameters, 9999, std::make_unique<Cti::Devices::Commands::RfnImmediateDemandFreezeCommand>() },
+        { "This was a triumph. I'm making a note here: HUGE SUCCESS." }, 
+        ClientErrors::None);
 
     pilServer.handleRfnDeviceResult(result);
 
