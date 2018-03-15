@@ -38,10 +38,13 @@ public class BusValidator extends SimpleValidator<CapControlSubBus> {
         }
         //Do not allow a bus to be enabled when in verification
         if (!bus.isDisabled()) {
-            SubBus ccBus = ccCache.getSubBus(bus.getId());
-            if (ccBus.getVerificationFlag()) {
-                bus.setDisabled(true);
-                errors.rejectValue("disabled", "yukon.web.modules.capcontrol.bus.verificationStatusDisabled");
+            Integer busId = bus.getId();
+            if (busId != null) {
+                SubBus ccBus = ccCache.getSubBus(busId);
+                if (ccBus.getVerificationFlag()) {
+                    bus.setDisabled(true);
+                    errors.rejectValue("disabled", "yukon.web.modules.capcontrol.bus.verificationStatusDisabled");
+                }
             }
         }
     }
