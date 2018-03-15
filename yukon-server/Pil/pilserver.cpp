@@ -459,7 +459,7 @@ struct collectRfnResultDeviceIds
 
     collectRfnResultDeviceIds(std::set<long> &c_) : c(c_)  { };
 
-    void operator()(const RfnDeviceResult &result)  {  c.insert(result.request.deviceId);  };
+    void operator()(const RfnDeviceResult &result)  {  c.insert(result.request.parameters.deviceId);  };
 };
 
 
@@ -719,15 +719,15 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
     {
         auto retMsg =
                 std::make_unique<CtiReturnMsg>(
-                        result.request.deviceId,
-                        result.request.commandString,
+                        result.request.parameters.deviceId,
+                        result.request.parameters.commandString,
                         result.commandResult.description,
                         result.status,
                         0,
                         MacroOffset::none,
                         0,
-                        result.request.groupMessageId,
-                        result.request.userMessageId);
+                        result.request.parameters.groupMessageId,
+                        result.request.parameters.userMessageId);
 
         std::ostringstream pointDataDescription;
 
@@ -764,9 +764,9 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
         retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
 
-        dev.decrementGroupMessageCount(result.request.userMessageId, result.request.connectionHandle);
+        dev.decrementGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle);
 
-        if( dev.getGroupMessageCount(result.request.userMessageId, result.request.connectionHandle) )
+        if( dev.getGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle) )
         {
             retMsg->setExpectMore(true);
         }
@@ -787,7 +787,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
 {
     // Find the device..
-    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(result.request.deviceId);
+    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(result.request.parameters.deviceId);
 
     CtiDeviceBase::CtiMessageList vgList;
     CtiDeviceBase::CtiMessageList retList;
@@ -796,23 +796,23 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
     {
         FormattedList logItems;
 
-        logItems.add("Device ID")     << result.request.deviceId;
-        logItems.add("Manufacturer")  << result.request.rfnIdentifier.manufacturer;
-        logItems.add("Model")         << result.request.rfnIdentifier.model;
-        logItems.add("Serial")        << result.request.rfnIdentifier.serialNumber;
+        logItems.add("Device ID")     << result.request.parameters.deviceId;
+        logItems.add("Manufacturer")  << result.request.parameters.rfnIdentifier.manufacturer;
+        logItems.add("Model")         << result.request.parameters.rfnIdentifier.model;
+        logItems.add("Serial")        << result.request.parameters.rfnIdentifier.serialNumber;
 
         CTILOG_ERROR(dout, "RFN result received from unknown device" <<
                 logItems);
 
         auto idnf_msg =
                 std::make_unique<CtiReturnMsg>(
-                        result.request.deviceId,
-                        result.request.commandString,
-                        "Device lookup failed. ID = " + CtiNumStr(result.request.deviceId),
+                        result.request.parameters.deviceId,
+                        result.request.parameters.commandString,
+                        "Device lookup failed. ID = " + CtiNumStr(result.request.parameters.deviceId),
                         ClientErrors::IdNotFound);
 
-        idnf_msg->setGroupMessageId(result.request.groupMessageId);
-        idnf_msg->setUserMessageId (result.request.userMessageId);
+        idnf_msg->setGroupMessageId(result.request.parameters.groupMessageId);
+        idnf_msg->setUserMessageId (result.request.parameters.userMessageId);
 
         retList.push_back(idnf_msg.release());
     }
@@ -820,7 +820,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
     {
         if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
         {
-            CTILOG_DEBUG(dout, "Pilserver resultThread received an RfnDeviceResult for "<< DeviceRecord->getName() <<" at priority "<< result.request.priority);
+            CTILOG_DEBUG(dout, "Pilserver resultThread received an RfnDeviceResult for "<< DeviceRecord->getName() <<" at priority "<< result.request.parameters.priority);
         }
 
         try
@@ -835,7 +835,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
         }
     }
 
-    sendResults(vgList, retList, result.request.priority, result.request.connectionHandle);
+    sendResults(vgList, retList, result.request.parameters.priority, result.request.parameters.connectionHandle);
 }
 
 
@@ -1028,13 +1028,13 @@ struct RequestExecuter : Devices::DeviceHandler
 
         RfnDeviceRequest req;
 
-        req.deviceId         = dev.getID();
-        req.rfnIdentifier    = dev.getRfnIdentifier();
-        req.commandString    = pReq->CommandString();
-        req.priority         = pReq->getMessagePriority();
-        req.groupMessageId   = pReq->GroupMessageId();
-        req.userMessageId    = pReq->UserMessageId();
-        req.connectionHandle = pReq->getConnectionHandle();
+        req.parameters.deviceId         = dev.getID();
+        req.parameters.rfnIdentifier    = dev.getRfnIdentifier();
+        req.parameters.commandString    = pReq->CommandString();
+        req.parameters.priority         = pReq->getMessagePriority();
+        req.parameters.groupMessageId   = pReq->GroupMessageId();
+        req.parameters.userMessageId    = pReq->UserMessageId();
+        req.parameters.connectionHandle = pReq->getConnectionHandle();
 
         while( ! returnMsgList.empty() )
         {

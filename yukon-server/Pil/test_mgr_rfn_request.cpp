@@ -70,18 +70,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
 
     std::vector<Cti::Pil::RfnDeviceRequest> requests;
 
-    const Cti::RfnIdentifier rfnId = { "MANUFATURER", "MODEL", "SERIAL" };
+    const Cti::RfnIdentifier rfnId { "MANUFACTURER", "MODEL", "SERIAL" };
 
     {
         Cti::Pil::RfnDeviceRequest request;
         request.command.reset(new Cti::Devices::Commands::RfnGetChannelSelectionFullDescriptionCommand);
-        request.rfnIdentifier   = rfnId;
-        request.deviceId        = 11235;
+        request.parameters.rfnIdentifier   = rfnId;
+        request.parameters.deviceId        = 11235;
         //request.rfnRequestId = ...
-        request.commandString   = "Command string.";
-        request.priority        = 11;
-        request.userMessageId   = 0;
-        request.groupMessageId  = 0;
+        request.parameters.commandString   = "Command string.";
+        request.parameters.priority        = 11;
+        request.parameters.userMessageId   = 0;
+        request.parameters.groupMessageId  = 0;
 
         requests.push_back(request);
     }
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
             "a4 00 00 0f a7 00 00 10 a0 00 "
             "08 0f a9 00 00 10 a0 00 08";
 
-        indication.rfnIdentifier = requests.front().rfnIdentifier;
+        indication.rfnIdentifier = requests.front().parameters.rfnIdentifier;
         indication.payload.assign(inboundPayload.begin(), inboundPayload.end());
 
         e2e->indicationHandler(indication);
@@ -208,18 +208,18 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 
     std::vector<Cti::Pil::RfnDeviceRequest> requests;
 
-    const Cti::RfnIdentifier rfnId = { "MANUFATURER", "MODEL", "SERIAL" };
+    const Cti::RfnIdentifier rfnId = { "MANUFACTURER", "MODEL", "SERIAL" };
 
     {
         Cti::Pil::RfnDeviceRequest request;
         request.command.reset(new Cti::Devices::Commands::RfnGetChannelSelectionFullDescriptionCommand);
-        request.rfnIdentifier   = rfnId;
-        request.deviceId        = 11235;
+        request.parameters.rfnIdentifier   = rfnId;
+        request.parameters.deviceId        = 11235;
         //request.rfnRequestId = ...
-        request.commandString   = "Command string.";
-        request.priority        = 11;
-        request.userMessageId   = 0;
-        request.groupMessageId  = 0;
+        request.parameters.commandString   = "Command string.";
+        request.parameters.priority        = 11;
+        request.parameters.userMessageId   = 0;
+        request.parameters.groupMessageId  = 0;
 
         requests.push_back(request);
     }
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
             "5a d6 "  //  app token
             "ff";
 
-        indication.rfnIdentifier = requests.front().rfnIdentifier;
+        indication.rfnIdentifier = requests.front().parameters.rfnIdentifier;
         indication.payload.assign(inboundPayload.begin(), inboundPayload.end());
 
         e2e->indicationHandler(indication);

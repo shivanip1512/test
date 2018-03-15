@@ -13,19 +13,24 @@ namespace Pil {
 
 struct RfnDeviceRequest
 {
-    Devices::Commands::RfnCommandSPtr command;
-    RfnIdentifier rfnIdentifier;
-    long deviceId;
+    struct Parameters
+    {
+        RfnIdentifier rfnIdentifier;
+        long deviceId;
+        std::string commandString;
+        int priority;
+        long userMessageId;
+        long groupMessageId;
+        ConnectionHandle connectionHandle;
+    };
+
+    Parameters parameters;
     unsigned long rfnRequestId;
-    std::string commandString;
-    unsigned priority;
-    long userMessageId;
-    long groupMessageId;
-    ConnectionHandle connectionHandle;
+    Devices::Commands::RfnCommandSPtr command;
 
     bool operator>(const RfnDeviceRequest &rhs) const
     {
-        return priority > rhs.priority;
+        return parameters.priority > rhs.parameters.priority;
     }
 };
 
