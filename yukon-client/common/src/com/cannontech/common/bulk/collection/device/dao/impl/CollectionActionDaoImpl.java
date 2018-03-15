@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,8 +168,8 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             }
             sql.append("AND ca.Status").in_k(filter.getStatuses());
         }
-        if (StringUtils.isNotEmpty(filter.getUserName())) {
-            sql.append("AND ca.UserName").eq(filter.getUserName());
+        if (filter.getUserNames() != null && !filter.getUserNames().isEmpty()) {
+            sql.append("AND ca.UserName").in(filter.getUserNames());
         }
         
         Range<Instant> dateRange = (Range<Instant>) Range.inclusiveExclusive(new Instant(filter.getStartDate()), new Instant(filter.getEndDate()));
@@ -211,9 +210,6 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 CollectionActionResult result = null;
                 CollectionAction action = rs.getEnum("Action", CollectionAction.class);
                 if (action.getProcess() == CollectionActionProcess.CRE) {
-                    if(true) {
-                        throw new RuntimeException("Loading from CRE tables is not implemented");
-                    }
                     result = buildCreResult(action, key);
                 } else if (action.getProcess() == CollectionActionProcess.DB) {
                     result = buildDbResult(action, key);

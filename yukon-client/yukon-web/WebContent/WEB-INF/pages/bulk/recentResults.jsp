@@ -15,17 +15,11 @@
     <div><i:inline key=".filterBy"/></div>
     <form:form id="filter-form" action="${detailUrl}" method="GET" commandName="filter" class="dib full-width push-down-4">
         <div style="display: flex !important; align-items: flex-end;">
-            <select class="fl" path="action" style="margin-right: 15px;">
-                <option><i:inline key="modules.tools.selectAll"/></option>
-                <c:forEach items="${actions}" var="action">
-                    <c:if test="${filter.action eq action.name()}">
-                        <option value="${action}" selected><i:inline key="${action.formatKey}"/></option>
-                    </c:if>
-                    <c:if test="${filter.action != action.name()}">
-                        <option value="${action}"><i:inline key="${action.formatKey}"/></option>
-                    </c:if>
-                </c:forEach>
-            </select>     
+        
+            <div class="fl" style="margin-right: 15px;" >
+                <cti:msg2 var="actionLabel" key=".action"/>    
+                <tags:selectWithItems items="${actionsList}" path="actions" itemLabel="${formatKey}" dataPlaceholder="${actionLabel}" inputClass="js-chosen"/>
+            </div>
             <div class="fl" style="margin-right: 15px;" >
                 <dt:dateRange toText="to" toStyle="margin-right:4px;margin-top:1%;" wrapperClasses="fl" startPath="startDate" endPath="endDate" startValue="${filter.startDate}" endValue="${filter.endDate}"/>
             </div>
@@ -36,11 +30,11 @@
                         <c:set var="selected" value="${true}"/>
                     </c:if>
                     <cti:msg2 var="statusLabel" key="${status.formatKey}"/>
-                    <tags:check path="statuses" classes="M0" value="${status}" label="${statusLabel}" checked="${selected}"></tags:check>
+                    <tags:check name="statuses" classes="M0" value="${status}" label="${statusLabel}" checked="${selected}"></tags:check>
                 </c:forEach>
             </div>
-            <tags:pickerDialog id="userPicker" type="userPicker" destinationFieldName="userName"
-                linkType="selection" selectionProperty="userName" initialId="${filter.userName}" 
+            <tags:pickerDialog id="userPicker" type="userPicker" destinationFieldName="userIds"
+                linkType="selection" selectionProperty="userName" initialId="${filter.userIds}" 
                 icon="icon-user" allowEmptySelection="true" styleClass="fl" multiSelectMode="true"/>
             </div>
 
@@ -50,7 +44,7 @@
     </form:form>
     <hr>    
     <span class="fwn"><i:inline key=".filteredResults"/>
-    <span class="badge">${recentActions.hitCount}</span>&nbsp;<i:inline key=".filteredResults"/>
+    <span class="badge">${recentActions.hitCount}</span>&nbsp;<i:inline key=".actions"/>
     
     <cti:url var="pagingUrl" value="${urlPath}">
         <cti:param name="startDate" value="${filter.startDate}"/>
@@ -58,23 +52,23 @@
         <c:forEach var="status" items="${filter.statuses}">
             <cti:param name="statuses" value="${status}"/>
         </c:forEach>
-        <cti:param name="userName" value="${filter.userName}"/>
+        <c:forEach var="userId" items="${filter.userIds}">
+            <cti:param name="userIds" value="${userId}"/>
+        </c:forEach>
         <cti:param name="action" value="${filter.action}"/>
    
     </cti:url>
     
     <div id="events-detail" data-url="${pagingUrl}" data-static>
-        <table class="compact-results-table has-actions row-highlighting">
+        <table class="compact-results-table row-highlighting">
             <tr>
                 <tags:sort column="${action}" />
                 <tags:sort column="${startTime}" />
                 <tags:sort column="${success}" />
                 <tags:sort column="${failure}" />
                 <tags:sort column="${notAttempted}" />
-                <th>
-                    <a class="wsnw sortable">
-                    ${fn:escapeXml(detail)}<cti:icon icon="icon-blank"/>
-                    </a>
+                <th class="vab">
+                    ${fn:escapeXml(detail)}
                 </th>
                 <tags:sort column="${status}" />
                 <tags:sort column="${userName}" />
@@ -86,9 +80,9 @@
                             <i:inline key="${action.action.formatKey}"/>
                         </td>
                         <td>
-                            <fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${action.formattedStartTime}" />
-                                <c:if test="${not empty action.stopTime}">-
-                                <fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${action.formattedStopTime}" />
+                            <fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${action.formattedStartTime}"/>
+                                <c:if test="${not empty action.stopTime}">
+                                -<fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${action.formattedStopTime}"/>
                                 </c:if>
                         </td>
                         <td>
@@ -115,4 +109,7 @@
         </table>
         <tags:pagingResultsControls result="${recentActions}" adjustPageCount="true" thousands="true"/>
     </div>
+    <script>
+        $(".js-chosen").chosen({width: "150px"});
+    </script>
 </cti:standardPage>

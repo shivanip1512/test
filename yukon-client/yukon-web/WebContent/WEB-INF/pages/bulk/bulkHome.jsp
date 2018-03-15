@@ -94,10 +94,10 @@
             <tr>
                 <td>
                     <a href="<cti:url value="/bulk/recentResults"/>">
-                        <i:inline key=".recentResults"/>
+                        <i:inline key="modules.tools.recentResults.recentResults"/>
                     </a>
                 </td>
-                <td><i:inline key=".recentResults.description"/></td>
+                <td><i:inline key="modules.tools.recentResults.recentResults.description"/></td>
             </tr>
         </cti:checkRolesAndProperties>
     

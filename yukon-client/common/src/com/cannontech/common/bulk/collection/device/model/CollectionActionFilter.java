@@ -8,10 +8,11 @@ import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 
 public class CollectionActionFilter {
     private List<CollectionAction> actions;
-    private Date startDate = new Date();
-    private Date endDate = new Date();
+    private Date startDate;
+    private Date endDate;
     private List<CommandRequestExecutionStatus> statuses;
-    private String userName;
+    private List<String> userNames;
+    private String userIds;
     private String action;
     
     public List<CommandRequestExecutionStatus> getStatuses() {
@@ -26,11 +27,11 @@ public class CollectionActionFilter {
     public void setActions(List<CollectionAction> actions) {
         this.actions = actions;
     }
-    public String getUserName() {
-        return userName;
+    public List<String> getUserNames() {
+        return userNames;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserNames(List<String> userNames) {
+        this.userNames = userNames;
     }
     public Date getStartDate() {
         return startDate;
@@ -49,5 +50,11 @@ public class CollectionActionFilter {
     }
     public void setAction(String action) {
         this.action = action;
+    }
+    public String getUserIds() {
+        return userIds;
+    }
+    public void setUserIds(String userIds) {
+        this.userIds = userIds;
     }
 }

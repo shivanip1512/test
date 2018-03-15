@@ -2,10 +2,10 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,6 +27,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -37,7 +38,8 @@ public class RecentResultsController {
     
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-
+    @Autowired private YukonUserDao userDao;
+    
     private final static String baseKey = "yukon.web.modules.tools.recentResults.";
     
     @RequestMapping(value = "recentResults", method = RequestMethod.GET)
@@ -71,21 +73,33 @@ public class RecentResultsController {
     private void setupModel(YukonUserContext userContext, ModelMap model, CollectionActionFilter filter,
                             SortingParameters sorting, Direction dir, ResultSortBy sortBy) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        if (StringUtils.isEmpty(filter.getAction()) || filter.getAction().equals( "Select All")) {
-            filter.setActions(Arrays.asList((CollectionAction.values())));
-        } else {
-            filter.setActions(Collections.singletonList(CollectionAction.valueOf(filter.getAction())));
-        }
-        
+
         List<CommandRequestExecutionStatus> statusList = new ArrayList<>();
-        statusList.add(CommandRequestExecutionStatus.STARTED);
+        statusList.add(CommandRequestExecutionStatus.CANCELLED);
         statusList.add(CommandRequestExecutionStatus.COMPLETE);
         statusList.add(CommandRequestExecutionStatus.FAILED);
-        statusList.add(CommandRequestExecutionStatus.CANCELLED);
+        statusList.add(CommandRequestExecutionStatus.STARTED);
 
+
+        if (filter.getStartDate() == null || filter.getEndDate() == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            cal.add(Calendar.DATE, -7);
+            Date weekPrior = cal.getTime();
+            filter.setStartDate(weekPrior);
+            filter.setEndDate(new Date());
+        }
+        
+        if (filter.getUserIds() != null && !filter.getUserIds().isEmpty()) {
+            List<String> userNames = new ArrayList<>();
+            for (String id : filter.getUserIds().split(",")) {
+                userNames.add(userDao.getLiteYukonUser(Integer.parseInt(id)).getUsername());
+            }
+            filter.setUserNames(userNames);
+        }
         model.addAttribute("filter", filter);
         model.addAttribute("statuses", statusList);
-        model.addAttribute("actions", Arrays.asList((CollectionAction.values())));
+        model.addAttribute("actionsList", Arrays.asList((CollectionAction.values())));
                 
         for (ResultSortBy columnHeader : ResultSortBy.values()) {
             String text = accessor.getMessage(columnHeader);
