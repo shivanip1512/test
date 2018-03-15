@@ -64,6 +64,7 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.chart.service.FlotChartService;
@@ -96,6 +97,7 @@ public class ZoneDetailController {
     @Autowired private ZoneDao zoneDao;
     @Autowired private ZoneDtoHelper zoneDtoHelper;
     @Autowired private ZoneService zoneService;
+    @Autowired private IvvcHelper ivvcHelper;
     
     public static class ZoneVoltageDeltas {
         private List<CapBankPointDelta> pointDeltas = LazyList
@@ -121,6 +123,7 @@ public class ZoneDetailController {
 
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
         ZoneVoltagePointsHolder zoneVoltagePointsHolder = new ZoneVoltagePointsHolder(zoneId, infos);
+        ivvcHelper.setIgnoreFlagForPoints(zoneVoltagePointsHolder);
         model.addAttribute("zoneVoltagePointsHolder", zoneVoltagePointsHolder);
         
         Map<String, Integer> hours = new HashMap<>();
@@ -134,7 +137,7 @@ public class ZoneDetailController {
             TimeRange.valueOf(userPreferenceService.getPreference(userContext.getYukonUser(),
                 UserPreferenceName.DISPLAY_EVENT_RANGE));
         model.addAttribute("lastRange", range);
- return "ivvc/zoneDetail.jsp";
+        return "ivvc/zoneDetail.jsp";
     }
 
     @RequestMapping("voltagePoints")
@@ -195,6 +198,7 @@ public class ZoneDetailController {
         int strategyId = cache.getSubBus(subBusId).getStrategyId();
 
         StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
+        ivvcHelper.setIgnoreFlagForPoints(zoneVoltagePointsHolder);
         for (VoltageLimitedDeviceInfo deviceInfo : zoneVoltagePointsHolder.getPoints()) {
             /* If OverideStrategy is false, then simply assign the strategy's limits to our object.
              * This prevents having to write jsp and javascript code checking for this case and handling it

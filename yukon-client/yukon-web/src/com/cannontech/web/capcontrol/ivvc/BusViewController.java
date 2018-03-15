@@ -40,6 +40,7 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.chart.service.FlotChartService;
@@ -61,6 +62,7 @@ public class BusViewController {
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FlotChartService flotChartService;
     @Autowired private UserPreferenceService userPreferenceService;
+    @Autowired private IvvcHelper ivvcHelper;
     
     @RequestMapping(value="detail", method = RequestMethod.GET)
     public String detail(ModelMap model, YukonUserContext userContext, int subBusId, HttpServletRequest req) throws IOException {
@@ -197,6 +199,7 @@ public class BusViewController {
         AbstractZone zone = hierarchy.getZone();
         List<VoltageLimitedDeviceInfo> voltageInfos = ccMonitorBankListDao.getDeviceInfoByZoneId(zone.getZoneId());
         ZoneVoltagePointsHolder pointsHolder = new ZoneVoltagePointsHolder(zone.getZoneId(), voltageInfos);
+        ivvcHelper.setIgnoreFlagForPoints(pointsHolder);
         pointsHolder.setZoneName(zone.getName());
         zoneVoltagePointsHolders.add(pointsHolder);
         

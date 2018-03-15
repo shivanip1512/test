@@ -1341,4 +1341,6 @@
     </bean>
     
      <bean class="com.cannontech.web.stars.rtu.service.impl.RtuServiceImpl"/>
+     
+     <bean class="com.cannontech.web.capcontrol.IvvcHelper"/>
 </beans>

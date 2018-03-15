@@ -575,8 +575,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 	    int paoId = bank.getControlDeviceID();
 	    double distance = bankToZone.getDistance();
         double xPosition = graphStartPosition + bankToZone.getGraphPositionOffset();
+        //Display point as ignored if cap bank is disabled
         VfPoint graphPoint = getVfPoint(settings, userContext, paoId, pointId, distance, phase, null,
-                                        zoneName, xPosition, false, false);
+                                        zoneName, xPosition, false, bank.getCcDisableFlag());
 	    return graphPoint;
 	}
 
@@ -611,6 +612,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         } else {
             pointValue = asyncDynamicDataSource.getPointValue(pointId);
         }
+        //Display Bad Data Quality points as Ignored
         PointQuality quality = pointValue.getPointQuality();
         if (!quality.equals(PointQuality.Manual) && !quality.equals(PointQuality.Normal)) {
             ignore = true;
