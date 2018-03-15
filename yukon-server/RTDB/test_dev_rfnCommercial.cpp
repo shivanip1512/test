@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_immediate_demand_freeze )
     }
 
     {
-        Commands::RfnCommandSPtr    command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         // execute message and check request bytes
 
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_getconfig_install_freezeday )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        Commands::RfnCommandSPtr    command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         // execute message and check request bytes
 
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_freezeday )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        Commands::RfnCommandSPtr    command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         // execute message and check request bytes
 
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -364,7 +364,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -410,7 +410,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
             BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 

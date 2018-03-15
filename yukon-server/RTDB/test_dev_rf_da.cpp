@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfDa_getconfig_dnp_address )
 
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 

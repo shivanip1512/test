@@ -13,7 +13,7 @@ YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser 
 {
     if( parse.isKeyValid("dnp address") )
     {
-        rfnRequests.push_back(boost::make_shared<Commands::RfDaReadDnpSlaveAddressCommand>());
+        rfnRequests.push_back(std::make_unique<Commands::RfDaReadDnpSlaveAddressCommand>());
 
         return ClientErrors::None;
     }

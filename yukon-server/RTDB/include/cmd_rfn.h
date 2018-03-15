@@ -291,7 +291,7 @@ protected:
     static std::vector<TypeLengthValue> getTlvsFromBytes( const Bytes &bytes, const LongTlvList &longTlvs );
 };
 
-typedef boost::shared_ptr<RfnCommand> RfnCommandSPtr;
+typedef std::unique_ptr<RfnCommand> RfnCommandPtr;
 
 }
 }

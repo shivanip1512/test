@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_enable )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_disable )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_tou_schedule )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -589,7 +589,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
 
             {
                 {
-                    Commands::RfnCommandSPtr command = rfnRequests[0];
+                    auto& command = rfnRequests[0];
 
                     Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -610,7 +610,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
                                  && configValue == dynamicInfo );
                 }
                 {
-                    Commands::RfnCommandSPtr command = rfnRequests[1];
+                    auto& command = rfnRequests[1];
 
                     Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -708,7 +708,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
 
             {
                 {
-                    Commands::RfnCommandSPtr command = rfnRequests[0];
+                    auto& command = rfnRequests[0];
 
                     Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -720,7 +720,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
                                                    exp.begin() , exp.end() );
                 }
                 {
-                    Commands::RfnCommandSPtr command = rfnRequests[1];
+                    auto& command = rfnRequests[1];
 
                     Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -801,7 +801,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             }
 
             {
-                Commands::RfnCommandSPtr command = rfnRequests.front();
+                auto& command = rfnRequests.front();
 
                 Commands::RfnCommand::RfnRequestPayload request_rcv = command->executeCommand( execute_time );
 
@@ -892,7 +892,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -927,7 +927,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_active )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -957,7 +957,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_cancel )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -987,7 +987,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_tou_holiday )
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1026,7 +1026,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_on_demand )
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1104,7 +1104,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_demand_threshold )
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1181,7 +1181,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_cycling )
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1390,7 +1390,7 @@ BOOST_AUTO_TEST_CASE( test_immediate_demand_freeze )
     }
 
     {
-        Commands::RfnCommandSPtr    command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         // execute message and check request bytes
 
@@ -1423,7 +1423,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_cancel )
     }
 
     {
-        Commands::RfnCommandSPtr    command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         // execute message and check request bytes
 
@@ -1456,7 +1456,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_today )
     }
 
     {
-        Commands::RfnCommandSPtr    command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         // execute message and check request bytes
 
@@ -1489,7 +1489,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_tomorrow )
     }
 
     {
-        Commands::RfnCommandSPtr    command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         // execute message and check request bytes
 
@@ -1531,7 +1531,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
 
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1606,7 +1606,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1647,7 +1647,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
             BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -2143,7 +2143,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
     BOOST_CHECK_EQUAL_COLLECTIONS( statusRcv.begin(), statusRcv.end(),
                                    statusExp.begin(), statusExp.end() );
 
-    Cti::Devices::Commands::RfnCommandSPtr command = rfnRequests.front();
+    auto& command = rfnRequests.front();
 
     BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
 

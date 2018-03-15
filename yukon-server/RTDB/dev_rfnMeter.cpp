@@ -130,7 +130,7 @@ YukonError_t RfnMeterDevice::executeGetConfigBehavior(const CtiRequestMsg& pReq,
     {
         if( *behaviorType == "rfndatastreaming" )
         {
-            rfnRequests.push_back(boost::make_shared<Commands::RfnDataStreamingGetMetricsListCommand>(getDeviceType()));
+            rfnRequests.push_back(std::make_unique<Commands::RfnDataStreamingGetMetricsListCommand>(getDeviceType()));
 
             return ClientErrors::None;
         }
@@ -182,7 +182,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
     {
         //  No assigned behavior, disable on the device.
         rfnRequests.push_back(
-                boost::make_shared<RfnDataStreamingSetMetricsCommand>(
+                std::make_unique<RfnDataStreamingSetMetricsCommand>(
                         getDeviceType(), 
                         RfnDataStreamingSetMetricsCommand::StreamingDisabled));
     }
@@ -196,7 +196,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
     {
         //  We have an assigned behavior, but we have no device state - so just enable the requested channels as a best-effort attempt.
         rfnRequests.push_back(
-                boost::make_shared<RfnDataStreamingSetMetricsCommand>(
+                std::make_unique<RfnDataStreamingSetMetricsCommand>(
                         getDeviceType(), 
                         boost::copy_range<MetricList>(
                                 behavior->channels | channelToEnabledMetric)));
@@ -293,7 +293,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
         boost::range::copy(toDisable   | attributeToDisabledMetric, std::back_inserter(metrics));
 
         rfnRequests.push_back(
-                boost::make_shared<RfnDataStreamingSetMetricsCommand>(
+                std::make_unique<RfnDataStreamingSetMetricsCommand>(
                         getDeviceType(), 
                         std::move(metrics)));
     }
@@ -577,7 +577,7 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                 else
                 {
                     rfnRequests.push_back(
-                        boost::make_shared<RfnSetChannelSelectionCommand>( midnightMetrics ) );
+                        std::make_unique<RfnSetChannelSelectionCommand>( midnightMetrics ) );
                 }
             }
         }
@@ -627,7 +627,7 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnChannelIntervalRecording::SetConfigurationCommand>(
+                    rfnRequests.push_back( std::make_unique<Commands::RfnChannelIntervalRecording::SetConfigurationCommand>(
                         intervalMetrics,
                         cfgRecordingIntervalSeconds,
                         cfgReportingIntervalSeconds ) );
@@ -750,8 +750,8 @@ YukonError_t RfnMeterDevice::executeGetConfigInstallChannels( CtiRequestMsg    *
                                                               ReturnMsgList    & returnMsgs,
                                                               RfnCommandList   & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetChannelSelectionFullDescriptionCommand>() );
-    rfnRequests.push_back( boost::make_shared<Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand>() );
+    rfnRequests.push_back( std::make_unique<Commands::RfnGetChannelSelectionFullDescriptionCommand>() );
+    rfnRequests.push_back( std::make_unique<Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand>() );
 
     return ClientErrors::None;
 }
@@ -821,7 +821,7 @@ YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * p
             }
             else
             {
-                rfnRequests.push_back( boost::make_shared<RfnSetTemperatureAlarmConfigurationCommand>( configuration ) );
+                rfnRequests.push_back( std::make_unique<RfnSetTemperatureAlarmConfigurationCommand>( configuration ) );
                 ret = ClientErrors::None;
             }
         }
@@ -844,7 +844,7 @@ YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * p
 
 YukonError_t RfnMeterDevice::executeGetConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetTemperatureAlarmConfigurationCommand>() );
+    rfnRequests.push_back( std::make_unique<Commands::RfnGetTemperatureAlarmConfigurationCommand>() );
 
     return ClientErrors::None;
 }

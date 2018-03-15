@@ -91,7 +91,7 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
 YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
-            boost::make_shared<Commands::RfnTouResetCommand>());
+            std::make_unique<Commands::RfnTouResetCommand>());
 
     return ClientErrors::None;
 }
@@ -99,7 +99,7 @@ YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, 
 YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
-            boost::make_shared<Commands::RfnTouResetZeroCommand>());
+            std::make_unique<Commands::RfnTouResetZeroCommand>());
 
     return ClientErrors::None;
 }
@@ -139,7 +139,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
         }
         else
         {
-            rfnRequests.push_back( boost::make_shared<Commands::RfnDemandFreezeConfigurationCommand>( configFreezeDay ) );
+            rfnRequests.push_back( std::make_unique<Commands::RfnDemandFreezeConfigurationCommand>( configFreezeDay ) );
             ret = ClientErrors::None;
         }
 
@@ -165,7 +165,7 @@ YukonError_t RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg  
                                                                  ReturnMsgList     & returnMsgs,
                                                                  RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnImmediateDemandFreezeCommand>() );
+    rfnRequests.push_back( std::make_unique<Commands::RfnImmediateDemandFreezeCommand>() );
 
     return ClientErrors::None;
 }
@@ -176,7 +176,7 @@ YukonError_t RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg   
                                                                 ReturnMsgList     & returnMsgs,
                                                                 RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetDemandFreezeInfoCommand>() );
+    rfnRequests.push_back( std::make_unique<Commands::RfnGetDemandFreezeInfoCommand>() );
 
     return ClientErrors::None;
 }
@@ -187,7 +187,7 @@ YukonError_t RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
                                                         ReturnMsgList    & returnMsgs,
                                                         RfnCommandList   & rfnRequests)
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnTouStateConfigurationCommand>());
+    rfnRequests.push_back( std::make_unique<Commands::RfnTouStateConfigurationCommand>());
 
     return ClientErrors::None;
 }
@@ -201,7 +201,7 @@ YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * p
 
     if( parse.isKeyValid("tou_critical_peak_cancel") )
     {
-        rfnRequests.push_back( boost::make_shared<Commands::RfnTouCancelCriticalPeakCommand>() );
+        rfnRequests.push_back( std::make_unique<Commands::RfnTouCancelCriticalPeakCommand>() );
     }
     else
     {
@@ -225,7 +225,7 @@ YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * p
         const unsigned minute   = parsedMinute;
         const std::string rate  = parse.getsValue( "tou_critical_peak_rate" );
 
-        rfnRequests.push_back( boost::make_shared<Commands::RfnTouCriticalPeakCommand>( rate, hour, minute ) );
+        rfnRequests.push_back( std::make_unique<Commands::RfnTouCriticalPeakCommand>( rate, hour, minute ) );
     }
 
     return ClientErrors::None;
@@ -249,14 +249,14 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
 
     if( parse.isKeyValid("tou_enable") )
     {
-        rfnRequests.push_back( boost::make_shared<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouEnable ));
+        rfnRequests.push_back( std::make_unique<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouEnable ));
 
         return ClientErrors::None;
     }
 
     if( parse.isKeyValid("tou_disable") )
     {
-        rfnRequests.push_back( boost::make_shared<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouDisable ));
+        rfnRequests.push_back( std::make_unique<RfnTouStateConfigurationCommand>( RfnTouConfigurationCommand::TouDisable ));
 
         return ClientErrors::None;
     }
@@ -336,7 +336,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
         schedule_name = "tou_schedule_" + CtiNumStr(iter).zpad(2);
     }
 
-    rfnRequests.push_back( boost::make_shared<RfnTouScheduleSetConfigurationCommand>( schedule ));
+    rfnRequests.push_back( std::make_unique<RfnTouScheduleSetConfigurationCommand>( schedule ));
 
     return ClientErrors::None;
 }
@@ -349,7 +349,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq
                                                         ReturnMsgList     & returnMsgs,
                                                         RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
+    rfnRequests.push_back( std::make_unique<Commands::RfnTouScheduleGetConfigurationCommand>());
 
     return ClientErrors::None;
 }
@@ -368,14 +368,14 @@ YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * 
 
     if( parse.isKeyValid("holiday_set_active") )
     {
-        rfnRequests.push_back( boost::make_shared<RfnTouSetHolidayActiveCommand>());
+        rfnRequests.push_back( std::make_unique<RfnTouSetHolidayActiveCommand>());
 
         return ClientErrors::None;
     }
 
     if( parse.isKeyValid("holiday_cancel_active") )
     {
-        rfnRequests.push_back( boost::make_shared<RfnTouCancelHolidayActiveCommand>());
+        rfnRequests.push_back( std::make_unique<RfnTouCancelHolidayActiveCommand>());
 
         return ClientErrors::None;
     }
@@ -406,7 +406,7 @@ YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * 
         holiday_nbr++;
     }
 
-    rfnRequests.push_back( boost::make_shared<RfnTouHolidayConfigurationCommand>( holidays ));
+    rfnRequests.push_back( std::make_unique<RfnTouHolidayConfigurationCommand>( holidays ));
 
     return ClientErrors::None;
 }
@@ -466,7 +466,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
         if( ! touEnableMatches || sendForced )
         {
             rfnRequests.push_back(
-                    boost::make_shared<RfnTouStateConfigurationCommand>(
+                    std::make_unique<RfnTouStateConfigurationCommand>(
                             configTouEnabled ?
                                 RfnTouStateConfigurationCommand::TouEnable :
                                 RfnTouStateConfigurationCommand::TouDisable));
@@ -578,7 +578,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
             //
 
             rfnRequests.push_back(
-                    boost::make_shared<RfnTouScheduleSetConfigurationCommand>(
+                    std::make_unique<RfnTouScheduleSetConfigurationCommand>(
                             schedule_to_send ));
         }
 
@@ -692,7 +692,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg    
                                                                ReturnMsgList     & returnMsgs,
                                                                RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnTouScheduleGetConfigurationCommand>());
+    rfnRequests.push_back( std::make_unique<Commands::RfnTouScheduleGetConfigurationCommand>());
 
     return ClientErrors::None;
 }
@@ -706,7 +706,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * 
                                                             ReturnMsgList     & returnMsgs,
                                                             RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnTouHolidayConfigurationCommand>());
+    rfnRequests.push_back( std::make_unique<Commands::RfnTouHolidayConfigurationCommand>());
 
     return ClientErrors::None;
 }
@@ -722,7 +722,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    
         return ClientErrors::NoMethod;
     }
 
-    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectGetConfigurationCommand>() );
+    rfnRequests.push_back( std::make_unique<Commands::RfnRemoteDisconnectGetConfigurationCommand>() );
 
     return ClientErrors::None;
 }
@@ -771,7 +771,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
                         return ClientErrors::ConfigNotCurrent;
                     }
 
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( reconnectParam ));
+                    rfnRequests.push_back( std::make_unique<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( reconnectParam ));
                 }
 
                 break;
@@ -806,7 +806,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
                         return ClientErrors::ConfigNotCurrent;
                     }
 
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>(
+                    rfnRequests.push_back( std::make_unique<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>(
                             reconnectParam,
                             demandInterval,
                             configDemandThreshold,
@@ -834,7 +834,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
                         return ClientErrors::ConfigNotCurrent;
                     }
 
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>(
+                    rfnRequests.push_back( std::make_unique<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>(
                             configDisconnectMinutes,
                             configConnectMinutes ));
                 }

@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_install_ovuv_mete
         BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
-        for ( Cti::Devices::Commands::RfnCommandSPtr cmd : rfnRequests )
+        for ( auto& cmd : rfnRequests )
         {
             results.push_back(cmd->executeCommand(execute_time));
         }
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
 
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
             BOOST_CHECK_EQUAL( static_cast<bool>(test_ovuvEnabled), true );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
             BOOST_CHECK_EQUAL( test_ovuvAlarmReportingInterval, 5 );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
             BOOST_CHECK_EQUAL( test_ovuvAlarmRepeatInterval, 60 );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
             BOOST_CHECK_EQUAL( test_ovuvAlarmRepeatCount, 2 );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
             BOOST_CHECK_EQUAL( test_ovThreshold, 123.456 );
         }
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -860,7 +860,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
     BOOST_CHECK_EQUAL_RANGES( resultStringRcv, resultStringExp );
     BOOST_CHECK_EQUAL_RANGES( statusRcv, statusExp );
 
-    Cti::Devices::Commands::RfnCommandSPtr command = rfnRequests.front();
+    auto& command = rfnRequests.front();
 
     BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
 
@@ -1137,7 +1137,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_e
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1168,7 +1168,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_d
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1217,7 +1217,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getvalue_voltage_profile_st
     }
 
     {
-        Commands::RfnCommandSPtr command = rfnRequests.front();
+        auto& command = rfnRequests.front();
 
         Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -1258,7 +1258,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             {
                 Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
@@ -1320,7 +1320,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
 
         RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
         {
-            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            auto& command = *rfnRequest_itr++;
 
             {
                 Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );

@@ -104,7 +104,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigVoltageAveragingInterv
                                                                                     ReturnMsgList     & returnMsgs,
                                                                                     RfnCommandList    & rfnRequests )
 {
-    rfnRequests.push_back( boost::make_shared<Commands::RfnVoltageProfileGetConfigurationCommand>() );
+    rfnRequests.push_back( std::make_unique<Commands::RfnVoltageProfileGetConfigurationCommand>() );
 
     return ClientErrors::None;
 }
@@ -194,7 +194,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterv
         else
         {
             rfnRequests.push_back(
-                boost::make_shared<Commands::RfnVoltageProfileSetConfigurationCommand>(
+                std::make_unique<Commands::RfnVoltageProfileSetConfigurationCommand>(
                 *configSettings.voltageAveragingInterval,
                 *configSettings.voltageDataStreamingInterval ) );
             return ClientErrors::None;
@@ -226,8 +226,8 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigOvUv( CtiRequestMsg   
 
     Commands::RfnOvUvConfigurationCommand::MeterID  meterID = getMeterIdForDeviceType(getType());
 
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
-    rfnRequests.push_back( boost::make_shared<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );
+    rfnRequests.push_back( std::make_unique<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::OverVoltage ) );
+    rfnRequests.push_back( std::make_unique<Commands::RfnGetOvUvAlarmConfigurationCommand>( meterID, Commands::RfnOvUvConfigurationCommand::UnderVoltage ) );
 
     return ClientErrors::None;
 }
@@ -274,7 +274,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
                         ? RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
                         : RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
 
-                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmProcessingStateCommand>( state ) );
+                    rfnRequests.push_back( std::make_unique<RfnSetOvUvAlarmProcessingStateCommand>( state ) );
                     ret = ClientErrors::None;
                 }
             }
@@ -295,7 +295,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvNewAlarmReportIntervalCommand>( configOvUvReportingInterval ) );
+                    rfnRequests.push_back( std::make_unique<RfnSetOvUvNewAlarmReportIntervalCommand>( configOvUvReportingInterval ) );
                     ret = ClientErrors::None;
                 }
             }
@@ -316,7 +316,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
                  }
                  else
                  {
-                     rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatIntervalCommand>( configOvUvRepeatInterval ) );
+                     rfnRequests.push_back( std::make_unique<RfnSetOvUvAlarmRepeatIntervalCommand>( configOvUvRepeatInterval ) );
                      ret = ClientErrors::None;
                  }
              }
@@ -337,7 +337,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatCountCommand>( configOvUvRepeatCount ) );
+                    rfnRequests.push_back( std::make_unique<RfnSetOvUvAlarmRepeatCountCommand>( configOvUvRepeatCount ) );
                     ret = ClientErrors::None;
                 }
             }
@@ -361,7 +361,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, configOvThreshold ) );
+                    rfnRequests.push_back( std::make_unique<RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, configOvThreshold ) );
                     ret = ClientErrors::None;
                 }
             }
@@ -382,7 +382,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg   
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, configUvThreshold ) );
+                    rfnRequests.push_back( std::make_unique<RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, configUvThreshold ) );
                     ret = ClientErrors::None;
                 }
             }
@@ -464,7 +464,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigPermanentVoltageProfil
 {
     using Commands::RfnLoadProfileGetRecordingCommand;
 
-    rfnRequests.push_back( boost::make_shared<RfnLoadProfileGetRecordingCommand>());
+    rfnRequests.push_back( std::make_unique<RfnLoadProfileGetRecordingCommand>());
 
     return ClientErrors::None;
 }
@@ -502,7 +502,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfil
                         ? RfnLoadProfileRecordingCommand::EnableRecording
                         : RfnLoadProfileRecordingCommand::DisableRecording;
 
-                rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetPermanentRecordingCommand>( option ) );
+                rfnRequests.push_back( std::make_unique<RfnLoadProfileSetPermanentRecordingCommand>( option ) );
             }
         }
 
@@ -546,7 +546,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageProfile( CtiReq
         RfnLoadProfileRecordingCommand::RecordingOption option = (parse.getiValue("voltage_profile_enable")) ? RfnLoadProfileRecordingCommand::EnableRecording
                                                                                                              : RfnLoadProfileRecordingCommand::DisableRecording;
 
-        rfnRequests.push_back( boost::make_shared<RfnLoadProfileSetTemporaryRecordingCommand>( option ));
+        rfnRequests.push_back( std::make_unique<RfnLoadProfileSetTemporaryRecordingCommand>( option ));
 
         return ClientErrors::None;
     }
@@ -565,7 +565,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigVoltageProfile( CtiReq
 
     if( parse.isKeyValid("voltage_profile_state") )
     {
-        rfnRequests.push_back( boost::make_shared<RfnLoadProfileGetRecordingCommand>());
+        rfnRequests.push_back( std::make_unique<RfnLoadProfileGetRecordingCommand>());
 
         return ClientErrors::None;
     }
@@ -627,7 +627,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetValueVoltageProfile( CtiRequ
         }
     }
 
-    rfnRequests.push_back( boost::make_shared<RfnLoadProfileReadPointsCommand>( CtiTime::now(),
+    rfnRequests.push_back( std::make_unique<RfnLoadProfileReadPointsCommand>( CtiTime::now(),
                                                                                 begin,
                                                                                 end ));
 

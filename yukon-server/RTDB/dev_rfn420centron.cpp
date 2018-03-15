@@ -76,7 +76,7 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
         }
 
         rfnRequests.push_back(
-                boost::make_shared<Commands::RfnCentronSetLcdConfigurationCommand>(
+                std::make_unique<Commands::RfnCentronSetLcdConfigurationCommand>(
                         configItems.display_metrics,
                         configItems.disconnect_display,
                         configItems.display_digits,

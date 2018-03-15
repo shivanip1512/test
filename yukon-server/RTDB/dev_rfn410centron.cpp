@@ -96,7 +96,7 @@ RfnMeterDevice::ConfigMap Rfn410CentronDevice::getConfigMethods(InstallType inst
 YukonError_t Rfn410CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
-            boost::make_shared<Commands::RfnCentronGetLcdConfigurationCommand>());
+            std::make_unique<Commands::RfnCentronGetLcdConfigurationCommand>());
 
     return ClientErrors::None;
 }
@@ -180,7 +180,7 @@ YukonError_t Rfn410CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
         }
 
         rfnRequests.push_back(
-                boost::make_shared<Commands::RfnCentronSetLcdConfigurationCommand>(
+                std::make_unique<Commands::RfnCentronSetLcdConfigurationCommand>(
                         configItems.display_metrics,
                         configItems.display_digits,
                         configItems.cycle_delay));

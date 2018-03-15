@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 

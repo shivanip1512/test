@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch 
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_failure )
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
@@ -727,7 +727,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_two_channels_no_device
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 
@@ -837,7 +837,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 
@@ -893,7 +893,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_device
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 
@@ -952,7 +952,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_channe
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 
@@ -1020,7 +1020,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 
@@ -1100,7 +1100,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
 
     Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
     {
-        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        auto& command = *rfnRequest_itr++;
         {
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
 

@@ -86,7 +86,7 @@ RfnMeterDevice::ConfigMap RfnLgyrFocusAlDevice::getConfigMethods(InstallType ins
 YukonError_t RfnLgyrFocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     rfnRequests.push_back(
-            boost::make_shared<Commands::RfnFocusAlLcdConfigurationReadCommand>());
+            std::make_unique<Commands::RfnFocusAlLcdConfigurationReadCommand>());
 
     return ClientErrors::None;
 }
@@ -180,7 +180,7 @@ YukonError_t RfnLgyrFocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, 
 
         // Create display items config
 
-        rfnRequests.push_back( boost::make_shared<Commands::RfnFocusAlLcdConfigurationWriteCommand>( config_display_items, config_display_duration ));
+        rfnRequests.push_back( std::make_unique<Commands::RfnFocusAlLcdConfigurationWriteCommand>( config_display_items, config_display_duration ));
 
         return ClientErrors::None;
     }
