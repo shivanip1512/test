@@ -12,6 +12,43 @@
 
 namespace Cti {
 
+//  Workaround for MSVC's lack of support for P0195R2, see https://docs.microsoft.com/en-us/cpp/visual-cpp-language-conformance for current status.
+//    Once that is available, all the following should be replaced with:
+/*
+template<class ... Lambdas> struct lambda_overloads : Lambdas... { using Lambdas::operator()...; };
+*/
+
+template<typename... Lambdas>
+struct lambda_overloads;
+
+template<typename Lambda, typename... Others>
+struct lambda_overloads<Lambda, Others...> : Lambda, lambda_overloads<Others...>
+{
+    using Lambda::operator();
+    using lambda_overloads<Others...>::operator();
+
+    lambda_overloads(Lambda ld, Others... others)
+        :   Lambda(ld),
+            lambda_overloads<Others...>(others...) 
+    {}
+};
+
+template<typename Lambda>
+struct lambda_overloads<Lambda> : public Lambda
+{
+    using Lambda::operator ();
+
+    lambda_overloads(Lambda ld)
+        :   Lambda(ld) 
+    {}
+};
+
+//  Type deduction helper, can be replaced with a C++17 type deduction guide when available - see https://dev.to/tmr232/that-overloaded-trick-overloading-lambdas-in-c17
+template<typename... Lambdas> auto make_lambda_overloads(Lambdas... lambdas)
+{
+    return lambda_overloads <Lambdas...> { lambdas... };
+}
+
 template <class Map>
 boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename Map::key_type &key )
 {
