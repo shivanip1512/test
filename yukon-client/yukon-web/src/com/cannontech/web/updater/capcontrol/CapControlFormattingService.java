@@ -55,7 +55,8 @@ public interface CapControlFormattingService<E> {
         SA_ENABLED_MSG,
         DUALBUS_MESSAGE,
         DUALBUS,
-        SA_ENABLED_ALL_MSG
+        SA_ENABLED_ALL_MSG,
+        DMV_TEST_RUNNING_FLAG
     }
     
     public String getValueString(E latestValue, Format format, YukonUserContext userContext);

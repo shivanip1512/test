@@ -57,7 +57,8 @@ public class SubBusValidator extends AutoInitializedClassValidator<SubBus> {
         ctrlObj.setUsePhaseData(generator.generateBoolean());        
         ctrlObj.setAlternateBusId(generator.generateInt());
         ctrlObj.setDualBusEnabled(generator.generateBoolean());
-
+        ctrlObj.setDmvTestRunningFlag(generator.generateBoolean());
+        
         ctrlObj.setCcFeeders(getDefaultObjectVectorFor(Feeder.class, generator));
 
         ctrlObj.setStrategyId(0);   // Hardcoded on C++ side to be able to generate strategies fields

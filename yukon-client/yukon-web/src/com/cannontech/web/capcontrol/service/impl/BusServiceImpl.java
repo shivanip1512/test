@@ -80,6 +80,7 @@ public class BusServiceImpl implements BusService {
         bus.setSchedules(assigns);
         SubBus ccBus = ccCache.getSubBus(id);
         bus.setVerificationFlag(ccBus.getVerificationFlag());
+        bus.setDmvTestRunningFlag(ccBus.getDmvTestRunningFlag());
         return bus;
     }
 

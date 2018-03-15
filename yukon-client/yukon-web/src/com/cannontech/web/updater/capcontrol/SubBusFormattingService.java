@@ -181,4 +181,9 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
         return ret;
     }
     
+    @Override
+    protected boolean getDmvTestRunningFlag(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        return latestValue.getDmvTestRunningFlag();
+    }
+    
 }

@@ -107,6 +107,7 @@ public class SubBusSerializer extends
         msg.setAlternateBusId(entity.get_altSubId());
         msg.setDualBusEnabled(entity.is_dualBusEnabled());
         msg.setStrategyId(entity.get_strategyId());
+        msg.setDmvTestRunningFlag(entity.is_dmvTestRunningFlag());
         msg.setCcFeeders(helper.convertToMessageVector(entity.get_ccFeeders(), Feeder.class));
     }
 

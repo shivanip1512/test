@@ -71,6 +71,7 @@
                 <td>
                     <capTags:warningImg paoId="${subbusId}" type="SUBBUS"/>
                     <capTags:verificationImg paoId="${subbusId}" type="SUBBUS"/>
+                    <capTags:dmvTestRunningImg paoId="${subbusId}" type="SUBBUS"/>
                     <a href="${dualBusLink}">
                         <capTags:dualBusImg paoId="${subbusId}" type="SUBBUS"/>
                     </a>

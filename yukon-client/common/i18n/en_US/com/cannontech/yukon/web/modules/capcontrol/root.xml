@@ -620,6 +620,8 @@
     <entry key="yukon.web.modules.capcontrol.feeder.saved">Feeder was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.noAssignedCapBanks">No Assigned CapBanks</entry>
     
+    <entry key="yukon.web.modules.capcontrol.substation.dmvTestRunning.hoverText">Currently being used in a DMV test</entry>
+    
     <!-- cbcChart.jsp -->
     <entry key="yukon.web.modules.capcontrol.tabularData">Tabular Data:</entry>
 

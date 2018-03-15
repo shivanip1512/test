@@ -109,6 +109,12 @@ yukon.da.updaters = (function () {
                         _updateOperations(tapContainer.find('.js-phase-' + phase), data.tap, data.mode, data.tapTooltip);
                     };
                 }
+            },
+            
+            dmvTestRunning: function (data) {
+                var result = JSON.parse(data.value),
+                    icon = $('.js-dmvTestRunning[data-pao-id="' + result.paoId  + '"]');
+                icon.toggleClass('dn', !result.value);
             }
         };
 

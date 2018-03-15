@@ -71,6 +71,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private boolean dualBusEnabled;
     private int alternateBusId;
     private int strategyId = -1;
+    private boolean dmvTestRunningFlag;
 
     public SubBus() {
         super();
@@ -542,5 +543,13 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 
     public int getStrategyId() {
         return strategyId;
+    }
+    
+    public boolean getDmvTestRunningFlag() {
+        return dmvTestRunningFlag;
+    }
+
+    public void setDmvTestRunningFlag(boolean dmvTestRunningFlag) {
+        this.dmvTestRunningFlag = dmvTestRunningFlag;
     }
 }
