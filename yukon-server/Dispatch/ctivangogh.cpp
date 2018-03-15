@@ -3461,7 +3461,7 @@ INT CtiVanGogh::sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGrou
                                                         sig.getPointValue(),
                                                         sig.getMessageTime(),
                                                         !(sig.getTags() & TAG_UNACKNOWLEDGED_ALARM),
-                                                        sig.getTags() & TAG_ACTIVE_ALARM);
+                                                        static_cast<bool>(sig.getTags() & TAG_ACTIVE_ALARM));
 
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_NOTIFICATION)
