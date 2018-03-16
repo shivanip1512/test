@@ -52,18 +52,22 @@ yukon.ami.meterDetails = (function () {
                         mod.updateMeterTypeFields();                    }
                 });
             });
-            
+
             $('#commander-menu-option').click(function (ev) {
+                var paoId = $('#device-id').val();
                 var params = {
                     target: 'DEVICE',
-                    paoId: $('#device-id').val()
-                },
-                url = yukon.url('/tools/commander/updateCommanderPreferences');
-            
-                $.ajax({ type: 'POST', url: url, data: params });
-                window.location.href = yukon.url('/tools/commander');
+                    paoId: paoId
+                };
+                $.ajax({
+                    type: 'POST',
+                    url: yukon.url('/tools/commander/updateCommanderPreferences'),
+                    data: params 
+                }).done(function() {
+                    window.location.href = yukon.url('/tools/commander/' + paoId);
+                });
             });
-            
+
             $('.js-create-meter').click(function () {
                 var content = $('#contentPopup'),
                 popupTitle = content.data('create-title');

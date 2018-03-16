@@ -73,7 +73,6 @@ import com.cannontech.web.tools.commander.model.RecentTarget;
 import com.cannontech.web.tools.commander.model.ViewableTarget;
 import com.cannontech.web.tools.commander.service.CommanderService;
 import com.cannontech.web.user.service.UserPreferenceService;
-import com.cannontech.web.util.WebUtilityService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Joiner;
@@ -94,7 +93,6 @@ public class CommanderController {
     @Autowired private CommanderService commanderService;
     @Autowired private CommanderEventLogService eventLogger;
     @Autowired private DeviceUpdateService deviceUpdateService;
-    @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPreferenceService userPreferenceService;
@@ -116,8 +114,9 @@ public class CommanderController {
     private static final int RECENT_TARGET_MAXIMUM_SIZE_LIMIT = 10;
     
     /** The commander page. */
-    @RequestMapping({"/commander", "/commander/"})
-    public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
+    @RequestMapping({"/commander", "/commander/{deviceId}"})
+    public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user,
+            @PathVariable Optional<Integer> deviceId) {
 
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
@@ -127,7 +126,7 @@ public class CommanderController {
 
         String lastTarget = userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_TARGET);
 
-        if (lastTarget != null) {
+        if (lastTarget != null && deviceId.isPresent()) { // deviceId is present when flow came from meter details page . For Tools > Commander deviceId.isPresent() return false.
             CommandTarget target = CommandTarget.valueOf(lastTarget);
             model.addAttribute("target", target);
             if (target.isPao()) {
