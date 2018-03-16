@@ -6,6 +6,7 @@
 #include "boost/optional/optional.hpp"
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#include <boost/range/algorithm_ext/insert.hpp>
 
 #include <iostream>
 #include <iomanip>
@@ -172,7 +173,7 @@ std::map<U, T> vectorToMap(const std::vector<T>& attributeList, U (T::*keyFunc)(
 {
     std::map<U, T> m;
     auto asPair = [=](T input) { return std::make_pair((input.*keyFunc)(), input); };
-    boost::copy(attributeList | boost::adaptors::transformed(asPair), std::inserter(m, m.begin()));
+    boost::insert(m, attributeList | boost::adaptors::transformed(asPair));
     return m;
 }
 

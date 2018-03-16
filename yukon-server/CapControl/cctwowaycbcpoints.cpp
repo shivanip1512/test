@@ -14,7 +14,7 @@
 #include <regex>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/filtered.hpp>
-#include <boost/range/algorithm/copy.hpp>
+#include <boost/range/algorithm_ext/insert.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 
 extern unsigned long _CC_DEBUG;
@@ -417,10 +417,10 @@ bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue( const long pointID,
 
 void CtiCCTwoWayPoints::addAllCBCPointsToRegMsg( std::set<long> & pointList ) const
 {
-    boost::copy( _attributeIds
-                    | boost::adaptors::map_values
-                    | boost::adaptors::filtered( []( const long ID ){ return ID > 0; } ),
-                 std::inserter( pointList, pointList.begin() ) );
+    boost::insert( pointList,
+                   _attributeIds
+                       | boost::adaptors::map_values
+                       | boost::adaptors::filtered( Cti::is_greater<long, 0>() ) );
 }
 
 std::string CtiCCTwoWayPoints::getLastControlText()

@@ -336,6 +336,15 @@ namespace Cti
         }
     };
     
+    //  Can be replaced by the following when Visual Studio gets support for P0127R2, "Declaring non-type template parameters with auto" - see https://docs.microsoft.com/en-us/cpp/visual-cpp-language-conformance
+    //  template <auto Val>
+    template <typename Type, Type Val>
+    auto is_greater()
+    {
+        //return [](decltype(Val) test) { return std::greater<decltype(Val)>()(test, Val); };
+        return [](Type test) { return std::greater<Type>()(test, Val); };
+    };
+
     //  Euclidean algorithm - https://en.wikipedia.org/wiki/Euclidean_algorithm
     inline unsigned find_gcd(unsigned x, unsigned y)
     {

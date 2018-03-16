@@ -49,8 +49,9 @@
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/range/algorithm/count_if.hpp>
+#include <boost/range/algorithm/count.hpp>
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/algorithm_ext/insert.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
 
 #include <iomanip>
@@ -58,6 +59,7 @@
 #include <vector>
 
 using namespace std;
+using boost::adaptors::transformed;
 
 extern IM_EX_CTIBASE std::string outMessageToString(const OUTMESS* Om);
 
@@ -496,8 +498,8 @@ void PilServer::resultThread()
 
             set<long> paoids;
 
-            boost::copy(pendingInMessages     | boost::adaptors::transformed(get_inmess_target_device), std::inserter(paoids, paoids.begin()));
-            boost::copy(pendingRfnResultQueue | boost::adaptors::transformed(get_rfn_result_device),    std::inserter(paoids, paoids.begin()));
+            boost::insert(paoids, pendingInMessages     | transformed(get_inmess_target_device));
+            boost::insert(paoids, pendingRfnResultQueue | transformed(get_rfn_result_device));
 
             if( ! paoids.empty() )
             {
@@ -1032,12 +1034,12 @@ struct RequestExecuter : Devices::DeviceHandler
         {
             for( auto &command : commands )
             {
-                rfnRequests.emplace_back(parameters, rfnRequestId++, std::move(command));
+                rfnRequests.emplace_back(parameters, ++rfnRequestId, std::move(command));
             }
         }
         else
         {
-            rfnRequests.emplace_back(parameters, rfnRequestId++, Devices::RfnDevice::combineRfnCommands(std::move(commands)));
+            rfnRequests.emplace_back(parameters, ++rfnRequestId, Devices::RfnDevice::combineRfnCommands(std::move(commands)));
         }
 
         return retVal;
@@ -1068,12 +1070,9 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         //  first, scrub our queue of this request
         if( _currentParse.isKeyValid("request_cancel") )
         {
-            auto itr = _groupQueue.begin(),
-                 end = _groupQueue.end();
-
-            while( itr != end )
+            for( auto itr = _groupQueue.begin(), end = _groupQueue.end(); itr != end; )
             {
-                if( reinterpret_cast<const CtiRequestMsg *>(*itr)->GroupMessageId() == group_message_id )
+                if( (*itr)->GroupMessageId() == group_message_id )
                 {
                     delete *itr;
                     itr = _groupQueue.erase(itr);
@@ -1096,15 +1095,12 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         //  This does not count items still in the MainQueue_, only group processed items.
         if( _currentParse.isKeyValid("request_count") )
         {
-            auto requestMsgGroupIdMatches =
-                [=](const CtiRequestMsg *msg)
-                {
-                    return msg->GroupMessageId() == group_message_id;
-                };
+            auto getGroupMessageId = transformed( [](const CtiRequestMsg * msg) { return msg->GroupMessageId(); } );
 
             long group_id_count = 0;
 
-            group_id_count += boost::count_if(_groupQueue, requestMsgGroupIdMatches);
+            group_id_count += boost::count(_groupQueue | getGroupMessageId, 
+                                           group_message_id);
 
             group_id_count += _rfnManager.countByGroupMessageId(group_message_id);
 

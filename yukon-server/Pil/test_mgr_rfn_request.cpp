@@ -76,7 +76,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
         Cti::Pil::RfnDeviceRequest::Parameters parameters;
         parameters.rfnIdentifier   = rfnId;
         parameters.deviceId        = 11235;
-        //parameters.rfnRequestId = ...
         parameters.commandString   = "Command string.";
         parameters.priority        = 11;
         parameters.userMessageId   = 0;
@@ -213,7 +212,6 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
         Cti::Pil::RfnDeviceRequest::Parameters parameters;
         parameters.rfnIdentifier   = rfnId;
         parameters.deviceId        = 11235;
-        //parameters.rfnRequestId = ...
         parameters.commandString   = "Command string.";
         parameters.priority        = 11;
         parameters.userMessageId   = 0;
