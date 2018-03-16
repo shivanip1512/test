@@ -92,7 +92,6 @@ public class TamperFlagEditorController {
             FlashScope flash, RedirectAttributes attrs) throws Exception, ServletException {
         // new processor?
         boolean isNewMonitor = true;
-        //TamperFlagMonitor tamperFlagMonitor;
         try {
             if (tamperFlagMonitor.getTamperFlagMonitorId() != null) {
                 isNewMonitor = false;
@@ -154,7 +153,6 @@ public class TamperFlagEditorController {
             }
             // redirect to edit page with processor
             return "redirect:/meter/start";
-        //}
     }
 
     private String bindAndForward(TamperFlagMonitor tamperFlagMonitor, BindingResult result, RedirectAttributes attrs) {
@@ -187,8 +185,7 @@ public class TamperFlagEditorController {
 
         try {
             tamperFlagMonitorService.toggleEnabled(tamperFlagMonitorId);
-            model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
-        } catch (OutageMonitorNotFoundException e) {
+        } catch (TamperFlagMonitorNotFoundException e) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.tamperFlagEditor.monitorNotFound"));
         }
 

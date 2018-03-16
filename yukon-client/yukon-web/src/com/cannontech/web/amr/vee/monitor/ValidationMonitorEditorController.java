@@ -138,7 +138,6 @@ public class ValidationMonitorEditorController {
             throws Exception, ServletException {
         try {
             validationMonitorService.toggleEnabled(validationMonitorId);
-            model.addAttribute("validationMonitorId", validationMonitorId);
         } catch (ValidationMonitorNotFoundException e) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + ".monitorNotFound"));
         }
