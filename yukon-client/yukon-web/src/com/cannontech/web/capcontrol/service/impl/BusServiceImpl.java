@@ -6,11 +6,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
@@ -46,6 +48,8 @@ public class BusServiceImpl implements BusService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoScheduleServiceHelper paoScheduleServiceHelper;
     
+    private Logger log = YukonLogManager.getLogger(getClass());
+    
     @Override
     public CapControlSubBus get(int id) {
 
@@ -78,9 +82,13 @@ public class BusServiceImpl implements BusService {
          */
 
         bus.setSchedules(assigns);
-        SubBus ccBus = ccCache.getSubBus(id);
-        bus.setVerificationFlag(ccBus.getVerificationFlag());
-        bus.setDmvTestRunningFlag(ccBus.getDmvTestRunningFlag());
+        try {
+            SubBus ccBus = ccCache.getSubBus(id);
+            bus.setVerificationFlag(ccBus.getVerificationFlag());
+            bus.setDmvTestRunningFlag(ccBus.getDmvTestRunningFlag());
+        } catch (NotFoundException nfe) {
+            log.error("Bus not found in cache: ", nfe);
+        }
         return bus;
     }
 
