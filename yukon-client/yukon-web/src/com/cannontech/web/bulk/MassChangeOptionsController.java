@@ -2,6 +2,7 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,7 +104,13 @@ public class MassChangeOptionsController {
             ServletRequestUtils.getRequiredStringParameter(request, "massChangeBulkFieldName");
         BulkField<?, SimpleDevice> bulkField = bulkYukonDeviceFieldFactory.getBulkField(massChangeBulkFieldName);
 
-        CollectionActionResult result = collectionActionService.createResult(CollectionAction.MASS_CHANGE, null,
+        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+        String value = yukonDeviceDtoObj.getRoute();
+        if (value == null) {
+            value = yukonDeviceDtoObj.getEnable() ? "Enable" : "Disable";
+        }
+        userInputs.put("Change", bulkField.getInputSource().getDisplayName() + ": " + value);
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.MASS_CHANGE, userInputs,
             deviceCollection, context);
 
         // PROCESS

@@ -1,5 +1,6 @@
 package com.cannontech.web.bulk;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,11 +96,13 @@ public class ChangeDeviceTypeController {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
-        CollectionActionResult result = collectionActionService.createResult(CollectionAction.CHANGE_TYPE, null,
+        final PaoType selectedDeviceType = ServletRequestEnumUtils.getRequiredEnumParameter(request, PaoType.class, "deviceTypes"); 
+        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+        userInputs.put("Device Type",  selectedDeviceType.getDbString());
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.CHANGE_TYPE, userInputs,
             deviceCollection, context);
         
         // PROCESS
-        final PaoType selectedDeviceType = ServletRequestEnumUtils.getRequiredEnumParameter(request, PaoType.class, "deviceTypes"); 
         SingleProcessor<SimpleDevice> bulkUpdater = new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {

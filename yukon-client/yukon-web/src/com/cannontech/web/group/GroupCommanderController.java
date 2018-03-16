@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +104,9 @@ public class GroupCommanderController {
 
     @RequestMapping(value="executeCollectionCommand", method=RequestMethod.POST)
     public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandSelectValue, String commandString, final String emailAddress, boolean sendEmail, final YukonUserContext userContext, ModelMap map) {
+        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+        userInputs.put("Selected Command", commandSelectValue);
+        userInputs.put("Command", commandString);
         boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, null, userContext, map);
         if (success) {
             return "redirect:resultDetail";

@@ -34,7 +34,7 @@
             </tags:nameValue2>
             <c:forEach var="input" items="${result.inputs.inputs}">
                 <tr>
-                    <td class="name">${input.key}</td>
+                    <td class="name">${input.key}:</td>
                     <td class="value">${input.value}</td>
                 </tr>
             </c:forEach>

@@ -1,16 +1,15 @@
 package com.cannontech.web.bulk;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
-import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -45,7 +43,6 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -73,7 +70,7 @@ public class DeviceConfigController {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired protected CollectionActionService collectionActionService;
 
-    @RequestMapping("assignConfig")
+    @RequestMapping(value = "assignConfig", method = RequestMethod.GET)
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         // pass along deviceCollection
@@ -88,7 +85,7 @@ public class DeviceConfigController {
         return "config/assignConfig.jsp";
     }
     
-    @RequestMapping(value="doAssignConfig", method=RequestMethod.POST)
+    @RequestMapping(value = "doAssignConfig", method = RequestMethod.POST)
     public String doAssignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -98,7 +95,9 @@ public class DeviceConfigController {
         eventLogService.assignConfigInitiated(configuration.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration, userContext.getYukonUser());
 
-        CollectionActionResult result = collectionActionService.createResult(CollectionAction.ASSIGN_CONFIG, null,
+        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+        userInputs.put("Configuration", configuration.getName());
+        CollectionActionResult result = collectionActionService.createResult(CollectionAction.ASSIGN_CONFIG, userInputs,
             deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
