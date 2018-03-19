@@ -54,6 +54,10 @@ struct RfnDeviceResult
     {
     }
 
+    RfnDeviceResult(RfnDeviceResult&&) = default;
+
+    RfnDeviceResult& operator=(RfnDeviceResult&&) = default;
+
     RfnDeviceRequest request;
     Devices::Commands::RfnCommandResult commandResult;
     YukonError_t status;
@@ -63,7 +67,7 @@ class IM_EX_CTIPIL RfnRequestManager
 {
 public:
 
-    using ResultQueue          = std::deque<std::unique_ptr<RfnDeviceResult>>;
+    using ResultQueue          = std::deque<RfnDeviceResult>;
     using RfnDeviceRequestList = std::vector<RfnDeviceRequest>;
 
     void tick();

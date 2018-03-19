@@ -26,8 +26,6 @@
 namespace Cti {
 namespace Pil {
 
-class RfnDeviceResult;
-
 class IM_EX_CTIPIL PilServer : public CtiServer
 {
    BOOL                 bServerClosing;
@@ -80,7 +78,7 @@ protected:
    virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
 
    void handleInMessageResult(const INMESS &InMessage);
-   void handleRfnDeviceResult(const RfnDeviceResult &result);
+   void handleRfnDeviceResult(RfnDeviceResult result);
 
    void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, RequestQueue& execList, RequestQueue& groupRequests, std::list< CtiMessage* > & retList);
    int  analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, std::list< CtiMessage* > & retList);

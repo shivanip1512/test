@@ -494,7 +494,7 @@ void PilServer::resultThread()
 
             auto pendingRfnResultQueue = _rfnManager.getResults(inQueueBlockSize);
 
-            auto get_rfn_result_device = [](const std::unique_ptr<RfnDeviceResult> & result) { return result->request.parameters.deviceId; };
+            auto get_rfn_result_device = [](const RfnDeviceResult & result) { return result.request.parameters.deviceId; };
 
             set<long> paoids;
 
@@ -517,7 +517,7 @@ void PilServer::resultThread()
 
             while( !bServerClosing && !pendingRfnResultQueue.empty() )
             {
-                handleRfnDeviceResult(*pendingRfnResultQueue.front());
+                handleRfnDeviceResult(std::move(pendingRfnResultQueue.front()));
 
                 pendingRfnResultQueue.pop_front();
             }
@@ -688,10 +688,10 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 {
     CtiDeviceBase::CtiMessageList &vgList;
     CtiDeviceBase::CtiMessageList &retList;
-    const RfnDeviceResult &result;
+    const RfnDeviceResult result;
 
-    RfnDeviceResultProcessor(const RfnDeviceResult &result_, CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_) :
-        result(result_),
+    RfnDeviceResultProcessor(RfnDeviceResult result_, CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_) :
+        result(std::move(result_)),
         vgList(vgList_),
         retList(retList_)
     {
@@ -773,13 +773,16 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 };
 
 
-void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
+void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
 {
     // Find the device..
     CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(result.request.parameters.deviceId);
 
     CtiDeviceBase::CtiMessageList vgList;
     CtiDeviceBase::CtiMessageList retList;
+
+    const auto priority         = result.request.parameters.priority;
+    const auto connectionHandle = result.request.parameters.connectionHandle;
 
     if( ! DeviceRecord )
     {
@@ -814,7 +817,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
 
         try
         {
-            RfnDeviceResultProcessor rp(result, vgList, retList);
+            RfnDeviceResultProcessor rp(std::move(result), vgList, retList);
 
             DeviceRecord->invokeDeviceHandler(rp);
         }
@@ -824,7 +827,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
         }
     }
 
-    sendResults(vgList, retList, result.request.parameters.priority, result.request.parameters.connectionHandle);
+    sendResults(vgList, retList, priority, connectionHandle);
 }
 
 

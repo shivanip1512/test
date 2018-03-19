@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        Cti::Pil::RfnDeviceResult &result = *results.front();
+        auto & result = results.front();
 
         const std::string expectedDescription =
             "Status: Success (0)"
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        Cti::Pil::RfnDeviceResult &result = *results.front();
+        auto & result = results.front();
 
         const std::string expectedDescription =
             "Request not acceptable";
