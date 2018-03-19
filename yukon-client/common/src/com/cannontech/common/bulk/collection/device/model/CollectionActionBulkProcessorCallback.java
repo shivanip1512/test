@@ -45,8 +45,8 @@ public class CollectionActionBulkProcessorCallback implements BulkProcessorCallb
         collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
         CollectionActionLogDetail detailLog =
             new CollectionActionLogDetail(null, CollectionActionDetail.FAILURE);
-        detailLog.setExecutionExceptionText("Failed");
-        result.setExecutionExceptionText("Failed", detailLog);
+        detailLog.setExecutionExceptionText("There was an error processing the command");
+        result.setExecutionExceptionText("There was an error processing the command", detailLog);
         result.log();
     }
 }

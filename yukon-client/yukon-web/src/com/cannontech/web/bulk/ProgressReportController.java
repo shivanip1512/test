@@ -48,6 +48,7 @@ public class ProgressReportController {
         model.addAttribute("result", result);
         model.addAttribute("details", CollectionActionDetail.values());
         model.addAttribute("status", CommandRequestExecutionStatus.values());
+        model.addAttribute("isLogAvailable", collectionActionLogService.hasLog(key));
         return "progressReport.jsp";
     }
 
@@ -58,7 +59,7 @@ public class ProgressReportController {
         json.put("result",  result);
         
         //toggle icon display
-        collectionActionLogService.hasLog(key);
+        json.put("isLogAvailable", collectionActionLogService.hasLog(key));
         
         return json;
     }

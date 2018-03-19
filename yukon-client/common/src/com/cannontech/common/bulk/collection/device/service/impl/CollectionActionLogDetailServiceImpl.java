@@ -100,7 +100,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     @Override
     public boolean hasLog(int cacheKey) {
         File file = new File(CtiUtilities.getCollectionActionDirPath(), String.valueOf(cacheKey) + ".csv");
-        if (!file.exists()) {
+        if (file.exists()) {
             return true;
         }
         return false;

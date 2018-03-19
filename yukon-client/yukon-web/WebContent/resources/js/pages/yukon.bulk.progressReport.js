@@ -118,6 +118,8 @@ yukon.bulk.progressReport = (function () {
             }
         }).done(function (data) {
             _updatePage(data.result);
+            //show hide Log Icon if available
+            $('.js-log-icon').toggleClass('dn', !data.isLogAvailable);
         });
         if (_updateTimeout) {
             clearTimeout(_updateTimeout);
@@ -162,7 +164,6 @@ yukon.bulk.progressReport = (function () {
             }
             //show/hide cancel
             $('.js-cancel').toggleClass('dn', !data.cancelable);
-            
         }
     },
     

@@ -90,9 +90,10 @@
             <cti:url var="creLink" value="/common/commandRequestExecutionResults/detail?commandRequestExecutionId=${result.execution.id}"/>
             <cti:button renderMode="image" icon="icon-report" title="${creText}" href="${creLink}"/>
         </c:if>
+        <c:set var="logClass" value="${isLogAvailable ? '' : 'dn'}"/>
         <cti:msg2 var="logText" key=".logText"/>
         <cti:url var="logLink" value="/bulk/progressReport/log?key=${result.cacheKey}"/>
-        <cti:button renderMode="image" icon="icon-script" title="${logText}" href="${logLink}"/>
+        <cti:button renderMode="image" icon="icon-script" title="${logText}" href="${logLink}" classes="js-log-icon ${logClass}"/>
     </c:set>
     
     <tags:sectionContainer2 nameKey="results" controls="${controls}">
