@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,10 +91,10 @@ public abstract class AddRemovePointsControllerBase {
     }
     
     // START BULK PROCESSOR
-    public int startBulkProcessor(CollectionAction action, DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType, YukonUserContext context) {
+    public int startBulkProcessor(CollectionAction action, DeviceCollection deviceCollection, Processor<? super YukonDevice> processor, BackgroundProcessTypeEnum backgroundProcessType, YukonUserContext context, LinkedHashMap<String, String> userInputs) {
              
         
-        CollectionActionResult result = collectionActionService.createResult(action, null,
+        CollectionActionResult result = collectionActionService.createResult(action, userInputs,
             deviceCollection, context);
         
         // PROCESS

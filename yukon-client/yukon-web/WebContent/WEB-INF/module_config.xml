@@ -322,15 +322,9 @@
                   </page>
                   <page name="bulk.assignConfig" type="BASIC">
                     <link>/bulk/config/assignConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.assignConfigResults" type="BASIC"/>
-                    </pages>
                   </page>
                   <page name="bulk.unassignConfig" type="BASIC">
                     <link>/bulk/config/unassignConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>
-                    <pages>
-                      <page name="bulk.unassignConfigResults" type="BASIC"/>
-                    </pages>
                   </page>
                   <page name="bulk.sendConfig" type="BASIC">
                     <link>/bulk/config/sendConfig?${local:convertMapToQueryHtml(deviceCollection.collectionParameters)}</link>

@@ -341,12 +341,12 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     
     private void saveInputs(int actionId, LinkedHashMap<String, String> inputs) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        List<List<Object>> values = inputs.entrySet().stream().map(e -> {
-            int i = 1;
-            List<Object> row = Lists.newArrayList(actionId, i++, e.getKey(), e.getValue());
-            return row;
-        }).collect(Collectors.toList());
-
+        int i = 1;
+        List<List<Object>> values = new ArrayList<>();
+        for (Map.Entry<String, String> entry : inputs.entrySet()) {
+            List<Object> row = Lists.newArrayList(actionId, i++, entry.getKey(), entry.getValue());
+            values.add(row);
+        }
         sql.batchInsertInto("CollectionActionInput").columns("CollectionActionId", "InputOrder", "Description", "Value").values(values);
         jdbcTemplate.yukonBatchUpdate(sql);
     }

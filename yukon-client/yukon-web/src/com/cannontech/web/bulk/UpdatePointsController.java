@@ -1,5 +1,7 @@
 package com.cannontech.web.bulk;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -139,8 +141,17 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
         }
 
         // start processor
+        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+        for (Map.Entry<PaoType, Set<PointTemplate>> entry : pointTemplatesMap.entrySet()) {
+            List<String> points = new ArrayList<>();
+            entry.getValue().forEach(template -> {
+                points.add(template.getName());
+            });
+            userInputs.put(entry.getKey().getDbString(), String.join(", ", points));
+        }
+        userInputs.put("Update Field", updateField.getDisplayValue() + ": " + setValue);
         int key  =
-            startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, userContext);
+            startBulkProcessor(CollectionAction.UPDATE_POINTS, deviceCollection, updatePointsProcessor, BackgroundProcessTypeEnum.UPDATE_POINTS, userContext, userInputs);
 
         return "redirect:/bulk/progressReport/detail?key=" + key;
     }

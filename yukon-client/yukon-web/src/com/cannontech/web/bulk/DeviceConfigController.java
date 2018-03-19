@@ -106,13 +106,7 @@ public class DeviceConfigController {
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
     
-    @RequestMapping("assignConfigResults")
-    public String assignConfigResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
-        doConfigResultsCore(request, model, userContext);
-        return "config/assignConfigResults.jsp";
-    }
-    
-    @RequestMapping("unassignConfig")
+    @RequestMapping(value = "unassignConfig", method = RequestMethod.GET)
     public String unassignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
@@ -125,7 +119,7 @@ public class DeviceConfigController {
         return "config/unassignConfig.jsp";
     }
     
-    @RequestMapping(value="doUnassignConfig", method=RequestMethod.POST)
+    @RequestMapping(value = "doUnassignConfig", method = RequestMethod.POST)
     public String doUnassignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
@@ -140,25 +134,6 @@ public class DeviceConfigController {
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, new CollectionActionBulkProcessorCallback(result, collectionActionService));
         
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
-    }
-    
-    @RequestMapping("unassignConfigResults")
-    public String unassignConfigResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
-        doConfigResultsCore(request, model, userContext);
-        return "config/unassignConfigResults.jsp";
-    }
-    
-    /**
-     * Helper method for the assignConfigResults and unassignConfigResults methods that 
-     * handles common statements.
-     */
-    private void doConfigResultsCore(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
-      /*  String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        ConfigurationCallbackResult callbackResult = (ConfigurationCallbackResult)recentResultsCache.getResult(resultsId);
-        model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
-        model.addAttribute("callbackResult", callbackResult);
-        model.addAttribute("fileName", callbackResult.getDeviceCollection().getUploadFileName());*/
     }
 
     /**
