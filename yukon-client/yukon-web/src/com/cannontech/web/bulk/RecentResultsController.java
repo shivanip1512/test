@@ -3,6 +3,8 @@ package com.cannontech.web.bulk;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -40,17 +42,17 @@ public class RecentResultsController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonUserDao userDao;
     
-    private final static String baseKey = "yukon.web.modules.tools.recentResults.";
+    private final static String baseKey = "yukon.web.modules.tools.bulk.recentResults.";
     
     @RequestMapping(value = "recentResults", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter,
                        @DefaultSort(dir=Direction.desc, sort="action") SortingParameters sorting,
                        @DefaultItemsPerPage(value=250) PagingParameters paging) {
         
-        filter.setStatuses(Arrays.asList((CommandRequestExecutionStatus.values())));
         Direction dir = sorting.getDirection();
         ResultSortBy sortBy = ResultSortBy.valueOf(sorting.getSort());
         setupModel(userContext, model, filter, sorting, dir, sortBy);
+        filter(userContext, model, filter, sorting, paging);
         
         return "recentResults.jsp";
     }
@@ -63,8 +65,16 @@ public class RecentResultsController {
         Direction dir = sorting.getDirection();
         ResultSortBy sortBy = ResultSortBy.valueOf(sorting.getSort());
         setupModel(userContext, model, filter, sorting, dir, sortBy);
+        boolean allTypesSelected = false;
+        if (filter.getActions() == null) {
+            allTypesSelected = true;
+            filter.setActions(Arrays.asList(CollectionAction.values()));
+        }
         SearchResults<CollectionActionFilteredResult> results = collectionActionDao.getCollectionActionFilteredResults(filter, paging, sortBy.getValue(), dir);
-
+        if (allTypesSelected) {
+            filter.setActions(null);
+        }
+        
         model.addAttribute("recentActions", results);
         
         return "recentResults.jsp";
@@ -75,12 +85,15 @@ public class RecentResultsController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
         List<CommandRequestExecutionStatus> statusList = new ArrayList<>();
-        statusList.add(CommandRequestExecutionStatus.CANCELLED);
-        statusList.add(CommandRequestExecutionStatus.COMPLETE);
-        statusList.add(CommandRequestExecutionStatus.FAILED);
         statusList.add(CommandRequestExecutionStatus.STARTED);
-
-
+        statusList.add(CommandRequestExecutionStatus.COMPLETE);
+        statusList.add(CommandRequestExecutionStatus.CANCELLED);
+        statusList.add(CommandRequestExecutionStatus.FAILED);
+        
+        if (filter.getStatuses() == null) {
+            filter.setStatuses(statusList);
+        }
+        
         if (filter.getStartDate() == null || filter.getEndDate() == null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(new Date());
@@ -99,14 +112,18 @@ public class RecentResultsController {
         }
         model.addAttribute("filter", filter);
         model.addAttribute("statuses", statusList);
-        model.addAttribute("actionsList", Arrays.asList((CollectionAction.values())));
+        Comparator<CollectionAction> comparator = (o1, o2) -> {
+            return o1.name().compareTo(o2.name());
+        };
+        List<CollectionAction> actions = Arrays.asList(CollectionAction.values());
+        Collections.sort(actions, comparator);
+        model.addAttribute("actionsList", actions);
                 
         for (ResultSortBy columnHeader : ResultSortBy.values()) {
             String text = accessor.getMessage(columnHeader);
             SortableColumn col = SortableColumn.of(dir, columnHeader == sortBy, text, columnHeader.name());
             model.addAttribute(columnHeader.name(), col);
         }
-        model.addAttribute("detail", accessor.getMessage("yukon.web.modules.tools.recentResults.detail"));
     }
     
     public enum ResultSortBy implements DisplayableEnum {

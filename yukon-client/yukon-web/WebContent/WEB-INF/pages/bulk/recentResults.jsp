@@ -68,9 +68,7 @@
                 <tags:sort column="${success}" />
                 <tags:sort column="${failure}" />
                 <tags:sort column="${notAttempted}" />
-                <th class="vab">
-                    ${fn:escapeXml(detail)}
-                </th>
+                <th class="vab"><i:inline key=".detail"/></th>
                 <tags:sort column="${status}" />
                 <tags:sort column="${userName}" />
             </tr>
@@ -82,9 +80,9 @@
                         </td>
                         <td>
                             <fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${action.formattedStartTime}"/>
-                                <c:if test="${not empty action.stopTime}">
+                            <c:if test="${not empty action.stopTime}">
                                 - <fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${action.formattedStopTime}"/>
-                                </c:if>
+                            </c:if>
                         </td>
                         <td>
                             ${action.successCount}
