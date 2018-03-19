@@ -22,7 +22,7 @@ public class IvvcHelper {
             PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(deviceInfo.getPointId());
             PointQuality quality = pointValue.getPointQuality();
             if (!quality.equals(PointQuality.Manual) && !quality.equals(PointQuality.Normal)) {
-                deviceInfo.setIgnore(true);;
+                deviceInfo.setIgnore(true);
             }
             if (deviceInfo.getParentPaoIdentifier().getPaoType().equals(PaoType.CAPBANK)) {
                 CapBankDevice capBank = ccCache.getCapBankDevice(deviceInfo.getParentPaoIdentifier().getPaoId());
