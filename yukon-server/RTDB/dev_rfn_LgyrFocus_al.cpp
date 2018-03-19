@@ -6,7 +6,6 @@
 
 #include "std_helper.h"
 
-#include <boost/make_shared.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/bimap.hpp>

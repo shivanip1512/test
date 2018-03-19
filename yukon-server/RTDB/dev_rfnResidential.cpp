@@ -8,7 +8,6 @@
 #include "devicetypes.h"
 
 #include <boost/optional.hpp>
-#include <boost/make_shared.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/assign/list_inserter.hpp>
 #include <boost/type_traits.hpp>

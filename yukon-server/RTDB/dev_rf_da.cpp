@@ -4,8 +4,6 @@
 
 #include "cmd_rf_da_dnpAddress.h"
 
-#include <boost/make_shared.hpp>
-
 namespace Cti {
 namespace Devices {
 

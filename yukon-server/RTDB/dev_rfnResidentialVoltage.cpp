@@ -9,10 +9,8 @@
 #include "CParms.h"
 
 #include <boost/optional.hpp>
-#include <boost/make_shared.hpp>
 
 #include <limits>
-
 
 namespace Cti       {
 namespace Devices   {

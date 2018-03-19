@@ -5,7 +5,6 @@
 #include "config_helpers.h"
 #include "std_helper.h"
 
-#include <boost/make_shared.hpp>
 #include <boost/range/algorithm/transform.hpp>
 
 namespace Cti {

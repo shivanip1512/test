@@ -16,9 +16,6 @@
 
 #include "std_helper.h"
 
-#include <boost/make_shared.hpp>
-#include <boost/range/algorithm/set_algorithm.hpp>
-
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
 #include <boost/range/algorithm/sort.hpp>
