@@ -1,6 +1,9 @@
 package com.cannontech.dr.rfn.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Data object for individual Power Quality Response event.
@@ -39,5 +42,16 @@ public final class PqrEvent {
 
     public Double getValue() {
         return value;
+    }
+    
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("inventoryId", inventoryId)
+                .append("timestamp", ISODateTimeFormat.dateTime().print(timestamp))
+                .append("eventType", eventType)
+                .append("responseType", responseType)
+                .append("value", value)
+                .build();
     }
 }

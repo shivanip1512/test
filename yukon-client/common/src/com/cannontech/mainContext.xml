@@ -413,6 +413,7 @@
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrExiParsingStrategy"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrTlvParsingStrategy"/>
     <bean class="com.cannontech.dr.rfn.service.impl.PqrEventLogParsingServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.dao.impl.PqrEventDaoImpl"/>
 
     <bean class="com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl"/>
     <bean class="com.cannontech.dr.dao.impl.SepReportedAddressDaoImpl"/>

@@ -414,5 +414,8 @@
       <sequence name="CollectionActionRequest">
         <table name="CollectionActionRequest" identitycolumn="CollectionActionRequestId" initsequence="true"/>
       </sequence>
+      <sequence name="PqrEventLog">
+        <table name="PqrEventLog" identitycolumn="EventLogId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

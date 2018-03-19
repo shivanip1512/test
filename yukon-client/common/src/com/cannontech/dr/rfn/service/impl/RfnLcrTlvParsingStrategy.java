@@ -20,6 +20,7 @@ import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.dr.rfn.dao.PqrEventDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.model.PqrEvent;
@@ -41,6 +42,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
     @Autowired private RfnLcrDataMappingService<ListMultimap<FieldType, byte[]>> rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private PqrEventDao pqrEventDao;
     @Autowired private PqrEventLogParsingService pqrEventLogParsingService;
     protected JmsTemplate jmsTemplate;
 
@@ -97,10 +99,8 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
                 List<byte[]> pqrLogBlob = decodedPayload.get(FieldType.POWER_QUALITY_RESPONSE_LOG_BLOB);
                 if (pqrLogBlob.size() > 0) {
                     List<PqrEvent> pqrEvents = pqrEventLogParsingService.parseLogBlob(inventoryId, pqrLogBlob.get(0));
-                    //TODO: YUK-17796
-                    //pqrEventLogDao.saveEvents(pqrEvents);
+                    pqrEventDao.saveEvents(pqrEvents);
                 }
-                
             }
         }
 
@@ -117,6 +117,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
     public List<Schema> getSchema() {
         List<Schema> schemas = new ArrayList<>();
         schemas.add(Schema.SCHEMA_0_0_4);
+        schemas.add(Schema.SCHEMA_0_0_5);
         return schemas;
     }
 
