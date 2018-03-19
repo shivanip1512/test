@@ -267,7 +267,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
 
             CTILOG_INFO(dout, msg);
 
-            auto retMsg = 
+            returnMsgs.emplace_back(
                 std::make_unique<CtiReturnMsg>(
                     req.DeviceId(),
                     req.CommandString(),
@@ -277,9 +277,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiR
                     MacroOffset::none,
                     0,
                     req.GroupMessageId(),
-                    req.UserMessageId() );
-
-            returnMsgs.push_back( retMsg.release() );
+                    req.UserMessageId()));
 
             return ClientErrors::None;  //  do not return ConfigCurrent - we want it to be Success for now (until YUK-17192).
         }

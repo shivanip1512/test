@@ -222,18 +222,17 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
 
             const auto replyCode = consumer.get();
 
-            auto retMsg = std::make_unique<CtiReturnMsg>(
-                pReq->DeviceId(),
-                pReq->CommandString(),
-                getName() + ": " + GetErrorString( replyCode ),
-                replyCode,
-                0,
-                MacroOffset::none,
-                0,
-                pReq->GroupMessageId(),
-                pReq->UserMessageId() );
-
-            returnMsgs.push_back( retMsg.release() );
+            returnMsgs.emplace_back(
+                std::make_unique<CtiReturnMsg>(
+                    pReq->DeviceId(),
+                    pReq->CommandString(),
+                    getName() + ": " + GetErrorString( replyCode ),
+                    replyCode,
+                    0,
+                    MacroOffset::none,
+                    0,
+                    pReq->GroupMessageId(),
+                    pReq->UserMessageId() ));
         }
     }
 
@@ -271,18 +270,17 @@ YukonError_t RfWaterMeterDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, 
 
         std::string resultString = configInfo->to_string();
 
-        auto retMsg = std::make_unique<CtiReturnMsg>(
-            pReq->DeviceId(),
-            pReq->CommandString(),
-            resultString,
-            ClientErrors::None,
-            0,
-            MacroOffset::none,
-            0,
-            pReq->GroupMessageId(),
-            pReq->UserMessageId() );
-
-        returnMsgs.push_back( retMsg.release() );
+        returnMsgs.emplace_back(
+            std::make_unique<CtiReturnMsg>(
+                pReq->DeviceId(),
+                pReq->CommandString(),
+                resultString,
+                ClientErrors::None,
+                0,
+                MacroOffset::none,
+                0,
+                pReq->GroupMessageId(),
+                pReq->UserMessageId() ));
 
         return ExecutionComplete;
     }

@@ -12,6 +12,7 @@ namespace Devices {
 namespace Commands {
 
 class RfDaReadDnpSlaveAddressCommand;
+class RfnAggregateCommand;
 class RfnCentronSetLcdConfigurationCommand;
 class RfnCentronGetLcdConfigurationCommand;
 class RfnFocusAlLcdConfigurationReadCommand;
@@ -59,6 +60,7 @@ struct RfnResultHandlerInvoker
     struct ResultHandler
     {
         virtual void handleCommandResult(const RfDaReadDnpSlaveAddressCommand &)                      {}
+        virtual void handleCommandResult(const RfnAggregateCommand &)                                 {}
         virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)                {}
         virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)                {}
         virtual void handleCommandResult(const RfnFocusAlLcdConfigurationReadCommand &)               {}
@@ -291,7 +293,8 @@ protected:
     static std::vector<TypeLengthValue> getTlvsFromBytes( const Bytes &bytes, const LongTlvList &longTlvs );
 };
 
-typedef std::unique_ptr<RfnCommand> RfnCommandPtr;
+using RfnCommandPtr  = std::unique_ptr<RfnCommand>;
+using RfnCommandList = std::vector<RfnCommandPtr>;
 
 }
 }

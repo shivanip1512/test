@@ -38,7 +38,7 @@ class IM_EX_DEVDB CtiDeviceSingle : public CtiDeviceBase
     typedef CtiDeviceBase Inherited;
 
 public:
-    using ReturnMsgList = boost::ptr_deque<CtiReturnMsg>;
+    using ReturnMsgList = std::vector<std::unique_ptr<CtiReturnMsg>>;
 
     enum ScanFlags
     {

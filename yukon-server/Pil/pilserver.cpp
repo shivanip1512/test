@@ -1028,21 +1028,13 @@ struct RequestExecuter : Devices::DeviceHandler
             pReq->GroupMessageId(),
             pReq->getConnectionHandle() };
 
-        while( ! returnMsgList.empty() )
-        {
-            retList.push_back( returnMsgList.pop_front().release() );
-        }
+        static const auto releaseUniquePtr = [](std::unique_ptr<CtiReturnMsg> &retMsg) { return retMsg.release(); };
 
-        if( gConfigParms.getValueAsDouble("RFN_FIRMWARE") < 9.0 )
+        boost::insert(retList, retList.end(), returnMsgList | boost::adaptors::transformed(releaseUniquePtr));
+
+        for( auto &command : commands )
         {
-            for( auto &command : commands )
-            {
-                rfnRequests.emplace_back(parameters, ++rfnRequestId, std::move(command));
-            }
-        }
-        else
-        {
-            rfnRequests.emplace_back(parameters, ++rfnRequestId, Devices::RfnDevice::combineRfnCommands(std::move(commands)));
+            rfnRequests.emplace_back(parameters, ++rfnRequestId, std::move(command));
         }
 
         return retVal;

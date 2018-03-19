@@ -2145,18 +2145,17 @@ YukonError_t CtiDeviceSingle::reportConfigErrorDetails(
     CtiRequestMsg *pReq,
     CtiDeviceSingle::ReturnMsgList &returnMsgs )
 {
-    auto retMsg = std::make_unique<CtiReturnMsg>(
-        pReq->DeviceId(),
-        pReq->CommandString(),
-        msg,
-        errcode,
-        0,
-        MacroOffset::none,
-        0,
-        pReq->GroupMessageId(),
-        pReq->UserMessageId() );
-
-    returnMsgs.push_back( retMsg.release() );
+    returnMsgs.emplace_back(
+        std::make_unique<CtiReturnMsg>(
+            pReq->DeviceId(),
+            pReq->CommandString(),
+            msg,
+            errcode,
+            0,
+            MacroOffset::none,
+            0,
+            pReq->GroupMessageId(),
+            pReq->UserMessageId() ));
 
     return errcode;
 }
@@ -2207,18 +2206,17 @@ void CtiDeviceSingle::reportConfigDetails(
 {
     CTILOG_DEBUG( dout, msg );
 
-    auto retMsg = std::make_unique<CtiReturnMsg>(
-        pReq->DeviceId(),
-        pReq->CommandString(),
-        msg,
-        ClientErrors::ConfigNotCurrent,
-        0,
-        Cti::MacroOffset::none,
-        0,
-        pReq->GroupMessageId(),
-        pReq->UserMessageId() );
-
-    returnMsgs.push_back( retMsg.release() );
+    returnMsgs.emplace_back(
+        std::make_unique<CtiReturnMsg>(
+            pReq->DeviceId(),
+            pReq->CommandString(),
+            msg,
+            ClientErrors::ConfigNotCurrent,
+            0,
+            Cti::MacroOffset::none,
+            0,
+            pReq->GroupMessageId(),
+            pReq->UserMessageId() ));
 }
 
 /**

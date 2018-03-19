@@ -18,7 +18,7 @@ class IM_EX_DEVDB RfnDevice :
 public:
     RfnDevice() {};
 
-    typedef std::vector<Commands::RfnCommandPtr> RfnCommandList;
+    using RfnCommandList = Commands::RfnCommandList;
 
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 

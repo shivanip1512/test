@@ -2,6 +2,7 @@
 
 #include "dev_rfn.h"
 #include "tbl_rfnidentifier.h"
+#include "cmd_rfn_Aggregate.h"
 
 #include "std_helper.h"
 
@@ -60,11 +61,9 @@ void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
 
 YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    typedef YukonError_t (RfnDevice::*RfnExecuteMethod)(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    using RfnExecuteMethod = decltype(&RfnDevice::executeGetConfig);
 
-    typedef std::map<int, RfnExecuteMethod> ExecuteLookup;
-
-    const ExecuteLookup executeMethods {
+    const std::map<int, RfnExecuteMethod> executeMethods {
         { GetConfigRequest, &RfnDevice::executeGetConfig },
         { PutConfigRequest, &RfnDevice::executePutConfig },
         { GetValueRequest,  &RfnDevice::executeGetValue  },
@@ -75,7 +74,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     YukonError_t errorCode = ClientErrors::NoMethod;
     std::string errorDescription = "Invalid command.";
 
-    if( const boost::optional<RfnExecuteMethod> executeMethod = mapFind(executeMethods, parse.getCommand()) )
+    if( const auto executeMethod = mapFind(executeMethods, parse.getCommand()) )
     {
         try
         {
@@ -102,8 +101,8 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         CTILOG_ERROR(dout, "Execute error for device " << getName() <<". Command: "<< pReq->CommandString());
 
-        std::auto_ptr<CtiReturnMsg> executeError(
-                new CtiReturnMsg(
+        returnMsgs.emplace_back(
+                std::make_unique<CtiReturnMsg>(
                         getID( ),
                         pReq->CommandString(),
                         errorDescription,
@@ -113,16 +112,14 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                         0,
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));
-
-        returnMsgs.push_back(executeError);
     }
 
     if( ! rfnRequests.empty() )
     {
         const size_t numRequests = rfnRequests.size();
 
-        std::auto_ptr<CtiReturnMsg> commandsSent(
-                new CtiReturnMsg(
+        auto commandsSent = 
+                std::make_unique<CtiReturnMsg>(
                         getID( ),
                         pReq->CommandString(),
                         CtiNumStr(numRequests) + (numRequests == 1?" command":" commands") + " queued for device",
@@ -131,18 +128,26 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                         MacroOffset::none,
                         0,
                         pReq->GroupMessageId(),
-                        pReq->UserMessageId()));
+                        pReq->UserMessageId());
 
         commandsSent->setExpectMore(true);
 
-        returnMsgs.push_back(commandsSent);
+        returnMsgs.push_back(std::move(commandsSent));
 
         incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), rfnRequests.size());
     }
 
-    for( ReturnMsgList::iterator itr = returnMsgs.begin(); itr != returnMsgs.end(); )
+    if( rfnRequests.size() > 1 )
     {
-        CtiReturnMsg &retMsg = *itr;
+        if( gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.0 )
+        {
+            //rfnRequests.emplace_back(std::make_unique<Commands::RfnAggregateCommand>(std::move(rfnRequests)));
+        }
+    }
+
+    for( auto itr = returnMsgs.begin(); itr != returnMsgs.end(); )
+    {
+        auto & retMsg = **itr;
 
         // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
         if( ++itr != returnMsgs.end() || ! rfnRequests.empty() )
@@ -213,8 +218,8 @@ YukonError_t RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiComma
             }
         }
 
-        std::auto_ptr<CtiReturnMsg> retMsg(
-                new CtiReturnMsg(
+        returnMsgs.emplace_back(
+                std::make_unique<CtiReturnMsg>(
                         pReq->DeviceId(),
                         pReq->CommandString(),
                         result,
@@ -224,8 +229,6 @@ YukonError_t RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiComma
                         0,
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));
-
-        returnMsgs.push_back( retMsg );
     }
 
     return nRet;

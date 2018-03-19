@@ -21,6 +21,7 @@ enum class IM_EX_MSG ApplicationServiceIdentifiers : unsigned char
     //E2EAP_SNMP       = 10,
     E2EAP_DNP3         = 11,
     E2EAP_DataStreaming = 12,
+    BulkMessageHandler = 0xFE,
 };
 
 namespace {
@@ -34,6 +35,7 @@ namespace {
             static_cast<unsigned char>(ASIDs::E2EDT),
             static_cast<unsigned char>(ASIDs::EventManager),
             static_cast<unsigned char>(ASIDs::HubMeterCommandSet),
+            static_cast<unsigned char>(ASIDs::BulkMessageHandler),
         };
 
         return e2eDtAsids.count(asid);
