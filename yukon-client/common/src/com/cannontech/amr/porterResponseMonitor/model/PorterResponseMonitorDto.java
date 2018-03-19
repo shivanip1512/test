@@ -2,6 +2,8 @@ package com.cannontech.amr.porterResponseMonitor.model;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -51,7 +53,7 @@ public class PorterResponseMonitorDto {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.trim(name);
     }
 
     public String getGroupName() {
