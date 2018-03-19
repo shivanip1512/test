@@ -13,7 +13,6 @@ public class CollectionActionFilter {
     private List<CommandRequestExecutionStatus> statuses;
     private List<String> userNames;
     private String userIds;
-    private String action;
     
     public List<CommandRequestExecutionStatus> getStatuses() {
         return statuses;
@@ -44,12 +43,6 @@ public class CollectionActionFilter {
     }
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-    public String getAction() {
-        return action;
-    }
-    public void setAction(String action) {
-        this.action = action;
     }
     public String getUserIds() {
         return userIds;

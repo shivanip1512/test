@@ -8,6 +8,7 @@ import static com.cannontech.common.device.commands.CommandRequestExecutionStatu
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -161,7 +162,13 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         }
         sql.append("FROM CollectionAction ca");
         sql.append("JOIN Counts AS c ON ca.CollectionActionId = c.CollectionActionId");
-        sql.append("WHERE ca.Action").in_k(filter.getActions());
+        
+        if (filter.getActions() == null || filter.getActions().isEmpty()) {
+            sql.append("WHERE ca.Action").in_k(Arrays.asList(CollectionAction.values()));
+        } else {
+            sql.append("WHERE ca.Action").in_k(filter.getActions());
+        }
+        
         if (filter.getStatuses() != null) {
             if (filter.getStatuses().contains(CommandRequestExecutionStatus.CANCELLED)) {
                 filter.getStatuses().add(CommandRequestExecutionStatus.CANCELING);

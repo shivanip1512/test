@@ -54,9 +54,10 @@
         </c:forEach>
         <c:forEach var="userId" items="${filter.userIds}">
             <cti:param name="userIds" value="${userId}"/>
+        </c:forEach>   
+        <c:forEach var="action" items="${filter.actions}">
+            <cti:param name="actions" value="${action}"/>
         </c:forEach>
-        <cti:param name="action" value="${filter.action}"/>
-   
     </cti:url>
     
     <div id="events-detail" data-url="${pagingUrl}" data-static>
@@ -82,7 +83,7 @@
                         <td>
                             <fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${action.formattedStartTime}"/>
                                 <c:if test="${not empty action.stopTime}">
-                                -<fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${action.formattedStopTime}"/>
+                                - <fmt:formatDate type="both" dateStyle="short" timeStyle="short" value="${action.formattedStopTime}"/>
                                 </c:if>
                         </td>
                         <td>
