@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::BadParameter );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), exp );
@@ -323,7 +323,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_enable )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_disable )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_tou_schedule )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -559,17 +559,21 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_REQUIRE_EQUAL( 3, returnMsgs.size()  );
 
             auto returnMsgItr = returnMsgs.begin();
-            CtiReturnMsg &returnMsg = *returnMsgItr;
-            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Schedule did not match." );
-
-            returnMsg = *( ++returnMsgItr );
-            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Enable did not match." );
-
-            returnMsg = *( ++returnMsgItr );
-            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
+            {
+                auto & returnMsg = **returnMsgItr;
+                BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Schedule did not match." );
+            }
+            {
+                auto & returnMsg = **(++returnMsgItr);
+                BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Enable did not match." );
+            }
+            {
+                auto & returnMsg = **(++returnMsgItr);
+                BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
+                }
         }
 
         {
@@ -581,7 +585,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
             {
-                const CtiReturnMsg &returnMsg = returnMsgs.front();
+                const auto & returnMsg = *returnMsgs.front();
 
                 BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
                 BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
@@ -671,7 +675,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
@@ -685,7 +689,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
@@ -700,7 +704,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
             {
-                const CtiReturnMsg &returnMsg = returnMsgs.front();
+                const auto & returnMsg = *returnMsgs.front();
 
                 BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
                 BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
@@ -772,17 +776,21 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_REQUIRE_EQUAL( 3, returnMsgs.size()  );
 
             auto returnMsgItr = returnMsgs.begin();
-            CtiReturnMsg &returnMsg = *returnMsgItr;
-            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Schedule did not match." );
-
-            returnMsg = *( ++returnMsgItr );
-            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Enable did not match." );
-
-            returnMsg = *( ++returnMsgItr );
-            BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
+            {
+                auto & returnMsg = **returnMsgItr;
+                BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Schedule did not match." );
+            }
+            {
+                auto & returnMsg = **( ++returnMsgItr );
+                BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config TOU Enable did not match." );
+            }
+            {
+                auto & returnMsg = **(++returnMsgItr);
+                BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::ConfigNotCurrent );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
+            }
         }
 
         {
@@ -794,7 +802,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
             {
-                const CtiReturnMsg &returnMsg = returnMsgs.front();
+                const auto & returnMsg = *returnMsgs.front();
 
                 BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
                 BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -864,7 +872,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::None );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
@@ -885,7 +893,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -920,7 +928,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_active )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -950,7 +958,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_cancel )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -980,7 +988,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_tou_holiday )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1017,7 +1025,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_on_demand )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1095,7 +1103,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_demand_threshold )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1172,7 +1180,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_cycling )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1240,13 +1248,12 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
-            auto returnMsgItr = returnMsgs.begin();
-
-            CtiReturnMsg &returnMsg = *returnMsgItr;
+            CtiReturnMsg &returnMsg = *returnMsgs.front();
             BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::NoConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Missing data for config key \"disconnectMode\"." );
-
-            returnMsg = *( ++returnMsgItr );
+        }
+        {
+            CtiReturnMsg &returnMsg = *returnMsgs.back();
             BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::NoConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Device had no configuration for config:disconnect" );
         }
@@ -1270,12 +1277,12 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
-            auto returnMsgItr = returnMsgs.begin();
-            CtiReturnMsg &returnMsg = *returnMsgItr;
+            CtiReturnMsg &returnMsg = *returnMsgs.front();
             BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::InvalidConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Invalid data for config key \"disconnectMode\" : invalid value NOT_A_DISCONNECT_MODE, expected [CYCLING; DEMAND_THRESHOLD; ON_DEMAND]." );
-
-            returnMsg = *( ++returnMsgItr );
+        }
+        {
+            CtiReturnMsg &returnMsg = *returnMsgs.back();
             BOOST_CHECK_EQUAL( returnMsg.Status(), ClientErrors::InvalidConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:disconnect" );
         }
@@ -1293,7 +1300,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile )
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
@@ -1311,7 +1318,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_enable )
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
@@ -1329,7 +1336,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_disable )
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
@@ -1347,7 +1354,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_voltage_profile )
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
@@ -1365,7 +1372,7 @@ BOOST_AUTO_TEST_CASE( test_getvalue_voltage_profile_state )
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
@@ -1383,7 +1390,7 @@ BOOST_AUTO_TEST_CASE( test_immediate_demand_freeze )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1416,7 +1423,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_cancel )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1449,7 +1456,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_today )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1482,7 +1489,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_tomorrow )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1523,7 +1530,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1597,7 +1604,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
 
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
@@ -1859,12 +1866,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
-    std::vector<bool> expectMoreRcv;
-    for each( const CtiReturnMsg &m in returnMsgs )
-    {
-        expectMoreRcv.push_back( m.ExpectMore() );
-    }
-    returnExpectMoreRcv.push_back( expectMoreRcv );
+    returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
 
     ////// add each configuration //////
 
@@ -1883,12 +1885,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
-        std::vector<bool> expectMoreRcv;
-        for each( const CtiReturnMsg &m in returnMsgs )
-        {
-            expectMoreRcv.push_back( m.ExpectMore() );
-        }
-        returnExpectMoreRcv.push_back( expectMoreRcv );
+        returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
@@ -2117,7 +2114,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
     BOOST_CHECK_EQUAL( 1, rfnRequests.size() );
 
     std::vector<bool> expectMoreRcv;
-    const std::vector<bool> expectMoreExp = list_of(true).repeat(3, true);
+    const std::vector<bool> expectMoreExp { true, true, true, true };
 
     std::vector<std::string> resultStringRcv;
     const std::vector<std::string> resultStringExp = list_of
@@ -2127,21 +2124,18 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
             ("1 command queued for device");
 
     std::vector<int> statusRcv;
-    const std::vector<int> statusExp = list_of(0).repeat(3, 0);
+    const std::vector<int> statusExp { 0, 0, 0, 0 };
 
-    for each( const CtiReturnMsg &m in returnMsgs )
+    for( const auto & m : returnMsgs )
     {
-        expectMoreRcv.push_back( m.ExpectMore() );
-        resultStringRcv.push_back( m.ResultString() );
-        statusRcv.push_back( m.Status() );
+        expectMoreRcv.push_back( m->ExpectMore() );
+        resultStringRcv.push_back( m->ResultString() );
+        statusRcv.push_back( m->Status() );
     }
 
-    BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin(), expectMoreRcv.end(),
-                                   expectMoreExp.begin(), expectMoreExp.end() );
-    BOOST_CHECK_EQUAL_COLLECTIONS( resultStringRcv.begin(), resultStringRcv.end(),
-                                   resultStringExp.begin(), resultStringExp.end() );
-    BOOST_CHECK_EQUAL_COLLECTIONS( statusRcv.begin(), statusRcv.end(),
-                                   statusExp.begin(), statusExp.end() );
+    BOOST_CHECK_EQUAL_RANGES( expectMoreRcv,   expectMoreExp );
+    BOOST_CHECK_EQUAL_RANGES( resultStringRcv, resultStringExp );
+    BOOST_CHECK_EQUAL_RANGES( statusRcv,       statusExp );
 
     auto& command = rfnRequests.front();
 
@@ -2329,14 +2323,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
-    std::vector<bool> expectMoreRcv;
-    for each( const CtiReturnMsg &m in returnMsgs )
-    {
-        BOOST_TEST_MESSAGE( std::to_string( m.ExpectMore() ) << ": " << m.ResultString() );
-        expectMoreRcv.push_back( m.ExpectMore() );
-    }
-    BOOST_TEST_MESSAGE("");             // Add a blank line for clarity
-    returnExpectMoreRcv.push_back( expectMoreRcv );
+    returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
 
     ////// add each configuration //////
 
@@ -2357,14 +2344,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
-            std::vector<bool> expectMoreRcv;
-        for each( const CtiReturnMsg &m in returnMsgs )
-        {
-            BOOST_TEST_MESSAGE( std::to_string( m.ExpectMore() ) << ": " << m.ResultString() );
-            expectMoreRcv.push_back( m.ExpectMore() );
-        }
-        BOOST_TEST_MESSAGE( "" );
-        returnExpectMoreRcv.push_back( expectMoreRcv );
+        returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );

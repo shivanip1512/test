@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display )
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display_out_of_order_slot_disabled )
     BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       284 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Device \"\" - Invalid value (DELIVERED_KWH) seen after SLOT_DISABLED for config key \"displayItem2\"" );

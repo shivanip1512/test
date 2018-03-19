@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
         BOOST_REQUIRE_EQUAL( 6, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "6 commands queued for device" );
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_mete
             BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
             {
-                const CtiReturnMsg &returnMsg = returnMsgs.front();
+                const auto & returnMsg = *returnMsgs.front();
 
                 BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
                 BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::NoConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Missing data for config key \"ovuvEnabled\"." );
@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       ClientErrors::InvalidConfigData );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(),
@@ -562,12 +562,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
-    std::vector<bool> expectMoreRcv;
-    for ( const CtiReturnMsg &m : returnMsgs )
-    {
-        expectMoreRcv.push_back( m.ExpectMore() );
-    }
-    returnExpectMoreRcv.push_back( expectMoreRcv );
+    returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
 
     ////// add each configuration //////
 
@@ -586,12 +581,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
-        std::vector<bool> expectMoreRcv;
-        for ( const CtiReturnMsg &m : returnMsgs )
-        {
-            expectMoreRcv.push_back( m.ExpectMore() );
-        }
-        returnExpectMoreRcv.push_back( expectMoreRcv );
+        returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
     }
 
     BOOST_CHECK_EQUAL_RANGES( requestMsgsRcv, requestMsgsExp );
@@ -849,11 +839,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
     std::vector<int>       statusRcv;
     const std::vector<int> statusExp( 5, 0 );
 
-    for ( const CtiReturnMsg &m : returnMsgs )
+    for ( const auto & m : returnMsgs )
     {
-        expectMoreRcv.push_back( m.ExpectMore() );
-        resultStringRcv.push_back( m.ResultString() );
-        statusRcv.push_back( m.Status() );
+        expectMoreRcv.push_back( m->ExpectMore() );
+        resultStringRcv.push_back( m->ResultString() );
+        statusRcv.push_back( m->Status() );
     }
 
     BOOST_CHECK_EQUAL_RANGES( expectMoreRcv, expectMoreExp );
@@ -1065,12 +1055,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
-    std::vector<bool> expectMoreRcv;
-    for ( const CtiReturnMsg &m : returnMsgs )
-    {
-        expectMoreRcv.push_back( m.ExpectMore() );
-    }
-    returnExpectMoreRcv.push_back( expectMoreRcv );
+    returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
 
     ////// add each configuration //////
 
@@ -1089,12 +1074,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
-        std::vector<bool> expectMoreRcv;
-        for ( const CtiReturnMsg &m : returnMsgs )
-        {
-            expectMoreRcv.push_back( m.ExpectMore() );
-        }
-        returnExpectMoreRcv.push_back( expectMoreRcv );
+        returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
     }
 
     BOOST_CHECK_EQUAL_RANGES( requestMsgsRcv, requestMsgsExp );
@@ -1112,7 +1092,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile )
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
@@ -1130,7 +1110,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_e
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1161,7 +1141,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_d
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1192,7 +1172,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_voltage_profile )
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       202 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "No Method" );
@@ -1210,7 +1190,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getvalue_voltage_profile_st
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1250,7 +1230,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -1312,7 +1292,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );

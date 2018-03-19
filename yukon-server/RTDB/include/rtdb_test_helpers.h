@@ -431,21 +431,26 @@ as verifying the return status.
 */
 
 void msgsEqual( 
-    CtiDeviceSingle::ReturnMsgList &returnMsgs, 
+    const CtiDeviceSingle::ReturnMsgList &returnMsgs, 
     int status, 
     std::vector<std::string> oracleMsgs )
 {
-    for (auto returnMsg: returnMsgs)
+    for ( const auto & returnMsg : returnMsgs )
     {
-        BOOST_TEST_MESSAGE(returnMsg.ResultString());
+        BOOST_TEST_MESSAGE(returnMsg->ResultString());
     }
 
-    auto resultStrings = returnMsgs | boost::adaptors::transformed( []( const CtiReturnMsg &msg ){ return msg.ResultString(); } );
-    auto resultStatuses = returnMsgs | boost::adaptors::transformed( []( const CtiReturnMsg &msg ){ return msg.Status(); } );
+    auto resultStrings = returnMsgs | boost::adaptors::transformed( [](const std::unique_ptr<CtiReturnMsg> &msg){ return msg->ResultString(); } );
+    auto resultStatuses = returnMsgs | boost::adaptors::transformed( []( const std::unique_ptr<CtiReturnMsg> &msg ){ return msg->Status(); } );
 
     BOOST_CHECK_EQUAL_RANGES( resultStrings, oracleMsgs );
     BOOST_CHECK_EQUAL( resultStatuses.size(), boost::range::count( resultStatuses, status ) );
 };
+
+auto extractExpectMore(const CtiDeviceSingle::ReturnMsgList & returnMsgs) 
+{
+    return boost::copy_range<std::vector<bool>>(returnMsgs | boost::adaptors::transformed([](const std::unique_ptr<CtiReturnMsg> &msg) { return msg->ExpectMore(); }));
+}
 
 }
 }

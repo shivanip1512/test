@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch 
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_failure )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -601,7 +601,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
@@ -689,7 +689,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_no_channels )
         BOOST_CHECK(rfnRequests.empty());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 284);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Configuration data is invalid.");
@@ -718,7 +718,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_two_channels_no_device
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
@@ -783,7 +783,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_mat
         BOOST_CHECK(rfnRequests.empty());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), 
@@ -828,7 +828,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
@@ -884,7 +884,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_device
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
@@ -943,7 +943,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_channe
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
@@ -1011,7 +1011,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
@@ -1091,7 +1091,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
@@ -1166,7 +1166,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_unsupported_attribute)
         BOOST_CHECK(rfnRequests.empty());
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 284);
             BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Configuration data is invalid.");

@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_immediate_demand_freeze )
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_getconfig_install_freezeday )
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_freezeday )
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
     {
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
+        const auto & returnMsg = *returnMsgs.front();
 
         BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
         BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
@@ -526,12 +526,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
-    std::vector<bool> expectMoreRcv;
-    for each( const CtiReturnMsg &m in returnMsgs )
-    {
-        expectMoreRcv.push_back( m.ExpectMore() );
-    }
-    returnExpectMoreRcv.push_back( expectMoreRcv );
+    returnExpectMoreRcv.push_back( Cti::Test::extractExpectMore( returnMsgs ) );
 
     ////// add each configuration //////
 
@@ -550,12 +545,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
-        std::vector<bool> expectMoreRcv;
-        for each( const CtiReturnMsg &m in returnMsgs )
-        {
-            expectMoreRcv.push_back( m.ExpectMore() );
-        }
-        returnExpectMoreRcv.push_back( expectMoreRcv );
+        returnExpectMoreRcv.push_back(Cti::Test::extractExpectMore(returnMsgs));
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );

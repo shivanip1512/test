@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfDa_getconfig_dnp_address )
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
         {
-            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            const auto & returnMsg = *returnMsgs.front();
 
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
