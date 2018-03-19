@@ -72,12 +72,8 @@ public class ValidationMonitorEditorController {
             FlashScope flash, RedirectAttributes attrs) {
 
         boolean isNewMonitor = true;
-        try {
-            if (validationMonitor.getValidationMonitorId() != null) {
-                isNewMonitor = false;
-            }
-        } catch (ValidationMonitorNotFoundException e) {
-            return "redirect:/meter/start";
+        if (validationMonitor.getValidationMonitorId() != null) {
+            isNewMonitor = false;
         }
 
         /* Enable the monitor. */

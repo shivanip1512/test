@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -171,7 +172,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Override
     public boolean processorExistsWithName(String name) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM DeviceDataMonitor WHERE Name").eq(name);
+        sql.append("SELECT COUNT(*) FROM DeviceDataMonitor WHERE UPPER(Name) = UPPER(").appendArgument(StringUtils.trim(name)).append(")");
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 
