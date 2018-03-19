@@ -29,4 +29,6 @@ public interface StatusPointMonitorDao {
      * @return
      */
     public boolean deleteProcessor(int statusPointMonitorProcessorId);
+    
+    boolean monitorExistsWithName(String name);
 }

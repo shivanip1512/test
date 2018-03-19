@@ -11,7 +11,7 @@
 
         <tags:sectionContainer2 nameKey="setup">
             <tags:nameValueContainer2>
-                <tags:inputNameValue nameKey=".name" path="name" size="50" maxlength="50" />
+                <tags:inputNameValue nameKey=".name" path="name" size="60" maxlength="60" />
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
 

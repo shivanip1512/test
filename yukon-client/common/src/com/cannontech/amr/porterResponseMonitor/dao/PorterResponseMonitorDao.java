@@ -15,4 +15,7 @@ public interface PorterResponseMonitorDao {
 	public List<PorterResponseMonitor> getAllMonitors();
 
 	public boolean deleteMonitor(int monitorId);
+	
+    boolean monitorExistsWithName(String name);
+
 }

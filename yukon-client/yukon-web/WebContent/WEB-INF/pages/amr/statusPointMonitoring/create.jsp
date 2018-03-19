@@ -21,9 +21,7 @@
             <tags:nameValueContainer2>
             
                 <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" 
-                                    size="50" 
-                                    maxlength="50"/>
+                <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" size="60" maxlength="60"/>
                 
                 <%-- state group --%>
                 <tags:nameValue2 nameKey=".selectStateGroup">

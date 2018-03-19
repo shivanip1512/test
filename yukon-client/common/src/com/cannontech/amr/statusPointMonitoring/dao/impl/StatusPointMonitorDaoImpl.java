@@ -244,4 +244,11 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
         StatusPointMonitor parent;
         StatusPointMonitorProcessor statusPointMonitorProcessor;
     }
+
+    @Override
+    public boolean monitorExistsWithName(String name) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM StatusPointMonitor WHERE StatusPointMonitorName").eq(name);
+        return yukonJdbcTemplate.queryForInt(sql) > 0;
+    }
 }

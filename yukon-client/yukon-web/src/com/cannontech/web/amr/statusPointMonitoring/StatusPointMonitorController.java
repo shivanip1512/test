@@ -9,19 +9,16 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
@@ -30,17 +27,13 @@ import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorProcessor;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitorStateType;
 import com.cannontech.amr.statusPointMonitoring.service.StatusPointMonitorService;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -48,6 +41,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.monitor.validators.StatusPointMonitorValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -58,42 +52,15 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.STATUS_POINT_MONITORING)
 public class StatusPointMonitorController {
     
-    private final static String baseKey = "yukon.web.modules.amr.statusPointMonitorEditor";
-    
     @Autowired private StatusPointMonitorDao statusPointMonitorDao;
     @Autowired private StatusPointMonitorService statusPointMonitorService;
     @Autowired private AttributeService attributeService;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private OutageEventLogService outageEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private StatusPointMonitorValidator statusPointMonitorValidator;
     
-    private final Validator createValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
-        @Override
-        public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "statusPointMonitorName", statusPointMonitor.getStatusPointMonitorName(), 50);
-            if (!DeviceGroupUtil.isValidName(statusPointMonitor.getStatusPointMonitorName())) {
-                errors.rejectValue("statusPointMonitorName", "yukon.web.error.deviceGroupName.containsIllegalChars");
-            }
-        }
-    };
-    
-    private final Validator updateValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
-        @Override
-        public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "statusPointMonitorName", statusPointMonitor.getStatusPointMonitorName(), 50);
-            if (!DeviceGroupUtil.isValidName(statusPointMonitor.getStatusPointMonitorName())) {
-                errors.rejectValue("statusPointMonitorName", "yukon.web.error.deviceGroupName.containsIllegalChars");
-            }
-            if (deviceGroupService.findGroupName(statusPointMonitor.getGroupName()) == null) {
-                errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
-            }
-        }
-    };
-    
-    @RequestMapping("viewPage")
+    @RequestMapping(value = "viewPage", method = RequestMethod.GET)
     public String viewPage(int statusPointMonitorId, 
                           ModelMap model, 
                           YukonUserContext userContext,
@@ -103,7 +70,7 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/view.jsp";
     }
     
-    @RequestMapping("creationPage")
+    @RequestMapping(value = "creationPage", method = RequestMethod.GET)
     public String creationPage(ModelMap modelMap, YukonUserContext userContext) {
         
         StatusPointMonitor statusPointMonitor = new StatusPointMonitor();
@@ -112,7 +79,7 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/create.jsp";
     }
     
-    @RequestMapping("editPage")
+    @RequestMapping(value = "editPage", method = RequestMethod.GET)
     public String editPage(Integer statusPointMonitorId, ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope) {
         
         StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
@@ -121,19 +88,19 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/edit.jsp";
     }
     
-    @RequestMapping(value="create", params="cancel")
+    @RequestMapping(value="create", params="cancel", method = RequestMethod.POST)
     public String cancel() {
         return "redirect:/meter/start";
     }
     
-    @RequestMapping("create")
+    @RequestMapping(value = "create", method = RequestMethod.POST)
     public String create(@ModelAttribute StatusPointMonitor statusPointMonitor,
                                      BindingResult bindingResult,
                                      ModelMap modelMap, 
                                      YukonUserContext userContext,
                                      FlashScope flashScope, HttpServletRequest request) {
         
-        createValidator.validate(statusPointMonitor, bindingResult);
+        statusPointMonitorValidator.validate(statusPointMonitor, bindingResult);
           
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -142,15 +109,7 @@ public class StatusPointMonitorController {
             return "statusPointMonitoring/create.jsp";
         }
         
-        try {
-            statusPointMonitorService.create(statusPointMonitor);
-        } catch (DuplicateException e) {
-            bindingResult.rejectValue("statusPointMonitorName", baseKey + ".alreadyExists");
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupCreationPageModelMap(statusPointMonitor, modelMap);
-            return "statusPointMonitoring/create.jsp";
-        }
+        statusPointMonitorService.create(statusPointMonitor);
         
         modelMap.addAttribute("statusPointMonitorId", statusPointMonitor.getStatusPointMonitorId());
         
@@ -167,15 +126,15 @@ public class StatusPointMonitorController {
         return "redirect:/amr/statusPointMonitoring/editPage";
     }
     
-    @RequestMapping("update")
+    @RequestMapping(value = "update", method = RequestMethod.POST)
     public String update(@ModelAttribute StatusPointMonitor statusPointMonitor,
                                                   BindingResult bindingResult,
                                                   ModelMap modelMap, 
                                                   YukonUserContext userContext,
                                                   FlashScope flashScope) {
 
-        updateValidator.validate(statusPointMonitor, bindingResult);
-          
+        statusPointMonitorValidator.validate(statusPointMonitor, bindingResult);
+        
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
@@ -183,15 +142,7 @@ public class StatusPointMonitorController {
             return "statusPointMonitoring/edit.jsp";
         }
         
-        try {
-            statusPointMonitorService.update(statusPointMonitor);
-        } catch (DuplicateException e) {
-            bindingResult.rejectValue("statusPointMonitorName", baseKey + ".alreadyExists");
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupEditPageModelMap(statusPointMonitor, modelMap, userContext);
-            return "statusPointMonitoring/edit.jsp";
-        }
+        statusPointMonitorService.update(statusPointMonitor);
         
         MessageSourceResolvable updateMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.statusPointMonitor.updated", statusPointMonitor.getStatusPointMonitorName());
         flashScope.setConfirm(Collections.singletonList(updateMessage));
@@ -207,17 +158,7 @@ public class StatusPointMonitorController {
         return "redirect:viewPage";
     }
     
-
-    @RequestMapping("confirmDelete")
-    public String confirmDelete(StatusPointMonitor statusPointMonitor,
-                                ModelMap model,
-                                YukonUserContext userContext) {
-        
-        model.addAttribute("statusPointMonitor", statusPointMonitor);
-        return "statusPointMonitoring/confirmDelete.jsp";
-    }
-    
-    @RequestMapping("delete")
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
     public String delete(Integer statusPointMonitorId,
                          ModelMap modelMap,
                          FlashScope flashScope,
@@ -240,7 +181,7 @@ public class StatusPointMonitorController {
         return "redirect:/meter/start";
     }
     
-    @RequestMapping("toggleEnabled")
+    @RequestMapping(value = "toggleEnabled", method = RequestMethod.POST)
     public String toggleEnabled(int statusPointMonitorId,
                                 ModelMap modelMap,
                                 YukonUserContext userContext) {

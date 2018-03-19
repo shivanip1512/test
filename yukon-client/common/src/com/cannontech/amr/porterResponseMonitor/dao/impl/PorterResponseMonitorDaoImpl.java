@@ -251,4 +251,11 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
         errorCodeTemplate.setParentForeignKeyField("RuleId", CascadeMode.DELETE_ALL_CHILDREN_BEFORE_UPDATE);
         errorCodeTemplate.setAdvancedFieldMapper(errorCodeFieldMapper);
     }
+
+    @Override
+    public boolean monitorExistsWithName(String name) {
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM PorterResponseMonitor WHERE Name").eq(name);
+        return yukonJdbcTemplate.queryForInt(sql) > 0;
+    }
 }

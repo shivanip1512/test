@@ -63,4 +63,12 @@ $(function() {
         yukon.StatusPointMonitor.reindexAll();
     });
     
+    $(document).on('click', '#deleteButton', function() {
+        $('#deleteStatusPointMonitor').submit();
+    });
+    
+    $(document).on('click', '#toggleMonitor', function() {
+        $('#toggleEnabledForm').submit();
+    });
+    
 });

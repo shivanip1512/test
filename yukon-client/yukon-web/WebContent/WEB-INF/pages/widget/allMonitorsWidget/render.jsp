@@ -357,7 +357,7 @@
                 <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="OUTAGE_PROCESSING">
-                <cti:url var="url" value="/amr/outageProcessing/monitorEditor/edit"/>
+                <cti:url var="url" value="/amr/outageProcessing/monitorEditor/create"/>
                 <cm:dropdownOption key="widgets.outageMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="TAMPER_FLAG_PROCESSING">

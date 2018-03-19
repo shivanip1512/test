@@ -2,21 +2,16 @@ package com.cannontech.web.amr.porterResponseMonitor;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,9 +25,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.porterResponseMonitor.dao.PorterResponseMonitorDao;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitor;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorDto;
-import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorErrorCode;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatchStyle;
-import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
@@ -40,7 +33,6 @@ import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -48,9 +40,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -62,6 +52,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.amr.monitor.validators.PorterResponseMonitorValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
@@ -85,72 +76,10 @@ public class PorterResponseMonitorController {
     @Autowired private PointService pointService;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+    @Autowired private PorterResponseMonitorValidator validator;
+
     private final static String baseKey = "yukon.web.modules.amr.porterResponseMonitor";
     private final Logger log = YukonLogManager.getLogger(PorterResponseMonitorController.class);
-    
-    private final Validator nameValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
-        @Override
-        public void doValidation(PorterResponseMonitor monitor, Errors errors) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name","yukon.web.error.required");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 50);
-            if (!DeviceGroupUtil.isValidName(monitor.getName())) {
-                errors.rejectValue("name", "yukon.web.error.deviceGroupName.containsIllegalChars");
-            }
-        }
-    };
-
-    private final Validator nameAndRulesValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
-        @Override
-        public void doValidation(PorterResponseMonitor monitor, Errors errors) {
-            
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.required");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 50);
-            if (!DeviceGroupUtil.isValidName(monitor.getName())) {
-                errors.rejectValue("name", "yukon.web.error.deviceGroupName.containsIllegalChars");
-            }
-            if (deviceGroupService.findGroupName(monitor.getGroupName()) == null) {
-                errors.rejectValue("groupName", "yukon.web.modules.amr.invalidGroupName");
-            }
-            // --- uniqueness checks ---
-
-            List<Integer> orderList = Lists.newArrayList();
-            List<PorterResponseMonitorRule> rules = monitor.getRules();
-            for (int i = 0; i < rules.size(); i++) {
-                PorterResponseMonitorRule rule = rules.get(i);
-                List<PorterResponseMonitorErrorCode> errorCodes = rule.getErrorCodes();
-
-                orderList.add(rule.getRuleOrder());
-
-                // Error Code Uniqueness
-                List<Integer> errorsList = Lists.newArrayList();
-                for (PorterResponseMonitorErrorCode errorCode : errorCodes) {
-                    errorsList.add(errorCode.getErrorCode());
-                }
-                if (containsDuplicates(errorsList)) {
-                    // we have duplicate errors for this rule
-                    errors.reject(baseKey + ".rulesTable.errorCodesFormat");
-                }
-            }
-
-            // Order Uniqueness check
-            // which should not be a problem now that I am normalizing the order in the Constructor
-            // -- keeping this here in case that normalization is ever changed / removed
-            if (containsDuplicates(orderList)) {
-                // we have duplicate orders for this monitor
-                errors.reject(baseKey + ".rulesTable.uniqueOrder");
-            }
-        }
-    };
-
-    private <T> boolean containsDuplicates(List<T> list) {
-        Set<T> set = new HashSet<T>(list);
-        if (set.size() < list.size()) {
-            // duplicates were removed
-            return true;
-        }
-        return false;
-    }
 
     @RequestMapping(value = "viewPage", method = RequestMethod.GET)
     public String viewPage(int monitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
@@ -170,7 +99,7 @@ public class PorterResponseMonitorController {
         return "porterResponseMonitor/edit.jsp";
     }
 
-    @RequestMapping(value="createPage", method=RequestMethod.GET)
+    @RequestMapping(value = "createPage", method = RequestMethod.GET)
     public String createPage(ModelMap model) {
 
         setupCreatePageModelMap(model);
@@ -178,28 +107,19 @@ public class PorterResponseMonitorController {
         return "porterResponseMonitor/create.jsp";
     }
 
-    @RequestMapping(value="create", method=RequestMethod.POST)
-    public String create(@ModelAttribute("monitor") PorterResponseMonitor monitor, BindingResult bindingResult, ModelMap modelMap,
-            YukonUserContext userContext, FlashScope flashScope) {
+    @RequestMapping(value = "create", method = RequestMethod.POST)
+    public String create(@ModelAttribute("monitor") PorterResponseMonitor monitor, BindingResult bindingResult,
+            ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope) {
 
-        nameValidator.validate(monitor, bindingResult);
+        validator.validate(monitor, bindingResult);
 
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupCreatePageModelMap(modelMap);
             return "porterResponseMonitor/create.jsp";
         }
 
-        try {
-            porterResponseMonitorService.create(monitor);
-        } catch (DuplicateException e) {
-            bindingResult.rejectValue("name", baseKey + ".alreadyExists");
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupCreatePageModelMap(modelMap);
-            return "porterResponseMonitor/create.jsp";
-        }
+        porterResponseMonitorService.create(monitor);
 
         modelMap.addAttribute("monitorId", monitor.getMonitorId());
 
@@ -215,12 +135,9 @@ public class PorterResponseMonitorController {
         return "redirect:editPage";
     }
 
-    @RequestMapping("update")
-    public String update(@ModelAttribute("monitorDto") PorterResponseMonitorDto monitorDto,
-                    BindingResult bindingResult,
-                    ModelMap modelMap,
-                    YukonUserContext userContext, 
-                    FlashScope flashScope) {
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    public String update(@ModelAttribute("monitorDto") PorterResponseMonitorDto monitorDto, BindingResult bindingResult,
+            ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope) {
 
         PorterResponseMonitor monitor = null;
         try {
@@ -231,20 +148,14 @@ public class PorterResponseMonitorController {
             return "porterResponseMonitor/edit.jsp";
         }
 
-        nameAndRulesValidator.validate(monitor, bindingResult);
+        validator.validate(monitor, bindingResult);
 
         if (bindingResult.hasErrors()) {
             setupErrorEditPageModelMap(monitorDto, modelMap, bindingResult, flashScope);
             return "porterResponseMonitor/edit.jsp";
         }
 
-        try {
-            porterResponseMonitorService.update(monitor);
-        } catch (DuplicateException e) {
-            bindingResult.rejectValue("name", baseKey + ".alreadyExists");
-            setupErrorEditPageModelMap(monitorDto, modelMap, bindingResult, flashScope);
-            return "porterResponseMonitor/edit.jsp";
-        }
+        porterResponseMonitorService.update(monitor);
 
         modelMap.addAttribute("monitorId", monitor.getMonitorId());
 
@@ -261,8 +172,9 @@ public class PorterResponseMonitorController {
         return "redirect:viewPage";
     }
 
-    @RequestMapping(value="update", params = "delete")
-    public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, FlashScope flashScope, LiteYukonUser user) {
+    @RequestMapping(value = "update", params = "delete", method = RequestMethod.POST)
+    public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, FlashScope flashScope,
+            LiteYukonUser user) {
 
         porterResponseMonitorService.delete(monitorDto.getMonitorId());
 
@@ -279,16 +191,17 @@ public class PorterResponseMonitorController {
         return "redirect:/meter/start";
     }
 
-    @RequestMapping(value="update", params = "toggleEnabled")
-    public String toggleEnabled(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, 
-                    YukonUserContext userContext) {
+    @RequestMapping(value = "update", params = "toggleEnabled", method = RequestMethod.POST)
+    public String toggleEnabled(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap,
+            YukonUserContext userContext) {
 
         MonitorEvaluatorStatus status = monitorDto.getEvaluatorStatus();
 
         try {
-            status = porterResponseMonitorService.toggleEnabled(monitorDto.getMonitorId());
             modelMap.addAttribute("monitorId", monitorDto.getMonitorId());
+            status = porterResponseMonitorService.toggleEnabled(monitorDto.getMonitorId());
         } catch (NotFoundException e) {
+            log.error("Could not enable/disable the monitor", e);
             return "redirect:/meter/start";
         }
 

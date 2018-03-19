@@ -12,6 +12,9 @@ public class OutageMonitor implements PointMonitor, Comparable<OutageMonitor> {
     private String outageMonitorName;
     private int timePeriodDays;
     private int numberOfOutages;
+    private String expression;
+    private boolean scheduleGroupCommand;
+    private String scheduleName;
     
     public Integer getOutageMonitorId() {
         return outageMonitorId;
@@ -65,6 +68,30 @@ public class OutageMonitor implements PointMonitor, Comparable<OutageMonitor> {
         return evaluatorStatus == MonitorEvaluatorStatus.ENABLED;
     }
     
+    public String getExpression() {
+        return expression;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+
+    public boolean isScheduleGroupCommand() {
+        return scheduleGroupCommand;
+    }
+
+    public void setScheduleGroupCommand(boolean scheduleGroupCommand) {
+        this.scheduleGroupCommand = scheduleGroupCommand;
+    }
+
+    public String getScheduleName() {
+        return scheduleName;
+    }
+
+    public void setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+    }
+
     @Override
     public int compareTo(OutageMonitor o) {
         return this.getOutageMonitorName().compareToIgnoreCase(o.getOutageMonitorName());

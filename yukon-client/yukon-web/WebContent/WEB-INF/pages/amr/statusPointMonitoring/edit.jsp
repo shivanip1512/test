@@ -68,7 +68,7 @@
             <tags:nameValueContainer2>
             
                 <%-- name --%>
-                <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" size="50" maxlength="50"/>
+                <tags:inputNameValue nameKey=".name" path="statusPointMonitorName" size="60" maxlength="60"/>
                 
                 <%-- device group --%>
                 <tags:nameValue2 nameKey=".deviceGroup">
@@ -171,10 +171,8 @@
             <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
                 <c:set var="enableDisableKey" value="enable"/>
             </c:if>
-            <cti:button nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"
-                onclick="$('#toggleEnabledForm').submit()"/>
-            <cti:button id="deleteButton" nameKey="delete" onclick="$('#deleteStatusPointMonitor').submit();" busy="true" 
-                data-disable-group="actionButtons" classes="delete"/>
+            <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>
+            <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${statusPointMonitor.statusPointMonitorName}"/>
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />

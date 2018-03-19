@@ -91,6 +91,12 @@
     ]]></entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.saveOk">Outage Monitor Has Been Saved</entry>
     
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.notFound">Outage monitor does not exists.</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.invalidNumberOfOutages">Number of outages must be greater than or equal to 1.</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.invalidTimePeriod">Time period must be greater than or equal to 0.</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.scheduleName.blank">Schedule name cannot be empty.</entry>
+    <entry key="yukon.web.modules.amr.outageMonitorConfig.invalidSchedule">Schedule is not valid.</entry>
+    
     <!-- OutageProcessingController process.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
