@@ -242,9 +242,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
             @Override
             public void complete() {
-                collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result,
-                    new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices()));
-                commandRequestExecutionDao.saveOrUpdate(result.getExecution());
                 collectionActionService.updateResult(result, !result.isCanceled()
                     ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
                 if (callback != null) {
@@ -267,6 +264,10 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         }
         int requestCount = deviceCollectionSummary.getRequestCount();
         result.getExecution().setRequestCount(requestCount);
+        commandRequestExecutionDao.saveOrUpdate(result.getExecution());
+        new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices());
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result,
+            new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices()));
         log.debug("updating request count =" + requestCount);
         commandRequestExecutionDao.saveOrUpdate(result.getExecution());
         return result.getCacheKey();

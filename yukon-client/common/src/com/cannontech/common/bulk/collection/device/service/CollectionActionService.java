@@ -38,7 +38,7 @@ public interface CollectionActionService {
     void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> unsupportedDevices);
     
-    
+    List<CollectionActionResult> getCachedResults(List<Integer> cacheKeys);
     
     
     

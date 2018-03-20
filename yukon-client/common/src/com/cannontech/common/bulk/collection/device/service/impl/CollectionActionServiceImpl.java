@@ -143,6 +143,11 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     }
     
     @Override
+    public List<CollectionActionResult> getCachedResults(List<Integer> cacheKeys) {
+        return cache.getAllPresent(cacheKeys).values().asList();
+    }
+    
+    @Override
     public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> devices) {
         log.debug("Adding unsupported devices:" + devices.size() + " detail:" + detail + " cacheKey:" + result.getCacheKey());

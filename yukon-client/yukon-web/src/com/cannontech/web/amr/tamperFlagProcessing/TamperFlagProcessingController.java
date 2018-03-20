@@ -23,6 +23,7 @@ import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
@@ -56,9 +57,10 @@ public class TamperFlagProcessingController {
 	@Autowired private DeviceGroupService deviceGroupService;
 	@Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CollectionActionService collectionActionService;
 	
-	private ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
-	private ListMultimap<Integer, String> monitorToRecentResetKeysCache = ArrayListMultimap.create();
+	private ListMultimap<Integer, Integer> monitorToRecentReadKeysCache = ArrayListMultimap.create();
+	private ListMultimap<Integer, Integer> monitorToRecentResetKeysCache = ArrayListMultimap.create();
 	private static final String RESET_FLAGS_COMMAND = "putstatus reset";
 	
 	// EDIT
@@ -71,22 +73,28 @@ public class TamperFlagProcessingController {
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 		
-		// read results
-/*		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(deviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
-		allReadsResults.addAll(deviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
-		
-		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
-		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(tamperFlagMonitorId);
-		if (readResultKeysForMonitor != null) {
-			for (GroupMeterReadResult result : allReadsResults) {
-				if (readResultKeysForMonitor.contains(result.getKey())) {
-					readResults.add(result);
-				}
-			}
-			Collections.sort(readResults);
-		}
-		model.addAttribute("readResults", readResults);*/
+       List<CollectionActionResult> results =
+            collectionActionService.getCachedResults(monitorToRecentReadKeysCache.get(tamperFlagMonitorId));
+
+        // read results
+        /*
+         * List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
+         * allReadsResults.addAll(deviceAttributeReadService.getPendingByType(DeviceRequestType.
+         * GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+         * allReadsResults.addAll(deviceAttributeReadService.getCompletedByType(DeviceRequestType.
+         * GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
+         * List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
+         * List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(tamperFlagMonitorId);
+         * if (readResultKeysForMonitor != null) {
+         * for (GroupMeterReadResult result : allReadsResults) {
+         * if (readResultKeysForMonitor.contains(result.getKey())) {
+         * readResults.add(result);
+         * }
+         * }
+         * Collections.sort(readResults);
+         * }
+         * model.addAttribute("readResults", readResults);
+         */
 		
 		// reset results
 /*		List<GroupCommandResult> allResetResults = new ArrayList<GroupCommandResult>();
@@ -117,11 +125,11 @@ public class TamperFlagProcessingController {
 	@RequestMapping(value = "readFlags", method = RequestMethod.GET)
     public String readFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
 		
-		final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
+		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
-		
+				
 		// alert callback
         SimpleCallback<CollectionActionResult> alertCallback =
                 CollectionActionAlertHelper.createAlert(AlertType.TAMPER_FLAG_PROCESSING_READ_INTERNAL_FLAGS_COMPLETION, alertService,
@@ -129,10 +137,9 @@ public class TamperFlagProcessingController {
 	
         int cacheKey = deviceAttributeReadService.initiateRead(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), 
                                                                 DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext);
-        monitorToRecentReadKeysCache.put(tamperFlagMonitorId, Integer.toString(cacheKey));
+        monitorToRecentReadKeysCache.put(tamperFlagMonitorId, cacheKey);
 		
 		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
-		model.addAttribute("readOk", true);
 		
 		//return "redirect:process";
 	    return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
@@ -141,19 +148,17 @@ public class TamperFlagProcessingController {
 	// RESET FLAGS
 	@RequestMapping(value = "resetFlags", method = RequestMethod.GET)
     public String resetFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext) throws ServletException {
-			
-		final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
+
+		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 
         int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, null, tamperFlagGroupDeviceCollection,
                                                        RESET_FLAGS_COMMAND, CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, null, userContext);
-		monitorToRecentResetKeysCache.put(tamperFlagMonitorId, Integer.toString(cacheKey));
-		
+		monitorToRecentResetKeysCache.put(tamperFlagMonitorId, cacheKey);
+
 		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
-		model.addAttribute("resetOk", true);
-		
 		//return "redirect:process";
 	    return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
 	}

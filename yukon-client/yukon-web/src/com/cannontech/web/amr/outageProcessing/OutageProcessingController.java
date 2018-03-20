@@ -23,8 +23,10 @@ import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -55,8 +57,9 @@ public class OutageProcessingController extends MultiActionController {
 	@Autowired private DeviceGroupService deviceGroupService;
 	@Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CollectionActionService collectionActionService;
 	
-	private final ListMultimap<Integer, String> monitorToRecentReadKeysCache = ArrayListMultimap.create();
+	private final ListMultimap<Integer, Integer> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	
 	// PROCESS
 	@RequestMapping(value = "process", method = RequestMethod.GET)
@@ -64,6 +67,9 @@ public class OutageProcessingController extends MultiActionController {
 
 		OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 		
+		
+        List<CollectionActionResult> results =
+            collectionActionService.getCachedResults(monitorToRecentReadKeysCache.get(outageMonitorId));
 		// read results
 /*		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
 		allReadsResults.addAll(deviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
@@ -98,18 +104,28 @@ public class OutageProcessingController extends MultiActionController {
 		
         StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
+				    
 		
-		// alert callback
+        SimpleCallback<CollectionActionResult> outageRemovalCallback = new SimpleCallback<CollectionActionResult>() {
+            @Override
+            public void handle(CollectionActionResult result) throws Exception {
+                if (removeFromOutageGroupAfterRead) {
+                    DeviceCollection successCollection = result.getDeviceCollection(CollectionActionDetail.SUCCESS);
+                    deviceGroupMemberEditorDao.removeDevices(outageGroup, successCollection.getDeviceList());
+                }
+            }
+        };
+
+        // alert callback
         SimpleCallback<CollectionActionResult> alertCallback =
-                CollectionActionAlertHelper.createAlert(AlertType.OUTAGE_PROCESSING_READ_LOGS_COMPLETION, alertService,
-                    messageResolver.getMessageSourceAccessor(userContext), request);
-	
+            CollectionActionAlertHelper.createAlert(AlertType.OUTAGE_PROCESSING_READ_LOGS_COMPLETION, alertService,
+                messageResolver.getMessageSourceAccessor(userContext), outageRemovalCallback, request);
+
         int cacheKey = deviceAttributeReadService.initiateRead(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), 
                                                                 DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext);
-        monitorToRecentReadKeysCache.put(outageMonitorId, Integer.toString(cacheKey));
+        monitorToRecentReadKeysCache.put(outageMonitorId, cacheKey);
 		
 		model.addAttribute("outageMonitorId", outageMonitorId);
-		model.addAttribute("readOk", true);
 		
 		//return "redirect:process";
 		return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
