@@ -411,7 +411,7 @@ void CtiCapController::incomingMessageProcessor()
                     {
                         msgCount = ((CtiMultiMsg*)msg)->getCount();
                     }
-                    CTILOG_INFO(dout, "Processing "<< msgCount <<" New Message(s).");
+                    CTILOG_TRACE(dout, "Processing "<< msgCount <<" New Message(s).");
                 }
 
                 mc.increment();

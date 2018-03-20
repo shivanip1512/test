@@ -7091,9 +7091,9 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 
             _paobject_substation_map.erase(substationToDelete->getPaoId());
 
-            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            if( _CC_DEBUG & CC_DEBUG_DELETION )
             {
-                CTILOG_DEBUG(dout, "SUBSTATION: " << substationName <<" has been deleted.");
+                CTILOG_INFO(dout, "SUBSTATION: " << substationName <<" has been deleted.");
             }
         }
         catch(...)
@@ -7179,9 +7179,9 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
 
                 delete areaToDelete;
 
-                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                if( _CC_DEBUG & CC_DEBUG_DELETION )
                 {
-                    CTILOG_DEBUG(dout, "AREA: " << areaName <<" has been deleted.");
+                    CTILOG_INFO(dout, "AREA: " << areaName <<" has been deleted.");
                 }
             }
             catch(...)
@@ -7263,9 +7263,9 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
 
                 delete spAreaToDelete;
 
-                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                if( _CC_DEBUG & CC_DEBUG_DELETION )
                 {
-                    CTILOG_DEBUG(dout, "SPECIAL AREA: " << areaName <<" has been deleted.");
+                    CTILOG_INFO(dout, "SPECIAL AREA: " << areaName <<" has been deleted.");
                 }
             }
             catch(...)
@@ -7414,9 +7414,9 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                 delete subToDelete;
                 subToDelete = NULL;
             }
-            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            if( _CC_DEBUG & CC_DEBUG_DELETION )
             {
-                CTILOG_DEBUG(dout, "SUBBUS: " << subBusName <<" has been deleted.");
+                CTILOG_INFO(dout, "SUBBUS: " << subBusName <<" has been deleted.");
             }
         }
         catch(...)
@@ -7489,9 +7489,9 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
                 feederToDelete = NULL;
             }
 
-            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            if( _CC_DEBUG & CC_DEBUG_DELETION )
             {
-                CTILOG_DEBUG(dout, "FEEDER: " << feederName <<" has been deleted.");
+                CTILOG_INFO(dout, "FEEDER: " << feederName <<" has been deleted.");
             }
 
         }
@@ -7573,9 +7573,9 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                     delete capBankToDelete;
                     capBankToDelete = NULL;
                 }
-                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                if( _CC_DEBUG & CC_DEBUG_DELETION )
                 {
-                    CTILOG_DEBUG(dout, "CAPBANK: " << capBankName <<" has been deleted.");
+                    CTILOG_INFO(dout, "CAPBANK: " << capBankName <<" has been deleted.");
                 }
             }
             catch(...)
