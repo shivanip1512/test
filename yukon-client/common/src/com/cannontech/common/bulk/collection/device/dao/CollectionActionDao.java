@@ -47,4 +47,6 @@ public interface CollectionActionDao {
 
     SearchResults<CollectionActionFilteredResult> getCollectionActionFilteredResults(CollectionActionFilter filter,
             PagingParameters paging, SortBy sortBy, Direction direction);
+
+    int getCollectionActionIdFromCreId(int creId);
 }

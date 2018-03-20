@@ -91,7 +91,20 @@
                     
         <tags:nameValueContainer>
 
-            <tags:nameValue name="${infoTypeText}" nameColumnWidth="160px">${cre.commandRequestExecutionType.shortName}</tags:nameValue>
+            <tags:nameValue name="${infoTypeText}" nameColumnWidth="160px">
+                <c:choose>
+                    <c:when test="${not empty progressReportUrl}"><a href="${progressReportUrl}">${cre.commandRequestExecutionType.shortName}</a></c:when>
+                    <c:otherwise>${cre.commandRequestExecutionType.shortName}</c:otherwise>
+                </c:choose>
+            </tags:nameValue>
+            
+            <cti:toJson id="resultsjson" object="${result}"/>
+            <c:forEach var="input" items="${result.inputs.inputs}">
+                <tr>
+                    <td class="name">${input.key}:</td>
+                    <td class="value">${input.value}</td>
+                </tr>
+            </c:forEach>
             
             <tags:nameValue name="${infoStatusText}">
                 <c:choose>

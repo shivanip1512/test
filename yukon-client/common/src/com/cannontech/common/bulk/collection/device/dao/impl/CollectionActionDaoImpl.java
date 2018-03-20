@@ -334,6 +334,15 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         return jdbcTemplate.queryForInt(sql);
     }
         
+    @Override
+    public int getCollectionActionIdFromCreId(int creId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CollectionActionId");
+        sql.append("FROM CollectionActionCommandRequest");
+        sql.append("WHERE CommandRequestExecId").eq(creId);
+        return jdbcTemplate.queryForInt(sql);
+    }
+    
     private int createAction(CollectionAction action, Instant startTime, CommandRequestExecutionStatus status, LiteYukonUser user) {
         int collectionActionId = nextValueHelper.getNextValue("CollectionAction");
         SqlStatementBuilder sql = new SqlStatementBuilder();
