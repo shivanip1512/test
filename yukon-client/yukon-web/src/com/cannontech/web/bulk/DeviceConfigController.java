@@ -21,6 +21,7 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
@@ -68,6 +69,7 @@ public class DeviceConfigController {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired protected CollectionActionService collectionActionService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CollectionActionDao collectionActionDao;
 
     @RequestMapping(value = "assignConfig", method = RequestMethod.GET)
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
@@ -100,7 +102,7 @@ public class DeviceConfigController {
             deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
    
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
@@ -130,7 +132,8 @@ public class DeviceConfigController {
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.UNASSIGN_CONFIG, null,
             deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
-        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, new CollectionActionBulkProcessorCallback(result, collectionActionService));
+        bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
         
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }

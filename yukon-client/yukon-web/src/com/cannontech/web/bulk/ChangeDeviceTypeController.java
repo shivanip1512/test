@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
@@ -46,7 +47,8 @@ public class ChangeDeviceTypeController {
     @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
-    @Autowired protected CollectionActionService collectionActionService;
+    @Autowired private CollectionActionService collectionActionService;
+    @Autowired private CollectionActionDao collectionActionDao;
     
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
@@ -112,7 +114,7 @@ public class ChangeDeviceTypeController {
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
         
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }

@@ -49,4 +49,6 @@ public interface CollectionActionDao {
             PagingParameters paging, SortBy sortBy, Direction direction);
 
     int getCollectionActionIdFromCreId(int creId);
+
+    void updateCollectionActionRequest(int cacheKey, int deviceId, CommandRequestExecutionStatus status);
 }

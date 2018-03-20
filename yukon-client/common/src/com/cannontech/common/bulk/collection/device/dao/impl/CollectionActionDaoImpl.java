@@ -34,6 +34,8 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDa
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
+import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -366,5 +368,16 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         }
         sql.batchInsertInto("CollectionActionInput").columns("CollectionActionId", "InputOrder", "Description", "Value").values(values);
         jdbcTemplate.yukonBatchUpdate(sql);
+    }
+    
+    @Override
+    @Transactional
+    public void updateCollectionActionRequest(int cacheKey, int deviceId, CommandRequestExecutionStatus status) {
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        SqlParameterSink params = updateSql.update("CollectionActionRequest");
+        params.addValue("Result", status);
+        updateSql.append("WHERE CollectionActionId").eq(cacheKey);
+        updateSql.append("AND PAObjectId").eq(deviceId);
+        jdbcTemplate.update(updateSql);
     }
 }

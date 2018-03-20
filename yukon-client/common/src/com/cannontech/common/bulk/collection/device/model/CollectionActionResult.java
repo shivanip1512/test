@@ -183,7 +183,7 @@ public class CollectionActionResult {
 
     public void setStatus(CommandRequestExecutionStatus status) {
         this.status = status;
-        if (status == COMPLETE || status == CANCELLED || status == FAILED) {
+        if (logService != null && (status == COMPLETE || status == CANCELLED || status == FAILED)) {
             logService.clearCache(cacheKey);
         }
     }

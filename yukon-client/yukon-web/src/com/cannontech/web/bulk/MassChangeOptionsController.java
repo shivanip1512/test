@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
@@ -63,7 +64,8 @@ public class MassChangeOptionsController {
     private @Resource(name = "resubmittingBulkProcessor") BulkProcessor bulkProcessor;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private BulkFieldService bulkFieldService;
-    @Autowired protected CollectionActionService collectionActionService;
+    @Autowired private CollectionActionService collectionActionService;
+    @Autowired private CollectionActionDao collectionActionDao;
 
     @RequestMapping(value = "massChangeOptions", method = RequestMethod.GET)
     protected String massChangeOptions(ModelMap model, HttpServletRequest request) throws Exception {
@@ -119,7 +121,7 @@ public class MassChangeOptionsController {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
 
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
             
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }

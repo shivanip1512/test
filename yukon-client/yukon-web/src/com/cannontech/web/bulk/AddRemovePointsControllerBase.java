@@ -24,6 +24,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionBulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
@@ -74,6 +75,7 @@ public abstract class AddRemovePointsControllerBase {
     @Autowired protected PointDao pointDao;
     @Autowired protected PaoDao paoDao;
     @Autowired protected CollectionActionService collectionActionService;
+    @Autowired protected CollectionActionDao collectionActionDao;
     
     @Resource(name="transactionPerItemProcessor") protected BulkProcessor bulkProcessor;
 
@@ -101,7 +103,7 @@ public abstract class AddRemovePointsControllerBase {
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService));
+            new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
 
         return result.getCacheKey();
     }
