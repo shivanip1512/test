@@ -958,7 +958,7 @@ unsigned char RfnTouCriticalPeakCommand::getOperation() const
     return Operation_CriticalPeak;
 }
 
-void RfnTouCriticalPeakCommand::prepareCommandData( const CtiTime & now )
+void RfnTouCriticalPeakCommand::prepareCommandData( const CtiTime now )
 {
     CtiDate todaysDate( now );
 

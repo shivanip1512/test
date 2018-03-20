@@ -13,6 +13,8 @@ public:
 
     RfnAggregateCommand(RfnCommandList commands);
 
+    void prepareCommandData(const CtiTime now) override;
+
     ASID getApplicationServiceId() const override;
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
@@ -25,7 +27,15 @@ private:
     Bytes getCommandHeader() override;
     Bytes getCommandData()   override;
 
-    RfnCommandList _commands;
+    static std::atomic_uint16_t _globalContextId;
+
+    using CommandMap = std::map<uint16_t, RfnCommandPtr>;
+    CommandMap _commands;
+
+    using MessageMap = std::map<uint16_t, Bytes>;
+    MessageMap _messages;
+
+    size_t getPayloadLength() const;
 };
 
 }

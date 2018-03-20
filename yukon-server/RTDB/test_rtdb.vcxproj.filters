@@ -227,5 +227,8 @@
     <ClCompile Include="test_dev_dnprtu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_cmd_rfn_Aggregate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

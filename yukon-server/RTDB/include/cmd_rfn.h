@@ -150,7 +150,7 @@ protected:
 
     virtual Bytes         getCommandHeader();
 
-    virtual void    prepareCommandData(const CtiTime & now) { }
+    virtual void prepareCommandData(const CtiTime now) { }
 
     enum UnitOfMeasure
     {

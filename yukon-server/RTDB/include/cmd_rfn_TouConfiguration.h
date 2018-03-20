@@ -264,7 +264,7 @@ public:
 
     RfnTouCriticalPeakCommand( const std::string & rate, const unsigned hour, const unsigned minute );
 
-    virtual void prepareCommandData( const CtiTime & now );
+    void prepareCommandData( const CtiTime now ) override;
 
 protected:
 
