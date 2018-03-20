@@ -345,6 +345,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 	private class DeviceCollectionSummary {
 
         private Set<YukonPao> unsupportedDevices = new HashSet<>();
+        private Set<YukonPao> supportedDevices = new HashSet<>();
         private Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy = ArrayListMultimap.create();
         private int requestCount = 0;
         private Map<PaoIdentifier, SpecificDeviceErrorDescription> errors =
@@ -369,6 +370,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                         hasStrategy = true;
                         if (strategy.isReadable(points)) {
                             pointsForStrategy.putAll(strategy, points);
+                            supportedDevices.add(pao);
                             break;
                         } else {
                             /*
@@ -393,9 +395,9 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                         pao.getPaoIdentifier());
                 }
             }
-                        
+                  
             for (YukonPao unsupported : paoPointIdentifiers.getUnsupportedDevices()) {
-                if (!unsupportedDevices.contains(unsupported)) {
+                if (!unsupportedDevices.contains(unsupported) && !supportedDevices.contains(unsupported)) {
                     if (log.isDebugEnabled()) {
                         log.debug("Unsupported device(appribute is not supported):" + unsupported);
                     }

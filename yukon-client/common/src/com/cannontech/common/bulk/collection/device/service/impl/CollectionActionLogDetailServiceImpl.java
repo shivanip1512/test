@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -84,26 +86,24 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 }
                 cache.getIfPresent(result.getCacheKey()).add(detail);
                 List<String> fields = new ArrayList<>();
-                if (detail.getPao() != null) {
-                    fields.add(dbCache.getAllPaosMap().get(detail.getPao().getPaoIdentifier().getPaoId()).getPaoName());
+                fields.add(detail.getPao() != null ? dbCache.getAllPaosMap().get(detail.getPao().getPaoIdentifier().getPaoId()).getPaoName() : "");
+                fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
+                fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
+
+                if (result.getAction().contains(TIMESTAMP)) {
+                    fields.add(detail.getTime() != null
+                        ? dateFormattingService.format(detail.getTime(), DateFormatEnum.BOTH, result.getContext())
+                        : "");
                 }
 
-                if (detail.getDetail() != null) {
-                    fields.add(accessor.getMessage(detail.getDetail()));
+                if (result.getAction().contains(DEVICE_ERROR_TEXT)) {
+                    fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
                 }
 
-                if (result.getAction().contains(TIMESTAMP) && detail.getTime() != null) {
-                    fields.add(dateFormattingService.format(detail.getTime(), DateFormatEnum.BOTH, result.getContext()));
-                }
-
-                if (result.getAction().contains(DEVICE_ERROR_TEXT)
-                    && StringUtils.isNotEmpty(detail.getDeviceErrorText())) {
-                    fields.add(detail.getDeviceErrorText());
-                }
-
-                if (result.getAction().contains(POINT_DATA) && detail.getValue() != null) {
-                    fields.add(
-                        pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext()));
+                if (result.getAction().contains(POINT_DATA)) {
+                    fields.add(detail.getValue() != null
+                        ? pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())
+                        : "");
                 }
 
                 fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
