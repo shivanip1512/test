@@ -1,8 +1,5 @@
 package com.cannontech.web.group;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,29 +18,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.model.AlertType;
-import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.common.util.ResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.CollectionActionAlertHelper;
 import com.cannontech.web.util.AttributeSelectorHelperService;
-import com.google.common.collect.Maps;
 
 @RequestMapping("/groupMeterRead/*")
 @Controller
@@ -52,8 +42,8 @@ public class GroupMeterReadController {
 	@Autowired private AlertService alertService;
 	@Autowired private AttributeSelectorHelperService attributeSelectorHelperService;
 	@Autowired private AttributeService attributeService;
-    @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private DeviceCollectionFactory deviceCollectionFactory;
 	
     @RequestMapping(value = "homeCollection", method = RequestMethod.GET)
@@ -81,7 +71,7 @@ public class GroupMeterReadController {
 	}
 	
 	@RequestMapping("readCollection")
-	public ModelAndView readCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public String readCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 	    DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
 	    
@@ -93,15 +83,17 @@ public class GroupMeterReadController {
         if (selectedAttributes.size() == 0) {
             addErrorStateToMav(errorMav, "No Attribute Selected", null, makeSelectedAttributeStrsParameter(attributeSelectorHelperService.getAttributeSet(request, null, null)));
             errorMav.addAllObjects(deviceCollection.getCollectionParameters());
-            return errorMav;
+            return "";
         }
 		
 		return read(request, response, deviceCollection, errorPage, null);
 	}
 	
 	// READ
-	private ModelAndView read(HttpServletRequest request, HttpServletResponse response, DeviceCollection deviceCollection, String errorPage, String groupName) throws ServletException {
+	private String read(HttpServletRequest request, HttpServletResponse response, DeviceCollection deviceCollection, String errorPage, String groupName) throws ServletException {
 		
+	    int resultKey = 0;
+	    
 		ModelAndView mav = new ModelAndView("redirect:resultDetail");
 		ModelAndView errorMav = new ModelAndView("redirect:" + errorPage);
 		final YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -113,60 +105,21 @@ public class GroupMeterReadController {
 			addErrorStateToMav(errorMav, "No Attribute Selected", groupName, null);
 			errorMav.addObject("deviceCollection", deviceCollection);
 			errorMav.addAllObjects(deviceCollection.getCollectionParameters());
-			return errorMav;
+			return "";
 		}
 		
-		
-		// alert callback
-		SimpleCallback<GroupMeterReadResult> alertCallback = new SimpleCallback<GroupMeterReadResult>() {
-            @Override
-            public void handle(GroupMeterReadResult result) {
-            	
-            	GroupMeterReadResultWrapper resultWrapper = new GroupMeterReadResultWrapper(result);
-            	
-            	// alert
-            	ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.groupMeterReadCompletion");
-            	if (result.isExceptionOccured()) {
-                	resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.commandCompletion.failed");
-            	}
-                	
-            	int successCount = result.getResultHolder().getResultStrings().size();
-            	int failureCount = result.getResultHolder().getErrors().size();
-            	int completedCount = failureCount + successCount;
-                
-                resolvableTemplate.addData("completedCount", completedCount);
-                resolvableTemplate.addData("percentSuccess", completedCount > 0 ? ((float) successCount * 100 / completedCount) : 0);
-                resolvableTemplate.addData("attributesDescription", resultWrapper.getAttributesDescription(userContext, objectFormattingService));
-                resolvableTemplate.addData("resultKey", result.getKey());
-                
-                if (result.isExceptionOccured()) {
-                	
-                	int deviceCount = result.getDeviceCollection().getDeviceCount();
-                	int notCompletedCount = deviceCount - completedCount;
-                	String exceptionReason = result.getExceptionReason();
-                	
-                	resolvableTemplate.addData("notCompletedCount", notCompletedCount);
-                	resolvableTemplate.addData("exceptionReason", exceptionReason);
-                }
-                
-                Alert groupMeterReadCompletionAlert = new BaseAlert(new Date(), resolvableTemplate) {
-                    @Override
-                    public com.cannontech.common.alert.model.AlertType getType() {
-                        return AlertType.GROUP_METER_READ_COMPLETION;
-                    };
-                };
-                
-                alertService.add(groupMeterReadCompletionAlert);
-            }
-        };
+        SimpleCallback<CollectionActionResult> alertCallback =
+                CollectionActionAlertHelper.createAlert(AlertType.GROUP_METER_READ_COMPLETION, alertService,
+                    messageResolver.getMessageSourceAccessor(userContext), request);
+        
 		
         // read
         try {
-            String resultKey =  deviceAttributeReadService.initiateRead(deviceCollection,
+            resultKey =  deviceAttributeReadService.initiateRead(deviceCollection,
                                           selectedAttributes,
                                           DeviceRequestType.GROUP_ATTRIBUTE_READ,
                                           alertCallback,
-                                          userContext.getYukonUser());
+                                          userContext);
         	mav.addObject("resultKey", resultKey);
 		
         } catch (Exception e) {
@@ -174,10 +127,9 @@ public class GroupMeterReadController {
         	addErrorStateToMav(errorMav, error, groupName, makeSelectedAttributeStrsParameter(selectedAttributes));
         	errorMav.addObject("deviceCollection", deviceCollection);
             errorMav.addAllObjects(deviceCollection.getCollectionParameters());
-			return errorMav;
         }
 		
-		return mav;
+        return "redirect:/bulk/progressReport/detail?key=" + resultKey;
 	}
 	
 	private void addErrorStateToMav(ModelAndView mav, String errorMsg, String groupName, String selectedAttributeStrs) {
@@ -190,10 +142,10 @@ public class GroupMeterReadController {
 	@RequestMapping("resultsList")
 	public ModelAndView resultsList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
-		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResults.jsp");
+		/*ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResults.jsp");
 		
 		// results
-		List<GroupMeterReadResult> allReads = new ArrayList<GroupMeterReadResult>();
+		List<GroupMeterReadResult> allReads = new ArrayList<>();
 		allReads.addAll(deviceAttributeReadService.getPending());
 		allReads.addAll(deviceAttributeReadService.getCompleted());
 		Collections.sort(allReads);
@@ -205,7 +157,7 @@ public class GroupMeterReadController {
 				return new GroupMeterReadResultWrapper(from);
 			}
 		};
-		List<GroupMeterReadResultWrapper> resultWrappers = new MappingList<GroupMeterReadResult, GroupMeterReadResultWrapper>(allReads, mapper);
+		List<GroupMeterReadResultWrapper> resultWrappers = new MappingList<>(allReads, mapper);
 
 		YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
 		Map<GroupMeterReadResultWrapper,String> attributeDescriptions = Maps.newHashMap();
@@ -214,16 +166,16 @@ public class GroupMeterReadController {
 		    attributeDescriptions.put(wrapper, wrapper.getAttributesDescription(context, objectFormattingService));
 		}
 
-		mav.addObject("resultWrappers",attributeDescriptions);
+		mav.addObject("resultWrappers",attributeDescriptions);*/
 		
-		return mav;
+		return null;
 	}
 	
 	
 	@RequestMapping("resultDetail")
 	public ModelAndView resultDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
-		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResultDetail.jsp");
+		/*ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResultDetail.jsp");
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
 		GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
@@ -235,32 +187,32 @@ public class GroupMeterReadController {
 		
 		GroupMeterReadResultWrapper resultWrapper = new GroupMeterReadResultWrapper(result);
 		mav.addObject("attributesDescription", resultWrapper.getAttributesDescription(YukonUserContextUtils.getYukonUserContext(request), objectFormattingService));
-		mav.addObject("resultWrapper", resultWrapper);
-		return mav;
+		mav.addObject("resultWrapper", resultWrapper);*/
+		return null;
 	}
 	
 	@RequestMapping("errorsList")
     public ModelAndView errorsList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
-		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
+		/*String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
 		GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/errorsList.jsp");
 		mav.addObject("definitionName", "groupMeterReadFailureResultDefinition");
-		mav.addObject("result", result);
-		return mav;
+		mav.addObject("result", result);*/
+		return null;
     }
 	
 	@RequestMapping("successList")
 	public ModelAndView successList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
-		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
+		/*String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
 		GroupMeterReadResult result = deviceAttributeReadService.getResult(resultKey);
 		
 		ModelAndView mav = new ModelAndView("commander/successList.jsp");
 		mav.addObject("definitionName", "groupMeterReadSuccessResultDefinition");
-		mav.addObject("result", result);
-		return mav;
+		mav.addObject("result", result);*/
+		return null;
     }
 	
     private String makeSelectedAttributeStrsParameter(Set<Attribute> attributeParameters) {

@@ -1,6 +1,5 @@
 package com.cannontech.web.bulk;
 
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -29,14 +29,12 @@ import com.cannontech.common.bulk.collection.device.service.CollectionActionServ
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.ProcessorFactory;
-import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.device.config.service.DeviceConfigService.LogAction;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -47,8 +45,8 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.group.GroupCommandCompletionAlert;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -69,6 +67,7 @@ public class DeviceConfigController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired protected CollectionActionService collectionActionService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping(value = "assignConfig", method = RequestMethod.GET)
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
@@ -233,76 +232,26 @@ public class DeviceConfigController {
         return "config/verifyConfigResults.jsp";
     }
     
-    /**
-     * DO READ CONFIG
-     * @param deviceCollection
-     * @param method
-     * @param user
-     * @param model
-     * @return
-     * @throws ServletException
-     */
-    @RequestMapping(value="doReadConfig", method=RequestMethod.POST)
-    public String doReadConfig(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) throws ServletException {
+
+    @RequestMapping(value = "doReadConfig", method = RequestMethod.POST)
+    public String doReadConfig(HttpServletRequest request, DeviceCollection deviceCollection, LiteYukonUser user,
+            ModelMap model, YukonUserContext context) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, user);
-        // DO SEND
-        SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
-            @Override
-            public void handle(GroupCommandResult result) {
-                
-                //It would be nice to log these as they individually complete, but that would require rearchitecture of the callback.
-                deviceConfigService.logCompleted(result.getSuccessCollection().getDeviceList(), LogAction.READ, true);
-                deviceConfigService.logCompleted(result.getFailureCollection().getDeviceList(), LogAction.READ, false);
-                String reason =  result.getExceptionReason() == null? "": result.getExceptionReason();
-                eventLogService.readConfigCompleted(result.getSuccessCollection().getDeviceCount(),
-                                                            result.getFailureCollection().getDeviceCount(),
-                                                            result.getUnsupportedCollection().getDeviceCount(),
-                                                            reason, 
-                                                            result.getKey());
-                GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
-                alertService.add(commandCompletionAlert);
-            }
-            
-        };
-                
-        String key = deviceConfigService.readConfigs(deviceCollection, callback, user);
-        model.addAttribute("resultKey", key);
-        return "redirect:/group/commander/resultDetail";
+        SimpleCallback<CollectionActionResult> alertCallback =
+            CollectionActionAlertHelper.createAlert(AlertType.GROUP_COMMAND_COMPLETION, alertService,
+                messageResolver.getMessageSourceAccessor(context), request);
+        int key = deviceConfigService.readConfigs(deviceCollection, alertCallback, context);
+        return "redirect:/bulk/progressReport/detail?key=" + key;
     }
-    
-    /**
-     * DO SEND CONFIG
-     * @param deviceCollection
-     * @param method
-     * @param user
-     * @param model
-     * @return
-     * @throws ServletException
-     */
-    @RequestMapping(value="doSendConfig", method=RequestMethod.POST)
-    public String doSendConfig(DeviceCollection deviceCollection, String method, LiteYukonUser user, ModelMap model) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, user);
-        // DO SEND
-        SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
-            @Override
-            public void handle(GroupCommandResult result) {
-                // It would be nice to log these as they individually complete, but that would require rearchitecture of the callback.
-                deviceConfigService.logCompleted(result.getSuccessCollection().getDeviceList(), LogAction.SEND, true);
-                deviceConfigService.logCompleted(result.getFailureCollection().getDeviceList(), LogAction.SEND, false);
-                String reason =  result.getExceptionReason() == null? "": result.getExceptionReason();
-                eventLogService.sendConfigCompleted(result.getSuccessCollection().getDeviceCount(),
-                                                            result.getFailureCollection().getDeviceCount(),
-                                                            result.getUnsupportedCollection().getDeviceCount(),
-                                                            reason,
-                                                            result.getKey());
-                GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
-                alertService.add(commandCompletionAlert);
-            }
-            
-        };
-        String key = deviceConfigService.sendConfigs(deviceCollection, method, callback, user);
-        model.addAttribute("resultKey", key);
-        return "redirect:/group/commander/resultDetail";
+
+    @RequestMapping(value = "doSendConfig", method = RequestMethod.POST)
+    public String doSendConfig(HttpServletRequest request, DeviceCollection deviceCollection, String method,
+            ModelMap model, YukonUserContext context) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, context.getYukonUser());
+        SimpleCallback<CollectionActionResult> alertCallback =
+            CollectionActionAlertHelper.createAlert(AlertType.GROUP_COMMAND_COMPLETION, alertService,
+                messageResolver.getMessageSourceAccessor(context), request);
+        int key = deviceConfigService.sendConfigs(deviceCollection, method, alertCallback, context);
+        return "redirect:/bulk/progressReport/detail?key=" + key;
     }
-    
 }

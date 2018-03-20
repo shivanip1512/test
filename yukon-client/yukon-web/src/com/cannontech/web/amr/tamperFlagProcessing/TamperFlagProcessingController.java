@@ -1,56 +1,17 @@
 package com.cannontech.web.amr.tamperFlagProcessing;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
-import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
-import com.cannontech.amr.meter.dao.GroupMetersDao;
-import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
-import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
-import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
-import com.cannontech.common.alert.model.Alert;
-import com.cannontech.common.alert.model.AlertType;
-import com.cannontech.common.alert.model.BaseAlert;
-import com.cannontech.common.alert.service.AlertService;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.GroupCommandResult;
-import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 
 @Controller
 @RequestMapping("/tamperFlagProcessing/process/*")
 @CheckRoleProperty(YukonRoleProperty.TAMPER_FLAG_PROCESSING)
 public class TamperFlagProcessingController {
 
-    @Autowired private TamperFlagMonitorDao tamperFlagMonitorDao;
+  /*  @Autowired private TamperFlagMonitorDao tamperFlagMonitorDao;
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	@Autowired private TamperFlagMonitorService tamperFlagMonitorService;
 	@Autowired private AlertService alertService;
@@ -213,6 +174,6 @@ public class TamperFlagProcessingController {
         model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
 		
         return "redirect:process";
-	}
+	}*/
 	
 }

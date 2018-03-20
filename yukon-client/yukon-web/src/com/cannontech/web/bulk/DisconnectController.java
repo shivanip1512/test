@@ -42,11 +42,12 @@ public class DisconnectController {
 
     @RequestMapping(value = "start", method = RequestMethod.POST)
     public String start(HttpServletRequest request, ModelMap model, DeviceCollection deviceCollection,
-                        YukonUserContext userContext, DisconnectCommand command) throws ServletException {
-        SimpleCallback<CollectionActionResult> alert =
+            YukonUserContext userContext, DisconnectCommand command) throws ServletException {
+        SimpleCallback<CollectionActionResult> alertCallback =
             CollectionActionAlertHelper.createAlert(AlertType.DISCONNECT_COMPLETION, alertService,
                 messageResolver.getMessageSourceAccessor(userContext), request);
-        CollectionActionResult result = disconnectService.execute(command, deviceCollection, alert, userContext);
+        CollectionActionResult result =
+            disconnectService.execute(command, deviceCollection, alertCallback, userContext);
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
 }

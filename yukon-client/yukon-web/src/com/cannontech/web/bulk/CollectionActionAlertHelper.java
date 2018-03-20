@@ -18,9 +18,15 @@ public class CollectionActionAlertHelper {
 
     public static SimpleCallback<CollectionActionResult> createAlert(AlertType type, AlertService alertService,
             MessageSourceAccessor accessor, HttpServletRequest request) {
+        return  createAlert(type, alertService, accessor, null, request);
+    }
+    
+    public static SimpleCallback<CollectionActionResult> createAlert(AlertType type, AlertService alertService,
+            MessageSourceAccessor accessor, SimpleCallback<CollectionActionResult> callback, HttpServletRequest request) {
 
         return new SimpleCallback<CollectionActionResult>() {
             String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
+
             @Override
             public void handle(CollectionActionResult result) throws Exception {
                 ResolvableTemplate template;
@@ -30,6 +36,9 @@ public class CollectionActionAlertHelper {
                     String exceptionReason = result.getExecutionExceptionText();
                     template.addData("notCompletedCount", result.getCounts().getNotCompleted());
                     template.addData("exceptionReason", exceptionReason);
+                } else if (result.isCanceled()) {
+                    template = new ResolvableTemplate("yukon.common.alerts.collectionActionCompletion.canceled");
+                    template.addData("notCompletedCount", result.getCounts().getNotCompleted());
                 } else {
                     template = new ResolvableTemplate("yukon.common.alerts.collectionActionCompletion");
                 }
@@ -46,6 +55,9 @@ public class CollectionActionAlertHelper {
                     };
                 };
                 alertService.add(alert);
+                if(callback != null) {
+                    callback.handle(result);
+                }
             }
         };
     }
