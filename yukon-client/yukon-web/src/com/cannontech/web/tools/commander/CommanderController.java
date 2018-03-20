@@ -73,7 +73,6 @@ import com.cannontech.web.tools.commander.model.RecentTarget;
 import com.cannontech.web.tools.commander.model.ViewableTarget;
 import com.cannontech.web.tools.commander.service.CommanderService;
 import com.cannontech.web.user.service.UserPreferenceService;
-import com.cannontech.web.util.WebUtilityService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Joiner;
@@ -94,7 +93,6 @@ public class CommanderController {
     @Autowired private CommanderService commanderService;
     @Autowired private CommanderEventLogService eventLogger;
     @Autowired private DeviceUpdateService deviceUpdateService;
-    @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPreferenceService userPreferenceService;
@@ -118,22 +116,64 @@ public class CommanderController {
     /** The commander page. */
     @RequestMapping({"/commander", "/commander/"})
     public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
+        addRoutesandRecentsTargetToModel(req, model, user);
+        return "commander/commander.jsp";
+    }
 
+    /** Render commander page when redirected from device home detail page . */
+    @RequestMapping("/redirectToCommander")
+    public String redirectFromMeterDetailPage(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
+        addRoutesandRecentsTargetToModel(req, model, user);
+        addPaoDetailsToModel(req, model, user);
+        return "commander/commander.jsp";
+    }
+
+    /** Add routes and recents target data to model map object . */
+    private void addRoutesandRecentsTargetToModel(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
         List<CommandRequest> requests = new ArrayList<>(commanderService.getRequests(user).values());
         Collections.sort(requests, onTimestamp);
         model.addAttribute("requests", requests);
-
         String lastTarget = userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_TARGET);
-
         if (lastTarget != null) {
             CommandTarget target = CommandTarget.valueOf(lastTarget);
             model.addAttribute("target", target);
+            if (!target.isPao()) {
+                model.addAttribute("serialNumber", Integer.valueOf(
+                    userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_SERIAL_NUMBER)));
+                model.addAttribute("routeId", Integer.valueOf(
+                    userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_ROUTE_ID)));
+            }
+        } else {
+            // Default to device target
+            model.addAttribute("target", CommandTarget.DEVICE);
+        }
+        if (userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_RECENT_TARGETS) != null) {
+            String recentPrefStringValue =
+                userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_RECENT_TARGETS);
+            List<RecentTarget> recentTargets;
+            try {
+                recentTargets = JsonUtils.fromJson(recentPrefStringValue, recentTargetsType);
+                model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
+            } catch (IOException e) {
+                log.error("Commander failed to load the recent target, because recent Target JSON format is incorrect."
+                    + " To see the correct recent targets, please make correction in user preference for recent targets");
+            }
+        }
+        model.addAttribute("executeManualCommand",
+            rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user));
+    }
+
+    /** Add PAO data to model map object . */
+    private void addPaoDetailsToModel(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
+        String lastTarget = userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_TARGET);
+        if (lastTarget != null) {
+            CommandTarget target = CommandTarget.valueOf(lastTarget);
             if (target.isPao()) {
                 // Device or load group
-                Integer paoId =
-                    Integer.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_PAO_ID));
+                Integer paoId = Integer.valueOf(
+                    userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_PAO_ID));
                 if (paoId != null) {
                     try {
                         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
@@ -155,33 +195,10 @@ public class CommanderController {
                         paoId = null;
                     }
                 }
-            } else {
-                model.addAttribute("serialNumber", Integer.valueOf(userPreferenceService.getPreference(user,
-                    UserPreferenceName.COMMANDER_LAST_SERIAL_NUMBER)));
-                model.addAttribute("routeId", Integer.valueOf(userPreferenceService.getPreference(user,
-                    UserPreferenceName.COMMANDER_LAST_ROUTE_ID)));
-            }
-        } else {
-            // Default to device target
-            model.addAttribute("target", CommandTarget.DEVICE);
-        }
-        if (userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_RECENT_TARGETS) != null) {
-            String recentPrefStringValue =
-                userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_RECENT_TARGETS);
-            List<RecentTarget> recentTargets;
-            try {
-                recentTargets = JsonUtils.fromJson(recentPrefStringValue, recentTargetsType);
-                model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
-            } catch (IOException e) {
-                log.error("Commander failed to load the recent target, because recent Target JSON format is incorrect."
-                    + " To see the correct recent targets, please make correction in user preference for recent targets");
             }
         }
-        model.addAttribute("executeManualCommand",
-            rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user));
-        return "commander/commander.jsp";
     }
-    
+
     /** A device was chosen, get the details to setup the actions button. */
     @RequestMapping("/commander/{paoId}/data")
     public @ResponseBody Map<String, Object> data(LiteYukonUser user, HttpServletResponse resp, @PathVariable int paoId) {
