@@ -1,15 +1,22 @@
 package com.cannontech.common.device.commands.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestBase;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface CommandExecutionService {
 
@@ -58,4 +65,9 @@ public interface CommandExecutionService {
      * @return number of commands that we attempted to cancel
      */
     long cancelExecution(CommandCompletionCallback<?> callback, LiteYukonUser user, boolean updateExecutionStatus);
+
+
+    int execute(CollectionAction action, LinkedHashMap<String, String> inputs, DeviceCollection collection,
+            String command, CommandRequestType commandRequestType, DeviceRequestType deviceRequestType,
+            SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
 }

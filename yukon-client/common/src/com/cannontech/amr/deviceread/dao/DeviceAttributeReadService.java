@@ -1,10 +1,9 @@
 package com.cannontech.amr.deviceread.dao;
 
-import java.util.List;
 import java.util.Set;
 
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
-import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.YukonDevice;
@@ -12,6 +11,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * This is the preferred Service for "reading" PAOs. This service, unlike the ones
@@ -30,37 +30,21 @@ public interface DeviceAttributeReadService {
     public boolean isReadable(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes, LiteYukonUser user);
        
     public void initiateRead(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
-                             DeviceAttributeReadCallback callback,
-                             DeviceRequestType type,
-                             LiteYukonUser user);
+            DeviceAttributeReadCallback callback, DeviceRequestType type, LiteYukonUser user);
 
     /**
      * This method will attempt to read device collection
      */
 
-    public String initiateRead(DeviceCollection deviceCollection,
+    public int initiateRead(DeviceCollection deviceCollection,
                                Set<? extends Attribute> attributes,
                                DeviceRequestType type,
-                               final SimpleCallback<GroupMeterReadResult> callback,
-                               LiteYukonUser user);
+                               SimpleCallback<CollectionActionResult> callback,
+                               YukonUserContext context);
     
     /**
      * This method will attempt to read device and wait for the result
      */
     DeviceReadResult initiateReadAndWait(YukonDevice device, Set<? extends Attribute> toRead,
-                                                              DeviceRequestType requestType, LiteYukonUser user);
-    
-    
-    // The methods below this line represent a distinct part of this service.
-    // The String returned by the first method can be used to look up the 
-    // result object that is stored in memory.
-    
-   
-    public List<GroupMeterReadResult> getCompleted();
-    public List<GroupMeterReadResult> getCompletedByType(DeviceRequestType type);
-
-    public List<GroupMeterReadResult> getPending();
-    public List<GroupMeterReadResult> getPendingByType(DeviceRequestType type);
-
-    public GroupMeterReadResult getResult(String id);
+                                                              DeviceRequestType requestType, LiteYukonUser user);;
 }

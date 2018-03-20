@@ -1,6 +1,6 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -25,7 +25,6 @@ import com.cannontech.amr.archivedValueExporter.model.TimestampPattern;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
 import com.cannontech.amr.device.ProfileAttributeChannel;
-import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
@@ -67,6 +66,7 @@ import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionById;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;

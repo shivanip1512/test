@@ -5,7 +5,7 @@ import org.joda.time.Instant;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
-import com.cannontech.common.bulk.collection.device.model.Strategy;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.model.SimpleDevice;
 
 public interface DisconnectCallback {
@@ -18,7 +18,7 @@ public interface DisconnectCallback {
     /**
      * This method should be called when it is known that all the requests are completed
      */
-    void complete(Strategy strategy);
+    void complete(StrategyType strategy);
     
     /**
      * This method should be called if an error occurred that will

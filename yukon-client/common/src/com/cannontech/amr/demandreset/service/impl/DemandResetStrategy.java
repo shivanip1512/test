@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
-import com.cannontech.amr.device.StrategyType;
+import com.cannontech.common.bulk.collection.device.service.StrategyService;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -12,7 +12,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public interface DemandResetStrategy {
+public interface DemandResetStrategy extends StrategyService{
 
     /**
      * Filter the given devices for devices which can be sent a demand reset using RF.
@@ -46,6 +46,5 @@ public interface DemandResetStrategy {
      */
  
     void cancel(DemandResetResult result, LiteYukonUser user);
-    
-    StrategyType getType();
+   
 }

@@ -30,20 +30,17 @@ import com.cannontech.amr.disconnect.service.DisconnectStrategyService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.model.Strategy;
-import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
@@ -52,7 +49,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class DisconnectServiceImpl implements DisconnectService, CollectionActionCancellationService {
 
@@ -60,11 +56,9 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
     @Autowired private List<DisconnectStrategyService> strategies;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
-    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private CollectionActionLogDetailService logService;
 
     @Override
     public CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
@@ -95,8 +89,8 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         
         log.debug("validMetersByStrategy=" + validMetersByStrategy);
 
-        addUnsupportedToResult(UNSUPPORTED, result, unsupportedDevices);
-        addUnsupportedToResult(NOT_CONFIGURED, result, notConfiguredDevices);
+        collectionActionService.addUnsupportedToResult(UNSUPPORTED, result, unsupportedDevices);
+        collectionActionService.addUnsupportedToResult(NOT_CONFIGURED, result, notConfiguredDevices);
 
         if (!unsupportedDevices.isEmpty() || !notConfiguredDevices.isEmpty()) {
             log.debug("Updated result with unsupported and not configured devices:");
@@ -104,7 +98,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         }
         
         DisconnectCallback callback = new DisconnectCallback() {
-            List<Strategy> pendingStrategies = Collections.synchronizedList(strategies
+            List<StrategyType> pendingStrategies = Collections.synchronizedList(strategies
                 .stream().map(strategy -> strategy.getStrategy())
                 .collect(Collectors.toList()));
 
@@ -122,11 +116,11 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
             @Override
             public void canceled(SimpleDevice device) {
-                result.addDeviceToGroup(CANCELED, device, new CollectionActionLogDetail(device, CANCELED));
+                collectionActionService.addUnsupportedToResult(CANCELED, result, Lists.newArrayList(device));
             }
 
             @Override
-            public void complete(Strategy strategy) {
+            public void complete(StrategyType strategy) {
                 pendingStrategies.remove(strategy);
                 log.debug("Completing " + strategy + " strategy. Remaining strategies:" + pendingStrategies);
                 if (pendingStrategies.isEmpty()) {
@@ -135,7 +129,6 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                     disconnectEventLogService.groupActionCompleted(context.getYukonUser(), command,
                         result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
                         result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
-                    result.log();
                     try {
                         alertCallback.handle(result);
                     } catch (Exception e) {
@@ -146,9 +139,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
             @Override
             public void processingExceptionOccured(String reason) {
-                CollectionActionLogDetail log = new CollectionActionLogDetail(null, null);
-                log.setExecutionExceptionText(reason);
-                result.setExecutionExceptionText(reason, log);
+                result.setExecutionExceptionText(reason);
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
             }
 
@@ -180,12 +171,6 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         return result;
     }
 
-    private void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
-            List<SimpleDevice> unsupportedDevices) {
-        result.addDevicesToGroup(detail, unsupportedDevices, logService.buildLogDetails(unsupportedDevices, detail));
-        commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(unsupportedDevices),
-            result.getExecution().getId(), detail.getCreUnsupportedType());
-    }
     @Override
     public DisconnectMeterResult execute(DisconnectCommand command, final DeviceRequestType type, YukonMeter meter,
             final LiteYukonUser user) {
@@ -271,7 +256,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         }
 
         @Override
-        public void complete(Strategy strategy) {
+        public void complete(StrategyType strategy) {
             isComplete = true;
             log.debug("Command Completed by" + strategy+ " strategy");
             execution.setRequestCount(1);
@@ -286,7 +271,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             if (!isComplete) {
                 completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.FAILED);
                 result.setProcessingException(reason);
-                complete(Strategy.PLC);
+                complete(StrategyType.PLC);
             }
         }
 
@@ -299,12 +284,13 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
     @Override
     public void cancel(int key, LiteYukonUser user) {
-        CollectionActionResult result = collectionActionService.getResult(key);
-        disconnectEventLogService.groupCancelAttempted(user, DisconnectCommand.getDisconnectCommand(result.getAction()));
-        collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
-        result.setCanceled(true);
-        for (DisconnectStrategyService strategy : strategies) {
-            strategy.cancel(result, user);
+        CollectionActionResult result = collectionActionService.getCachedResult(key);
+        if (result != null) {
+            disconnectEventLogService.groupCancelAttempted(user,
+                DisconnectCommand.getDisconnectCommand(result.getAction()));
+            result.setCanceled(true);
+            collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
+            strategies.forEach(s -> s.cancel(result, user));
         }
     }
 

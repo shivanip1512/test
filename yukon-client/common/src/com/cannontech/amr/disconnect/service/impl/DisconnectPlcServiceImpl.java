@@ -21,7 +21,7 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
-import com.cannontech.common.bulk.collection.device.model.Strategy;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -247,7 +247,7 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
     }
 
     @Override
-    public Strategy getStrategy() {
-        return Strategy.PLC;
+    public StrategyType getStrategy() {
+        return StrategyType.PLC;
     }
 }

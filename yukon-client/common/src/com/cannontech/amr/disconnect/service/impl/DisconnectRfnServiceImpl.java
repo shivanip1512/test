@@ -35,7 +35,7 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.YukonLogManager.RfnLogger;
-import com.cannontech.common.bulk.collection.device.model.Strategy;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.config.RfnMeterDisconnectArming;
@@ -274,7 +274,7 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
     }
 
     @Override
-    public Strategy getStrategy() {
-        return Strategy.RF;
+    public StrategyType getStrategy() {
+        return StrategyType.RF;
     }
 }

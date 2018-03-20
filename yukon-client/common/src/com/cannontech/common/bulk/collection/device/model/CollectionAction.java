@@ -11,6 +11,7 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_ERROR_TEXT;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.TIMESTAMP;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
@@ -27,8 +28,8 @@ import com.google.common.collect.Sets;
 
 public enum CollectionAction implements DisplayableEnum {
 
-    SEND_COMMAND(CRE, null, SUCCESS, FAILURE, CANCELED),
-    READ_ATTRIBUTE(CRE, null, SUCCESS, FAILURE, UNSUPPORTED),
+    SEND_COMMAND(CRE, getLogEntries(POINT_DATA, DEVICE_ERROR_TEXT), SUCCESS, FAILURE, CANCELED),
+    READ_ATTRIBUTE(CRE, getLogEntries(POINT_DATA, DEVICE_ERROR_TEXT), SUCCESS, FAILURE, CANCELED, UNSUPPORTED),
     LOCATE_ROUTE(CRE, null, SUCCESS, FAILURE, CANCELED),
     CONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     DISCONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),

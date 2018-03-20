@@ -1,9 +1,17 @@
 package com.cannontech.common.device.commands.service.impl;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.CANCELLED;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -26,12 +34,20 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandPriority;
 import com.cannontech.common.device.commands.CommandRequestBase;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
@@ -46,14 +62,19 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionRe
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PorterRequestCancelService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
@@ -62,15 +83,11 @@ import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
-import com.google.common.collect.Lists;
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.*; 
+import com.google.common.collect.Lists; 
 
-
-/**
- * Formerly known as CommandRequestExecutorBase
- */
-public class CommandExecutionServiceImpl implements CommandExecutionService {
+public class CommandExecutionServiceImpl implements CommandExecutionService, CollectionActionCancellationService {
     private final static Logger log = YukonLogManager.getLogger(CommandExecutionServiceImpl.class);
     private final static Random random = new Random();
 
@@ -87,11 +104,81 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     @Autowired private CommandPermissionConverter commandPermissionConverter;
     @Autowired private @Qualifier("main") Executor executor;
     @Autowired private @Qualifier("porter") BasicServerConnection porterConnection;
+    @Autowired private CollectionActionService collectionActionService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private Set<Permission> loggableCommandPermissions = new HashSet<>();
 
     private final Map<CommandCompletionCallback<? extends CommandRequestBase>, CommandResultMessageListener> msgListeners =
         new ConcurrentHashMap<>();
+
+    @Override
+    public int execute(CollectionAction action, LinkedHashMap<String, String> inputs, DeviceCollection collection,
+            String command, CommandRequestType commandRequestType, DeviceRequestType deviceRequestType,
+            SimpleCallback<CollectionActionResult> callback, YukonUserContext context) {
+
+        CollectionActionResult result = collectionActionService.createResult(action, inputs, collection,
+            commandRequestType, deviceRequestType, context);
+        CommandCompletionCallback<CommandRequestDevice> execCallback =
+            new CommandCompletionCallback<CommandRequestDevice>() {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+                List<SimpleDevice> devices = Collections.synchronizedList(collection.getDeviceList());
+
+                @Override
+                public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
+                    CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice());
+                    detail.setValue(value);
+                    result.appendToLogWithoutAddingToGroup(detail);
+                }
+
+                @Override
+                public void receivedLastResultString(CommandRequestDevice command, String value) {
+                    CollectionActionLogDetail detail =
+                        new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
+                    result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
+                    devices.remove(command.getDevice());
+                }
+
+                @Override
+                public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                    CollectionActionLogDetail detail =
+                        new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.FAILURE);
+                    detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
+                    result.addDeviceToGroup(CollectionActionDetail.FAILURE, command.getDevice(), detail);
+                    devices.remove(command.getDevice());
+                }
+
+                @Override
+                public void processingExceptionOccured(String reason) {
+                    result.setExecutionExceptionText(reason);
+                    collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
+                }
+
+                @Override
+                public void complete() {
+                    collectionActionService.updateResult(result, !result.isCanceled()
+                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                    if (callback != null) {
+                        try {
+                            callback.handle(result);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            log.error(e);
+                        }
+                    }
+                }
+
+                @Override
+                public void cancel() {
+                    collectionActionService.addUnsupportedToResult(CANCELED, result, devices);
+                }
+            };
+        List<CommandRequestBase> commands =
+            collection.getDeviceList().stream().map(device -> new CommandRequestDevice(command, device)).collect(
+                Collectors.toList());
+        execute(commands, execCallback, result.getExecution(), false, context.getYukonUser());
+        return result.getCacheKey();
+    }
 
     @Override
     public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user)
@@ -485,7 +572,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     public long cancelExecution(CommandCompletionCallback<?> callback, LiteYukonUser user,
             boolean updateExecutionStatus) {
 
-        CommandResultMessageListener listener = msgListeners.get(callback);
+        CommandResultMessageListener listener = msgListeners != null ? msgListeners.get(callback) : null;
 
         if (listener == null) {
             log.info("No message listener found for callback=" + callback);
@@ -529,5 +616,20 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
     private String buildCancelLogString(CommandResultMessageListener listener) {
         return "Canceling execution id:" + listener.execution.getId() + " groupMessageId:"
             + listener.getGroupMessageId();
+    }
+
+    @Override
+    public boolean isCancellable(CollectionAction action) {
+        return action == CollectionAction.SEND_COMMAND;
+    }
+
+    @Override
+    public void cancel(int key, LiteYukonUser user) {
+        CollectionActionResult result = collectionActionService.getCachedResult(key);
+        if (result != null) {
+            result.setCanceled(true);
+            collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
+            cancelExecution(result.getCancelationCallback(), user, false);
+        }
     }
 }

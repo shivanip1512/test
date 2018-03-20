@@ -35,4 +35,6 @@ public interface CollectionActionLogDetailService {
      * Returns true if log file exist.
      */
     boolean hasLog(int cacheKey);
+
+    void clearCache(int cacheKey);
 }

@@ -13,28 +13,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
+import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
-import com.cannontech.common.device.commands.service.GroupCommandExecutionService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
@@ -43,8 +45,11 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -54,25 +59,24 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Autowired private CommandExecutionService commandRequestService;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceConfigEventLogService eventLogService;
-    @Autowired private GroupCommandExecutionService groupCommandExecutionService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoLoadingService paoLoadingService;
-    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
     @Autowired private IDatabaseCache dbCache;
-    
-    private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback,
-            String command, DeviceRequestType type, LiteYukonUser user) {
+    @Autowired private CollectionActionService collectionActionService;
+    @Autowired private CommandExecutionService commandExecutionService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+ 
+    private int initiateAction(String command, DeviceCollection deviceCollection, LogAction logAction,
+            CollectionAction collectionAction, DeviceRequestType requestType,
+            SimpleCallback<CollectionActionResult> callback, YukonUserContext context) {
         List<SimpleDevice> unsupportedDevices = new ArrayList<>();
         List<SimpleDevice> supportedDevices = new ArrayList<>();
         for (SimpleDevice device : deviceCollection.getDeviceList()) {
             if (!isConfigCommandSupported(device)) {
                 unsupportedDevices.add(device);
             } else {
-                // hit the db to find out I guess.
                 LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
                 if (configuration != null
                     && deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getDeviceType())) {
@@ -82,47 +86,86 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 }
             }
         }
+        logInitiated(supportedDevices, logAction, context.getYukonUser());
+        CollectionActionResult result = collectionActionService.createResult(collectionAction, null, deviceCollection,
+            CommandRequestType.DEVICE, requestType, context);
+        CommandCompletionCallback<CommandRequestDevice> execCallback =
+            new CommandCompletionCallback<CommandRequestDevice>() {
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
-        StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
-        StoredDeviceGroup supportedGroup = temporaryDeviceGroupService.createTempGroup();
-        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, unsupportedDevices);
-        deviceGroupMemberEditorDao.addDevices(supportedGroup, supportedDevices);
-        DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
-        DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
-        
-        String key = groupCommandExecutionService.execute(supportedCollection, command, type, callback, user);
-        if(type == DeviceRequestType.GROUP_DEVICE_CONFIG_SEND){
-            logInitiated(supportedCollection.getDeviceList(),  LogAction.SEND, user);
-        }else if(type == DeviceRequestType.GROUP_DEVICE_CONFIG_READ){
-            logInitiated(supportedCollection.getDeviceList(),  LogAction.READ, user);
-        }
-        
-        GroupCommandResult result = groupCommandExecutionService.getResult(key);
-        result.setHandleUnsupported(true);
-        result.setUnsupportedCollection(unsupportedCollection);
-        result.setDeviceCollection(deviceCollection);
-        return key;
+                @Override
+                public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
+                    CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice());
+                    detail.setValue(value);
+                    result.appendToLogWithoutAddingToGroup(detail);
+                }
+
+                @Override
+                public void receivedLastResultString(CommandRequestDevice command, String value) {
+                    logCompleted(Lists.newArrayList(command.getDevice()), logAction, true);
+                    CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
+                    result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
+                }
+
+                @Override
+                public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                    logCompleted(Lists.newArrayList(command.getDevice()), logAction, false);
+                    CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.FAILURE);
+                    detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
+                    result.addDeviceToGroup(CollectionActionDetail.FAILURE, command.getDevice(), detail);
+                }
+
+                @Override
+                public void processingExceptionOccured(String reason) {
+                    result.setExecutionExceptionText(reason);
+                    collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
+                }
+
+                @Override
+                public void complete() {
+                    collectionActionService.updateResult(result, !result.isCanceled()
+                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                    try {
+                        callback.handle(result);
+                    } catch (Exception e) {
+                        log.error(e);
+                    }
+                }
+            };
+        List<CommandRequestDevice> requests = deviceCollection.getDeviceList().stream().map(
+            device -> new CommandRequestDevice(command, new SimpleDevice(device.getPaoIdentifier()))).collect(
+                Collectors.toList());
+        commandExecutionService.execute(requests, execCallback, requestType, context.getYukonUser());
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, unsupportedDevices);
+        return result.getCacheKey();
     }
-
+    
     @Override
-    public String sendConfigs(DeviceCollection deviceCollection, String method,
-            SimpleCallback<GroupCommandResult> callback, LiteYukonUser user) {
+    public int sendConfigs(DeviceCollection deviceCollection, String method,
+            SimpleCallback<CollectionActionResult> callback, YukonUserContext context) {
         String commandString = "putconfig emetcon install all";
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
         }
-        String resultKey = sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
-        eventLogService.sendConfigInitiated(deviceCollection.getDeviceCount(), commandString, resultKey, user);    //after the execute so we can have the key
-        return resultKey;
+        int cacheKey = initiateAction(commandString, deviceCollection, LogAction.SEND, CollectionAction.SEND_CONFIG,
+            DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, callback, context);
+
+        eventLogService.sendConfigInitiated(deviceCollection.getDeviceCount(), commandString, String.valueOf(cacheKey),
+            context.getYukonUser()); // after the execute so we can have the key
+        return cacheKey;
     }
 
     @Override
-    public String readConfigs(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback,
-            LiteYukonUser user) {
+    public int readConfigs(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback,
+            YukonUserContext context) {
         String commandString = "getconfig install all";
-        String resultKey = sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
-        eventLogService.readConfigInitiated(deviceCollection.getDeviceCount(), resultKey, user);    // after execute call so we can get the key.
-        return resultKey;
+
+        int cacheKey = initiateAction(commandString, deviceCollection, LogAction.READ, CollectionAction.READ_CONFIG,
+            DeviceRequestType.GROUP_DEVICE_CONFIG_READ, callback, context);
+
+        eventLogService.readConfigInitiated(deviceCollection.getDeviceCount(), String.valueOf(cacheKey),
+            context.getYukonUser()); // after execute call so we can get the key.
+        return cacheKey;
     }
 
     @Override

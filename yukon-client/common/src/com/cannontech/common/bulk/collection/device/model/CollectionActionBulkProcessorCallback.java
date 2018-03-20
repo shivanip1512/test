@@ -1,7 +1,5 @@
 package com.cannontech.common.bulk.collection.device.model;
 
-import org.apache.log4j.Logger;
-
 import com.cannontech.common.bulk.callbackResult.BulkProcessorCallback;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
@@ -37,16 +35,11 @@ public class CollectionActionBulkProcessorCallback implements BulkProcessorCallb
     @Override
     public void processingSucceeded() {
         collectionActionService.updateResult(result, CommandRequestExecutionStatus.COMPLETE);
-        result.log();
     }
 
     @Override
     public void processingFailed(Exception e) {
+        result.setExecutionExceptionText("There was an error processing the command");
         collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
-        CollectionActionLogDetail detailLog =
-            new CollectionActionLogDetail(null, CollectionActionDetail.FAILURE);
-        detailLog.setExecutionExceptionText("There was an error processing the command");
-        result.setExecutionExceptionText("There was an error processing the command", detailLog);
-        result.log();
     }
 }

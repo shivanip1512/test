@@ -5,8 +5,8 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 
-import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.google.common.collect.Maps;

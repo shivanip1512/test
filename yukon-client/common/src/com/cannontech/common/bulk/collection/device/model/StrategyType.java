@@ -1,6 +1,7 @@
 package com.cannontech.common.bulk.collection.device.model;
 
-public enum Strategy {
+public enum StrategyType {
     RF,
-    PLC
+    PLC,
+    ECOBEE
 }

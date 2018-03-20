@@ -11,6 +11,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
@@ -25,6 +26,7 @@ import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.*;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CollectionActionResult {
@@ -76,7 +78,7 @@ public class CollectionActionResult {
             startTime = new Instant(execution.getStartTime());
             stopTime = execution.getStopTime() == null ? null : new Instant(execution.getStopTime());
         } else {
-            status = CommandRequestExecutionStatus.STARTED;
+            status = STARTED;
             startTime = new Instant();
         }
     }
@@ -89,7 +91,7 @@ public class CollectionActionResult {
     }
 
     public boolean isCancelable() {
-        return isCached && action.isCancelable() && status != null && status == CommandRequestExecutionStatus.STARTED;
+        return isCached && action.isCancelable() && status != null && status == STARTED;
     }
 
     public CollectionActionDetailGroup getDetail(CollectionActionDetail detail) {
@@ -106,14 +108,24 @@ public class CollectionActionResult {
 
     public void addDevicesToGroup(CollectionActionDetail detail, List<? extends YukonPao> paos,
             List<CollectionActionLogDetail> log) {
-        if (!paos.isEmpty()) {
+        if (!CollectionUtils.isEmpty(paos)) {
             editorDao.addDevices(details.get(detail).getGroup(), paos);
-            logService.appendToLog(this, log);
+            appendToLogWithoutAddingToGroup(log);
         }
     }
 
     public void addDeviceToGroup(CollectionActionDetail detail, YukonPao pao, CollectionActionLogDetail log) {
         addDevicesToGroup(detail, Lists.newArrayList(pao), Lists.newArrayList(log));
+    }
+
+    public void appendToLogWithoutAddingToGroup(List<CollectionActionLogDetail> log) {
+        if (!CollectionUtils.isEmpty(log)) {
+            logService.appendToLog(this, log);
+        }
+    }
+    
+    public void appendToLogWithoutAddingToGroup(CollectionActionLogDetail log) {
+        appendToLogWithoutAddingToGroup(Lists.newArrayList(log));
     }
 
     public void setExecution(CommandRequestExecution execution) {
@@ -132,9 +144,9 @@ public class CollectionActionResult {
         return executionExceptionText;
     }
 
-    public void setExecutionExceptionText(String executionExceptionText, CollectionActionLogDetail log) {
+    public void setExecutionExceptionText(String executionExceptionText) {
         this.executionExceptionText = executionExceptionText;
-        logService.appendToLog(this, log);
+        logService.appendToLog(this, new CollectionActionLogDetail(executionExceptionText));
     }
 
     public CollectionActionInputs getInputs() {
@@ -171,6 +183,9 @@ public class CollectionActionResult {
 
     public void setStatus(CommandRequestExecutionStatus status) {
         this.status = status;
+        if (status == COMPLETE || status == CANCELLED || status == FAILED) {
+            logService.clearCache(cacheKey);
+        }
     }
 
     public Instant getStartTime() {
@@ -225,14 +240,14 @@ public class CollectionActionResult {
         if (logger.isDebugEnabled()) {
             DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
             df.withZone(DateTimeZone.getDefault());
-            logger.debug("Key=" + getCacheKey() + "----------------------------------------------------------------------");
+            logger.debug("Key=" + getCacheKey() + " Status=" + getStatus());
             logger.debug("Cached=" + isCached());
             logger.debug("Start Time:" + startTime.toString(df));
             logger.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
             if (execution != null) {
-                logger.debug("creId:" + execution.getId() + " Type:" + execution.getCommandRequestExecutionType());
+                logger.debug("creId:" + execution.getId() + " Execution Type:" + execution.getCommandRequestExecutionType());
             }
-            logger.debug(stopTime == null ? "" : "Stop Time:" +stopTime.toString(df));
+            logger.debug(stopTime == null ? "" : "Stop Time:" + stopTime.toString(df));
             logger.debug("---Inputs---");
             logger.debug("Action:" + getAction());
             if (getInputs().getInputs() != null) {
@@ -242,18 +257,19 @@ public class CollectionActionResult {
             logger.debug("Devices:" + getInputs().getCollection().getDeviceCount());
 
             logger.debug("---Results---");
+            logger.debug("executionExceptionText=" + executionExceptionText);
             logger.debug("Cancel:" + isCancelable());
-            logger.debug("Progress=" + getCounts().getPercentProgress() + "%");
-
-            getAction().getDetails().forEach(detail -> {
-                logger.debug("------" + detail + "    device count=" + getDeviceCollection(detail).getDeviceCount() + "   "
-                    + getCounts().getPercentage(detail) + "%");
+            logger.debug("Progress=" + getCounts().getPercentCompleted() + "%");
+            
+            getCounts().getPercentages().keySet().forEach(detail -> {
+                logger.debug("------" + detail + "    device count=" + getDeviceCollection(detail).getDeviceCount()
+                    + "   " + getCounts().getPercentages().get(detail) + "%");
             });
 
             if (cancelationCallback != null) {
-                logger.debug("cancelationCallback:" + cancelationCallback);
+                logger.debug("cancelationCallback:" + cancelationCallback.getClass());
             }
-            logger.debug("status=" + getStatus() + "----------------------------------------------------------------------");
+            logger.debug("-----------------------------------------------------");
         }
     }
 }

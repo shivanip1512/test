@@ -15,8 +15,6 @@
             </set>
         </property>
     </bean>
-    
-    <bean class="com.cannontech.common.device.commands.service.impl.GroupCommandExecutionServiceImpl"/>
   
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionServiceImpl"/>
     <bean class="com.cannontech.common.bulk.collection.device.service.impl.CollectionActionLogDetailServiceImpl"/>

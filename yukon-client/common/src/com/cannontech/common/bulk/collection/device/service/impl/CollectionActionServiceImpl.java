@@ -32,16 +32,19 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class CollectionActionServiceImpl implements CollectionActionService {
     
@@ -53,6 +56,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Autowired private CommandRequestExecutionDao executionDao;
     @Autowired private CollectionActionLogDetailService logService;
     @Autowired private List<CollectionActionCancellationService> cancellationService;
+    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionServiceImpl.class);
     
@@ -86,10 +90,14 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public void cancel(int key, LiteYukonUser user) {
         CollectionActionResult cachedResult = cache.getIfPresent(key);
+        log.debug("Attemting to cancel result for " + key);
         if(cachedResult != null) {
             Optional<CollectionActionCancellationService> service =
                 cancellationService.stream().filter(s -> s.isCancellable(cachedResult.getAction())).findFirst();
             if(service.isPresent()) {
+                log.debug("Using " + service.get().getClass() + " to cancel result for " + key);
+                log.debug("Result to be canceled:");
+                cachedResult.log();
                 service.get().cancel(cachedResult.getCacheKey(), user);
             }
         }
@@ -116,6 +124,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             result.setStatus(status);
         }
         result.setStopTime(new Instant(stopTime));
+        result.log();
     }
 
     @Override
@@ -128,6 +137,20 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         return  result;
     }
     
+    @Override
+    public CollectionActionResult getCachedResult(int key) {
+        return cache.getIfPresent(key);
+    }
+    
+    @Override
+    public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
+            List<? extends YukonPao> devices) {
+        log.debug("Adding unsupported devices:" + devices.size() + " detail:" + detail + " cacheKey:" + result.getCacheKey());
+        result.addDevicesToGroup(detail, devices, logService.buildLogDetails(devices, detail));
+        commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(devices), result.getExecution().getId(),
+            detail.getCreUnsupportedType());
+    }
+
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
         log.debug("Created new collecton action result:");

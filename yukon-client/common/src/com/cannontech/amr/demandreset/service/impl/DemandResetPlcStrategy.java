@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.PlcDemandResetService;
-import com.cannontech.amr.device.StrategyType;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -55,7 +55,7 @@ public class DemandResetPlcStrategy implements DemandResetStrategy {
     }
 
     @Override
-    public StrategyType getType() {
+    public StrategyType getStrategy() {
         return StrategyType.PLC;
     }
 }

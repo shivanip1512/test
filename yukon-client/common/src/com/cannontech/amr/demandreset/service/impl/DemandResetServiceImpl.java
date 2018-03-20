@@ -18,13 +18,13 @@ import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.amr.demandreset.service.DemandResetVerificationCallback;
-import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -360,8 +360,8 @@ public class DemandResetServiceImpl implements DemandResetService {
                                   SimpleCallback<DemandResetResult> alertCallback) {
             this.devicesToSend.addAll(devicesForStrategy.values());
             this.devicesToVerify.addAll(devicesToVerify);
-            pendingStrategies = Sets.newConcurrentHashSet(
-                devicesForStrategy.keySet().stream().map(s -> s.getType()).collect(Collectors.toSet()));
+            pendingStrategies = 
+                devicesForStrategy.keySet().stream().map(s -> s.getStrategy()).collect(Collectors.toSet());
             this.tempGroups = tempGroups;
             this.result = result;
             this.alertCallback = alertCallback;
@@ -544,8 +544,8 @@ public class DemandResetServiceImpl implements DemandResetService {
             this.user = user;
             this.callback = callback;
             initiationStrategies = new AtomicInteger(devicesForStrategy.keySet().size());
-            verificationStrategies = Sets.newConcurrentHashSet(
-                devicesForStrategy.keySet().stream().map(s -> s.getType()).collect(Collectors.toSet()));
+            verificationStrategies =
+                devicesForStrategy.keySet().stream().map(s -> s.getStrategy()).collect(Collectors.toSet());
         }
         
         @Override

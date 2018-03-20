@@ -208,9 +208,6 @@
                 <entry key="ROUTELOCATE">
                     <ref bean="routeLocateBackingService"/>
                 </entry>
-                <entry key="COMMANDER">
-                    <ref bean="commanderUpdateBackingService"/>
-                </entry>
                 <entry key="COMMAND_REQUEST_EXECUTION">
                     <ref bean="commandRequestExecutionBackingService"/>
                 </entry>
@@ -234,9 +231,6 @@
                 </entry>
                 <entry key="JOB">
                     <ref bean="jobBackingService"/>
-                </entry>
-                <entry key="GROUP_METER_READ">
-                    <ref bean="groupMeterReadUpdateBackingService"/>
                 </entry>
                 <entry key="ESTIMATED_LOAD">
                     <ref bean="drEstimatedLoadBackingService"/>
@@ -382,8 +376,6 @@
         <property name="resultsCache" ref="routeLocateResultsCache"/>
     </bean>
 
-    <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService"/>
-
     <bean id="backgroundProcessBackingService" class="com.cannontech.web.updater.bulk.BackgroundProcessBackingService">
         <property name="recentResultsCache" ref="recentResultsCache"/>
     </bean>
@@ -394,7 +386,6 @@
         <qualifier value="regulatorMapping"/>
     </bean>
     
-    <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService"/>
 
     <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService"/>
 

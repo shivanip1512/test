@@ -12,18 +12,16 @@ import org.joda.time.MutableDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.amr.device.StrategyType;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
@@ -35,7 +33,6 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
@@ -47,12 +44,11 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private EcobeePointUpdateServiceImpl ecobeePointUpdateServiceImpl;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     @Override
-    public StrategyType getType() {
+    public StrategyType getStrategy() {
         return StrategyType.ECOBEE;
     }
 
@@ -62,22 +58,20 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     }
 
     @Override
-    public boolean isReadable(Iterable<PaoMultiPointIdentifier> devices, LiteYukonUser user) {
+    public boolean isReadable(Iterable<PaoMultiPointIdentifier> devices) {
         return !Iterables.isEmpty(devices);
     }
 
     @Override
-    public void initiateRead(Iterable<PaoMultiPointIdentifier> devices,
-            DeviceAttributeReadStrategyCallback delegateCallback, DeviceRequestType type,
+    public void initiateRead(Iterable<PaoMultiPointIdentifier> devices, DeviceAttributeReadCallback callback,
             CommandRequestExecution execution, LiteYukonUser user) {
         try {
-            //All devices succeeded.
+            // All devices succeeded.
             Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues = initiateRead(devices);
             for (PaoIdentifier pao : devicesToPointValues.keySet()) {
                 for (PointValueHolder pointValue : devicesToPointValues.values()) {
-                    delegateCallback.receivedValue(pao, pointValue);
+                    callback.receivedValue(pao, pointValue);
                 }
-                delegateCallback.receivedLastValue(pao, "");
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, pao.getPaoId(), 0);
             }
         } catch (EcobeeCommunicationException error) {
@@ -86,44 +80,15 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
              * is treated the same as "no porter connection" error. There is no
              * command request execution result created for the entries.
              */
-            
+
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
-            MessageSourceResolvable detail =
-                YukonMessageSourceResolvable.createSingleCodeWithArguments(
-                    "yukon.common.device.attributeRead.general.readError", error.getMessage());
+            MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                "yukon.common.device.attributeRead.general.readError", error.getMessage());
             SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(errorDescription, detail);
             log.error(error);
-            delegateCallback.receivedException(deviceError);
+            callback.receivedException(deviceError);
         }
-        delegateCallback.complete();
-    }
-
-    @Override
-    public void initiateRead(Iterable<PaoMultiPointIdentifier> devices, GroupCommandCompletionCallback groupCallback,
-            DeviceRequestType type, LiteYukonUser user) {
-        try {
-            //All devices succeeded.
-            Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues = initiateRead(devices);
-            for (PaoIdentifier pao : devicesToPointValues.keySet()) {
-                CommandRequestDevice command = new CommandRequestDevice(new SimpleDevice(pao));
-                for (PointValueHolder pointValue : devicesToPointValues.get(pao)) {
-                    groupCallback.receivedValue(command, pointValue);
-                }
-                groupCallback.receivedLastResultString(command, "");
-                commandRequestExecutionResultDao.saveCommandRequestExecutionResult(groupCallback.getExecution(),
-                    pao.getPaoId(), 0);
-            }
-        } catch (EcobeeCommunicationException error) {
-            /*
-             * Read for all devices failed. This error
-             * is treated the same as "no porter connection" error. There is no
-             * command request execution result created for the entries.
-             */
-            log.error(error);
-            groupCallback.processingExceptionOccured(error.getMessage());
-        }
-
-        groupCallback.complete();
+        callback.complete(getStrategy());
     }
 
     private Multimap<PaoIdentifier, PointValueHolder> initiateRead(Iterable<PaoMultiPointIdentifier> devices)
@@ -166,5 +131,11 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Override
     public int getRequestCount(Collection<PaoMultiPointIdentifier> devicesForThisStrategy) {
         return devicesForThisStrategy.size();
+    }
+
+    @Override
+    public void cancel(CollectionActionResult result, LiteYukonUser user) {
+        // not supported
+        
     }
 }

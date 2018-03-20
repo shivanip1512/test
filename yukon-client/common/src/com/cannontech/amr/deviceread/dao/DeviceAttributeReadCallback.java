@@ -1,6 +1,10 @@
 package com.cannontech.amr.deviceread.dao;
 
+import java.util.List;
+
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.PointValueHolder;
 
@@ -30,6 +34,20 @@ public interface DeviceAttributeReadCallback {
     /**
      * This is guaranteed to be called exactly once. Once this has been called, none of the received* methods will called.
      */
-    void complete();
-
+    
+    default void complete() {
+        
+    }
+    
+    default void complete(StrategyType type) {
+        
+    }
+    
+    default CollectionActionResult getResult() {
+        return null;
+    }
+    
+    default void cancel(List<? extends PaoIdentifier> paos) {
+        
+    }
 }

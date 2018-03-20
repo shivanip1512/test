@@ -108,6 +108,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             CollectionActionFilter filter, PagingParameters paging, SortBy sortBy, Direction direction) {
 
         SqlStatementBuilder allRowsSql = buildResultSelect(filter, sortBy, direction);
+        System.out.println(allRowsSql.getDebugSql());
         SqlStatementBuilder countSql = buildResultSelect(filter, null, null);
 
         int start = paging.getStartIndex();
@@ -179,7 +180,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             sql.append("AND ca.UserName").in(filter.getUserNames());
         }
         
-        Range<Instant> dateRange = (Range<Instant>) Range.inclusiveExclusive(new Instant(filter.getStartDate()), new Instant(filter.getEndDate()));
+        Range<Instant> dateRange = Range.inclusiveExclusive(new Instant(filter.getStartDate()), new Instant(filter.getEndDate()));
         Instant startDate = dateRange == null ? null : dateRange.getMin();
         if (startDate != null) {
             if (dateRange.isIncludesMinValue()) {

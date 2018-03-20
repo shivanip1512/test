@@ -1,11 +1,17 @@
 package com.cannontech.common.bulk.collection.device.model;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetailSummary.FAILURE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetailSummary.NOT_ATTEMPTED;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetailSummary.SUCCESS;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetailSummary.*;
+import com.cannontech.common.device.model.SimpleDevice;
 
 public class CollectionActionCounts {
 
@@ -41,13 +47,6 @@ public class CollectionActionCounts {
         return calculate(getSuccessCount());
     }
     
-    public double getPercentProgress() {
-        int successTotal = result.getAction().getDetails().stream()
-                .mapToInt(detail -> result.getDeviceCollection(detail).getDeviceCount())
-                .sum();
-        return calculate(successTotal);
-    }
-
     // Used by JS
     public double getPercentCompleted() {
         return calculate(getCompleted());
@@ -55,10 +54,11 @@ public class CollectionActionCounts {
 
     // Used by JS
     public int getCompleted() {
-        int completedTotal = result.getAction().getDetails().stream()
-                .mapToInt(detail -> result.getDeviceCollection(detail).getDeviceCount())
-                .sum();
-        return completedTotal;
+        Set<SimpleDevice> devices = new HashSet<>();
+        result.getAction().getDetails().forEach(detail -> {
+            devices.addAll(result.getDeviceCollection(detail).getDeviceList());
+        });
+        return devices.size();
     }
     
     public int getNotCompleted() {
@@ -77,19 +77,14 @@ public class CollectionActionCounts {
             new BigDecimal(100)).doubleValue();
     }
 
-    public double getPercentage(CollectionActionDetail detail) {
-        int detailTotal = result.getDeviceCollection(detail).getDeviceCount();
-        return calculate(detailTotal);
-    }
-    
     public double getPercentageCompleted(CollectionActionDetail detail) {
         int detailTotal = result.getDeviceCollection(detail).getDeviceCount();
         int completed = getCompleted();
         if (detailTotal > 0 && completed > 0) {
-            return new BigDecimal(detailTotal).divide(new BigDecimal(getCompleted()), 2, RoundingMode.HALF_EVEN).multiply(
-                new BigDecimal(100)).doubleValue();
+            return new BigDecimal(detailTotal).divide(new BigDecimal(getCompleted()), 2,
+                RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).doubleValue();
         }
-            return 0;
+        return 0;
     }
     
     // Used by JS
