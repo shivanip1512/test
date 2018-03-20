@@ -2,12 +2,11 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -95,12 +94,10 @@ public class RecentResultsController {
         }
         
         if (filter.getStartDate() == null || filter.getEndDate() == null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
-            cal.add(Calendar.DATE, -7);
-            Date weekPrior = cal.getTime();
-            filter.setStartDate(weekPrior);
-            filter.setEndDate(new Date());
+            DateTime from = new DateTime(userContext.getJodaTimeZone()).withTimeAtStartOfDay().minusDays(6);
+            DateTime to = new DateTime(userContext.getJodaTimeZone()).plusDays(1);
+            filter.setStartDate(from.toDate());
+            filter.setEndDate(to.toDate());
         }
         
         if (filter.getUserIds() != null && !filter.getUserIds().isEmpty()) {
