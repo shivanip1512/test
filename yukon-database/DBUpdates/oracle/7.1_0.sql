@@ -2,7 +2,7 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* Start YUK-17960 */
+/* @start YUK-17960 */
 CREATE TABLE CollectionAction  (
     CollectionActionId  NUMBER          NOT NULL,
     Action              VARCHAR2(50)    NOT NULL,
@@ -63,7 +63,9 @@ ALTER TABLE CollectionActionRequest
     ADD CONSTRAINT FK_CollectionActionR_YukonPAObject FOREIGN KEY (PAObjectId)
         REFERENCES YukonPAObject (PAObjectID)
         ON DELETE CASCADE;
-/* End YUK-17960 */
+
+INSERT INTO DBUpdates VALUES ('YUK-17960', '7.1.0', SYSDATE);
+/* @end YUK-17960 */
     
 /**************************************************************/
 /* VERSION INFO                                               */

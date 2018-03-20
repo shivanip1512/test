@@ -2,7 +2,7 @@
 /**** SQL Server DBupdates             ****/
 /******************************************/
 
-/* Start YUK-17960 */
+/* @start YUK-17960 */
 CREATE TABLE CollectionAction (
     CollectionActionId  NUMERIC             NOT NULL,
     Action              VARCHAR(50)         NOT NULL,
@@ -66,7 +66,9 @@ ALTER TABLE CollectionActionRequest
         REFERENCES YukonPAObject (PAObjectID)
             ON DELETE CASCADE;
 GO
-/* End YUK-17960 */
+
+INSERT INTO DBUpdates VALUES ('YUK-17960', '7.1.0', GETDATE());
+/* @End YUK-17960 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
