@@ -73,8 +73,11 @@ public class CollectionActionCounts {
      */
     private double calculate(int subset){
         int total = result.getInputs().getCollection().getDeviceCount();
-        return new BigDecimal(subset).divide(new BigDecimal(total), 2, RoundingMode.HALF_EVEN).multiply(
-            new BigDecimal(100)).doubleValue();
+        if (total > 0) {
+            return new BigDecimal(subset).divide(new BigDecimal(total), 2, RoundingMode.HALF_EVEN).multiply(
+                new BigDecimal(100)).doubleValue();
+        }
+        return 0;
     }
 
     public double getPercentageCompleted(CollectionActionDetail detail) {

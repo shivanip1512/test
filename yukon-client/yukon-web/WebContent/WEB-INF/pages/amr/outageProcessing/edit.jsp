@@ -202,7 +202,7 @@
                     <cti:button id="deleteButton" nameKey="delete" onclick="deleteOutageMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete" disableGroup="actionButtons"/>
                     <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
-                        <cti:param name="outageMonitorId" value="${outageMonitorId}" />
+                        <cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}" />
                     </cti:url>
                 </c:when>
                 <c:otherwise>
