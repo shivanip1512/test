@@ -21,6 +21,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.dbtools.updater.dao.impl.DBupdatesDaoImpl;
 import com.cannontech.tools.gui.IMessageFrame;
 
 /**
@@ -34,24 +35,28 @@ import com.cannontech.tools.gui.IMessageFrame;
 public class UpdateDB
 {
 
-	private IMessageFrame output = null;
+    private IMessageFrame output = null;
     private Double version = null;
     private boolean starsToBeCreated = false;
 
     private static final Pattern cparmPattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
+    private static final Pattern startIFPattern = Pattern.compile(DBMSDefines.START_IF_REGEX);
+    private static final Pattern startPattern =  Pattern.compile(DBMSDefines.START_REGEX);
+    private static final Pattern endPattern = Pattern.compile(DBMSDefines.END_REGEX);
     private static final Pattern SQLServerVarPattern = 
             Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
     private static final Pattern OracleVarPattern = 
             Pattern.compile("v_[A-Za-z_]+ := \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
 
-	/**
-	 * 
-	 */
-	public UpdateDB( IMessageFrame output_ )
-	{
-		super();
-		output = output_;		
-	}
+    private DBupdatesDaoImpl dBupdatesDaoImpl;
+    /**
+     * 
+     */
+    public UpdateDB( IMessageFrame output_ )
+    {
+        super();
+        output = output_;       
+    }
 
 
 	public static boolean isValidString( String str_ )
@@ -307,33 +312,42 @@ public class UpdateDB
 		return dbUpdateFiles;
 	}
 
+    /**
+     *
+     * This comment may contain some meta data, process it
+     * if so.
+     **/
+    private void handleComment(final String token_, final UpdateLine updLine_) {
+        int metaIndx = token_.indexOf(DBMSDefines.META_TAG);
+        int startIndx = token_.indexOf(DBMSDefines.START);
+        if (startIndx >= 0) {
+            StringTokenizer tokenizer = new StringTokenizer(token_.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
+            String key = tokenizer.nextToken();
+            while (tokenizer.countTokens() >= 2) {
+                String val = tokenizer.nextToken();
+                if (!updLine_.getMetaProps().containsKey(key)) {
+                    updLine_.getMetaProps().put(key, val);
+                } else {
+                    updLine_.getMetaProps().put(key, updLine_.getMetaProps().get(key) + " " + val);
+                }
+            }
+        } else {
+            if (metaIndx >= 0 && metaIndx < token_.length()) {
+                StringTokenizer tokenizer = new StringTokenizer(token_.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
 
-	/**
-	*
-	* This comment may contain some meta data, process it
-	* if so.
-	**/
-	private void handleComment( final String token_, final UpdateLine updLine_ )
-	{
-		int metaIndx = token_.indexOf(DBMSDefines.META_TAG);
-		
-		if( metaIndx >= 0 && metaIndx < token_.length() )
-		{
-			StringTokenizer tokenizer = new StringTokenizer( 
-					token_.substring(metaIndx+1), DBMSDefines.META_TOKEN );
-	
-			//we are only expecting the key,value pair
-			if( tokenizer.countTokens() >= 2 )
-			{
-				String key = tokenizer.nextToken();
-				String val = tokenizer.nextToken();
-				
-				updLine_.getMetaProps().put( key, val );
-			}
+                // we are only expecting the key,value pair
+                if (tokenizer.countTokens() >= 2) {
+                    String key = tokenizer.nextToken();
+                    if (key.equals(DBMSDefines.META_ERROR)) {
+                        updLine_.getMetaProps().remove(key);
+                    }
+                    String val = tokenizer.nextToken();
+                    updLine_.getMetaProps().put(key, val);
+                }
 
-		}
-				
-	}
+            }
+        }
+    }
 
 	/**
 	 * When the stars token is found, find a matching stars file and return that file
@@ -456,25 +470,35 @@ public class UpdateDB
 	}
 
 
-	// Given a file in string list format (fileStrings), output parsed UpdateLines
-	// sqlFilesLocation and sqlFileName are used for special STARS annotations in Yukon 4.0.3 and previous
+    // Given a file in string list format (fileStrings), output parsed UpdateLines
+    // sqlFilesLocation and sqlFileName are used for special STARS annotations in Yukon 4.0.3 and previous
     public List<UpdateLine> convertToUpdateLines(List<String> fileStrings, final String sqlFilesLocation, final String sqlFileName) {
         List<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
         UpdateLine updLine = new UpdateLine();
+        if (dBupdatesDaoImpl == null) {
+            dBupdatesDaoImpl = new DBupdatesDaoImpl();
+        }
         boolean commentState = false;
         boolean blockState = false;
         boolean cparmState = false;
+        boolean startIfState = false;
         String cparmToken = "";
         ConfigurationSource config = null;
         Matcher cparmMatcher = null;
-
+        Matcher startIfMatcher = null;
+        Matcher endMatcher = null;
+        Matcher startMatcher = null;
+        boolean startMatchState = false;
+        boolean ignoreEntry = false;
         for (String token : fileStrings) {
-        	cparmMatcher = cparmPattern.matcher(token);
-
-        	if( isValidString(token) )
-        	{
+            cparmMatcher = cparmPattern.matcher(token);
+            startIfMatcher = startIFPattern.matcher(token);
+            endMatcher = endPattern.matcher(token);
+            startMatcher = startPattern.matcher(token);
+            if( isValidString(token) )
+            {
                 // Check to see if we're handling a cparm.
-        	    // This can happen in a block, so check it first.
+                // This can happen in a block, so check it first.
                 if ( cparmState ) {
                     if (token.endsWith(DBMSDefines.END_CPARM)) {
                         // We are done processing this cparm. Grab the next line.
@@ -510,10 +534,76 @@ public class UpdateDB
                     cparmToken = cparmMatcher.group(1);
                     continue;
                 }
-                
-        	    // Checks to see if its an end block
-        		if ( blockState ) {
-        		    // Checks to see if the file is using a slash and skips to the next line
+
+                if (startIfState) {
+                    if (ignoreEntry) {
+                        ignoreEntry = !endMatcher.find();
+                        startIfState = ignoreEntry;
+                        continue;
+                    }
+                    startIfState = !endMatcher.find();
+                    if (!startIfState) {
+                        int metaIndx = token.indexOf(DBMSDefines.META_TAG);
+                        StringTokenizer tokenizer =
+                            new StringTokenizer(token.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
+                        if (metaIndx >= 0 && metaIndx < token.length() && tokenizer.countTokens() >= 2) {
+                            String key = tokenizer.nextToken();
+                            String value = tokenizer.nextToken();
+                            updLine.getMetaProps().put(key, value);
+                        }
+                        continue;
+                    }
+                } else if (startIfMatcher.find()) {
+                    startIfState = !endMatcher.find();
+                    if (startIfState) {
+                        List<String> updateIds = dBupdatesDaoImpl.getUpdateIds();
+                        String newYukId = null;
+                        String dependentYukId = null;
+                        String[] tokenArray = token.split("\\s");
+                        newYukId = tokenArray[2];
+                        dependentYukId = tokenArray[4];
+
+                        if (!updateIds.contains(dependentYukId) || updateIds.contains(newYukId)) {
+                            ignoreEntry = true;
+                            continue;
+                        }
+                    } else {}
+                }
+
+                if (startMatchState) {
+                    if (ignoreEntry) {
+                        ignoreEntry = !endMatcher.find();
+                        startMatchState = ignoreEntry;
+                        continue;
+                    }
+                    startMatchState = !endMatcher.find();
+                    if (!startMatchState) {
+                        int metaIndx = token.indexOf(DBMSDefines.META_TAG);
+                        StringTokenizer tokenizer =
+                            new StringTokenizer(token.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
+                        if (metaIndx >= 0 && metaIndx < token.length() && tokenizer.countTokens() >= 2) {
+                            String key = tokenizer.nextToken();
+                            String value = tokenizer.nextToken();
+                            updLine.getMetaProps().put(key, value);
+                        }
+                        continue;
+                    }
+                } else if (startMatcher.find()) {
+                    startMatchState = !endMatcher.find();
+                    if (startMatchState) {
+                        String[] tokenArray = token.split("\\s");
+                        String yukId = tokenArray[2];
+                        List<String> updateIds = dBupdatesDaoImpl.getUpdateIds();
+                        if (updateIds.contains(yukId)) {
+                            ignoreEntry = true;
+                            continue;
+                        }
+                    }
+                }
+
+                // Checks to see if its an end block
+                if ( blockState ) {
+                    // Checks to see if the file is using a slash and skips to the next line
                     if (token.equals(DBMSDefines.PROCESS_COMMAND_CHARACTER)) {
                         continue;
                     }
@@ -539,7 +629,9 @@ public class UpdateDB
                         // @error warn_once should work with blocks. Blocks otherwise would clear this setting and do not work with @error ignore-begin
                         UpdateLine oldUpdLine = updLine;
                         updLine = new UpdateLine();
-                        
+                        if (startIfState || startMatchState) {
+                            updLine.getMetaProps().putAll(oldUpdLine.getMetaProps());
+                        }
                         if(oldUpdLine.isWarnOnce()) { 
                             
                             updLine.setWarnOnce();
@@ -547,8 +639,10 @@ public class UpdateDB
                         if (oldUpdLine.isIgnoreEnd()){
                             updLine.setIgnoreEnd();
                         }
-                        
-                        updLine.getValue().append(DBMSDefines.START_BLOCK + " ");
+
+                        if (token.startsWith(DBMSDefines.START_BLOCK)) {
+                            updLine.getValue().append(DBMSDefines.START_BLOCK + " ");
+                        }
                         continue;
                     }
                     //single line block, so must be from a *valids file.

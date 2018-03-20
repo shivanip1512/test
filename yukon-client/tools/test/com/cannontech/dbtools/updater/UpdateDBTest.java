@@ -1,15 +1,23 @@
 package com.cannontech.dbtools.updater;
 
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.config.MockConfigurationSource;
-
+import com.cannontech.dbtools.updater.dao.impl.DBupdatesDaoImpl;
 public class UpdateDBTest {
     
     // Fake out a master.cfg entry to test CPARM code.
@@ -101,7 +109,65 @@ public class UpdateDBTest {
                                          "",
                                          "insert into CTIDatabase values('32.0', 'BobTheBuilder', '07-NOV-2120', 'Latest Update', 3 );"));
         return fileStrings;
-        
     }
-    
+
+    @Test
+    public void testUpgradeScript() {
+        UpdateDB updateDB = new UpdateDB(null);
+        List<String> fileStrings = getFileStrings();
+
+        DBupdatesDaoImpl dbupdatesDaoImpl = createNiceMock(DBupdatesDaoImpl.class);
+        dbupdatesDaoImpl.getUpdateIds();
+        expectLastCall().andAnswer(() -> {
+            List<String> updateIds = new ArrayList<>();
+            updateIds.addAll(Arrays.asList("YUK-111", "YUK-116", "YUK-16225", "YUK-1"));
+            return updateIds;
+        }).anyTimes();
+
+        replay(dbupdatesDaoImpl);
+        ReflectionTestUtils.setField(updateDB, "dBupdatesDaoImpl", dbupdatesDaoImpl);
+
+        List<UpdateLine> result = updateDB.convertToUpdateLines(fileStrings, null, null);
+
+        Assert.assertEquals(13, result.size());
+
+        Assert.assertEquals(true, result.get(1).getValue().toString().contains(
+            "INSERT INTO DBUpdates VALUES ('YUK-21', '7.0.1', GETDATE())"));
+
+        Assert.assertEquals(true, result.get(2).getValue().toString().contains(
+            "INSERT INTO DBUpdates VALUES ('YUK-26', '7.0.1', GETDATE())"));
+
+        Assert.assertEquals(true, result.get(2).getValue().toString().contains("/* @start-block */")
+            && result.get(2).getValue().toString().contains("/* @end-block */"));
+
+        Assert.assertEquals(true, result.get(4).getValue().toString().contains(
+            "INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE())"));
+
+        Assert.assertEquals(true, result.get(7).getValue().toString().contains(
+            "UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1"));
+
+        Assert.assertEquals(true, result.get(11).getValue().toString().contains(
+            "INSERT INTO DBUpdates VALUES ('YUK-30', '7.0.1', GETDATE())"));
+
+        Assert.assertEquals(true, result.get(12).getValue().toString().contains(
+            "INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 1, GETDATE())"));
+    }
+
+    private List<String> getFileStrings() {
+        List<String> fileStrings = new ArrayList<>();
+        InputStream is = UpdateDBTest.class.getResourceAsStream("TestUpgradeScript.sql");
+        try {
+            fileStrings = IOUtils.readLines(is);
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                Assert.fail(e.getMessage());
+            }
+        }
+        return fileStrings;
+
+    }
 }

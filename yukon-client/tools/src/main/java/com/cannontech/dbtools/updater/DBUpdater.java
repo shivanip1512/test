@@ -274,13 +274,12 @@ public class DBUpdater extends MessageFrameAdaptor {
 
         if (line_.isSuccess() == null) {
             Statement stat = conn.createStatement();
-
-            if (line_.getValue().toString().startsWith(DBMSDefines.START_BLOCK)) {
+            String lineValue = line_.getValue().toString();
+            if (lineValue.startsWith(DBMSDefines.START_BLOCK) || lineValue.startsWith(DBMSDefines.START)) {
                 cmd = line_.getValue().toString();
             } else {
-                cmd =
-                    line_.getValue().toString()
-                            .substring(0, line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM));
+                cmd = line_.getValue().toString().substring(0,
+                    line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM));
             }
 
             getIMessageFrame().addOutput("EXECUTING: " + cmd);

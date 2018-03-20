@@ -1,7 +1,7 @@
 package com.cannontech.dbtools.updater;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -35,7 +35,7 @@ public class UpdateLine
 	public Map<String, String> getMetaProps()
 	{
 		if( metaProps == null )
-			metaProps = new HashMap<String, String>(16);
+            metaProps = new LinkedHashMap<String, String>(16);
 
 		return metaProps;
 	}
