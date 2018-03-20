@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -35,7 +34,6 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.CollectionActionAlertHelper;
@@ -65,9 +63,8 @@ public class TamperFlagProcessingController {
 	
 	// EDIT
 	@RequestMapping(value = "process", method = RequestMethod.GET)
-    public void process(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
+    public String process(ModelMap model, int tamperFlagMonitorId) throws ServletException {
 		
-		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
 		// tamper flag group device collection
@@ -113,13 +110,13 @@ public class TamperFlagProcessingController {
 		model.addAttribute("tamperFlagGroupBase", basePath);
 		model.addAttribute("tamperFlagGroupDeviceCollection", tamperFlagGroupDeviceCollection);
 		
+	    return "tamperFlagProcessing/process/process.jsp";
 	}
 	
 	// READ FLAGS
 	@RequestMapping(value = "readFlags", method = RequestMethod.GET)
-    public String readFlags(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletException {
+    public String readFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
 		
-		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
 		final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
@@ -143,10 +140,7 @@ public class TamperFlagProcessingController {
 	
 	// RESET FLAGS
 	@RequestMapping(value = "resetFlags", method = RequestMethod.GET)
-    public String resetFlags(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletException {
-		
-		String processError = null;
-		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
+    public String resetFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext) throws ServletException {
 			
 		final TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
@@ -158,18 +152,16 @@ public class TamperFlagProcessingController {
 		monitorToRecentResetKeysCache.put(tamperFlagMonitorId, Integer.toString(cacheKey));
 		
 		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
-		model.addAttribute("processError", processError);
-		model.addAttribute("resetOk", processError == null);
+		model.addAttribute("resetOk", true);
 		
 		//return "redirect:process";
 	    return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
 	}
 	
 	// CLEAR TAMPER FLAG GROUP
-	@RequestMapping("clearTamperFlagGroup")
-	public String clearTamperFlagGroup(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletException {
+	@RequestMapping(value = "clearTamperFlagGroup", method = RequestMethod.GET)
+	public String clearTamperFlagGroup(ModelMap model, int tamperFlagMonitorId) throws ServletException {
 		
-		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
 		
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
