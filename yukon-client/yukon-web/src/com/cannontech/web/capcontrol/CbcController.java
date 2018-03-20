@@ -274,7 +274,7 @@ public class CbcController {
 
         model.addAttribute("tcpCommPorts", tcpPorts);
 
-        List<LightDeviceConfiguration> configs = deviceConfigurationService.getAllConfigurationsByType(cbc.getPaoType());
+        List<LightDeviceConfiguration> configs = deviceConfigDao.getAllConfigurationsByType(cbc.getPaoType());
         model.addAttribute("configs", configs);
 
         return "cbc.jsp";

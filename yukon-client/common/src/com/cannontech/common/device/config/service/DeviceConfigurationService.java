@@ -84,13 +84,6 @@ public interface DeviceConfigurationService {
      */
     void changeCategoryAssignment(int deviceConfigurationId, int newCategoryId, CategoryType categoryType);
 
-    /**
-     * Find all configurations in the database that support the provided pao type and having all 
-     * required categories assigned to it.
-     * @param paoType the pao type whose matching configurations are being retrieved.
-     */
-    List<LightDeviceConfiguration> getAllConfigurationsByType(PaoType paoType);
-
     void removeCategoryAssignment(int deviceConfigurationId, CategoryType categoryType);
 
 }

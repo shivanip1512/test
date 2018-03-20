@@ -163,17 +163,4 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
                                             DbChangeType.DELETE);
         }
     }
-
-    @Override
-    public List<LightDeviceConfiguration> getAllConfigurationsByType(PaoType paoType) {
-        List<String> requiredCategories = 
-                paoDefinitionDao.getCategoryToPaoTypeMap().asMap().entrySet()
-                                                                  .stream()
-                                                                  .filter(entry -> entry.getValue().contains(paoType) 
-                                                                                           && entry.getKey().isRequired())
-                                                                  .map(entry -> entry.getKey().getType().value())
-                                                                  .collect(Collectors.toList());
-
-        return deviceConfigurationDao.getAllAssignableConfigurationsByType(paoType, requiredCategories);
-    }
 }

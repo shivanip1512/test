@@ -271,12 +271,16 @@
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
                         </c:if>
-                        <c:set var="heartbeatClass" value="${heartbeatConfig.mode == null ? 'dn' : ''}"/>
                         <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode"
-                            valueClass="js-heartbeat-cbcHeartbeatMode" rowClass="js-heartbeat-field ${heartbeatClass}">
-                            <c:if test="${heartbeatConfig.mode != null}">
-                                <i:inline key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.${heartbeatConfig.mode}"/>
-                            </c:if>
+                            valueClass="js-heartbeat-cbcHeartbeatMode" rowClass="js-heartbeat-field">
+                            <c:choose>
+                                <c:when test="${!empty heartbeatConfig.mode}">
+                                    <i:inline key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.${heartbeatConfig.mode}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <tags:alertBox key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.unassigned"/>
+                                </c:otherwise>
+                            </c:choose>
                         </tags:nameValue2>
                         <c:set var="heartbeatModeClass" value="${heartbeatConfig.mode == null || heartbeatConfig.mode == 'DISABLED' ? 'dn' : ''}"/>
                         <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod"
@@ -299,7 +303,7 @@
                                     ${fn:escapeXml(attributeMapping.categoryName)}
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="empty-list"><i:inline key="yukon.common.none.choice" /></span>
+                                    <tags:alertBox key="yukon.web.modules.tools.configs.category.cbcAttributeMapping.attributeMappings.unassigned"/>
                                 </c:otherwise>
                             </c:choose>
                         </tags:nameValue2>
