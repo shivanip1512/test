@@ -9,10 +9,6 @@
 
 <cti:standardPage module="amr" page="tamperFlagProcessing">
     
-    <c:if test="${not empty param.processError}">
-        <div class="error">${param.processError}</div>
-    </c:if>
-    
     <%-- MAIN DETAILS --%>
     <div class="column-14-10">
         <div class="column one">
@@ -135,11 +131,7 @@
                             <thead>
                                 <tr>
                                     <th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.dateTime"/></th>
-                                    <th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.successCount"/></th>
-                                    <th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.failureCount"/></th>
-                                    <th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.unsupportedCount"/></th>
                                     <th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.detail"/></th>
-                                    <th><i:inline key=".section.readFlags.recentReadFlagsResults.tableHeader.status"/></th>
                                 </tr>
                             </thead>
                             <tfoot></tfoot>
@@ -151,26 +143,11 @@
                                             <cti:formatDate type="BOTH" value="${result.startTime}"/>
                                         </td>
                                         <td>
-                                            <cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/SUCCESS_COUNT"/>
-                                        </td>
-                                        <td>
-                                            <cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/FAILURE_COUNT"/>
-                                        </td>
-                                        <td>
-                                            <cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/>
-                                        </td>
-                                        <td>
-                                            <cti:url var="readLogsDetailUrl" value="/group/groupMeterRead/resultDetail">
-                                                <cti:param name="resultKey" value="${result.key}"/>
+                                            <cti:url var="readLogsDetailUrl" value="/bulk/progressReport/detail">
+                                                <cti:param name="key" value="${result.cacheKey}"/>
                                             </cti:url>
                                             <a href="${readLogsDetailUrl}"><i:inline key=".section.readFlags.recentReadFlagsResults.viewDetailLink"/></a>
                                         </td>
-                                        <td>
-                                            <cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
-                                                <cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/STATUS_TEXT"/>
-                                            </cti:classUpdater>
-                                        </td>
-                                    
                                     </tr>
                                 </c:forEach>
                             </tbody>
@@ -212,10 +189,7 @@
                             <thead>
                                 <tr>
                                     <th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.dateTime"/></th>
-                                    <th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.successCount"/></th>
-                                    <th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.failureCount"/></th>
                                     <th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.detail"/></th>
-                                    <th><i:inline key=".section.resetFlags.recentResetFlagsResults.tableHeader.status"/></th>
                                 </tr>
                             </thead>
                             <tfoot></tfoot>
@@ -223,28 +197,15 @@
                             
                                 <c:forEach var="result" items="${resetResults}">
                                     <tr>
-                                    
                                         <td>
                                             <cti:formatDate type="BOTH" value="${result.startTime}"/>
                                         </td>
                                         <td>
-                                            <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/>
-                                        </td>
-                                        <td>
-                                            <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/>
-                                        </td>
-                                        <td>
-                                            <cti:url var="resetLogsDetailUrl" value="/group/commander/resultDetail">
-                                                <cti:param name="resultKey" value="${result.key}"/>
+                                            <cti:url var="resetLogsDetailUrl" value="/bulk/progressReport/detail">
+                                                <cti:param name="key" value="${result.cacheKey}"/>
                                             </cti:url>
                                             <a href="${resetLogsDetailUrl}"><i:inline key=".section.resetFlags.recentResetFlagsResults.viewDetailLink"/></a>
                                         </td>
-                                        <td>
-                                            <cti:classUpdater type="COMMANDER" identifier="${result.key}/STATUS_CLASS">
-                                                <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/STATUS_TEXT"/>
-                                            </cti:classUpdater>
-                                        </td>
-                                    
                                     </tr>
                                 </c:forEach>
                                 </tbody>

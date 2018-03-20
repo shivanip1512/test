@@ -94,11 +94,7 @@
     
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults">Recent Read Internal Flags Results:</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.dateTime">Read Date/Time</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.successCount">Success</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.failureCount">Fail</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.unsupportedCount">Not Supported</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.detail">Detail</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.status">Status</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.viewDetailLink">View</entry>
     
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlert"><![CDATA[
@@ -110,10 +106,7 @@
 
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults">Recent Reset Internal Flags Results:</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.dateTime">Reset Date/Time</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.successCount">Success Count</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.failureCount">Failure Count</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.detail">Detail</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.status">Status</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.viewDetailLink">View</entry>
     
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.title">Options</entry>

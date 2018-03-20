@@ -9,10 +9,6 @@
 
 <cti:standardPage module="amr" page="outageProcessing">
     
-    <c:if test="${not empty param.processError}">
-        <div class="error">${param.processError}</div>
-    </c:if>
-    
     <div class="column-14-10">
         <div class="column one">
             <%-- MAIN DETAILS --%>
@@ -150,11 +146,7 @@
                             <thead>
                                 <tr>
                                     <th><i:inline key=".recentReadLogsResults.dateTime"/></th>
-                                    <th><i:inline key=".recentReadLogsResults.successCount"/></th>
-                                    <th><i:inline key=".recentReadLogsResults.failureCount"/></th>
-                                    <th><i:inline key=".recentReadLogsResults.unsupportedCount"/></th>
                                     <th><i:inline key=".recentReadLogsResults.detail"/></th>
-                                    <th><i:inline key=".recentReadLogsResults.status"/></th>
                                 </tr>
                             </thead>
                             <tfoot></tfoot>
@@ -163,21 +155,12 @@
                                     <tr>
                                     
                                         <td><cti:formatDate type="BOTH" value="${result.startTime}"/></td>
-                                        <td><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/SUCCESS_COUNT"/></td>
-                                        <td><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/FAILURE_COUNT"/></td>
-                                        <td><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/UNSUPPORTED_COUNT"/></td>
                                         <td>
-                                            <cti:url var="readLogsDetailUrl" value="/group/groupMeterRead/resultDetail">
-                                                <cti:param name="resultKey" value="${result.key}"/>
+                                            <cti:url var="readLogsDetailUrl" value="/bulk/progressReport/detail">
+                                                <cti:param name="key" value="${result.cacheKey}"/>
                                             </cti:url>
                                             <a href="${readLogsDetailUrl}"><i:inline key=".recentReadLogsResults.viewDetailLink"/></a>
                                         </td>
-                                        <td>
-                                            <cti:classUpdater type="GROUP_METER_READ" identifier="${result.key}/STATUS_CLASS">
-                                                <cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${result.key}/STATUS_TEXT"/>
-                                            </cti:classUpdater>
-                                        </td>
-                                    
                                     </tr>
                                 </c:forEach>
                             </tbody>

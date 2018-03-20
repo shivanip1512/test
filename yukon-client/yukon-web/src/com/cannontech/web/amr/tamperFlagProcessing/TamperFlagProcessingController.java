@@ -1,6 +1,7 @@
 package com.cannontech.web.amr.tamperFlagProcessing;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -73,45 +74,11 @@ public class TamperFlagProcessingController {
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 		
-       List<CollectionActionResult> results =
-            collectionActionService.getCachedResults(monitorToRecentReadKeysCache.get(tamperFlagMonitorId));
-
-        // read results
-        /*
-         * List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-         * allReadsResults.addAll(deviceAttributeReadService.getPendingByType(DeviceRequestType.
-         * GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
-         * allReadsResults.addAll(deviceAttributeReadService.getCompletedByType(DeviceRequestType.
-         * GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ));
-         * List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
-         * List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(tamperFlagMonitorId);
-         * if (readResultKeysForMonitor != null) {
-         * for (GroupMeterReadResult result : allReadsResults) {
-         * if (readResultKeysForMonitor.contains(result.getKey())) {
-         * readResults.add(result);
-         * }
-         * }
-         * Collections.sort(readResults);
-         * }
-         * model.addAttribute("readResults", readResults);
-         */
-		
-		// reset results
-/*		List<GroupCommandResult> allResetResults = new ArrayList<GroupCommandResult>();
-		allResetResults.addAll(groupCommandExecutor.getPendingByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET));
-		allResetResults.addAll(groupCommandExecutor.getCompletedByType(DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_RESET));
-		
-		List<GroupCommandResult> resetResults = new ArrayList<GroupCommandResult>();
-		List<String> resetResultKeysForMonitor = monitorToRecentResetKeysCache.get(tamperFlagMonitorId);
-		if (resetResultKeysForMonitor != null) {
-			for (GroupCommandResult result : allResetResults) {
-				if (resetResultKeysForMonitor.contains(result.getKey())) {
-					resetResults.add(result);
-				}
-			}
-			Collections.sort(resetResults);
-		}
-		model.addAttribute("resetResults", resetResults);*/
+		//check for cached results
+	    List<CollectionActionResult> results = collectionActionService.getCachedResults(monitorToRecentReadKeysCache.get(tamperFlagMonitorId));
+	    model.addAttribute("readResults", results);
+        List<CollectionActionResult> resetResults = collectionActionService.getCachedResults(monitorToRecentResetKeysCache.get(tamperFlagMonitorId));
+        model.addAttribute("resetResults", resetResults);
 		
 		model.addAttribute("tamperFlagMonitor", tamperFlagMonitor);
 		String basePath = deviceGroupService.getFullPath(SystemGroupEnum.TAMPER_FLAG);
@@ -140,9 +107,9 @@ public class TamperFlagProcessingController {
         monitorToRecentReadKeysCache.put(tamperFlagMonitorId, cacheKey);
 		
 		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
+		model.addAttribute("readOk", true);
 		
-		//return "redirect:process";
-	    return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
+		return "redirect:process";
 	}
 	
 	// RESET FLAGS
@@ -154,13 +121,16 @@ public class TamperFlagProcessingController {
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 
-        int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, null, tamperFlagGroupDeviceCollection,
+        LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
+        userInputs.put("Command", RESET_FLAGS_COMMAND);
+        int cacheKey = commandExecutionService.execute(CollectionAction.SEND_COMMAND, userInputs, tamperFlagGroupDeviceCollection,
                                                        RESET_FLAGS_COMMAND, CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, null, userContext);
 		monitorToRecentResetKeysCache.put(tamperFlagMonitorId, cacheKey);
 
 		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
-		//return "redirect:process";
-	    return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
+		model.addAttribute("resetOk", true);
+		
+		return "redirect:process";
 	}
 	
 	// CLEAR TAMPER FLAG GROUP

@@ -67,25 +67,10 @@ public class OutageProcessingController extends MultiActionController {
 
 		OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
 		
-		
+		//check for cached results
         List<CollectionActionResult> results =
             collectionActionService.getCachedResults(monitorToRecentReadKeysCache.get(outageMonitorId));
-		// read results
-/*		List<GroupMeterReadResult> allReadsResults = new ArrayList<GroupMeterReadResult>();
-		allReadsResults.addAll(deviceAttributeReadService.getPendingByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		allReadsResults.addAll(deviceAttributeReadService.getCompletedByType(DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ));
-		
-		List<GroupMeterReadResult> readResults = new ArrayList<GroupMeterReadResult>();
-		List<String> readResultKeysForMonitor = monitorToRecentReadKeysCache.get(outageMonitorId);
-		if (readResultKeysForMonitor != null) {
-			for (GroupMeterReadResult result : allReadsResults) {
-				if (readResultKeysForMonitor.contains(result.getKey())) {
-					readResults.add(result);
-				}
-			}
-			Collections.sort(readResults);
-		}
-		mav.addObject("readResults", readResults);*/
+        model.addAttribute("readResults", results);
 		
 		model.addAttribute("outageMonitor", outageMonitor);
 		model.addAttribute("outageGroupBase", deviceGroupService.getFullPath(SystemGroupEnum.OUTAGE));
@@ -93,7 +78,6 @@ public class OutageProcessingController extends MultiActionController {
 		
 		return "outageProcessing/process.jsp";
 	}
-	
 	
 	// READ OUTAGE LOGS
 	@RequestMapping(value = "readOutageLogs", method = RequestMethod.GET)
@@ -104,8 +88,7 @@ public class OutageProcessingController extends MultiActionController {
 		
         StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
-				    
-		
+				    	
         SimpleCallback<CollectionActionResult> outageRemovalCallback = new SimpleCallback<CollectionActionResult>() {
             @Override
             public void handle(CollectionActionResult result) throws Exception {
@@ -126,13 +109,10 @@ public class OutageProcessingController extends MultiActionController {
         monitorToRecentReadKeysCache.put(outageMonitorId, cacheKey);
 		
 		model.addAttribute("outageMonitorId", outageMonitorId);
+		model.addAttribute("readOk", true);
 		
-		//return "redirect:process";
-		return "redirect:/bulk/progressReport/detail?key=" + cacheKey;
+		return "redirect:process";
 	}
-	
-	
-	
 	
 	// CLEAR OUTAGES GROUP
 	@RequestMapping(value = "clearOutagesGroup", method = RequestMethod.GET)
