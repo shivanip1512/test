@@ -28,7 +28,6 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
     private CapControlSubstationBus capControlSubstationBus = null;
     private List<CCFeederSubAssignment> ccFeederList = null;
     private boolean verificationFlag = false;
-    private boolean dmvTestRunningFlag = false;
     
     public CapControlSubBus() {
         super(PaoType.CAP_CONTROL_SUBBUS);
@@ -262,14 +261,6 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
 
     public void setVerificationFlag(boolean verificationFlag) {
         this.verificationFlag = verificationFlag;
-    }
-    
-    public boolean isDmvTestRunningFlag() {
-        return dmvTestRunningFlag;
-    }
-
-    public void setDmvTestRunningFlag(boolean dmvTestRunningFlag) {
-        this.dmvTestRunningFlag = dmvTestRunningFlag;
     }
 
 }

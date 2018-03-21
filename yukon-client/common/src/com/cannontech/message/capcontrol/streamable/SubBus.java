@@ -545,7 +545,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         return strategyId;
     }
     
-    public boolean getDmvTestRunningFlag() {
+    public boolean isDmvTestRunningFlag() {
         return dmvTestRunningFlag;
     }
 
