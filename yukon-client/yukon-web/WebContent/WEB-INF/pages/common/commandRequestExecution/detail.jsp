@@ -90,10 +90,10 @@
     <tags:sectionContainer title="${infoSectionText}" id="creInfoSection" styleClass="stacked">
                     
         <tags:nameValueContainer>
-            <cti:url var="progressReportUrl" value="/bulk/progressReport/detail?key=${cacheKey}"/>
+            <cti:url var="progressReportUrl" value="/bulk/progressReport/detail?key=${result.cacheKey}"/>
             <tags:nameValue name="${infoTypeText}" nameColumnWidth="160px">
                 <c:choose>
-                    <c:when test="${not empty cacheKey}"><a href="${progressReportUrl}">${cre.commandRequestExecutionType.shortName}</a></c:when>
+                    <c:when test="${not empty result}"><a href="${progressReportUrl}">${cre.commandRequestExecutionType.shortName}</a></c:when>
                     <c:otherwise>${cre.commandRequestExecutionType.shortName}</c:otherwise>
                 </c:choose>
             </tags:nameValue>

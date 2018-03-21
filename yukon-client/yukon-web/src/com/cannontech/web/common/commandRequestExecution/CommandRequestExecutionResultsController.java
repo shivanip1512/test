@@ -195,7 +195,6 @@ public class CommandRequestExecutionResultsController {
         if (collectionActionId != null) {
     	    CollectionActionResult  collectionActionResult = collectionActionService.getResult(collectionActionId);
             model.addAttribute("result", collectionActionResult);
-            model.addAttribute("cacheKey", collectionActionId);
         }
         
 		model.addAttribute("commandRequestExecutionId", commandRequestExecutionId);

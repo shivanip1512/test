@@ -48,7 +48,7 @@ public interface CollectionActionDao {
     SearchResults<CollectionActionFilteredResult> getCollectionActionFilteredResults(CollectionActionFilter filter,
             PagingParameters paging, SortBy sortBy, Direction direction);
     /**
-     * @returns an Integer or null, CollectionActionId may not exist for CRE's prior to this update
+     * @returns null if CollectionActionId doesn't exist for the creId provided otherwise returns creId.
      */
     Integer findCollectionActionIdFromCreId(int creId);
 
