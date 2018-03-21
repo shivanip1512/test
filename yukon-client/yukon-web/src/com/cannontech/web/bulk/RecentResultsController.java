@@ -29,6 +29,10 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
+import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -40,6 +44,7 @@ public class RecentResultsController {
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonUserDao userDao;
+    @Autowired private UserGroupDao userGroupDao;
     
     private final static String baseKey = "yukon.web.modules.tools.bulk.recentResults.";
     
@@ -82,7 +87,16 @@ public class RecentResultsController {
     private void setupModel(YukonUserContext userContext, ModelMap model, CollectionActionFilter filter,
                             SortingParameters sorting, Direction dir, ResultSortBy sortBy) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-
+        
+        List<Integer> excludedUserIds = new ArrayList<>();
+        
+        for (LiteUserGroup lug : userGroupDao.getAllLiteUserGroups()) {
+            UserGroup ug = userGroupDao.getUserGroup(lug.getLiteID());
+            if (!ug.hasYukonRole(YukonRole.DEVICE_ACTIONS)) {
+                excludedUserIds.addAll(userDao.getUserIdsForUserGroup(lug.getLiteID()));
+            }
+        }
+        
         List<CommandRequestExecutionStatus> statusList = new ArrayList<>();
         statusList.add(CommandRequestExecutionStatus.STARTED);
         statusList.add(CommandRequestExecutionStatus.COMPLETE);
@@ -115,7 +129,7 @@ public class RecentResultsController {
         List<CollectionAction> actions = Arrays.asList(CollectionAction.values());
         Collections.sort(actions, comparator);
         model.addAttribute("actionsList", actions);
-                
+        model.addAttribute("excludedUserIds", excludedUserIds);
         for (ResultSortBy columnHeader : ResultSortBy.values()) {
             String text = accessor.getMessage(columnHeader);
             SortableColumn col = SortableColumn.of(dir, columnHeader == sortBy, text, columnHeader.name());

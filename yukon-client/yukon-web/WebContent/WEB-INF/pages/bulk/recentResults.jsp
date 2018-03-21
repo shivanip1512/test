@@ -35,7 +35,8 @@
             </div>
             <tags:pickerDialog id="userPicker" type="userPicker" destinationFieldName="userIds"
                 linkType="selection" selectionProperty="userName" initialId="${filter.userIds}" 
-                icon="icon-user" allowEmptySelection="true" styleClass="fl" multiSelectMode="true"/>
+                icon="icon-user" allowEmptySelection="true" styleClass="fl" multiSelectMode="true"
+                excludeIds="${excludedUserIds}"/>
             </div>
 
             <div class="push-down-4 fr">
