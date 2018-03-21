@@ -72,7 +72,7 @@ class IVVCState
 
         std::string dmvTestStatusMessage;
 
-        unsigned dmvWattVarPointCount;
+        std::set<long>  dmvWattVarPointIDs;
 
         enum
         {

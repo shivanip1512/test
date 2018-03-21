@@ -762,7 +762,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder, state->dmvWattVarPointCount ) )
+            if ( !determineDmvWatchPoints(subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
             {
                 // Configuration Error
                 CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
@@ -826,12 +826,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
 
             // update our voltage data min/max pair data structure
-            // skip the BusPower points as they are not voltages...
+            // skip the BusPower watt and var points as they are not voltages...
             //      feasibilityData:     pointID -> { min, max } voltages
 
-            for ( auto requestType : { RegulatorRequestType, CbcRequestType, OtherRequestType } )
+            for ( auto pointData : request->getPointValues() )
             {
-                for ( auto pointData : request->getPointValues( requestType ) )
+                if ( state->dmvWattVarPointIDs.count( pointData.first ) == 0 )  // its a voltage point
                 {
                     // if it is in the mapping, update the min and max voltages as necessary, if it isn't, add the current
                     //  value as both the min and max
@@ -872,7 +872,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             // is the feasibilityData the same size as the collection of all non-BusPower watt and var points in the request?
             //  if yes then we have all the data and can proceed
 
-            if ( ( request->requestSize() - state->dmvWattVarPointCount ) != state->feasibilityData.size() )
+            if ( ( request->requestSize() - state->dmvWattVarPointIDs.size() ) != state->feasibilityData.size() )
             {
                 // Didn't receive all the requested data so we can't determine if the bump size is possible.
                 CTILOG_ERROR( dout, "Incomplete Feasibility Data: DMV Test '" << testDataPtr.TestName
@@ -909,10 +909,16 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if ( feasibility.second.first - testDataPtr.StepSize < Vmin )  // undervoltage
                 {
                     canBumpDown = false;
+
+                    CTILOG_INFO( dout, "Feasibility -- PointID: " << feasibility.first
+                                        << " - Bumping Down would create an under-voltage condition." );
                 }
                 if ( feasibility.second.second + testDataPtr.StepSize > Vmax ) // overvoltage
                 {
                     canBumpUp = false;
+
+                    CTILOG_INFO( dout, "Feasibility -- PointID: " << feasibility.first
+                                        << " - Bumping Up would create an over-voltage condition." );
                 }
             }
 
@@ -1110,7 +1116,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder, state->dmvWattVarPointCount ) )
+            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
             {
                 // Configuration Error
                 CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
@@ -1252,7 +1258,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder, state->dmvWattVarPointCount ) )
+            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
             {
                 // Configuration Error
                 CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
@@ -4559,6 +4565,13 @@ bool completionCheck( PointDataRequestPtr   request,
         {   BusPowerRequestType,    "bus telemetry"         }
     };
 
+    if ( ! request->hasRequestType( requestType ) )
+    {
+        CTILOG_INFO( dout, "No " << description.at( requestType ) << " data is monitored in the point request." );
+
+        return true;
+    }
+    
     const double complete = 100.0 * request->ratioComplete( requestType );
 
     if ( complete < thresholdPercentage )
@@ -4702,8 +4715,8 @@ unsigned validateTapOpSolution( const IVVCState::TapOperationZoneMap & tapOp )
 bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
                                              bool sendScan,
                                              std::set<PointRequest>& pointRequests,
-                                             bool isBusOptimized,
-                                             unsigned & wattVarCount )
+                                             ControlStrategy::ControlMethodType strategyControlMethod,
+                                             std::set<long> & dmvWattVarPointIDs )
 {
     bool configurationError = false;
 
@@ -4799,7 +4812,7 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
         }
     }
 
-    wattVarCount = 0;
+    dmvWattVarPointIDs.clear();
 
     // We need the bus watt, var points and attached voltage point.
 
@@ -4807,7 +4820,7 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
     if (busWattPointId > 0)
     {
         pointRequests.emplace( busWattPointId, BusPowerRequestType, false );
-        wattVarCount++;
+        dmvWattVarPointIDs.insert( busWattPointId );
     }
     else
     {
@@ -4824,7 +4837,7 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
         if (ID > 0)
         {
             pointRequests.emplace( ID, BusPowerRequestType, false );
-            wattVarCount++;
+            dmvWattVarPointIDs.insert( ID );
         }
         else
         {
@@ -4849,7 +4862,7 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
     // We need the watt, var and voltage points for each feeder on the bus
     //  -- iff control method is bus optimized
 
-    if ( isBusOptimized )
+    if ( strategyControlMethod == ControlStrategy::BusOptimizedFeeder )
     {
         for ( CtiCCFeederPtr feeder : subbus->getCCFeeders() )
         {
@@ -4859,7 +4872,7 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
             if (wattPoint > 0)
             {
                 pointRequests.emplace( wattPoint, BusPowerRequestType, false );
-                wattVarCount++;
+                dmvWattVarPointIDs.insert( wattPoint );
             }
             else
             {
@@ -4877,7 +4890,7 @@ bool IVVCAlgorithm::determineDmvWatchPoints( CtiCCSubstationBusPtr subbus,
                 if (varPoint > 0)
                 {
                     pointRequests.emplace( varPoint, BusPowerRequestType, false );
-                    wattVarCount++;
+                    dmvWattVarPointIDs.insert( varPoint );
                 }
                 else
                 {

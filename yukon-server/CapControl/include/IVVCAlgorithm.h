@@ -73,7 +73,7 @@ class IVVCAlgorithm
                                      bool & dataIsValid );
 
         bool determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
-        bool determineDmvWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, bool isBusOptimized, unsigned & wattVarCount);
+        bool determineDmvWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, ControlStrategy::ControlMethodType strategyControlMethod, std::set<long> & dmvWattVarPointIDs );
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
         double calculateVf(const PointValueMap &voltages);

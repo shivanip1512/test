@@ -4199,7 +4199,7 @@ void CtiCCSubstationBus::setSendMoreTimeControlledCommandsFlag(bool flag)
 
 void CtiCCSubstationBus::setDmvTestRunning(bool flag)
 {
-    updateDynamicValue( _dmvTestRunningFlag, flag );
+    _busupdatedflag |= updateDynamicValue( _dmvTestRunningFlag, flag );
 }
 
 void CtiCCSubstationBus::setCurrentVerificationFeederId(long feederId)
