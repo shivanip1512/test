@@ -48,9 +48,16 @@ class RfnTemperatureAlarmCommand;
 
 struct RfnCommandResult
 {
-    RfnCommandResult(const std::string &desc) : description(desc) {}
+    RfnCommandResult(const std::string &desc) 
+        :   RfnCommandResult(desc, ClientErrors::None)
+    {}
+    RfnCommandResult(const std::string &desc, YukonError_t error) 
+        :   description(desc)
+        ,   status(error) 
+    {}
 
     std::string description;
+    YukonError_t status;
     std::vector<DeviceCommand::point_data> points;
 };
 

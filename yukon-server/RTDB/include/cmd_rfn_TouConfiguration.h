@@ -16,7 +16,7 @@ class IM_EX_DEVDB RfnTouConfigurationCommand : public RfnCommand
 {
 public:
 
-    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
+    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
 
     enum Rate
     {

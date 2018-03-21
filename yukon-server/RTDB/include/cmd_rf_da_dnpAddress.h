@@ -31,7 +31,7 @@ public:
 
     unsigned short getDnpSlaveAddress() const;
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response ) override;
 };
 
 

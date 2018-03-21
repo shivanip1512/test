@@ -102,8 +102,8 @@ public:
 
     RfnVoltageProfileGetConfigurationCommand();
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
     boost::optional<unsigned> getVoltageAveragingInterval() const;
     boost::optional<unsigned> getLoadProfileInterval()      const;
@@ -126,8 +126,8 @@ public:
     RfnVoltageProfileSetConfigurationCommand( const unsigned voltage_averaging_interval_seconds,
                                               const unsigned load_profile_interval_minutes );
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
     const unsigned voltageAveragingInterval,    // seconds
                    loadProfileInterval;         // minutes
@@ -167,8 +167,8 @@ public:
 
     RfnLoadProfileGetRecordingCommand();
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
     boost::optional<RecordingOption> getRecordingOption() const;
     boost::optional<CtiTime>         getEndTime() const;
@@ -196,8 +196,8 @@ public:
 
     RfnLoadProfileSetTemporaryRecordingCommand( const RecordingOption option );
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
     const RecordingOption recordingOption;
 };
@@ -213,8 +213,8 @@ public:
 
     RfnLoadProfileSetPermanentRecordingCommand( const RecordingOption option );
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
     const RecordingOption recordingOption;
 };
@@ -231,8 +231,8 @@ public:
                                      const CtiTime begin,
                                      const CtiTime end );
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
 protected:
 

@@ -112,7 +112,7 @@ auto Rfn410CentronDevice::getDisplayConfigItems(const Config::DeviceConfigSPtr &
                 return getConfigDataEnum(deviceConfig, configKey, Cti::Config::displayItemMap);
             });
 
-    config.cycle_delay    = getConfigData<long, 0x00, 0x0f>(deviceConfig, Config::RfnStrings::LcdCycleTime);
+    config.cycle_delay    = getConfigData<uint8_t, 0x00, 0x0f>(deviceConfig, Config::RfnStrings::LcdCycleTime);
     config.display_digits = getConfigDataEnum(deviceConfig, Config::RfnStrings::DisplayDigits, displayDigitLookup);
 
     return config;

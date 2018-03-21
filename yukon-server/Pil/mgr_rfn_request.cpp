@@ -12,6 +12,8 @@
 #include <boost/range/algorithm/heap_algorithm.hpp>
 #include <boost/range/numeric.hpp>
 
+using Cti::Devices::Commands::DeviceCommand;
+using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Messaging::Rfn::E2eMessenger;
 
@@ -163,17 +165,17 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
                 auto commandResult = activeRequest.request.command->decodeCommand(CtiTime::now(), activeRequest.response);
 
-                result.emplace(std::move(activeRequest.request), commandResult, ClientErrors::None);
+                result.emplace(std::move(activeRequest.request), commandResult);
             }
-            catch( const Devices::Commands::DeviceCommand::CommandException &ce )
+            catch( const DeviceCommand::CommandException &ce )
             {
-                result.emplace(std::move(activeRequest.request), ce.error_description, ce.error_code);
+                result.emplace(std::move(activeRequest.request), RfnCommandResult { ce.error_description, ce.error_code });
             }
             catch( const Protocols::E2eDataTransferProtocol::RequestNotAcceptable &rne )
             {
                 CTILOG_ERROR(dout, "Endpoint indicated request not acceptable for device "<< activeRequest.request.parameters.rfnIdentifier);
 
-                result.emplace(std::move(activeRequest.request), rne.reason, ClientErrors::E2eRequestNotAcceptable);
+                result.emplace(std::move(activeRequest.request), RfnCommandResult { rne.reason, ClientErrors::E2eRequestNotAcceptable });
             }
             catch( Protocols::E2eDataTransferProtocol::E2eException &ex )
             {
@@ -182,7 +184,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 continue;
             }
 
-            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< result->request.parameters.rfnIdentifier);
+            CTILOG_INFO(dout, "Result ["<< result->commandResult.status <<", "<< result->commandResult.description <<"] for device "<< result->request.parameters.rfnIdentifier);
 
             _tickResults.push_back(std::move(*result));
 
@@ -231,9 +233,9 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
             {
                 auto commandError = activeRequest.request.command->error(CtiTime::now(), confirm.error);
 
-                CTILOG_INFO(dout, "Result ["<< confirm.error <<", "<< commandError.description <<"] for device "<< confirm.rfnIdentifier);
+                CTILOG_INFO(dout, "Result ["<< commandError.status <<", "<< commandError.description <<"] for device "<< confirm.rfnIdentifier);
 
-                _tickResults.emplace_back(std::move(activeRequest.request), commandError, confirm.error);
+                _tickResults.emplace_back(std::move(activeRequest.request), commandError);
 
                 rejected.insert(confirm.rfnIdentifier);
 
@@ -338,9 +340,9 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
 
             auto commandError = activeRequest.request.command->error(CtiTime::now(), error);
 
-            CTILOG_INFO(dout, "Result ["<< error <<", "<< commandError.description <<"] for device "<< rfnId);
+            CTILOG_INFO(dout, "Result ["<< commandError.status <<", "<< commandError.description <<"] for device "<< rfnId);
 
-            _tickResults.emplace_back(std::move(activeRequest.request), commandError, error);
+            _tickResults.emplace_back(std::move(activeRequest.request), commandError);
 
             expirations.insert(rfnId);
 
@@ -419,7 +421,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
         try
         {
-            Devices::Commands::RfnCommand::RfnRequestPayload rfnRequest = request.command->executeCommand(CtiTime::now());
+            auto rfnRequest = request.command->executeCommand(CtiTime::now());
 
             std::vector<unsigned char> e2ePacket;
 
@@ -429,7 +431,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             }
             catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
             {
-                throw Devices::Commands::DeviceCommand::CommandException(
+                throw DeviceCommand::CommandException(
                         ClientErrors::E2eRequestPayloadTooLarge,
                         "Request payload too large (" + CtiNumStr(rfnRequest.size()) + ")");
             }
@@ -470,11 +472,11 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             return;
         }
-        catch( Devices::Commands::DeviceCommand::CommandException &ce )
+        catch( DeviceCommand::CommandException &ce )
         {
             CTILOG_ERROR(dout, "Result ["<< ce.error_code <<", "<< ce.error_description <<"] for device "<< rfnIdentifier);
 
-            _tickResults.emplace_back(std::move(request), ce.error_description, ce.error_code);
+            _tickResults.emplace_back(std::move(request), RfnCommandResult { ce.error_description, ce.error_code });
         }
     }
 }

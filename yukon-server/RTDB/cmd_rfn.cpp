@@ -29,7 +29,7 @@ RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
 // Return the error description
 RfnCommandResult RfnCommand::error(const CtiTime now, const YukonError_t errorCode)
 {
-    return GetErrorString(errorCode);
+    return { GetErrorString(errorCode), errorCode };
 }
 
 // Default header for RFN messages

@@ -57,7 +57,7 @@ public:
             const DisplayDigits display_digits,
             const unsigned char cycle_time);
 
-    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
+    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
 
     const metric_vector_t display_metrics;
     const boost::optional<DisconnectDisplayState> disconnect_display;
@@ -78,7 +78,7 @@ public:
 
     RfnCentronGetLcdConfigurationCommand();
 
-    virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
+    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
 
     metric_map_t getDisplayMetrics() const;
     boost::optional<bool> getDisconnectDisplayDisabled() const;

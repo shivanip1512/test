@@ -59,8 +59,8 @@ public:
 
     ASID getApplicationServiceId() const override;
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 };
 
 
@@ -180,8 +180,8 @@ public:
 
     RfnGetOvUvAlarmConfigurationCommand( const MeterID meter_id, const EventID event_id );
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now,
+                                    const RfnResponsePayload & response ) override;
 
     AlarmConfiguration  getAlarmConfiguration() const;
 

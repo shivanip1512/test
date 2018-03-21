@@ -711,7 +711,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                         result.request.parameters.deviceId,
                         result.request.parameters.commandString,
                         result.commandResult.description,
-                        result.status,
+                        result.commandResult.status,
                         0,
                         MacroOffset::none,
                         0,
@@ -763,12 +763,12 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
         vgList.push_back(retMsg->replicateMessage());
         retList.push_back(retMsg.release());
 
-        if( ! result.status )
+        if( ! result.commandResult.status )
         {
             dev.extractCommandResult(*result.request.command);
         }
 
-        return result.status;
+        return result.commandResult.status;
     }
 };
 

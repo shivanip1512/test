@@ -47,10 +47,9 @@ struct RfnDeviceRequest
 
 struct RfnDeviceResult
 {
-    RfnDeviceResult(RfnDeviceRequest request_, Devices::Commands::RfnCommandResult commandResult_, const YukonError_t status_) :
+    RfnDeviceResult(RfnDeviceRequest request_, Devices::Commands::RfnCommandResult commandResult_) :
         request(std::move(request_)),
-        commandResult(commandResult_),
-        status(status_)
+        commandResult(commandResult_)
     {
     }
 
@@ -60,7 +59,6 @@ struct RfnDeviceResult
 
     RfnDeviceRequest request;
     Devices::Commands::RfnCommandResult commandResult;
-    YukonError_t status;
 };
 
 class IM_EX_CTIPIL RfnRequestManager

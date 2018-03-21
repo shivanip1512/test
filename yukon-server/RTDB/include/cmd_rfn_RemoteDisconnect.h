@@ -102,7 +102,7 @@ public:
 
     unsigned char currentDisconnectMode;
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload &response );
+    RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload &response ) override;
 
 protected:
 
@@ -192,7 +192,7 @@ public:
 
     RfnRemoteDisconnectGetConfigurationCommand();
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response );
+    RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response ) override;
 };
 
 }

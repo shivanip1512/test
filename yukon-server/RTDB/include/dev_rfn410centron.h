@@ -19,7 +19,7 @@ protected:
     {
         Commands::RfnCentronLcdConfigurationCommand::metric_vector_t display_metrics;
         Commands::RfnCentronLcdConfigurationCommand::DisplayDigits display_digits;
-        long cycle_delay;
+        uint8_t cycle_delay;
     };
 
     c1sx_display getDisplayConfigItems(const Config::DeviceConfigSPtr &config);

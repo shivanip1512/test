@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        auto & result = results.front();
+        auto & commandResult = results.front().commandResult;
 
         const std::string expectedDescription =
             "Status: Success (0)"
@@ -185,9 +185,9 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
             "\nTime in Seconds, Rate D (4256): Coincident Value 1, Scaling Factor: 1"
             "\n";
 
-        BOOST_CHECK_EQUAL(result.commandResult.description, expectedDescription);
-        BOOST_CHECK(result.commandResult.points.empty());
-        BOOST_CHECK_EQUAL(result.status, ClientErrors::None);
+        BOOST_CHECK_EQUAL(commandResult.description, expectedDescription);
+        BOOST_CHECK(commandResult.points.empty());
+        BOOST_CHECK_EQUAL(commandResult.status, ClientErrors::None);
     }
 }
 
@@ -259,14 +259,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        auto & result = results.front();
+        auto & commandResult = results.front().commandResult;
 
         const std::string expectedDescription =
             "Request not acceptable";
 
-        BOOST_CHECK_EQUAL(result.commandResult.description, expectedDescription);
-        BOOST_CHECK(result.commandResult.points.empty());
-        BOOST_CHECK_EQUAL(result.status, ClientErrors::E2eRequestNotAcceptable);
+        BOOST_CHECK_EQUAL(commandResult.description, expectedDescription);
+        BOOST_CHECK(commandResult.points.empty());
+        BOOST_CHECK_EQUAL(commandResult.status, ClientErrors::E2eRequestNotAcceptable);
     }
 }
 

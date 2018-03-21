@@ -166,8 +166,7 @@ BOOST_AUTO_TEST_CASE(test_handleRfnDeviceResult)
 
     pilServer.handleRfnDeviceResult({
         { parameters, 9999, std::make_unique<Cti::Devices::Commands::RfnImmediateDemandFreezeCommand>() },
-        { "This was a triumph. I'm making a note here: HUGE SUCCESS." },
-        ClientErrors::None });
+        { "This was a triumph. I'm making a note here: HUGE SUCCESS." }});
 
     BOOST_REQUIRE_EQUAL(1, pilServer.retList.size());
 
