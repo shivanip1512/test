@@ -176,6 +176,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService, Col
         List<CommandRequestBase> commands =
             collection.getDeviceList().stream().map(device -> new CommandRequestDevice(command, device)).collect(
                 Collectors.toList());
+        result.setCancelationCallback(execCallback);
         execute(commands, execCallback, result.getExecution(), false, context.getYukonUser());
         return result.getCacheKey();
     }

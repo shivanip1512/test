@@ -106,7 +106,7 @@ public class GroupCommanderController {
                     commanderEventLogService.groupCommandCompleted(
                         result.getDetail(CollectionActionDetail.SUCCESS).getDevices().getDeviceCount(),
                         result.getCounts().getFailedCount(),
-                        result.getDetail(CollectionActionDetail.UNSUPPORTED).getDevices().getDeviceCount(),
+                        0,
                         result.getExecutionExceptionText(), String.valueOf(result.getCacheKey()));
                 }
             };
