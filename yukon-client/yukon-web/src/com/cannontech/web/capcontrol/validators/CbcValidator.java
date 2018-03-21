@@ -44,6 +44,9 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
 
         if (cbc.isTwoWay()) {
             validateCommPort(cbc, errors);
+            if (!cbc.getDeviceScanRateMap().isEmpty()) {
+                validateScanIntervals(cbc, errors);
+            }
         }
         if (cbc.isLogical()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "parentRtuId", basekey + ".parentRTURequired");
@@ -77,6 +80,17 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
                 }
             }
         }
+    }
+
+    private void validateScanIntervals(CapControlCBC cbc, Errors errors) {
+        cbc.getDeviceScanRateMap().forEach((key, deviceScanRate) -> {
+            if (deviceScanRate.getAlternateRate().equals(deviceScanRate.getIntervalRate())) {
+                errors.rejectValue("deviceScanRateMap['" + key + "'].alternateRate",
+                    "yukon.web.error.valuesCannotBeSame");
+                errors.rejectValue("deviceScanRateMap['" + key + "'].intervalRate",
+                    "yukon.web.error.valuesCannotBeSame");
+            }
+        });
     }
 
     private void validateSerialNumber(CapControlCBC cbc, Errors errors) {
