@@ -66,20 +66,8 @@ public class BusServiceImpl implements BusService {
         assignments = paoScheduleServiceHelper.getAssignmentsByDMVFilter(assignments);
 
         List<PAOScheduleAssign> assigns = assignments.stream()
-           .map(new Function<PaoScheduleAssignment, PAOScheduleAssign>(){
-
-                @Override
-                public PAOScheduleAssign apply(PaoScheduleAssignment assignment) {
-                    return PAOScheduleAssign.of(assignment);
-                }
-            })
+           .map(assign -> PAOScheduleAssign.of(assign))
            .collect(Collectors.toList());
-
-        /*
-         * TODO JAVA 8
-         *
-         * .map(assign -> PAOScheduleAssign.of(assign))
-         */
 
         bus.setSchedules(assigns);
         try {
@@ -87,7 +75,7 @@ public class BusServiceImpl implements BusService {
             bus.setVerificationFlag(ccBus.getVerificationFlag());
             bus.setDmvTestRunningFlag(ccBus.getDmvTestRunningFlag());
         } catch (NotFoundException nfe) {
-            log.error("Bus not found in cache: ", nfe);
+            log.debug("Bus not found in cache: ", nfe);
         }
         return bus;
     }
