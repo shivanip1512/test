@@ -30,6 +30,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilteredResult;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionProcess;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
@@ -62,6 +63,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     @Autowired private TemporaryDeviceGroupService tempGroupService;
     @Autowired private DeviceGroupMemberEditorDao editorDao;
     @Autowired private DeviceGroupCollectionHelper groupHelper;
+    @Autowired private CollectionActionLogDetailService logService;
     
     private static final Logger log = YukonLogManager.getLogger(CollectionActionDao.class);
     
@@ -283,7 +285,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             }
         });
         CollectionActionResult result = new CollectionActionResult(action, allDevices, loadInputs(key),
-            null, editorDao, tempGroupService, groupHelper, null, null);
+            null, editorDao, tempGroupService, groupHelper, logService, null);
         //failure bucket
         result.addDevicesToGroup(FAILURE, failed, null);
         //success bucket
