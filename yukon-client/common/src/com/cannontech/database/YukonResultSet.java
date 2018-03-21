@@ -18,6 +18,7 @@ import org.joda.time.format.ISOPeriodFormat;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.input.type.EnumInputType;
@@ -154,6 +155,15 @@ public class YukonResultSet {
         PaoType paoType = getEnum("Type", PaoType.class);
         
         return new PaoIdentifier(paoId, paoType);
+    }
+    
+    /**
+     * Returns a {@link RfnIdentifier} using 'SerialNumber', 'Manufacturer' and 'Model' as the column names.
+     */
+    public RfnIdentifier getRfnIdentifier() throws SQLException {
+        return new RfnIdentifier(getStringSafe("SerialNumber"), 
+                                 getStringSafe("Manufacturer"), 
+                                 getStringSafe("Model"));
     }
     
     public PointIdentifier getPointIdentifier(String pointTypeColumnLabel, String pointOffsetColumnLabel)

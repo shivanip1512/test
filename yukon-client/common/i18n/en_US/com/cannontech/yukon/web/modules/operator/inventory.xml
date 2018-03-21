@@ -73,6 +73,31 @@
     <entry key="yukon.web.modules.operator.inventory.report.pageHeading">Device Report</entry>
     <entry key="yukon.web.modules.operator.inventory.report.crumbTitle">Device Report</entry>
     
+    <!-- /inventory/pqrReport/setup.jsp -->
+    <entry key="yukon.web.modules.operator.pqrReport.pageTitle">PQR Event Report</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.pageHeading">Power Quality Response Event Report</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.crumbTitle">PQR Event Report</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.downloadButton.label">Download Report</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.timestamp">Timestamp</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType">Event Type</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.responseType">Response Type</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.value">Value</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.RESPONSE_DISABLED">Response Disabled</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.EVENT_DETECTED">Event Detected</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.NOT_ACTIVATED">Not Activated</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.NO_DR_EVENT">No DR Event</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.EVENT_SUSTAINED">Event Sustained</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.EVENT_RELEASE_MIN">Event Release Minimum</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.EVENT_RELEASE">Event Release</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.EVENT_RELEASE_MAX">Event Release Maximum</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.EVENT_COMPLETE">Event Completed</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.eventType.RESTORE_DETECTED">Restore Detected</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.responseType.UNDER_VOLTAGE">Under Voltage</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.responseType.OVER_VOLTAGE">Over Voltage</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.responseType.UNDER_FREQUENCY">Under Frequency</entry>
+    <entry key="yukon.web.modules.operator.pqrReport.responseType.OVER_FREQUENCY">Over Frequency</entry>
+    
     <!-- /inventory/abr/setup.jsp -->
     <entry key="yukon.web.modules.operator.abr.setup.pageName">Add Hardware By SN Range</entry>
     <entry key="yukon.web.modules.operator.abr.setup.contextualPageName">Add By Range</entry>
@@ -292,6 +317,8 @@
     <entry key="yukon.web.modules.operator.inventory.actions.controlAuditDescription">Run a control audit report for two-way devices.</entry>
     <entry key="yukon.web.modules.operator.inventory.actions.report.label">Device Report</entry>
     <entry key="yukon.web.modules.operator.inventory.actions.report.description">View a report of device details.</entry>
+    <entry key="yukon.web.modules.operator.inventory.actions.pqrExport.label">Power Quality Response Report</entry>
+    <entry key="yukon.web.modules.operator.inventory.actions.pqrExport.description">View a report of PQR events.</entry>
     
     <!-- /inventory/inventoryOperations/saveBatchFile.jsp -->
     <entry key="yukon.web.modules.operator.saveToFile.pageName">Save To File</entry>

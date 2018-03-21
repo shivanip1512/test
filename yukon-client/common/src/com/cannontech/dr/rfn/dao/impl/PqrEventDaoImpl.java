@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlBuilder;
@@ -42,7 +43,8 @@ public class PqrEventDaoImpl implements PqrEventDao {
         PqrEventType eventType = rs.getEnum("EventType", PqrEventType.class);
         PqrResponseType responseType = rs.getEnum("ResponseType", PqrResponseType.class);
         double value = rs.getDouble("Value");
-        return new PqrEvent(inventoryId, timestamp, eventType, responseType, value);
+        RfnIdentifier rfnIdentifier = rs.getRfnIdentifier();
+        return new PqrEvent(inventoryId, rfnIdentifier, timestamp, eventType, responseType, value);
     };
     
     @Autowired private NextValueHelper nextValueHelper;
@@ -82,9 +84,11 @@ public class PqrEventDaoImpl implements PqrEventDao {
             @Override
             public SqlFragmentSource generate(List<Integer> inventoryIdsSubList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT EventLogId, InventoryId, Timestamp, EventType, ResponseType, Value");
-                sql.append("FROM PqrEventLog");
-                sql.append("WHERE InventoryId").in(inventoryIdsSubList);
+                sql.append("SELECT EventLogId, pel.InventoryId, Timestamp, EventType, ResponseType, Value, ra.Manufacturer, ra.Model, ra.SerialNumber");
+                sql.append("FROM PqrEventLog pel");
+                sql.append("JOIN InventoryBase ib ON pel.InventoryId = ib.InventoryId");
+                sql.append("JOIN RfnAddress ra ON ra.DeviceId = ib.DeviceId");
+                sql.append("WHERE pel.InventoryId").in(inventoryIdsSubList);
                 sql.append("AND Timestamp").gte(dateRange.getMin());
                 sql.append("AND Timestamp").lte(dateRange.getMax());
                 sql.append("ORDER BY InventoryId ASC, Timestamp ASC");

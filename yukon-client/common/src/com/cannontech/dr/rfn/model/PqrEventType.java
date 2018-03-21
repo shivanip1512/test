@@ -2,12 +2,14 @@ package com.cannontech.dr.rfn.model;
 
 import java.util.Arrays;
 
+import com.cannontech.common.i18n.DisplayableEnum;
+
 /**
  * Possible types of Power Quality Response events that can be returned in the event log blob in the LCR TLV report.
  * Values are specified in the GridBallast Firmware Design document (section 5.2: Log Entries) at
  * http://customsp.etn.com/es/EASTeamSite/ProLaunch_Template_Rev01/NODES/Requirements/Grid%20Ballast%20Firmware%20Design.docx
  */
-public enum PqrEventType {
+public enum PqrEventType implements DisplayableEnum {
     RESPONSE_DISABLED(0x01),
     EVENT_DETECTED(0x02),
     NOT_ACTIVATED(0x03),
@@ -35,5 +37,10 @@ public enum PqrEventType {
                      .filter(type -> type.value == value)
                      .findFirst()
                      .orElseThrow(() -> new IllegalArgumentException("No PqrEventType for value: " + value));
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.operator.pqrReport.eventType." + name();
     }
 }
