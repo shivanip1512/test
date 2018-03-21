@@ -62,8 +62,6 @@ RfnCommand::Bytes RfnDemandFreezeCommand::getCommandData()
 RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now,
                                                                     const RfnResponsePayload & response )
 {
-    RfnCommandResult  result;
-
     // We need at least 4 bytes
 
     validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
@@ -80,7 +78,7 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
     // if not found in map, then status == Reserved
 
-    result.description += "Status: " + ( status ? *status : "Reserved" ) + " (" + CtiNumStr(response[1]).xhex(2) + ")";
+    RfnCommandResult  result { "Status: " + ( status ? *status : "Reserved" ) + " (" + CtiNumStr(response[1]).xhex(2) + ")" };
 
     // validate additional status
 

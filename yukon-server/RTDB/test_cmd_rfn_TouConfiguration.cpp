@@ -290,7 +290,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 " Switch 3 rate - A\n"
                 " Switch 4 rate - B\n"
                 " Switch 5 rate - C\n"
-                "Default TOU rate : B\n";
+                "Default TOU rate : B";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
@@ -419,7 +419,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
             "Holidays :\n"
             " Date 1 - 02/01/2025 00:00:00\n"
             " Date 2 - 06/14/2036 00:00:00\n"
-            " Date 3 - 12/30/2050 00:00:00\n";
+            " Date 3 - 12/30/2050 00:00:00";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
@@ -491,7 +491,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
         std::string desc_exp =
             "Status : Success\n"
             "Additional Status : NO ADDITIONAL STATUS\n"
-            "TOU State : Enabled\n";
+            "TOU State : Enabled";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
         std::string desc_exp =
             "Status : Success\n"
             "Additional Status : NO ADDITIONAL STATUS\n"
-            "TOU State : Disabled\n";
+            "TOU State : Disabled";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 

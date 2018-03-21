@@ -125,8 +125,6 @@ RfnCommand::Bytes RfnFocusAlLcdConfigurationReadCommand::getCommandData()
 
 RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnCommandResult result;
-
     /*
      *  Length (Bytes)  Field Description
      *  1               Command Code
@@ -165,9 +163,9 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
     // update display item duration
     _displayItemDurationReceived = displayItemDuration;
 
-    result.description += "Display items received:";
+    std::string description = "Display items received:";
 
-    result.description += "\nLCD cycle time : " + CtiNumStr( displayItemDuration ) + " seconds";
+    description += "\nLCD cycle time : " + CtiNumStr( displayItemDuration ) + " seconds";
 
     const unsigned responseSizeExp = 4 + displayItemNbr*3;
 
@@ -178,9 +176,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
     if( ! displayItemNbr )
     {
-        result.description += "\nNo display metrics";
-
-        return result;
+        return description += "\nNo display metrics";
     }
 
     Bytes::const_iterator response_iter = response.begin() + 4;
@@ -210,10 +206,10 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
         _displayItemsReceived->push_back( metric->metric );
 
-        result.description += "\nDisplay metric " + CtiNumStr(item+1) + " [" + alphamericId + "] : " + metric->description;
+        description += "\nDisplay metric " + CtiNumStr(item+1) + " [" + alphamericId + "] : " + metric->description;
     }
 
-    return result;
+    return description;
 }
 
 
@@ -289,8 +285,6 @@ RfnCommand::Bytes RfnFocusAlLcdConfigurationWriteCommand::getCommandData()
 
 RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnCommandResult result;
-
     /*
      *  Length (Bytes)  Field Description
      *  1               Command Code
@@ -316,17 +310,15 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
     validate( Condition( statusCode == 0x00, ClientErrors::Unknown )
             << "Failure Status (" << statusCode << ")");
 
-    result.description += "Status: " + *status + " (" + CtiNumStr(statusCode) + ")";
+    std::string description = "Status: " + *status + " (" + CtiNumStr(statusCode) + ")";
 
-    result.description += "\nDisplay items sent:";
+    description += "\nDisplay items sent:";
 
-    result.description += "\nLCD cycle time : " + CtiNumStr(displayItemDuration) + " seconds";
+    description += "\nLCD cycle time : " + CtiNumStr(displayItemDuration) + " seconds";
 
     if( metrics.empty() )
     {
-        result.description += "\nNo display metrics";
-
-        return result;
+        return description += "\nNo display metrics";
     }
 
     unsigned item = 0;
@@ -338,10 +330,10 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
         validate( Condition( !! metric, ClientErrors::InvalidData )
                 << "Invalid metric code (" << m << ")" );
 
-        result.description += "\nDisplay metric " + CtiNumStr(++item) + " : " + metric->description;
+        description += "\nDisplay metric " + std::to_string(++item) + " : " + metric->description;
     }
 
-    return result;
+    return description;
 }
 
 

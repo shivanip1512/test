@@ -65,8 +65,6 @@ unsigned char RfnRemoteDisconnectConfigurationCommand::getOperation() const
 
 RfnCommandResult RfnRemoteDisconnectConfigurationCommand::decodeResponseHeader( const CtiTime now, const RfnResponsePayload & response )
 {
-    RfnCommandResult result;
-
     // We need at least three bytes
     validate( Condition( response.size() >= 3, ClientErrors::InvalidData )
             << "Invalid Response length (" << response.size() << ")" );
@@ -87,9 +85,7 @@ RfnCommandResult RfnRemoteDisconnectConfigurationCommand::decodeResponseHeader( 
     validate( Condition( response[2] == 0, ClientErrors::InvalidData ) // success
             << "Status: " << *status << " (" << response[2] << ")" );
 
-    result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
-
-    return result;
+    return "Status: " + *status + " (" + std::to_string(response[2]) + ")";
 }
 
 BaseCmd::TlvList RfnRemoteDisconnectConfigurationCommand::getTlvsFromPayload( const RfnResponsePayload & response )

@@ -135,8 +135,6 @@ unsigned char RfnTouConfigurationCommand::getCommandCode() const
  */
 RfnCommandResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnCommandResult result;
-
     // check size
 
     validate( Condition( response.size() >= 6, ClientErrors::InvalidData )
@@ -176,17 +174,17 @@ RfnCommandResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, co
 
     string touStateDesc = ( *_touState_received == TouEnable ) ? "Enabled" : "Disabled";
 
-    result.description += "Status : " + *statusDesc + "\n"
-                       +  "Additional Status : " + *additionalStatusDesc + "\n"
-                       +  "TOU State : " + touStateDesc + "\n";
+    std::string description = 
+        "Status : " + *statusDesc 
+        + "\nAdditional Status : " + *additionalStatusDesc
+        + "\nTOU State : " + touStateDesc;
 
-    const vector<TypeLengthValue> tlvs = getTlvsFromBytes( Bytes( response.begin() + 5 , response.end() ));
-    for each(const TypeLengthValue& tlv in tlvs)
+    for( const auto & tlv : getTlvsFromBytes(Bytes(response.begin() + 5, response.end())) )
     {
-        decodeTlv( result, tlv );
+        description += "\n" + decodeTlv( tlv );
     }
 
-    return result;
+    return description;
 }
 
 /**
@@ -379,37 +377,31 @@ RfnCommand::Bytes RfnTouScheduleSetConfigurationCommand::createCommandData( cons
  * @param result
  * @param tlv
  */
-void RfnTouScheduleConfigurationCommand::decodeTlv( RfnCommandResult& result,  const TypeLengthValue& tlv )
+std::string RfnTouScheduleConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     switch( tlv.type )
     {
         case Type_DayTable :
         {
-            decodeDayTable( result, tlv.value );
-            break;
+            return decodeDayTable( tlv.value );
         }
         case Type_Schedule1_SwitchTimes :
         case Type_Schedule2_SwitchTimes :
         case Type_Schedule3_SwitchTimes :
         case Type_Schedule4_SwitchTimes :
         {
-            ScheduleNbr schedule_nbr = *mapFind( timesScheduleNbrItems, tlv.type );
-            decodeScheduleSwitchTimes( result, tlv.value, schedule_nbr );
-            break;
+            return decodeScheduleSwitchTimes( tlv.value, *mapFind(timesScheduleNbrItems, tlv.type) );
         }
         case Type_Schedule1_Rates :
         case Type_Schedule2_Rates :
         case Type_Schedule3_Rates :
         case Type_Schedule4_Rates :
         {
-            ScheduleNbr schedule_nbr = *mapFind( ratesScheduleNbrItems, tlv.type );
-            decodeScheduleRates( result, tlv.value, schedule_nbr );
-            break;
+            return decodeScheduleRates( tlv.value, *mapFind(ratesScheduleNbrItems, tlv.type) );
         }
         case Type_DefaultTouRate :
         {
-            decodeDefaultTouRate( result, tlv.value );
-            break;
+            return decodeDefaultTouRate( tlv.value );
         }
         default :
         {
@@ -423,7 +415,7 @@ void RfnTouScheduleConfigurationCommand::decodeTlv( RfnCommandResult& result,  c
  * @param result append description to the result
  * @param value byte vector containing the tlv value
  */
-void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnCommandResult& result, const Bytes& value )
+std::string RfnTouScheduleConfigurationCommand::decodeDayTable( const Bytes& value )
 {
     validate( Condition( value.size() == 3, ClientErrors::InvalidData )
             << "Invalid day table data size - (" << value.size() << ", expecting 3-byte)" );
@@ -442,7 +434,7 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnCommandResult& resul
 
     DayTable dayTable;
 
-    result.description += "Day Table :\n";
+    std::string description = "Day Table :";
 
     for( int day_nbr = 0; day_nbr < 8; day_nbr++ )
     {
@@ -453,7 +445,7 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnCommandResult& resul
 
         const string schedule_name = SchedulePrefix + CtiNumStr(schedule_nbr + 1);
 
-        result.description += string(" ") + dayNames[day_nbr] + " - " + schedule_name + "\n";
+        description += string("\n ") + dayNames[day_nbr] + " - " + schedule_name;
 
         dayTable.push_back( schedule_name );
     }
@@ -467,6 +459,8 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnCommandResult& resul
             << "Unexpected day table tlv has been already received" );
 
     _schedule_received->_dayTable = dayTable;
+
+    return description;
 }
 
 /**
@@ -475,14 +469,14 @@ void RfnTouScheduleConfigurationCommand::decodeDayTable( RfnCommandResult& resul
  * @param value byte vector containing the tlv value
  * @param schedule_nbr schedule number <=> [0,3]
  */
-void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
+std::string RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( const Bytes& value, const ScheduleNbr schedule_nbr )
 {
     validate( Condition( value.size() == 10, ClientErrors::InvalidData )
             << "Invalid schedule switch times data size - (" << value.size() << ", expecting 10-byte)" );
 
     DailyTimes times;
 
-    result.description += "SCHEDULE_" + CtiNumStr((int)schedule_nbr+1) + " switch times :\n";
+    std::string description = "SCHEDULE_" + CtiNumStr((int)schedule_nbr+1) + " switch times :";
 
     times.push_back("00:00");
 
@@ -502,7 +496,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnCommandRe
 
         const string time_str = CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2);
 
-        result.description += " Switch time " + CtiNumStr(time_nbr) + " - " + time_str + "\n";
+        description += "\n Switch time " + CtiNumStr(time_nbr) + " - " + time_str;
 
         times.push_back( time_str );
     }
@@ -516,6 +510,8 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnCommandRe
             << "Unexpected switch Times tlv has been already received" );
 
     _schedule_received->_times[schedule_nbr] = times;
+
+    return description;
 }
 
 /**
@@ -524,7 +520,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnCommandRe
  * @param value byte vector containing the tlv value
  * @param schedule_nbr schedule number <=> [0,3]
  */
-void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr )
+std::string RfnTouScheduleConfigurationCommand::decodeScheduleRates( const Bytes& value, const ScheduleNbr schedule_nbr )
 {
     validate( Condition( value.size() == 3, ClientErrors::InvalidData )
             << "Invalid schedule rate data size - (" << value.size() << ", expecting 3-byte)" );
@@ -541,7 +537,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& 
 
     DailyRates rates;
 
-    result.description += "SCHEDULE_" + CtiNumStr((int)schedule_nbr+1) + " rates :\n";
+    std::string description = "SCHEDULE_" + CtiNumStr((int)schedule_nbr+1) + " rates :";
 
     for( int rate_nbr = 0; rate_nbr < 6; rate_nbr++ )
     {
@@ -551,7 +547,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& 
         validate( Condition( !! rate_str, ClientErrors::InvalidData )
                 << "Invalid schedule rate - (" << rate << ")");
 
-        result.description += string(" ") + switchRates[rate_nbr] + " rate - " + *rate_str + "\n";
+        description += string("\n ") + switchRates[rate_nbr] + " rate - " + *rate_str;
 
         rates.push_back( *rate_str );
     }
@@ -565,6 +561,8 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& 
             << "Unexpected switch rates tlv has been already received" );
 
     _schedule_received->_rates[schedule_nbr] = rates;
+
+    return description;
 }
 
 /**
@@ -572,7 +570,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& 
  * @param result append description to the result
  * @param value byte vector containing the tlv value
  */
-void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnCommandResult& result, const Bytes& value )
+std::string RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( const Bytes& value )
 {
     validate( Condition( value.size() == 1, ClientErrors::InvalidData )
             << "Invalid default rate data size - (" << value.size() << ", expecting 1-byte)");
@@ -583,8 +581,6 @@ void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnCommandResult&
     validate( Condition( !! rate_str, ClientErrors::InvalidData )
             << "Invalid default rate - (" << rate << ")");
 
-    result.description += "Default TOU rate : " + *rate_str + "\n";
-
     if( ! _schedule_received )
     {
         _schedule_received = Schedule();
@@ -594,6 +590,8 @@ void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnCommandResult&
             << "Unexpected tlv - default rates has been already received" );
 
     _schedule_received->_defaultRate = *rate_str;
+
+    return "Default TOU rate : " + *rate_str;
 }
 
 /**
@@ -689,12 +687,12 @@ RfnCommand::Bytes RfnTouHolidayConfigurationCommand::getCommandData()
  * @param result append description to the result
  * @param tlv item to decode
  */
-void RfnTouHolidayConfigurationCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouHolidayConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     validate( Condition( tlv.type == Type_Holiday, ClientErrors::InvalidData )
             << "Unexpected tlv - (type " << tlv.type << ")" );
 
-    decodeHoliday( result, tlv.value );
+    return decodeHoliday( tlv.value );
 }
 
 /**
@@ -702,14 +700,14 @@ void RfnTouHolidayConfigurationCommand::decodeTlv( RfnCommandResult& result, con
  * @param result append description to the result
  * @param value byte vector containing the tlv value
  */
-void RfnTouHolidayConfigurationCommand::decodeHoliday( RfnCommandResult& result, const Bytes& value )
+std::string RfnTouHolidayConfigurationCommand::decodeHoliday( const Bytes& value )
 {
     validate( Condition( value.size() == 12, ClientErrors::InvalidData )
             << "Invalid holiday data size - (" << value.size() << ", expecting 12-byte)" );
 
     Holidays holidays;
 
-    result.description += "Holidays :\n";
+    std::string description = "Holidays :";
 
     for( int holiday_nbr = 0; holiday_nbr < 3; holiday_nbr++ )
     {
@@ -717,7 +715,7 @@ void RfnTouHolidayConfigurationCommand::decodeHoliday( RfnCommandResult& result,
 
         CtiTime holidayTime( date );
 
-        result.description += " Date " + CtiNumStr( holiday_nbr + 1 ) + " - " + holidayTime.asString() + "\n";
+        description += "\n Date " + CtiNumStr( holiday_nbr + 1 ) + " - " + holidayTime.asString();
 
         holidays[holiday_nbr] = CtiDate( holidayTime );
     }
@@ -726,6 +724,8 @@ void RfnTouHolidayConfigurationCommand::decodeHoliday( RfnCommandResult& result,
             << "Unexpected tlv - holiday has been already received" );
 
     _holidays_received = holidays;
+
+    return description;
 }
 
 /**
@@ -800,7 +800,7 @@ RfnCommand::Bytes RfnTouStateConfigurationCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouStateConfigurationCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouStateConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -840,7 +840,7 @@ RfnCommand::Bytes RfnTouSetHolidayActiveCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouSetHolidayActiveCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouSetHolidayActiveCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -880,7 +880,7 @@ RfnCommand::Bytes RfnTouCancelHolidayActiveCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouCancelHolidayActiveCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouCancelHolidayActiveCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -903,7 +903,7 @@ RfnCommand::Bytes RfnTouResetCommand::getCommandData()
     return list_of(0); // zero tlvs
 }
 
-void RfnTouResetCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouResetCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -926,7 +926,7 @@ RfnCommand::Bytes RfnTouResetZeroCommand::getCommandData()
     return list_of(0); // zero tlvs
 }
 
-void RfnTouResetZeroCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouResetZeroCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -987,7 +987,7 @@ RfnCommand::Bytes RfnTouCriticalPeakCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouCriticalPeakCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouCriticalPeakCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }
@@ -1017,7 +1017,7 @@ RfnCommand::Bytes RfnTouCancelCriticalPeakCommand::getCommandData()
  * @param result
  * @param tlv
  */
-void RfnTouCancelCriticalPeakCommand::decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv )
+std::string RfnTouCancelCriticalPeakCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     throw RfnCommand::CommandException( ClientErrors::InvalidData, "Unexpected tlv - (type " + CtiNumStr(tlv.type) + ")");
 }

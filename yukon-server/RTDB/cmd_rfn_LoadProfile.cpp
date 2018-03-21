@@ -73,8 +73,6 @@ RfnLoadProfileCommand::TlvList RfnLoadProfileCommand::getTlvs()
 RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
                                                               const RfnResponsePayload & response )
 {
-    RfnCommandResult result;
-
     // We need at least 3 bytes
 
     validate( Condition( response.size() >= 3, ClientErrors::InvalidData )
@@ -98,9 +96,7 @@ RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
     validate( Condition( response[2] == 0, ClientErrors::InvalidData ) // success
             << "Status: " << *status << " (" << response[2] << ")" );
 
-    result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
-
-    return result;
+    return "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
 }
 
 

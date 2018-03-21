@@ -365,7 +365,7 @@ RfnCommand::Bytes RfnChannelConfigurationCommand::getCommandData()
     return getBytesFromTlvs( getTlvsToSend() );
 }
 
-void RfnChannelConfigurationCommand::decodeHeader( const Bytes &response, RfnCommandResult &result )
+std::string RfnChannelConfigurationCommand::decodeHeader( const Bytes &response )
 {
     // We need at least 4 bytes for Command code, operation, status and the number of TLVs
     validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
@@ -387,10 +387,10 @@ void RfnChannelConfigurationCommand::decodeHeader( const Bytes &response, RfnCom
     validate( Condition( response[2] == 0, ClientErrors::InvalidData )
             << "Status: " << *status << " (" << response[2] << ")" );
 
-    result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")\n";
+    return "Status: " + *status + " (" + std::to_string(response[2]) + ")";
 }
 
-void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, RfnCommandResult &result )
+std::string RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response )
 {
     validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
             << "Number of bytes for list of metric IDs received 0, expected >= 1" );
@@ -403,12 +403,11 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
     validate( Condition( expectedSize == response.size(), ClientErrors::InvalidData )
             << "Number of bytes for list of metric IDs received " << response.size() << ", expected " << expectedSize );
 
-    result.description += "Metric(s) list:\n";
+    std::string description = "Metric(s) list:\n";
 
     if( offset == expectedSize )
     {
-        result.description += "none\n";
-        return;
+        return description += "none\n";
     }
 
     while( offset < expectedSize )
@@ -416,10 +415,10 @@ void RfnChannelConfigurationCommand::decodeMetricsIds( const Bytes &response, Rf
         const unsigned metricId = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
 
-        std::string metricDescription = getMetricDescription(metricId);
-
-        result.description += metricDescription + " (" + CtiNumStr(metricId) + ")\n";
+        description += getMetricDescription(metricId) + " (" + std::to_string(metricId) + ")\n";
     }
+
+    return description;
 }
 
 
@@ -432,7 +431,7 @@ bool isValidRecordingMetric( const unsigned metricId )
 }
 
 
-void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response, RfnCommandResult &result )
+std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response )
 {
     validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received 0, expected >= 1" );
@@ -445,12 +444,11 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
     validate( Condition( expectedSize == response.size(), ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received " << response.size() << ", expected " << expectedSize );
 
-    result.description += "Metric(s) descriptors:\n";
+    std::string description = "Metric(s) descriptors:\n";
 
     if( offset == expectedSize )
     {
-        result.description += "none\n";
-        return;
+        return description += "none\n";
     }
 
     unsigned coincidentValue = -1; // start with -1 in case the first metric has a non-zero coincident value
@@ -462,7 +460,7 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
 
         std::string metricDescription = getMetricDescription(metricId);
 
-        result.description += metricDescription + " (" + CtiNumStr(metricId) + "): ";
+        description += metricDescription + " (" + std::to_string(metricId) + "): ";
 
         const unsigned metricQualifier = getValueFromBytes_bEndian( response, offset, 2 );
         offset += 2;
@@ -498,8 +496,10 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
             //  Ignore the coincidents - we don't record them in DynamicPaoInfo or report them to the user
         }
 
-        result.description += metricQFields.resolve() + "\n";
+        description += metricQFields.resolve() + "\n";
     }
+
+    return description;
 }
 
 //----------------------------------------------------------------------------
@@ -523,16 +523,11 @@ unsigned char RfnChannelSelectionCommand::getResponseCommandCode() const
 RfnCommandResult RfnChannelSelectionCommand::decodeCommand( const CtiTime now,
                                                             const RfnResponsePayload & response )
 {
-    RfnCommandResult result;
-
-    decodeHeader( response, result );
-
-    decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()), longTlvs ), result, getExpectedTlvType() );
-
-    return result;
+    auto description = decodeHeader( response );
+    return description + "\n" + decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()), longTlvs ), getExpectedTlvType() );
 }
 
-void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, const unsigned char tlvTypeExpected )
+std::string RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, const unsigned char tlvTypeExpected )
 {
     validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
@@ -546,15 +541,17 @@ void RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, RfnCommandResu
     {
         case TlvType_ChannelSelection_Configuration :
         {
-            result.description += "Channel Selection Configuration:\n";
-            decodeMetricsIds( tlv.value, result );
-            break;
+            return "Channel Selection Configuration:\n" 
+                + decodeMetricsIds( tlv.value );
         }
         case TlvType_ChannelSelection_ActiveChannels :
         {
-            result.description += "Channel Registration Full Description:\n";
-            decodeChannelDescriptors( tlv.value, result );
-            break;
+            return "Channel Registration Full Description:\n" 
+                + decodeChannelDescriptors( tlv.value );
+        }
+        default:
+        {
+            return "Unknown TLV type (" + std::to_string(tlv.type) + ")";
         }
     }
 }
@@ -642,18 +639,14 @@ unsigned char RfnChannelIntervalRecordingCommand::getResponseCommandCode() const
 RfnCommandResult RfnChannelIntervalRecordingCommand::decodeCommand( const CtiTime now,
                                                                     const RfnResponsePayload & response )
 {
-    RfnCommandResult result;
-
-    decodeHeader( response, result );
+    std::string description = decodeHeader( response );
 
     TlvList tlvs = getTlvsFromBytes( Bytes( response.begin() + 3, response.end()) );
 
     validate( Condition( tlvs.size() == 1, ClientErrors::InvalidData )
             << "Unexpected TLV count (" << tlvs.size() << "), expected (1)" );
 
-    decodeTlv( tlvs[0], result );
-
-    return result;
+    return description + "\n" + decodeTlv( tlvs[0] );
 }
 
 namespace RfnChannelIntervalRecording {
@@ -698,13 +691,12 @@ unsigned char SetConfigurationCommand::getOperation() const
     return Operation_SetChannelIntervalRecordingConfiguration;
 }
 
-void SetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
+std::string SetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveChannels, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveChannels << ")" );
 
-    result.description += "Channel Interval Recording Full Description:\n";
-    decodeChannelDescriptors( tlv.value, result );
+    return "Channel Interval Recording Full Description:\n" + decodeChannelDescriptors( tlv.value );
 }
 
 unsigned SetConfigurationCommand::getIntervalRecordingSeconds() const
@@ -726,16 +718,15 @@ unsigned char GetConfigurationCommand::getOperation() const
     return Operation_GetChannelIntervalRecordingConfiguration;
 }
 
-void GetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
+std::string GetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_Configuration, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_Configuration << ")" );
 
-    result.description += "Channel Interval Recording Configuration:\n";
-    decodeChannelIntervalRecording( tlv.value, result );
+    return "Channel Interval Recording Configuration:\n" + decodeChannelIntervalRecording( tlv.value );
 }
 
-void GetConfigurationCommand::decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result )
+std::string GetConfigurationCommand::decodeChannelIntervalRecording( const Bytes &response )
 {
     validate( Condition( response.size() >= 9, ClientErrors::InvalidData )
             << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
@@ -748,10 +739,9 @@ void GetConfigurationCommand::decodeChannelIntervalRecording( const Bytes &respo
     _intervalReportingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
     offset += 4;
 
-    result.description += "Interval Recording: " + CtiNumStr(_intervalRecordingSecondsReceived) + " seconds\n" +
-                          "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
-
-    decodeMetricsIds( Bytes(response.begin() + 8 , response.end()), result );
+    return "Interval Recording: " + std::to_string(_intervalRecordingSecondsReceived) + " seconds\n" +
+           "Interval Reporting: " + std::to_string(_intervalReportingSecondsReceived) + " seconds\n" +
+           decodeMetricsIds( Bytes(response.begin() + 8 , response.end()) );
 }
 
 unsigned GetConfigurationCommand::getIntervalRecordingSecondsReceived() const
@@ -773,16 +763,15 @@ unsigned char GetActiveConfigurationCommand::getOperation() const
     return Operation_GetChannelIntervalRecordingActiveConfiguration;
 }
 
-void GetActiveConfigurationCommand::decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result )
+std::string GetActiveConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
 {
     validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveConfiguration, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveConfiguration << ")" );
 
-    result.description += "Channel Interval Recording Active Configuration:\n";
-    decodeActiveConfiguration( tlv.value, result );
+    return "Channel Interval Recording Active Configuration:\n" + decodeActiveConfiguration( tlv.value );
 }
 
-void GetActiveConfigurationCommand::decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result )
+std::string GetActiveConfigurationCommand::decodeActiveConfiguration( const Bytes &response )
 {
     validate( Condition( response.size() >= 9, ClientErrors::InvalidData )
             << "Number of bytes for interval recording received " << response.size() << ", expected >= 9" );
@@ -795,10 +784,9 @@ void GetActiveConfigurationCommand::decodeActiveConfiguration( const Bytes &resp
     _intervalReportingSecondsReceived = getValueFromBytes_bEndian( response, offset, 4 );
     offset += 4;
 
-    result.description += "Interval Recording: " + CtiNumStr(_intervalRecordingSecondsReceived) + " seconds\n" +
-                          "Interval Reporting: " + CtiNumStr(_intervalReportingSecondsReceived) + " seconds\n";
-
-    decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()), result );
+    return "Interval Recording: " + std::to_string(_intervalRecordingSecondsReceived) + " seconds\n" +
+           "Interval Reporting: " + std::to_string(_intervalReportingSecondsReceived) + " seconds\n" +
+           decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()) );
 }
 
 unsigned GetActiveConfigurationCommand::getIntervalRecordingSecondsReceived() const

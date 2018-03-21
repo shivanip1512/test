@@ -36,9 +36,9 @@ protected:
     virtual TlvList       getTlvsToSend() const;
     virtual unsigned char getResponseCommandCode() const = 0;
 
-    void decodeHeader             ( const Bytes &response, RfnCommandResult &result );
-    void decodeMetricsIds         ( const Bytes &response, RfnCommandResult &result );
-    void decodeChannelDescriptors ( const Bytes &response, RfnCommandResult &result );
+    std::string decodeHeader             ( const Bytes &response );
+    std::string decodeMetricsIds         ( const Bytes &response );
+    std::string decodeChannelDescriptors ( const Bytes &response );
 };
 
 /**
@@ -58,9 +58,9 @@ class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCom
     unsigned char getCommandCode() const;
     unsigned char getResponseCommandCode() const;
 
-    void decodeTlvs( const TlvList& tlvs, RfnCommandResult &result, const unsigned char tlv_expected );
+    std::string decodeTlvs( const TlvList& tlvs, const unsigned char tlv_expected );
 
-    void decodeTlvChannelSelection( const Bytes &data, RfnCommandResult &result );
+    std::string decodeTlvChannelSelection( const Bytes &data );
 
 protected:
     enum
@@ -136,7 +136,7 @@ class IM_EX_DEVDB RfnChannelIntervalRecordingCommand : public RfnChannelConfigur
     unsigned char getCommandCode() const;
     unsigned char getResponseCommandCode() const;
 
-    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result ) = 0;
+    virtual std::string decodeTlv( const TypeLengthValue& tlv ) = 0;
 
 protected:
     enum
@@ -175,7 +175,7 @@ class IM_EX_DEVDB SetConfigurationCommand : public RfnChannelIntervalRecordingCo
 
     unsigned char getOperation() const;
 
-    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
     const unsigned _intervalRecordingSeconds,
                    _intervalReportingSeconds;
@@ -198,9 +198,9 @@ class IM_EX_DEVDB GetConfigurationCommand : public RfnChannelIntervalRecordingCo
 {
     unsigned char getOperation() const;
 
-    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
-    void decodeChannelIntervalRecording( const Bytes &response, RfnCommandResult &result );
+    std::string decodeChannelIntervalRecording( const Bytes &response );
 
     unsigned _intervalRecordingSecondsReceived;
     unsigned _intervalReportingSecondsReceived;
@@ -218,9 +218,9 @@ class IM_EX_DEVDB GetActiveConfigurationCommand : public RfnChannelIntervalRecor
 {
     unsigned char getOperation() const;
 
-    virtual void decodeTlv( const TypeLengthValue& tlv, RfnCommandResult &result );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
-    void decodeActiveConfiguration( const Bytes &response, RfnCommandResult &result );
+    std::string decodeActiveConfiguration( const Bytes &response );
 
     unsigned _intervalRecordingSecondsReceived;
     unsigned _intervalReportingSecondsReceived;

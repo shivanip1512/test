@@ -46,7 +46,7 @@ protected:
     virtual unsigned char getOperation() const = 0;
     virtual Bytes         getCommandData() = 0;
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv ) = 0;
+    virtual std::string decodeTlv( const TypeLengthValue& tlv ) = 0;
 
     boost::optional<TouState> _touState_received;
 };
@@ -90,12 +90,12 @@ protected:
     virtual unsigned char getOperation() const = 0;
     virtual Bytes         getCommandData() = 0;
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
-    void decodeDayTable            ( RfnCommandResult& result, const Bytes& value );
-    void decodeDefaultTouRate      ( RfnCommandResult& result, const Bytes& value );
-    void decodeScheduleSwitchTimes ( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
-    void decodeScheduleRates       ( RfnCommandResult& result, const Bytes& value, const ScheduleNbr schedule_nbr );
+    std::string decodeDayTable            ( const Bytes& value );
+    std::string decodeDefaultTouRate      ( const Bytes& value );
+    std::string decodeScheduleSwitchTimes ( const Bytes& value, const ScheduleNbr schedule_nbr );
+    std::string decodeScheduleRates       ( const Bytes& value, const ScheduleNbr schedule_nbr );
 
     boost::optional<Schedule> _schedule_received;
 };
@@ -152,9 +152,9 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
-    void decodeHoliday( RfnCommandResult& result, const Bytes& value );
+    std::string decodeHoliday( const Bytes& value );
 
 private:
 
@@ -180,7 +180,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
 private:
 
@@ -201,7 +201,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 };
 
 /**
@@ -218,7 +218,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 };
 
 /**
@@ -235,7 +235,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 };
 
 /**
@@ -252,7 +252,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 };
 
 /**
@@ -271,7 +271,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
 private:
 
@@ -295,7 +295,7 @@ protected:
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    virtual void decodeTlv( RfnCommandResult& result, const TypeLengthValue& tlv );
+    std::string decodeTlv( const TypeLengthValue& tlv ) override;
 
 };
 

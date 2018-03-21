@@ -61,8 +61,6 @@ RfnCommand::Bytes RfnTemperatureAlarmCommand::getCommandData()
 RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime now,
                                                                     const RfnResponsePayload & response )
 {
-    RfnCommandResult  result;
-
     // We need at least 3 bytes
 
     validate( Condition( response.size() >= 3, ClientErrors::InvalidData )
@@ -94,9 +92,7 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 
     _commandStatus = statusDescription->first;
 
-    result.description += "Temperature Alarm Request Status: " + statusDescription->second + " (" + CtiNumStr(response[2]) + ")";
-
-    return result;
+    return "Temperature Alarm Request Status: " + statusDescription->second + " (" + std::to_string(response[2]) + ")";
 }
 
 

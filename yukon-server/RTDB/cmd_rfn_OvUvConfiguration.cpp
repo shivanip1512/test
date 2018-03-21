@@ -64,8 +64,6 @@ auto RfnOvUvConfigurationCommand::getApplicationServiceId() const -> ASID
 RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
                                                              const RfnResponsePayload & response )
 {
-    RfnCommandResult    result;
-
     // We need 2 bytes
 
     validate( Condition( response.size() == 2, ClientErrors::InvalidData )
@@ -88,9 +86,7 @@ RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
     validate( Condition( response[1] == 0x01, ClientErrors::InvalidData ) // success
             << "Status: " << *status << " (" << response[1] << ")" );
 
-    result.description += "Status: " + *status + " (" + CtiNumStr(response[1]) + ")";
-
-    return result;
+    return "Status: " + *status + " (" + std::to_string(response[1]) + ")";
 }
 
 
@@ -307,8 +303,6 @@ const std::map<unsigned char, std::string> severityResolver = boost::assign::map
 RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTime now,
                                                                      const RfnResponsePayload & response )
 {
-    RfnCommandResult    result;
-
 ///    We need 19 bytes
 ///        1   -- opCode
 ///        1   -- Meter ID
@@ -361,7 +355,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
     validate( Condition( response[1] == _meterID, ClientErrors::InvalidData )
             << "Meter ID mismatch (" << response[1] << ") expected (" << _meterID << ")" );
 
-    result.description += "Meter ID: " + *meterID + " (" + CtiNumStr(response[1]) + ")";
+    std::string description = "Meter ID: " + *meterID + " (" + CtiNumStr(response[1]) + ")";
 
     const unsigned eventIDvalue = (response[2] << 8) + response[3];
 
@@ -373,26 +367,26 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
     validate( Condition( eventIDvalue == _eventID, ClientErrors::InvalidData )
             << "Event ID mismatch (" << eventIDvalue << ") expected (" << _eventID << ")" );
 
-    result.description += "\nEvent ID: " + *eventID + " (" + CtiNumStr(eventIDvalue) + ")";
+    description += "\nEvent ID: " + *eventID + " (" + CtiNumStr(eventIDvalue) + ")";
 
     boost::optional<std::string> ovuvState = Cti::mapFind( ovuvStateResolver, response[4] );
 
     validate( Condition( !! ovuvState, ClientErrors::InvalidData )
             << "Invalid OV/UV State (" << response[4] << ")" );
 
-    result.description += "\nOV/UV State: " + *ovuvState + " (" + CtiNumStr(response[4]) + ")";
+    description += "\nOV/UV State: " + *ovuvState + " (" + CtiNumStr(response[4]) + ")";
 
-    result.description += "\nNew Alarm Reporting Interval: " + CtiNumStr(response[5]) + " minutes";
-    result.description += "\nAlarm Repeat Interval: " + CtiNumStr(response[6]) + " minutes";
-    result.description += "\nSET Alarm Repeat Count: " + CtiNumStr(response[7]) + " count(s)";
-    result.description += "\nCLEAR Alarm Repeat Count: " + CtiNumStr(response[8]) + " count(s)";
+    description += "\nNew Alarm Reporting Interval: " + CtiNumStr(response[5]) + " minutes";
+    description += "\nAlarm Repeat Interval: " + CtiNumStr(response[6]) + " minutes";
+    description += "\nSET Alarm Repeat Count: " + CtiNumStr(response[7]) + " count(s)";
+    description += "\nCLEAR Alarm Repeat Count: " + CtiNumStr(response[8]) + " count(s)";
 
     boost::optional<std::string> severity = Cti::mapFind( severityResolver, response[9] );
 
     validate( Condition( !! severity, ClientErrors::InvalidData )
             << "Invalid severity (" << response[9] << ")" );
 
-    result.description += "\nSeverity: " + *severity + " (" + CtiNumStr(response[9]) + ")";
+    description += "\nSeverity: " + *severity + " (" + CtiNumStr(response[9]) + ")";
 
     _alarmConfig.ovuvEnabled                = response[4];
     _alarmConfig.ovuvAlarmReportingInterval = response[5];
@@ -403,15 +397,15 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     const double threshold = thresholdValue / 1000.0;
 
-    result.description += "\nSet Threshold Value: " + CtiNumStr(threshold) + " volts (" + CtiNumStr(thresholdValue).xhex(8) + ")";
+    description += "\nSet Threshold Value: " + CtiNumStr(threshold) + " volts (" + CtiNumStr(thresholdValue).xhex(8) + ")";
 
     ( _eventID == OverVoltage ? _alarmConfig.ovThreshold : _alarmConfig.uvThreshold ) = threshold;
 
-    result.description += "\nUnit of Measure: Volts (" + CtiNumStr(response[14]).xhex(2) + ")";
-    result.description += "\nUoM modifier 1: " + CtiNumStr(uom_modifier1).xhex(4);
-    result.description += "\nUoM modifier 2: " + CtiNumStr(uom_modifier2).xhex(4);
+    description += "\nUnit of Measure: Volts (" + CtiNumStr(response[14]).xhex(2) + ")";
+    description += "\nUoM modifier 1: " + CtiNumStr(uom_modifier1).xhex(4);
+    description += "\nUoM modifier 2: " + CtiNumStr(uom_modifier2).xhex(4);
 
-    return result;
+    return description;
 }
 
 

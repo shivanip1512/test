@@ -48,7 +48,6 @@ class RfnTemperatureAlarmCommand;
 
 struct RfnCommandResult
 {
-    RfnCommandResult() {}
     RfnCommandResult(const std::string &desc) : description(desc) {}
 
     std::string description;
