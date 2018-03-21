@@ -7,6 +7,9 @@ import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.model.SimpleDevice;
 
+/**
+ * Callback for non-CRE collection actions
+ */
 public class CollectionActionBulkProcessorCallback implements BulkProcessorCallback<SimpleDevice, SimpleDevice>{
 
     private CollectionActionResult result;

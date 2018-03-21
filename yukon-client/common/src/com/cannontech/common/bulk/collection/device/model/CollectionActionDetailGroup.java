@@ -3,6 +3,9 @@ package com.cannontech.common.bulk.collection.device.model;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 
+/**
+ * This class represents collection action bucket. Group is needed to be able to add device to collection.
+ */
 public class CollectionActionDetailGroup {
 
     private DeviceCollection devices;

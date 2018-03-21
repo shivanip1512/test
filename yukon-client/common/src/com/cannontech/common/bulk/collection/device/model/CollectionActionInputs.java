@@ -2,6 +2,9 @@ package com.cannontech.common.bulk.collection.device.model;
 
 import java.util.LinkedHashMap;
 
+/**
+ * Represents user inputs
+ */
 public class CollectionActionInputs {
     
     //collection actions selected by the user
@@ -22,5 +25,4 @@ public class CollectionActionInputs {
     public LinkedHashMap<String, String> getInputs() {
         return inputs;
     }
-  
 }

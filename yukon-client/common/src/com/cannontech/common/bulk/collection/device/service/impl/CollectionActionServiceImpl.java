@@ -1,28 +1,21 @@
 package com.cannontech.common.bulk.collection.device.service.impl;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionProcess;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
@@ -35,15 +28,12 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class CollectionActionServiceImpl implements CollectionActionService {
@@ -51,7 +41,6 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Autowired private TemporaryDeviceGroupService tempGroupService;
     @Autowired private DeviceGroupMemberEditorDao editorDao;
     @Autowired private DeviceGroupCollectionHelper groupHelper;
-    @Autowired private IDatabaseCache dbCache;
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired private CommandRequestExecutionDao executionDao;
     @Autowired private CollectionActionLogDetailService logService;
@@ -156,129 +145,16 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             detail.getCreUnsupportedType());
     }
 
+    /**
+     * 1. Saves result to the database
+     * 2. Logs the result info
+     * 3. Caches the result for 7 days
+     */
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
         log.debug("Created new collecton action result:");
         result.setLogger(log);
         result.log();
         cache.put(result.getCacheKey(), result);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    @Override
-    public void printResult(CollectionActionResult result) {  
-        result.log();
-    }
-
-    @Override
-    public CollectionActionResult getRandomResult(int numberOfDevices, LinkedHashMap<String, String> userInputs,
-            Instant stopTime, CommandRequestExecutionStatus status, CollectionAction action) {
-
-        if (numberOfDevices < 1 || action == null || userInputs == null) {
-            new Exception();
-        }
-
-        StoredDeviceGroup tempGroup = tempGroupService.createTempGroup();
-        DeviceCollection devices = groupHelper.buildDeviceCollection(tempGroup);
-
-        List<SimpleMeter> meters = Lists.newArrayList(dbCache.getAllMeters().values());
-        Set<SimpleMeter> subset = new HashSet<>();
-
-        Random rand = new Random();
-        while (true) {
-            int randomIndex = rand.nextInt(meters.size());
-            SimpleMeter randomMeter = meters.get(randomIndex);
-            subset.add(randomMeter);
-            if (subset.size() == numberOfDevices) {
-                break;
-            }
-        }
-
-
-        YukonUserContext context = YukonUserContext.system;
-        context.getYukonUser().setUsername(String.valueOf((char) (rand.nextInt(26) + 'a')));
-        CollectionActionResult result = createResult(action, userInputs, devices, context);
-
-        if (status == CommandRequestExecutionStatus.STARTED || status == CommandRequestExecutionStatus.CANCELING) {
-            stopTime = null;
-        } else {
-            subset.forEach(meter -> {
-                int randomIndex = rand.nextInt(action.getDetails().size());
-                CollectionActionDetail bucket = Lists.newArrayList(action.getDetails()).get(randomIndex);
-                result.addDeviceToGroup(bucket, meter, null);
-                if (result.getAction().getProcess() == CollectionActionProcess.DB) {
-                    if (bucket == CollectionActionDetail.SUCCESS) {
-                        collectionActionDao.updateDbRequestStatus(result.getCacheKey(),
-                            meter.getPaoIdentifier().getPaoId(), CommandRequestExecutionStatus.COMPLETE);
-                    } else {
-                        collectionActionDao.updateDbRequestStatus(result.getCacheKey(),
-                            meter.getPaoIdentifier().getPaoId(), CommandRequestExecutionStatus.FAILED);
-                    }
-                }
-            });
-        }
-        collectionActionDao.updateCollectionActionStatus(result.getCacheKey(), status, stopTime.toDate());
-        result.setStatus(status);
-        result.setStopTime(stopTime);
-        printResult(result);
-        return result;
-    }
-   
-    @Transactional
-    @Override
-    public void loadLotsOfDataForNonCreCollectionActions(LinkedHashMap<String, String> userInputs) {
-        List<CommandRequestExecutionStatus> statuses = Lists.newArrayList(CommandRequestExecutionStatus.values());
-        statuses.remove(CommandRequestExecutionStatus.IN_PROGRESS);
-        List<CollectionAction> actions = Lists.newArrayList(CollectionAction.values()).stream().filter(
-            a -> a.getProcess() == CollectionActionProcess.DB).collect(Collectors.toList());
-        for (int i = 0; i < 60; i++) {
-            Random rand = new Random();
-            DateTime stopTime = new DateTime().plusDays(rand.nextInt(6));
-            System.out.println("---------------------------" + (i + 1) + " Creating new result");
-            getRandomResult(60, userInputs, stopTime.toInstant(), statuses.get(rand.nextInt(statuses.size())),
-                actions.get(rand.nextInt(actions.size())));
-        }
-    }
-    
-
-    @Override
-    public void compareCacheAndGB(int key) {
-        CollectionActionResult cachedResult = cache.getIfPresent(key);
-        
-        if(cachedResult == null) {
-            System.out.println(key + " not in cache");
-        }else {
-            System.out.println("---------CACHE----------");
-            printResult(cachedResult);
-        }
-        System.out.println("---------DB----------");
-        printResult(collectionActionDao.loadResultFromDb(key));
     }
 }

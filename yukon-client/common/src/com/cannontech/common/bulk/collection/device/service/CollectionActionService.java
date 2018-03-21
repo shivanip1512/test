@@ -3,8 +3,6 @@ package com.cannontech.common.bulk.collection.device.service;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.joda.time.Instant;
-
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
@@ -18,14 +16,32 @@ import com.cannontech.user.YukonUserContext;
 
 public interface CollectionActionService {
 
+    /**
+     * Returns result from cache, if result is not found re-created result from the database.
+     */
     CollectionActionResult getResult(int key);
 
+    /**
+     * Returns result from cache. This method should be used if we do not want the result to be re-created from the database.
+     * Example would be cancellations, we only can cancel cached executions.
+     */
     CollectionActionResult getCachedResult(int key);
+    
+    /**
+     * Returns list of results from cache.
+     */
+    List<CollectionActionResult> getCachedResults(List<Integer> cacheKeys);
 
+    /**
+     * Creates result for CRE collection action types.
+     */
     CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, CommandRequestType commandRequestType, DeviceRequestType deviceRequestType,
             YukonUserContext context);
-    
+
+    /**
+     * Creates result for none-CRE collection action types.
+     */
     CollectionActionResult createResult(CollectionAction action, LinkedHashMap<String, String> inputs,
             DeviceCollection collection, YukonUserContext context);
     /**
@@ -33,33 +49,15 @@ public interface CollectionActionService {
      */
     void cancel(int key, LiteYukonUser user);
     
+    /**
+     * Updates result's status.
+     */
     void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status);
     
+    /**
+     * Adds unsupported devices to the list.
+     */
     void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> unsupportedDevices);
     
-    List<CollectionActionResult> getCachedResults(List<Integer> cacheKeys);
-    
-    
-    
-    
-    
-    
-    /**
-     * Takes X number of random meters and builds collection result.
-     * 
-     * @param numberOfDevices - number of devices user entered 
-     * @param action - Read Attribute etc
-     * @return pre-populated result
-     */
-
-    CollectionActionResult getRandomResult(int numberOfDevices, LinkedHashMap<String, String> userInputs,
-            Instant stopTime, CommandRequestExecutionStatus status, CollectionAction action);
-
-    void loadLotsOfDataForNonCreCollectionActions(LinkedHashMap<String, String> userInputs);
-
-    void printResult(CollectionActionResult result);
-
-    void compareCacheAndGB(int key);
-
 }

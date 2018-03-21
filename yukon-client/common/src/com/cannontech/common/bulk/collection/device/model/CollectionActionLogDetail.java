@@ -5,6 +5,10 @@ import org.joda.time.Instant;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dynamic.PointValueHolder;
 
+/**
+ * Represents collection action log entry, as written to a file cacheKey.csv located in
+ * \Yukon\ExportArchive\CollectionAction
+ */
 public class CollectionActionLogDetail {
     private YukonPao pao;
     private CollectionActionDetail detail;

@@ -6,6 +6,9 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 
+/**
+ * Used to display table on recent results page.
+ */
 public class CollectionActionFilteredResult {
     private CollectionAction action;
     private Instant startTime;

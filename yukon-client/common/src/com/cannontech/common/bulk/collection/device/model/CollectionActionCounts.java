@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 
 import com.cannontech.common.device.model.SimpleDevice;
 
+/**
+ * Calculates counts for results. Used to display % on the progress report page and figure out counts to
+ * display in alerts.
+ */
 public class CollectionActionCounts {
 
     private CollectionActionResult result;

@@ -26,6 +26,12 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+/**
+ * This enum defines Collection Action.
+ * 1. Collection Action
+ * 2. Possible collection action log file entries
+ * 3. Possible buckets
+ */
 public enum CollectionAction implements DisplayableEnum {
 
     SEND_COMMAND(CRE, getLogEntries(POINT_DATA, DEVICE_ERROR_TEXT), SUCCESS, FAILURE, CANCELED),

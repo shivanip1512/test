@@ -32,9 +32,14 @@ public interface CollectionActionLogDetailService {
     File getLog(int cacheKey) throws FileNotFoundException;
 
     /**
-     * Returns true if log file exist.
+     * Returns true if log file exist. It is possible for the result to be created and file not to exist if
+     * devices haven't responded yet.
      */
     boolean hasLog(int cacheKey);
 
+    /**
+     * Log details are cached until execution/action is done (Completed, Canceled etc) to prevent duplicate
+     * entries in the log file for the same devices. When action is done this method is called to clear cache.
+     */
     void clearCache(int cacheKey);
 }

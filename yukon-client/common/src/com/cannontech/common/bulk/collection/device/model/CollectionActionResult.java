@@ -1,5 +1,7 @@
 package com.cannontech.common.bulk.collection.device.model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -231,6 +233,14 @@ public class CollectionActionResult {
 
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+    
+    public boolean hasLogFile() {
+        return logService.hasLog(cacheKey); 
+    }
+    
+    public File getLogFile() throws FileNotFoundException {
+        return logService.getLog(cacheKey); 
     }
     
     public void log() {

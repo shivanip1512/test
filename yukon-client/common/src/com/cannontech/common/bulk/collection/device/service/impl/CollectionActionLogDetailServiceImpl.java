@@ -48,6 +48,10 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionLogDetailServiceImpl.class);
     
+    /**
+     * Log details are cached until execution/action is done (Completed, Canceled etc) to prevent duplicate
+     * entries in the log file for the same devices.
+     */
     private Cache<Integer, Set<CollectionActionLogDetail>> cache =
             CacheBuilder.newBuilder().expireAfterAccess(7, TimeUnit.DAYS).build();
     

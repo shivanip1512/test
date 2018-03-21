@@ -6,6 +6,9 @@ import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 
+/**
+ * This enum defines collection action buckets.
+ */
 public enum CollectionActionDetail implements DisplayableEnum {
     SUCCESS(CollectionActionDetailSummary.SUCCESS, null, "#009933"),  //green
     FAILURE(CollectionActionDetailSummary.FAILURE, null, "#d14836"),  //red

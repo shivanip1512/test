@@ -6,6 +6,9 @@ import java.util.List;
 
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 
+/**
+ * Filter for recent results page.
+ */
 public class CollectionActionFilter {
     private List<CollectionAction> actions;
     private Date startDate;

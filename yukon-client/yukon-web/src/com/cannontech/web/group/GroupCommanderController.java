@@ -187,13 +187,14 @@ public class GroupCommanderController {
         
         
         try {
-            //attach to email
-            File file = collectionActionLogService.getLog(result.getCacheKey());
+            // attach to email
+            if (result.hasLogFile()) {
+                File file = result.getLogFile();
+            }
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
         
         
         

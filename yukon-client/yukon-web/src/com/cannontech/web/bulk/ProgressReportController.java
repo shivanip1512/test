@@ -36,7 +36,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 public class ProgressReportController {
 
     @Autowired private CollectionActionService collectionActionService;
-    @Autowired private CollectionActionLogDetailService collectionActionLogService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
     
@@ -48,7 +47,7 @@ public class ProgressReportController {
         model.addAttribute("result", result);
         model.addAttribute("details", CollectionActionDetail.values());
         model.addAttribute("status", CommandRequestExecutionStatus.values());
-        model.addAttribute("isLogAvailable", collectionActionLogService.hasLog(key));
+        model.addAttribute("isLogAvailable", result.hasLogFile());
         return "progressReport.jsp";
     }
 
@@ -59,7 +58,7 @@ public class ProgressReportController {
         json.put("result",  result);
         
         //toggle icon display
-        json.put("isLogAvailable", collectionActionLogService.hasLog(key));
+        json.put("isLogAvailable", result.hasLogFile());
         
         return json;
     }
@@ -73,8 +72,9 @@ public class ProgressReportController {
     
     @RequestMapping(value = "log", method = RequestMethod.GET)
     public String log(HttpServletResponse response, FlashScope flashScope, Integer key, YukonUserContext userContext) {
+        CollectionActionResult result = collectionActionService.getResult(key);
         try (OutputStream output = response.getOutputStream();
-            InputStream input = new FileInputStream(collectionActionLogService.getLog(key))) {
+            InputStream input = new FileInputStream(result.getLogFile())) {
             response.setContentType("text/csv csv CSV");
             String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
             response.setHeader("Content-Disposition", "attachment; filename=\"CollectionActionLog-" + key + "_" + now + ".csv\"");
