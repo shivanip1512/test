@@ -13,7 +13,15 @@ using Cti::Devices::Commands::RfnAggregateCommand;
 using Cti::Devices::Commands::RfnCentronSetLcdConfigurationCommand;
 using Cti::Devices::Commands::RfnCentronGetLcdConfigurationCommand;
 
-BOOST_AUTO_TEST_SUITE( test_cmd_rfn_Aggregate )
+struct resetContextId
+{
+    resetContextId()
+    {
+        RfnAggregateCommand::setGlobalContextId(0x4444, test_tag);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_cmd_rfn_Aggregate, resetContextId )
 
 const CtiTime execute_time(CtiDate(17, 2, 2010), 10);
 
@@ -48,7 +56,7 @@ BOOST_AUTO_TEST_CASE(test_send_one_command)
             0x01, //  1 message
             0x07, 0x00, //  Payload length 7
             //  message 1
-            0x44, 0x44, //  context ID 4444
+            0x44, 0x44, //  context ID 0x4444
             0x03, 0x00, //  message length 3
             0x70, 0x01, 0x00 };
 
@@ -62,7 +70,7 @@ BOOST_AUTO_TEST_CASE(test_send_one_command)
             0x01, //  1 message
             0x07, 0x00, //  Payload length 7
             //  message 1
-            0x44, 0x44, //  context ID 4444
+            0x44, 0x44, //  context ID 0x4444
             0x09, 0x00, //  message length 9
             0x71, 0x00, 0x03, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02 };
 
@@ -84,7 +92,7 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
     l.emplace_back(std::make_unique<RfnCentronSetLcdConfigurationCommand>(
-            RfnCentronSetLcdConfigurationCommand::metric_vector_t{ 0x00, 0x01, 0x02 },
+            RfnCentronSetLcdConfigurationCommand::metric_vector_t { 0x00, 0x01, 0x02 },
             RfnCentronSetLcdConfigurationCommand::DisconnectDisplayEnabled,
             RfnCentronSetLcdConfigurationCommand::DisplayDigits6x1,
             1));
@@ -100,13 +108,13 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
             0x02, //  2 messages
             0x1a, 0x00, //  Payload length 26
             //  message 1
-            0x45, 0x44, //  context ID 4445
+            0x44, 0x44, //  context ID 0x4444
             0x03, 0x00, //  message length 3
                 0x70, 
                 0x01, 
                 0x00,
             //  message 2
-            0x46, 0x44, //  context ID 4446
+            0x45, 0x44, //  context ID 0x4445
             0x0f, 0x00, //  message length 15
                 0x70, 
                 0x00, 
@@ -128,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
             0x02, //  2 messages
             0x14, 0x00, //  Payload length 20
             //  message 1
-            0x45, 0x44, //  context ID 4445
+            0x44, 0x44, //  context ID 0x4444
             0x09, 0x00, //  message length 9
                 0x71, 
                 0x00, 
@@ -137,7 +145,7 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
                 0x01, 0x01, 
                 0x02, 0x02,
             //  message 2
-            0x46, 0x44, //  context ID 4446
+            0x45, 0x44, //  context ID 0x4445
             0x03, 0x00,
                 0x71, 
                 0x00, 
@@ -147,12 +155,12 @@ BOOST_AUTO_TEST_CASE(test_send_two_commands)
 
         BOOST_CHECK(rcv.points.empty());
         BOOST_CHECK_EQUAL(rcv.description,
-            "Aggregate message 1, context ID 17477"
+            "Aggregate message 1, context ID 17476"
             "\nDisplay metrics:"
             "\nDisplay metric 1: Metric Slot Disabled"
             "\nDisplay metric 2: No Segments"
             "\nDisplay metric 3: All Segments"
-            "\nAggregate message 2, context ID 17478"
+            "\nAggregate message 2, context ID 17477"
             "\nDisplay metrics successfully set"
             "\nDisplay metric 1: Metric Slot Disabled"
             "\nDisplay metric 2: No Segments"

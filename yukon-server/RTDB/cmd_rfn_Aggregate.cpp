@@ -13,7 +13,12 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-std::atomic_uint16_t RfnAggregateCommand::_globalContextId { 0x4444 };
+std::atomic_uint16_t RfnAggregateCommand::_globalContextId { static_cast<uint16_t>(std::time(nullptr)) };
+
+void RfnAggregateCommand::setGlobalContextId(const uint16_t id, Test::use_in_unit_tests_only&)
+{
+    _globalContextId.store(id);
+}
 
 RfnAggregateCommand::RfnAggregateCommand(RfnCommandList commands)
 {
@@ -46,7 +51,7 @@ auto RfnAggregateCommand::getApplicationServiceId() const -> ASID
 
 unsigned char RfnAggregateCommand::getCommandCode() const
 {
-    return 0x01;  //  Aggregate Message
+    return Command_AggregateMessage;
 }
 
 unsigned char RfnAggregateCommand::getOperation() const
@@ -57,7 +62,7 @@ unsigned char RfnAggregateCommand::getOperation() const
 size_t RfnAggregateCommand::getPayloadLength() const
 {
     return 
-        _messages.size() * 4 + 
+        _messages.size() * SubMessageHeaderLength + 
         boost::accumulate(
             _messages 
                 | boost::adaptors::map_values 
@@ -71,7 +76,7 @@ auto RfnAggregateCommand::getCommandHeader() -> Bytes
 {
     Bytes header;
 
-    header.reserve(4);
+    header.reserve(HeaderLength);
 
     header.push_back(getCommandCode());
     header.push_back(_commands.size());
@@ -111,8 +116,8 @@ RfnCommand::Bytes RfnAggregateCommand::getCommandData()
 
 RfnCommandResult RfnAggregateCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    validate(Condition(response.size() >= 4, ClientErrors::InvalidData) 
-        << "Response size < 4, " << response.size());
+    validate(Condition(response.size() >= HeaderLength, ClientErrors::InvalidData) 
+        << "Response size < HeaderLength, " << response.size());
     
     validate(Condition(response[0] == 0x01, ClientErrors::InvalidData)
         << "Command != 0x01, " << response[0]);
@@ -120,12 +125,12 @@ RfnCommandResult RfnAggregateCommand::decodeCommand(const CtiTime now, const Rfn
     auto messages = response[1];
     auto payloadLength = response[2] | response[3] << 8;
 
-    validate(Condition(response.size() >= payloadLength + 4, ClientErrors::InvalidData)
-        << "Response size < payloadLength + 4, " << response.size());
+    validate(Condition(response.size() >= payloadLength + HeaderLength, ClientErrors::InvalidData)
+        << "Response size < payloadLength + HeaderLength, " << response.size());
 
-    size_t pos = 4;
+    size_t pos = HeaderLength;
 
-    RfnCommandResult aggregateResult;
+    RfnCommandResult aggregateResult { "" };
 
     std::vector<std::string> descriptions;
 
@@ -133,7 +138,7 @@ RfnCommandResult RfnAggregateCommand::decodeCommand(const CtiTime now, const Rfn
     {
         auto contextId = response[pos] | response[pos + 1] << 8;
         pos += 2;
-        auto length = response[pos] | response[pos + 1] << 8;
+        auto length    = response[pos] | response[pos + 1] << 8;
         pos += 2;
 
         validate(Condition(pos + length <= response.size(), ClientErrors::InvalidData)

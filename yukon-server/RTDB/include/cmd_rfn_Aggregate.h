@@ -19,7 +19,17 @@ public:
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
 
+    static void setGlobalContextId(uint16_t id, Test::use_in_unit_tests_only&);
+
 private:
+
+    enum
+    {
+        Command_AggregateMessage = 0x01,
+
+        HeaderLength = 4,
+        SubMessageHeaderLength = 4
+    };
 
     unsigned char getCommandCode() const override;
     unsigned char getOperation()   const override;
