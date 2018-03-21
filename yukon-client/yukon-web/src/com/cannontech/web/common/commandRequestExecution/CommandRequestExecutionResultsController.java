@@ -3,12 +3,10 @@ package com.cannontech.web.common.commandRequestExecution;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
@@ -64,9 +61,7 @@ public class CommandRequestExecutionResultsController {
 	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 	@Autowired private CollectionActionDao collectionActionDao;
 	@Autowired private CollectionActionService collectionActionService;
-	
-    private static final Logger log = YukonLogManager.getLogger(CommandRequestExecutionResultsController.class); 
-	
+		
 	public static class ListBackingBean {
 	   
         private int creId = 0;
@@ -196,14 +191,13 @@ public class CommandRequestExecutionResultsController {
 			int commandRequestExecutionId,
 			@RequestParam(defaultValue = "0") int jobId) {
 
-	    try {
-	        int collectionActionId = collectionActionDao.getCollectionActionIdFromCreId(commandRequestExecutionId);
+        Integer collectionActionId = collectionActionDao.findCollectionActionIdFromCreId(commandRequestExecutionId);
+        if (collectionActionId != null) {
     	    CollectionActionResult  collectionActionResult = collectionActionService.getResult(collectionActionId);
             model.addAttribute("result", collectionActionResult);
-            model.addAttribute("progressReportUrl", "/yukon/bulk/progressReport/detail?key=" + collectionActionId);
-	    } catch (EmptyResultDataAccessException e) {
-	        log.debug("No CollectionActionId corresponds to CommandRequestExecutionId",e);
-	    }
+            model.addAttribute("cacheKey", collectionActionId);
+        }
+        
 		model.addAttribute("commandRequestExecutionId", commandRequestExecutionId);
 		model.addAttribute("jobId", jobId);
 		

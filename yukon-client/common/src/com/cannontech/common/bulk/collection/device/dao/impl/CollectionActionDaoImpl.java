@@ -15,10 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -34,8 +37,6 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDa
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
-import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
-import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -61,6 +62,8 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     @Autowired private TemporaryDeviceGroupService tempGroupService;
     @Autowired private DeviceGroupMemberEditorDao editorDao;
     @Autowired private DeviceGroupCollectionHelper groupHelper;
+    
+    private static final Logger log = YukonLogManager.getLogger(CollectionActionDao.class);
     
     @Override
     @Transactional
@@ -337,12 +340,17 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     }
         
     @Override
-    public int getCollectionActionIdFromCreId(int creId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT CollectionActionId");
-        sql.append("FROM CollectionActionCommandRequest");
-        sql.append("WHERE CommandRequestExecId").eq(creId);
-        return jdbcTemplate.queryForInt(sql);
+    public Integer findCollectionActionIdFromCreId(int creId) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT CollectionActionId");
+            sql.append("FROM CollectionActionCommandRequest");
+            sql.append("WHERE CommandRequestExecId").eq(creId);
+            return jdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("No CollectionActionId corresponds to CommandRequestExecutionId", e);
+            return null;
+        }
     }
     
     private int createAction(CollectionAction action, Instant startTime, CommandRequestExecutionStatus status, LiteYukonUser user) {

@@ -47,8 +47,10 @@ public interface CollectionActionDao {
 
     SearchResults<CollectionActionFilteredResult> getCollectionActionFilteredResults(CollectionActionFilter filter,
             PagingParameters paging, SortBy sortBy, Direction direction);
-
-    int getCollectionActionIdFromCreId(int creId);
+    /**
+     * @returns an Integer or null, CollectionActionId may not exist for CRE's prior to this update
+     */
+    Integer findCollectionActionIdFromCreId(int creId);
 
     void updateCollectionActionRequest(int cacheKey, int deviceId, CommandRequestExecutionStatus status);
 }
