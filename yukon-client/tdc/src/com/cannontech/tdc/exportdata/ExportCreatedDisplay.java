@@ -71,7 +71,7 @@ private String[] getDisplayData() throws com.cannontech.common.util.CommandExecu
 	if( displayStrings == null )
 	{
 		String query= new String(
-			"select name, type, title, description " +
+			"select name, type, description " +
 			"from display where displaynum = ?");
 		Object[] objs = new Object[1];
 		objs[0] = new Long(displayNumber);
@@ -167,11 +167,10 @@ private void writeFile( String destination )
 
 		try
 		{
-			writer.write("insert into display (displaynum, name, type, title, description) values (" + displayNumber +
+			writer.write("insert into display (displaynum, name, type, description) values (" + displayNumber +
 					 ", '" + getDisplayData()[0] + 
 					 "', '" + getDisplayData()[1] + 
-					 "', '" + getDisplayData()[2] +
-					 "', '" + getDisplayData()[3] +"');\r\n" );
+					 "', '" + getDisplayData()[2] +"');\r\n" );
 
 			for( int i = 0; i < getDisplayPoints().length; i++ )
 			{

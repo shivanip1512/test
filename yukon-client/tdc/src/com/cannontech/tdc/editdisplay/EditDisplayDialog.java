@@ -227,17 +227,15 @@ private void createDisplay( String newName )
 
 	String displayName = new String( newName );
 	String displayType = new String( getTopPanel().getType().toString() );
-	String displayTitle = new String( getTopPanel().getTitle() );
 	String displayDescr = new String( getTopPanel().getDescription() );
 		
 	String query = new String
-		("insert into display (displaynum, name, type, title, description) values (?, ?, ?, ?, ?)");
-	Object[] objs = new Object[5];
+		("insert into display (displaynum, name, type, description) values (?, ?, ?, ?)");
+	Object[] objs = new Object[4];
 	objs[0] = new Long(currentDisplayNumber);
 	objs[1] = displayName;
 	objs[2] = displayType;
-	objs[3] = displayTitle;
-	objs[4] = displayDescr;
+	objs[3] = displayDescr;
 	DataBaseInteraction.updateDataBase( query, objs );
 	
 
@@ -521,7 +519,7 @@ private boolean initComboCurrentDisplay( String displayName )
 	
 	// Init our Display Name Combo Box
 	String query = new String
-		("select name, displaynum, title from display " +
+		("select name, displaynum from display " +
 		 " where displaynum >= ?");
 	Object[] objs = new Object[1];
 	objs[0] = new Integer(com.cannontech.tdc.data.Display.BEGINNING_USER_DISPLAY_NUMBER-1); // subtract 1 so we get the PreDefined Display(displaynum=99)
@@ -834,21 +832,18 @@ private void updateDisplayTable()
 {
 	String displayName = new String( getTopPanel().getName() );
 	String displayType = new String( getTopPanel().getType().toString() );
-	String displayTitle = new String( getTopPanel().getTitle() );
 	String displayDescr = new String( getTopPanel().getDescription() );
 		
 	String query = new String
 		("update display set name = ? " +
 		 ", type = ? " +
-		 ", title = ? " +
 		 ", description = ? " +
 		 " where displaynum = ?");
-	Object[] objs = new Object[5];
+	Object[] objs = new Object[4];
 	objs[0] = displayName;
 	objs[1] = displayType;
-	objs[2] = displayTitle;
-	objs[3] = displayDescr;
-	objs[4] = new Long(currentDisplayNumber);	
+	objs[2] = displayDescr;
+	objs[3] = new Long(currentDisplayNumber);	
 	DataBaseInteraction.updateDataBase( query, objs );	
 
 	return;	

@@ -573,7 +573,7 @@ public class TdcServiceImpl implements TdcService {
     public Display copyCustomDisplay(int displayId, String name) {
         Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> data = displayDataDao.getCustomDisplayData(display);
-        display = updateCustomDisplay(0, name, display.getTitle(), display.getDescription(),
+        display = updateCustomDisplay(0, name, display.getDescription(),
             data.stream().map(d -> d.getPointId()).collect(Collectors.toList()), display.getColumns());
         dbChangeManager.processDbChange(display.getDisplayId(), DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.ADD);
         return display;
@@ -581,27 +581,27 @@ public class TdcServiceImpl implements TdcService {
 
     @Override
     @Transactional
-    public Display createCustomDisplayForPoints(String name, String title, String description, List<Integer> pointIds) {
-        Display display = updateCustomDisplay(0, name, title, description, pointIds, Column.getDefaultColumns());
+    public Display createCustomDisplayForPoints(String name, String description, List<Integer> pointIds) {
+        Display display = updateCustomDisplay(0, name, description, pointIds, Column.getDefaultColumns());
         dbChangeManager.processDbChange(display.getDisplayId(), DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.ADD);
         return display;
     }
 
     @Override
     @Transactional
-    public Display createCustomDisplayForDevices(String name, String title, String description,
+    public Display createCustomDisplayForDevices(String name, String description,
             List<Integer> deviceIds) {
-        Display display = updateCustomDisplay(0, name, title, description, getPoints(deviceIds), Column.getDefaultColumns());
+        Display display = updateCustomDisplay(0, name, description, getPoints(deviceIds), Column.getDefaultColumns());
         dbChangeManager.processDbChange(display.getDisplayId(), DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.ADD);
         return display;
     }
 
     @Override
     @Transactional
-    public Display updateCustomDisplay(int displayId, String name, String title, String description,
+    public Display updateCustomDisplay(int displayId, String name, String description,
             List<Integer> pointIds) throws DuplicateException {
         Display display = displayDao.getDisplayById(displayId);
-        display = updateCustomDisplay(displayId, name, display.getTitle(), display.getDescription(), pointIds,
+        display = updateCustomDisplay(displayId, name, display.getDescription(), pointIds,
             display.getColumns());
         dbChangeManager.processDbChange(displayId, DBChangeMsg.CHANGE_TDC_DB, "ALL", DbChangeType.UPDATE);
         return display;
@@ -617,13 +617,12 @@ public class TdcServiceImpl implements TdcService {
     /**
      * Creates display if the displayId is 0 otherwise updates display.
      */
-    public Display updateCustomDisplay(int displayId, String name, String title, String description,
+    public Display updateCustomDisplay(int displayId, String name, String description,
             List<Integer> pointIds, List<Column> columns) throws DuplicateException{
         Display display = new Display();
         display.setDisplayId(displayId);
         display.setName(name);
         display.setDescription(description);
-        display.setTitle(title);
         display.setType(DisplayType.CUSTOM_DISPLAYS);
         display.setColumns(columns);
         display = displayDao.updateDisplay(display);

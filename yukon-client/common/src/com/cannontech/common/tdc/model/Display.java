@@ -18,7 +18,6 @@ public class Display {
     private int displayId;
     private String name;
     private DisplayType type;
-    private String title;
     private String description;
     private List<Column> columns;
     private boolean acknowledgable;
@@ -41,12 +40,7 @@ public class Display {
     public void setType(DisplayType type) {
         this.type = type;
     }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
+
     public String getDescription() {
         return description;
     }
@@ -96,7 +90,6 @@ public class Display {
         tsb.append("displayId", displayId);
         tsb.append("name", name);
         tsb.append("type", type);
-        tsb.append("title", title);
         tsb.append("description", description);
         tsb.append("acknowledgable", acknowledgable);
         tsb.append(getColumns());

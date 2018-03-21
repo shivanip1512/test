@@ -3130,7 +3130,7 @@ public void jMenuItemAddBookmark_ActionPerformed(java.awt.event.ActionEvent acti
 	if( getMainPanel().getJComboCurrentDisplay().getSelectedIndex() >= 0 )
 	{
 		if( getMainPanel().getCurrentDisplay().getDisplayNumber() <= Display.BEGINNING_CLIENT_DISPLAY_NUMBER )
-			getBookmarks().addBookmark( getMainPanel().getCurrentDisplay().getTitle() + BookMarkBase.BOOKMARK_TOKEN + getMainPanel().getCurrentDisplay().getName() );
+			getBookmarks().addBookmark( getMainPanel().getCurrentDisplay().getName() + BookMarkBase.BOOKMARK_TOKEN + getMainPanel().getCurrentDisplay().getName() );
 		else
 			getBookmarks().addBookmark( getMainPanel().getCurrentDisplay().getType() + BookMarkBase.BOOKMARK_TOKEN + getMainPanel().getCurrentDisplay().getName() );
 	}
@@ -4482,7 +4482,7 @@ private void setTitleFromDisplay() {
         setTitle( getMainPanel().getCurrentDisplay().getName() + connected );
     }
     else if (Display.isCoreType(getMainPanel().getCurrentDisplay().getType())) {
-        setTitle( getMainPanel().getCurrentDisplay().getTitle() + connected );
+        setTitle( getMainPanel().getCurrentDisplay().getName() + connected );
     }
 }
 

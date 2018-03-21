@@ -19,7 +19,6 @@ public class Display implements IDisplay
 	private int displayNumber = UNKNOWN_DISPLAY_NUMBER;
 	private String name = null;
 	private String type = null;
-	private String title = null;
 	private String description = null;
 	
 	private DisplayData displayData = null;
@@ -34,7 +33,6 @@ public class Display implements IDisplay
 	{
 		UNKNOWN_DISPLAY.setName("UNKNOWN");
 		UNKNOWN_DISPLAY.setType("UNKNOWN");
-		UNKNOWN_DISPLAY.setTitle("UNKNOWN");
 		UNKNOWN_DISPLAY.setDescription("UNKNOWN");
 	}
 
@@ -246,14 +244,7 @@ public static int getDisplayTypeIndexByType(String displayType)
 public java.lang.String getName() {
 	return name;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/3/00 2:55:08 PM)
- * @return java.lang.String
- */
-public java.lang.String getTitle() {
-	return title;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (10/3/00 2:55:08 PM)
@@ -296,7 +287,7 @@ public static void setDISPLAY_TITLES( final Display[] displays_ )
 			{				
 				int type = Display.getDisplayTypeIndexByType( displays_[i].getType() );
 				
-				DISPLAY_TITLES[type] = displays_[i].getTitle();
+				DISPLAY_TITLES[type] = displays_[i].getName();
 			}
 
 		}
@@ -323,14 +314,7 @@ public void setDisplayNumber(int newDisplayNumber) {
 public void setName(java.lang.String newName) {
 	name = newName;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/3/00 2:55:08 PM)
- * @param newTitle java.lang.String
- */
-public void setTitle(java.lang.String newTitle) {
-	title = newTitle;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (10/3/00 2:55:08 PM)

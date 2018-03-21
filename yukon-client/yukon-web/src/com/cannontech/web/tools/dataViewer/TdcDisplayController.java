@@ -219,15 +219,14 @@ public class TdcDisplayController {
             return "data-viewer/customDisplay.jsp";
         }
         String name = display.getName();
-        String title = display.getTitle();
         String description = display.getDescription();
 
         int id = display.getDisplayId();
         try {
             if (id != 0) {
-                tdcService.updateCustomDisplay(id, name, title, description, pointList);
+                tdcService.updateCustomDisplay(id, name, description, pointList);
             } else {
-                display = tdcService.createCustomDisplayForPoints(name, title, description, pointList);
+                display = tdcService.createCustomDisplayForPoints(name, description, pointList);
             }
         } catch (DuplicateException e) {
             result.rejectValue("name", "yukon.web.error.nameConflict");

@@ -19,9 +19,6 @@
                 <tags:nameValue2 nameKey=".name">
                     <tags:input path="name" maxlength="40" size="30" />
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".title">
-                    <tags:input path="title" maxlength="30" size="30" />
-                </tags:nameValue2>
                 <tags:nameValue2 nameKey=".description">
                     <tags:input path="description" maxlength="200" size="50" />
                 </tags:nameValue2>

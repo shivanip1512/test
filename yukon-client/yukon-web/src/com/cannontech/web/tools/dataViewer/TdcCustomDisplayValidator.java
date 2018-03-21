@@ -19,7 +19,6 @@ public class TdcCustomDisplayValidator extends SimpleValidator<Display> {
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
         YukonValidationUtils.checkExceedsMaxLength(errors, "name", display.getName(), 40);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "title", display.getTitle(), 30);
         YukonValidationUtils.checkExceedsMaxLength(errors, "description", display.getDescription(), 200);
 
     }

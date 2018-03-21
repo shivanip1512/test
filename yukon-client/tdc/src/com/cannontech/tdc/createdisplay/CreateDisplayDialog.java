@@ -428,7 +428,6 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 {
 	String displayName = new String( getTopPanel().getName() );
 	String displayType = new String( getTopPanel().getType().toString() );
-	String displayTitle = new String( getTopPanel().getTitle() );
 	String displayDescr = new String( getTopPanel().getDescription() );
 	
 		
@@ -444,13 +443,12 @@ public void okCancelPanel_JButtonOkAction_actionPerformed(java.util.EventObject 
 			currentDisplayNumber = TDCDefines.createValidDisplayNumber();
 
 			String query = new String
-				("insert into display (displaynum, name, type, title, description) values (?, ?, ?, ?, ?)");
-			Object[] objs = new Object[5];
+				("insert into display (displaynum, name, type, description) values (?, ?, ?, ?)");
+			Object[] objs = new Object[4];
 			objs[0] = new Long(currentDisplayNumber);
 			objs[1] = displayName;
 			objs[2] = displayType;
-			objs[3] = displayTitle;
-			objs[4] = displayDescr;
+			objs[3] = displayDescr;
 			DataBaseInteraction.updateDataBase( query, objs );
 			
 			insertCreatedColumns();

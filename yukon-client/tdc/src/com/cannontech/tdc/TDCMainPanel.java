@@ -683,7 +683,7 @@ public void fireBookMarkSelected( Object source )
 			else
 			{
 				// set the current display to the newly selected one
-				setCurrentDisplay( getAllDisplays()[getDisplayIndexByTitle(currentDisplayTitle)] );
+				setCurrentDisplay( getAllDisplays()[getDisplayIndexByName(currentDisplayTitle)] );
 				
 				// we must have a none static client display
 				initClientDisplays();
@@ -985,15 +985,7 @@ private int getDisplayIndexByName(String displayName)
 			
 	return -1;
 }
-private int getDisplayIndexByTitle(String displayTitle)
-{
-	for( int i = 0; i < getAllDisplays().length; i++ )
-		if( getAllDisplays()[i].getTitle().equalsIgnoreCase(displayTitle) )
-			return i;
-
-	throw new RuntimeException("Display title '" + displayTitle + "' was not found.");
-	//return -1;
-}/**
+/**
  * Insert the method's description here.
  * Creation date: (3/20/2001 2:34:03 PM)
  * @return int
@@ -1884,7 +1876,7 @@ private void initClientDisplays()
 		    // add the new ActionListener to our combo box
 		    getCurrentSpecialChild().addActionListenerToJComponent( getJComboCurrentDisplay() );
 
-		    getJLabelDisplayTitle().setText(getCurrentDisplay().getTitle());			
+		    getJLabelDisplayTitle().setText(getCurrentDisplay().getName());			
 		}
 		
 		/************** Set the JTable row colors here ********************************/
@@ -1933,7 +1925,7 @@ public boolean initComboCurrentDisplay()
 	
 	// get the data for the majority of our displays
 	String query = new String(
-		"select name, displaynum, title, type, description from display " +
+		"select name, displaynum, type, description from display " +
  		"order by name, type");
 
 	Object[][] values = DataBaseInteraction.queryResults( query, null );
@@ -2041,13 +2033,8 @@ private void initDisplays( Object[][] query, int index )
 	display.setName( query[index][0].toString() );
 	display.setDisplayNumber( Integer.parseInt(query[index][1].toString()) );
 	
-	if ( query[index][2] == null )
-		display.setTitle(" ");
-	else
-		display.setTitle( query[index][2].toString() );
-		
-	display.setType( query[index][3].toString() );
-	display.setDescription( query[index][4].toString() );
+	display.setType( query[index][2].toString() );
+	display.setDescription( query[index][3].toString() );
 	
 		
 			
@@ -2226,7 +2213,7 @@ public void initializeTable()
 				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
 					enabled = !TDCDefines.isHiddenMACS(TDCDefines.USER_RIGHTS);
 
-				addClientRadioButtons( currentDisp.getTitle(), i, enabled );
+				addClientRadioButtons( currentDisp.getName(), i, enabled );
 			}
  
         
@@ -3862,7 +3849,7 @@ public void setUpTable()
 			else
 			{
 				// Set up the column names and Display Title
-				setDisplayTitle( getCurrentDisplay().getTitle(), null );
+				setDisplayTitle( getCurrentDisplay().getName(), null );
 				getTableDataModel().setCurrentDisplay( getCurrentDisplay() );
 				getTableDataModel().makeTable();
 				setColumnWidths();				

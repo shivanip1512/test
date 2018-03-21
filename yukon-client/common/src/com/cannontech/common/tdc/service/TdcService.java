@@ -121,19 +121,19 @@ public interface TdcService {
      * Creates custom display if one of the point ids is 0 inserts a blank line.
      */
 
-    Display createCustomDisplayForPoints(String name, String title, String description, List<Integer> pointIds) throws DuplicateException;
+    Display createCustomDisplayForPoints(String name, String description, List<Integer> pointIds) throws DuplicateException;
 
     /**
      * Creates custom display with all the points for the devices. Blank line is inserted as a separator
      * between devices.
      */
 
-    Display createCustomDisplayForDevices(String name, String title, String description, List<Integer> deviceIds);
+    Display createCustomDisplayForDevices(String name, String description, List<Integer> deviceIds);
 
     /**
      * Updates custom display.
      */
-    Display updateCustomDisplay(int displayId, String name, String title, String description, List<Integer> pointIds) throws DuplicateException;
+    Display updateCustomDisplay(int displayId, String name, String description, List<Integer> pointIds) throws DuplicateException;
 
     /**
      * @param sortBy nullable.

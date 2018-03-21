@@ -62,7 +62,7 @@ public class DisplayDaoImpl implements DisplayDao {
     public List<Display> getDisplayByType(DisplayType type) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
+        sql.append("SELECT DISPLAYNUM, NAME, TYPE, DESCRIPTION");
         sql.append("FROM DISPLAY");
         sql.append("WHERE TYPE").eq_k(type);
         sql.append("ORDER BY DISPLAYNUM");
@@ -82,7 +82,7 @@ public class DisplayDaoImpl implements DisplayDao {
     public Display getDisplayById(int displayId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
+        sql.append("SELECT DISPLAYNUM, NAME, TYPE, DESCRIPTION");
         sql.append("FROM DISPLAY");
         sql.append("WHERE DISPLAYNUM").eq(displayId);
         Display display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
@@ -95,7 +95,7 @@ public class DisplayDaoImpl implements DisplayDao {
     public Display findDisplayByName(String name) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
+        sql.append("SELECT DISPLAYNUM, NAME, TYPE, DESCRIPTION");
         sql.append("FROM DISPLAY");
         sql.append("WHERE NAME").eq(name);
         try {
@@ -226,7 +226,6 @@ public class DisplayDaoImpl implements DisplayDao {
                 display.setDisplayId(rs.getInt("DISPLAYNUM"));
                 display.setName(rs.getStringSafe("NAME"));
                 display.setType(rs.getEnum("TYPE", DisplayType.class));
-                display.setTitle(rs.getStringSafe("TITLE"));
                 display.setDescription(rs.getStringSafe("DESCRIPTION"));
                 /*
                  * For the displays where acknowledge is set to true the acknowledge button will be
@@ -277,7 +276,6 @@ public class DisplayDaoImpl implements DisplayDao {
         SqlParameterSink displaySink = displayId == 0 ? displaySql.insertInto("DISPLAY") : displaySql.update("DISPLAY");
         displaySink.addValue("NAME", display.getName());
         displaySink.addValue("DESCRIPTION", display.getDescription());
-        displaySink.addValue("TITLE", display.getTitle());
         displaySink.addValue("TYPE", display.getType().getDatabaseRepresentation());
         
         if (displayId == 0) {

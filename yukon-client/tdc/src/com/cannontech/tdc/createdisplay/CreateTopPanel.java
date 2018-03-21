@@ -40,7 +40,7 @@ public void editInitialize( Long displayNumber )
 {
 
 	String query = new String
-		("select  name, title, type, description " +
+		("select  name, type, description " +
 		 "from display where displaynum = ?");
 	Object[] objs = new Object[1];
 	objs[0] = displayNumber;
@@ -52,9 +52,8 @@ public void editInitialize( Long displayNumber )
 		for( int i = 0; i < values.length; i++ )
 		{
 			getJTextFieldName().setText( CommonUtils.createString( values[i][0] ) );
-			getJTextFieldTitle().setText( CommonUtils.createString( values[i][1] ) );
-			getJComboBoxType().setSelectedItem( values[i][2] );
-			getJEditorPaneDescription().setText( CommonUtils.createString( values[i][3] ) );
+			getJComboBoxType().setSelectedItem( values[i][1] );
+			getJEditorPaneDescription().setText( CommonUtils.createString( values[i][2] ) );
 		}
 	}
 		
@@ -168,27 +167,6 @@ private javax.swing.JLabel getJLabelName() {
 	return ivjJLabelName;
 }
 /**
- * Return the JLabelTitle property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelTitle() {
-	if (ivjJLabelTitle == null) {
-		try {
-			ivjJLabelTitle = new javax.swing.JLabel();
-			ivjJLabelTitle.setName("JLabelTitle");
-			ivjJLabelTitle.setText("Title:");
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelTitle;
-}
-/**
  * Return the JLabelType property value.
  * @return javax.swing.JLabel
  */
@@ -249,19 +227,6 @@ private javax.swing.JPanel getJPanel1() {
 			constraintsJLabelName.insets = new java.awt.Insets(2, 4, 4, 2);
 			getJPanel1().add(getJLabelName(), constraintsJLabelName);
 
-			java.awt.GridBagConstraints constraintsJTextFieldTitle = new java.awt.GridBagConstraints();
-			constraintsJTextFieldTitle.gridx = 4; constraintsJTextFieldTitle.gridy = 2;
-			constraintsJTextFieldTitle.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJTextFieldTitle.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJTextFieldTitle.weightx = 1.0;
-			constraintsJTextFieldTitle.insets = new java.awt.Insets(2, 4, 4, 2);
-			getJPanel1().add(getJTextFieldTitle(), constraintsJTextFieldTitle);
-
-			java.awt.GridBagConstraints constraintsJLabelTitle = new java.awt.GridBagConstraints();
-			constraintsJLabelTitle.gridx = 3; constraintsJLabelTitle.gridy = 2;
-			constraintsJLabelTitle.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelTitle.insets = new java.awt.Insets(2, 4, 4, 2);
-			getJPanel1().add(getJLabelTitle(), constraintsJLabelTitle);
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -388,14 +353,6 @@ private javax.swing.JTextField getJTextFieldTitle() {
 public String getName() 
 {
 	return getJTextFieldName().getText();	
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/25/00 10:14:08 AM)
- */
-public String getTitle() 
-{
-	return getJTextFieldTitle().getText();
 }
 /**
  * Insert the method's description here.
