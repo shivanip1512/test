@@ -72,10 +72,6 @@ public class OutageMonitor implements PointMonitor, Comparable<OutageMonitor> {
         return expression;
     }
 
-    public void setExpression(String expression) {
-        this.expression = expression;
-    }
-
     public boolean isScheduleGroupCommand() {
         return scheduleGroupCommand;
     }

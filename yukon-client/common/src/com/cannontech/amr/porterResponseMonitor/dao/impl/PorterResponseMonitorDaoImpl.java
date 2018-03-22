@@ -255,7 +255,9 @@ public class PorterResponseMonitorDaoImpl implements PorterResponseMonitorDao {
     @Override
     public boolean monitorExistsWithName(String name) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM PorterResponseMonitor WHERE UPPER(Name) = UPPER(").appendArgument(name).append(")");
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM PorterResponseMonitor");
+        sql.append("WHERE UPPER(Name) = UPPER(").appendArgument(name).append(")");
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 }

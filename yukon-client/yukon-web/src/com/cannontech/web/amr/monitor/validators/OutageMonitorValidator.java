@@ -15,12 +15,12 @@ import com.cannontech.common.validator.YukonValidationUtils;
 @Service
 public class OutageMonitorValidator extends SimpleValidator<OutageMonitor> {
 
+    @Autowired private OutageMonitorDao outageMonitorDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    
     public OutageMonitorValidator() {
         super(OutageMonitor.class);
     }
-
-    @Autowired private OutageMonitorDao outageMonitorDao;
-    @Autowired private DeviceGroupService deviceGroupService;
 
     @Override
     protected void doValidation(OutageMonitor outageMonitor, Errors errors) {

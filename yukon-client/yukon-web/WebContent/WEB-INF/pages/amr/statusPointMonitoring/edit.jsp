@@ -172,7 +172,8 @@
                 <c:set var="enableDisableKey" value="enable"/>
             </c:if>
             <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>
-            <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
+            <cti:button id="deleteButton" nameKey="delete" onclick="$('#deleteStatusPointMonitor').submit();" busy="true" 
+                        data-disable-group="actionButtons" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${statusPointMonitor.statusPointMonitorName}"/>
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />

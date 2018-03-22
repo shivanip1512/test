@@ -64,7 +64,9 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao {
     @Override
     public boolean processorExistsWithName(String name) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM OutageMonitor WHERE UPPER(OutageMonitorName) = UPPER(").appendArgument(name).append(")");
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM OutageMonitor");
+        sql.append("WHERE UPPER(OutageMonitorName) = UPPER(").appendArgument(name).append(")");
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 

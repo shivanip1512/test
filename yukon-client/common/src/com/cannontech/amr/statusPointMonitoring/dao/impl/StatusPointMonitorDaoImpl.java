@@ -248,9 +248,9 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao  {
     @Override
     public boolean monitorExistsWithName(String name) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(
-            "SELECT COUNT(*) FROM StatusPointMonitor WHERE UPPER(StatusPointMonitorName) = UPPER(").appendArgument(
-                name).append(")");
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM StatusPointMonitor");
+        sql.append("WHERE UPPER(StatusPointMonitorName) = UPPER(").appendArgument(name).append(")");
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 }

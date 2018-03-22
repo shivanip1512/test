@@ -185,7 +185,7 @@ public class OutageMonitorEditorController {
             outageMonitorService.update(outageMonitor);
         }
         // redirect to edit page with processor
-        return "redirect:/meter/start";
+        return "redirect:/amr/outageProcessing/process/process?outageMonitorId=" + outageMonitor.getOutageMonitorId();
     }
 
     // DELETE
