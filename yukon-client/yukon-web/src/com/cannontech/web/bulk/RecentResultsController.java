@@ -45,7 +45,7 @@ public class RecentResultsController {
     
     @RequestMapping(value = "recentResults", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter,
-                       @DefaultSort(dir=Direction.desc, sort="action") SortingParameters sorting,
+                       @DefaultSort(dir=Direction.desc, sort="startTime") SortingParameters sorting,
                        @DefaultItemsPerPage(value=250) PagingParameters paging) {
         
         Direction dir = sorting.getDirection();
@@ -58,7 +58,7 @@ public class RecentResultsController {
     
     @RequestMapping(value = "filter", method = RequestMethod.GET)
     public String filter(YukonUserContext userContext, ModelMap model, @ModelAttribute("filter") CollectionActionFilter filter,
-                         @DefaultSort(dir=Direction.desc, sort="action") SortingParameters sorting,
+                         @DefaultSort(dir=Direction.desc, sort="startTime") SortingParameters sorting,
                          @DefaultItemsPerPage(value=250) PagingParameters paging) {
         
         Direction dir = sorting.getDirection();
