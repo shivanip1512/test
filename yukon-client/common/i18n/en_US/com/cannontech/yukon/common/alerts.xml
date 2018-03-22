@@ -17,7 +17,7 @@
 ]]></entry>
 
 <entry key="yukon.common.alerts.collectionActionCompletion.canceled"><![CDATA[
-<p>Command "<a href="{url}">{command}</a>" {detail} completed.</p>
+<p>Command "<a href="{url}">{command}</a>" {detail} canceled.</p>
 <p>{statistics}</p>
 ]]></entry>
 
