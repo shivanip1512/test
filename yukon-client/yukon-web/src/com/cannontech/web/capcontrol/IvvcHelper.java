@@ -21,10 +21,10 @@ public class IvvcHelper {
             //check for other ignore scenarios (bad quality and cap bank disabled)
             PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(deviceInfo.getPointId());
             PointQuality quality = pointValue.getPointQuality();
-            if (!quality.equals(PointQuality.Manual) && !quality.equals(PointQuality.Normal)) {
+            if (quality != PointQuality.Manual && quality != PointQuality.Normal) {
                 deviceInfo.setIgnore(true);
             }
-            if (deviceInfo.getParentPaoIdentifier().getPaoType().equals(PaoType.CAPBANK)) {
+            if (deviceInfo.getParentPaoIdentifier().getPaoType() == PaoType.CAPBANK) {
                 CapBankDevice capBank = ccCache.getCapBankDevice(deviceInfo.getParentPaoIdentifier().getPaoId());
                 if (capBank.getCcDisableFlag()) {
                     deviceInfo.setIgnore(true);
