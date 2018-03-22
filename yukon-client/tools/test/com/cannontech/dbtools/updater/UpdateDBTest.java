@@ -131,6 +131,7 @@ public class UpdateDBTest {
 
         Assert.assertEquals(19, result.size());
 
+        /* YUK-21 will be executed */
         Assert.assertEquals("YUK-21", result.get(0).getMetaProps().get("start"));
 
         Assert.assertEquals(true, result.get(1).getValue().toString().contains(
@@ -138,28 +139,42 @@ public class UpdateDBTest {
 
         Assert.assertEquals("YUK-21", result.get(2).getMetaProps().get("end"));
 
+        /* YUK-26 will be executed and contains metadata - @start-block and @end-block */
         Assert.assertEquals(true, result.get(2).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-26', '7.0.1', GETDATE())"));
 
         Assert.assertEquals(true, result.get(2).getValue().toString().contains("/* @start-block */")
             && result.get(2).getValue().toString().contains("/* @end-block */"));
 
+        /* YUK-22 will be executed */
         Assert.assertEquals(true, result.get(4).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE())"));
 
+        /* YUK-23 will not be executed and will be tagged with meta-data @skip-start */
         Assert.assertEquals("true", result.get(5).getMetaProps().get("skip-start"));
 
+        /* YUK-24 will not be executed and will be tagged with meta-data @skip-start */
         Assert.assertEquals("true", result.get(8).getMetaProps().get("skip-start"));
 
+        /* YUK-25 will be executed and contains metadata - @start-block and @end-block */
+        Assert.assertEquals(true, result.get(9).getValue().toString().contains(
+            "INSERT INTO DBUpdates VALUES ('YUK-25', '7.0.1', GETDATE())"));
+
+        Assert.assertEquals(true, result.get(9).getValue().toString().contains("/* @start-block */")
+            && result.get(9).getValue().toString().contains("/* @end-block */"));
+
+        /* YUK-111 will not be executed and will be tagged with metadata @skip-start */
         Assert.assertEquals("true", result.get(10).getMetaProps().get("skip-start"));
 
         Assert.assertEquals(true, result.get(10).getValue().toString().contains(
             "UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1"));
 
-        Assert.assertEquals("ignore-begin", result.get(12).getMetaProps().get("error"));
-
+        /* YUK-32 will be executed should contains metadata - @ignore-begin */
         Assert.assertEquals("YUK-32 IF YUK-16225", result.get(12).getMetaProps().get("start"));
 
+        Assert.assertEquals("ignore-begin", result.get(12).getMetaProps().get("error"));
+
+        /* YUK-30 will be executed and should contain metadata - @error warn-once */
         Assert.assertEquals("warn-once", result.get(17).getMetaProps().get("error"));
 
         Assert.assertEquals(true, result.get(17).getValue().toString().contains(
