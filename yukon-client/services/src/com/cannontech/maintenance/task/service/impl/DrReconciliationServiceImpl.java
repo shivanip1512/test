@@ -353,12 +353,12 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
         lcrsToSendCommand.put(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, sendInServiceDevice);
 
         compareExpectedServiceStatusWithReportedLcrs(lcrsToSendCommand);
-        log.debug("Send In service to device "+sendInServiceDevice);
-        log.debug("Send OOS to device "+sendOOSDevice);
+        log.debug("Devices picked for Send In service command " + sendInServiceDevice);
+        log.debug("Devices picked for Send Out of service command " + sendOOSDevice);
 
         // Get LCR's with incorrect addressing, we need to send config message to them
         Set<Integer> sendAddressing = getLCRWithConflictingAddressing();
-        log.debug("Send config to device " + sendAddressing);
+        log.debug("Devices picked for Send config command " + sendAddressing);
 
         Set<Integer> allLcrs = new HashSet<>();
         allLcrs.addAll(sendOOSDevice);
@@ -412,7 +412,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                     log.error("Scheduler for finding message to send Interrupted " + e);
                 }
             });
-            log.debug("Will send message to " + sendMessageToLcr.size() + " LCR in next 12 min");
+            if (sendMessageToLcr.size() > 0) {
+                log.debug("Will send message to " + sendMessageToLcr.size() + " LCR in next 12 min");
+            }
 
         }, 0, calculationCycleMinutes, TimeUnit.MINUTES);
 
@@ -440,7 +442,9 @@ public class DrReconciliationServiceImpl implements DrReconciliationService {
                     log.error("Scheduler for sending message Interrupted " + e);
                 }
             }
-            log.debug("Have send message " + messagesSend + " in this minute");
+            if (messagesSend > 0) {
+                log.debug("Have send message " + messagesSend + " in this minute");
+            }
         }, perMinuteScheduling, perMinuteScheduling, TimeUnit.MINUTES);
         
         schedulersFuture.add(futureSchdTwelveMin);
