@@ -129,10 +129,14 @@ public class UpdateDBTest {
 
         List<UpdateLine> result = updateDB.convertToUpdateLines(fileStrings, null, null);
 
-        Assert.assertEquals(13, result.size());
+        Assert.assertEquals(19, result.size());
+
+        Assert.assertEquals("YUK-21", result.get(0).getMetaProps().get("start"));
 
         Assert.assertEquals(true, result.get(1).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-21', '7.0.1', GETDATE())"));
+
+        Assert.assertEquals("YUK-21", result.get(2).getMetaProps().get("end"));
 
         Assert.assertEquals(true, result.get(2).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-26', '7.0.1', GETDATE())"));
@@ -143,13 +147,25 @@ public class UpdateDBTest {
         Assert.assertEquals(true, result.get(4).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE())"));
 
-        Assert.assertEquals(true, result.get(7).getValue().toString().contains(
+        Assert.assertEquals("true", result.get(5).getMetaProps().get("skip-start"));
+
+        Assert.assertEquals("true", result.get(8).getMetaProps().get("skip-start"));
+
+        Assert.assertEquals("true", result.get(10).getMetaProps().get("skip-start"));
+
+        Assert.assertEquals(true, result.get(10).getValue().toString().contains(
             "UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1"));
 
-        Assert.assertEquals(true, result.get(11).getValue().toString().contains(
+        Assert.assertEquals("ignore-begin", result.get(12).getMetaProps().get("error"));
+
+        Assert.assertEquals("YUK-32 IF YUK-16225", result.get(12).getMetaProps().get("start"));
+
+        Assert.assertEquals("warn-once", result.get(17).getMetaProps().get("error"));
+
+        Assert.assertEquals(true, result.get(17).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-30', '7.0.1', GETDATE())"));
 
-        Assert.assertEquals(true, result.get(12).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(18).getValue().toString().contains(
             "INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 1, GETDATE())"));
     }
 

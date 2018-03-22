@@ -29,7 +29,9 @@ public interface DBMSDefines
         
 		"ignore-begin", //ignore all errors up to the ignore-end tag
         "ignore-end", //matching tag for ignore-begin
-        "warn-once" //Stop execution but mark as valid in valids file.
+        "warn-once", //Stop execution but mark as valid in valids file.
+        "skip-start", //skip-start tag is to skip the sql statements that are not executed
+        "skip-end"
 	};
 
 
@@ -44,7 +46,8 @@ public interface DBMSDefines
 	
     /*For use with T-SQL or PL/SQL transaction blocks*/
     public static final String START_BLOCK              = "/* @start-block */";
-    public static final String START                    = "/* @start";
+    public static final String START                    = "start";
+    public static final String META_START               = COMMENT_BEGIN +" "+ META_TAG + "start";
     public static final String END_BLOCK                = "/* @end-block */";
     public static final String START_CPARM_REGEX        = "/\\* @start-cparm (\\w+) \\*/";
     public static final String END_CPARM                = "/* @end-cparm */";

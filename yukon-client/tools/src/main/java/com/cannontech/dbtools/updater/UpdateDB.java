@@ -40,7 +40,7 @@ public class UpdateDB
     private boolean starsToBeCreated = false;
 
     private static final Pattern cparmPattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
-    private static final Pattern startIFPattern = Pattern.compile(DBMSDefines.START_IF_REGEX);
+    private static final Pattern startIfPattern = Pattern.compile(DBMSDefines.START_IF_REGEX);
     private static final Pattern startPattern =  Pattern.compile(DBMSDefines.START_REGEX);
     private static final Pattern endPattern = Pattern.compile(DBMSDefines.END_REGEX);
     private static final Pattern SQLServerVarPattern = 
@@ -319,7 +319,7 @@ public class UpdateDB
      **/
     private void handleComment(final String token_, final UpdateLine updLine_) {
         int metaIndx = token_.indexOf(DBMSDefines.META_TAG);
-        int startIndx = token_.indexOf(DBMSDefines.START);
+        int startIndx = token_.indexOf(DBMSDefines.META_START);
         if (startIndx >= 0) {
             StringTokenizer tokenizer = new StringTokenizer(token_.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
             String key = tokenizer.nextToken();
@@ -492,7 +492,7 @@ public class UpdateDB
         boolean ignoreEntry = false;
         for (String token : fileStrings) {
             cparmMatcher = cparmPattern.matcher(token);
-            startIfMatcher = startIFPattern.matcher(token);
+            startIfMatcher = startIfPattern.matcher(token);
             endMatcher = endPattern.matcher(token);
             startMatcher = startPattern.matcher(token);
             if( isValidString(token) )
@@ -539,19 +539,22 @@ public class UpdateDB
                     if (ignoreEntry) {
                         ignoreEntry = !endMatcher.find();
                         startIfState = ignoreEntry;
-                        continue;
-                    }
-                    startIfState = !endMatcher.find();
-                    if (!startIfState) {
-                        int metaIndx = token.indexOf(DBMSDefines.META_TAG);
-                        StringTokenizer tokenizer =
-                            new StringTokenizer(token.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
-                        if (metaIndx >= 0 && metaIndx < token.length() && tokenizer.countTokens() >= 2) {
-                            String key = tokenizer.nextToken();
-                            String value = tokenizer.nextToken();
-                            updLine.getMetaProps().put(key, value);
+                        if (!ignoreEntry) {
+                            updLine.getMetaProps().put(DBMSDefines.OPTIONS_ERROR[8], "true");
                         }
-                        continue;
+                    } else {
+                        startIfState = !endMatcher.find();
+                        if (!startIfState) {
+                            int metaIndx = token.indexOf(DBMSDefines.META_TAG);
+                            StringTokenizer tokenizer =
+                                new StringTokenizer(token.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
+                            if (metaIndx >= 0 && metaIndx < token.length() && tokenizer.countTokens() >= 2) {
+                                String key = tokenizer.nextToken();
+                                String value = tokenizer.nextToken();
+                                updLine.getMetaProps().put(key, value);
+                            }
+                            continue;
+                        }
                     }
                 } else if (startIfMatcher.find()) {
                     startIfState = !endMatcher.find();
@@ -565,9 +568,9 @@ public class UpdateDB
 
                         if (!updateIds.contains(dependentYukId) || updateIds.contains(newYukId)) {
                             ignoreEntry = true;
-                            continue;
+                            updLine.getMetaProps().put(DBMSDefines.OPTIONS_ERROR[7], "true");
                         }
-                    } else {}
+                    }
                 }
 
                 if (startMatchState) {
