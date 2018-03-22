@@ -186,14 +186,10 @@ public class GroupCommanderController {
         System.out.println("..................sending email..............");
         
         
-        try {
-            // attach to email
-            if (result.hasLogFile()) {
-                File file = result.getLogFile();
-            }
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+        // attach to email
+        if (result.hasLogFile()) {
+            File file = result.getLogFile();
         }
         
         

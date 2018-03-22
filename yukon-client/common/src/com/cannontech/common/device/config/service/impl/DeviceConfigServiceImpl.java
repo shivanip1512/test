@@ -67,7 +67,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
- 
+
     private int initiateAction(String command, DeviceCollection deviceCollection, LogAction logAction,
             CollectionAction collectionAction, DeviceRequestType requestType,
             SimpleCallback<CollectionActionResult> callback, YukonUserContext context) {
@@ -103,14 +103,16 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 @Override
                 public void receivedLastResultString(CommandRequestDevice command, String value) {
                     logCompleted(Lists.newArrayList(command.getDevice()), logAction, true);
-                    CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
+                    CollectionActionLogDetail detail =
+                        new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
                     result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
                 }
 
                 @Override
                 public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                     logCompleted(Lists.newArrayList(command.getDevice()), logAction, false);
-                    CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.FAILURE);
+                    CollectionActionLogDetail detail =
+                        new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.FAILURE);
                     detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
                     result.addDeviceToGroup(CollectionActionDetail.FAILURE, command.getDevice(), detail);
                 }
@@ -132,11 +134,17 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                     }
                 }
             };
-        List<CommandRequestDevice> requests = deviceCollection.getDeviceList().stream().map(
-            device -> new CommandRequestDevice(command, new SimpleDevice(device.getPaoIdentifier()))).collect(
-                Collectors.toList());
-        commandExecutionService.execute(requests, execCallback, requestType, context.getYukonUser());
+
         collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result, unsupportedDevices);
+        if (supportedDevices.isEmpty()) {
+            execCallback.complete();
+        } else {
+            List<CommandRequestDevice> requests = supportedDevices.stream().map(
+                device -> new CommandRequestDevice(command, new SimpleDevice(device.getPaoIdentifier()))).collect(
+                    Collectors.toList());
+            result.setCancelationCallback(execCallback);
+            commandExecutionService.execute(requests, execCallback, requestType, context.getYukonUser());
+        }
         return result.getCacheKey();
     }
     

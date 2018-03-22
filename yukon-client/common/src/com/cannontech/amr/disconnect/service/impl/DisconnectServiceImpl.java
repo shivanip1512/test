@@ -44,8 +44,10 @@ import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -59,6 +61,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
     @Autowired private DisconnectEventLogService disconnectEventLogService;
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
     public CollectionActionResult execute(DisconnectCommand command, DeviceCollection deviceCollection,
@@ -98,6 +101,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         }
         
         DisconnectCallback callback = new DisconnectCallback() {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
             List<StrategyType> pendingStrategies = Collections.synchronizedList(strategies
                 .stream().map(strategy -> strategy.getStrategy())
                 .collect(Collectors.toList()));
@@ -111,6 +115,8 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
 
             @Override
             public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
+                CollectionActionLogDetail detail = new CollectionActionLogDetail(device, FAILURE);
+                detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
                 result.addDeviceToGroup(FAILURE, device, new CollectionActionLogDetail(device, FAILURE));
             }
 

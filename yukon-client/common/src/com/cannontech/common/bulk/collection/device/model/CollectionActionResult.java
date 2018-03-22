@@ -236,11 +236,15 @@ public class CollectionActionResult {
     }
     
     public boolean hasLogFile() {
-        return logService.hasLog(cacheKey); 
+        return logService == null ? false : logService.hasLog(cacheKey);
     }
     
-    public File getLogFile() throws FileNotFoundException {
-        return logService.getLog(cacheKey); 
+    public File getLogFile() {
+        try {
+            return logService == null ? null : logService.getLog(cacheKey);
+        } catch (FileNotFoundException e) {
+            return null;
+        }
     }
     
     public void log() {

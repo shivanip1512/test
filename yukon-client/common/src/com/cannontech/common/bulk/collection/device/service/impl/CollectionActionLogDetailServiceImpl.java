@@ -1,6 +1,5 @@
 package com.cannontech.common.bulk.collection.device.service.impl;
 
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_ERROR_TEXT;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.TIMESTAMP;
 
@@ -92,17 +91,14 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 fields.add(detail.getPao() != null ? dbCache.getAllPaosMap().get(detail.getPao().getPaoIdentifier().getPaoId()).getPaoName() : "");
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
                 fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
+                fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
 
                 if (result.getAction().contains(TIMESTAMP)) {
                     fields.add(detail.getTime() != null
                         ? dateFormattingService.format(detail.getTime(), DateFormatEnum.BOTH, result.getContext())
                         : "");
                 }
-
-                if (result.getAction().contains(DEVICE_ERROR_TEXT)) {
-                    fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
-                }
-
+                
                 if (result.getAction().contains(POINT_DATA)) {
                     fields.add(detail.getValue() != null
                         ? pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())

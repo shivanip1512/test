@@ -10,7 +10,6 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_ERROR_TEXT;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.TIMESTAMP;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
@@ -34,24 +33,24 @@ import com.google.common.collect.Sets;
  */
 public enum CollectionAction implements DisplayableEnum {
 
-    SEND_COMMAND(CRE, getLogEntries(POINT_DATA, DEVICE_ERROR_TEXT), SUCCESS, FAILURE, CANCELED),
-    READ_ATTRIBUTE(CRE, getLogEntries(POINT_DATA, DEVICE_ERROR_TEXT), SUCCESS, FAILURE, CANCELED, UNSUPPORTED),
+    SEND_COMMAND(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, CANCELED),
+    READ_ATTRIBUTE(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, CANCELED, UNSUPPORTED),
     LOCATE_ROUTE(CRE, null, SUCCESS, FAILURE, CANCELED),
     CONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     DISCONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     ARM(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     DEMAND_RESET(CRE, null, CONFIRMED, UNCONFIRMED, FAILURE, UNSUPPORTED, CANCELED),
-    SEND_CONFIG(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
-    READ_CONFIG(CRE, null, SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
+    SEND_CONFIG(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
+    READ_CONFIG(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     ARCHIVE_DATA_ANALYSIS(DB, null, SUCCESS, FAILURE),
-    MASS_CHANGE(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    CHANGE_TYPE(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    MASS_DELETE(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    ADD_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    UPDATE_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    REMOVE_POINTS(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    ASSIGN_CONFIG(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE),
-    UNASSIGN_CONFIG(DB, getLogEntries(DEVICE_ERROR_TEXT), SUCCESS, FAILURE);
+    MASS_CHANGE(DB, null, SUCCESS, FAILURE),
+    CHANGE_TYPE(DB, null, SUCCESS, FAILURE),
+    MASS_DELETE(DB, null, SUCCESS, FAILURE),
+    ADD_POINTS(DB, null, SUCCESS, FAILURE),
+    UPDATE_POINTS(DB, null, SUCCESS, FAILURE),
+    REMOVE_POINTS(DB, null, SUCCESS, FAILURE),
+    ASSIGN_CONFIG(DB, null, SUCCESS, FAILURE),
+    UNASSIGN_CONFIG(DB, null, SUCCESS, FAILURE);
 
     private CollectionActionProcess process;
 
