@@ -130,6 +130,7 @@
 		Recommended usage is to have Remove Successfully Read from Group After Read checked.
 		
     ]]></entry>
+    
     <entry key="yukon.web.modules.amr.outageProcessing.removeAfterRead">Remove Successfully Read from Group</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.recentReadLogsResults.dateTime">Read Date/Time</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.recentReadLogsResults.detail">Detail</entry>
@@ -138,11 +139,7 @@
     <entry key="yukon.web.modules.amr.outageProcessing.options.outagesGroupReport">View Outages Group Devices Report</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.options.clearOutagesGroup">Clear Outages Group</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.options.otherActions">Other Actions</entry>
-	<entry key="yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlert"><![CDATA[
-	Outage Logs read has completed for Outage Monitor "{outageMonitorName}" with {percentSuccess|#0.0#}% success 
-	  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-	    <i class="icon icon-magnifier-zoom-in fn"></i>
-	  </a>
-	]]></entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlertDetailText">for Outage Monitor "{0}"</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.disabled">Read Logs is disabled when there are no violations.</entry>
 
 </properties>

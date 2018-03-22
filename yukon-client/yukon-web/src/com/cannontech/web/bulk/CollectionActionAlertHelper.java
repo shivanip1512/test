@@ -18,11 +18,21 @@ public class CollectionActionAlertHelper {
 
     public static SimpleCallback<CollectionActionResult> createAlert(AlertType type, AlertService alertService,
             MessageSourceAccessor accessor, HttpServletRequest request) {
-        return  createAlert(type, alertService, accessor, null, request);
+        return  createAlert(type, alertService, accessor, null, request, null);
+    }
+    
+    public static SimpleCallback<CollectionActionResult> createAlert(AlertType type, AlertService alertService,
+            MessageSourceAccessor accessor, HttpServletRequest request, String detailText) {
+        return  createAlert(type, alertService, accessor, null, request, detailText);
     }
     
     public static SimpleCallback<CollectionActionResult> createAlert(AlertType type, AlertService alertService,
             MessageSourceAccessor accessor, SimpleCallback<CollectionActionResult> callback, HttpServletRequest request) {
+        return  createAlert(type, alertService, accessor, callback, request, null);
+    }
+    
+    public static SimpleCallback<CollectionActionResult> createAlert(AlertType type, AlertService alertService,
+            MessageSourceAccessor accessor, SimpleCallback<CollectionActionResult> callback, HttpServletRequest request, String detailText) {
 
         return new SimpleCallback<CollectionActionResult>() {
             String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
@@ -44,6 +54,7 @@ public class CollectionActionAlertHelper {
                 }
                 String url = partialUrl + "?key=" + result.getCacheKey();
                 template.addData("url", url);
+                template.addData("detail", detailText);
                 template.addData("command", accessor.getMessage(result.getAction().getFormatKey()));
                 template.addData("percentSuccess", percentSuccess);
                 template.addData("completedCount", result.getCounts().getCompleted());

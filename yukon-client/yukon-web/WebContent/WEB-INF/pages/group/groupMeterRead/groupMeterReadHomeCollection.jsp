@@ -1,16 +1,11 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<cti:standardPage module="tools" page="bulk.readAttribute">
 
-    <c:if test="${not empty errorMsg}">
-        <div class="error stacked">${fn:escapeXml(errorMsg)}</div>
-    </c:if>
+<cti:standardPage module="tools" page="bulk.readAttribute">
 
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.readAttribute" deviceCollection="${deviceCollection}">
         <cti:url var="groupMeterReadUrl" value="/group/groupMeterRead/readCollection"/>
-        <form id="groupMeterReadForm" action="${groupMeterReadUrl}" method="post">
+        <form action="${groupMeterReadUrl}" method="post">
             <cti:csrfToken/>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             <tags:attributeSelector 

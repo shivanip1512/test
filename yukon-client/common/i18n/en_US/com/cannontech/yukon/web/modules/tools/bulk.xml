@@ -476,6 +476,7 @@
     <entry key="yukon.web.modules.tools.bulk.readAttribute.header">Select an Attribute to Read</entry>
     <entry key="yukon.web.modules.tools.bulk.readAttribute.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.tools.bulk.readAttribute.noteText">Devices that do not support the attribute will not be included.</entry>
+    <entry key="yukon.web.modules.tools.bulk.readAttribute.noAttributesSelected">Please select at least one attribute to read.</entry>
 
     <!-- MASS DELETE -->
     <!-- ******************************************************************************************************************** -->

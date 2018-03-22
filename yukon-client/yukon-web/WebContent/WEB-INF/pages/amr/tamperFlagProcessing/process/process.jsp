@@ -19,6 +19,8 @@
                     
                     <tags:nameValue2 nameKey=".section.mainDetail.violations">
                         <cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${tamperFlagMonitor.tamperFlagMonitorId}/VIOLATIONS_COUNT"/>
+                        <cti:dataUpdaterCallback function="yukon.monitor.tamperFlag.enableDisableReadFlags" initialize="true" 
+                            value="TAMPER_FLAG_PROCESSING/${tamperFlagMonitor.tamperFlagMonitorId}/VIOLATIONS_COUNT"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".section.mainDetail.monitoring">
@@ -115,8 +117,9 @@
                     
                     <%-- read internal flags button --%>
                     <div class="page-action-area stacked">
+                        <tags:alertBox key=".section.readInternalFlags.disabled" type="info" classes="js-read-flags-message dn"/>
                         <cti:msg2 var="readInternalFlagsButtonText" key=".section.readInternalFlags.button"/>
-                        <cti:button label="${readInternalFlagsButtonText}" busy="true" type="submit" icon="icon-flag-green"/>
+                        <cti:button label="${readInternalFlagsButtonText}" busy="true" type="submit" icon="icon-flag-green" classes="js-read-flags"/>
                     </div>
                     
                     <%-- read ok --%>
@@ -174,8 +177,9 @@
                     
                     <%-- reset internal flags button --%>
                     <div class="page-action-area stacked">
+                        <tags:alertBox key=".section.readInternalFlags.disabled" type="info" classes="js-read-flags-message dn"/>
                         <cti:msg2 var="resetInternalFlagsButtonText" key=".section.resetInternalFlags.button"/>
-                        <cti:button label="${resetInternalFlagsButtonText}" type="submit" icon="icon-flag-gray" busy="true"/>
+                        <cti:button label="${resetInternalFlagsButtonText}" type="submit" icon="icon-flag-gray" busy="true" classes="js-read-flags"/>
                     </div>
                     
                     <%-- reset ok --%>
@@ -216,5 +220,7 @@
             </tags:sectionContainer2>
         </div>
     </div>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.monitor.tamperFlag.js"/>
     
 </cti:standardPage>

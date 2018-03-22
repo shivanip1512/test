@@ -212,7 +212,6 @@
           </page>
         </pages>
       </page>
-      <page name="groupMeterRead.results" type="BASIC"/>
       <page name="groupCommand.results" type="BASIC">
         <link>/group/commander/resultList</link>
         <pages>

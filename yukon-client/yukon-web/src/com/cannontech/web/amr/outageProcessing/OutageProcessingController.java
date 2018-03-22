@@ -32,6 +32,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SimpleCallback;
@@ -60,6 +61,7 @@ public class OutageProcessingController extends MultiActionController {
     @Autowired private CollectionActionService collectionActionService;
 	
 	private final ListMultimap<Integer, Integer> monitorToRecentReadKeysCache = ArrayListMultimap.create();
+    private final static String baseKey = "yukon.web.modules.amr.outageProcessing.";
 	
 	// PROCESS
 	@RequestMapping(value = "process", method = RequestMethod.GET)
@@ -100,9 +102,11 @@ public class OutageProcessingController extends MultiActionController {
         };
 
         // alert callback
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String detailText = accessor.getMessage(baseKey + "readOutagesLog.completionAlertDetailText", outageMonitor.getOutageMonitorName());
         SimpleCallback<CollectionActionResult> alertCallback =
             CollectionActionAlertHelper.createAlert(AlertType.OUTAGE_PROCESSING_READ_LOGS_COMPLETION, alertService,
-                messageResolver.getMessageSourceAccessor(userContext), outageRemovalCallback, request);
+                accessor, outageRemovalCallback, request, detailText);
 
         int cacheKey = deviceAttributeReadService.initiateRead(deviceCollection, Collections.singleton(BuiltInAttribute.OUTAGE_LOG), 
                                                                 DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext);

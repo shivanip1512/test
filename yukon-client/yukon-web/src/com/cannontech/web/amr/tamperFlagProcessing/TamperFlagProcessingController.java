@@ -32,6 +32,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SimpleCallback;
@@ -63,6 +64,7 @@ public class TamperFlagProcessingController {
 	private ListMultimap<Integer, Integer> monitorToRecentReadKeysCache = ArrayListMultimap.create();
 	private ListMultimap<Integer, Integer> monitorToRecentResetKeysCache = ArrayListMultimap.create();
 	private static final String RESET_FLAGS_COMMAND = "putstatus reset";
+    private final static String baseKey = "yukon.web.modules.amr.tamperFlagProcessing.";
 	
 	// EDIT
 	@RequestMapping(value = "process", method = RequestMethod.GET)
@@ -98,9 +100,11 @@ public class TamperFlagProcessingController {
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
 				
 		// alert callback
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String detailText = accessor.getMessage(baseKey + "readInternalFlags.completionAlertDetailText", tamperFlagMonitor.getTamperFlagMonitorName());
         SimpleCallback<CollectionActionResult> alertCallback =
                 CollectionActionAlertHelper.createAlert(AlertType.TAMPER_FLAG_PROCESSING_READ_INTERNAL_FLAGS_COMPLETION, alertService,
-                    messageResolver.getMessageSourceAccessor(userContext), request);
+                    accessor, request, detailText);
 	
         int cacheKey = deviceAttributeReadService.initiateRead(tamperFlagGroupDeviceCollection, Collections.singleton(BuiltInAttribute.GENERAL_ALARM_FLAG), 
                                                                 DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext);

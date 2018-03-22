@@ -20,6 +20,8 @@
                     
                     <tags:nameValue2 nameKey=".mainDetail.violations">
                         <cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/VIOLATIONS_COUNT"/>
+                        <cti:dataUpdaterCallback function="yukon.monitor.outage.enableDisableReadLogs" initialize="true" 
+                            value="OUTAGE_PROCESSING/${outageMonitor.outageMonitorId}/VIOLATIONS_COUNT"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".mainDetail.monitoring">
@@ -131,8 +133,9 @@
                 
                     <%-- remove after read checkbox --%>
                     <div class="page-action-area stacked">
-                        <cti:button nameKey="readOutageLogs" busy="true" type="submit" icon="icon-read"/>
-                        <label><input type="checkbox" name="removeFromOutageGroupAfterRead" checked><i:inline key=".removeAfterRead" /></label>
+                        <tags:alertBox key=".readOutageLogs.disabled" type="info" classes="js-read-outage-message dn"/>
+                        <cti:button nameKey="readOutageLogs" busy="true" type="submit" icon="icon-read" classes="js-read-outages"/>
+                        <label><input type="checkbox" name="removeFromOutageGroupAfterRead" checked class="js-read-outages"><i:inline key=".removeAfterRead" /></label>
                     </div>
                     
                     <%-- read ok --%>
@@ -171,5 +174,7 @@
             </tags:sectionContainer>
         </div>
     </div>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.monitor.outage.js"/>
     
 </cti:standardPage>

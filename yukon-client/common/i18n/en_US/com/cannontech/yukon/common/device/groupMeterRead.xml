@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    
-    <!-- GroupMeterReadController groupMeterReadResults.jsp -->
-    <!-- ================================================================================================================================================= -->
-    <!-- ================================================================================================================================================= -->
-    <entry key="yukon.common.device.groupMeterRead.results.pageTitle">Group Attribute Read Results</entry>
-    <entry key="yukon.web.modules.tools.groupMeterRead.results.pageName">Group Attribute Read Results</entry>
-    <entry key="yukon.web.modules.tools.groupMeterRead.results.tableHeader.attributes">Attributes</entry>
-    <entry key="yukon.web.modules.tools.groupMeterRead.results.tableHeader.unsupportedCount">Not Supported</entry>
-    <entry key="yukon.web.modules.tools.tableHeader.devices">Devices</entry>
-    <entry key="yukon.web.modules.tools.tableHeader.resultCount">Results</entry>
-    <entry key="yukon.web.modules.tools.tableHeader.detail">Detail</entry>
-    <entry key="yukon.web.modules.tools.tableHeader.status">Status</entry>
-    <entry key="yukon.web.modules.tools.tableHeader.startTime">Start Time</entry>
-    <entry key="yukon.web.modules.tools.tableTooltip">Success / Failure</entry>
-    <entry key="yukon.web.modules.tools.tableHeader.successCount">Success</entry>
-    <entry key="yukon.web.modules.tools.tableHeader.failureCount">Failure</entry>
 
     <!-- resultList.jsp -->
     <entry key="yukon.web.modules.tools.groupCommand.results.pageName">Group Command Processing Results</entry>
@@ -24,43 +8,5 @@
 
     <entry key="yukon.web.modules.tools.groupCommand.details.pageHeading">Group Command Processing Details</entry>
     <entry key="yukon.web.modules.tools.groupCommand.details.crumbTitle">Details</entry>
-
-    <!-- OutageProcessingController groupMeterReadResultDetail.jsp -->
-    <!-- ================================================================================================================================================= -->
-    <!-- ================================================================================================================================================= -->
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.pageTitle">Group Attribute Read Result Detail</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.recentResultsTitle">Recent Group Attribute Read Results</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.noteLabel">Note:</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.noteText"><![CDATA[
-		Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
-        You may view the progress of all recent and ongoing reads from the main 
-        <a href="{0}">Group Attribute Read</a> page.
-	]]></entry>
-    
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.success">Successfully Executed:</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.success.view">View Results</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.failed">Failed To Execute:</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.failed.viewFailReasons">View Failure Reasons</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.section.unsupported">Not Supported:</entry>
-    
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.allResults">Choose New Operation For All Devices</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.creResults">View Results Log</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.successResults">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.failureResults">Choose New Operation For These Devices</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.unsupportedResults">Choose New Operation For These Devices</entry>
-    
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.progressLabel">Progress</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.inProgress">In Progress...</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.complete">Complete.</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.canceled">Canceled.</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.tabularData">Tabular Data:</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.errorDescription">Error Description</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.errorCode">Error Code</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.firstPoint">First Point</entry>
-    <entry key="yukon.common.device.groupMeterRead.resultDetail.lastResult">Last Result</entry>
-    
-    <entry key="yukon.common.device.groupMeterRead.groupMeterReadResult.IS_SUCCESSFULLY_COMPLETE_TEXT">Complete</entry>
-    <entry key="yukon.common.device.groupMeterRead.groupMeterReadResult.IS_EXCEPTION_OCCURED_TEXT">Error: {exceptionReason}</entry>
-    <entry key="yukon.common.device.groupMeterRead.groupMeterReadResult.IS_IN_PROGRESS_TEXT">In Progress</entry>
     
 </properties>

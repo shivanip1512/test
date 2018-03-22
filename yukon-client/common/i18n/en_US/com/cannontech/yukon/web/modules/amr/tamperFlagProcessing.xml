@@ -81,6 +81,7 @@
     ]]></entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.viewPointsDescription">You may view device points, and add them if needed here:</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.viewPointsLink">View Current Points</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.disabled">Read/Reset Internal Flags is disabled when there are no violations.</entry>
     
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.title">Reset Internal Flags</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetInternalFlags.button">Reset Flags</entry>
@@ -96,13 +97,8 @@
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.dateTime">Read Date/Time</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.tableHeader.detail">Detail</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readFlags.recentReadFlagsResults.viewDetailLink">View</entry>
-    
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlert"><![CDATA[
-	Internal Flags read has completed for Tamper Flag Monitor "{tamperFlagMonitorName}" with {percentSuccess|#0.0#}% success 
-	  <a href="/group/groupMeterRead/resultDetail?resultKey={resultKey}" title="Click to see complete details">
-	    <i class="icon icon-magnifier-zoom-in fn"></i>
-	  </a>
-	]]></entry>
+
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.readInternalFlags.completionAlertDetailText">for Tamper Flag Monitor "{0}"</entry>
 
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults">Recent Reset Internal Flags Results:</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.resetFlags.recentResetFlagsResults.tableHeader.dateTime">Reset Date/Time</entry>
