@@ -14,7 +14,7 @@ public class RetryStrategy {
     }
     
     public static RetryStrategy noRetryStrategy() {
-        return new RetryStrategy(0, null, null);
+        return new RetryStrategy(0, null, 0);
     }
     
     public int getRetryCount() {
