@@ -24,7 +24,13 @@ public interface FeederService {
      * Delete the feeder with the given id
      * @return true when successful, false otherwise
      */
-    boolean delete(int feederId);
+    boolean delete(int feederId); 
+    
+    /**
+     * Returns whether the capbanks assigned to feeder are assigned within zone with the given feederId
+     * @return true when successful, false otherwise
+     */
+     boolean isCapBanksAssignedToZone(int feederId);
 
     /**
      * @return All cap banks, as {@link ViewableCapBank}s,  attached to the feeder with given feederId in display order<br>

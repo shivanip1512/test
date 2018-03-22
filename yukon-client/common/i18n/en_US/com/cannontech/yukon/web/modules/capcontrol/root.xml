@@ -619,6 +619,7 @@
     <entry key="yukon.web.modules.capcontrol.feeder.delete.success">Feeder {0} deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.saved">Feeder was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.noAssignedCapBanks">No Assigned CapBanks</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.delete.error">Error deleting feeder {0}. CapBank is currently assigned to a Zone, please navigate to the Zone editor and remove the associated CapBank from the Zone and then try again.</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.dmvTestRunning.hoverText">Currently being used in a DMV test.</entry>
     
