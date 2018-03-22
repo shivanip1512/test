@@ -117,7 +117,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             public void failed(SimpleDevice device, SpecificDeviceErrorDescription error) {
                 CollectionActionLogDetail detail = new CollectionActionLogDetail(device, FAILURE);
                 detail.setDeviceErrorText(accessor.getMessage(error.getDetail()));
-                result.addDeviceToGroup(FAILURE, device, new CollectionActionLogDetail(device, FAILURE));
+                result.addDeviceToGroup(FAILURE, device, detail);
             }
 
             @Override
