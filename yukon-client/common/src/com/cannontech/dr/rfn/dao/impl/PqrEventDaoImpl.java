@@ -31,11 +31,21 @@ import com.cannontech.dr.rfn.dao.PqrEventDao;
 import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.model.PqrEventType;
 import com.cannontech.dr.rfn.model.PqrResponseType;
+import com.google.common.collect.ImmutableSet;
 
 public class PqrEventDaoImpl implements PqrEventDao {
     private static final Logger log = YukonLogManager.getLogger(PqrEventDaoImpl.class);
     private static boolean createTable = false;
     private static VendorSpecificSqlBuilder tableCreatorSql;
+    private static final ImmutableSet<DatabaseVendor> oracleVendors = ImmutableSet.of(DatabaseVendor.ORACLE9I,
+                                                                                      DatabaseVendor.ORACLE10G, 
+                                                                                      DatabaseVendor.ORACLE11G, 
+                                                                                      DatabaseVendor.ORACLE12C,
+                                                                                      DatabaseVendor.ORACLE_UNKNOWN);
+    
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     private static final YukonRowMapper<PqrEvent> eventRowMapper = (rs) -> {
         int inventoryId = rs.getInt("inventoryId");
@@ -47,25 +57,20 @@ public class PqrEventDaoImpl implements PqrEventDao {
         return new PqrEvent(inventoryId, rfnIdentifier, timestamp, eventType, responseType, value);
     };
     
-    @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
-    
     @PostConstruct
     private void init() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) AS TableCount");
-        sql.append("FROM INFORMATION_SCHEMA.TABLES");
-        sql.append("WHERE TABLE_NAME").eq("PqrEventLog");
+        VendorSpecificSqlBuilder tableCounterSql = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder oracleCountSql = tableCounterSql.buildFor(oracleVendors);
+        SqlBuilder msCountSql = tableCounterSql.buildOther();
+        buildOracleTableCounterSql(oracleCountSql);
+        buildMsSqlTableCounterSql(msCountSql);
         
-        int tableCount = jdbcTemplate.queryForInt(sql);
+        int tableCount = jdbcTemplate.queryForInt(tableCounterSql);
         
         if (tableCount == 0) {
             createTable = true;
             tableCreatorSql = vendorSpecificSqlBuilderFactory.create();
-            SqlBuilder oracleSql = tableCreatorSql.buildFor(DatabaseVendor.ORACLE10G, 
-                                                         DatabaseVendor.ORACLE11G, 
-                                                         DatabaseVendor.ORACLE12C);
+            SqlBuilder oracleSql = tableCreatorSql.buildFor(oracleVendors);
             SqlBuilder msSql = tableCreatorSql.buildOther();
             buildOracleTableCreationSql(oracleSql);
             buildMsSqlTableCreationSql(msSql);
@@ -207,5 +212,23 @@ public class PqrEventDaoImpl implements PqrEventDao {
         sql.append(  "Timestamp ASC");
         sql.append(")");
         jdbcTemplate.update(sql);
+    }
+    
+    /**
+     * Checks if the PqrEventLog table exists, with MS SQL syntax.
+     */
+    private void buildOracleTableCounterSql(SqlBuilder sql) {
+        sql.append("SELECT COUNT(*) AS TableCount");
+        sql.append("FROM USER_TABLES");
+        sql.append("WHERE TABLE_NAME").eq("PqrEventLog");
+    }
+    
+    /**
+     * Checks if the PqrEventLog table exists, with Oracle syntax.
+     */
+    private void buildMsSqlTableCounterSql(SqlBuilder sql) {
+        sql.append("SELECT COUNT(*) AS TableCount");
+        sql.append("FROM INFORMATION_SCHEMA.TABLES");
+        sql.append("WHERE TABLE_NAME").eq("PqrEventLog");
     }
 }
