@@ -33,7 +33,7 @@
                     <tags:check name="statuses" classes="M0" value="${status}" label="${statusLabel}" checked="${selected}"></tags:check>
                 </c:forEach>
             </div>
-            <tags:pickerDialog id="userPicker" type="userPicker" destinationFieldName="userIds"
+            <tags:pickerDialog id="userPicker" type="deviceActionsRoleUserPicker" destinationFieldName="userIds"
                 linkType="selection" selectionProperty="userName" initialId="${filter.userIds}" 
                 icon="icon-user" allowEmptySelection="true" styleClass="fl" multiSelectMode="true"
                 excludeIds="${excludedUserIds}"/>

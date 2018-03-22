@@ -578,4 +578,23 @@ public class YukonUserDaoImpl implements YukonUserDao {
         return userGroupNameList;
 
     }
+    
+    @Override
+    public List<String> getDeviceActionsRoleUserGroups() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Name");
+        sql.append("FROM UserGroup yg");
+
+        SqlStatementBuilder userGroupsWithDeviceActionsRole = new SqlStatementBuilder();
+        userGroupsWithDeviceActionsRole.append("SELECT DISTINCT UserGroupId");
+        userGroupsWithDeviceActionsRole.append("FROM UserGroupToYukonGroupMapping map");
+        userGroupsWithDeviceActionsRole.append("JOIN YukonGroupRole ygr ON map.GroupId = ygr.GroupId");
+        userGroupsWithDeviceActionsRole.append("WHERE RoleId").eq(YukonRole.DEVICE_ACTIONS);
+
+        sql.append("WHERE yg.UserGroupId").in(userGroupsWithDeviceActionsRole);
+
+        List<String> userGroupNameList = jdbcTemplate.query(sql, TypeRowMapper.STRING);
+        return userGroupNameList;
+
+    }
 }

@@ -204,4 +204,7 @@
 <!-- DNP RTU Picker -->
 <entry key="yukon.web.picker.dnpRtuPicker.dialogTitle">Select Parent RTU</entry>
 
+<!-- DNP RTU Picker -->
+<entry key="yukon.web.picker.deviceActionsRoleUserPicker.dialogTitle">Select User</entry>
+
 </properties>

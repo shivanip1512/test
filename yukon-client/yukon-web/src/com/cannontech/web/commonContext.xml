@@ -359,6 +359,11 @@
     <bean name="nonResidentailUserPicker" class="com.cannontech.web.picker.NonResidentailUserPicker">
         <property name="searcher" ref="userSearcherLucene"/>
     </bean>
+    
+    <bean name="deviceActionsRoleUserPicker" class="com.cannontech.web.picker.DeviceActionsRoleUserPicker">
+        <property name="searcher" ref="userSearcherLucene"/>
+    </bean>
+    
     <bean class="com.cannontech.web.capcontrol.service.impl.CapBankServiceImpl"/>
     <bean class="com.cannontech.web.capcontrol.service.impl.StrategyServiceImpl"/>
     <bean class="com.cannontech.capcontrol.dao.impl.StrategyDaoImpl"/>

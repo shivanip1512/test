@@ -184,4 +184,7 @@ public interface YukonUserDao {
 
     /** Get user group for non residential users */
     List<String> getNonResidentialUserGroups();
+    
+    /** Get user group with Device Action Yukon Role */
+    List<String> getDeviceActionsRoleUserGroups();
 }
