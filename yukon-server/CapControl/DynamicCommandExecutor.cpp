@@ -36,10 +36,7 @@ void DynamicCommandExecutor::execute()
         case DynamicCommand::UNDEFINED:
         default:
         {
-            if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-            {
-                CTILOG_ERROR(dout, "DynamicCommandExecutor: UNDEFINED COMMAND: Command Type: " << commandType);
-            }
+            CTILOG_ERROR(dout, "DynamicCommandExecutor: UNDEFINED COMMAND: Command Type: " << commandType);
             break;
         }
     }
@@ -69,10 +66,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
 {
     if ( ! validatePointResponseDeltaUpdate())
     {
-        if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-        {
-            CTILOG_ERROR(dout, "DynamicCommandExecutor: EXCEPTION: Point Response Update improperly formated.");
-        }
+        CTILOG_ERROR(dout, "DynamicCommandExecutor: EXCEPTION: Point Response Update improperly formated.");
         return false;
     }
 
@@ -101,10 +95,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
         CtiCCCapBankPtr bankPtr = store->findCapBankByPAObjectID(bankId);
         if (bankPtr == NULL)
         {
-            if (_CC_DEBUG & CC_DEBUG_EXTENDED)
-            {
-                CTILOG_ERROR(dout, "DynamicCommandExecutor: EXCEPTION: Point Response Update failed. Invalid CapBank Id");
-            }
+            CTILOG_ERROR(dout, "DynamicCommandExecutor: EXCEPTION: Point Response Update failed. Invalid CapBank Id");
             return false;
         }
 
