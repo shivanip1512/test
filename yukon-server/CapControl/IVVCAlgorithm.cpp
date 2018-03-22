@@ -762,7 +762,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( !determineDmvWatchPoints(subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
+            if ( ! determineDmvWatchPoints( subbus, shouldScan, pointRequests, strategy->getMethodType(), state->dmvWattVarPointIDs ) )
             {
                 // Configuration Error
                 CTILOG_ERROR( dout, "Bus Configuration Error: DMV Test '" << testDataPtr.TestName
