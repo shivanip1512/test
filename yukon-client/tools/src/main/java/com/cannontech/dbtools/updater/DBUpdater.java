@@ -286,7 +286,7 @@ public class DBUpdater extends MessageFrameAdaptor {
 
             String skippedStartValue = line_.getMetaProps().get(DBMSDefines.OPTIONS_ERROR[7]);
             if (skippedStartValue != null && skippedStartValue.equals("true")
-                && line_.getMetaProps().containsKey("start")) {
+                && line_.getMetaProps().containsKey(DBMSDefines.START)) {
 
                 String metaStartIfValue = line_.getMetaProps().get(DBMSDefines.START);
                 if (metaStartIfValue.contains("IF")) {
