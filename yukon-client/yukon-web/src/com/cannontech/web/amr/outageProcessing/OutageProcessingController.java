@@ -37,9 +37,11 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.CollectionActionAlertHelper;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -84,12 +86,17 @@ public class OutageProcessingController extends MultiActionController {
 	// READ OUTAGE LOGS
 	@RequestMapping(value = "readOutageLogs", method = RequestMethod.GET)
 	public String readOutageLogs(ModelMap model, int outageMonitorId, boolean removeFromOutageGroupAfterRead, YukonUserContext userContext, 
-	                             HttpServletRequest request) throws ServletException {
-
+	                             HttpServletRequest request, FlashScope flash) throws ServletException {
 		final OutageMonitor outageMonitor = outageMonitorDao.getById(outageMonitorId);
+	    model.addAttribute("outageMonitorId", outageMonitorId);
 		
         StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(outageMonitor.getOutageMonitorName());
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(outageGroup);
+		
+		if (deviceCollection.getDeviceCount() == 0) {
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "readOutageLogs.noDevices"));
+	        return "redirect:process";
+		}
 				    	
         SimpleCallback<CollectionActionResult> outageRemovalCallback = new SimpleCallback<CollectionActionResult>() {
             @Override
@@ -112,7 +119,6 @@ public class OutageProcessingController extends MultiActionController {
                                                                 DeviceRequestType.GROUP_OUTAGE_PROCESSING_OUTAGE_LOGS_READ, alertCallback, userContext);
         monitorToRecentReadKeysCache.put(outageMonitorId, cacheKey);
 		
-		model.addAttribute("outageMonitorId", outageMonitorId);
 		model.addAttribute("readOk", true);
 		
 		return "redirect:process";

@@ -12,16 +12,13 @@
     <div class="column-14-10">
         <div class="column one">
             <%-- MAIN DETAILS --%>
-            <cti:msg2 var="mainDetailSectionHeaderText" key=".mainDetail.sectionHeader" />
-            <tags:sectionContainer title="${mainDetailSectionHeaderText}">
+            <tags:sectionContainer2 nameKey="mainDetail.sectionHeader">
             
                 <tags:nameValueContainer2 tableClass="has-actions" naturalWidth="false">
                     <tags:nameValue2 nameKey=".mainDetail.name">${fn:escapeXml(outageMonitor.outageMonitorName)}</tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".mainDetail.violations">
                         <cti:dataUpdaterValue type="OUTAGE_PROCESSING" identifier="${outageMonitor.outageMonitorId}/VIOLATIONS_COUNT"/>
-                        <cti:dataUpdaterCallback function="yukon.monitor.outage.enableDisableReadLogs" initialize="true" 
-                            value="OUTAGE_PROCESSING/${outageMonitor.outageMonitorId}/VIOLATIONS_COUNT"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".mainDetail.monitoring">
@@ -113,15 +110,14 @@
                     <a href="${reportUrl}" class="fr"><i:inline key=".reportingLink"/></a>
                 </div>
                 
-            </tags:sectionContainer>
+            </tags:sectionContainer2>
             
         </div>
         <div class="column two nogutter">
             <%-- READ OUTAGE LOGS --%>
-            <cti:msg2 var="readOutageLogsSectionTitleText" key=".readOutageLogs.title" />
-            <tags:sectionContainer id="readOutageLogsSection" title="${readOutageLogsSectionTitleText}">
+            <tags:sectionContainer2 nameKey="readOutageLogs">
                 <cti:url var="readOutageLogsUrl" value="/amr/outageProcessing/process/readOutageLogs"/>
-                <form id="readOutagesForm" action="${readOutageLogsUrl}">
+                <form action="${readOutageLogsUrl}">
                     <input type="hidden" name="outageMonitorId" value="${outageMonitor.outageMonitorId}">
                     <%-- note --%>
                     <table class="stacked">
@@ -133,9 +129,8 @@
                 
                     <%-- remove after read checkbox --%>
                     <div class="page-action-area stacked">
-                        <tags:alertBox key=".readOutageLogs.disabled" type="info" classes="js-read-outage-message dn"/>
-                        <cti:button nameKey="readOutageLogs" busy="true" type="submit" icon="icon-read" classes="js-read-outages"/>
-                        <label><input type="checkbox" name="removeFromOutageGroupAfterRead" checked class="js-read-outages"><i:inline key=".removeAfterRead" /></label>
+                        <cti:button nameKey="readOutageLogs" busy="true" type="submit" icon="icon-read"/>
+                        <label><input type="checkbox" name="removeFromOutageGroupAfterRead" checked><i:inline key=".removeAfterRead" /></label>
                     </div>
                     
                     <%-- read ok --%>
@@ -156,7 +151,6 @@
                             <tbody>
                                 <c:forEach var="result" items="${readResults}">
                                     <tr>
-                                    
                                         <td><cti:formatDate type="BOTH" value="${result.startTime}"/></td>
                                         <td>
                                             <cti:url var="readLogsDetailUrl" value="/bulk/progressReport/detail">
@@ -171,10 +165,8 @@
                     </c:if>
                 </form>
                 
-            </tags:sectionContainer>
+            </tags:sectionContainer2>
         </div>
     </div>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.monitor.outage.js"/>
     
 </cti:standardPage>

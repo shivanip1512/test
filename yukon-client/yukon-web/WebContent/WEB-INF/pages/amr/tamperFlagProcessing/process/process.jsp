@@ -19,8 +19,6 @@
                     
                     <tags:nameValue2 nameKey=".section.mainDetail.violations">
                         <cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${tamperFlagMonitor.tamperFlagMonitorId}/VIOLATIONS_COUNT"/>
-                        <cti:dataUpdaterCallback function="yukon.monitor.tamperFlag.enableDisableReadFlags" initialize="true" 
-                            value="TAMPER_FLAG_PROCESSING/${tamperFlagMonitor.tamperFlagMonitorId}/VIOLATIONS_COUNT"/>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".section.mainDetail.monitoring">
@@ -96,9 +94,9 @@
         </div>
         <div class="column two nogutter">
             <%-- READ INTERNAL FLAGS --%>
-            <tags:sectionContainer2 id="readInternalFlagsSection" nameKey="section.readInternalFlags">
+            <tags:sectionContainer2 nameKey="section.readInternalFlags">
                 <cti:url var="readFlagsUrl" value="/amr/tamperFlagProcessing/process/readFlags"/>
-                <form id="readInternalFlagsForm" action="${readFlagsUrl}">
+                <form action="${readFlagsUrl}">
                     <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
                     <%-- note --%>
                     <table class="stacked">
@@ -117,9 +115,8 @@
                     
                     <%-- read internal flags button --%>
                     <div class="page-action-area stacked">
-                        <tags:alertBox key=".section.readInternalFlags.disabled" type="info" classes="js-read-flags-message dn"/>
                         <cti:msg2 var="readInternalFlagsButtonText" key=".section.readInternalFlags.button"/>
-                        <cti:button label="${readInternalFlagsButtonText}" busy="true" type="submit" icon="icon-flag-green" classes="js-read-flags"/>
+                        <cti:button label="${readInternalFlagsButtonText}" busy="true" type="submit" icon="icon-flag-green"/>
                     </div>
                     
                     <%-- read ok --%>
@@ -161,9 +158,9 @@
             </tags:sectionContainer2>
             
             <%-- RESET INTERNAL FLAGS --%>
-            <tags:sectionContainer2 id="resetInternalFlagsSection" nameKey="section.resetInternalFlags">
+            <tags:sectionContainer2 nameKey="section.resetInternalFlags">
                 <cti:url var="resetFlagsUrl" value="/amr/tamperFlagProcessing/process/resetFlags"/>
-                <form id="resetInternalFlagsForm" action="${resetFlagsUrl}">
+                <form action="${resetFlagsUrl}">
         
                     <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
             
@@ -177,9 +174,8 @@
                     
                     <%-- reset internal flags button --%>
                     <div class="page-action-area stacked">
-                        <tags:alertBox key=".section.readInternalFlags.disabled" type="info" classes="js-read-flags-message dn"/>
                         <cti:msg2 var="resetInternalFlagsButtonText" key=".section.resetInternalFlags.button"/>
-                        <cti:button label="${resetInternalFlagsButtonText}" type="submit" icon="icon-flag-gray" busy="true" classes="js-read-flags"/>
+                        <cti:button label="${resetInternalFlagsButtonText}" type="submit" icon="icon-flag-gray" busy="true"/>
                     </div>
                     
                     <%-- reset ok --%>
@@ -220,7 +216,5 @@
             </tags:sectionContainer2>
         </div>
     </div>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.monitor.tamperFlag.js"/>
     
 </cti:standardPage>

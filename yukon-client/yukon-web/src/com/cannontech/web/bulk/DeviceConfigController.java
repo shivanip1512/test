@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -44,7 +43,6 @@ import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -65,20 +63,15 @@ public class DeviceConfigController {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigEventLogService eventLogService;
     @Autowired private AlertService alertService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired protected CollectionActionService collectionActionService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private CollectionActionDao collectionActionDao;
 
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
     @RequestMapping(value = "assignConfig", method = RequestMethod.GET)
-    public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
-        // pass along deviceCollection
+    public String assignConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
-        
-        long deviceCount = deviceCollection.getDeviceCount();
-        model.addAttribute("deviceCount", deviceCount);
         
         List<LightDeviceConfiguration> existingConfigs = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("existingConfigs", existingConfigs);
@@ -86,18 +79,17 @@ public class DeviceConfigController {
         return "config/assignConfig.jsp";
     }
     
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
     @RequestMapping(value = "doAssignConfig", method = RequestMethod.POST)
-    public String doAssignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
+    public String doAssignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int configuration) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
 
-        final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
-        DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
-        eventLogService.assignConfigInitiated(configuration.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
-        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration, userContext.getYukonUser());
+        DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
+        eventLogService.assignConfigInitiated(deviceConfig.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
+        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(deviceConfig, userContext.getYukonUser());
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
-        userInputs.put("Configuration", configuration.getName());
+        userInputs.put("Configuration", deviceConfig.getName());
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.ASSIGN_CONFIG, userInputs,
             deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -107,26 +99,18 @@ public class DeviceConfigController {
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
     
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
     @RequestMapping(value = "unassignConfig", method = RequestMethod.GET)
-    public String unassignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
-        
-        // pass along deviceCollection
+    public String unassignConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {        
         model.addAttribute("deviceCollection", deviceCollection);
-        
-        long deviceCount = deviceCollection.getDeviceCount();
-        model.addAttribute("deviceCount", deviceCount);
-        
         return "config/unassignConfig.jsp";
     }
     
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
     @RequestMapping(value = "doUnassignConfig", method = RequestMethod.POST)
     public String doUnassignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
-        
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
 
-        
         eventLogService.unassignConfigInitiated(deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor(userContext.getYukonUser());
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.UNASSIGN_CONFIG, null,
@@ -138,19 +122,10 @@ public class DeviceConfigController {
         return "redirect:/bulk/progressReport/detail?key=" + result.getCacheKey();
     }
 
-    /**
-     * CONFIRM CONFIG SEND
-     * @param deviceCollection
-     * @param model
-     * @return
-     * @throws ServletException
-     */
-    @RequestMapping("sendConfig")
-    public String sendConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
+    @RequestMapping(value = "sendConfig", method = RequestMethod.GET)
+    public String sendConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
-        long deviceCount = deviceCollection.getDeviceCount();
-        model.addAttribute("deviceCount", deviceCount);
 
         for (SimpleDevice sd : deviceCollection.getDeviceList()) {
             if (sd.getDeviceType().isRfn()) {
@@ -162,47 +137,20 @@ public class DeviceConfigController {
         return "config/sendConfig.jsp";
     }
     
-    /**
-     * CONFIRM CONFIG VERIFY
-     * @param deviceCollection
-     * @param model
-     * @return
-     * @throws ServletException
-     */
-    @RequestMapping("verifyConfig")
+    @RequestMapping(value = "verifyConfig", method = RequestMethod.GET)
     public String verifyConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
-        long deviceCount = deviceCollection.getDeviceCount();
-        model.addAttribute("deviceCount", deviceCount);
-        
         return "config/verifyConfig.jsp";
     }
     
-    /**
-     * CONFIRM CONFIG READ
-     * @param deviceCollection
-     * @param model
-     * @return
-     * @throws ServletException
-     */
-    @RequestMapping("readConfig")
-    public String readConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
+    @RequestMapping(value = "readConfig", method = RequestMethod.GET)
+    public String readConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
-        long deviceCount = deviceCollection.getDeviceCount();
-        model.addAttribute("deviceCount", deviceCount);
-        
         return "config/readConfig.jsp";
     }
     
-    /**
-     * DO VERIFY CONFIG
-     * @param deviceCollection
-     * @param user
-     * @param model
-     * @return
-     */
-    @RequestMapping("doVerifyConfigs")
+    @RequestMapping(value = "doVerifyConfigs", method = RequestMethod.POST)
     public String doVerifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
         
@@ -234,12 +182,11 @@ public class DeviceConfigController {
         
         return "config/verifyConfigResults.jsp";
     }
-    
 
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     @RequestMapping(value = "doReadConfig", method = RequestMethod.POST)
-    public String doReadConfig(HttpServletRequest request, DeviceCollection deviceCollection, LiteYukonUser user,
-            ModelMap model, YukonUserContext context) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, user);
+    public String doReadConfig(HttpServletRequest request, DeviceCollection deviceCollection, ModelMap model, 
+                               YukonUserContext context) throws ServletException {
         SimpleCallback<CollectionActionResult> alertCallback =
             CollectionActionAlertHelper.createAlert(AlertType.GROUP_COMMAND_COMPLETION, alertService,
                 messageResolver.getMessageSourceAccessor(context), request);
@@ -247,10 +194,10 @@ public class DeviceConfigController {
         return "redirect:/bulk/progressReport/detail?key=" + key;
     }
 
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     @RequestMapping(value = "doSendConfig", method = RequestMethod.POST)
     public String doSendConfig(HttpServletRequest request, DeviceCollection deviceCollection, String method,
             ModelMap model, YukonUserContext context) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, context.getYukonUser());
         SimpleCallback<CollectionActionResult> alertCallback =
             CollectionActionAlertHelper.createAlert(AlertType.GROUP_COMMAND_COMPLETION, alertService,
                 messageResolver.getMessageSourceAccessor(context), request);

@@ -2,7 +2,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="tools" page="bulk.sendConfig">
 
@@ -12,7 +11,7 @@
         </c:if>
         <div class="page-action-area">
             <cti:url var="sendConfigUrl" value="/bulk/config/doSendConfig" />
-            <form id="sendConfigForm" method="post" action="${sendConfigUrl}">
+            <form method="post" action="${sendConfigUrl}">
                 <cti:csrfToken/>
                 <%-- DEVICE COLLECTION --%>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
@@ -27,7 +26,7 @@
                         </select>
                     
                 </label>
-                <cti:button nameKey="send" name="sendButton" type="submit" classes="primary action" busy="true"/>
+                <cti:button nameKey="send" type="submit" classes="primary action" busy="true"/>
             </form>
         </div>
     </tags:bulkActionContainer>

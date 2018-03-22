@@ -106,7 +106,7 @@
     <entry key="yukon.web.modules.amr.outageProcessing.pageDescription">{0}</entry>     
     <entry key="yukon.web.modules.amr.outageProcessing.pageTitle">Outage Processing</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.reportingLink">View Outage Logs Report</entry>
-    <entry key="yukon.web.modules.amr.outageProcessing.mainDetail.sectionHeader">Info</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.mainDetail.sectionHeader.title">Info</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.mainDetail.name">Name</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.mainDetail.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.mainDetail.outagesGroup">Outages Group</entry>
@@ -140,6 +140,6 @@
     <entry key="yukon.web.modules.amr.outageProcessing.options.clearOutagesGroup">Clear Outages Group</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.options.otherActions">Other Actions</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.readOutagesLog.completionAlertDetailText">for Outage Monitor "{0}"</entry>
-    <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.disabled">Read Logs is disabled when there are no violations.</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.readOutageLogs.noDevices">There are no devices in violation.</entry>
 
 </properties>

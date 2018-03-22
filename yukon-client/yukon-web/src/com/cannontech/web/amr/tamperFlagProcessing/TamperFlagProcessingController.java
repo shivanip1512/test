@@ -37,9 +37,11 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.CollectionActionAlertHelper;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -92,12 +94,18 @@ public class TamperFlagProcessingController {
 	
 	// READ FLAGS
 	@RequestMapping(value = "readFlags", method = RequestMethod.GET)
-    public String readFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
-		
+    public String readFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext, 
+                            HttpServletRequest request, FlashScope flash) throws ServletException {
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
+	    model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
 		
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
+		
+        if (tamperFlagGroupDeviceCollection.getDeviceCount() == 0) {
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "section.readInternalFlags.noDevices"));
+            return "redirect:process";
+        }
 				
 		// alert callback
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -110,7 +118,6 @@ public class TamperFlagProcessingController {
                                                                 DeviceRequestType.GROUP_TAMPER_FLAG_PROCESSING_INTERNAL_STATUS_READ, alertCallback, userContext);
         monitorToRecentReadKeysCache.put(tamperFlagMonitorId, cacheKey);
 		
-		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
 		model.addAttribute("readOk", true);
 		
 		return "redirect:process";
@@ -118,12 +125,17 @@ public class TamperFlagProcessingController {
 	
 	// RESET FLAGS
 	@RequestMapping(value = "resetFlags", method = RequestMethod.GET)
-    public String resetFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext) throws ServletException {
-
+    public String resetFlags(ModelMap model, int tamperFlagMonitorId, YukonUserContext userContext, FlashScope flash) throws ServletException {
 		TamperFlagMonitor tamperFlagMonitor = tamperFlagMonitorDao.getById(tamperFlagMonitorId);
-		
+	    model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
+
 		StoredDeviceGroup tamperFlagGroup = tamperFlagMonitorService.getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
 		DeviceCollection tamperFlagGroupDeviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tamperFlagGroup);
+		
+        if (tamperFlagGroupDeviceCollection.getDeviceCount() == 0) {
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "section.readInternalFlags.noDevices"));
+            return "redirect:process";
+        }
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
         userInputs.put("Command", RESET_FLAGS_COMMAND);
@@ -131,7 +143,6 @@ public class TamperFlagProcessingController {
                                                        RESET_FLAGS_COMMAND, CommandRequestType.DEVICE, DeviceRequestType.GROUP_COMMAND, null, userContext);
 		monitorToRecentResetKeysCache.put(tamperFlagMonitorId, cacheKey);
 
-		model.addAttribute("tamperFlagMonitorId", tamperFlagMonitorId);
 		model.addAttribute("resetOk", true);
 		
 		return "redirect:process";
