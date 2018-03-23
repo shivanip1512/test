@@ -175,7 +175,7 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
     const int metrics_nbr = response[2];
 
     validate(Condition((metrics_nbr * 2) == (response.size() - 3), ClientErrors::InvalidData)
-            << "Invalid display metric length - (" << (response.size() - 3) << ", expecting " << (metrics_nbr * 2)  + ")");
+            << "Invalid display metric length - (" << (response.size() - 3) << ", expecting " << (metrics_nbr * 2) << ")");
 
     for( unsigned i = 0; i < metrics_nbr; ++i )
     {
