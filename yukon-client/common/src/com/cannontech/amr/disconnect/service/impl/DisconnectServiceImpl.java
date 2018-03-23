@@ -46,6 +46,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -107,9 +108,9 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 .collect(Collectors.toList()));
 
             @Override
-            public void success(DisconnectCommand command, SimpleDevice device, Instant timestamp) {
+            public void success(DisconnectCommand command, SimpleDevice device, PointValueHolder value) {
                 CollectionActionLogDetail detail = new CollectionActionLogDetail(device, getDisconnectDetail(command));
-                detail.setTime(timestamp);
+                detail.setValue(value);
                 result.addDeviceToGroup(getDisconnectDetail(command), device, detail);
             }
 
@@ -240,7 +241,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         }
 
         @Override
-        public void success(DisconnectCommand state, SimpleDevice device, Instant timestamp) {
+        public void success(DisconnectCommand state, SimpleDevice device, PointValueHolder value) {
             switch (state) {
             case ARM:
                 result.setState(DisconnectDeviceState.ARMED);
@@ -252,7 +253,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 result.setState(DisconnectDeviceState.DISCONNECTED);
                 break;
             }
-            result.setDisconnectTime(timestamp);
+            result.setDisconnectTime(new Instant(value.getPointDataTimeStamp()));
         }
 
         @Override

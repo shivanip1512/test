@@ -1,12 +1,11 @@
 package com.cannontech.amr.disconnect.service;
 
-import org.joda.time.Instant;
-
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.core.dynamic.PointValueHolder;
 
 public interface DisconnectCallback {
     
@@ -26,7 +25,7 @@ public interface DisconnectCallback {
      */
     void processingExceptionOccured(String reason);
    
-    void success(DisconnectCommand state, SimpleDevice device, Instant timestamp);
+    void success(DisconnectCommand state, SimpleDevice device, PointValueHolder value);
     
     default CollectionActionResult getResult() {
         return null;

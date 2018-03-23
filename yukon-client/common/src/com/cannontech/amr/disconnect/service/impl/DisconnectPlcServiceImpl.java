@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -221,14 +220,11 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
             Disconnect410State disconnectState = Disconnect410State.getByRawState(liteState.getStateRawState());
             if (disconnectState == Disconnect410State.CONFIRMED_DISCONNECTED
                 || disconnectState == Disconnect410State.UNCONFIRMED_DISCONNECTED) {
-                callback.success(DisconnectCommand.DISCONNECT, command.getDevice(),
-                    new Instant(value.getPointDataTimeStamp()));
+                callback.success(DisconnectCommand.DISCONNECT, command.getDevice(), value);
             } else if (disconnectState == Disconnect410State.CONNECTED) {
-                callback.success(DisconnectCommand.CONNECT, command.getDevice(),
-                    new Instant(value.getPointDataTimeStamp()));
+                callback.success(DisconnectCommand.CONNECT, command.getDevice(), value);
             } else if (disconnectState == Disconnect410State.CONNECT_ARMED) {
-                callback.success(DisconnectCommand.ARM, command.getDevice(),
-                    new Instant(value.getPointDataTimeStamp()));
+                callback.success(DisconnectCommand.ARM, command.getDevice(), value);
             }
             if (log.isDebugEnabled()) {
                 log.debug("PLC receivedValue:" + command + " State:" + disconnectState);

@@ -973,6 +973,12 @@
     <entry key="yukon.web.modules.tools.bulk.collectionAction.ASSIGN_CONFIG">Assign Config</entry>
     <entry key="yukon.web.modules.tools.bulk.collectionAction.UNASSIGN_CONFIG">Unassign Config</entry>
     
+    <!-- Collection Log Headers-->
+    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.DeviceName">Device Name</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.ResponseDateTime">Response Date Time</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.Status">Status</entry>
+    <entry key="yukon.web.modules.tools.bulk.collectionAction.log.header.Error">Error</entry>
+    
     <!-- Collection Action Detail Types -->
     <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.SUCCESS">Success</entry>
     <entry key="yukon.web.modules.tools.bulk.collectionActionDetail.FAILURE">Failure</entry>

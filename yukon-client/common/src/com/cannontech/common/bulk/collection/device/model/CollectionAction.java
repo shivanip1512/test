@@ -11,7 +11,6 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.TIMESTAMP;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
 
@@ -36,9 +35,9 @@ public enum CollectionAction implements DisplayableEnum {
     SEND_COMMAND(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, CANCELED),
     READ_ATTRIBUTE(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, CANCELED, UNSUPPORTED),
     LOCATE_ROUTE(CRE, null, SUCCESS, FAILURE, CANCELED),
-    CONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
-    DISCONNECT(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
-    ARM(CRE, getLogEntries(TIMESTAMP), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
+    CONNECT(CRE, getLogEntries(POINT_DATA), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
+    DISCONNECT(CRE, getLogEntries(POINT_DATA), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
+    ARM(CRE, getLogEntries(POINT_DATA), CONNECTED, ARMED, DISCONNECTED, FAILURE, NOT_CONFIGURED, UNSUPPORTED, CANCELED),
     DEMAND_RESET(CRE, null, CONFIRMED, UNCONFIRMED, FAILURE, UNSUPPORTED, CANCELED),
     SEND_CONFIG(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
     READ_CONFIG(CRE, getLogEntries(POINT_DATA), SUCCESS, FAILURE, UNSUPPORTED, CANCELED),
@@ -74,6 +73,10 @@ public enum CollectionAction implements DisplayableEnum {
 
     public boolean contains(CollectionActionOptionalLogEntry entry) {
         return optionalLogEntries != null && optionalLogEntries.contains(entry);
+    }
+    
+    public Set<CollectionActionOptionalLogEntry> getOptionalLogEntries() {
+        return optionalLogEntries;
     }
 
     public boolean isCancelable() {

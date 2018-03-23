@@ -1,7 +1,6 @@
 package com.cannontech.common.bulk.collection.device.service.impl;
 
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.TIMESTAMP;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,6 +44,8 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     @Autowired private IDatabaseCache dbCache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
+    private static final String header="yukon.web.modules.tools.bulk.collectionAction.log.header.";
+    
     private final Logger log = YukonLogManager.getLogger(CollectionActionLogDetailServiceImpl.class);
     
     /**
@@ -76,29 +77,25 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
 
     @Override
     public void appendToLog(CollectionActionResult result, List<CollectionActionLogDetail> details) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
         if (cache.getIfPresent(result.getCacheKey()) == null) {
             cache.put(result.getCacheKey(), new HashSet<>());
+            addHeader(accessor, result);
         }
         if (CollectionUtils.isNotEmpty(details)) {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
             List<String> data = new ArrayList<>();
-            for(CollectionActionLogDetail detail: details) {
-                if(cache.getIfPresent(result.getCacheKey()).contains(detail)) {
+            for (CollectionActionLogDetail detail : details) {
+                if (cache.getIfPresent(result.getCacheKey()).contains(detail)) {
                     continue;
                 }
                 cache.getIfPresent(result.getCacheKey()).add(detail);
                 List<String> fields = new ArrayList<>();
-                fields.add(detail.getPao() != null ? dbCache.getAllPaosMap().get(detail.getPao().getPaoIdentifier().getPaoId()).getPaoName() : "");
+                fields.add(detail.getPao() != null
+                    ? dbCache.getAllPaosMap().get(detail.getPao().getPaoIdentifier().getPaoId()).getPaoName() : "");
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
                 fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
                 fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
 
-                if (result.getAction().contains(TIMESTAMP)) {
-                    fields.add(detail.getTime() != null
-                        ? dateFormattingService.format(detail.getTime(), DateFormatEnum.BOTH, result.getContext())
-                        : "");
-                }
-                
                 if (result.getAction().contains(POINT_DATA)) {
                     fields.add(detail.getValue() != null
                         ? pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())
@@ -108,16 +105,36 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
                 data.add(String.join(",", fields));
             }
-         
-            try {
-                FileUtils.writeLines(new File(CtiUtilities.getCollectionActionDirPath(), String.valueOf(result.getCacheKey())+".csv"),
-                    data, true);
-            } catch (IOException e) {
-                log.error(log);
-            }
+            writeToFile(data, result.getCacheKey());
         }
     }
     
+    /**
+     * Adds header to a file
+     */
+    private void addHeader(MessageSourceAccessor accessor, CollectionActionResult result) {
+        List<String> list = new ArrayList<>();
+        // required entries
+        list.add(accessor.getMessage(header + "DeviceName"));
+        list.add(accessor.getMessage(header + "ResponseDateTime"));
+        list.add(accessor.getMessage(header + "Status"));
+        list.add(accessor.getMessage(header + "Error"));
+        // optional entries
+        result.getAction().getOptionalLogEntries().forEach(entry -> list.add(""));
+        // ExecutionExceptionText - no porter connection
+        list.add("");
+        writeToFile(Lists.newArrayList(String.join(",", list)), result.getCacheKey());
+    }
+    
+    private void writeToFile(List<String> data, int cacheKey) {
+        try {
+            FileUtils.writeLines(new File(CtiUtilities.getCollectionActionDirPath(), String.valueOf(cacheKey) + ".csv"),
+                data, true);
+        } catch (IOException e) {
+            log.error(log);
+        }
+    }
+
     @Override
     public File getLog(int cacheKey) throws FileNotFoundException {
         String fileName = String.valueOf(cacheKey) + ".csv";

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
@@ -244,7 +243,6 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
             } else {
-                Instant timestamp = pointData == null ? null : new Instant(pointData.getPointDataTimeStamp());
                 switch (state) {
                 case UNKNOWN:
                     // devices with "UNKNOWN" state should be counted as failed
@@ -256,13 +254,13 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
                 case CONNECTED_DEMAND_THRESHOLD_ACTIVE:
                 case DISCONNECTED_CYCLING_ACTIVE:
                 case CONNECTED_CYCLING_ACTIVE:
-                    callback.success(DISCONNECT, meter, timestamp);
+                    callback.success(DISCONNECT, meter, pointData);
                     break;
                 case ARMED:
-                    callback.success(ARM, meter, timestamp);
+                    callback.success(ARM, meter, pointData);
                     break;
                 case CONNECTED:
-                    callback.success(CONNECT, meter, timestamp);
+                    callback.success(CONNECT, meter, pointData);
                     break;
                 default:
                     throw new UnsupportedOperationException(state + " is not supported");
