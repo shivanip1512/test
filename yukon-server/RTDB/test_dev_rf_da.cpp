@@ -87,7 +87,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfDa_getconfig_dnp_address )
             std::vector<unsigned char> response = boost::assign::list_of
                     (0x36)(0x12)(0x34);
 
-            Commands::RfnCommandResult result = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             BOOST_CHECK_EQUAL( result.description, "Outstation DNP3 address: 4660" );
             BOOST_CHECK_EQUAL( result.points.size(), 0 );

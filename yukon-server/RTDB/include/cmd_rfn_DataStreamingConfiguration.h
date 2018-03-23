@@ -1,13 +1,13 @@
 #pragma once
 
 #include "ctidate.h"
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 
 namespace Cti {
 namespace Devices {
 namespace Commands {
 
-class IM_EX_DEVDB RfnDataStreamingConfigurationCommand : public RfnCommand
+class IM_EX_DEVDB RfnDataStreamingConfigurationCommand : public RfnIndividualCommand
 {
 public:
     enum StreamingState

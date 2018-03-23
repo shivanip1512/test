@@ -38,9 +38,6 @@
     <ClCompile Include="test_cmd_rf_da_dnpAddress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_cmd_rfn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test_cmd_rfn_CentronLcdConfiguration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -228,6 +225,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_Aggregate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_cmd_rfn_Individual.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -14,7 +14,7 @@
 namespace Cti       {
 namespace Devices   {
 
-YukonError_t RfWaterMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfWaterMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
@@ -30,7 +30,7 @@ YukonError_t RfWaterMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiComman
     return ClientErrors::NoMethod; 
 }
 
-YukonError_t RfWaterMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfWaterMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
@@ -100,7 +100,7 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurati
     return consumer.get();
 }
 
-YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
@@ -239,7 +239,7 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
     return ClientErrors::None;
 }
 
-YukonError_t RfWaterMeterDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfWaterMeterDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;

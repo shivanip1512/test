@@ -120,7 +120,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn410Centron_putconfig_display )
             std::vector<unsigned char> response = boost::assign::list_of
                     (0x71)(0x00)(0x00);
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                     "Display metrics successfully set"
@@ -153,7 +157,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn410Centron_putconfig_display )
                     "\nLCD cycle time: (default)"
                     "\nDisplay digits: 5x1";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );

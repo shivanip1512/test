@@ -101,12 +101,16 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
             const std::vector< unsigned char > response {
                     0x89, 0x00, 0x00, 0x00 };
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                     "Temperature Alarm Request Status: Success (0)";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );
@@ -179,7 +183,11 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch 
             const std::vector< unsigned char > response {
                     0x89, 0x00, 0x00, 0x01, 0x01, 0x07, 0x01, 0x00, 0x2d, 0x00, 0x23, 0x05, 0x03 };
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                     "Temperature Alarm Request Status: Success (0)"
@@ -189,7 +197,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch 
                     "\nAlarm Repeat Interval: 5 minutes"
                     "\nAlarm Repeat Count: 3 counts";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );
@@ -262,12 +270,16 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_failure )
             const std::vector< unsigned char > response {
                     0x89, 0x00, 0x01, 0x00 };
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                     "Temperature Alarm Request Status: Failure (1)";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );
@@ -325,12 +337,16 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
             const std::vector< unsigned char > response {
                     0x89, 0x00, 0x02, 0x00 };
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                     "Temperature Alarm Request Status: Unsupported (2)";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );
@@ -641,7 +657,11 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
                 0x00,        //  metric ID 3 status
                 0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand(decode_time, response);
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                 R"SQUID(json{
@@ -668,7 +688,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
 "sequence" : 3735928559
 })SQUID";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
     }
 }

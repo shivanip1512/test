@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 #include "boost/array.hpp"
 #include "ctidate.h"
 #include "ctitime.h"
@@ -12,7 +12,7 @@ namespace Commands {
 /**
  * RFN TOU configuration command base class
  */
-class IM_EX_DEVDB RfnTouConfigurationCommand : public RfnCommand
+class IM_EX_DEVDB RfnTouConfigurationCommand : public RfnIndividualCommand
 {
 public:
 

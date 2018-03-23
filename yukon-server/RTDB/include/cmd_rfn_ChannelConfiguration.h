@@ -2,7 +2,7 @@
 
 #include <boost/container/flat_map.hpp>
 #include "ctidate.h"
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 
 namespace Cti        {
 namespace Devices    {
@@ -11,7 +11,7 @@ namespace Commands   {
 /**
  * Channel Configuration Command
  */
-class IM_EX_DEVDB RfnChannelConfigurationCommand : public RfnCommand
+class IM_EX_DEVDB RfnChannelConfigurationCommand : public RfnIndividualCommand
 {
     Bytes getCommandData();
 

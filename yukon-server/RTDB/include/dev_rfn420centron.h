@@ -23,7 +23,7 @@ class IM_EX_DEVDB Rfn420CentronDevice :
     bool isDisplayConfigCurrent(const c2sx_display &config);
 
 protected:
-    YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
+    YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
 
     void handleCommandResult(const Commands::RfnCentronSetLcdConfigurationCommand &cmd) override;
     void handleCommandResult(const Commands::RfnCentronGetLcdConfigurationCommand &cmd) override;

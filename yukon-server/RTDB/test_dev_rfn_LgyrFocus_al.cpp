@@ -100,7 +100,11 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display )
                     (0x73)
                     (0x00);
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                     "Status: Success (0)"
@@ -114,7 +118,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display )
                     "\nDisplay metric 6 : All Segments"
                     "\nDisplay metric 7 : Firmware version";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );

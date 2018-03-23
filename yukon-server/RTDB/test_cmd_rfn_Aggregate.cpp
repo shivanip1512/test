@@ -7,11 +7,11 @@
 
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandPtr;
-using Cti::Devices::Commands::RfnCommandList;
 using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnAggregateCommand;
 using Cti::Devices::Commands::RfnCentronSetLcdConfigurationCommand;
 using Cti::Devices::Commands::RfnCentronGetLcdConfigurationCommand;
+using Cti::Devices::Commands::RfnIndividualCommandList;
 
 struct resetContextId
 {
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_no_items)
 
 BOOST_AUTO_TEST_CASE(test_send_one_command)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
     
     l.emplace_back( std::make_unique<RfnCentronGetLcdConfigurationCommand>() );
 
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(test_send_one_command)
 
 BOOST_AUTO_TEST_CASE(test_short_header)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
 
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_short_header)
 
 BOOST_AUTO_TEST_CASE(test_invalid_command)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_invalid_command)
 
 BOOST_AUTO_TEST_CASE(test_short_payload)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
 
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE(test_short_payload)
 
 BOOST_AUTO_TEST_CASE(test_short_message)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
 
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_short_message)
 
 BOOST_AUTO_TEST_CASE(test_error_response)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
 
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(test_error_response)
 
 BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
     l.emplace_back(std::make_unique<RfnCentronSetLcdConfigurationCommand>(
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
 
 BOOST_AUTO_TEST_CASE(test_error_response_bad_second_payload_length)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
     l.emplace_back(std::make_unique<RfnCentronSetLcdConfigurationCommand>(
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(test_error_response_bad_second_payload_length)
 
 BOOST_AUTO_TEST_CASE(test_two_commands_handleError)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
     l.emplace_back(std::make_unique<RfnCentronSetLcdConfigurationCommand>(
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(test_two_commands_handleError)
 
 BOOST_AUTO_TEST_CASE(test_missing_response)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
 
@@ -362,7 +362,7 @@ BOOST_AUTO_TEST_CASE(test_missing_response)
 
 BOOST_AUTO_TEST_CASE(test_send_two_commands)
 {
-    RfnCommandList l;
+    RfnIndividualCommandList l;
 
     l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
     l.emplace_back(std::make_unique<RfnCentronSetLcdConfigurationCommand>(

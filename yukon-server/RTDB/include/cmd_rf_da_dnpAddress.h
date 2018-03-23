@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 
 namespace Cti {
 namespace Devices {
 namespace Commands {
 
 
-class IM_EX_DEVDB RfDaReadDnpSlaveAddressCommand : public RfnCommand,
+class IM_EX_DEVDB RfDaReadDnpSlaveAddressCommand : public RfnIndividualCommand,
        InvokerFor<RfDaReadDnpSlaveAddressCommand>
 {
     unsigned short _dnp3SlaveAddress;

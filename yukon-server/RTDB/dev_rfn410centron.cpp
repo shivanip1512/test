@@ -92,7 +92,7 @@ RfnMeterDevice::ConfigMap Rfn410CentronDevice::getConfigMethods(InstallType inst
     return m;
 }
 
-YukonError_t Rfn410CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t Rfn410CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             std::make_unique<Commands::RfnCentronGetLcdConfigurationCommand>());
@@ -150,7 +150,7 @@ bool Rfn410CentronDevice::isDisplayConfigCurrent(const c1sx_display &config)
 }
 
 
-YukonError_t Rfn410CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t Rfn410CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     try
     {

@@ -11,8 +11,8 @@ class IM_EX_DEVDB RfnLgyrFocusAlDevice
 {
     virtual ConfigMap getConfigMethods(InstallType installType);
 
-    YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+    YukonError_t executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
     void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationReadCommand &cmd);
     void handleCommandResult(const Commands::RfnFocusAlLcdConfigurationWriteCommand &cmd);

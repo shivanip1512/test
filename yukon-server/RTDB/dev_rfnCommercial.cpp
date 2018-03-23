@@ -8,9 +8,9 @@ namespace Devices {
 YukonError_t RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
                                                                 CtiCommandParser  & parse,
                                                                 ReturnMsgList     & returnMsgs,
-                                                                RfnCommandList    & rfnRequests )
+                                                                RfnIndividualCommandList & rfnRequests )
 {
-    rfnRequests.push_back( std::make_unique<Commands::RfnImmediateDemandFreezeCommand>() );
+    rfnRequests.emplace_back( std::make_unique<Commands::RfnImmediateDemandFreezeCommand>() );
 
     return ClientErrors::None;
 }
@@ -19,9 +19,9 @@ YukonError_t RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg   
 YukonError_t RfnCommercialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
                                                                CtiCommandParser  & parse,
                                                                ReturnMsgList     & returnMsgs,
-                                                               RfnCommandList    & rfnRequests )
+                                                               RfnIndividualCommandList & rfnRequests )
 {
-    rfnRequests.push_back( std::make_unique<Commands::RfnGetDemandFreezeInfoCommand>() );
+    rfnRequests.emplace_back( std::make_unique<Commands::RfnGetDemandFreezeInfoCommand>() );
 
     return ClientErrors::None;
 }

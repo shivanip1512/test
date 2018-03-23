@@ -82,15 +82,15 @@ RfnMeterDevice::ConfigMap RfnLgyrFocusAlDevice::getConfigMethods(InstallType ins
     return m;
 }
 
-YukonError_t RfnLgyrFocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnLgyrFocusAlDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
-    rfnRequests.push_back(
+    rfnRequests.emplace_back(
             std::make_unique<Commands::RfnFocusAlLcdConfigurationReadCommand>());
 
     return ClientErrors::None;
 }
 
-YukonError_t RfnLgyrFocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnLgyrFocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     try
     {
@@ -179,7 +179,7 @@ YukonError_t RfnLgyrFocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, 
 
         // Create display items config
 
-        rfnRequests.push_back( std::make_unique<Commands::RfnFocusAlLcdConfigurationWriteCommand>( config_display_items, config_display_duration ));
+        rfnRequests.emplace_back( std::make_unique<Commands::RfnFocusAlLcdConfigurationWriteCommand>( config_display_items, config_display_duration ));
 
         return ClientErrors::None;
     }

@@ -7,11 +7,11 @@
 namespace Cti {
 namespace Devices {
 
-YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( parse.isKeyValid("dnp address") )
     {
-        rfnRequests.push_back(std::make_unique<Commands::RfDaReadDnpSlaveAddressCommand>());
+        rfnRequests.emplace_back(std::make_unique<Commands::RfDaReadDnpSlaveAddressCommand>());
 
         return ClientErrors::None;
     }

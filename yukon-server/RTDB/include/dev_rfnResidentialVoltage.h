@@ -15,14 +15,14 @@ protected:
 
     virtual ConfigMap getConfigMethods(InstallType installType);
 
-    YukonError_t executeGetConfigVoltageAveragingInterval( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests );
-    YukonError_t executePutConfigVoltageAveragingInterval( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests );
+    YukonError_t executeGetConfigVoltageAveragingInterval( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests );
+    YukonError_t executePutConfigVoltageAveragingInterval( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests );
 
     void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand & cmd ) override;
 
-    YukonError_t executeGetConfigOvUv( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests );
-    YukonError_t executePutConfigOvUv( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests );
+    YukonError_t executeGetConfigOvUv( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests );
+    YukonError_t executePutConfigOvUv( CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests );
 
     void handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand       & cmd ) override;
     void handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand     & cmd ) override;
@@ -32,11 +32,11 @@ protected:
     void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand  & cmd ) override;
     void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand & cmd ) override;
 
-    YukonError_t executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
-    YukonError_t executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
-    YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests) override;
-    YukonError_t executeGetConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
-    YukonError_t executePutConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    YukonError_t executeGetConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
+    YukonError_t executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
+    YukonError_t executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
+    YukonError_t executeGetConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+    YukonError_t executePutConfigPermanentVoltageProfile  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetTemporaryRecordingCommand & cmd ) override;

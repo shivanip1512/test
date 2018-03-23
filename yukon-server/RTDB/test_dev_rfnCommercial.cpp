@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
                     0x00, 0x04, 0x40, 0x00,
                     0x00, 0x05, 0x08, 0x00 };
 
-            command->decodeCommand( CtiTime::now(), response );
+            command->handleResponse( CtiTime::now(), response );
 
             dut.extractCommandResult( *command );
 
@@ -274,7 +274,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
                     0x00, 0x04, 0x00, 0x00,
                     0x00, 0x05, 0x00, 0x00 };
 
-            const Cti::Devices::Commands::RfnCommandResult result = command->decodeCommand( CtiTime::now(), response );
+            const auto results = command->handleResponse( CtiTime::now(), response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             BOOST_CHECK_EQUAL(
                     result.description,
@@ -391,7 +395,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
                     0x00, 0x04, 0x40, 0x00,
                     0x00, 0xc8, 0x08, 0x00 };  //  DEMAND is metric ID 200 (0xc8) for the Sentinel
 
-            command->decodeCommand( CtiTime::now(), response );
+            command->handleResponse( CtiTime::now(), response );
 
             dut.extractCommandResult( *command );
 
@@ -437,7 +441,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
                     0x00, 0x04, 0x00, 0x00, 
                     0x00, 0xc8, 0x00, 0x00 };  //  DEMAND is metric ID 200 (0xc8) for the Sentinel
 
-            const Cti::Devices::Commands::RfnCommandResult result = command->decodeCommand( CtiTime::now(), response );
+            const auto results = command->handleResponse( CtiTime::now(), response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             BOOST_CHECK_EQUAL(
                     result.description,

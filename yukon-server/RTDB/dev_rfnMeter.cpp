@@ -68,7 +68,7 @@ const std::string RfnMeterDevice::ConfigPart::channelconfig    = "channelconfig"
 const std::string RfnMeterDevice::ConfigPart::voltageprofile   = "voltageprofile";
 
 
-YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( parse.isKeyValid("install") )
     {
@@ -95,7 +95,7 @@ YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandPar
 }
 
 
-YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( parse.isKeyValid("install") )
     {
@@ -121,7 +121,7 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetConfigBehavior(const CtiRequestMsg& pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetConfigBehavior(const CtiRequestMsg& pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( auto behaviorType = parse.findStringForKey("behavior") )
     {
@@ -136,7 +136,7 @@ YukonError_t RfnMeterDevice::executeGetConfigBehavior(const CtiRequestMsg& pReq,
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigBehavior(const CtiRequestMsg& pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfigBehavior(const CtiRequestMsg& pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( auto behaviorType = parse.findStringForKey("behavior") )
     {
@@ -149,7 +149,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehavior(const CtiRequestMsg& pReq,
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiRequestMsg& req, ReturnMsgList& returnMsgs, RfnCommandList& rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(const CtiRequestMsg& req, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests)
 {
     using Behaviors::RfnDataStreamingBehavior;
     using Channel     = RfnDataStreamingBehavior::Channel;
@@ -323,7 +323,7 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
 /**
  * Execute putconfig/getconfig Install
  */
-YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, InstallType installType )
+YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests, InstallType installType )
 {
     boost::optional<std::string> configPart = parse.findStringForKey("installvalue");
     if( ! configPart )
@@ -367,7 +367,7 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiComman
     return ClientErrors::None;
 }
 
-YukonError_t RfnMeterDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( parse.getFlags() & CMD_FLAG_GS_TOU )
     {
@@ -377,12 +377,12 @@ YukonError_t RfnMeterDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandPar
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetStatusTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetStatusTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( parse.isKeyValid("freeze") )
     {
@@ -396,52 +396,52 @@ YukonError_t RfnMeterDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandPar
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeTouCriticalPeak(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetConfigTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetConfigHoliday(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutConfigVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetValueVoltageProfile(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( parse.isKeyValid("voltage_profile") )
     {
@@ -451,7 +451,7 @@ YukonError_t RfnMeterDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandPars
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( parse.isKeyValid("reset") && parse.isKeyValid("tou") )
     {
@@ -467,22 +467,22 @@ YukonError_t RfnMeterDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandPars
 }
 
 
-YukonError_t RfnMeterDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnMeterDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executeGetConfigDisconnect( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+YukonError_t RfnMeterDevice::executeGetConfigDisconnect( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnIndividualCommandList & rfnRequests )
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigDisconnect( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+YukonError_t RfnMeterDevice::executePutConfigDisconnect( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnIndividualCommandList & rfnRequests )
 {
     return ClientErrors::NoMethod;
 }
@@ -490,7 +490,7 @@ YukonError_t RfnMeterDevice::executePutConfigDisconnect( CtiRequestMsg * pReq, C
 YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    * pReq,
                                                               CtiCommandParser & parse,
                                                               ReturnMsgList    & returnMsgs,
-                                                              RfnCommandList   & rfnRequests )
+                                                              RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnChannelConfigurationCommand;
     using Commands::RfnSetChannelSelectionCommand;
@@ -743,7 +743,7 @@ YukonError_t RfnMeterDevice::compareChannels(
 YukonError_t RfnMeterDevice::executeGetConfigInstallChannels( CtiRequestMsg    * pReq,
                                                               CtiCommandParser & parse,
                                                               ReturnMsgList    & returnMsgs,
-                                                              RfnCommandList   & rfnRequests )
+                                                              RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnGetChannelSelectionFullDescriptionCommand>() );
     rfnRequests.push_back( std::make_unique<Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand>() );
@@ -751,7 +751,7 @@ YukonError_t RfnMeterDevice::executeGetConfigInstallChannels( CtiRequestMsg    *
     return ClientErrors::None;
 }
 
-YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnTemperatureAlarmCommand;
     using Commands::RfnSetTemperatureAlarmConfigurationCommand;
@@ -837,7 +837,7 @@ YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * p
     }
 }
 
-YukonError_t RfnMeterDevice::executeGetConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+YukonError_t RfnMeterDevice::executeGetConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnGetTemperatureAlarmConfigurationCommand>() );
 

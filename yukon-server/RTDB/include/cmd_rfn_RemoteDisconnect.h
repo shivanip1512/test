@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 
 #include <boost/optional.hpp>
 
@@ -11,7 +11,7 @@ namespace Commands   {
 //------------------------------------------------------------
 // Remote disconnect command base class
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectConfigurationCommand : public RfnCommand
+class IM_EX_DEVDB RfnRemoteDisconnectConfigurationCommand : public RfnIndividualCommand
 {
 public:
 

@@ -844,7 +844,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
                         (0x0A)(0x01) // default TOU rate
                         (0x01);
 
-                command->decodeCommand( decode_time, response );
+                command->handleResponse( decode_time, response );
 
                 dut.extractCommandResult( *command );
 
@@ -1060,13 +1060,17 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_on_demand )
                     (0x01)  //  length 1
                     (0x00); //  reconnect:  arm
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp = "Status: Success (0)"
                                     "\nDisconnect mode: On Demand"
                                     "\nReconnect param: Arm reconnect";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );
@@ -1131,9 +1135,13 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_demand_threshold )
             std::vector<unsigned char> response = boost::assign::list_of
                     (0x83)(0x00)(0x00)(0x02)(0x01)(0x02)(0x05)(0x01)(0x05)(0x66)(0x0f)(0x0a);
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
 
-            BOOST_CHECK_EQUAL( rcv.description,
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
+
+            BOOST_CHECK_EQUAL( result.description,
                                      "Status: Success (0)"
                                      "\nDisconnect mode: Demand Threshold"
                                      "\nReconnect param: Immediate reconnect"
@@ -1208,7 +1216,11 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_cycling )
             std::vector<unsigned char> response = boost::assign::list_of
                     (0x83)(0x00)(0x00)(0x03)(0x01)(0x03)(0x05)(0x01)(0x00)(0x0a)(0x00)(0x14);
 
-            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+            const auto results = command->handleResponse( decode_time, response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             const std::string exp =
                     "Status: Success (0)"
@@ -1217,7 +1229,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_cycling )
                     "\nDisconnect minutes: 10"
                     "\nConnect minutes: 20";
 
-            BOOST_CHECK_EQUAL(rcv.description, exp);
+            BOOST_CHECK_EQUAL(result.description, exp);
         }
 
         dut.extractCommandResult( *command );
@@ -1550,7 +1562,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
             std::vector<unsigned char> response = boost::assign::list_of
                         (0x56)(0x00)(0x00)(0x00)(0x00);
 
-            command->decodeCommand( CtiTime::now(), response );
+            command->handleResponse( CtiTime::now(), response );
 
             dut.extractCommandResult( *command );
 
@@ -1634,7 +1646,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
                     (0x00)(0x04)(0x40)(0x00)
                     (0x00)(0x05)(0x08)(0x00);
 
-            command->decodeCommand( CtiTime::now(), response );
+            command->handleResponse( CtiTime::now(), response );
 
             dut.extractCommandResult( *command );
 
@@ -1681,7 +1693,11 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
                     (0x00)(0x05)(0x00)(0x00)
                     ;
 
-            const Cti::Devices::Commands::RfnCommandResult result = command->decodeCommand( CtiTime::now(), response );
+            const auto results = command->handleResponse( CtiTime::now(), response );
+
+            BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+            const auto & result = results.front();
 
             BOOST_CHECK_EQUAL(
                     result.description,
@@ -2156,9 +2172,13 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
         const std::vector< unsigned char > response = boost::assign::list_of
             ( 0x89 )( 0x00 )( 0x00 )( 0x00 );
 
-        Cti::Devices::Commands::RfnCommandResult cmdResult = command->decodeCommand( execute_time, response );
+        const auto results = command->handleResponse( decode_time, response );
 
-        BOOST_CHECK_EQUAL( cmdResult.description, "Temperature Alarm Request Status: Success (0)" );
+        BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+        const auto & result = results.front();
+
+        BOOST_CHECK_EQUAL( result.description, "Temperature Alarm Request Status: Success (0)" );
 
         dut.extractCommandResult(*command);
 

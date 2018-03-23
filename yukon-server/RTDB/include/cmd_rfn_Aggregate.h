@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 
 namespace Cti {
 namespace Devices {
@@ -10,7 +11,7 @@ class IM_EX_DEVDB RfnAggregateCommand : public RfnCommand
 {
 public:
 
-    RfnAggregateCommand(RfnCommandList commands);
+    RfnAggregateCommand(RfnIndividualCommandList commands);
 
     void prepareCommandData(const CtiTime now) override;
 
@@ -18,9 +19,6 @@ public:
 
     RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override;
     RfnCommandResultList handleError(const CtiTime now, const YukonError_t error) override;
-
-    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
-    RfnCommandResult error(const CtiTime now, const YukonError_t error) override;
 
     void invokeResultHandler(ResultHandler &rh) const override final;
 
@@ -44,7 +42,7 @@ private:
 
     static std::atomic_uint16_t _globalContextId;
 
-    using CommandMap = std::map<uint16_t, RfnCommandPtr>;
+    using CommandMap = std::map<uint16_t, RfnIndividualCommandPtr>;
     CommandMap _commands;
 
     using MessageMap = std::map<uint16_t, Bytes>;

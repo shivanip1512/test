@@ -872,9 +872,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
             0x89, 0x00, 0x00, 0x00
         };
 
-        Cti::Devices::Commands::RfnCommandResult cmdResult = command->decodeCommand( execute_time, response );
+        const auto results = command->handleResponse(decode_time, response);
 
-        BOOST_CHECK_EQUAL( cmdResult.description, "Temperature Alarm Request Status: Success (0)" );
+        BOOST_REQUIRE_EQUAL(results.size(), 1);
+
+        const auto & result = results.front();
+
+        BOOST_CHECK_EQUAL( result.description, "Temperature Alarm Request Status: Success (0)" );
 
         dut.extractCommandResult(*command);
 
@@ -1257,9 +1261,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
                     0x69, 0x06, 0x00, 0x00
                 };
 
-                Commands::RfnCommandResult rcv = command->decodeCommand( execute_time, response );
+                const auto results = command->handleResponse( decode_time, response );
 
-                BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+                BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+                const auto & result = results.front();
+
+                BOOST_CHECK_EQUAL( result.description, "Status: Success (0)" );
             }
 
             dut.extractCommandResult( *command );
@@ -1319,9 +1327,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
                     0x69, 0x02, 0x00, 0x00
                 };
 
-                Commands::RfnCommandResult rcv = command->decodeCommand( execute_time, response );
+                const auto results = command->handleResponse( decode_time, response );
 
-                BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+                BOOST_REQUIRE_EQUAL( results.size(), 1 );
+
+                const auto & result = results.front();
+
+                BOOST_CHECK_EQUAL( result.description, "Status: Success (0)" );
             }
 
             dut.extractCommandResult( *command );

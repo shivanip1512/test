@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 #include "ctidate.h"
 
 
@@ -12,7 +12,7 @@ namespace Commands   {
 /**
  * Load Profile Command Base Class
  */
-class IM_EX_DEVDB RfnLoadProfileCommand : public RfnCommand
+class IM_EX_DEVDB RfnLoadProfileCommand : public RfnIndividualCommand
 {
 protected:
 

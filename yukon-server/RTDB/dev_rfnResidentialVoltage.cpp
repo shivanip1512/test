@@ -100,7 +100,7 @@ RfnMeterDevice::ConfigMap RfnResidentialVoltageDevice::getConfigMethods(InstallT
 YukonError_t RfnResidentialVoltageDevice::executeGetConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                                     CtiCommandParser  & parse,
                                                                                     ReturnMsgList     & returnMsgs,
-                                                                                    RfnCommandList    & rfnRequests )
+                                                                                    RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnVoltageProfileGetConfigurationCommand>() );
 
@@ -110,7 +110,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigVoltageAveragingInterv
 YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageAveragingInterval( CtiRequestMsg     * pReq,
                                                                                     CtiCommandParser  & parse,
                                                                                     ReturnMsgList     & returnMsgs,
-                                                                                    RfnCommandList    & rfnRequests )
+                                                                                    RfnIndividualCommandList & rfnRequests )
 {
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
@@ -218,7 +218,7 @@ void RfnResidentialVoltageDevice::handleCommandResult( const Commands::RfnVoltag
 YukonError_t RfnResidentialVoltageDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
                                                                 CtiCommandParser & parse,
                                                                 ReturnMsgList    & returnMsgs,
-                                                                RfnCommandList   & rfnRequests )
+                                                                RfnIndividualCommandList & rfnRequests )
 {
     // get the meter ID
 
@@ -233,7 +233,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigOvUv( CtiRequestMsg   
 YukonError_t RfnResidentialVoltageDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                                                 CtiCommandParser & parse,
                                                                 ReturnMsgList    & returnMsgs,
-                                                                RfnCommandList   & rfnRequests )
+                                                                RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnOvUvConfigurationCommand;
     using Commands::RfnSetOvUvAlarmProcessingStateCommand;
@@ -458,7 +458,7 @@ void RfnResidentialVoltageDevice::handleCommandResult( const Commands::RfnSetOvU
 YukonError_t RfnResidentialVoltageDevice::executeGetConfigPermanentVoltageProfile( CtiRequestMsg    * pReq,
                                                                                    CtiCommandParser & parse,
                                                                                    ReturnMsgList    & returnMsgs,
-                                                                                   RfnCommandList   & rfnRequests )
+                                                                                   RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnLoadProfileGetRecordingCommand;
 
@@ -470,7 +470,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigPermanentVoltageProfil
 YukonError_t RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfile( CtiRequestMsg    * pReq,
                                                                                    CtiCommandParser & parse,
                                                                                    ReturnMsgList    & returnMsgs,
-                                                                                   RfnCommandList   & rfnRequests )
+                                                                                   RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnLoadProfileRecordingCommand;
     using Commands::RfnLoadProfileSetPermanentRecordingCommand;
@@ -528,7 +528,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigPermanentVoltageProfil
 YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,
                                                                           CtiCommandParser  & parse,
                                                                           ReturnMsgList     & returnMsgs,
-                                                                          RfnCommandList    & rfnRequests )
+                                                                          RfnIndividualCommandList & rfnRequests )
 {
     // putconfig voltage profile enable|disable
 
@@ -555,7 +555,7 @@ YukonError_t RfnResidentialVoltageDevice::executePutConfigVoltageProfile( CtiReq
 YukonError_t RfnResidentialVoltageDevice::executeGetConfigVoltageProfile( CtiRequestMsg     * pReq,
                                                                           CtiCommandParser  & parse,
                                                                           ReturnMsgList     & returnMsgs,
-                                                                          RfnCommandList    & rfnRequests )
+                                                                          RfnIndividualCommandList & rfnRequests )
 {
     // getconfig voltage profile state
 
@@ -574,7 +574,7 @@ YukonError_t RfnResidentialVoltageDevice::executeGetConfigVoltageProfile( CtiReq
 YukonError_t RfnResidentialVoltageDevice::executeGetValueVoltageProfile( CtiRequestMsg     * pReq,
                                                                          CtiCommandParser  & parse,
                                                                          ReturnMsgList     & returnMsgs,
-                                                                         RfnCommandList    & rfnRequests )
+                                                                         RfnIndividualCommandList & rfnRequests )
 {
     // getvalue voltage profile 12/13/2005 12/15/2005
 

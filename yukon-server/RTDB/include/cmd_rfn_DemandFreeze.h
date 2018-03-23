@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 #include <boost/optional.hpp>
 #include <map>
 
@@ -11,7 +11,7 @@ namespace Commands   {
 
 
 
-class IM_EX_DEVDB RfnDemandFreezeCommand : public RfnCommand
+class IM_EX_DEVDB RfnDemandFreezeCommand : public RfnIndividualCommand
 {
 protected:
 

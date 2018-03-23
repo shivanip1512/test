@@ -1,12 +1,12 @@
 #pragma once
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 
 namespace Cti        {
 namespace Devices    {
 namespace Commands   {
 
-class IM_EX_DEVDB RfnTemperatureAlarmCommand : public RfnCommand,
+class IM_EX_DEVDB RfnTemperatureAlarmCommand : public RfnIndividualCommand,
        InvokerFor<RfnTemperatureAlarmCommand>
 {
 public:

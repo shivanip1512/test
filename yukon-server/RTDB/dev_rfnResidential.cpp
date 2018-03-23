@@ -87,7 +87,7 @@ RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(InstallType ins
     return m;
 }
 
-YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             std::make_unique<Commands::RfnTouResetCommand>());
@@ -95,7 +95,7 @@ YukonError_t RfnResidentialDevice::executePutValueTouReset(CtiRequestMsg *pReq, 
     return ClientErrors::None;
 }
 
-YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     rfnRequests.push_back(
             std::make_unique<Commands::RfnTouResetZeroCommand>());
@@ -107,7 +107,7 @@ YukonError_t RfnResidentialDevice::executePutValueTouResetZero(CtiRequestMsg *pR
 YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * pReq,
                                                                     CtiCommandParser  & parse,
                                                                     ReturnMsgList     & returnMsgs,
-                                                                    RfnCommandList    & rfnRequests )
+                                                                    RfnIndividualCommandList & rfnRequests )
 {
     YukonError_t ret = ClientErrors::ConfigCurrent;
     try
@@ -162,7 +162,7 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
 YukonError_t RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
                                                                  CtiCommandParser  & parse,
                                                                  ReturnMsgList     & returnMsgs,
-                                                                 RfnCommandList    & rfnRequests )
+                                                                 RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnImmediateDemandFreezeCommand>() );
 
@@ -173,7 +173,7 @@ YukonError_t RfnResidentialDevice::executeImmediateDemandFreeze( CtiRequestMsg  
 YukonError_t RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg     * pReq,
                                                                 CtiCommandParser  & parse,
                                                                 ReturnMsgList     & returnMsgs,
-                                                                RfnCommandList    & rfnRequests )
+                                                                RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnGetDemandFreezeInfoCommand>() );
 
@@ -184,7 +184,7 @@ YukonError_t RfnResidentialDevice::executeReadDemandFreezeInfo( CtiRequestMsg   
 YukonError_t RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
                                                         CtiCommandParser & parse,
                                                         ReturnMsgList    & returnMsgs,
-                                                        RfnCommandList   & rfnRequests)
+                                                        RfnIndividualCommandList & rfnRequests)
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnTouStateConfigurationCommand>());
 
@@ -195,7 +195,7 @@ YukonError_t RfnResidentialDevice::executeGetStatusTou( CtiRequestMsg    * pReq,
 YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * pReq,
                                                            CtiCommandParser  & parse,
                                                            ReturnMsgList     & returnMsgs,
-                                                           RfnCommandList    & rfnRequests )
+                                                           RfnIndividualCommandList & rfnRequests )
 {
 
     if( parse.isKeyValid("tou_critical_peak_cancel") )
@@ -237,7 +237,7 @@ YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * p
 YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
                                                         CtiCommandParser  & parse,
                                                         ReturnMsgList     & returnMsgs,
-                                                        RfnCommandList    & rfnRequests )
+                                                        RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnTouConfigurationCommand;
     using Commands::RfnTouStateConfigurationCommand;
@@ -346,7 +346,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
 YukonError_t RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq,
                                                         CtiCommandParser  & parse,
                                                         ReturnMsgList     & returnMsgs,
-                                                        RfnCommandList    & rfnRequests )
+                                                        RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnTouScheduleGetConfigurationCommand>());
 
@@ -359,7 +359,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigTou( CtiRequestMsg     * pReq
 YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * pReq,
                                                             CtiCommandParser  & parse,
                                                             ReturnMsgList     & returnMsgs,
-                                                            RfnCommandList    & rfnRequests )
+                                                            RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnTouHolidayConfigurationCommand;
     using Commands::RfnTouSetHolidayActiveCommand;
@@ -416,7 +416,7 @@ YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * 
 YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
                                                                CtiCommandParser  & parse,
                                                                ReturnMsgList     & returnMsgs,
-                                                               RfnCommandList    & rfnRequests )
+                                                               RfnIndividualCommandList & rfnRequests )
 {
     using Commands::RfnTouScheduleConfigurationCommand;
     using Commands::RfnTouScheduleSetConfigurationCommand;
@@ -689,7 +689,7 @@ bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &d
 YukonError_t RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg     * pReq,
                                                                CtiCommandParser  & parse,
                                                                ReturnMsgList     & returnMsgs,
-                                                               RfnCommandList    & rfnRequests )
+                                                               RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnTouScheduleGetConfigurationCommand>());
 
@@ -703,7 +703,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigInstallTou( CtiRequestMsg    
 YukonError_t RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * pReq,
                                                             CtiCommandParser  & parse,
                                                             ReturnMsgList     & returnMsgs,
-                                                            RfnCommandList    & rfnRequests )
+                                                            RfnIndividualCommandList & rfnRequests )
 {
     rfnRequests.push_back( std::make_unique<Commands::RfnTouHolidayConfigurationCommand>());
 
@@ -714,7 +714,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigHoliday( CtiRequestMsg     * 
 YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    * pReq,
                                                                CtiCommandParser & parse,
                                                                ReturnMsgList    & returnMsgs,
-                                                               RfnCommandList   & rfnRequests )
+                                                               RfnIndividualCommandList & rfnRequests )
 {
     if( ! isDisconnectConfigSupported() )
     {
@@ -729,7 +729,7 @@ YukonError_t RfnResidentialDevice::executeGetConfigDisconnect( CtiRequestMsg    
 YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                                                                CtiCommandParser & parse,
                                                                ReturnMsgList    & returnMsgs,
-                                                               RfnCommandList   & rfnRequests )
+                                                               RfnIndividualCommandList & rfnRequests )
 {
     try
     {

@@ -1,23 +1,24 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 
 using Cti::Devices::Commands::RfnCommand;
+using Cti::Devices::Commands::RfnIndividualCommand;
 using boost::assign::list_of;
 
-struct test_RfnCommand : RfnCommand
+struct test_RfnIndividualCommand : RfnIndividualCommand
 {
-    using RfnCommand::getBytesFromTlvs;
-    using RfnCommand::getTlvsFromBytes;
+    using RfnIndividualCommand::getBytesFromTlvs;
+    using RfnIndividualCommand::getTlvsFromBytes;
 
-    typedef RfnCommand::TypeLengthValue TypeLengthValue;
-    typedef RfnCommand::LongTlvList LongTlvList;
+    typedef RfnIndividualCommand::TypeLengthValue TypeLengthValue;
+    typedef RfnIndividualCommand::LongTlvList LongTlvList;
 };
 
-typedef test_RfnCommand::TypeLengthValue TypeLengthValue;
+typedef test_RfnIndividualCommand::TypeLengthValue TypeLengthValue;
 
 namespace std {
 
@@ -63,7 +64,7 @@ BOOST_AUTO_TEST_CASE(test_getBytesFromTlvs_empty)
     const std::vector<TypeLengthValue> tlvs;
 
     const RfnCommand::Bytes results =
-        test_RfnCommand::getBytesFromTlvs(tlvs);
+        test_RfnIndividualCommand::getBytesFromTlvs(tlvs);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(
        expected.begin(), expected.end(),
@@ -93,7 +94,7 @@ BOOST_AUTO_TEST_CASE(test_getBytesFromTlvs_one_entry)
         for each(const std::vector<unsigned char> &value in values)
         {
             results.push_back(
-                test_RfnCommand::getBytesFromTlvs(
+                test_RfnIndividualCommand::getBytesFromTlvs(
                     list_of
                         (TypeLengthValue(type, value))));
         }
@@ -146,7 +147,7 @@ BOOST_AUTO_TEST_CASE(test_getBytesFromTlvs_two_entries)
         for each(const TypeLengthValue tlv2 in tlvs)
         {
             results.push_back(
-                test_RfnCommand::getBytesFromTlvs(
+                test_RfnIndividualCommand::getBytesFromTlvs(
                     list_of
                         (tlv1)
                         (tlv2)));
@@ -194,7 +195,7 @@ BOOST_AUTO_TEST_CASE(test_getBytesFromTlvs_up_to_four_entries)
         source_tlvs.push_back(tlv);
 
         results.push_back(
-            test_RfnCommand::getBytesFromTlvs(source_tlvs));
+            test_RfnIndividualCommand::getBytesFromTlvs(source_tlvs));
     }
 
     const std::vector<RfnCommand::Bytes> expected = {
@@ -226,7 +227,7 @@ BOOST_AUTO_TEST_CASE(test_getBytesFromTlvs_up_to_four_entries_various_tlv_field_
         source_tlvs.push_back(tlv);
 
         results.push_back(
-            test_RfnCommand::getBytesFromTlvs(source_tlvs));
+            test_RfnIndividualCommand::getBytesFromTlvs(source_tlvs));
     }
 
     const std::vector<RfnCommand::Bytes> expected = {
@@ -298,11 +299,11 @@ BOOST_AUTO_TEST_CASE(test_getTlvsFromBytes)
         for each( RfnCommand::Bytes input in bytes )
         {
             results.push_back(
-               test_RfnCommand::getTlvsFromBytes(
+               test_RfnIndividualCommand::getTlvsFromBytes(
                   input));
         }
     }
-    catch ( test_RfnCommand::CommandException &ce )
+    catch ( test_RfnIndividualCommand::CommandException &ce )
     {
         BOOST_FAIL(ce.what());
     }
@@ -376,7 +377,7 @@ BOOST_AUTO_TEST_CASE(test_getTlvsFromBytes_various_length_field_size)
      *
      */
 
-    const test_RfnCommand::LongTlvList longTlvs = boost::assign::list_of
+    const test_RfnIndividualCommand::LongTlvList longTlvs = boost::assign::list_of
         (0x01)
         (0xff)
         (0x38)
@@ -437,11 +438,11 @@ BOOST_AUTO_TEST_CASE(test_getTlvsFromBytes_various_length_field_size)
         for each( RfnCommand::Bytes input in bytes )
         {
             results.push_back(
-               test_RfnCommand::getTlvsFromBytes( 
+               test_RfnIndividualCommand::getTlvsFromBytes( 
                   input, longTlvs ));
         }
     }
-    catch ( test_RfnCommand::CommandException &ce )
+    catch ( test_RfnIndividualCommand::CommandException &ce )
     {
         BOOST_FAIL(ce.what());
     }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cmd_rfn.h"
+#include "cmd_rfn_Individual.h"
 #include "ctidate.h"
 
 
@@ -9,7 +9,7 @@ namespace Devices    {
 namespace Commands   {
 
 
-class IM_EX_DEVDB RfnOvUvConfigurationCommand : public RfnCommand
+class IM_EX_DEVDB RfnOvUvConfigurationCommand : public RfnIndividualCommand
 {
 protected:
 

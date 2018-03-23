@@ -20,7 +20,7 @@ void RfnAggregateCommand::setGlobalContextId(const uint16_t id, Test::use_in_uni
     _globalContextId.store(id);
 }
 
-RfnAggregateCommand::RfnAggregateCommand(RfnCommandList commands)
+RfnAggregateCommand::RfnAggregateCommand(RfnIndividualCommandList commands)
 {
     validate( Condition( ! commands.empty(), ClientErrors::MissingParameter ) << "No commands passed to RfnAggregateCommand" );
 
@@ -30,8 +30,8 @@ RfnAggregateCommand::RfnAggregateCommand(RfnCommandList commands)
         _commands,
         commands
             | boost::adaptors::transformed(
-                [&contextId](RfnCommandPtr &command) {
-                    return std::pair<uint16_t, RfnCommandPtr>(contextId++, std::move(command)); }));
+                [&contextId](RfnIndividualCommandPtr &command) {
+                    return make_pair(contextId++, std::move(command)); }));
 }
 
 void RfnAggregateCommand::prepareCommandData(const CtiTime now)
@@ -112,11 +112,6 @@ RfnCommand::Bytes RfnAggregateCommand::getCommandData()
     }
 
     return payload;
-}
-
-RfnCommandResult RfnAggregateCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
-{
-    throw YukonErrorException(ClientErrors::NoMethod, "AggregateCommand does not support individual decodeCommand");
 }
 
 RfnCommandResultList RfnAggregateCommand::handleResponse(const CtiTime now, const RfnResponsePayload &response)
@@ -216,11 +211,6 @@ RfnCommandResultList RfnAggregateCommand::handleError(const CtiTime now, YukonEr
     }
 
     return aggregateResults;
-}
-
-RfnCommandResult RfnAggregateCommand::error(const CtiTime now, const YukonError_t error)
-{
-    throw YukonErrorException(ClientErrors::NoMethod, "AggregateCommand does not support individual errorCommand");
 }
 
 void RfnAggregateCommand::invokeResultHandler(ResultHandler &rh) const
