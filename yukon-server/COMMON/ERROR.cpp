@@ -45,6 +45,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::BadLength,                   ei{ ERRTYPESYSTEM,   "Bad Length Specification"                    } },
         { ClientErrors::BadHdlcUaFrame,              ei{ ERRTYPECOMM,     "Bad HDLC UA Frame"                           } },
         { ClientErrors::Unknown,                     ei{ ERRTYPESYSTEM,   "Unknown Error"                               } },
+        { ClientErrors::UnknownCommandReceived,      ei{ ERRTYPEPROTOCOL, "Unknown Command Received"                    } },
         { ClientErrors::ReqackFlagSet,               ei{ ERRTYPECOMM,     "REQACK Flag set-- Frame Unexecutable"        } },
         { ClientErrors::RouteNotFound,               ei{ ERRTYPESYSTEM,   "Route Not Found"                             } },
         { ClientErrors::IdNotFound,                  ei{ ERRTYPESYSTEM,   "ID Not Found"                                } },

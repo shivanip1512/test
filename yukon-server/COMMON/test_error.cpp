@@ -64,7 +64,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Bad Length Specification")
     ("Bad HDLC UA Frame")
     ("Unknown Error")
-    ("Unknown Error Code (38)")
+    ("Unknown Command Received")
     ("Unknown Error Code (39)")
     //  40
     ("Unknown Error Code (40)")
@@ -284,7 +284,7 @@ BOOST_AUTO_TEST_CASE(test_GetErrorType)
         0, _, _, 2, 2, _, _, _, _, _,
         _, _, _, _, _, 3, 3, 2, 2, 2,
         2, 2, 2, _, _, _, _, _, _, _,
-        _, 3, 3, 3, 3, _, 3, _, _, _,
+        _, 3, 3, 3, 3, _, 3, _, 2, _,
         _, _, _, _, _, _, 3, _, _, _,
         _, _, _, _, _, _, _, 2, 2, _,
         _, _, _, _, _, 3, _, 3, 3, _,

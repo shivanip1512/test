@@ -172,7 +172,7 @@ struct ClientErrors
         BadLength,
         BadHdlcUaFrame,
         Unknown,
-        z_038,
+        UnknownCommandReceived,
         z_039,
         z_040,
         z_041,
