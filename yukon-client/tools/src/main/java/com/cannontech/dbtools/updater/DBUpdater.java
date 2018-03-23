@@ -374,8 +374,8 @@ public class DBUpdater extends MessageFrameAdaptor {
         }
         String startValue = line_.getMetaProps().get(DBMSDefines.START);
         if (startValue != null) {
-            if (startValue.contains("IF")) {
-                // If update line contains @start-IF annotation
+            if (startValue.contains("if")) {
+                // If update line contains @start-if annotation
                 String[] tokenArray = startValue.split("\\s");
                 String newYukId = tokenArray[0];
                 String dependentYukId = tokenArray[2];

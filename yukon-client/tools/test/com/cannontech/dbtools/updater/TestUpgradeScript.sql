@@ -31,20 +31,20 @@ INSERT INTO DBUpdates VALUES ('YUK-116', '7.0.1', GETDATE());
 /* @end YUK-116 */
 
 /*** SHOULD EXECUTE AS YUK-16225 IS ALREADY AVAILABLE AND YUK-22 IS NOT AVAILABLE IN DBUPDATES TABLE ***/
-/* @start YUK-22 IF YUK-16225 */
+/* @start YUK-22 if YUK-16225 */
 UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;
 INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE());
 /* @end YUK-22 */
 
 /*** SHOULD NOT EXECUTE AS YUK-6 IS NOT AVAILABLE IN DBUPDATES TABLE ***/
-/* @start YUK-23 IF 6 */
+/* @start YUK-23 if 6 */
 UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0;
 UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;
 INSERT INTO DBUpdates VALUES ('YUK-23', '7.0.1', GETDATE());
 /* @end YUK-23 */
 
 /*** SHOULD NOT EXECUTE AS YUK-6 IS NOT AVAILABLE IN DBUPDATES TABLE ***/
-/* @start YUK-24 IF YUK-6 */
+/* @start YUK-24 if YUK-6 */
 /* @start-block */
 UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0;
 UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;
@@ -53,7 +53,7 @@ INSERT INTO DBUpdates VALUES ('YUK-24', '7.0.1', GETDATE());
 /* @end YUK-24 */
 
 /*** SHOULD EXECUTE AS YUK-16225 IS ALREADY AVAILABLE AND YUK-25 IS NOT AVAILABLE IN DBUPDATES TABLE ***/
-/* @start YUK-25 IF YUK-16225 */
+/* @start YUK-25 if YUK-16225 */
 /* @start-block */
 UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0;
 UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;
@@ -62,12 +62,12 @@ INSERT INTO DBUpdates VALUES ('YUK-25', '7.0.1', GETDATE());
 /* @end YUK-25 */
 
 /*** SHOULD NOT EXECUTE AS YUK-111 IS ALREADY AVAILABLE IN DBUPDATES TABLE ***/
-/* @start YUK-111 IF YUK-16225 */
+/* @start YUK-111 if YUK-16225 */
 UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;
 INSERT INTO DBUpdates VALUES ('YUK-111', '7.0.1', GETDATE());
 /* @end YUK-111 */
 
-/* @start YUK-32 IF YUK-16225 */
+/* @start YUK-32 if YUK-16225 */
 /* @error ignore-begin */
 UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28  rawstate = 0;
 UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;

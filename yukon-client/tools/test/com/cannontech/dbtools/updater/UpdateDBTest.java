@@ -147,7 +147,7 @@ public class UpdateDBTest {
             "UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1"));
 
         /* YUK-32 will be executed should contains metadata - @ignore-begin */
-        Assert.assertEquals("YUK-32 IF YUK-16225", result.get(15).getMetaProps().get("start"));
+        Assert.assertEquals("YUK-32 if YUK-16225", result.get(15).getMetaProps().get("start"));
 
         Assert.assertEquals("ignore-begin", result.get(15).getMetaProps().get("error"));
 
