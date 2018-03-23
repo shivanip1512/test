@@ -57,4 +57,9 @@ public interface UserPageDao {
     List<DisplayablePao> getDrRecentViewed(LiteYukonUser user);
 
     void deletePagesForPoint(int pointId);
+
+    /**
+     * Delete all references to trend in page history/favorites.
+     */
+    void deletePagesForTrend(int trendId);
 }

@@ -2,6 +2,7 @@ package com.cannontech.database.data.graph;
 
 import java.util.ArrayList;
 
+import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
@@ -10,6 +11,7 @@ import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.web.OperatorLoginGraphList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -79,6 +81,8 @@ public void delete() throws java.sql.SQLException
 
 	getGraphDefinition().setDbConnection(getDbConnection());
 	getGraphDefinition().delete();
+    UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
+    userPageDao.deletePagesForTrend(getGraphDefinition().getGraphDefinitionID());
 	getGraphDefinition().setDbConnection(null);
 }
 /**

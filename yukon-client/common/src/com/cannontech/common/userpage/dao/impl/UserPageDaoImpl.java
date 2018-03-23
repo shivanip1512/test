@@ -358,11 +358,13 @@ public class UserPageDaoImpl implements UserPageDao {
 
         otherDeviceUrls.add(compileUrlParam("/stars/relay/home", "deviceId"));
         otherDeviceUrls.add(Pattern.compile("/stars/gateways/(\\d+)"));
+        otherDeviceUrls.add(Pattern.compile("/stars/rtu/(\\d+)"));
 
         paoUrls.addAll(otherDeviceUrls);
     }
     
     private static Pattern pointUrl = Pattern.compile("/tools/points/(\\d+).*");
+    private static Pattern trendUrl = Pattern.compile("/tools/trends/(\\d+).*");
 
     @Override
     public void deletePagesForPao(YukonPao pao) {
@@ -408,6 +410,17 @@ public class UserPageDaoImpl implements UserPageDao {
         for (UserPage page : pages) {
             Integer pagePointId = idInPath(page.getPath(), ImmutableList.of(pointUrl));
             if (pagePointId != null && pagePointId == pointId) {
+                delete(page.getKey());
+            }
+        }
+    }
+
+    @Override
+    public void deletePagesForTrend(int trendId) {
+        List<UserPage> pages = getPages(null, null);
+        for (UserPage page : pages) {
+            Integer pageTrendId = idInPath(page.getPath(), ImmutableList.of(trendUrl));
+            if (pageTrendId != null && pageTrendId == trendId) {
                 delete(page.getKey());
             }
         }
