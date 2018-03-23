@@ -254,7 +254,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Unknown object.")
     ("Parameter error, not all points in the index range or object index prefixes exist.")
     ("Requested operation is already executing.")
-    .repeat(42, UnknownErrorHelper(308));
+    ("Aggregate response did not include an entry for the command.")
+    .repeat(41, UnknownErrorHelper(309));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {
@@ -314,7 +315,7 @@ BOOST_AUTO_TEST_CASE(test_GetErrorType)
         _, _, _, _, _, _, _, _, _, _,
         _, _, _, _, _, _, _, _, _, _,
         //  300
-        _, _, _, _, 2, 2, 2, 2, _, _,
+        _, _, _, _, 2, 2, 2, 2, 2, _,
         _, _, _, _, _, _, _, _, _, _,
         _, _, _, _, _, _, _, _, _, _,
         _, _, _, _, _, _, _, _, _, _,

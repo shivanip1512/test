@@ -391,6 +391,8 @@ struct ClientErrors
         UnknownObject,
         ParameterError,
         OperationAlreadyExecuting,
+
+        NoAggregateResponseEntry,
     };
 };
 

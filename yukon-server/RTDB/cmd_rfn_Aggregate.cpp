@@ -5,7 +5,6 @@
 #include "cmd_rfn_helper.h"
 
 #include <boost/range/adaptor/map.hpp>
-#include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/numeric.hpp>
 
 using namespace std;
@@ -139,6 +138,8 @@ try
 
     RfnCommandResultList aggregateResults;
 
+    YukonError_t remainingErrors = ClientErrors::NoAggregateResponseEntry;
+
     for( int msgIndex = 0; msgIndex < messages; ++msgIndex )
     {
         auto contextId = response[pos] | response[pos + 1] << 8;
@@ -146,8 +147,14 @@ try
         auto length    = response[pos] | response[pos + 1] << 8;
         pos += 2;
 
-        validate(Condition(response.size() >= pos + length, ClientErrors::DataMissing)
-            << "Response size < pos + message length, " << response.size() << " < " << pos + length);
+        if( response.size() < pos + length )
+        {
+            CTILOG_ERROR(dout, "Response size < pos + message length, " << response.size() << " < " << pos + length);
+
+            remainingErrors = ClientErrors::DataMissing;
+
+            break;
+        }
 
         if( auto cmd = mapFindRef(_commands, contextId) )
         {
@@ -178,8 +185,8 @@ try
         {
             aggregateResults.emplace_back(
                 command->error(
-                    now, 
-                    ClientErrors::E2eRequestTimeout));  //  TODO change to Aggregate Message timeout or something
+                    now,
+                    remainingErrors));
         }
     }
 

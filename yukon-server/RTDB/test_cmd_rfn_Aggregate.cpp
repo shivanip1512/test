@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
         0x07, 0x00, //  Payload length 7
         //  message 1
         0x44, 0x44, //  context ID 0x4444
-        0x03, 0x00, //  message length 9
+        0x03, 0x00, //  message length 3
         0x71, 0x00, 0x03 };
 
     const auto results = aggregate.handleResponse(execute_time, response);
@@ -258,8 +258,51 @@ BOOST_AUTO_TEST_CASE(test_error_response_two_commands)
     {
         const auto & result = results.back();
         BOOST_CHECK(result.points.empty());
-        BOOST_CHECK_EQUAL(result.status, 292);
-        BOOST_CHECK_EQUAL(result.description, "Did not receive a response from the device.");
+        BOOST_CHECK_EQUAL(result.status, 308);
+        BOOST_CHECK_EQUAL(result.description, "Aggregate response did not include an entry for the command.");
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_error_response_bad_second_payload_length)
+{
+    RfnCommandList l;
+
+    l.emplace_back(std::make_unique<RfnCentronGetLcdConfigurationCommand>());
+    l.emplace_back(std::make_unique<RfnCentronSetLcdConfigurationCommand>(
+        RfnCentronSetLcdConfigurationCommand::metric_vector_t{ 0x00, 0x01, 0x02 },
+        RfnCentronSetLcdConfigurationCommand::DisconnectDisplayEnabled,
+        RfnCentronSetLcdConfigurationCommand::DisplayDigits6x1,
+        1));
+
+    RfnAggregateCommand aggregate(std::move(l));
+
+    aggregate.executeCommand(execute_time);
+
+    std::vector<unsigned char> response{
+        0x01, //  Aggregate message
+        0x02, //  1 message
+        0x0b, 0x00, //  Payload length 11
+        //  message 1
+        0x44, 0x44, //  context ID 0x4444
+        0x03, 0x00, //  message length 3
+        0x71, 0x00, 0x03,
+        //  message 2
+        0x45, 0x44, //  context ID 0x4445
+        0x03, 0x00 };  //  message length 3, but missing
+
+    const auto results = aggregate.handleResponse(execute_time, response);
+    BOOST_REQUIRE_EQUAL(results.size(), 2);
+    {
+        const auto & result = results.front();
+        BOOST_CHECK(result.points.empty());
+        BOOST_CHECK_EQUAL(result.status, 264);
+        BOOST_CHECK_EQUAL(result.description, "Invalid display metric length - (0, expecting 6)");
+    }
+    {
+        const auto & result = results.back();
+        BOOST_CHECK(result.points.empty());
+        BOOST_CHECK_EQUAL(result.status, 283);
+        BOOST_CHECK_EQUAL(result.description, "Not enough data received from the device.");
     }
 }
 
@@ -313,8 +356,8 @@ BOOST_AUTO_TEST_CASE(test_missing_response)
     BOOST_REQUIRE_EQUAL(results.size(), 1);
     const auto & result = results.front();
     BOOST_CHECK(result.points.empty());
-    BOOST_CHECK_EQUAL(result.status, 292);
-    BOOST_CHECK_EQUAL(result.description, "Did not receive a response from the device.");
+    BOOST_CHECK_EQUAL(result.status, 308);
+    BOOST_CHECK_EQUAL(result.description, "Aggregate response did not include an entry for the command.");
 }
 
 BOOST_AUTO_TEST_CASE(test_send_two_commands)

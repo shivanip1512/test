@@ -174,7 +174,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::ParameterError,              ei{ ERRTYPEPROTOCOL, "Parameter error, not all points in the index range or object index prefixes exist." } },
         { ClientErrors::OperationAlreadyExecuting,   ei{ ERRTYPEPROTOCOL, "Requested operation is already executing." } },
         { ClientErrors::ConfigNotCurrent,            ei{ ERRTYPESYSTEM,   "Config is not current" } },
-
+        { ClientErrors::NoAggregateResponseEntry,    { ERRTYPEPROTOCOL, "Aggregate response did not include an entry for the command." } },
     };
 
 }
