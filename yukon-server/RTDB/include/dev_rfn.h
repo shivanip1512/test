@@ -30,8 +30,6 @@ public:
     virtual void extractCommandResult(const Commands::RfnCommand &command);
     virtual YukonError_t invokeDeviceHandler(DeviceHandler &handler);
 
-    static Commands::RfnCommandPtr combineRfnCommands(RfnCommandList commands);
-
 protected:
 
     typedef std::function<YukonError_t (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;
@@ -42,6 +40,8 @@ protected:
     {
         return boost::bind( f, c, _1, _2, _3, _4 );
     }
+
+    virtual bool isAggregateCommandSupported() const;
 
     YukonError_t executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );
 

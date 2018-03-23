@@ -136,7 +136,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        auto & commandResult = results.front().commandResult;
+        const auto & commandResults = results.front().commandResults;
+
+        BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+
+        const auto & commandResult = commandResults.front();
 
         const std::string expectedDescription =
             "Status: Success (0)"
@@ -259,12 +263,13 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        auto & commandResult = results.front().commandResult;
+        const auto & commandResults = results.front().commandResults;
 
-        const std::string expectedDescription =
-            "Request not acceptable";
+        BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
 
-        BOOST_CHECK_EQUAL(commandResult.description, expectedDescription);
+        const auto & commandResult = commandResults.front();
+
+        BOOST_CHECK_EQUAL(commandResult.description, "Endpoint indicated request not acceptable.");
         BOOST_CHECK(commandResult.points.empty());
         BOOST_CHECK_EQUAL(commandResult.status, ClientErrors::E2eRequestNotAcceptable);
     }

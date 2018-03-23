@@ -5,6 +5,7 @@
 #include "cmd_rfn_helper.h"
 
 #include <boost/range/adaptor/map.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/numeric.hpp>
 
 using namespace std;
@@ -116,23 +117,27 @@ RfnCommand::Bytes RfnAggregateCommand::getCommandData()
 
 RfnCommandResult RfnAggregateCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    validate(Condition(response.size() >= HeaderLength, ClientErrors::InvalidData) 
-        << "Response size < HeaderLength, " << response.size());
+    throw YukonErrorException(ClientErrors::NoMethod, "AggregateCommand does not support individual decodeCommand");
+}
+
+RfnCommandResultList RfnAggregateCommand::handleResponse(const CtiTime now, const RfnResponsePayload &response)
+try
+{
+    validate(Condition(response.size() >= HeaderLength, ClientErrors::DataMissing) 
+        << "Response size < HeaderLength, " << response.size() << " < " << HeaderLength);
     
-    validate(Condition(response[0] == 0x01, ClientErrors::InvalidData)
+    validate(Condition(response[0] == 0x01, ClientErrors::UnknownCommandReceived)
         << "Command != 0x01, " << response[0]);
 
     auto messages = response[1];
     auto payloadLength = response[2] | response[3] << 8;
 
-    validate(Condition(response.size() >= payloadLength + HeaderLength, ClientErrors::InvalidData)
-        << "Response size < payloadLength + HeaderLength, " << response.size());
+    validate(Condition(response.size() >= payloadLength + HeaderLength, ClientErrors::DataMissing)
+        << "Response size < payloadLength + HeaderLength, " << response.size() << " < " << payloadLength + HeaderLength);
 
     size_t pos = HeaderLength;
 
-    RfnCommandResult aggregateResult { "" };
-
-    std::vector<std::string> descriptions;
+    RfnCommandResultList aggregateResults;
 
     for( int msgIndex = 0; msgIndex < messages; ++msgIndex )
     {
@@ -141,32 +146,91 @@ RfnCommandResult RfnAggregateCommand::decodeCommand(const CtiTime now, const Rfn
         auto length    = response[pos] | response[pos + 1] << 8;
         pos += 2;
 
-        validate(Condition(pos + length <= response.size(), ClientErrors::InvalidData)
-            << "Pos + message length > payloadLength, " << pos + length);
+        validate(Condition(response.size() >= pos + length, ClientErrors::DataMissing)
+            << "Response size < pos + message length, " << response.size() << " < " << pos + length);
 
         if( auto cmd = mapFindRef(_commands, contextId) )
         {
-            auto result = 
-                (*cmd)->decodeCommand(
-                    now, 
-                    { response.cbegin() + pos, 
-                      response.cbegin() + pos + length });
+            try
+            {
+                aggregateResults.emplace_back(
+                    (*cmd)->decodeCommand(
+                        now,
+                        { response.cbegin() + pos,
+                          response.cbegin() + pos + length }));
+            }
+            catch( const CommandException & ce )
+            {
+                aggregateResults.emplace_back(ce.error_description, ce.error_code);
+            }
 
-            descriptions.emplace_back(
-                "Aggregate message " + std::to_string(msgIndex + 1) + ", context ID " + std::to_string(contextId)
-                + "\n" + result.description);
-            
-            std::move(
-                std::begin(aggregateResult.points), 
-                std::end  (aggregateResult.points),
-                std::back_inserter(result.points));
+            _statuses.emplace(contextId, aggregateResults.back().status);
         }
         pos += length;
     }
 
-    aggregateResult.description = boost::join(descriptions, "\n");
+    for( const auto & kv : _commands )
+    {
+        const auto contextId = kv.first;
+        auto & command = kv.second;
 
-    return aggregateResult;
+        if( ! _statuses.count(contextId) )
+        {
+            aggregateResults.emplace_back(
+                command->error(
+                    now, 
+                    ClientErrors::E2eRequestTimeout));  //  TODO change to Aggregate Message timeout or something
+        }
+    }
+
+    return std::move(aggregateResults);
+}
+catch( const CommandException & ce )
+{
+    CTILOG_EXCEPTION_ERROR(dout, ce);
+
+    return handleError(now, ce.error_code);
+}
+
+RfnCommandResultList RfnAggregateCommand::handleError(const CtiTime now, YukonError_t error)
+{
+    RfnCommandResultList aggregateResults;
+
+    for( auto & kv : _commands )
+    {
+        const auto contextId = kv.first;
+        auto & command = kv.second;
+
+        auto result = command->error(now, error);
+        
+        _statuses.emplace(contextId, result.status);
+
+        aggregateResults.emplace_back(result);
+    }
+
+    return aggregateResults;
+}
+
+RfnCommandResult RfnAggregateCommand::error(const CtiTime now, const YukonError_t error)
+{
+    throw YukonErrorException(ClientErrors::NoMethod, "AggregateCommand does not support individual errorCommand");
+}
+
+void RfnAggregateCommand::invokeResultHandler(ResultHandler &rh) const
+{
+    for( auto & kv : _commands )
+    {
+        const auto contextId = kv.first;
+        auto & command = kv.second;
+
+        if( const auto status = mapFind(_statuses, contextId) )
+        {
+            if( ! *status )
+            {
+                command->invokeResultHandler(rh);
+            }
+        }
+    }
 }
 
 

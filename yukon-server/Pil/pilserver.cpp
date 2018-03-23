@@ -706,69 +706,76 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
     YukonError_t execute(Devices::RfnDevice &dev)
     {
-        auto retMsg =
-                std::make_unique<CtiReturnMsg>(
-                        result.request.parameters.deviceId,
-                        result.request.parameters.commandString,
-                        result.commandResult.description,
-                        result.commandResult.status,
-                        0,
-                        MacroOffset::none,
-                        0,
-                        result.request.parameters.groupMessageId,
-                        result.request.parameters.userMessageId);
+        bool anySuccess = false;
 
-        std::ostringstream pointDataDescription;
-
-        for( const auto& pd : result.commandResult.points )
+        for( const auto & commandResult : result.commandResults )
         {
-            pointDataDescription << "\n";
+            auto retMsg =
+                    std::make_unique<CtiReturnMsg>(
+                            result.request.parameters.deviceId,
+                            result.request.parameters.commandString,
+                            commandResult.description,
+                            commandResult.status,
+                            0,
+                            MacroOffset::none,
+                            0,
+                            result.request.parameters.groupMessageId,
+                            result.request.parameters.userMessageId);
 
-            if( const CtiPointSPtr p = dev.getDevicePointOffsetTypeEqual(pd.offset, pd.type) )
+            anySuccess |= commandResult.status == ClientErrors::None;
+
+            std::ostringstream pointDataDescription;
+
+            for( const auto& pd : commandResult.points )
             {
-                auto pdMsg =
-                        std::make_unique<CtiPointDataMsg>(
-                                p->getID(),
-                                pd.value,
-                                pd.quality,
-                                p->getType(),
-                                pd.description,
-                                pd.tags);
+                pointDataDescription << "\n";
 
-                pdMsg->setTime(pd.time);
+                if( const CtiPointSPtr p = dev.getDevicePointOffsetTypeEqual(pd.offset, pd.type) )
+                {
+                    auto pdMsg =
+                            std::make_unique<CtiPointDataMsg>(
+                                    p->getID(),
+                                    pd.value,
+                                    pd.quality,
+                                    p->getType(),
+                                    pd.description,
+                                    pd.tags);
 
-                retMsg->PointData().push_back(pdMsg.release());
+                    pdMsg->setTime(pd.time);
 
-                pointDataDescription << p->getName();
+                    retMsg->PointData().push_back(pdMsg.release());
+
+                    pointDataDescription << p->getName();
+                }
+                else
+                {
+                    CTILOG_ERROR(dout, "Point not found for device "<< dev.getName() <<" / "<< dev.getID() <<": "<< desolvePointType(pd.type) <<" "<< pd.offset);
+
+                    pointDataDescription << "[Unknown]";
+                }
+
+                pointDataDescription << " - " << desolvePointType(pd.type) << " " << pd.offset << ": " << pd.value << " @ " << pd.time;
             }
-            else
+
+            retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
+
+            dev.decrementGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle);
+
+            if( dev.getGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle) )
             {
-                CTILOG_ERROR(dout, "Point not found for device "<< dev.getName() <<" / "<< dev.getID() <<": "<< desolvePointType(pd.type) <<" "<< pd.offset);
-
-                pointDataDescription << "[Unknown]";
+                retMsg->setExpectMore(true);
             }
 
-            pointDataDescription << " - " << desolvePointType(pd.type) << " " << pd.offset << ": " << pd.value << " @ " << pd.time;
+            vgList.push_back(retMsg->replicateMessage());
+            retList.push_back(retMsg.release());
         }
 
-        retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
-
-        dev.decrementGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle);
-
-        if( dev.getGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle) )
-        {
-            retMsg->setExpectMore(true);
-        }
-
-        vgList.push_back(retMsg->replicateMessage());
-        retList.push_back(retMsg.release());
-
-        if( ! result.commandResult.status )
+        if( anySuccess )
         {
             dev.extractCommandResult(*result.request.command);
         }
 
-        return result.commandResult.status;
+        return ClientErrors::None;
     }
 };
 

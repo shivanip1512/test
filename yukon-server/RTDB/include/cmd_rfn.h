@@ -61,6 +61,8 @@ struct RfnCommandResult
     std::vector<DeviceCommand::point_data> points;
 };
 
+using RfnCommandResultList = std::vector<RfnCommandResult>;
+
 struct RfnResultHandlerInvoker
 {
     struct ResultHandler
@@ -111,7 +113,7 @@ struct NoResultHandler : virtual RfnResultHandlerInvoker
 template<class CommandType>
 struct InvokerFor : virtual RfnResultHandlerInvoker
 {
-    void invokeResultHandler(ResultHandler &rh) const final
+    void invokeResultHandler(ResultHandler &rh) const override final
     {
         //  Verify that we're actually the command type we were templated with
         using SafeCommandType =
@@ -133,8 +135,13 @@ public:
     typedef Bytes RfnResponsePayload;
 
     RfnRequestPayload executeCommand(const CtiTime now);
+
+    //  Single-command (non-aggregate) decode methods
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
-    virtual RfnCommandResult error  (const CtiTime now, const YukonError_t errorCode);
+    virtual RfnCommandResult error(const CtiTime now, const YukonError_t errorCode);
+
+    virtual RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response);
+    virtual RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode);
 
     using ASID = Messaging::Rfn::ApplicationServiceIdentifiers;
 

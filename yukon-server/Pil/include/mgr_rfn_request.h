@@ -47,9 +47,9 @@ struct RfnDeviceRequest
 
 struct RfnDeviceResult
 {
-    RfnDeviceResult(RfnDeviceRequest request_, Devices::Commands::RfnCommandResult commandResult_) :
+    RfnDeviceResult(RfnDeviceRequest request_, Devices::Commands::RfnCommandResultList commandResults_) :
         request(std::move(request_)),
-        commandResult(commandResult_)
+        commandResults(commandResults_)
     {
     }
 
@@ -58,7 +58,7 @@ struct RfnDeviceResult
     RfnDeviceResult& operator=(RfnDeviceResult&&) = default;
 
     RfnDeviceRequest request;
-    Devices::Commands::RfnCommandResult commandResult;
+    Devices::Commands::RfnCommandResultList commandResults;
 };
 
 class IM_EX_CTIPIL RfnRequestManager

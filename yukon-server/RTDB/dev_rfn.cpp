@@ -32,12 +32,6 @@ YukonError_t RfnDevice::invokeDeviceHandler(DeviceHandler &handler)
     return handler.execute(*this);
 }
 
-Commands::RfnCommandPtr RfnDevice::combineRfnCommands(RfnCommandList commands)
-{
-    //  TODO
-    return Commands::RfnCommandPtr();
-}
-
 void RfnDevice::extractCommandResult(const Commands::RfnCommand &command)
 {
     return command.invokeResultHandler(*this);
@@ -59,6 +53,12 @@ void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
 }
 
 
+bool RfnDevice::isAggregateCommandSupported() const
+{
+    return gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.0;
+}
+
+
 YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     using RfnExecuteMethod = decltype(&RfnDevice::executeGetConfig);
@@ -74,11 +74,13 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     YukonError_t errorCode = ClientErrors::NoMethod;
     std::string errorDescription = "Invalid command.";
 
+    RfnCommandList commands;
+
     if( const auto executeMethod = mapFind(executeMethods, parse.getCommand()) )
     {
         try
         {
-            errorCode = (this->**executeMethod)(pReq, parse, returnMsgs, rfnRequests);
+            errorCode = (this->**executeMethod)(pReq, parse, returnMsgs, commands);
 
             if( errorCode )
             {
@@ -114,9 +116,9 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                         pReq->UserMessageId()));
     }
 
-    if( ! rfnRequests.empty() )
+    if( ! commands.empty() )
     {
-        const size_t numRequests = rfnRequests.size();
+        const size_t numRequests = commands.size();
 
         auto commandsSent = 
                 std::make_unique<CtiReturnMsg>(
@@ -134,14 +136,20 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
         returnMsgs.push_back(std::move(commandsSent));
 
-        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), rfnRequests.size());
-    }
+        incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), numRequests);
 
-    if( rfnRequests.size() > 1 )
-    {
-        if( gConfigParms.getValueAsDouble("RFN_FIRMWARE") >= 9.0 )
+        if( commands.size() > 1 && isAggregateCommandSupported() )
         {
-            //rfnRequests.emplace_back(std::make_unique<Commands::RfnAggregateCommand>(std::move(rfnRequests)));
+            auto aggregateCommand = std::make_unique<Commands::RfnAggregateCommand>(std::move(commands));
+
+            rfnRequests.emplace_back(std::move(aggregateCommand));
+        }
+        else
+        {
+            rfnRequests.insert(
+                rfnRequests.end(), 
+                std::make_move_iterator(commands.begin()),
+                std::make_move_iterator(commands.end()));
         }
     }
 

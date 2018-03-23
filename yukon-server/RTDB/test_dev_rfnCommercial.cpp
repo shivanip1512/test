@@ -2,6 +2,7 @@
 
 #include "dev_rfnCommercial.h"
 #include "cmd_rfn.h"
+#include "cmd_rfn_Aggregate.h"  //  to reset the global counter
 #include "config_data_rfn.h"
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
@@ -550,6 +551,123 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
     BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
     BOOST_CHECK_EQUAL_COLLECTIONS( returnExpectMoreRcv.begin(), returnExpectMoreRcv.end(), returnExpectMoreExp.begin(), returnExpectMoreExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
+{
+    struct : test_RfnCommercialDevice 
+    {
+        bool isAggregateCommandSupported() const override { return true; }
+    } 
+    dut;
+
+    dut.setDeviceType(TYPE_RFN430SL3);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+        { "rfnTempAlarm", {
+            { RfnStrings::TemperatureAlarmEnabled,           "true" },
+            { RfnStrings::TemperatureAlarmRepeatInterval,    "15" },
+            { RfnStrings::TemperatureAlarmRepeatCount,       "3" },
+            { RfnStrings::TemperatureAlarmHighTempThreshold, "50" } }},
+
+        { "rfnChannelConfiguration", {
+            { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+            { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+            { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+            { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+            { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } }} };
+
+    CtiCommandParser parse("putconfig install all");
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( auto & category : configurations )
+    {
+        cfg.addCategory(
+            Cti::Config::Category::ConstructCategory(
+                category.first,
+                category.second));
+    }
+
+    Commands::RfnAggregateCommand::setGlobalContextId(0x4444, test_tag);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+
+    BOOST_REQUIRE_EQUAL(rfnRequests.size(), 1);
+
+    auto & command = *rfnRequests.front();
+
+    const auto payload = command.executeCommand(execute_time);
+
+    const std::vector<uint8_t> expected { 
+       0x01,
+       0x03,
+       0x2f, 0x00,
+       0x44, 0x44, 
+       0x09, 0x00, 
+       0x78, 0x00, 0x01, 0x01, 0x00, 0x03, 0x01, 0x00, 0x01, 
+       0x45, 0x44, 
+       0x0e, 0x00, 
+       0x7a, 0x00, 0x01, 0x01, 0x09, 0x00, 0x00, 0x1c, 0xd4, 0x00, 0x00, 0x6a, 0xe0, 0x00, 
+       0x46, 0x44, 
+       0x0c, 0x00, 
+       0x88, 0x00, 0x01, 0x01, 0x07, 0x01, 0x00, 0x0a, 0x00, 0x00, 0x0f, 0x03 };
+
+    BOOST_CHECK_EQUAL_RANGES(expected, payload);
+
+    const std::vector<uint8_t> response {
+        0x01,
+        0x03,
+        0x20, 0x00,
+        0x44, 0x44,
+        0x0c, 0x00,
+        0x79, 0x00, 0x00, 0x01, 0x02, 0x00, 0x05, 0x01, 0x00, 0x01, 0x00, 0x00,
+        0x45, 0x44,
+        0x07, 0x00,
+        0x7b, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00,
+        0x46, 0x44,
+        0x04, 0x00,
+        0x89, 0x00, 0x00, 0x00 };
+
+    const auto results = command.handleResponse(decode_time, response);
+
+    BOOST_REQUIRE_EQUAL(results.size(), 3);
+
+    auto itr = results.begin();
+
+    {
+        const auto & result = *itr++;
+
+        BOOST_CHECK_EQUAL(result.description, 
+            "Status: Success (0)"
+            "\nChannel Registration Full Description:"
+            "\nMetric(s) descriptors:"
+            "\nWatt hour delivered (1): Scaling Factor: 1"
+            "\n");
+        BOOST_CHECK_EQUAL(result.status, 0);
+        BOOST_CHECK(result.points.empty());
+    }
+    {
+        const auto & result = *itr++;
+
+        BOOST_CHECK_EQUAL(result.description, "Number of bytes for channel descriptors received 0, expected >= 1");
+        BOOST_CHECK_EQUAL(result.status, 264);
+        BOOST_CHECK(result.points.empty());
+    }
+    {
+        const auto & result = *itr++;
+
+        BOOST_CHECK_EQUAL(result.description, "Temperature Alarm Request Status: Success (0)");
+        BOOST_CHECK_EQUAL(result.status, 0);
+        BOOST_CHECK(result.points.empty());
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

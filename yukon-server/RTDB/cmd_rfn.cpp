@@ -26,7 +26,16 @@ RfnCommand::RfnRequestPayload RfnCommand::executeCommand(const CtiTime now)
     return req;
 }
 
-// Return the error description
+RfnCommandResultList RfnCommand::handleResponse(const CtiTime now, const RfnResponsePayload &response)
+{
+    return { decodeCommand(now, response) };
+}
+
+RfnCommandResultList RfnCommand::handleError(const CtiTime now, const YukonError_t errorCode)
+{
+    return { error(now, errorCode) };
+}
+
 RfnCommandResult RfnCommand::error(const CtiTime now, const YukonError_t errorCode)
 {
     return { GetErrorString(errorCode), errorCode };
