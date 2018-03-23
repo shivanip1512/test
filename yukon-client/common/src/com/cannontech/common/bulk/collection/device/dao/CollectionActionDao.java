@@ -18,9 +18,9 @@ public interface CollectionActionDao {
     public enum SortBy{
         ACTION("ca.Action"),
         START_TIME("ca.StartTime"),
-        SUCCESS("c.SuccessCount"),
-        FAILURE("c.FailedCount"),
-        NOT_ATTEMPTED("c.NotAttemptedCount"),
+        SUCCESS("SuccessCount"),
+        FAILURE("FailedCount"),
+        NOT_ATTEMPTED("NotAttemptedCount"),
         STATUS("ca.Status"),
         USER_NAME("ca.UserName");
         
