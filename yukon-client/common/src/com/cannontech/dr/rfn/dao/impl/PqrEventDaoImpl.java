@@ -89,7 +89,7 @@ public class PqrEventDaoImpl implements PqrEventDao {
             @Override
             public SqlFragmentSource generate(List<Integer> inventoryIdsSubList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT EventLogId, pel.InventoryId, Timestamp, EventType, ResponseType, Value, ra.Manufacturer, ra.Model, ra.SerialNumber");
+                sql.append("SELECT pel.EventLogId, pel.InventoryId, pel.Timestamp, pel.EventType, pel.ResponseType, pel.Value, ra.Manufacturer, ra.Model, ra.SerialNumber");
                 sql.append("FROM PqrEventLog pel");
                 sql.append("JOIN InventoryBase ib ON pel.InventoryId = ib.InventoryId");
                 sql.append("JOIN RfnAddress ra ON ra.DeviceId = ib.DeviceId");
