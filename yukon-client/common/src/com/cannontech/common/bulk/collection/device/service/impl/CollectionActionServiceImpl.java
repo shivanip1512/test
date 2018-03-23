@@ -124,17 +124,24 @@ public class CollectionActionServiceImpl implements CollectionActionService {
 
     @Override
     public CollectionActionResult getResult(int key) {
-        CollectionActionResult result = cache.getIfPresent(key);
-        if(result == null) {
-            result = collectionActionDao.loadResultFromDb(key);
-            result.setLogger(log);
-        } 
-        return  result;
+        return cache.getIfPresent(key) != null ? getCachedResult(key) : getDbResult(key);
     }
     
     @Override
     public CollectionActionResult getCachedResult(int key) {
         return cache.getIfPresent(key);
+    }
+    
+    @Override
+    public void clearCache() {
+        cache.invalidateAll();
+    }
+    
+    @Override
+    public CollectionActionResult getDbResult(int key) {
+        CollectionActionResult result = collectionActionDao.loadResultFromDb(key);
+        result.setLogger(log);
+        return result;
     }
     
     @Override

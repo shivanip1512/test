@@ -28,6 +28,16 @@ public interface CollectionActionService {
     CollectionActionResult getCachedResult(int key);
     
     /**
+     * Returns result from db. Used for testing only.
+     */
+    CollectionActionResult getDbResult(int key);
+    
+    /**
+     * Clears cache. Used for testing only.
+     */
+    void clearCache();
+    
+    /**
      * Returns list of results from cache.
      */
     List<CollectionActionResult> getCachedResults(List<Integer> cacheKeys);
@@ -59,5 +69,4 @@ public interface CollectionActionService {
      */
     void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> unsupportedDevices);
-    
 }

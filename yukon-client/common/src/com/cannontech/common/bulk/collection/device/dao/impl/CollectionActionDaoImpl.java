@@ -10,9 +10,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -154,22 +156,53 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
      */
     private SqlStatementBuilder buildResultSelect(CollectionActionFilter filter, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("WITH Counts AS(");
-        sql.append("SELECT CollectionActionId,");
-        sql.append("    SUM(case when Result = '" + FAILED + "' then 1 else 0 end) FailedCount,");
-        sql.append("    SUM(case when Result = '" + COMPLETE + "' then 1 else 0 end) SuccessCount,");
-        sql.append("    0 as NotAttemptedCount");
-        sql.append("FROM CollectionActionRequest");
-        sql.append("GROUP BY CollectionActionId");
+
+        sql.append("WITH Successes AS");
+        sql.append("(");
+        sql.append("    SELECT COUNT(1) AS SuccessCount, CollectionActionId");
+        sql.append("    FROM CollectionActionRequest WHERE Result").eq_k(COMPLETE);
+        sql.append("    GROUP BY CollectionActionId ");
+        sql.append("UNION");
+        sql.append("    SELECT COUNT(1) AS SuccessCount, CA.CollectionActionId");
+        sql.append("    FROM CollectionAction CA");
+        sql.append("    JOIN CollectionActionCommandRequest CACR ON CA.CollectionActionId = CACR.CollectionActionId");
+        sql.append("    JOIN CommandRequestExecResult CRER ON CACR.CommandRequestExecId = CRER.CommandRequestExecId");
+        sql.append("    WHERE CRER.ErrorCode = 0");
+        sql.append("    GROUP BY CA.CollectionActionId ");
+        sql.append(")");
+        
+        sql.append(", Failures AS");
+        sql.append("(");
+        sql.append("    SELECT COUNT(1) AS FailureCount, CollectionActionId");
+        sql.append("    FROM CollectionActionRequest WHERE Result").eq_k(FAILED);
+        sql.append("    GROUP BY CollectionActionId ");
+        sql.append("UNION");
+        sql.append("    SELECT COUNT(1) AS FailureCount, CA.CollectionActionId");
+        sql.append("    FROM CollectionAction CA");
+        sql.append("    JOIN CollectionActionCommandRequest CACR ON CA.CollectionActionId = CACR.CollectionActionId");
+        sql.append("    JOIN CommandRequestExecResult CRER ON CACR.CommandRequestExecId = CRER.CommandRequestExecId");
+        sql.append("    WHERE CRER.ErrorCode > 0");
+        sql.append("    GROUP BY CA.CollectionActionId ");
+        sql.append(")");
+        
+        sql.append(", NotAttempted AS");
+        sql.append("(");
+        sql.append("    SELECT COUNT(1) AS NotAttemptedCount, CA.CollectionActionId");
+        sql.append("    FROM CollectionAction CA");
+        sql.append("    JOIN CollectionActionCommandRequest CACR ON CA.CollectionActionId = CACR.CollectionActionId");
+        sql.append("    JOIN CommandRequestUnsupported CRU ON CACR.CommandRequestExecId = CRU.CommandRequestExecId");
+        sql.append("    GROUP BY CA.CollectionActionId ");
         sql.append(")");
 
         if (sortBy == null) {
             sql.append( "SELECT count(ca.CollectionActionId)");
         } else {
-            sql.append( "SELECT ca.CollectionActionId, ca.Action, ca.StartTime, ca.StopTime, ca.Status, c.FailedCount, c.SuccessCount, c.NotAttemptedCount, ca.UserName");
+            sql.append( "SELECT CA.CollectionActionId, CA.Action, CA.StartTime, CA.StopTime, CA.Status, COALESCE( F.FailureCount, 0 ) AS FailedCount, COALESCE( S.SuccessCount, 0 ) AS SuccessCount, COALESCE( N.NotAttemptedCount, 0 ) AS NotAttemptedCount, CA.UserName");
         }
-        sql.append("FROM CollectionAction ca");
-        sql.append("JOIN Counts AS c ON ca.CollectionActionId = c.CollectionActionId");
+        sql.append("FROM CollectionAction CA");
+        sql.append("LEFT JOIN Successes S ON CA.CollectionActionId = S.CollectionActionId");
+        sql.append("LEFT JOIN Failures F ON CA.CollectionActionId = F.CollectionActionId");
+        sql.append("LEFT JOIN NotAttempted N ON CA.CollectionActionId = N.CollectionActionId");
         
         if (filter.getActions() == null || filter.getActions().isEmpty()) {
             sql.append("WHERE ca.Action").in_k(Arrays.asList(CollectionAction.values()));
@@ -295,15 +328,16 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     
     private CollectionActionResult buildCreResult(CollectionAction action, int key) {
         CommandRequestExecution exec = commandRequestExecutionDao.getById(getCreId(key));
-        List<PaoIdentifier> allDevices = crerDao.getRequestedDeviceIds(exec.getId());
-        CollectionActionResult result = new CollectionActionResult(action, allDevices, loadInputs(key),
-            exec, editorDao, tempGroupService, groupHelper, null, null);
+        Set<PaoIdentifier> allDevices = new HashSet<>(crerDao.getRequestedDeviceIds(exec.getId()));
+        Map<CommandRequestUnsupportedType, List<PaoIdentifier>> unsupported =
+            action.getCreUnsupportedTypes().stream().collect(Collectors.toMap(type -> type,
+                type -> crerDao.getUnsupportedDeviceIdsByExecutionId(exec.getId(), type)));
+        unsupported.values().forEach(values -> allDevices.addAll(values));
+        CollectionActionResult result = new CollectionActionResult(action, Lists.newArrayList(allDevices),
+            loadInputs(key), exec, editorDao, tempGroupService, groupHelper, null, null);
         
         List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
         List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());
-        
-        Map<CommandRequestUnsupportedType, List<PaoIdentifier>> unsupported = action.getCreUnsupportedTypes()
-                .stream().collect(Collectors.toMap(type -> type, type -> crerDao.getUnsupportedDeviceIdsByExecutionId(exec.getId(), type)));
         //failure bucket
         result.addDevicesToGroup(FAILURE, failed, null);
         //unsupported buckets

@@ -162,7 +162,6 @@ public class CommandExecutionServiceImpl implements CommandExecutionService, Col
                         try {
                             callback.handle(result);
                         } catch (Exception e) {
-                            e.printStackTrace();
                             log.error(e);
                         }
                     }
@@ -293,9 +292,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService, Col
                     commandToSend = requestHolder.request.getCommandString();
                     porterConnection.write(requestHolder.request);
                     nothingWritten = false;
-                    if (execution.getCommandRequestExecutionType().isPersistedRequestRequired()) {
-                        deviceIdsProcessed.add(requestHolder.request.getDeviceID());
-                    }
+                    deviceIdsProcessed.add(requestHolder.request.getDeviceID());
                     logCommand(requestHolder.request, params.getUser());
                     if (log.isDebugEnabled()) {
                         log.debug(buildLogString(execution) + " sent request to porter:" + requestHolder.request);
@@ -320,9 +317,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService, Col
                     params.getType(), commandToSend, e.getMessage(), params.getUser());
                 completeRequestAndRemoveListeners(listener, FAILED, true);
             } finally {
-                if (execution.getCommandRequestExecutionType().isPersistedRequestRequired()) {
-                    commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIdsProcessed);
-                }
+                commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), deviceIdsProcessed);
                 listener.getCommandsAreWritingLatch().countDown();
             }
         });

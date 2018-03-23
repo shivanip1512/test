@@ -70,15 +70,4 @@ public enum DeviceRequestType {
     public boolean isScheduled() {
         return scheduled;
     }
-    
-    /**
-     * Returns true if entry in "CommandRequestExecRequest" is needed.
-     */
-    public boolean isPersistedRequestRequired() {
-        if (this == GROUP_DEVICE_CONFIG_VERIFY || this == GROUP_DEVICE_CONFIG_SEND
-            || this == GROUP_DEVICE_CONFIG_READ) {
-            return true;
-        }
-        return false;
-    }
 }

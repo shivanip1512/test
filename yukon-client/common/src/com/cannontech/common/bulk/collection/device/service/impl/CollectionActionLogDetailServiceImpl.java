@@ -120,7 +120,9 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
         list.add(accessor.getMessage(header + "Status"));
         list.add(accessor.getMessage(header + "Error"));
         // optional entries
-        result.getAction().getOptionalLogEntries().forEach(entry -> list.add(""));
+        if(result.getAction().getOptionalLogEntries() != null) {
+            result.getAction().getOptionalLogEntries().forEach(entry -> list.add(""));
+        }
         // ExecutionExceptionText - no porter connection
         list.add("");
         writeToFile(Lists.newArrayList(String.join(",", list)), result.getCacheKey());
