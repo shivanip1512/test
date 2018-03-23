@@ -21,7 +21,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.dbtools.updater.dao.impl.DBupdatesDaoImpl;
 import com.cannontech.tools.gui.IMessageFrame;
 
 /**
@@ -47,8 +46,6 @@ public class UpdateDB
             Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
     private static final Pattern OracleVarPattern = 
             Pattern.compile("v_[A-Za-z_]+ := \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
-
-    private DBupdatesDaoImpl dBupdatesDaoImpl;
     /**
      * 
      */
@@ -475,9 +472,6 @@ public class UpdateDB
     public List<UpdateLine> convertToUpdateLines(List<String> fileStrings, final String sqlFilesLocation, final String sqlFileName) {
         List<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
         UpdateLine updLine = new UpdateLine();
-        if (dBupdatesDaoImpl == null) {
-            dBupdatesDaoImpl = new DBupdatesDaoImpl();
-        }
         boolean commentState = false;
         boolean blockState = false;
         boolean cparmState = false;
@@ -489,7 +483,6 @@ public class UpdateDB
         Matcher endMatcher = null;
         Matcher startMatcher = null;
         boolean startMatchState = false;
-        boolean ignoreEntry = false;
         for (String token : fileStrings) {
             cparmMatcher = cparmPattern.matcher(token);
             startIfMatcher = startIfPattern.matcher(token);
@@ -536,49 +529,23 @@ public class UpdateDB
                 }
 
                 if (startIfState) {
-                    if (ignoreEntry) {
-                        ignoreEntry = !endMatcher.find();
-                        startIfState = ignoreEntry;
-                        if (!ignoreEntry) {
-                            updLine.getMetaProps().put(DBMSDefines.OPTIONS_ERROR[8], "true");
+                    startIfState = !endMatcher.find();
+                    if (!startIfState) {
+                        int metaIndx = token.indexOf(DBMSDefines.META_TAG);
+                        StringTokenizer tokenizer =
+                            new StringTokenizer(token.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
+                        if (metaIndx >= 0 && metaIndx < token.length() && tokenizer.countTokens() >= 2) {
+                            String key = tokenizer.nextToken();
+                            String value = tokenizer.nextToken();
+                            updLine.getMetaProps().put(key, value);
                         }
-                    } else {
-                        startIfState = !endMatcher.find();
-                        if (!startIfState) {
-                            int metaIndx = token.indexOf(DBMSDefines.META_TAG);
-                            StringTokenizer tokenizer =
-                                new StringTokenizer(token.substring(metaIndx + 1), DBMSDefines.META_TOKEN);
-                            if (metaIndx >= 0 && metaIndx < token.length() && tokenizer.countTokens() >= 2) {
-                                String key = tokenizer.nextToken();
-                                String value = tokenizer.nextToken();
-                                updLine.getMetaProps().put(key, value);
-                            }
-                            continue;
-                        }
+                        continue;
                     }
                 } else if (startIfMatcher.find()) {
                     startIfState = !endMatcher.find();
-                    if (startIfState) {
-                        List<String> updateIds = dBupdatesDaoImpl.getUpdateIds();
-                        String newYukId = null;
-                        String dependentYukId = null;
-                        String[] tokenArray = token.split("\\s");
-                        newYukId = tokenArray[2];
-                        dependentYukId = tokenArray[4];
-
-                        if (!updateIds.contains(dependentYukId) || updateIds.contains(newYukId)) {
-                            ignoreEntry = true;
-                            updLine.getMetaProps().put(DBMSDefines.OPTIONS_ERROR[7], "true");
-                        }
-                    }
                 }
 
                 if (startMatchState) {
-                    if (ignoreEntry) {
-                        ignoreEntry = !endMatcher.find();
-                        startMatchState = ignoreEntry;
-                        continue;
-                    }
                     startMatchState = !endMatcher.find();
                     if (!startMatchState) {
                         int metaIndx = token.indexOf(DBMSDefines.META_TAG);
@@ -593,15 +560,6 @@ public class UpdateDB
                     }
                 } else if (startMatcher.find()) {
                     startMatchState = !endMatcher.find();
-                    if (startMatchState) {
-                        String[] tokenArray = token.split("\\s");
-                        String yukId = tokenArray[2];
-                        List<String> updateIds = dBupdatesDaoImpl.getUpdateIds();
-                        if (updateIds.contains(yukId)) {
-                            ignoreEntry = true;
-                            continue;
-                        }
-                    }
                 }
 
                 // Checks to see if its an end block

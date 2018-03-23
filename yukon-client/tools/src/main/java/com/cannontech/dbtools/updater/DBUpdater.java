@@ -75,7 +75,8 @@ Suggested DBUpdate Process Steps
 public class DBUpdater extends MessageFrameAdaptor {
     // local class to execute update functions
     private UpdateDB updateDB = null;
-
+    private DBupdatesDaoImpl dBupdatesDaoImpl;
+    
     private boolean isIgnoreAllErrors = false;
     private boolean isIgnoreBlockErrors = false;
 
@@ -266,11 +267,76 @@ public class DBUpdater extends MessageFrameAdaptor {
         }
     }
 
+    private void executeLine(UpdateLine line_, Statement stat) throws SQLException {
+        String cmd = null;
+        String lineValue = line_.getValue().toString();
+        if (lineValue.startsWith(DBMSDefines.START_BLOCK) || lineValue.startsWith(DBMSDefines.META_START)) {
+            cmd = line_.getValue().toString();
+        } else {
+            cmd = line_.getValue().toString().substring(0,
+                line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM));
+        }
+
+        getIMessageFrame().addOutput("EXECUTING: " + cmd);
+
+        if (line_.isWarnOnce()) {
+            try {
+                stat.execute(cmd);
+                line_.setSuccess(true);
+                getIMessageFrame().addOutput("   SUCCESS : " + cmd);
+            } catch (SQLException ex) {
+                // We want this error to interrupt execution, but it will be marked as success
+                // in the valids file.
+                // This allows users to not have to edit the valids file after being prompted
+                // for certain errors.
+                line_.setSuccess(true);
+                getIMessageFrame().addOutput("");
+                getIMessageFrame().addOutput("");
+                getIMessageFrame().addOutput(
+                        " ************************************************************************** ");
+                getIMessageFrame().addOutput("   Warning Message:");
+                getIMessageFrame().addOutput(
+                        "   After you understand and act on the below warning, press Start again to continue execution.");
+                getIMessageFrame().addOutput("");
+                getIMessageFrame().addOutput("   " + ex.getMessage());
+                getIMessageFrame().addOutput(
+                        " ************************************************************************** ");
+                getIMessageFrame().addOutput("");
+                getIMessageFrame().addOutput("");
+                getIMessageFrame()
+                        .finish("Please see Output Messages to review an error that has been raised. Once resolution has been implemented, you may click Start to resume processing.");
+                throw ex; // Re-Throw to interrupt execution.
+            }
+        } else if (line_.isIgnoreError() || isIgnoreAllErrors || isIgnoreBlockErrors) {
+            try {
+                stat.execute(cmd);
+                line_.setSuccess(true);
+                getIMessageFrame().addOutput("   SUCCESS : " + cmd);
+            } catch (Exception ex) // SQLException ex )
+            {
+                // since we are ignoring errors, do not let the SQL error force use to exit
+                line_.setSuccess(false);
+                getIMessageFrame().addOutput("   UNSUCCESSFUL : " + cmd);
+                getIMessageFrame().addOutput("     (IGNORING ERROR) : " + ex.getMessage());
+            }
+
+        } else {
+            stat.execute(cmd);
+            line_.setSuccess(true);
+            getIMessageFrame().addOutput("   SUCCESS : " + cmd);
+        }
+
+        try {
+            if (stat != null) {
+                stat.close(); // free up any open cursors please
+            }
+        } catch (Exception e) {} // ain't no thang
+    
+    }
+
     private void processLine(UpdateLine line_, Connection conn) throws SQLException {
         if (line_ == null || conn == null)
             return;
-
-        String cmd = null;
 
         // set any error ignore flags
         setIgnoreState(line_);
@@ -278,95 +344,58 @@ public class DBUpdater extends MessageFrameAdaptor {
         if (line_.isSuccess() == null) {
             Statement stat = conn.createStatement();
 
-            String skippedEndValue = line_.getMetaProps().get(DBMSDefines.OPTIONS_ERROR[8]);
-            if (skippedEndValue != null && skippedEndValue.equals("true")) {
-                skipFlag = false;
-                line_.getMetaProps().remove(DBMSDefines.OPTIONS_ERROR[8]);
+            if (dBupdatesDaoImpl == null) {
+                dBupdatesDaoImpl = new DBupdatesDaoImpl();
             }
-
-            String skippedStartValue = line_.getMetaProps().get(DBMSDefines.OPTIONS_ERROR[7]);
-            if (skippedStartValue != null && skippedStartValue.equals("true")
-                && line_.getMetaProps().containsKey(DBMSDefines.START)) {
-
-                String metaStartIfValue = line_.getMetaProps().get(DBMSDefines.START);
-                if (metaStartIfValue.contains("IF")) {
-                    String[] tokenArray = metaStartIfValue.split("\\s");
-                    String newYukId = tokenArray[0];
-                    String dependentYukId = tokenArray[2];
-                    DBupdatesDaoImpl dBupdatesDaoImpl = new DBupdatesDaoImpl();
-                    List<String> updateIds = dBupdatesDaoImpl.getUpdateIds();
-                    if (!updateIds.contains(dependentYukId) || updateIds.contains(newYukId)) {
-                        skipFlag = true;
-                    } else {
-                        line_.getMetaProps().remove(DBMSDefines.OPTIONS_ERROR[7]);
-                    }
-                }
+            List<String> updateIds = dBupdatesDaoImpl.getUpdateIds();
+            boolean shouldProcessLine = shouldProcessLine(line_, updateIds);
+            if (!shouldProcessLine) {
+                return;
             }
             if (!skipFlag) {
-                String lineValue = line_.getValue().toString();
-                if (lineValue.startsWith(DBMSDefines.START_BLOCK) || lineValue.startsWith(DBMSDefines.META_START)) {
-                    cmd = line_.getValue().toString();
-                } else {
-                    cmd = line_.getValue().toString().substring(0,
-                        line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM));
-                }
-
-                getIMessageFrame().addOutput("EXECUTING: " + cmd);
-
-                if (line_.isWarnOnce()) {
-                    try {
-                        stat.execute(cmd);
-                        line_.setSuccess(true);
-                        getIMessageFrame().addOutput("   SUCCESS : " + cmd);
-                    } catch (SQLException ex) {
-                        // We want this error to interrupt execution, but it will be marked as success
-                        // in the valids file.
-                        // This allows users to not have to edit the valids file after being prompted
-                        // for certain errors.
-                        line_.setSuccess(true);
-                        getIMessageFrame().addOutput("");
-                        getIMessageFrame().addOutput("");
-                        getIMessageFrame().addOutput(
-                                " ************************************************************************** ");
-                        getIMessageFrame().addOutput("   Warning Message:");
-                        getIMessageFrame().addOutput(
-                                "   After you understand and act on the below warning, press Start again to continue execution.");
-                        getIMessageFrame().addOutput("");
-                        getIMessageFrame().addOutput("   " + ex.getMessage());
-                        getIMessageFrame().addOutput(
-                                " ************************************************************************** ");
-                        getIMessageFrame().addOutput("");
-                        getIMessageFrame().addOutput("");
-                        getIMessageFrame()
-                                .finish("Please see Output Messages to review an error that has been raised. Once resolution has been implemented, you may click Start to resume processing.");
-                        throw ex; // Re-Throw to interrupt execution.
-                    }
-                } else if (line_.isIgnoreError() || isIgnoreAllErrors || isIgnoreBlockErrors) {
-                    try {
-                        stat.execute(cmd);
-                        line_.setSuccess(true);
-                        getIMessageFrame().addOutput("   SUCCESS : " + cmd);
-                    } catch (Exception ex) // SQLException ex )
-                    {
-                        // since we are ignoring errors, do not let the SQL error force use to exit
-                        line_.setSuccess(false);
-                        getIMessageFrame().addOutput("   UNSUCCESSFUL : " + cmd);
-                        getIMessageFrame().addOutput("     (IGNORING ERROR) : " + ex.getMessage());
-                    }
-
-                } else {
-                    stat.execute(cmd);
-                    line_.setSuccess(true);
-                    getIMessageFrame().addOutput("   SUCCESS : " + cmd);
-                }
-
-                try {
-                    if (stat != null) {
-                        stat.close(); // free up any open cursors please
-                    }
-                } catch (Exception e) {} // ain't no thang
+                executeLine(line_, stat);
             }
         }
+    }
+
+    /**
+     * Method validates update line given and decides whether it needs execution based on @start and @start-if
+     * annonations.
+     */
+    private boolean shouldProcessLine(UpdateLine line_, List<String> updateIds) {
+        boolean shouldProcessLine = false;
+        if (line_.getMetaProps().containsKey(DBMSDefines.END)) {
+            // set skipFlag to false again when @end is read
+            skipFlag = false;
+        }
+        if (skipFlag) {
+            // just return if skipFlag is true, ie.line does not require execution
+            return false;
+        }
+        String startValue = line_.getMetaProps().get(DBMSDefines.START);
+        if (startValue != null) {
+            if (startValue.contains("IF")) {
+                // If update line contains @start-IF annotation
+                String[] tokenArray = startValue.split("\\s");
+                String newYukId = tokenArray[0];
+                String dependentYukId = tokenArray[2];
+                if (!updateIds.contains(dependentYukId) || updateIds.contains(newYukId)) {
+                    // Simple return because either dependentYukId is not already present in UpdateIds in
+                    // yukon or newYukId is already available in DBUpdates table
+                    skipFlag = true;
+                    return false;
+                }
+            } else {
+                // If update line contains @start annotation
+                if (updateIds.contains(startValue)) {
+                    // Simple return because startValue (yuk-id) is already available in DBUpdates table
+                    skipFlag = true;
+                    return false;
+                }
+            }
+        }
+        shouldProcessLine = !skipFlag;
+        return shouldProcessLine;
     }
 
     private void renameFile(File sqlFile) throws IOException {

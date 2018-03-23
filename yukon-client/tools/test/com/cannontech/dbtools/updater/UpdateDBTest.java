@@ -1,9 +1,5 @@
 package com.cannontech.dbtools.updater;
 
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -17,7 +13,6 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.config.MockConfigurationSource;
-import com.cannontech.dbtools.updater.dao.impl.DBupdatesDaoImpl;
 public class UpdateDBTest {
     
     // Fake out a master.cfg entry to test CPARM code.
@@ -114,24 +109,16 @@ public class UpdateDBTest {
     @Test
     public void testUpgradeScript() {
         UpdateDB updateDB = new UpdateDB(null);
+        DBUpdater dbUpdater = new DBUpdater();
         List<String> fileStrings = getFileStrings();
-
-        DBupdatesDaoImpl dbupdatesDaoImpl = createNiceMock(DBupdatesDaoImpl.class);
-        dbupdatesDaoImpl.getUpdateIds();
-        expectLastCall().andAnswer(() -> {
-            List<String> updateIds = new ArrayList<>();
-            updateIds.addAll(Arrays.asList("YUK-111", "YUK-116", "YUK-16225", "YUK-1"));
-            return updateIds;
-        }).anyTimes();
-
-        replay(dbupdatesDaoImpl);
-        ReflectionTestUtils.setField(updateDB, "dBupdatesDaoImpl", dbupdatesDaoImpl);
+        List<String> updateIds = Arrays.asList("YUK-111", "YUK-116", "YUK-16225", "YUK-1");
 
         List<UpdateLine> result = updateDB.convertToUpdateLines(fileStrings, null, null);
 
-        Assert.assertEquals(19, result.size());
+        /* Validate total no of update lines returned */
+        Assert.assertEquals(22, result.size());
 
-        /* YUK-21 will be executed */
+        /* Validate some valid update lines with some meta properties */
         Assert.assertEquals("YUK-21", result.get(0).getMetaProps().get("start"));
 
         Assert.assertEquals(true, result.get(1).getValue().toString().contains(
@@ -146,44 +133,74 @@ public class UpdateDBTest {
         Assert.assertEquals(true, result.get(2).getValue().toString().contains("/* @start-block */")
             && result.get(2).getValue().toString().contains("/* @end-block */"));
 
-        /* YUK-22 will be executed */
         Assert.assertEquals(true, result.get(4).getValue().toString().contains(
-            "INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE())"));
-
-        /* YUK-23 will not be executed and will be tagged with meta-data @skip-start */
-        Assert.assertEquals("true", result.get(5).getMetaProps().get("skip-start"));
-
-        /* YUK-24 will not be executed and will be tagged with meta-data @skip-start */
-        Assert.assertEquals("true", result.get(8).getMetaProps().get("skip-start"));
+            "INSERT INTO DBUpdates VALUES ('YUK-111', '7.0.1', GETDATE())"));
 
         /* YUK-25 will be executed and contains metadata - @start-block and @end-block */
-        Assert.assertEquals(true, result.get(9).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(12).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-25', '7.0.1', GETDATE())"));
 
-        Assert.assertEquals(true, result.get(9).getValue().toString().contains("/* @start-block */")
-            && result.get(9).getValue().toString().contains("/* @end-block */"));
+        Assert.assertEquals(true, result.get(12).getValue().toString().contains("/* @start-block */")
+            && result.get(12).getValue().toString().contains("/* @end-block */"));
 
-        /* YUK-111 will not be executed and will be tagged with metadata @skip-start */
-        Assert.assertEquals("true", result.get(10).getMetaProps().get("skip-start"));
-
-        Assert.assertEquals(true, result.get(10).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(13).getValue().toString().contains(
             "UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1"));
 
         /* YUK-32 will be executed should contains metadata - @ignore-begin */
-        Assert.assertEquals("YUK-32 IF YUK-16225", result.get(12).getMetaProps().get("start"));
+        Assert.assertEquals("YUK-32 IF YUK-16225", result.get(15).getMetaProps().get("start"));
 
-        Assert.assertEquals("ignore-begin", result.get(12).getMetaProps().get("error"));
+        Assert.assertEquals("ignore-begin", result.get(15).getMetaProps().get("error"));
 
         /* YUK-30 will be executed and should contain metadata - @error warn-once */
-        Assert.assertEquals("warn-once", result.get(17).getMetaProps().get("error"));
+        Assert.assertEquals("warn-once", result.get(20).getMetaProps().get("error"));
 
-        Assert.assertEquals(true, result.get(17).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(20).getValue().toString().contains(
             "INSERT INTO DBUpdates VALUES ('YUK-30', '7.0.1', GETDATE())"));
 
-        Assert.assertEquals(true, result.get(18).getValue().toString().contains(
+        Assert.assertEquals(true, result.get(21).getValue().toString().contains(
             "INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 1, GETDATE())"));
+
+        /*
+         * Test shouldProcessLine() method in DBUpdater and validate each given update line if it should be
+         * processed or executed
+         */
+        result.forEach(row -> {
+            String rowValue = row.getValue().toString();
+            boolean shouldProcess = ReflectionTestUtils.invokeMethod(dbUpdater, "shouldProcessLine", row, updateIds);
+            if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-21', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-26', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-111', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(false, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-116', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(false, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-23', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(false, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-24', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(false, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-25', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-32', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-33', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            } else if (rowValue.contains("INSERT INTO DBUpdates VALUES ('YUK-30', '7.0.1', GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            } else if (rowValue.contains(
+                "INSERT INTO CTIDatabase VALUES ('7.0', '26-FEB-2018', 'Latest Update', 1, GETDATE())")) {
+                Assert.assertEquals(true, shouldProcess);
+            }
+        });
+
     }
 
+    /**
+     * Reads every line in TestUpgradeScript.sql file
+     * @return List of String statements
+     */
     private List<String> getFileStrings() {
         List<String> fileStrings = new ArrayList<>();
         InputStream is = UpdateDBTest.class.getResourceAsStream("TestUpgradeScript.sql");
