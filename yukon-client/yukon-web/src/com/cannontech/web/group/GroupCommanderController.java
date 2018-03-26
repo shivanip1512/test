@@ -3,6 +3,7 @@ package com.cannontech.web.group;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.ContactDao;
@@ -102,7 +104,7 @@ public class GroupCommanderController {
             SimpleCallback<CollectionActionResult> emailCallback = new SimpleCallback<CollectionActionResult>() {
                 @Override
                 public void handle(CollectionActionResult result) throws Exception {
-                    sendEmail(null, null, result, context);
+                    sendEmail(null, null, commandString, result, context);
                     commanderEventLogService.groupCommandCompleted(
                         result.getDetail(CollectionActionDetail.SUCCESS).getDevices().getDeviceCount(),
                         result.getCounts().getFailedCount(),
@@ -181,17 +183,29 @@ public class GroupCommanderController {
         map.addAttribute("commandString", commandString);
         map.addAttribute("groupName", groupName);
     }
-    
-    private void sendEmail(String emailAddress, URL hostUrl, CollectionActionResult result, YukonUserContext userContext) {
-        System.out.println("..................sending email..............");
-        
-        
 
+    private void sendEmail(String emailAddress, URL hostUrl, String commandString, CollectionActionResult result,
+            YukonUserContext userContext) {
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        System.out.println("\"" + commandString + "\" completed.");
+        DecimalFormat format = new DecimalFormat("0.#");
+        StringBuilder builder = new StringBuilder();
+        for (CollectionActionDetail detail : result.getAction().getDetails()) {
+            int count = result.getDeviceCollection(detail).getDeviceCount();
+            if (count > 0) {
+                builder.append(accessor.getMessage(detail) + ":" + count + " ("
+                    + format.format(result.getCounts().getPercentages().get(detail)) + "%)  ");
+            }
+        }
+        System.out.println(builder.toString());
+        System.out.println(
+            "The full results are available online at /bulk/progressReport/detail?key=" + result.getCacheKey());
+        System.out.println("---attach log file---");
         // attach to email
         if (result.hasLogFile()) {
             File file = result.getLogFile();
         }
-        
         
         
         

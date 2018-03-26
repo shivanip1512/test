@@ -73,6 +73,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
                     callback.receivedValue(pao, pointValue);
                 }
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, pao.getPaoId(), 0);
+                callback.receivedLastValue(pao, "");
             }
         } catch (EcobeeCommunicationException error) {
             /*

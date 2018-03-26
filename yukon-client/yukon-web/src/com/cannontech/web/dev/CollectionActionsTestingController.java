@@ -1,14 +1,17 @@
 package com.cannontech.web.dev;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 
 @Controller
 public class CollectionActionsTestingController {
+    @Autowired private CollectionActionService collectionActionService;
   
     @RequestMapping("collectionActionsTesting")
     public String collectionActionsTesting(ModelMap model) {
@@ -18,7 +21,7 @@ public class CollectionActionsTestingController {
     
     @RequestMapping("clearCache")
     public String clearCache(FlashScope flash) {
-        //TODO: Clear Cache
+        collectionActionService.clearCache();
         flash.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Collection Actions cache has been cleared."));
         return "redirect:collectionActionsTesting";
     }

@@ -54,7 +54,7 @@ public class CollectionActionAlertHelper {
                 String url = partialUrl + "?key=" + result.getCacheKey();
                 template.addData("url", url);
                 template.addData("detail", detailText);
-                template.addData("command", accessor.getMessage(result.getAction().getFormatKey()));
+                template.addData("action", accessor.getMessage(result.getAction().getFormatKey()));
                 
                 DecimalFormat format = new DecimalFormat("0.#");
                 StringBuilder builder = new StringBuilder();
