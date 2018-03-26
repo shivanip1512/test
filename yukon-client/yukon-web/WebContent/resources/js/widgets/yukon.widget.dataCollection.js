@@ -120,12 +120,14 @@ yukon.widget.dataCollection = (function () {
     },
     
     /** Update the page every so many seconds */
-    _update = function () {
+    _update = function (newSelection) {
         $('.js-data-collection-widget').each(function (idx, item) {
             var deviceGroup = $(item).find('input[name=groupName]').val(),
-            includeDisabled = $(item).find('#includeDisabled').is(":checked"),
-            chart = $(item).find('.js-pie-chart');
-            if (deviceGroup) {
+                includeDisabled = $(item).find('#includeDisabled').is(":checked"),
+                chart = $(item).find('.js-pie-chart'),
+                errorMessage = $(item).find('.user-message'),
+                errorMessageFound = errorMessage.is(":visible");
+            if (deviceGroup && (!errorMessageFound || newSelection)) {
                 $.ajax({
                     url: yukon.url('/amr/dataCollection/updateChart'),
                     data: {
@@ -149,12 +151,10 @@ yukon.widget.dataCollection = (function () {
                     } else {
                         chart.addClass('dn');
                     }
-                    var errorMessage = $(item).find('.user-message');
                     errorMessage.addClass('dn');
                     if (data.errorMessage != null) {
                         errorMessage.html(data.errorMessage);
                         errorMessage.removeClass('dn');
-                        clearTimeout(_updateTimeout);
                     }
                 });
             } else {
@@ -207,11 +207,11 @@ yukon.widget.dataCollection = (function () {
             });
 
             $(document).on('dialogclose', '.js-device-group-picker-dialog', function (ev, ui) {
-                _update();
+                _update(true);
             });
             
             $(document).on('click', '.js-include-disabled', function (ev, ui) {
-                _update();
+                _update(true);
             });
 
             _initialized = true;
