@@ -459,5 +459,15 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         return tags;
     }
+    
+    @Override
+    public List<com.cannontech.common.pao.definition.loader.jaxb.CategoryType> getRequiredCategoriesByPaoType(PaoType paoType) {
+        return getCategoryToPaoTypeMap().asMap().entrySet()
+                                                .stream()
+                                                .filter(entry -> entry.getValue().contains(paoType) 
+                                                            && entry.getKey().isRequired())
+                                                .map(entry -> entry.getKey().getType())
+                                                .collect(Collectors.toList());
+    }
 }
 

@@ -252,7 +252,12 @@ public class CbcController {
         model.addAttribute("availableRoutes", routes);
         if (cbc.isTwoWay()) {
             DNPConfiguration dnpConfig = cbcService.getDnpConfigForDevice(cbc);
-            model.addAttribute("dnpConfig", dnpConfig);
+            if (dnpConfig == null) {
+                dnpConfig = new DNPConfiguration(cbc.getDnpConfigId(), deviceConfigDao.getLightConfigurationById(cbc.getDnpConfigId()).getName(), "");
+                dnpConfig.setTimeOffset("UTC");
+                model.addAttribute("dnpCategoryUnassigned", true);
+            }
+                model.addAttribute("dnpConfig", dnpConfig);
         }
         if (cbc.isHeartBeat()) {
             HeartbeatConfiguration heartbeat = cbcService.getCBCHeartbeatConfigForDevice(cbc);
@@ -264,6 +269,10 @@ public class CbcController {
             model.addAttribute("attributeMapping", attMapping);
         }
 
+        List<CategoryType> requiredCategoryTypes = paoDefinitionDao.getRequiredCategoriesByPaoType(cbc.getPaoType());
+        model.addAttribute("heartbeatRequired", requiredCategoryTypes.contains(CategoryType.CBC_HEARTBEAT));
+        model.addAttribute("attributeRequired", requiredCategoryTypes.contains(CategoryType.CBC_ATTRIBUTE_MAPPING));
+        
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
         model.addAttribute("logicalTypes", CapControlCBC.getLogicalTypes());
 

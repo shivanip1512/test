@@ -228,4 +228,6 @@ import com.google.common.collect.SetMultimap;
      * @return true if supported
      */
     boolean isCategoryTypeSupportedByPaoType(PaoType paoType, CategoryType catType);
+
+    List<CategoryType> getRequiredCategoriesByPaoType(PaoType paoType);
 }
