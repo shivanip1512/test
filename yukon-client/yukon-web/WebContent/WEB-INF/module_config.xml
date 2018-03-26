@@ -1727,6 +1727,7 @@
           <page name="jsTesting" type="BASIC"/>
           <page name="paoDefinitionTesting" type="BASIC"/>
           <page name="smartNotificationsSimulator" type="BASIC"/>
+          <page name="collectionActionsTesting" type="BASIC"/>
           <page name="yukon-js-lib" type="BASIC"/>
           <page name="yukon-pages" type="BASIC"/>
           <page name="styleguide" type="BASIC">

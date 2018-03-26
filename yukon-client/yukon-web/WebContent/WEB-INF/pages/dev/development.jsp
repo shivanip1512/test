@@ -49,6 +49,7 @@
                     <li><a href="<cti:url value="/dev/systemHealthMetricSimulator/home"/>">Fake System Health Metrics</a></li>
                     <li><a href="<cti:url value="/dev/paoDefinition"/>">Pao Definition Testing</a></li>
                     <li><a href="<cti:url value="/dev/smartNotificationsSimulator"/>">Smart Notifications Testing</a></li>
+                    <li><a href="<cti:url value="/dev/collectionActionsTesting"/>">Collection Actions Testing</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>
