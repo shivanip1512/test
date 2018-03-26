@@ -7,18 +7,18 @@
 
 <!-- Common keys to use for Collection Action alerts -->
 <entry key="yukon.common.alerts.collectionActionCompletion"><![CDATA[
-<p>Command "<a href="{url}">{command}</a>" {detail} completed.</p>
-<p>{statistics}</p>
+Command "<a href="{url}">{command}</a>" {detail} completed.</br>
+{statistics}
 ]]></entry>
 
 <entry key="yukon.common.alerts.collectionActionCompletion.failed"><![CDATA[
-<p>Command "<a href="{url}">{command}</a>" {detail} failed. Reason: {exceptionReason}</p>
-<p>{statistics}</p>
+Command "<a href="{url}">{command}</a>" {detail} failed. Reason: {exceptionReason}</br>
+{statistics}
 ]]></entry>
 
 <entry key="yukon.common.alerts.collectionActionCompletion.canceled"><![CDATA[
-<p>Command "<a href="{url}">{command}</a>" {detail} canceled.</p>
-<p>{statistics}</p>
+Command "<a href="{url}">{command}</a>" {detail} canceled.</br>
+{statistics}
 ]]></entry>
 
 

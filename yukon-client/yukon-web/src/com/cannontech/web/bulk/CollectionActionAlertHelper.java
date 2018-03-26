@@ -61,8 +61,8 @@ public class CollectionActionAlertHelper {
                 for (CollectionActionDetail detail : result.getAction().getDetails()) {
                     int count = result.getDeviceCollection(detail).getDeviceCount();
                     if (count > 0) {
-                        builder.append(accessor.getMessage(detail) + ":" + count + " ("
-                            + format.format(result.getCounts().getPercentages().get(detail)) + "%)" + "  ");
+                        builder.append("<span style='padding-right:10px;'>" + accessor.getMessage(detail) + ":" + count + " ("
+                            + format.format(result.getCounts().getPercentages().get(detail)) + "%)" + "</span>");
                     }
                 }
                 template.addData("statistics", builder.toString());
