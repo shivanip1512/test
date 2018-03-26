@@ -461,7 +461,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     @Override
-    public List<com.cannontech.common.pao.definition.loader.jaxb.CategoryType> getRequiredCategoriesByPaoType(PaoType paoType) {
+    public List<CategoryType> getRequiredCategoriesByPaoType(PaoType paoType) {
         return getCategoryToPaoTypeMap().asMap().entrySet()
                                                 .stream()
                                                 .filter(entry -> entry.getValue().contains(paoType) 
