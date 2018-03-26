@@ -2397,6 +2397,16 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Received Peak kW">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
         <point name="kVA at Peak kW Coincidental">
             <uom>VA</uom>
             <multiplier value=".001"/>

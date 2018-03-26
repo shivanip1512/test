@@ -128,6 +128,7 @@
         <pointInfo name="Received kWh (Rate C kWh)" attributes="RECEIVED_KWH_RATE_C"/>
         <pointInfo name="Received kWh (Rate D kWh)" attributes="RECEIVED_KWH_RATE_D"/>
         <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Received Peak kW" attributes="RECEIVED_PEAK_DEMAND"/>
         <pointInfo name="Register Full-scale Exceeded" attributes="REGISTER_FULL_SCALE_EXCEEDED"/>
         <pointInfo name="Reverse Rotation" attributes="REVERSE_POWER_FLAG"/>
         <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
