@@ -27,7 +27,6 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -51,6 +50,7 @@ import com.cannontech.web.capcontrol.validators.CbcValidator;
 import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeListType;
+import com.cannontech.web.deviceConfiguration.enumeration.DnpTimeOffset.Offsets;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.rtu.service.RtuService;
@@ -70,7 +70,6 @@ public class CbcController {
     @Autowired private CapbankDao capbankDao;
     @Autowired private CapControlCache ccCache;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private RtuService rtuService;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
@@ -254,10 +253,10 @@ public class CbcController {
             DNPConfiguration dnpConfig = cbcService.getDnpConfigForDevice(cbc);
             if (dnpConfig == null) {
                 dnpConfig = new DNPConfiguration(cbc.getDnpConfigId(), deviceConfigDao.getLightConfigurationById(cbc.getDnpConfigId()).getName(), "");
-                dnpConfig.setTimeOffset("UTC");
+                dnpConfig.setTimeOffset(Offsets.UTC.toString());
                 model.addAttribute("dnpCategoryUnassigned", true);
             }
-                model.addAttribute("dnpConfig", dnpConfig);
+            model.addAttribute("dnpConfig", dnpConfig);
         }
         if (cbc.isHeartBeat()) {
             HeartbeatConfiguration heartbeat = cbcService.getCBCHeartbeatConfigForDevice(cbc);
