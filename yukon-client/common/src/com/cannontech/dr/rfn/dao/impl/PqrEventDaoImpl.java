@@ -31,17 +31,11 @@ import com.cannontech.dr.rfn.dao.PqrEventDao;
 import com.cannontech.dr.rfn.model.PqrEvent;
 import com.cannontech.dr.rfn.model.PqrEventType;
 import com.cannontech.dr.rfn.model.PqrResponseType;
-import com.google.common.collect.ImmutableSet;
 
 public class PqrEventDaoImpl implements PqrEventDao {
     private static final Logger log = YukonLogManager.getLogger(PqrEventDaoImpl.class);
     private static boolean createTable = false;
     private static VendorSpecificSqlBuilder tableCreatorSql;
-    private static final ImmutableSet<DatabaseVendor> oracleVendors = ImmutableSet.of(DatabaseVendor.ORACLE9I,
-                                                                                      DatabaseVendor.ORACLE10G, 
-                                                                                      DatabaseVendor.ORACLE11G, 
-                                                                                      DatabaseVendor.ORACLE12C,
-                                                                                      DatabaseVendor.ORACLE_UNKNOWN);
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
@@ -60,7 +54,7 @@ public class PqrEventDaoImpl implements PqrEventDao {
     @PostConstruct
     private void init() {
         VendorSpecificSqlBuilder tableCounterSql = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder oracleCountSql = tableCounterSql.buildFor(oracleVendors);
+        SqlBuilder oracleCountSql = tableCounterSql.buildFor(DatabaseVendor.getOracleDatabases());
         SqlBuilder msCountSql = tableCounterSql.buildOther();
         buildOracleTableCounterSql(oracleCountSql);
         buildMsSqlTableCounterSql(msCountSql);
@@ -70,7 +64,7 @@ public class PqrEventDaoImpl implements PqrEventDao {
         if (tableCount == 0) {
             createTable = true;
             tableCreatorSql = vendorSpecificSqlBuilderFactory.create();
-            SqlBuilder oracleSql = tableCreatorSql.buildFor(oracleVendors);
+            SqlBuilder oracleSql = tableCreatorSql.buildFor(DatabaseVendor.getOracleDatabases());
             SqlBuilder msSql = tableCreatorSql.buildOther();
             buildOracleTableCreationSql(oracleSql);
             buildMsSqlTableCreationSql(msSql);
