@@ -69,7 +69,7 @@ $(function() {
             <ul class="simple-list stacked">
                 <%-- Link to Yukon product documentaion on my.eaton.com --%>
                 <li>
-                   <a href="<cti:msg2 key=".yukon.manuals.link"/>"><i:inline key=".yukon.manuals.title"/></a>&nbsp;<span class="notes"><i:inline key=".manuals.general.label"/></span>
+                   <a href="<cti:msg2 key=".yukon.manuals.link"/>"><i:inline key=".yukon.manuals.title"/></a>&nbsp;<span class="notes"><i:inline key=".yukon.manuals.general.label"/></span>
                 </li>
                 <%-- Links to manuals found in the Yukon manuals folder --%>
                 <c:forEach var="manual" items="${manuals}">
