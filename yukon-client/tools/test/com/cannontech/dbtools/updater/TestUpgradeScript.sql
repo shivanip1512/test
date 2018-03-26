@@ -37,7 +37,7 @@ INSERT INTO DBUpdates VALUES ('YUK-22', '7.0.1', GETDATE());
 /* @end YUK-22 */
 
 /*** SHOULD NOT EXECUTE AS YUK-6 IS NOT AVAILABLE IN DBUPDATES TABLE ***/
-/* @start YUK-23 if 6 */
+/* @start YUK-23 if YUK-6 */
 UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0;
 UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;
 INSERT INTO DBUpdates VALUES ('YUK-23', '7.0.1', GETDATE());
