@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -43,6 +44,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
@@ -72,14 +74,27 @@ public class DataCollectionController {
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     private final static String widgetKey = "yukon.web.widgets.";
+    private Logger log = YukonLogManager.getLogger(DataCollectionController.class);
     
     @RequestMapping(value="updateChart", method=RequestMethod.GET)
     public @ResponseBody Map<String, Object> updateChart(String deviceGroup, Boolean includeDisabled, YukonUserContext userContext) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
-        DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
-        json.put("summary",  summary);
+        try {
+            DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
+            DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
+            if (summary.getTotalDeviceCount() == 0) {
+                String errorMsg = accessor.getMessage(widgetKey + "dataCollectionWidget.noDevicesFound", deviceGroup);
+                json.put("errorMessage", errorMsg);
+            } else {
+                json.put("summary",  summary);
+            }
+        } catch (NotFoundException e) {
+            String errorMsg = accessor.getMessage(widgetKey + "dataCollectionWidget.deviceGroupNotFound", deviceGroup);
+            log.error(errorMsg);
+            json.put("errorMessage", errorMsg);
+        }
+
         json.put("lastAttemptedRefresh", dataCollectionWidgetService.getRunTime(false));
         Instant nextRun = dataCollectionWidgetService.getRunTime(true);
         if (nextRun.isAfterNow()) {

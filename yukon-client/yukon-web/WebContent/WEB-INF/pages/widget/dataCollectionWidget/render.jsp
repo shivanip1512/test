@@ -21,6 +21,8 @@
         </tags:nameValue2>
     </tags:nameValueContainer2>
     
+    <div id="error-msg" class="user-message error dn"></div>
+    
     <div style="max-height: 200px;" class="js-pie-chart js-initialize"></div>
     
     <input type="checkbox" id="includeDisabled" class="js-include-disabled" <c:if test="${includeDisabled}">checked="checked"</c:if>/><cti:msg2 key=".widgetParameter.includeDisabled"/>

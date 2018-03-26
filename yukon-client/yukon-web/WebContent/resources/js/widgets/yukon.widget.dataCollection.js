@@ -145,6 +145,16 @@ yukon.widget.dataCollection = (function () {
                         } else {
                             _updateChart(chart, _getData(data.summary));
                         }
+                        chart.removeClass('dn');
+                    } else {
+                        chart.addClass('dn');
+                    }
+                    var errorMessage = $(item).find('.user-message');
+                    errorMessage.addClass('dn');
+                    if (data.errorMessage != null) {
+                        errorMessage.html(data.errorMessage);
+                        errorMessage.removeClass('dn');
+                        clearTimeout(_updateTimeout);
                     }
                 });
             } else {

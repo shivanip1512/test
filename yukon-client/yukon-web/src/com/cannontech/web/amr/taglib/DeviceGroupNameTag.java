@@ -7,10 +7,12 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
@@ -20,6 +22,8 @@ import com.cannontech.web.taglib.YukonTagSupport;
 public class DeviceGroupNameTag extends YukonTagSupport {
     
     @Autowired private DeviceGroupService deviceGroupService;
+    
+    private final static Logger log = YukonLogManager.getLogger(DeviceGroupNameTag.class);
     
     private String var = null;
     private String deviceGroupFullName;
@@ -55,7 +59,8 @@ public class DeviceGroupNameTag extends YukonTagSupport {
             formattedName = group.getName();
             
         } catch (NotFoundException e) {
-            throw new JspException("group: " + deviceGroupFullName + " is not a valid group", e);
+            log.error("group: " + deviceGroupFullName + " is not a valid group", e);
+            formattedName = deviceGroupFullName;
         }
         
         JspContext jspContext = getJspContext();
