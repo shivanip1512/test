@@ -360,7 +360,7 @@ public class DBUpdater extends MessageFrameAdaptor {
 
     /**
      * Method validates update line given and decides whether it needs execution based on @start and @start-if
-     * annonations.
+     * annotations.
      */
     private boolean shouldProcessLine(UpdateLine line_, List<String> updateIds) {
         boolean shouldProcessLine = false;
@@ -374,7 +374,7 @@ public class DBUpdater extends MessageFrameAdaptor {
         }
         String startValue = line_.getMetaProps().get(DBMSDefines.START);
         if (startValue != null) {
-            if (startValue.contains("if")) {
+            if (startValue.contains("if") || startValue.contains("If") || startValue.contains("IF")) {
                 // If update line contains @start-if annotation
                 String[] tokenArray = startValue.split("\\s");
                 String newYukId = tokenArray[0];

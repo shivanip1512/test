@@ -30,7 +30,8 @@ public class DBupdatesDaoImpl implements DBUpdatesDao {
                 updateIds.add(rs.getString("UpdateId"));
             }
         } catch (SQLException e) {
-            CTILogger.error(e.getMessage(), e);
+            // Not logging error message because for databases older than 7.0 this exception is obvious as
+            // they won't have DBUpdates table, just ignoring error in that case
         } finally {
             try {
                 if (rs != null) {

@@ -39,9 +39,9 @@ public class UpdateDB
     private boolean starsToBeCreated = false;
 
     private static final Pattern cparmPattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
-    private static final Pattern startIfPattern = Pattern.compile(DBMSDefines.START_IF_REGEX);
-    private static final Pattern startPattern =  Pattern.compile(DBMSDefines.START_REGEX);
-    private static final Pattern endPattern = Pattern.compile(DBMSDefines.END_REGEX);
+    private static final Pattern startIfPattern = Pattern.compile(DBMSDefines.START_IF_REGEX, Pattern.CASE_INSENSITIVE);
+    private static final Pattern startPattern = Pattern.compile(DBMSDefines.START_REGEX, Pattern.CASE_INSENSITIVE);
+    private static final Pattern endPattern = Pattern.compile(DBMSDefines.END_REGEX, Pattern.CASE_INSENSITIVE);
     private static final Pattern SQLServerVarPattern = 
             Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
     private static final Pattern OracleVarPattern = 
