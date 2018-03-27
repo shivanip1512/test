@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.Set;
 
@@ -310,6 +310,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> rfRelayTypes;
     private final static ImmutableSet<PaoType> waterMeterTypes;
     private final static ImmutableSet<PaoType> thermostatTypes;
+    private final static ImmutableSet<PaoType> tlvReportingTypes;
     
     public final static int INVALID = -1;
     
@@ -531,8 +532,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
-        
-        
         mctTypes = ImmutableSet.of(
             MCT213,
             MCT310,
@@ -645,6 +644,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN_RELAY);
         
         rfDaTypes = ImmutableSet.of(RFN_1200);
+        
+        tlvReportingTypes = ImmutableSet.of(LCR6700_RFN);
         
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
@@ -951,6 +952,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return isMct() || isIed() || isRfMeter();
     }
     
+    public boolean isTlvReporting() {
+        return tlvReportingTypes.contains(this);
+    }
+    
     public static ImmutableSet<PaoType> getIedTypes() {
         return iedTypes;
     }
@@ -1007,6 +1012,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return twoWayLcrTypes;
     }
 
+    public static ImmutableSet<PaoType> getTlvReportingTypes() {
+        return tlvReportingTypes;
+    }
+    
     /**
      * Maps PaoType String IDs to their corresponding integer device IDs.
      * @param typeString

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.Instant;
 
 public class ByteUtil {
@@ -52,5 +53,10 @@ public class ByteUtil {
         int dateInSec = (int) (timestamp.getMillis() / 1000);
         byte[] bytes = ByteBuffer.allocate(4).putInt(dateInSec).array();
         return bytes;
+    }
+    
+    public static byte[] convertListToArray(List<Byte> list) {
+        Byte[] wrappedByteArray = list.toArray(new Byte[list.size()]);
+        return ArrayUtils.toPrimitive(wrappedByteArray);
     }
 }

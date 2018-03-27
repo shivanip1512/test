@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -88,7 +90,32 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         RELAY_N_SPLINTER_ADDRESS((byte)0x11, 2, 3),
         RELAY_N_REMAINING_CONTROLTIME((byte)0x12, 5, 3),
         PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
-        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3);
+        CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
+        //Power Quality Response (GridBallast) fields:
+        /*
+        LOV_TRIGGER((byte)0x44, 2, 1),
+        LOV_RESTORE((byte)0x45, 2, 1),
+        LOV_TRIGGER_TIME((byte)0x46, 2, 1),
+        LOV_RESTORE_TIME((byte)0x47, 2, 1),
+        LOV_EVENT_COUNT((byte)0x48, 2, 1),
+        LOF_TRIGGER((byte)0x49, 2, 1),
+        LOF_RESTORE((byte)0x4a, 2, 1),
+        LOF_TRIGGER_TIME((byte)0x4b, 2, 1),
+        LOF_RESTORE_TIME((byte)0x4c, 2, 1),
+        LOF_EVENT_COUNT((byte)0x4d, 2, 1),
+        LOF_START_RANDOM_TIME((byte)0x4e, 2, 1),
+        LOF_END_RANDOM_TIME((byte)0x4f, 2, 1),
+        LOV_START_RANDOM_TIME((byte)0x50, 2, 1),
+        LOV_END_RANDOM_TIME((byte)0x51, 2, 1),
+        LOF_MIN_EVENT_DURATION((byte)0x52, 2, 1),
+        LOV_MIN_EVENT_DURATION((byte)0x53, 2, 1),
+        LOF_MAX_EVENT_DURATION((byte)0x54, 2, 1),
+        LOV_MAX_EVENT_DURATION((byte)0x55, 2, 1),
+        MINIMUM_EVENT_SEPARATION((byte)0x56, 2, 1),
+        //POWER_QUALITY_RESPONSE_LOG_BLOB((byte)0x57, ?, 1), //TODO: handle variable length
+        POWER_QUALITY_RESPONSE_ENABLED((byte)0x58, 1, 1),
+        */
+		;
 
         private final byte type;
         private final int length;
@@ -118,7 +145,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     
     private RfnDataSimulatorStatus rangeDevicesStatus = new RfnDataSimulatorStatus();
     private RfnDataSimulatorStatus allDevicesStatus = new RfnDataSimulatorStatus();
-            
+    
     static JAXBContext initJaxbContext() {
         try {
             return JAXBContext.newInstance("com.cannontech.dr.rfn.model.jaxb");
@@ -339,10 +366,17 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     private RfnLcrReadingArchiveRequest createReadArchiveRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters)
             throws RfnLcrSimulatorException, IOException {
         byte[] payload = null;
-        if (deviceParameters.getPaoType() == PaoType.LCR6700_RFN) {
+        if (deviceParameters.getPaoType().isTlvReporting()) {
             try {
-                //Header with expresscom Message response 0xE2 and schema version 0.0.4
-                byte[] header = Hex.decode("E20170043e00040000020044");
+                //TODO: This stuff should be configurable to more easily support future device types and TLV fields
+                String expresscomHeader = "E20170";
+                String deviceTypeId = "043E"; //0x043E = 1086 (LCR-6700)
+                String tlvMajorMinor = "00"; //TLV version = major.minor.revision. Major/minor in first byte...
+                String tlvRevision = "04"; //...revision in next byte
+                String headerCountTypeAndLength = "000002"; //"TLV Count" - TypeId: 0, Length: 2 bytes
+                String headerCountValue = "0044"; //0x44 = 68. TLV type IDs supported by device.
+                byte[] header = Hex.decode(expresscomHeader + deviceTypeId + tlvMajorMinor + tlvRevision + 
+                                           headerCountTypeAndLength + headerCountValue);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 outputStream.write(header);
                 // Add UTC 
@@ -462,64 +496,90 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
      * Generate byte Array (part of TLV report) from TLVField enum and generate random values for each field.
      */
     private byte[] getTLVMessage() {
-        // Fixed length message (assuming 3-relay are present)
-        byte[] data = new byte[322];
+        List<Byte> data = new ArrayList<>();
         int index = 0;
         for (TLVField field : TLVField.values()) {
             int fieldCount = 0;
-             while (fieldCount < field.frequency) {
-                    int valueIndex = 0;
-                    // Upper Nibble of first bye and Lower nibble of second byte makes FieldType in TLV format
-                    data[index++] = (byte) ((field.type >> 4) & 0x0f);
-                    data[index++] = (byte) ((field.type & 0x0f) << 4);
-                    data[index++] = (byte) (field.length);
-                    if (field.equals(TLVField.RELAY_N_RUNTIME) || field.equals(TLVField.RELAY_N_SHEDTIME)
-                        || field.equals(TLVField.RELAY_N_PROGRAM_ADDRESS)
-                        || field.equals(TLVField.RELAY_N_SPLINTER_ADDRESS)) {
-                        data[index++] = (byte) fieldCount;
-                        valueIndex++;
-                    }
+            while (fieldCount < field.frequency) {
+                int valueIndex = 0;
+                // Upper Nibble of first bye and Lower nibble of second byte makes FieldType in TLV format
+                data.add(index++, (byte) ((field.type >> 4) & 0x0f));
+                data.add(index++, (byte) ((field.type & 0x0f) << 4));
+                data.add(index++, (byte) field.length); //TODO: handle fields with variable length
+                
+                if (field == TLVField.RELAY_N_RUNTIME || field == TLVField.RELAY_N_SHEDTIME ||
+                    field == TLVField.RELAY_N_PROGRAM_ADDRESS|| field == TLVField.RELAY_N_SPLINTER_ADDRESS) {
                     
-                    if (field.equals(TLVField.RELAY_N_REMAINING_CONTROLTIME)) {
-                        // 5 elements, first is relay number, last 4 are control time in seconds.
-                        int remainingSeconds = 60*60*(valueIndex+1); // relay 1 = 1 hour, relay 2 = 2 hour.... 
-                        data[index++] = (byte) fieldCount;
-                        data[index++] = (byte) (remainingSeconds >> 24);
-                        data[index++] = (byte) (remainingSeconds >> 16);
-                        data[index++] = (byte) (remainingSeconds >> 8);
-                        data[index++] = (byte) remainingSeconds;
-                        valueIndex = field.length; // Let everyone know we took care of this field in its entirety
-                    }
-                    
-                    if (field.equals(TLVField.PROTECTION_TIME_RELAY_N) || field.equals(TLVField.CLP_TIME_FOR_RELAY_N)) {
-                        // 3 elements, first is relay number, the rest is a time possibly in seconds?
-                        data[index++] = (byte) fieldCount;
-                        data[index++] = (byte) 0;
-                        data[index++] = (byte) 120;
-                        valueIndex = field.length; // Let everyone know we took care of this field in its entirety
-                    }
-
-                    if(field.equals(TLVField.RELAY_INTERVAL_START_TIME)) {
-                        // Add relay interval start time in sec(24 hour before UTC field value).Hourly data will be added after this till UTC (field value).
-                        long intervalStartTime = new DateTime(DateTimeZone.UTC).minusHours(24).withTimeAtStartOfDay().getMillis()/1000;
-                        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-                        byte[] relayStartTime = buffer.putLong(intervalStartTime).array();
-                        // Add relay interval start time to byte array.
-                        for (int i = 4; i < relayStartTime.length; i++) {
-                            data[index++] = relayStartTime[i];
-                        }
-                        valueIndex = field.length;
-                    }
-                    
-                    // Fill in remaining values with incrementing numbers
-                    while (valueIndex < field.length) {
-                        data[index++] = (byte) (data[index-1] + 1);
-                        valueIndex++;
-                    }
-                    fieldCount++;
+                    data.add(index++, (byte) fieldCount);
+                    valueIndex++;
                 }
+                
+                if (field == TLVField.RELAY_N_REMAINING_CONTROLTIME) {
+                    // 5 elements, first is relay number, last 4 are control time in seconds.
+                    int remainingSeconds = 60*60*(valueIndex+1); // relay 1 = 1 hour, relay 2 = 2 hour.... 
+                    data.add(index++, (byte) fieldCount);
+                    data.add(index++, (byte) (remainingSeconds >> 24));
+                    data.add(index++, (byte) (remainingSeconds >> 16));
+                    data.add(index++, (byte) (remainingSeconds >> 8));
+                    data.add(index++, (byte) remainingSeconds);
+                    valueIndex = field.length; // Let everyone know we took care of this field in its entirety
+                }
+                
+                if (field == TLVField.PROTECTION_TIME_RELAY_N || field == TLVField.CLP_TIME_FOR_RELAY_N) {
+                    // 3 elements, first is relay number, the rest is a time possibly in seconds?
+                    data.add(index++, (byte) fieldCount);
+                    data.add(index++, (byte) 0);
+                    data.add(index++, (byte) 120);
+                    valueIndex = field.length; // Let everyone know we took care of this field in its entirety
+                }
+
+                if(field == TLVField.RELAY_INTERVAL_START_TIME) {
+                    // Add relay interval start time in sec(24 hour before UTC field value).Hourly data will be added after this till UTC (field value).
+                    long intervalStartTime = new DateTime(DateTimeZone.UTC).minusHours(24).withTimeAtStartOfDay().getMillis()/1000;
+                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+                    byte[] relayStartTime = buffer.putLong(intervalStartTime).array();
+                    // Add relay interval start time to byte array.
+                    for (int i = 4; i < relayStartTime.length; i++) {
+                        data.add(index++, relayStartTime[i]);
+                    }
+                    valueIndex = field.length;
+                }
+                
+                //TODO: handle PQR fields:
+                /*
+                LOV_TRIGGER(68),
+                LOV_RESTORE(69),
+                LOV_TRIGGER_TIME(70),
+                LOV_RESTORE_TIME(71),
+                LOV_EVENT_COUNT(72),
+                LOF_TRIGGER(73),
+                LOF_RESTORE(74),
+                LOF_TRIGGER_TIME(75),
+                LOF_RESTORE_TIME(76),
+                LOF_EVENT_COUNT(77),
+                LOF_START_RANDOM_TIME(78),
+                LOF_END_RANDOM_TIME(79),
+                LOV_START_RANDOM_TIME(80),
+                LOV_END_RANDOM_TIME(81),
+                LOF_MIN_EVENT_DURATION(82),
+                LOV_MIN_EVENT_DURATION(83),
+                LOF_MAX_EVENT_DURATION(84),
+                LOV_MAX_EVENT_DURATION(85),
+                MINIMUM_EVENT_SEPARATION(86),
+                POWER_QUALITY_RESPONSE_LOG_BLOB(87),
+                POWER_QUALITY_RESPONSE_ENABLED(88)
+                 */
+                
+                // Fill in remaining values with incrementing numbers
+                while (valueIndex < field.length) {
+                    data.add(index++, (byte) (data.get(index-1) + 1));
+                    valueIndex++;
+                }
+                fieldCount++;
+            }
         }
-        return data;
+        
+        return ByteUtil.convertListToArray(data);
     }
 
     /**
