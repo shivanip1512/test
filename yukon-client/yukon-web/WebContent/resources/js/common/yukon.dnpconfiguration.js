@@ -24,15 +24,15 @@ yukon.thing = (function () {
             $(document).on("change", "#dnp-config", function(event) {
                 var configId = $(this).val();
                 if (configId) {
-                    var url = yukon.url('/deviceConfiguration/' + configId);
-                    var dnpFields = $('.js-dnp-fields');
+                    var url = yukon.url('/deviceConfiguration/' + configId),
+                        dnpFields = $('.js-dnp-fields');
                     yukon.ui.block(dnpFields, 200);
                     $.get(url)
                      .done(function (data) {
                         if (data.deviceConfiguration.dnpCategory != null) {
                             data.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
-                                var fieldName = field.fieldName;
-                                var value = field.value;
+                                var fieldName = field.fieldName,
+                                    value = field.value;
                                 if (fieldName == 'timeOffset') {
                                     value = data.timeOffsetValue;
                                 }

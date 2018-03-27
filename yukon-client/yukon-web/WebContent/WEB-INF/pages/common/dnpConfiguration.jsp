@@ -1,3 +1,4 @@
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <tags:sectionContainer2 nameKey="dnpConfiguration" styleClass="stacked-lg">
     <tags:nameValueContainer2 tableClass="natural-width">
         <tags:nameValue2 nameKey=".dnpConfig">
