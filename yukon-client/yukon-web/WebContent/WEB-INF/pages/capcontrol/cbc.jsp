@@ -260,7 +260,7 @@
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </c:if>
-            <div class="js-heartbeat-required" data-heartbeat-required="${heartbeatRequired}"/>
+            <div class="js-heartbeat-required" data-heartbeat-required="${heartbeatRequired}"></div>
             <c:if test="${not empty heartbeatConfig}">
                 <tags:sectionContainer2 nameKey="heartbeatConfiguration" styleClass="stacked-lg">
                     <tags:nameValueContainer2 tableClass="natural-width js-heartbeat-fields">
@@ -274,11 +274,11 @@
                                                         items="${configs}"
                                                         path="dnpConfigId"
                                                         itemLabel="name"
-                                                        itemValue="configurationId"/>
+                                                        itemValue="configurationId" defaultItemLabel="(none)"/>
                                                 </cti:displayForPageEditModes>
                                         </c:when>
                                         <c:otherwise>
-                                            <tags:alertBox key="yukon.web.modules.tools.configs.config.cbc.noConfigsForType" arguments="${cbc.paoType}"
+                                            <tags:alertBox key="yukon.web.modules.tools.configs.config.cbc.noConfigsForType" arguments="${cbc.paoType.dbString}"
                                                 classes="js-no-configs-alert"/>
                                         </c:otherwise>
                                     </c:choose>
@@ -317,7 +317,7 @@
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </c:if>
-            <div class="js-attribute-required" data-attribute-required="${attributeRequired}"/>
+            <div class="js-attribute-required" data-attribute-required="${attributeRequired}"></div>
             <c:if test="${supportsAttributeMapping}">
                 <tags:sectionContainer2 nameKey="attributeMapping">
                     <tags:nameValueContainer2>

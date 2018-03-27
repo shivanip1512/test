@@ -116,6 +116,7 @@ yukon.da.cbc = (function () {
                             });
                         } else { 
                             $(dnpFields).addClass('dn');
+                            $('.js-dnp-category-alert').text('DNP category unassigned for ' + data.deviceConfiguration.name + '.');
                             $('.js-dnp-category-alert').removeClass('dn');
                         }
                         if (data.deviceConfiguration.heartbeatCategory != null) {
