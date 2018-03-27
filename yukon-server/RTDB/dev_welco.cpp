@@ -1600,10 +1600,8 @@ YukonError_t CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParse
 
             if ( ! point )
             {
-                std::string errorMessage = "The specified point is not on device " + getName();
-                insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
-
-                return ClientErrors::PointLookupFailed;
+                return insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, 
+                            "The specified point is not on device " + getName());
             }
 
             ctlPoint = boost::static_pointer_cast<CtiPointStatus>(point);

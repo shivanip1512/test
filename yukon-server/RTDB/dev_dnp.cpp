@@ -596,9 +596,7 @@ try
 }
 catch( YukonErrorException & ex )
 {
-    insertReturnMsg(ex.error_code, OutMessage, retList, ex.error_description);
-
-    return ex.error_code;
+    return insertReturnMsg(ex.error_code, OutMessage, retList, ex.error_description);
 }
 
 

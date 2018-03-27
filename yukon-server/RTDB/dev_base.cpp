@@ -445,7 +445,7 @@ void CtiDeviceBase::populateOutMessage(OUTMESS &OutMessage)
     OutMessage.TimeOut   = 2;
 }
 
-void CtiDeviceBase::insertReturnMsg(int retval, OUTMESS *&om, CtiMessageList &retList, const string &error) const
+YukonError_t CtiDeviceBase::insertReturnMsg(YukonError_t retval, OUTMESS *&om, CtiMessageList &retList, const string &error) const
 {
     retList.push_back(
         new CtiReturnMsg(
@@ -456,6 +456,8 @@ void CtiDeviceBase::insertReturnMsg(int retval, OUTMESS *&om, CtiMessageList &re
 
     delete om;
     om = NULL;
+
+    return retval;
 }
 
 void CtiDeviceBase::purgeStaticPaoInfo()

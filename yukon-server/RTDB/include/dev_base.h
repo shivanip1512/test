@@ -94,7 +94,7 @@ protected:
     void populateOutMessage( OUTMESS &om );
 
     // Places error onto the retlist, DELETES OUTMESSAGE
-    void insertReturnMsg(int retval, OUTMESS *&om, CtiMessageList &retList, const std::string &error) const;
+    YukonError_t insertReturnMsg(YukonError_t retval, OUTMESS *&om, CtiMessageList &retList, const std::string &error) const;
 
 public:
 

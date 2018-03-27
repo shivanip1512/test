@@ -82,10 +82,8 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
                 "Request device ID", childDeviceId,
                 "Child devices", _childDevices));
 
-            std::string errorMessage = "Unknown child device ID " + std::to_string(pReq->OptionsField());
-            insertReturnMsg(ClientErrors::ChildDeviceUnknown, OutMessage, retList, errorMessage);
-
-            return ClientErrors::ChildDeviceUnknown;
+            return insertReturnMsg(ClientErrors::ChildDeviceUnknown, OutMessage, retList, 
+                        "Unknown child device ID " + std::to_string(pReq->OptionsField()));
         }
 
         _executeId = childDeviceId;
@@ -98,11 +96,16 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
         {
             if( _lastIntegrityScan + _childScanQuietPeriod > std::chrono::system_clock::now() )
             {
-                return ClientErrors::CommandAlreadyInProgress;
+                auto lastScan = std::chrono::system_clock::to_time_t(_lastIntegrityScan);
+
+                return insertReturnMsg(ClientErrors::None, OutMessage, retList, 
+                            std::string("Parent RTU already scanned at ") + std::ctime(&lastScan));
             }
             else
             {
-                _childScanQuietPeriod = std::chrono::duration_cast<std::chrono::seconds>(gConfigParms.getValueAsDuration("DNP_RTU_CHILD_SCAN_QUIET_PERIOD", _childScanQuietPeriod));
+                _childScanQuietPeriod = 
+                    std::chrono::duration_cast<std::chrono::seconds>(
+                        gConfigParms.getValueAsDuration("DNP_RTU_CHILD_SCAN_QUIET_PERIOD", _childScanQuietPeriod));
             }
         }
 
