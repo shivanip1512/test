@@ -16,7 +16,7 @@
 </c:if>
 
 <c:if test="${alertBox}">
-    <div data-pao-id="${paoId}" class="dn user-message error js-warning-image">
+    <div data-pao-id="${paoId}" class="dn user-message info js-warning-image">
         <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE" initialize="false"/> 
     </div>
 </c:if>
