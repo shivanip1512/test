@@ -7,6 +7,8 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
+#include <regex>
+
 namespace Cti {
 
 CtiDate parseDateString(std::string date_str)
@@ -74,6 +76,30 @@ boost::optional<TimeParts> parseTimeString(std::string time_str)
         }
         catch( boost::bad_lexical_cast &/*ex*/ )
         {
+        }
+    }
+
+    return boost::none;
+}
+
+boost::optional<std::chrono::duration<double>> parseDurationString(const std::string duration)
+{
+    const std::regex period_regex { "\\d+(\\.\\d+)?[hms]" };
+
+    if( std::regex_match(duration, period_regex) )
+    {
+        size_t end;
+
+        const auto count = std::stod(duration, &end);
+
+        if( end + 1 == duration.size() )
+        {
+            switch( duration.back() )
+            {
+            case 's':  return std::chrono::duration<double, std::chrono::seconds::period> { count };
+            case 'm':  return std::chrono::duration<double, std::chrono::minutes::period> { count };
+            case 'h':  return std::chrono::duration<double, std::chrono::hours  ::period> { count };
+            }
         }
     }
 

@@ -74,7 +74,7 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
     {
         const auto childDeviceId = pReq->OptionsField();
 
-        if( !_childDevices.count(childDeviceId) )
+        if( ! _childDevices.count(childDeviceId) )
         {
             CTILOG_ERROR(dout, "Received a request message that is not from a child device:" << FormattedList::of(
                 "Device ID", getID(),
@@ -89,6 +89,24 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
         }
 
         _executeId = childDeviceId;
+    }
+
+    if( parse.getCommand() == ScanRequest &&
+        parse.getiValue("scantype") == ScanRateIntegrity )
+    {
+        if( _executeId )
+        {
+            if( _lastIntegrityScan + _childScanQuietPeriod > std::chrono::system_clock::now() )
+            {
+                return ClientErrors::CommandAlreadyInProgress;
+            }
+            else
+            {
+                _childScanQuietPeriod = std::chrono::duration_cast<std::chrono::seconds>(gConfigParms.getValueAsDuration("DNP_RTU_CHILD_SCAN_QUIET_PERIOD", _childScanQuietPeriod));
+            }
+        }
+
+        _lastIntegrityScan = std::chrono::system_clock::now();
     }
 
     auto nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);

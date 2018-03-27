@@ -6,6 +6,8 @@
 
 #include <map>
 
+#include <chrono>
+
 // Forward decls.
 class CtiConfigParameters;
 
@@ -121,11 +123,14 @@ public:
    void              Dump();
    void              HeadAndTail(char *source, char *dest, size_t len);
 
-   std::string       getValueAsString (const std::string& Key, const std::string& defaultval = "");
-   std::string       getValueAsPath   (const std::string& Key, const std::string& defaultval = "");
-   int               getValueAsInt    (const std::string& key, int defaultval = 0);
-   double            getValueAsDouble (const std::string& key, double defaultval = 0.0) ;
-   ULONG             getValueAsULong  (const std::string& key, ULONG defaultval = 0L, int base = 10);
+   using Duration = std::chrono::duration<double>;
+
+   std::string       getValueAsString  (const std::string& Key, const std::string& defaultval = "");
+   std::string       getValueAsPath    (const std::string& Key, const std::string& defaultval = "");
+   int               getValueAsInt     (const std::string& key, int defaultval = 0);
+   double            getValueAsDouble  (const std::string& key, double defaultval = 0.0) ;
+   ULONG             getValueAsULong   (const std::string& key, ULONG defaultval = 0L, int base = 10);
+   Duration          getValueAsDuration(const std::string& key, Duration defaultval = Duration { 0.0 });
 };
 
 

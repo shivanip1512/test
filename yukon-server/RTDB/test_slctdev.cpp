@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
 
     for( int type = 0; type < 10000; ++type )
     {
-        std::auto_ptr<CtiDeviceBase> dev(createDeviceType(type));
+        std::unique_ptr<CtiDeviceBase> dev(createDeviceType(type));
 
         results.push_back(
             dev.get()

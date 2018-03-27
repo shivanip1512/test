@@ -1,11 +1,13 @@
 #pragma once
 
-#include "ctidate.h"
 #include "dlldefs.h"
+
+#include "ctidate.h"
 
 #include <boost/optional.hpp>
 
 #include <string>
+#include <chrono>
 
 namespace Cti {
 
@@ -17,5 +19,7 @@ struct TimeParts
 };
 
 IM_EX_CTIBASE boost::optional<TimeParts> parseTimeString(std::string time_str);
+
+IM_EX_CTIBASE boost::optional<std::chrono::duration<double>> parseDurationString(const std::string duration);
 
 }

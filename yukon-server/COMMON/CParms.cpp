@@ -1,15 +1,14 @@
 #include "precompiled.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <iomanip>
-
 #include "cparms.h"
 #include "utility.h"
 #include "shlwapi.h"
 #include "encryption.h"
 #include "logManager.h"
 #include "std_helper.h"
+#include "date_utility.h"
+
+#include <regex>
 
 using namespace std;
 
@@ -309,43 +308,20 @@ double CtiConfigParameters::getValueAsDouble(const string& key, double defaultva
     return ret;
 }
 
-#ifdef TESTOBJECT
 
-void Usage(void)
+auto CtiConfigParameters::getValueAsDuration(const string& key, Duration defaultval) -> Duration
 {
-    cout << "You must be daft" << endl;
-}
-
-int main(int argc, char **argv)
-{
-
-    if(argc > 0)
+    if( isOpt(key) )
     {
-        CtiConfigParameters Opts(argc, argv);
-
-        Opts.Dump();
-
-        if(Opts.isOpt('?'))
+        if( auto duration = Cti::parseDurationString(getValueAsString(key)) )
         {
-            Usage();
-            exit(0);
+            return *duration;
         }
-
-        cout << "d is set to " << Opts.ReturnIntOpt('d') << endl;
-        if(Opts.isError()) cout << "Error " << Opts.isError() << endl;
-        cout << "e is set to " << Opts.ReturnDoubleOpt('e') << endl;
-        if(Opts.isError()) cout << "Error " << Opts.isError() << endl;
-    }
-    else
-    {
-        Usage();
     }
 
-
-
-    return 0;
+    return defaultval;
 }
-#endif
+
 
 void CtiConfigParameters::HeadAndTail(char *source, char *dest, size_t len)
 {

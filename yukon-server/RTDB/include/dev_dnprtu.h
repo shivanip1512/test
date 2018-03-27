@@ -11,6 +11,9 @@ class IM_EX_DEVDB DnpRtuDevice : public DnpDevice
 
     long _executeId {};
 
+    std::chrono::system_clock::time_point _lastIntegrityScan {};
+    std::chrono::seconds _childScanQuietPeriod { 3 };
+
     using Inherited = DnpDevice;
 
 protected:
