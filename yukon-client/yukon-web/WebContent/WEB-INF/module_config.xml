@@ -1296,10 +1296,14 @@
             </page>
             <page name="rtuList" type="BASIC" hideSearch="true">
                 <pages>
-                    <page name="rtuDetail" type="DETAIL">
+                    <page name="rtuDetail.VIEW" type="DETAIL">
                         <link>/stars/rtu/{id}</link>
                         <labelArgument>${rtu.name}</labelArgument>
                     </page>
+                    <page name="rtuDetail.EDIT" type="BASIC">
+                        <labelArgument>${rtu.name}</labelArgument>
+                    </page>
+                    <page name="rtuDetail.CREATE" type="BASIC"/>
                 </pages>
             </page>
             <page name="infrastructureWarnings" type="BASIC" hideSearch="true">

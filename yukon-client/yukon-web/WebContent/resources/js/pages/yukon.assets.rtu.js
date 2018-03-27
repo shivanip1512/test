@@ -13,12 +13,50 @@ yukon.assets.rtu= (function () {
     var
     _initialized = false,
     
+    _timeFormatter = yukon.timeFormatter,
+    
+    _initializeTimeSlider = function () {
+        var timeLabel = $('.js-time-range-label'),
+            timeSlider = $('.js-time-range-slider'),
+            defaultStart = $("#start-time").val() /60,
+            defaultEnd = $("#end-time").val() /60;
+        
+        //initialize time slider
+        timeSlider.slider({
+            max: 1440,
+            min: 0,
+            values: [defaultStart, defaultEnd],
+            step: 1,
+            range: true,
+            slide: function (ev, ui) {
+                var start = _timeFormatter.formatTime(ui.values[0], 0),
+                    end = _timeFormatter.formatTime(ui.values[1], 0);
+                    timeLabel.text(start + ' - ' + end);
+                    $("#start-time").val(ui.values[0] * 60);
+                    $("#end-time").val(ui.values[1] * 60);
+            },
+            change: function (ev, ui) {
+                var start = _timeFormatter.formatTime(ui.values[0], 0),
+                    end = _timeFormatter.formatTime(ui.values[1], 0);
+                    timeLabel.text(start + ' - ' + end);
+                    $("#start-time").val(ui.values[0] * 60);
+                    $("#end-time").val(ui.values[1] * 60);
+            }
+        });
+        var start = _timeFormatter.formatTime(defaultStart, 0),
+            end = _timeFormatter.formatTime(defaultEnd, 0);
+            timeLabel.text(start + ' - ' + end);
+            timeSlider.find('.ui-slider-range').css({"background" : "#38c", "height" : "12px", "padding" : "0"});
+    },
+    
     mod = {
         
         /** Initialize this module. */
         init: function () {
             
             if (_initialized) return;
+            
+            _initializeTimeSlider();
             
             /** User clicked on one of the show hide buttons on the Child Hierarchy tab */
             $(document).on('click', '.js-show-hide', function () {
@@ -39,7 +77,7 @@ yukon.assets.rtu= (function () {
                         icon.removeClass('icon-expand');
                         icon.addClass('icon-collapse');
                     });
-                }                
+                }
             });
             
             /** User clicked on the All Points tab */
@@ -48,7 +86,7 @@ yukon.assets.rtu= (function () {
                 $.ajax({ url: yukon.url('/stars/rtu/' + rtuId + '/allPoints') })
                 .done(function (details) {
                     $('.js-all-points').html(details);
-                });        
+                });
             });
             
             /** User filtered the All Points tab */
@@ -62,6 +100,10 @@ yukon.assets.rtu= (function () {
                         tableContainer.data('url', yukon.url('/stars/rtu/' + rtuId + '/allPoints?' + form.serialize()));
                     }
                 });
+            });
+            
+            $(document).on('click', '#cancel-btn', function (event) {
+                window.history.back();
             });
             
             _initialized = true;

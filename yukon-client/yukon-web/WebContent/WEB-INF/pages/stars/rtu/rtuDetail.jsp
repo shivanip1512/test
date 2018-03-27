@@ -1,17 +1,35 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage module="operator" page="rtuDetail">
+<cti:standardPage module="operator" page="rtuDetail.${mode}">
 
     <tags:setFormEditMode mode="${mode}" />
-
-    <form:form commandName="rtu">
-        <form:hidden id="rtuId" path="id" />
     
+    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+        <div id="page-actions" class="dn">
+            <cm:dropdown type="button" key="yukon.common.actions">
+                <cti:url var="createUrl" value="/stars/rtu/create" />
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" 
+                                   id="create-option" href="${createUrl}"/>
+                <cti:displayForPageEditModes modes="EDIT,VIEW">
+                    <li class="divider"></li>
+                    <cti:url var="editUrl" value="/stars/rtu/${rtu.id}/edit" />
+                    <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+                </cti:displayForPageEditModes>
+            </cm:dropdown>
+        </div>
+    </cti:checkRolesAndProperties>
+
+    <cti:url var="action" value="/stars/rtu/save" />
+    <form:form commandName="rtu" action="${action}">
+        <cti:csrfToken />
+        <form:hidden id="rtuId" path="id" />
+
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:sectionContainer2 nameKey="general">
@@ -21,6 +39,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".type">
                             <i:inline key="${rtu.paoType}" />
+                            <tags:hidden path="paoType"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".status">
                             <tags:switchButton path="disableFlag" inverse="${true}"
@@ -99,99 +118,92 @@
                             <tags:switchButton path="scanWindow" toggleGroup="scanWindow" toggleAction="hide"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".scanType" data-toggle-group="scanWindow">
-                            <tags:input path="deviceWindow.type" />
+                            ${rtu.deviceWindow.type}
+                            <tags:hidden path="deviceWindow.type"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".winOpen" data-toggle-group="scanWindow">
-                            <tags:input path="winOpenTime" />
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".winClose" data-toggle-group="scanWindow">
-                            <tags:input path="winCloseTime" />
-                        </tags:nameValue2>
-                        
+                        <form:hidden path="deviceWindow.winOpen" id="start-time" />
+                        <form:hidden path="deviceWindow.winClose" id="end-time" />
+                        <cti:displayForPageEditModes modes="CREATE,EDIT">
+                            <tags:nameValue2 nameKey=".winTimeRange" data-toggle-group="scanWindow">
+                                <div class="scan-window-range">
+                                    <div class="js-time-range-label fwb"></div>
+                                    <div class="slider-range js-time-range-slider buffered"></div>
+                                </div>
+                            </tags:nameValue2>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="VIEW">
+                            <tags:nameValue2 nameKey=".winOpen" data-toggle-group="scanWindow">
+                                <tags:input path="winOpenTime"/>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".winClose" data-toggle-group="scanWindow">
+                                <tags:input path="winCloseTime"/>
+                            </tags:nameValue2>
+                        </cti:displayForPageEditModes>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </div>
             
             <div class="column two nogutter">
-                
-                <c:set var="dnpConfig" value="${rtu.dnpConfig}"/>
                 <c:if test="${not empty dnpConfig}">
-                    <tags:sectionContainer2 nameKey="dnpConfiguration" styleClass="stacked-lg">
-                        <tags:nameValueContainer2 tableClass="natural-width">
-                            <tags:nameValue2 nameKey=".dnpConfig">
-                                ${fn:escapeXml(dnpConfig.name)}
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                        <tags:nameValueContainer2>
-                            <tags:nameValue2 nameKey=".internalRetries">
-                                ${dnpConfig.internalRetries}
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".timeOffset">
-                                <i:inline key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.${dnpConfig.timeOffset}"/>
-                            </tags:nameValue2>                        
-                            <tags:nameValue2 nameKey=".enableTimeSync">
-                                ${dnpConfig.enableDnpTimesyncs}
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".omitTimeReq">
-                                ${dnpConfig.omitTimeRequest}
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".unsolicit1">
-                                ${dnpConfig.enableUnsolicitedMessageClass1}
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".unsolicit2">
-                                ${dnpConfig.enableUnsolicitedMessageClass2}
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".unsolicit3">
-                                ${dnpConfig.enableUnsolicitedMessageClass3}
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".nonUpdated">
-                                ${dnpConfig.enableNonUpdatedOnFailedScan}
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
-                    </tags:sectionContainer2>
+                    <%@ include file="../../common/dnpConfiguration.jsp" %>
                 </c:if>
             </div>
-            
         </div>
 
+        <cti:displayForPageEditModes modes="VIEW,EDIT">
+            <cti:tabs>
+                <cti:msg2 var="childrenTab" key=".childrenTab"/>
+                <cti:tab title="${childrenTab}">
+                    <c:if test="${empty rtu.childDevices}">
+                        <i:inline key=".noChildDevices"/>
+                    </c:if>
+                    <c:forEach var="child" items="${rtu.childDevices}">
+                        <c:set var="paoId" value="${child.paoIdentifier.paoId}"/>
+                        <cti:button renderMode="image" icon="icon-expand" classes="js-show-hide" data-paoId="${paoId}"/>
+                        <cti:paoDetailUrl yukonPao="${child}">
+                            ${fn:escapeXml(child.name)}
+                        </cti:paoDetailUrl>
+                        <div class="js-points-${paoId}" style="margin:10px 0px 10px 30px;"></div>
+                    </c:forEach>
+                </cti:tab>
+        
+                <cti:msg2 var="allPointsTab" key=".allPointsTab"/>
+                <cti:tab title="${allPointsTab}" headerClasses="js-all-points-tab">
+                    <c:set var="isPointCreate" value= "false" />
+                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                        <c:set var="isPointCreate" value= "true" />
+                    </cti:checkRolesAndProperties>
+                    <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
+                        <c:set var="isPointCreate" value= "true" />
+                    </cti:checkRolesAndProperties>
+                    <c:if test="${isPointCreate}">
+                        <div class="stacked-lg">
+                            <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam"/></span>
+                        </div>
+                        <hr>
+                    </c:if>
+                    <cti:url var="dataUrl" value="/stars/rtu/${rtu.id}/allPoints"/>
+                    <div class="js-all-points" data-url="${dataUrl}"></div>
+                </cti:tab>
+            </cti:tabs>
+        </cti:displayForPageEditModes>
+    
+        <div class="page-action-area">
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <cti:button nameKey="save" type="submit" classes="primary action" />
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:url var="viewUrl" value="/stars/rtu/${rtu.id}"/>
+                <cti:button nameKey="cancel" href="${viewUrl}"/>
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:button id="cancel-btn" nameKey="cancel" />
+            </cti:displayForPageEditModes>
+        </div>
     </form:form>
     
-    <cti:tabs>
-        <cti:msg2 var="childrenTab" key=".childrenTab"/>
-        <cti:tab title="${childrenTab}">
-            <c:if test="${empty rtu.childDevices}">
-                <i:inline key=".noChildDevices"/>
-            </c:if>
-            <c:forEach var="child" items="${rtu.childDevices}">
-                <c:set var="paoId" value="${child.paoIdentifier.paoId}"/>
-                <cti:button renderMode="image" icon="icon-expand" classes="js-show-hide" data-paoId="${paoId}"/>
-                <cti:paoDetailUrl yukonPao="${child}">
-                    ${fn:escapeXml(child.name)}
-                </cti:paoDetailUrl>
-                <div class="js-points-${paoId}" style="margin:10px 0px 10px 30px;"></div>
-            </c:forEach>
-        </cti:tab>
-        
-        <cti:msg2 var="allPointsTab" key=".allPointsTab"/>
-        <cti:tab title="${allPointsTab}" headerClasses="js-all-points-tab">
-            <c:set var="isPointCreate" value= "false" />
-            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">     
-                <c:set var="isPointCreate" value= "true" />
-            </cti:checkRolesAndProperties>
-            <cti:checkRolesAndProperties value="MANAGE_POINTS" level="CREATE">
-                <c:set var="isPointCreate" value= "true" />
-            </cti:checkRolesAndProperties>
-            <c:if test="${isPointCreate}">
-                <div class="stacked-lg">
-                    <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam"/></span>
-                </div>
-                <hr>
-            </c:if>
-            <cti:url var="dataUrl" value="/stars/rtu/${rtu.id}/allPoints"/>
-            <div class="js-all-points" data-url="${dataUrl}"></div>
-        </cti:tab>
-        
-    </cti:tabs>
-    
+    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.rtu.js" />
 </cti:standardPage>

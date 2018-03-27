@@ -17,8 +17,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.capcontrol.service.CbcHelperService;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -34,9 +38,11 @@ import com.cannontech.common.rtu.model.RtuPointsFilter;
 import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -45,7 +51,9 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.editor.CapControlCBC;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.rtu.service.RtuService;
+import com.cannontech.web.stars.rtu.validator.RtuDnpValidator;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
@@ -57,22 +65,62 @@ public class RtuController {
     @Autowired private CbcHelperService cbcHelperService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RtuService rtuService;
+    @Autowired private DeviceConfigurationDao deviceConfigDao;
+    @Autowired private RtuDnpValidator validator;
+
+    private static final String baseKey = "yukon.web.modules.operator.rtuDetail";
     
     @RequestMapping(value = "rtu/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        model.addAttribute("threeClassTimeIntervals", TimeIntervals.getUpdateAndScanRate());
-        model.addAttribute("fourClassTimeIntervals", TimeIntervals.getScanIntervals());
-        model.addAttribute("altTimeIntervals", TimeIntervals.getAltIntervals());
-        model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
-        model.addAttribute("availablePorts", cache.getAllPorts());
         RtuDnp rtu = rtuDnpService.getRtuDnp(id);
-        model.addAttribute("rtu", rtu);
-        getPointsForModel(id, model);
-        List<MessageSourceResolvable> duplicatePointMessages = rtuService.generateDuplicatePointsErrorMessages(id, request);
+        getPointsForModel(rtu.getId(), model);
+        List<MessageSourceResolvable> duplicatePointMessages =
+            rtuService.generateDuplicatePointsErrorMessages(rtu.getId(), request);
         flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
+        return setupModel(rtu, model);
+    }
 
-        return "/rtu/rtuDetail.jsp";
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    @RequestMapping(value = "rtu/{id}/edit", method = RequestMethod.GET)
+    public String edit(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext userContext,
+            HttpServletRequest request) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        RtuDnp rtu = rtuDnpService.getRtuDnp(id);
+        getPointsForModel(rtu.getId(), model);
+        List<MessageSourceResolvable> duplicatePointMessages =
+            rtuService.generateDuplicatePointsErrorMessages(rtu.getId(), request);
+        flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
+        return setupModel(rtu, model);
+    }
+
+    @RequestMapping(value = "rtu/create", method = RequestMethod.GET)
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    public String create(ModelMap model, YukonUserContext userContext) {
+        RtuDnp rtu = null;
+        model.addAttribute("mode", PageEditMode.CREATE);
+        if (model.containsAttribute("rtu")) {
+            rtu = (RtuDnp) model.get("rtu");
+        } else {
+            rtu = new RtuDnp();
+            DNPConfiguration config =
+                deviceConfigDao.getDnpConfiguration((deviceConfigDao.getDefaultDNPConfiguration()));
+            rtu.setDnpConfigId(config.getConfigurationId());
+        }
+        return setupModel(rtu, model);
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    @RequestMapping(value = "rtu/save", method = RequestMethod.POST)
+    public String save(@ModelAttribute("rtu") RtuDnp rtu, BindingResult result, RedirectAttributes redirectAttributes,
+            FlashScope flash) {
+        validator.validate(rtu, result);
+        if (result.hasErrors()) {
+            return bindAndForward(rtu, result, redirectAttributes);
+        }
+        int paoId = rtuDnpService.save(rtu);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".info.saved"));
+        return "redirect:/stars/rtu/" + paoId;
     }
     
     @RequestMapping(value = "rtu/child/{id}/points", method = RequestMethod.GET)
@@ -147,7 +195,32 @@ public class RtuController {
 
         return points;
     }
-
+    
+    private String bindAndForward(RtuDnp rtu, BindingResult result, RedirectAttributes attrs) {
+        attrs.addFlashAttribute("rtu", rtu);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.rtu", result);
+        if (rtu.getId() == null) {
+            return "redirect:create";
+        }
+        return "redirect:" + rtu.getId() + "/edit";
+    }
+    
+    private String setupModel(RtuDnp rtu, ModelMap model) {
+        model.addAttribute("threeClassTimeIntervals", TimeIntervals.getUpdateAndScanRate());
+        model.addAttribute("fourClassTimeIntervals", TimeIntervals.getScanIntervals());
+        model.addAttribute("altTimeIntervals", TimeIntervals.getAltIntervals());
+        model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
+        model.addAttribute("availablePorts", cache.getAllPorts());
+        model.addAttribute("rtu", rtu);
+        
+        List<LightDeviceConfiguration> configs = deviceConfigDao.getAllConfigurationsByType(rtu.getPaoType());
+        model.addAttribute("configs", configs);
+        
+        DNPConfiguration dnpConfig = deviceConfigDao.getDnpConfiguration(deviceConfigDao.getDeviceConfiguration(rtu.getDnpConfigId()));
+        model.addAttribute("dnpConfig", dnpConfig);
+        
+        return "/rtu/rtuDetail.jsp";
+    }
 
     public enum RtuPointsSortBy implements DisplayableEnum {
 

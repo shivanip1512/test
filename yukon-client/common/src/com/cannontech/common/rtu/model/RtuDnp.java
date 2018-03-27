@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.joda.time.LocalTime;
 
-import com.cannontech.common.device.config.model.DNPConfiguration;
-import com.cannontech.common.device.config.model.HeartbeatConfiguration;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -15,19 +13,20 @@ import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.device.DeviceWindow;
+import com.google.common.collect.Maps;
 
 public class RtuDnp implements YukonPao {
 
     private Integer id;
     private String name;
-    private PaoType paoType;
+    private PaoType paoType = PaoType.RTU_DNP;
     private boolean disableFlag;
-    private Map<String, DeviceScanRate> deviceScanRateMap;
+    private Map<String, DeviceScanRate> deviceScanRateMap = Maps.newHashMap();
     private DeviceAddress deviceAddress;
-    private DeviceWindow deviceWindow;
+    private DeviceWindow deviceWindow = new DeviceWindow();
     private DeviceDirectCommSettings deviceDirectCommSettings;
     private List<DisplayableDevice> childDevices;
-    private DNPConfiguration dnpConfig;
+    private Integer dnpConfigId;
   
     public Integer getId() {
         return id;
@@ -118,14 +117,6 @@ public class RtuDnp implements YukonPao {
         this.childDevices = childDevices;
     }
 
-    public DNPConfiguration getDnpConfig() {
-        return dnpConfig;
-    }
-
-    public void setDnpConfig(DNPConfiguration dnpConfig) {
-        this.dnpConfig = dnpConfig;
-    }
-
     public boolean isScanWindow() {
         return this.deviceWindow.getWinClose() != 0 || this.deviceWindow.getWinOpen() != 0;
     }
@@ -151,5 +142,13 @@ public class RtuDnp implements YukonPao {
 
     public void setDeviceDirectCommSettings(DeviceDirectCommSettings deviceDirectCommSettings) {
         this.deviceDirectCommSettings = deviceDirectCommSettings;
+    }
+
+    public Integer getDnpConfigId() {
+        return dnpConfigId;
+    }
+
+    public void setDnpConfigId(Integer dnpConfigId) {
+        this.dnpConfigId = dnpConfigId;
     }
 }

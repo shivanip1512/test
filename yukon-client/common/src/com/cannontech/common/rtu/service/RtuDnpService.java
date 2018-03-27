@@ -41,6 +41,14 @@ public interface RtuDnpService {
     /**
      * Returns list of devices that include parent and children.
      */
-
     List<Integer> getParentAndChildDevices(int rtuId);
+    
+    /**
+     * This method inserts or updates the RTUDNP. If rtuDnp.id is null, it performs an insert. Else it will
+     * perform an update.
+     * 
+     * @param rtuDnp - The RTU-DNP object to the saved.
+     * @return pao id of the object saved.
+     */
+    int save(RtuDnp rtuDnp);
 }

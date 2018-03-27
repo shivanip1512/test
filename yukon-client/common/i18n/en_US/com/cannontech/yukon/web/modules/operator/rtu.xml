@@ -6,10 +6,16 @@
     <entry key="yukon.web.modules.operator.rtuList.pageName">RTUs</entry>
 
     <!-- rtuDetail.jsp -->
-    <entry key="yukon.web.modules.operator.rtuDetail.pageName">RTU: {0}</entry>
-    <entry key="yukon.web.modules.operator.rtuDetail.pageDescription">RTU: {0}</entry>
-    <entry key="yukon.web.modules.operator.rtuDetail.pageTitle">{0}</entry>
-        
+    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.pageHeading">Create RTU</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.crumbTitle">Create RTU</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.pageTitle">Create RTU</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.EDIT.pageHeading">Edit RTU: {0}</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.EDIT.pageTitle">RTU: {0}</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.VIEW.pageHeading">RTU: {0}</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.VIEW.pageTitle">RTU: {0}</entry>
+    
     <entry key="yukon.web.modules.operator.rtuDetail.general.title">General</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.name">Name</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.type">Type</entry>
@@ -29,6 +35,7 @@
     <entry key="yukon.web.modules.operator.rtuDetail.scanType">Type</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.winOpen">Open</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.winClose">Close</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.winTimeRange">Time</entry>
     
     <entry key="yukon.web.modules.operator.rtuDetail.rtuPoints">RTU Points:</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.childPoints">Points</entry>
@@ -66,4 +73,8 @@
     
     <entry key="yukon.web.modules.operator.rtu.pointUniqueness"><![CDATA[Point type and offset must be unique across an RTU-DNP and its Logical devices.<br/>]]></entry>
     <entry key="yukon.web.modules.operator.rtu.pointUniqueness.detail"><![CDATA[Conflicting offset: {0} {1} / {2} / {3}<br/>]]></entry>
+    
+    <entry key="yukon.web.modules.operator.rtuDetail.info.saved">RTU saved successfully.</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.error.invalidConfig">DNP configuration is not assignable for selected device type. Please select valid configuration.</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.error.masterSlave">Master/Slave address already in use by {0}.</entry>
 </properties>
