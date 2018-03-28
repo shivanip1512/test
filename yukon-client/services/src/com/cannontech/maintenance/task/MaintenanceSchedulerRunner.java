@@ -1,7 +1,5 @@
 package com.cannontech.maintenance.task;
 
-
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +13,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -40,9 +41,9 @@ public class MaintenanceSchedulerRunner {
     @Autowired private GlobalSettingDao globalSettingDao;
 
     // Four hours in milliseconds
-    private static final long fourHourWindow = 14400000;
+    private static final Duration fourHourWindow = new Duration(14400000);
     // Half an hour in milliseconds
-    private static final long minimumRunWindow = 1800000;
+    private static final Duration minimumRunWindow = new Duration(1800000);
 
     private Map<MaintenanceScheduler, Boolean> forceReschedule = new ConcurrentHashMap<>();
     private Map<MaintenanceScheduler, Boolean> rescheduleScheduler = new ConcurrentHashMap<>();
@@ -120,113 +121,59 @@ public class MaintenanceSchedulerRunner {
     private synchronized void rescheduleAllScheduler() {
         Set<MaintenanceScheduler> schedulers = Sets.newHashSet(MaintenanceScheduler.values());
         schedulers.stream().forEach(scheduler -> {
-                reschedule(scheduler);
+                reschedule(scheduler, false);
         });
     }
     
     /*
      * Schedule individual scheduler.
      */
-    private synchronized void reschedule(MaintenanceScheduler scheduler) {
+    private synchronized void reschedule(MaintenanceScheduler scheduler, boolean addDelay) {
 
         if (schedulersFuture.get(scheduler) != null) {
             schedulersFuture.get(scheduler).cancel(true);
         }
 
-        long millisecondsUntilRun = getMillisecondsUntilRun(scheduler);
-        ScheduledFuture<?> future_scheduler;
-        
-        if (millisecondsUntilRun > minimumRunWindow && !isForceReschedule(scheduler)) {
-            log.info("Maintenance scheduler " + scheduler + " will start at "
-                + new Date(Instant.now().getMillis() + millisecondsUntilRun));
-        }
-        
-        future_scheduler = scheduledExecutorService.schedule(() -> {
-            if (isForceReschedule(scheduler)) {
-                forceReschedule.put(scheduler, false);
-                rescheduleScheduler.put(scheduler, false);
-            } else {
-                Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
-
-                if (!isEnoughTimeAvailable(endOfRunWindow)) {
-                    log.info("Not enough time to run "+scheduler);
-                    rescheduleScheduler.put(scheduler, true);
+        // minimum wait means to delay a minimum of 4 hours
+        DateTime nextStartTime = addDelay ? DateTime.now().plus(fourHourWindow) : DateTime.now();
+        // Not complete, but this MUST return an interval. If there is
+        // absolutely no interval to be found, it should
+        // reschedule for end of time (not run until a dbchange comes through)
+        Interval nextRunWindow = getNextRunWindow(nextStartTime.toInstant());
+        if (nextRunWindow != null) {
+            long millisecondsUntilRun = Math.abs(nextRunWindow.getStartMillis() - Instant.now().getMillis());
+            ScheduledFuture<?> future_scheduler;
+            future_scheduler = scheduledExecutorService.schedule(() -> {
+                boolean endedEarly = false;
+                log.info("Maintenance scheduler " + scheduler + " is starting now and will end at " + nextRunWindow.getEnd().toDate());
+                // Get only those task which will run in this scheduler
+                List<MaintenanceTask> tasks = maintenanceService.getEnabledMaintenanceTasks(scheduler);
+                if (tasks.size() == 0) {
+                    log.info("No task to run for " + scheduler);
+                    endedEarly = true;
                 } else {
-
-                    log.info("Maintenance scheduler " + scheduler + " is starting now and will end at "
-                        + endOfRunWindow.toDate());
-                    // Get only those task which will run in this scheduler
-                    List<MaintenanceTask> tasks = maintenanceService.getEnabledMaintenanceTasks(scheduler);
-                    if (tasks.size() == 0) {
-                        log.info("No task to run for " + scheduler);
-                        rescheduleScheduler.put(scheduler, true);
-                    } else {
-                        log.info("Maintenance scheduler " + scheduler + " will run " + tasks.size() + " tasks.");
-                        // rescheduleScheduler will be true when all task completed before time, else it will be false
-                        boolean taskCompleted = taskRunner.run(tasks, endOfRunWindow);
-                        rescheduleScheduler.put(scheduler, taskCompleted);
-                    }
+                    log.info("Maintenance scheduler " + scheduler + " will run " + tasks.size() + " tasks.");
+                    // return will be true when all task completed before time, else it will be false
+                    endedEarly = taskRunner.run(tasks, nextRunWindow.getEnd().toInstant());
                 }
-            }
-            reschedule(scheduler);
-        }, millisecondsUntilRun, TimeUnit.MILLISECONDS);
-        schedulersFuture.put(scheduler, future_scheduler);
-    }
-
-    private boolean isForceReschedule(MaintenanceScheduler scheduler) {
-        return forceReschedule.getOrDefault(scheduler, false);
-    }
-
-    private boolean shouldRescheduleScheduler(MaintenanceScheduler scheduler) {
-        return rescheduleScheduler.getOrDefault(scheduler, false);
-    }
-
-    /*
-     * Checks if enough time is available to run any scheduler.
-     */
-    private boolean isEnoughTimeAvailable(Instant endOfRunWindow) {
-        if (endOfRunWindow.getMillis() - Instant.now().getMillis() <= minimumRunWindow) {
-            return false;
-        }
-        return true;
-    }
-
-    private synchronized long getMillisecondsUntilRun(MaintenanceScheduler scheduler) {
-        long millisecondsUntilRun = 0;
-        // Different rules of rescheduling when all tasks are completed or no task to run or no time window to run.
-        if (shouldRescheduleScheduler(scheduler)) {
-            millisecondsUntilRun = getRescheduledSecondsUntillNextRun(scheduler);
+                reschedule(scheduler, endedEarly);
+            }, millisecondsUntilRun, TimeUnit.MILLISECONDS);
+            schedulersFuture.put(scheduler, future_scheduler);
         } else {
-            millisecondsUntilRun = maintenanceService.getMillisecondsUntilRun();
+            log.info("No run time window is available for maintenance tasks.");
         }
-        if (millisecondsUntilRun < 0) {
-            millisecondsUntilRun = 0;
-        }
-        return millisecondsUntilRun;
+        
     }
 
-    /*
-     * When all the task have completed before completion time or or no tasks to run or no time to run
-     * scheduler, then rule is:
-     * If the difference in the completion time (endOfRunWindow) and four hour window is more than minimum run
-     * window then next run time will
-     * be four hours from now otherwise it will be the what ever the next run time is.
-     * This is required so that we do not keep on running the scheduler when there is nothing much to process
-     * or not much time (< 1hr) to process.
-     */
-    private long getRescheduledSecondsUntillNextRun(MaintenanceScheduler scheduler) {
-        long millisecondsUntilRun = 0;
-        Instant endOfRunWindow = maintenanceService.getEndOfRunWindow();
-        if ((endOfRunWindow.getMillis() - Instant.now().getMillis() - fourHourWindow) >= (minimumRunWindow)) {
-            millisecondsUntilRun = maintenanceService.getMillisecondsUntilRun();
-            if (millisecondsUntilRun == 0 || millisecondsUntilRun > fourHourWindow) {
-                millisecondsUntilRun = fourHourWindow;
-            }
-        } else {
-            millisecondsUntilRun = (endOfRunWindow.getMillis() - Instant.now().getMillis());
-            forceReschedule.put(scheduler, true);
+    // This (or the call a level or 2 down) can be unit tested?
+    private synchronized Interval getNextRunWindow(Instant nowTime) {
+        Interval nextRunWindow = null;
+        try {
+            nextRunWindow = maintenanceService.getNextAvailableRunTime(nowTime, minimumRunWindow);
+        } catch (Exception e) {
+            // do nothing
         }
-        return millisecondsUntilRun;
+        return nextRunWindow;
     }
 
     // Stop schedules Task

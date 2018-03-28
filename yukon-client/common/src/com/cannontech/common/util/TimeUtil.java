@@ -445,16 +445,8 @@ public static int differenceMinutes(Date from, Date to) {
         Date nextValidTimeAfter = null;
         try {
             CronExpression cronExpression = new CronExpression(cron);
-            // is this the right thing to do?
             cronExpression.setTimeZone(timeZone);
-
-            // If the next run time has already passed, check for the one after that,
-            // and so on, until we catch back up to the present.
             nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
-            while (nextValidTimeAfter != null && nextValidTimeAfter.before(new Date())) {
-                from = nextValidTimeAfter;
-                nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
-            }
         } catch (ParseException e) {
             throw e;
         } catch (UnsupportedOperationException e) {
