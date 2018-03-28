@@ -37,7 +37,6 @@ struct IM_EX_CTIBASE FileInfo
 
     FileInfo();
 
-    std::string logFileName      (const CtiDate &date) const;
     bool        shouldDeleteFile (const std::string& fileToDelete, const CtiDate& cutOffDate) const;
     void        setMaxFileSize   (const size_t maxFileSize);
 };

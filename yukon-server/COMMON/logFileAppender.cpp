@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-#include "utility.h"
 #include "logFileAppender.h"
 
 #include "log4cxx/file.h"
@@ -13,6 +12,7 @@
 #include "log4cxx/helpers/stringhelper.h"
 #include "log4cxx/helpers/fileoutputstream.h"
 #include "log4cxx/helpers/bufferedwriter.h"
+#include "log4cxx/rolling/timebasedrollingpolicy.h"
 
 #include <apr_time.h>
 
@@ -20,18 +20,9 @@ namespace Cti {
 namespace Logging {
 
 using log4cxx::helpers::LogLog;
+using namespace std::string_literals;
 
 namespace {
-
-long long makeMicroseconds(const CtiTime &t)
-{
-    long long result = t.seconds();
-
-    result *= 1000;
-    result *= 1000;
-
-    return result;
-}
 
 log4cxx::LogString toLogStr(const std::string &str)
 {
@@ -89,127 +80,25 @@ public:
 /// class LogFileAppender ///
 
 LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInfo& fileInfo)
-    :   log4cxx::WriterAppender(layout),
-        _fileInfo(fileInfo),
+    :   _fileInfo(fileInfo),
         _maxFileSizeLogged(false),
-        _lastRolloverFailed(false),
         _nextResumeAttempt(0),
         _nextFlush(0),
         _flushInterval(5 * 1000 * 1000)  //  force a flush every 5 seconds
 {
-    _tomorrow = makeMicroseconds(CtiTime(_today + 1));
+    setLayout(layout);
+
+    log4cxx::rolling::TimeBasedRollingPolicyPtr policy { new log4cxx::rolling::TimeBasedRollingPolicy() };
+
+    const auto fileNamePattern = fileInfo.path + "\\" + fileInfo.baseFileName + "_%d{yyyyMMdd}.log.zip";
+
+    policy->setFileNamePattern(toLogStr(fileNamePattern));
+
+    setRollingPolicy(policy);
 
     log4cxx::helpers::Pool p;
     activateOptions(p);
-    cleanupOldFiles();
 }
-
-void LogFileAppender::activateOptions(log4cxx::helpers::Pool& p)
-{
-    log4cxx::helpers::synchronized sync(mutex);
-
-    const std::string fileName = _fileInfo.logFileName(_today);
-
-    try
-    {
-        setFile(toLogStr(fileName), _fileInfo.fileAppend, _fileInfo.bufferedIO, _fileInfo.bufferSize, p);
-
-        WriterAppender::activateOptions(p);
-    }
-    catch( const log4cxx::helpers::IOException& e )
-    {
-        StreamBuffer sb;
-
-        sb <<"setFile("<< fileName <<","<< (_fileInfo.fileAppend ? "true":"false") << ") call failed.";
-
-        LogLog::error(toLogStr(sb.extractToString()), e);
-    }
-}
-
-void LogFileAppender::setFile(
-        const log4cxx::LogString& filename,
-        bool append,
-        bool bufferedIO,
-        size_t bufferSize,
-        log4cxx::helpers::Pool& p)
-{
-    log4cxx::helpers::synchronized sync(mutex);
-
-    // It does not make sense to have immediate flush and bufferedIO.
-    if( bufferedIO )
-    {
-        setImmediateFlush(false);
-    }
-
-    closeWriter();
-
-    bool writeBOM = false;
-    if( log4cxx::helpers::StringHelper::equalsIgnoreCase(getEncoding(), LOG4CXX_STR("utf-16"), LOG4CXX_STR("UTF-16")) )
-    {
-        // don't want to write a byte order mark if the file exists
-        if( append )
-        {
-            log4cxx::File outFile;
-            outFile.setPath(filename);
-            writeBOM = ! outFile.exists(p);
-        }
-        else
-        {
-            writeBOM = true;
-        }
-    }
-
-    log4cxx::helpers::OutputStreamPtr outStream;
-
-    try
-    {
-        outStream = new log4cxx::helpers::FileOutputStream(filename, append);
-    }
-    catch( const log4cxx::helpers::IOException& e )
-    {
-        log4cxx::LogString parentName = log4cxx::File().setPath(filename).getParent(p);
-        if( ! parentName.empty() )
-        {
-            log4cxx::File parentDir;
-            parentDir.setPath(parentName);
-            if( ! parentDir.exists(p) && parentDir.mkdirs(p) )
-            {
-                outStream = new log4cxx::helpers::FileOutputStream(filename, append);
-            }
-            else
-            {
-                throw e;
-            }
-        }
-        else
-        {
-            throw e;
-        }
-    }
-
-    // if a new file and UTF-16, then write a BOM
-    if( writeBOM )
-    {
-        char bom[] = { (char) 0xFE, (char) 0xFF };
-        log4cxx::helpers::ByteBuffer buf(bom, 2);
-        outStream->write(buf, p);
-    }
-
-    outStream = new CountingOutputStream(outStream, this);
-    log4cxx::helpers::WriterPtr newWriter = createWriter(outStream);
-
-    if( bufferedIO )
-    {
-        newWriter = new log4cxx::helpers::BufferedWriter(newWriter, bufferSize);
-    }
-
-    setWriter(_writer = newWriter);
-
-    _fileSize = log4cxx::File().setPath(filename).length(p);
-
-    writeHeader(p);
-}
-
 
 bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpers::Pool &p)
 {
@@ -220,25 +109,18 @@ bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpe
 
     _nextResumeAttempt = apr_time_now() + 5 * 1000 * 1000;  //  try every 5 seconds
 
-    const std::string fileName = _fileInfo.logFileName(_today);
-
-    log4cxx::File outFile;
-    outFile.setPath(toLogStr(fileName));
+    log4cxx::File outFile { getFile() };
     if( ! outFile.exists(p) || outFile.length(p) < _fileInfo.maxFileSize )
     {
         try
         {
-            setFile(toLogStr(fileName), _fileInfo.fileAppend, _fileInfo.bufferedIO, _fileInfo.bufferSize, p);
+            activateOptions(p);
 
             return true;
         }
         catch( const log4cxx::helpers::IOException& e )
         {
-            StreamBuffer sb;
-
-            sb <<"setFile("<< fileName <<","<< (_fileInfo.fileAppend ? "true":"false") << ") call failed.";
-
-            LogLog::error(toLogStr(sb.extractToString()), e);
+            LogLog::error(LOG4CXX_STR("Could not resume writing"), e);
         }
     }
 
@@ -247,28 +129,45 @@ bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpe
 
 extern const log4cxx::spi::LoggingEventPtr PokeEvent;
 
+log4cxx::helpers::WriterPtr LogFileAppender::createWriter(log4cxx::helpers::OutputStreamPtr& os)
+{
+    _maxFileSizeLogged = false;
+
+    cleanupOldFiles();
+
+    //  Grab a copy of the writer for us to flush on demand
+    return _writer = RollingFileAppender::createWriter(os);
+}
+
 void LogFileAppender::subAppend(
         const log4cxx::spi::LoggingEventPtr& event,
         log4cxx::helpers::Pool& p)
 {
-    log4cxx::LogString msg;
-
-    if( event != PokeEvent )
+// ---- copied from RollingFileAppender ----
+    // The rollover check must precede actual writing. This is the
+    // only correct behavior for time driven triggers.
+    if( triggeringPolicy->isTriggeringEvent(this, event, getFile(), getFileLength()) ) 
     {
-        layout->format(msg, event, p);
+        //
+        //   wrap rollover request in try block since
+        //    rollover may fail in case read access to directory
+        //    is not provided.  However appender should still be in good
+        //     condition and the append should still happen.
+        try {
+            rollover(p);
+        }
+        catch( std::exception& ex ) {
+            LogLog::warn(toLogStr("Exception during rollover attempt: "s + ex.what()));
+        }
     }
+// ---- copied from RollingFileAppender ----
 
     const long long timestamp = event != PokeEvent ? event->getTimeStamp() : apr_time_now();
 
     {
         log4cxx::helpers::synchronized sync(mutex);
 
-        if( ! rollover(timestamp, p) )
-        {
-            return; // rollover was attempted and failed
-        }
-
-        if( _fileSize >= _fileInfo.maxFileSize )
+        if( getFileLength() >= _fileInfo.maxFileSize )
         {
             if( ! _maxFileSizeLogged )
             {
@@ -292,7 +191,7 @@ void LogFileAppender::subAppend(
         {
             if( event != PokeEvent )
             {
-                _writer->write(msg, p);
+                FileAppender::subAppend(event, p);
             }
             if( getImmediateFlush() || timestamp > _nextFlush )
             {
@@ -301,61 +200,6 @@ void LogFileAppender::subAppend(
             }
         }
     }
-}
-
-bool LogFileAppender::rollover(const long long eventTimestamp, log4cxx::helpers::Pool &p)
-{
-    log4cxx::helpers::synchronized sync(mutex);
-
-    //  avoid creating a CtiDate every time we need to check an event timestamp
-    if( eventTimestamp < _tomorrow )
-    {
-        return true;
-    }
-
-    const CtiDate newDay;
-
-    const std::string fileName = _fileInfo.logFileName(newDay);
-
-    for(int openRetry=0 ; ; )
-    {
-        try
-        {
-            setFile(toLogStr(fileName), _fileInfo.fileAppend, _fileInfo.bufferedIO, _fileInfo.bufferSize, p);
-            break;
-        }
-        catch( const log4cxx::helpers::IOException& e )
-        {
-            if( _lastRolloverFailed )
-            {
-                return false;
-            }
-
-            StreamBuffer sb;
-            sb <<"Error opening log file "<< fileName;
-
-            if( ++openRetry > _fileInfo.maxOpenRetries )
-            {
-                LogLog::error(toLogStr(sb.extractToString()), e);
-                _lastRolloverFailed = true;
-                return false;
-            }
-
-            sb <<", will retry..";
-            LogLog::error(toLogStr(sb.extractToString()), e);
-        }
-
-        Sleep(_fileInfo.openRetryMillis);
-    }
-
-    _today    = newDay;
-    _tomorrow = makeMicroseconds(CtiTime(_today + 1));
-    _lastRolloverFailed = false;
-    _maxFileSizeLogged = false;
-
-    cleanupOldFiles();
-
-    return true;
 }
 
 void LogFileAppender::cleanupOldFiles() const
@@ -369,17 +213,18 @@ void LogFileAppender::cleanupOldFiles() const
 
     // We expect:
     // '\filenameYYYYMMDD.log' or
-    // '\filename_YYYYMMDD.log'
+    // '\filename_YYYYMMDD.log' or
+    // '\filename_YYYYMMDD.log.zip' or
     // Files found are fully verified inside shouldDeleteFile()
 
-    const std::string fileName = _fileInfo.path + "\\" + _fileInfo.baseFileName + "*.log";
+    const std::string fileName = _fileInfo.path + "\\" + _fileInfo.baseFileName + "*.log*";
 
     WIN32_FIND_DATA fileInfoFound;
     const HANDLE finderHandle = FindFirstFile(fileName.c_str(), &fileInfoFound);
 
     if( finderHandle != INVALID_HANDLE_VALUE )
     {
-        const CtiDate cutoffDate  = _today - _fileInfo.logRetentionDays;
+        const CtiDate cutoffDate = CtiDate::now() - _fileInfo.logRetentionDays;
 
         do
         {

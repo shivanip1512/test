@@ -57,26 +57,11 @@ FileInfo::FileInfo() :
     bufferSize       (1024 * 128)
 {}
 
-std::string FileInfo::logFileName(const CtiDate &date) const
-{
-    std::ostringstream oss;
-
-    oss << path <<"\\"<< baseFileName<<"_";
-
-    oss << date.year() << std::setfill('0')
-        << std::setw(2) << date.month()
-        << std::setw(2) << date.dayOfMonth();
-
-    oss <<".log";
-
-    return oss.str();
-}
-
 bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& cutOffDate) const
 {
     const std::string lowercaseFileName = boost::algorithm::to_lower_copy(baseFileName);
     const std::string date_regex_spec = "2\\d{7}";
-    const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "\\.log$";
+    const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "\\.log(.zip)?$";
 
     std::string input(fileToDelete);
     CtiToLower(input);
