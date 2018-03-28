@@ -1,7 +1,14 @@
 package com.cannontech.common.bulk.collection.device.model;
 
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.CANCELLED;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,18 +24,17 @@ import org.springframework.util.CollectionUtils;
 
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
-import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.user.YukonUserContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.*;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CollectionActionResult {
@@ -46,7 +52,8 @@ public class CollectionActionResult {
     private CollectionActionCounts counts;
     private Map<CollectionActionDetail, CollectionActionDetailGroup> details = new HashMap<>();
     @JsonIgnore
-    private CommandCompletionCallback<?> cancelationCallback;
+    private List<CollectionActionCancellationCallback> cancelationCallbacks =
+        Collections.synchronizedList(new ArrayList<CollectionActionCancellationCallback>());
     private boolean isCanceled;
     //result is in cache
     private boolean isCached = true;
@@ -95,6 +102,10 @@ public class CollectionActionResult {
     public boolean isCancelable() {
         return isCached && action.isCancelable() && status != null && status == STARTED;
     }
+    
+    public boolean isComplete() {
+        return status == COMPLETE || status == CANCELLED || status == FAILED;
+    }
 
     public CollectionActionDetailGroup getDetail(CollectionActionDetail detail) {
         return details.get(detail);
@@ -114,6 +125,20 @@ public class CollectionActionResult {
             editorDao.addDevices(details.get(detail).getGroup(), paos);
             appendToLogWithoutAddingToGroup(log);
         }
+    }
+    
+    /**
+     * Returns the list of devices that can be marked as canceled
+     */
+    public List<SimpleDevice> getCancelableDevices() {
+        List<SimpleDevice> devices = Collections.synchronizedList(new ArrayList<SimpleDevice>());
+        if (isCanceled) {
+            devices.addAll(inputs.getCollection().getDeviceList());
+            details.values().forEach(d -> {
+                devices.removeAll(d.getDevices().getDeviceList());
+            });
+        }
+        return devices;
     }
 
     public void addDeviceToGroup(CollectionActionDetail detail, YukonPao pao, CollectionActionLogDetail log) {
@@ -185,9 +210,6 @@ public class CollectionActionResult {
 
     public void setStatus(CommandRequestExecutionStatus status) {
         this.status = status;
-        if (logService != null && (status == COMPLETE || status == CANCELLED || status == FAILED)) {
-            logService.clearCache(cacheKey);
-        }
     }
 
     public Instant getStartTime() {
@@ -198,12 +220,12 @@ public class CollectionActionResult {
         this.startTime = startTime;
     }
 
-    public CommandCompletionCallback<?> getCancelationCallback() {
-        return cancelationCallback;
+    public CollectionActionCancellationCallback getCancellationCallback(StrategyType type) {
+        return cancelationCallbacks.stream().filter(c -> c.getStrategy() == type).findFirst().orElse(null);
     }
 
-    public void setCancelationCallback(CommandCompletionCallback<?> cancelationCallback) {
-        this.cancelationCallback = cancelationCallback;
+    public void addCancellationCallback(CollectionActionCancellationCallback cancelationCallback) {
+        cancelationCallbacks.add(cancelationCallback);
     }
 
     public boolean isCanceled() {
@@ -280,8 +302,8 @@ public class CollectionActionResult {
                     + "   " + getCounts().getPercentages().get(detail) + "%");
             });
 
-            if (cancelationCallback != null) {
-                logger.debug("cancelationCallback:" + cancelationCallback.getClass());
+            if (cancelationCallbacks != null) {
+                logger.debug("cancelationCallbacks:" + cancelationCallbacks.size());
             }
             logger.debug("-----------------------------------------------------");
         }

@@ -1,6 +1,5 @@
 package com.cannontech.amr.disconnect.service.impl;
 
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.NOT_CONFIGURED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
@@ -122,24 +121,21 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             }
 
             @Override
-            public void canceled(SimpleDevice device) {
-                collectionActionService.addUnsupportedToResult(CANCELED, result, Lists.newArrayList(device));
-            }
-
-            @Override
             public void complete(StrategyType strategy) {
-                pendingStrategies.remove(strategy);
-                log.debug("Completing " + strategy + " strategy. Remaining strategies:" + pendingStrategies);
-                if (pendingStrategies.isEmpty()) {
-                    collectionActionService.updateResult(result, !result.isCanceled()
-                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
-                    disconnectEventLogService.groupActionCompleted(context.getYukonUser(), command,
-                        result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
-                        result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
-                    try {
-                        alertCallback.handle(result);
-                    } catch (Exception e) {
-                        log.error(e);
+                if (!result.isComplete()) {
+                    pendingStrategies.remove(strategy);
+                    log.debug("Completing " + strategy + " strategy. Remaining strategies:" + pendingStrategies);
+                    if (pendingStrategies.isEmpty()) {
+                        collectionActionService.updateResult(result, !result.isCanceled()
+                            ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                        disconnectEventLogService.groupActionCompleted(context.getYukonUser(), command,
+                            result.getCounts().getTotalCount(), result.getCounts().getSuccessCount(),
+                            result.getCounts().getFailedCount(), result.getCounts().getNotAttemptedCount());
+                        try {
+                            alertCallback.handle(result);
+                        } catch (Exception e) {
+                            log.error(e);
+                        }
                     }
                 }
             }
@@ -278,7 +274,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             if (!isComplete) {
                 completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.FAILED);
                 result.setProcessingException(reason);
-                complete(StrategyType.PLC);
+                complete(StrategyType.PORTER);
             }
         }
 

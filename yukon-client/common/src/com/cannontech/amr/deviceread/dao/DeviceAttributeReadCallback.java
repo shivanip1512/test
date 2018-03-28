@@ -4,11 +4,12 @@ import java.util.List;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionStrategyCompletionCallback;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public interface DeviceAttributeReadCallback {
+public interface DeviceAttributeReadCallback extends CollectionActionStrategyCompletionCallback{
     /**
      * This method should be called zero or more times for each PAO (and thus, zero or more times overall).
      */
@@ -39,15 +40,7 @@ public interface DeviceAttributeReadCallback {
         
     }
     
-    default void complete(StrategyType type) {
-        
-    }
-    
     default CollectionActionResult getResult() {
         return null;
-    }
-    
-    default void cancel(List<? extends PaoIdentifier> paos) {
-        
     }
 }

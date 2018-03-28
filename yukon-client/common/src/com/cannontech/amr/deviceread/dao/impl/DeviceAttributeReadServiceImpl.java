@@ -1,7 +1,5 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -218,7 +216,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
             @Override
             public void receivedException(SpecificDeviceErrorDescription error) {
-                result.setExecutionExceptionText(accessor.getMessage(error.getDetail()));
+                result.setExecutionExceptionText(accessor.getMessage(error.getSummary()));
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
             }
             
@@ -229,26 +227,25 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
             @Override
             public void complete(StrategyType type) {
-                types.remove(type);
-                if (types.isEmpty()) {
-                    complete();
+                if (!result.isComplete()) {
+                    types.remove(type);
+                    if (types.isEmpty()) {
+                        complete();
+                    }
                 }
-            }
-            
-            @Override
-            public void cancel(List<? extends PaoIdentifier> paos) {
-                collectionActionService.addUnsupportedToResult(CANCELED, result, paos);
             }
 
             @Override
             public void complete() {
-                collectionActionService.updateResult(result, !result.isCanceled()
-                    ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
-                if (callback != null) {
-                    try {
-                        callback.handle(result);
-                    } catch (Exception e) {
-                        log.error(e);
+                if (!result.isComplete()) {
+                    collectionActionService.updateResult(result, !result.isCanceled()
+                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                    if (callback != null) {
+                        try {
+                            callback.handle(result);
+                        } catch (Exception e) {
+                            log.error(e);
+                        }
                     }
                 }
             }
@@ -335,7 +332,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
 	private void completeExecution(CommandRequestExecution execution) {
 	    if (execution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED) {
-            log.debug("All startegies complete");
+            log.debug("All strategies complete");
             execution.setStopTime(new Date());
             execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
             commandRequestExecutionDao.saveOrUpdate(execution);

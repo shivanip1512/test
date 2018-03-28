@@ -62,6 +62,6 @@ public class DemandResetRfnStrategy implements DemandResetStrategy {
 
     @Override
     public StrategyType getStrategy() {
-        return StrategyType.RF;
+        return StrategyType.NM;
     }
 }

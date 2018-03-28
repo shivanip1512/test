@@ -36,10 +36,4 @@ public interface CollectionActionLogDetailService {
      * devices haven't responded yet.
      */
     boolean hasLog(int cacheKey);
-
-    /**
-     * Log details are cached until execution/action is done (Completed, Canceled etc) to prevent duplicate
-     * entries in the log file for the same devices. When action is done this method is called to clear cache.
-     */
-    void clearCache(int cacheKey);
 }

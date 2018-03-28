@@ -117,7 +117,6 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             CollectionActionFilter filter, PagingParameters paging, SortBy sortBy, Direction direction) {
 
         SqlStatementBuilder allRowsSql = buildResultSelect(filter, sortBy, direction);
-        System.out.println(allRowsSql.getDebugSql());
         SqlStatementBuilder countSql = buildResultSelect(filter, null, null);
 
         int start = paging.getStartIndex();

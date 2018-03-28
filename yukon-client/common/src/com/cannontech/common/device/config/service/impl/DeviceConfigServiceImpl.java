@@ -14,10 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
+import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
@@ -28,6 +31,7 @@ import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.commands.WaitableCommandCompletionCallbackFactory;
+import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -45,7 +49,6 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -54,7 +57,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class DeviceConfigServiceImpl implements DeviceConfigService {
+public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionActionCancellationService {
     private final static Logger log = YukonLogManager.getLogger(DeviceConfigServiceImpl.class);
 
     @Autowired private CommandExecutionService commandRequestService;
@@ -67,6 +70,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired private CollectionActionService collectionActionService;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
 
     private int initiateAction(String command, DeviceCollection deviceCollection, LogAction logAction,
             CollectionAction collectionAction, DeviceRequestType requestType,
@@ -92,19 +96,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         CommandCompletionCallback<CommandRequestDevice> execCallback =
             new CommandCompletionCallback<CommandRequestDevice>() {
                 MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-
-                @Override
-                public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
-                    CollectionActionLogDetail detail = new CollectionActionLogDetail(command.getDevice());
-                    detail.setValue(value);
-                    result.appendToLogWithoutAddingToGroup(detail);
-                }
-
                 @Override
                 public void receivedLastResultString(CommandRequestDevice command, String value) {
                     logCompleted(Lists.newArrayList(command.getDevice()), logAction, true);
                     CollectionActionLogDetail detail =
                         new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
+                    detail.setLastValue(value);
                     result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
                 }
 
@@ -122,7 +119,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                     result.setExecutionExceptionText(reason);
                     collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
                 }
-
+                
                 @Override
                 public void complete() {
                     collectionActionService.updateResult(result, !result.isCanceled()
@@ -142,8 +139,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             List<CommandRequestDevice> requests = supportedDevices.stream().map(
                 device -> new CommandRequestDevice(command, new SimpleDevice(device.getPaoIdentifier()))).collect(
                     Collectors.toList());
-            result.setCancelationCallback(execCallback);
-            commandExecutionService.execute(requests, execCallback, requestType, context.getYukonUser());
+            result.addCancellationCallback(new CollectionActionCancellationCallback(StrategyType.PORTER, null, execCallback)); 
+            result.getExecution().setRequestCount(requests.size());
+            log.debug("updating request count =" + requests.size());
+            commandRequestExecutionDao.saveOrUpdate(result.getExecution());
+            commandExecutionService.execute(requests, execCallback, result.getExecution(), false, context.getYukonUser());
         }
         return result.getCacheKey();
     }
@@ -373,5 +373,15 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean isCancellable(CollectionAction action) {
+        return action == CollectionAction.SEND_CONFIG || action == CollectionAction.READ_CONFIG;
+    }
+
+    @Override
+    public void cancel(int key, LiteYukonUser user) {
+        commandRequestService.cancel(key, user);
     }
 }

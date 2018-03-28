@@ -1,5 +1,7 @@
 package com.cannontech.common.bulk.collection.device.service.impl;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
+
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -93,7 +95,8 @@ public class CollectionActionServiceImpl implements CollectionActionService {
                 }
             }
         } else {
-            log.debug("Attemting to cancel result for " + key + "failed.");
+            log.debug("Attemting to cancel result for " + key
+                + " failed. The results was already completed with the status " + cachedResult.getStatus());
             cachedResult.log();
         }
     }
@@ -118,8 +121,11 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             collectionActionDao.updateCollectionActionStatus(result.getCacheKey(), status, stopTime);
             result.setStatus(status);
         }
+        
+        if(result.isCanceled()) {
+            addUnsupportedToResult(CANCELED, result, result.getCancelableDevices());
+        }
         result.setStopTime(new Instant(stopTime));
-        result.log();
     }
 
     @Override
@@ -152,10 +158,13 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> devices) {
-        log.debug("Adding unsupported devices:" + devices.size() + " detail:" + detail + " cacheKey:" + result.getCacheKey());
-        result.addDevicesToGroup(detail, devices, logService.buildLogDetails(devices, detail));
-        commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(devices), result.getExecution().getId(),
-            detail.getCreUnsupportedType());
+        if(!devices.isEmpty()) {
+            log.debug("Adding unsupported devices:" + devices.size() + " detail:" + detail + " cacheKey:"
+                + result.getCacheKey());
+            result.addDevicesToGroup(detail, devices, logService.buildLogDetails(devices, detail));
+            commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(devices), result.getExecution().getId(),
+                detail.getCreUnsupportedType());
+        }
     }
 
     /**

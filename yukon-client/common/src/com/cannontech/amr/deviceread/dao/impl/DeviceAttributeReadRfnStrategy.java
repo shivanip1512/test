@@ -22,6 +22,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
@@ -65,7 +66,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     
     @Override
     public StrategyType getStrategy() {
-        return StrategyType.RF;
+        return StrategyType.NM;
     }
     
     @Override
@@ -83,6 +84,9 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     @Override
     public void initiateRead(Iterable<PaoMultiPointIdentifier> points, DeviceAttributeReadCallback callback,
             CommandRequestExecution execution, LiteYukonUser user) {
+        if(callback.getResult() != null) {
+            callback.getResult().addCancellationCallback(new CollectionActionCancellationCallback(getStrategy(), callback));
+        }
         initiateRead(points, new RfnStrategyCallback(callback, execution));
     }
 
@@ -104,7 +108,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
                 callback.complete(getStrategy());
             }
         }
-        
+
         @Override
         public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
             callback.receivedError(pao, error);
@@ -335,6 +339,9 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
 
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
-        // not supported
+        CollectionActionCancellationCallback callback = result.getCancellationCallback(getStrategy());
+        if (callback != null) {
+            callback.cancel();
+        }
     }
 }

@@ -174,7 +174,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                         verificationInfo.pointToDevice.keySet());
                     //complete execution
                     log.debug("RF Cancel Complete");
-                    result.getDemandResetCallback().complete(StrategyType.RF);
+                    result.getDemandResetCallback().complete(StrategyType.NM);
                 }
             }
         }
@@ -220,7 +220,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                 + " TimeoutChecker: All devices verified");
                             infoIterator.remove();
                             log.debug("RFN Completed");
-                            callback.complete(StrategyType.RF);
+                            callback.complete(StrategyType.NM);
                         }
                     }
                 } catch (Exception e) {
@@ -367,7 +367,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                     log.debug("TimeoutChecker: All devices verified.");
                                     infoIterator.remove();
                                     log.debug("RFN Completed");
-                                    callback.complete(StrategyType.RF);
+                                    callback.complete(StrategyType.NM);
                                 }
                             }
                         }
@@ -452,7 +452,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                         infoIterator.remove();
                         log.debug("pointDataReceived: All devices verified");
                         log.debug("RFN Completed");
-                        callback.complete(StrategyType.RF);
+                        callback.complete(StrategyType.NM);
                     }
                 }
             }

@@ -188,7 +188,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
 
             if (!callback.isCanceled()) {
                 log.debug("PLC Completed");
-                callback.complete(StrategyType.PLC);
+                callback.complete(StrategyType.PORTER);
             } else {
                 log.debug("PLC Waiting for " + minutesToWait + " minutes before completing");
             }
@@ -209,7 +209,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                         callback.canceled(meter);
                     }
                     log.debug("PLC Cancel Complete (VerificationCallback)");
-                    callback.complete(StrategyType.PLC);
+                    callback.complete(StrategyType.PORTER);
                 }
             };
             refreshTimer.schedule(cancelationRunner, minutesToWait, TimeUnit.MINUTES);

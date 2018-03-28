@@ -34,6 +34,8 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.YukonLogManager.RfnLogger;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
@@ -98,23 +100,28 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
     @Override
     public void execute(DisconnectCommand command, Set<SimpleDevice> meters, DisconnectCallback disconnectCallback,
             CommandRequestExecution execution, LiteYukonUser user) {
+        
+        if(disconnectCallback.getResult() != null) {
+            disconnectCallback.getResult().addCancellationCallback(
+                new CollectionActionCancellationCallback(getStrategy(), disconnectCallback));
+        }
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
                 PendingRequests pendingRequests = new PendingRequests(meters.size());
                 for (YukonMeter meter : yukonMeters) {
-                    Callback callback = new Callback(meter, disconnectCallback, pendingRequests, execution);
-                    if (disconnectCallback.getResult().isCanceled()) {
-                        callback.cancel();
-                    } else {
-                        if (rfnLogger.isDebugEnabled()) {
-                            rfnLogger.debug("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType()
-                                + " to " + ((RfnMeter) meter).getRfnIdentifier());
-                        }
-                        rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(),
-                            callback);
+                    if (disconnectCallback.getResult() != null && disconnectCallback.getResult().isCanceled()) {
+                        break;
                     }
+                    Callback callback = new Callback(meter, disconnectCallback, pendingRequests, execution);
+
+                    if (rfnLogger.isDebugEnabled()) {
+                        rfnLogger.debug("<<< Sent disconnect command: " + command.getRfnMeterDisconnectStatusType()
+                            + " to " + ((RfnMeter) meter).getRfnIdentifier());
+                    }
+                    rfnMeterDisconnectService.send((RfnMeter) meter, command.getRfnMeterDisconnectStatusType(),
+                        callback);
                 }
             }
         };
@@ -149,14 +156,6 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
             this.meter = new SimpleDevice(meter);
             this.pendingRequests = pendingRequests;
             this.execution = execution;
-        }
-
-        public void cancel() {
-            if (rfnLogger.isInfoEnabled()) {
-                rfnLogger.info("RFN send canceled:" + meter);
-            }
-            callback.canceled(meter);
-            complete();
         }
 
         @Override
@@ -273,6 +272,15 @@ public class DisconnectRfnServiceImpl implements DisconnectStrategyService {
 
     @Override
     public StrategyType getStrategy() {
-        return StrategyType.RF;
+        return StrategyType.NM;
+    }
+    
+    @Override
+    public void cancel(CollectionActionResult result, LiteYukonUser user) {
+        // doesn't support cancellation
+        CollectionActionCancellationCallback callback = result.getCancellationCallback(getStrategy());
+        if (callback != null) {
+            callback.cancel();
+        }
     }
 }

@@ -3,14 +3,12 @@ package com.cannontech.amr.disconnect.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.FilteredDevices;
@@ -19,10 +17,9 @@ import com.cannontech.amr.disconnect.service.DisconnectStrategyService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -36,7 +33,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -49,22 +45,18 @@ import com.google.common.collect.Sets;
 public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
 
     private final Logger log = YukonLogManager.getLogger(DisconnectPlcServiceImpl.class);
-    private int minutesToWait;
-    
+
     @Autowired private AttributeService attributeService;
     @Autowired private StateGroupDao stateGroupDao;
-    @Autowired @Qualifier("main") private ScheduledExecutor refreshTimer;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private MeterDao meterDao;
-    @Autowired private ConfigurationSource configurationSource;
 
     private Set<PaoType> integratedTypes;
     private Set<PaoType> collarTypes;
     
     @PostConstruct
     public void init() {
-        minutesToWait = configurationSource.getInteger(MasterConfigInteger.PLC_ACTIONS_CANCEL_TIMEOUT, 10);
         Set<PaoDefinition> collar = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
         Set<PaoDefinition> integrated = Sets.difference(
             paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_410, PaoTag.DISCONNECT_213, PaoTag.DISCONNECT_310),
@@ -110,8 +102,9 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
     
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
-        if (result.getCancelationCallback() != null) {
-            commandExecutionService.cancelExecution(result.getCancelationCallback(), user, false);
+        CollectionActionCancellationCallback callback = result.getCancellationCallback(getStrategy());
+        if (callback != null) {
+            commandExecutionService.cancelExecution(callback.getCommandCompletionCallback(), user, false);
         }
     }
             
@@ -126,7 +119,7 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
         }			          
         Callback commandCallback = new Callback(callback, meters, command);
         if(callback.getResult() != null) {
-            callback.getResult().setCancelationCallback(commandCallback);
+            callback.getResult().addCancellationCallback(new CollectionActionCancellationCallback(StrategyType.PORTER, null, commandCallback));
         }
         commandExecutionService.execute(commands, commandCallback, execution, false, user);
     }
@@ -147,7 +140,7 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
 
             devicesWithoutPoint = Sets.difference(meters, Sets.newHashSet(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet())));
         }
-
+        
         /**
          * Process devices that do not have point. The command was sent to the
          * device, but we do not know what state device is in
@@ -166,42 +159,13 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
 
         @Override
         public void complete() {
-            log.debug("PLC Complete (CommandCompletionCallback)");
-            if (log.isDebugEnabled()) {
-                log.debug("PLC Canceled:" + callback.getResult().isCanceled());
-            }
-            if (callback.getResult() == null || !callback.getResult().isCanceled()) {
-                log.debug("PLC Completed");
-                processUnsupported(devicesWithoutPoint);
-                callback.complete(getStrategy());
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("PLC Waiting for " + minutesToWait + " minutes before completing");
-                }
-            }
+            processUnsupported(devicesWithoutPoint);
+            callback.complete(getStrategy());
         }
 
         @Override
         public void cancel() {
-            log.debug("PLC Cancel (CommandCompletionCallback)");
-            if (log.isDebugEnabled()) {
-                log.debug("Wait " + minutesToWait + " minutes before proccessing cancelations.");
-            }
-            Runnable cancelationRunner = new Runnable() {
-                @Override
-                public void run() {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Proccessing cancelations for meters:" + meters);
-                    }
-                    processUnsupported(devicesWithoutPoint);
-                    for (SimpleDevice meter : meters) {
-                        callback.canceled(meter);
-                    }
-                    log.debug("PLC Cancel Complete (CommandCompletionCallback)");
-                    callback.complete(getStrategy());
-                }
-            };
-            refreshTimer.schedule(cancelationRunner, minutesToWait, TimeUnit.MINUTES);
+            complete();
         }
 
         @Override
@@ -244,6 +208,6 @@ public class DisconnectPlcServiceImpl implements DisconnectStrategyService {
 
     @Override
     public StrategyType getStrategy() {
-        return StrategyType.PLC;
+        return StrategyType.PORTER;
     }
 }

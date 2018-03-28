@@ -18,6 +18,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
@@ -66,6 +67,9 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     public void initiateRead(Iterable<PaoMultiPointIdentifier> devices, DeviceAttributeReadCallback callback,
             CommandRequestExecution execution, LiteYukonUser user) {
         try {
+            if(callback.getResult() != null) {
+                callback.getResult().addCancellationCallback(new CollectionActionCancellationCallback(getStrategy(), callback));
+            }
             // All devices succeeded.
             Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues = initiateRead(devices);
             for (PaoIdentifier pao : devicesToPointValues.keySet()) {
@@ -136,7 +140,10 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
 
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
-        // not supported
-        
+        // doesn't support cancellation
+        CollectionActionCancellationCallback callback = result.getCancellationCallback(getStrategy());
+        if (callback != null) {
+            callback.cancel();
+        }
     }
 }

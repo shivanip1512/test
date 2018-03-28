@@ -1,6 +1,5 @@
 package com.cannontech.common.device.commands.service.impl;
 
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.CANCELLED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
@@ -35,11 +34,12 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.service.CollectionActionCancellationService;
+import com.cannontech.common.bulk.collection.device.model.StrategyType;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
@@ -87,7 +87,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 import com.google.common.collect.Lists; 
 
-public class CommandExecutionServiceImpl implements CommandExecutionService, CollectionActionCancellationService {
+public class CommandExecutionServiceImpl implements CommandExecutionService {
     private final static Logger log = YukonLogManager.getLogger(CommandExecutionServiceImpl.class);
     private final static Random random = new Random();
 
@@ -156,26 +156,28 @@ public class CommandExecutionServiceImpl implements CommandExecutionService, Col
 
                 @Override
                 public void complete() {
-                    collectionActionService.updateResult(result, !result.isCanceled()
-                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
-                    if (callback != null) {
-                        try {
-                            callback.handle(result);
-                        } catch (Exception e) {
-                            log.error(e);
+                    if (!result.isComplete()) {
+                        collectionActionService.updateResult(result, !result.isCanceled()
+                            ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                        if (callback != null) {
+                            try {
+                                callback.handle(result);
+                            } catch (Exception e) {
+                                log.error(e);
+                            }
                         }
                     }
                 }
-
+                
                 @Override
                 public void cancel() {
-                    collectionActionService.addUnsupportedToResult(CANCELED, result, devices);
+                    complete();
                 }
             };
         List<CommandRequestBase> commands =
             collection.getDeviceList().stream().map(device -> new CommandRequestDevice(command, device)).collect(
                 Collectors.toList());
-        result.setCancelationCallback(execCallback);
+        result.addCancellationCallback(new CollectionActionCancellationCallback(StrategyType.PORTER, null, execCallback));
         execute(commands, execCallback, result.getExecution(), false, context.getYukonUser());
         return result.getCacheKey();
     }
@@ -625,7 +627,8 @@ public class CommandExecutionServiceImpl implements CommandExecutionService, Col
         if (result != null) {
             result.setCanceled(true);
             collectionActionService.updateResult(result, CommandRequestExecutionStatus.CANCELING);
-            cancelExecution(result.getCancelationCallback(), user, false);
+            CollectionActionCancellationCallback callback = result.getCancellationCallback(StrategyType.PORTER);
+            cancelExecution(callback.getCommandCompletionCallback(), user, false);
         }
     }
 }

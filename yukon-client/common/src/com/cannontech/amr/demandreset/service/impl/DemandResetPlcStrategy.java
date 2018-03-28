@@ -56,6 +56,6 @@ public class DemandResetPlcStrategy implements DemandResetStrategy {
 
     @Override
     public StrategyType getStrategy() {
-        return StrategyType.PLC;
+        return StrategyType.PORTER;
     }
 }

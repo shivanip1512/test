@@ -1,5 +1,6 @@
 package com.cannontech.common.bulk.collection.device.service.impl;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 
 import java.io.File;
@@ -32,6 +33,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -62,12 +64,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 .map(pao -> new CollectionActionLogDetail(pao, detail))
                 .collect(Collectors.toList());
     }
-    
-    @Override
-    public void clearCache(int cacheKey) {
-        cache.invalidate(cacheKey);
-    }
-    
+       
     @Override
     public void appendToLog(CollectionActionResult result, CollectionActionLogDetail detail) {
         if(detail != null) {
@@ -90,16 +87,22 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 }
                 cache.getIfPresent(result.getCacheKey()).add(detail);
                 List<String> fields = new ArrayList<>();
-                fields.add(detail.getPao() != null
-                    ? dbCache.getAllPaosMap().get(detail.getPao().getPaoIdentifier().getPaoId()).getPaoName() : "");
+                fields.add(detail.getDevice() != null ? dbCache.getAllPaosMap().get(detail.getDevice().getPaoIdentifier().getPaoId()).getPaoName() : "");
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
                 fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
                 fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
-
                 if (result.getAction().contains(POINT_DATA)) {
-                    fields.add(detail.getValue() != null
-                        ? pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())
-                        : "");
+                    String value = detail.getValue() != null
+                        ? "\""+pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())+"\"": "";
+                    fields.add(value);
+                } 
+                if (result.getAction().contains(LAST_VALUE) && StringUtils.isNotEmpty(detail.getLastValue())) {
+                    String value = detail.getLastValue().replaceAll("/", "");
+                    value =  "\"" + value + "\"";
+                    /*"MCT-410iL 1000026  
+Config data received: 00 00 00 00 00 00 00 00 00 00 00 00 00"*/
+                    /*BUG*/
+                    fields.add(value);
                 }
 
                 fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
