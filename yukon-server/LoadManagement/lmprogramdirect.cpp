@@ -644,7 +644,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     CTILOG_DEBUG(dout, "Gear Change, LM Program: " << getPAOName() << ", previous gear number: " << previousGearNumber << ", new gear number: " << _currentgearnumber);
                 }
 
-                expectedLoadReduced = updateProgramControlForGearChange(currentTime, previousGearNumber, multiPilMsg, multiDispatchMsg);
+                expectedLoadReduced = updateProgramControlForAutomaticGearChange(currentTime, previousGearNumber, multiPilMsg, multiDispatchMsg);
             }
             else
             {
@@ -2626,7 +2626,7 @@ BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, vector<Cti
             {
                 CTILOG_DEBUG(dout, "Gear Change, LM Program: " << getPAOName() << ", previous gear number: " << previousGearNumber << ", new gear number: " << _currentgearnumber);
             }
-            returnBoolean = ( 0.0 > updateProgramControlForGearChange(currentTime, previousGearNumber, multiPilMsg, multiDispatchMsg));
+            returnBoolean = ( 0.0 > updateProgramControlForAutomaticGearChange(currentTime, previousGearNumber, multiPilMsg, multiDispatchMsg));
         }
         else
         {
@@ -2642,13 +2642,16 @@ BOOL CtiLMProgramDirect::maintainProgramControl(LONG currentPriority, vector<Cti
 }
 
 /*---------------------------------------------------------------------------
-    updateProgramControlForGearChange
+    updateProgramControlForAutomaticGearChange
 
     Handles the changing of gears within a running program by sending pil
     requests to change the type of shed or cycle depending on the original
     gear control method and the new gear method.
+
+    Manual control does not use this but simply sends out the new commands
+    as if a new start message was sent.
 ---------------------------------------------------------------------------*/
-DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(CtiTime currentTime, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
+DOUBLE CtiLMProgramDirect::updateProgramControlForAutomaticGearChange(CtiTime currentTime, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg)
 {
     DOUBLE expectedLoadReduced = 0.0;
 

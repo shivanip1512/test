@@ -95,7 +95,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     BOOL maintainProgramControl(LONG currentPriority, std::vector<CtiLMControlAreaTrigger*>& controlAreaTriggers, LONG secondsFromBeginningOfDay, CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isPastMinResponseTime, BOOL isTriggerCheckNeeded);
     BOOL hasGearChanged(LONG currentPriority,         std::vector<CtiLMControlAreaTrigger*> controlAreaTriggers, CtiTime currentTime, CtiMultiMsg* multiDispatchMsg, BOOL isTriggerCheckNeeded);
     CtiLMProgramDirectGear* getCurrentGearObject();
-    DOUBLE updateProgramControlForGearChange(CtiTime currentTime, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
+    DOUBLE updateProgramControlForAutomaticGearChange(CtiTime currentTime, LONG previousGearNumber, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     BOOL refreshStandardProgramControl(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
     DOUBLE manualReduceProgramLoad(CtiTime currentTime, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
