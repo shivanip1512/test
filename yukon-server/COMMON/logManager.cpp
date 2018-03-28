@@ -61,7 +61,7 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
 {
     const std::string lowercaseFileName = boost::algorithm::to_lower_copy(baseFileName);
     const std::string date_regex_spec = "2\\d{7}";
-    const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "\\.log(.zip)?$";
+    const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "\\.log(\\.zip)?$";
 
     std::string input(fileToDelete);
     CtiToLower(input);
