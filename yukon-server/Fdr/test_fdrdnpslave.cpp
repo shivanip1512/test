@@ -375,7 +375,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
         "c0 ca 81 00 00 1e 01 28 02 00 03 00 00 3f 01 00 ef cc "
         "00 04 00 01 40 01 00 00 01 02 28 02 00 01 00 01 2e 4a "
         "02 00 81 14 01 28 01 00 00 00 01 13 00 00 00 28 69 58 "
-        "01 28 01 00 06 00 01 00 00 00 00 0a 02 28 01 00 3d 42 "
+        "01 28 01 00 06 00 01 40 01 00 00 0a 02 28 01 00 17 f7 "
         "05 00 01 f9 b6");
 
     /*
@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
     28 01  28 01 00 - 32 bit analog output with status, 2 byte count, 2 byte index, 1 object
     06 00 - index 6
     01 - online
-    00 00 00 00 
+    40 01 00 00 - value 320
 
     0a 02  28 01 00 - binary output with status, 2 byte count, 2 byte index, 1 object
     05 00 - index 5

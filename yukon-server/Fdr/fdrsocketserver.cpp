@@ -624,8 +624,9 @@ bool CtiFDRSocketServer::sendMessageToForeignSys(CtiMessage *aMessage)
     {
         return false;
     }
-    // need to update this in my list always
+    // need to update this in my lists always
     updatePointByIdInList (getSendToList(), localMsg);
+    updatePointByIdInList (getReceiveFromList(), localMsg);
 
     // if this is a response to a registration, do nothing
     if (localMsg->getTags() & TAG_POINT_MOA_REPORT)

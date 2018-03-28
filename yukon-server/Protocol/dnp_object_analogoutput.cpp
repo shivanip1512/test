@@ -16,8 +16,7 @@ namespace DNP {
 
 AnalogOutputStatus::AnalogOutputStatus(int group, int variation) : Object(group, variation)
 {
-    _longValue = 0;
-    _doubleValue = 0.0;
+    _value = 0.0;
     _flags.raw = 0;
     _flags.online = true;
 }
@@ -25,8 +24,7 @@ AnalogOutputStatus::AnalogOutputStatus(int group, int variation) : Object(group,
 
 AnalogOutputStatus::AnalogOutputStatus(int variation) : Object(Group, variation)
 {
-    _longValue = 0;
-    _doubleValue = 0.0;
+    _value = 0.0;
     _flags.raw = 0;
     _flags.online = true;
 }
@@ -66,7 +64,7 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
         {
             _flags.raw = buf[pos++];
 
-            _longValue = restoreValue<int32_t>(buf + pos);
+            _value = restoreValue<int32_t>(buf + pos);
 
             pos += 4;
 
@@ -77,7 +75,7 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
         {
             _flags.raw = buf[pos++];
 
-            _longValue = restoreValue<int16_t>(buf + pos);
+            _value = restoreValue<int16_t>(buf + pos);
 
             pos += 2;
 
@@ -88,7 +86,7 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
         {
             _flags.raw = buf[pos++];
 
-            _doubleValue = restoreValue<float>(buf + pos);
+            _value = restoreValue<float>(buf + pos);
 
             pos += 4;
 
@@ -99,7 +97,7 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
         {
             _flags.raw = buf[pos++];
 
-            _doubleValue = restoreValue<double>(buf + pos);
+            _value = restoreValue<double>(buf + pos);
 
             pos += 8;
 
@@ -135,7 +133,7 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            serializeValue<int32_t>(buf + pos, _longValue);
+            serializeValue<int32_t>(buf + pos, _value);
 
             pos += 4;
 
@@ -146,7 +144,7 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            serializeValue<int16_t>(buf + pos, _longValue);
+            serializeValue<int16_t>(buf + pos, _value);
 
             pos += 2;
 
@@ -157,7 +155,7 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            serializeValue<float>(buf + pos, _doubleValue);
+            serializeValue<float>(buf + pos, _value);
 
             pos += 4;
 
@@ -168,7 +166,7 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
         {
             buf[pos++] = _flags.raw;
 
-            serializeValue<double>(buf + pos, _doubleValue);
+            serializeValue<double>(buf + pos, _value);
 
             pos += 8;
 
@@ -209,7 +207,7 @@ int AnalogOutputStatus::getSerializedLen(void) const
 
 void AnalogOutputStatus::setValue(double value)
 {
-    _doubleValue = value;
+    _value = value;
 }
 
 
@@ -229,15 +227,10 @@ CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
     {
         case AOS_32Bit:
         case AOS_16Bit:
-        {
-            val = _longValue;
-            break;
-        }
-
         case AOS_SingleFloat:
         case AOS_DoubleFloat:
         {
-            val = _doubleValue;
+            val = _value;
             break;
         }
 
@@ -265,8 +258,7 @@ CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
 
 AnalogOutput::AnalogOutput(int variation) : Object(Group, variation)
 {
-    _longValue = 0;
-    _doubleValue = 0.0;
+    _value = 0.0;
     _status = 0;
 }
 
@@ -305,7 +297,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
     {
         case AO_32Bit:
         {
-            _longValue = restoreValue<int32_t>(buf + pos);
+            _value = restoreValue<int32_t>(buf + pos);
 
             pos += 4;
 
@@ -316,7 +308,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
         case AO_16Bit:
         {
-            _longValue = restoreValue<int16_t>(buf + pos);
+            _value = restoreValue<int16_t>(buf + pos);
 
             pos += 2;
 
@@ -327,7 +319,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
         case AO_SingleFloat:
         {
-            _doubleValue = restoreValue<float>(buf + pos);
+            _value = restoreValue<float>(buf + pos);
 
             pos += 4;
 
@@ -338,7 +330,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
         case AO_DoubleFloat:
         {
-            _doubleValue = restoreValue<double>(buf + pos);
+            _value = restoreValue<double>(buf + pos);
 
             pos += 8;
 
@@ -374,7 +366,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
     {
         case AO_32Bit:
         {
-            serializeValue<int32_t>(buf + pos, _longValue);
+            serializeValue<int32_t>(buf + pos, _value);
 
             pos += 4;
 
@@ -385,7 +377,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
         case AO_16Bit:
         {
-            serializeValue<int16_t>(buf + pos, _longValue);
+            serializeValue<int16_t>(buf + pos, _value);
 
             pos += 2;
 
@@ -396,7 +388,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
         case AO_SingleFloat:
         {
-            serializeValue<float>(buf + pos, _doubleValue);
+            serializeValue<float>(buf + pos, _value);
 
             pos += 4;
 
@@ -407,7 +399,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
         case AO_DoubleFloat:
         {
-            serializeValue<double>(buf + pos, _doubleValue);
+            serializeValue<double>(buf + pos, _value);
 
             pos += 8;
 
@@ -462,14 +454,10 @@ double AnalogOutput::getValue() const
     {
         case AO_32Bit:
         case AO_16Bit:
-        {
-            return _longValue;
-        }
-
         case AO_SingleFloat:
         case AO_DoubleFloat:
         {
-            return _doubleValue;
+            return _value;
         }
 
         default:
@@ -484,8 +472,7 @@ double AnalogOutput::getValue() const
 
 void AnalogOutput::setControl(double value)
 {
-    _doubleValue = value;
-    _longValue   = value;
+    _value   = value;
 }
 
 

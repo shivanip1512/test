@@ -9,8 +9,7 @@ namespace DNP {
 class IM_EX_PROT AnalogOutputStatus : public Object
 {
 private:
-    long   _longValue;
-    double _doubleValue;
+    double _value;
 
     union aofu //  analog out flag union, only for Slick's parsing pleasure
     {
@@ -68,8 +67,7 @@ public:
 class IM_EX_PROT AnalogOutput : public Object
 {
 private:
-    long   _longValue;
-    double _doubleValue;
+    double _value;
 
     unsigned char _status;
 
