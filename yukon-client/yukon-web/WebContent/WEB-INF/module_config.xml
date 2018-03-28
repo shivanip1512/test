@@ -212,12 +212,6 @@
           </page>
         </pages>
       </page>
-      <page name="groupCommand.results" type="BASIC">
-        <link>/group/commander/resultList</link>
-        <pages>
-            <page name="groupCommand.details" type="BASIC"/>
-        </pages>
-      </page>
       <page name="deviceGroupUpload" type="BASIC"/>
       <page name="dataStreaming" type="BASIC">
         <link>/dataStreaming/configurations</link>

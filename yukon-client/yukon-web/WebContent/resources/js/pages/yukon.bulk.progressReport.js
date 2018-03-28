@@ -151,7 +151,7 @@ yukon.bulk.progressReport = (function () {
             }
             
             //update stop time and stop updating page when complete
-            if (data.status == 'COMPLETE') {
+            if (data.status == 'COMPLETE' || data.status == 'CANCELED') {
                 clearTimeout(_updateTimeout);
                 if (data.stopTime) {
                     var timeText = moment(data.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);

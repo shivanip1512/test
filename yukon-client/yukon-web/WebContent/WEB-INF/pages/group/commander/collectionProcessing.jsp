@@ -1,18 +1,11 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="tools" page="bulk.sendCommand">
     
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.sendCommand" deviceCollection="${deviceCollection}">
-        
-        <%-- ERROR MSG --%>
-        <c:if test="${not empty param.errorMsg}">
-            <div class="error stacked">${param.errorMsg}</div>
-            <c:set var="errorMsg" value="" scope="request"/>
-        </c:if>
         
         <form id="collectionProcessingForm" action="<cti:url value="/group/commander/executeCollectionCommand"/>" method="post">
             <cti:csrfToken />
@@ -22,9 +15,10 @@
             <div class="stacked">
                 <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
                 <h4>${selectCommandLabel}:</h4>
-                <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
+                <amr:commandSelector id="commandSelectId" selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
                     selectedCommandString="${param.commandString}"
                     selectedSelectValue="${param.commandSelectValue}"/>
+                <input type="hidden" id="commandFromDropdown" name="commandFromDropdown"/>
             </div>
             <c:set var="manualCommands" value="false" />
             <cti:checkRolesAndProperties value="EXECUTE_MANUAL_COMMAND">
@@ -43,11 +37,13 @@
                     </tags:nameValueContainer2>
                 </c:if>
                 <div class="page-action-area">
-                    <cti:button nameKey="execute" type="submit" classes="primary action" busy="true"/>
+                    <cti:button nameKey="execute" classes="primary action js-execute-command" busy="true"/>
                 </div>
             </c:if>
         </form>
         
     </tags:bulkActionContainer>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.bulk.commandProcessing.js"/>
     
 </cti:standardPage>
