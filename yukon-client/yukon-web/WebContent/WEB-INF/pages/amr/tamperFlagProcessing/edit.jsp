@@ -94,7 +94,7 @@
                         <c:if test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
                             <c:set var="toggleText" value="disable"/>
                         </c:if>
-                        <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" 
+                        <cti:button id="toggleMonitor" nameKey="${toggleText}" busy="true" 
                             data-disable-group="actionButtons"/>
                             <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
                         <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
