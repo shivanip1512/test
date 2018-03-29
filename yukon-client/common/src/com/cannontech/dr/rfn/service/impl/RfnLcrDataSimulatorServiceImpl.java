@@ -92,7 +92,6 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         PROTECTION_TIME_RELAY_N((byte)0x13, 3, 3),
         CLP_TIME_FOR_RELAY_N((byte)0x14, 3, 3),
         //Power Quality Response (GridBallast) fields:
-        /*
         LOV_TRIGGER((byte)0x44, 2, 1),
         LOV_RESTORE((byte)0x45, 2, 1),
         LOV_TRIGGER_TIME((byte)0x46, 2, 1),
@@ -112,9 +111,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         LOF_MAX_EVENT_DURATION((byte)0x54, 2, 1),
         LOV_MAX_EVENT_DURATION((byte)0x55, 2, 1),
         MINIMUM_EVENT_SEPARATION((byte)0x56, 2, 1),
-        //POWER_QUALITY_RESPONSE_LOG_BLOB((byte)0x57, ?, 1), //TODO: handle variable length
         POWER_QUALITY_RESPONSE_ENABLED((byte)0x58, 1, 1),
-        */
 		;
 
         private final byte type;
@@ -136,7 +133,6 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
-    private List<PerformanceVerificationEventMessage> eventMessages = null;
     private static final JAXBContext jaxbContext = initJaxbContext();
     
     //minute of the day to send a request at/list of devices to send a read request to
@@ -372,23 +368,30 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 String expresscomHeader = "E20170";
                 String deviceTypeId = "043E"; //0x043E = 1086 (LCR-6700)
                 String tlvMajorMinor = "00"; //TLV version = major.minor.revision. Major/minor in first byte...
-                String tlvRevision = "04"; //...revision in next byte
+                String tlvRevision = "05"; //...revision in next byte
                 String headerCountTypeAndLength = "000002"; //"TLV Count" - TypeId: 0, Length: 2 bytes
-                String headerCountValue = "0044"; //0x44 = 68. TLV type IDs supported by device.
+                String headerCountValue = "0059"; //TLV type IDs supported by device. 
+                                                  //For 0.0.4: 0x49 = 73. For 0.0.5: 0x59 = 89.
                 byte[] header = Hex.decode(expresscomHeader + deviceTypeId + tlvMajorMinor + tlvRevision + 
                                            headerCountTypeAndLength + headerCountValue);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 outputStream.write(header);
                 // Add UTC 
-                writeUTC(outputStream);
-                // Generate TLV message
-                byte[] message = getTLVMessage();
-                outputStream.write(message);
-
+                DateTime reportTime = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay();
+                writeUTC(outputStream, reportTime);
+                
+                // Generate TLV values that translate to point data
+                byte[] data = generateTlvPointData();
+                outputStream.write(data);
+                
+                //Add PQR event log blob
+                //byte[] pqrEvents = generatePqrEvents(reportTime);
+                //TODO: outputStream.write(pqrEvents);
+                
                 // Add verification messages
                 outputStream.write((0x16 >> 4) & 0x0f); // Upper nibble of first byte
                 outputStream.write((0x16 & 0x0f) << 4); // Lower nibble of second byte
-                loadPerformanceVerificationEventMessages();
+                List<PerformanceVerificationEventMessage> eventMessages = loadPerformanceVerificationEventMessages();
                 byte messageLength;
                 if (eventMessages != null && !eventMessages.isEmpty()) {
                     // Add message length (No of bytes)
@@ -469,14 +472,22 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         return readArchiveRequest;
     }
 
-    private void writeUTC(ByteArrayOutputStream outputStream) {
+    private byte[] generatePqrEvents(DateTime reportTime) {
+        Instant eventStart = reportTime.minus(Duration.standardHours(12)).toInstant();
+        //TODO
+        //1. Build a reasonable series of PqrEvents with timestamps based on reportTime
+        //2. Convert events into appropriate bytes
+        return null;
+    }
+    
+    private void writeUTC(ByteArrayOutputStream outputStream, DateTime reportTime) {
         // UTC type
         outputStream.write((0x01 >> 4) & 0x0f);
         outputStream.write((0x01 & 0x0f) << 4);
         // UTC length as 4-byte
         outputStream.write(4);
         // Generate UTC field values (4-byte)
-        long timeInSec = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().getMillis() / 1000;
+        long timeInSec = reportTime.getMillis() / 1000;
         writeLongValueAsByteArray(outputStream, timeInSec);
     }
 
@@ -493,9 +504,9 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     }
     
     /**
-     * Generate byte Array (part of TLV report) from TLVField enum and generate random values for each field.
+     * Generate byte Array (part of TLV report) from TLVField enum and generate values for each field.
      */
-    private byte[] getTLVMessage() {
+    private byte[] generateTlvPointData() {
         List<Byte> data = new ArrayList<>();
         int index = 0;
         for (TLVField field : TLVField.values()) {
@@ -505,7 +516,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                 // Upper Nibble of first bye and Lower nibble of second byte makes FieldType in TLV format
                 data.add(index++, (byte) ((field.type >> 4) & 0x0f));
                 data.add(index++, (byte) ((field.type & 0x0f) << 4));
-                data.add(index++, (byte) field.length); //TODO: handle fields with variable length
+                data.add(index++, (byte) field.length);
                 
                 if (field == TLVField.RELAY_N_RUNTIME || field == TLVField.RELAY_N_SHEDTIME ||
                     field == TLVField.RELAY_N_PROGRAM_ADDRESS|| field == TLVField.RELAY_N_SPLINTER_ADDRESS) {
@@ -533,7 +544,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                     valueIndex = field.length; // Let everyone know we took care of this field in its entirety
                 }
 
-                if(field == TLVField.RELAY_INTERVAL_START_TIME) {
+                if (field == TLVField.RELAY_INTERVAL_START_TIME) {
                     // Add relay interval start time in sec(24 hour before UTC field value).Hourly data will be added after this till UTC (field value).
                     long intervalStartTime = new DateTime(DateTimeZone.UTC).minusHours(24).withTimeAtStartOfDay().getMillis()/1000;
                     ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
@@ -545,32 +556,103 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
                     valueIndex = field.length;
                 }
                 
-                //TODO: handle PQR fields:
-                /*
-                LOV_TRIGGER(68),
-                LOV_RESTORE(69),
-                LOV_TRIGGER_TIME(70),
-                LOV_RESTORE_TIME(71),
-                LOV_EVENT_COUNT(72),
-                LOF_TRIGGER(73),
-                LOF_RESTORE(74),
-                LOF_TRIGGER_TIME(75),
-                LOF_RESTORE_TIME(76),
-                LOF_EVENT_COUNT(77),
-                LOF_START_RANDOM_TIME(78),
-                LOF_END_RANDOM_TIME(79),
-                LOV_START_RANDOM_TIME(80),
-                LOV_END_RANDOM_TIME(81),
-                LOF_MIN_EVENT_DURATION(82),
-                LOV_MIN_EVENT_DURATION(83),
-                LOF_MAX_EVENT_DURATION(84),
-                LOV_MAX_EVENT_DURATION(85),
-                MINIMUM_EVENT_SEPARATION(86),
-                POWER_QUALITY_RESPONSE_LOG_BLOB(87),
-                POWER_QUALITY_RESPONSE_ENABLED(88)
-                 */
+                //TODO get "reasonable" values from Joe Childs
+                if (field == TLVField.LOV_TRIGGER) {
+                    insertTwoByteTlvField(data, index, (short) 2420); // 1/10 volts
+                }
                 
-                // Fill in remaining values with incrementing numbers
+                if (field == TLVField.LOV_RESTORE) {
+                    insertTwoByteTlvField(data, index, (short) 2400); // 1/10 volts
+                }
+                
+                if (field == TLVField.LOV_TRIGGER_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOV_RESTORE_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOV_EVENT_COUNT) {
+                    insertTwoByteTlvField(data, index, (short) 10); // counts
+                }
+                
+                //1000 millis / 60hz = 16.66... millis per oscillation
+                if (field == TLVField.LOF_TRIGGER) {
+                    insertTwoByteTlvField(data, index, (short) 18); // millis
+                }
+                
+                //1000 millis / 60hz = 16.66... millis per oscillation
+                if (field == TLVField.LOF_RESTORE) {
+                    insertTwoByteTlvField(data, index, (short) 17); // millis
+                }
+                
+                if (field == TLVField.LOF_TRIGGER_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOF_RESTORE_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOF_EVENT_COUNT) {
+                    insertTwoByteTlvField(data, index, (short) 10); // counts
+                }
+                
+                if (field == TLVField.LOF_START_RANDOM_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOF_END_RANDOM_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOV_START_RANDOM_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOV_END_RANDOM_TIME) {
+                    insertTwoByteTlvField(data, index, (short) 1000); // millis
+                }
+                
+                if (field == TLVField.LOF_MIN_EVENT_DURATION) {
+                    insertTwoByteTlvField(data, index, (short) 60); // seconds
+                }
+                
+                if (field == TLVField.LOV_MIN_EVENT_DURATION) {
+                    insertTwoByteTlvField(data, index, (short) 60); // seconds
+                }
+                
+                if (field == TLVField.LOF_MAX_EVENT_DURATION) {
+                    insertTwoByteTlvField(data, index, (short) (60*60)); // seconds
+                }
+                
+                if (field == TLVField.LOV_MAX_EVENT_DURATION) {
+                    insertTwoByteTlvField(data, index, (short) (60*60)); // seconds
+                }
+                
+                if (field == TLVField.MINIMUM_EVENT_SEPARATION) {
+                    insertTwoByteTlvField(data, index, (short) 60); // seconds
+                }
+                
+                if (field == TLVField.POWER_QUALITY_RESPONSE_ENABLED) {
+                    data.add(index++, (byte) 1); // 0 = disabled, 1 = enabled
+                }
+                
+                // Fill in remaining values with incrementing numbers. (Affects all TLVFields not handled above).
+                /*
+                SERIAL_NUMBER
+                SSPEC
+                FIRMWARE_VERSION
+                SPID
+                GEO_ADDRESS
+                FEEDER_ADDRESS
+                ZIP_ADDRESS
+                UDA_ADDRESS
+                REQUIRED_ADDRESS
+                SUBSTATION_ADDRESS,
+                BLINK_COUNT
+                */
                 while (valueIndex < field.length) {
                     data.add(index++, (byte) (data.get(index-1) + 1));
                     valueIndex++;
@@ -582,6 +664,12 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         return ByteUtil.convertListToArray(data);
     }
 
+    private void insertTwoByteTlvField(List<Byte> data, int index, short value) {
+        ByteBuffer bytes = ByteBuffer.allocate(2).putShort(value);
+        data.add(index++, bytes.get(0));
+        data.add(index++, bytes.get(1));
+    }
+    
     /**
      * Generates the raw XML report to be encoded.
      * 
@@ -642,7 +730,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             // Create broadcast verification message ids
             BroadcastVerificationMessages verificationMessages =
                 objectFactory.createDRReportBroadcastVerificationMessages();
-            loadPerformanceVerificationEventMessages();
+            List<PerformanceVerificationEventMessage> eventMessages = loadPerformanceVerificationEventMessages();
 
             if (eventMessages != null && !eventMessages.isEmpty()) {
                 for (PerformanceVerificationEventMessage eventMsg : eventMessages) {
@@ -669,10 +757,10 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     /*
      * This method loads Performance Verification Event Messages for the simulator
      */
-    private void loadPerformanceVerificationEventMessages() {
+    private List<PerformanceVerificationEventMessage> loadPerformanceVerificationEventMessages() {
         Instant now = new Instant();
         Range<Instant> last24HourRange = Range.inclusive(now.minus(Duration.standardHours(24)), now);
-        eventMessages = performanceVerificationDao.getEventMessages(last24HourRange);
+        return performanceVerificationDao.getEventMessages(last24HourRange);
     }
 
     /**
