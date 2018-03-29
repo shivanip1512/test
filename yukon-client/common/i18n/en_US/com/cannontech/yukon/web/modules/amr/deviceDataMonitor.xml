@@ -130,6 +130,8 @@
     <!-- DeviceDataMonitorController view.jsp -->
     <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.pageName">Device Data Monitoring</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.areYouSureTitleVerb">view</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.areYouSureMsgVerb">viewing</entry>
 
     <!-- validation errors -->
     <entry key="yukon.web.modules.amr.deviceDataMonitor.empty.name">Name cannot be empty.</entry>

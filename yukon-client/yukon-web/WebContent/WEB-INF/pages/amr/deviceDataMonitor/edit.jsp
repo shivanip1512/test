@@ -18,11 +18,11 @@
 
     <%@ include file="shared.jspf"%>
 
-    <form action="toggleEnabled" method="post" class="js-toggle-enabled-form">
+    <form action="toggleEnabled" id="toggleEnabledForm" method="post" class="js-toggle-enabled-form">
         <cti:csrfToken/>
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
-    <form action="delete" method="post" class="js-delete-form">
+    <form action="delete" method="post" id="deleteMonitorForm">
         <cti:csrfToken/>
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
@@ -247,13 +247,12 @@
     <%-- update / enable_disable / delete / cancel --%>
     <div class="page-action-area">
         <cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="update" classes="js-save-monitor primary action"/>
-            <c:if test="${monitor.enabled}">
-                <cti:button classes="js-toggle-enabled js-calculating-disable" nameKey="disable"/>
-            </c:if>
+            <cti:button nameKey="save" classes="js-save-monitor primary action"/>
+            <c:set var="enableDisableKey" value="disable"/>
             <c:if test="${!monitor.enabled}">
-                <cti:button classes="js-toggle-enabled js-calculating-disable" nameKey="enable"/>
+                <c:set var="enableDisableKey" value="enable"/>
             </c:if>
+            <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" classes="js-calculating-disable" busy="true" data-disable-group="actionButtons"/>
             <cti:button id="deleteButton" nameKey="delete" classes="delete js-calculating-disable"/>
             <d:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
             <cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
@@ -267,5 +266,5 @@
             <cti:button nameKey="cancel" href="${startMonitorUrl}"/>
         </cti:displayForPageEditModes>
     </div>
-
+<cti:includeScript link="/resources/js/pages/yukon.ami.monitor.js"/>
 </cti:standardPage>

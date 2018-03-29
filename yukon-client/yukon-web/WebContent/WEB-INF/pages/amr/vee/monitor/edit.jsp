@@ -11,22 +11,15 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="amr" page="validationEditor.${mode}" >
-<style>.validation-value{text-align: right;margin-right: 5px !important;}</style>
-<script type="text/javascript">
-    $(function() {
-        $(document).on('yukon.dialog.confirm.cancel', function(ev) {
-            yukon.ui.unbusy('#deleteButton');
-            $('.page-action-area .button').enable();
-        });
-    });
+<tags:setFormEditMode mode="${mode}" />
+<c:set var="viewMode" value="${false}" />
+        <cti:displayForPageEditModes modes="VIEW">
+            <c:set var="viewMode" value="${true}" />
+        </cti:displayForPageEditModes>
 
-    function deleteValidationMonitor() {
-        $("button[data-disable-group=actionButtons]").each( function(){
-            this.disabled = true;
-        });
-        $('#configDeleteForm').submit();
-    };
-</script>
+        <c:set var="tableClass" value="${viewMode ? '' : 'with-form-controls'}" />
+        
+<style>.validation-value{text-align: right;margin-right: 5px !important;}</style>
 
     <c:if test="${not empty editError}">
         <div class="error">${fn:escapeXml(editError)}</div>
@@ -39,7 +32,7 @@
     
     <%-- MISC FORMS --%>
     <cti:url var="deleteUrl" value="/amr/vee/monitor/delete"/>
-    <form id="configDeleteForm" action="${deleteUrl}" method="post">
+    <form id="deleteMonitorForm" action="${deleteUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="deleteValidationMonitorId" value="${validationMonitor.validationMonitorId}">
     </form>
@@ -62,8 +55,8 @@
             <form:hidden path="validationMonitorId" />
         </c:if>
         <form:hidden path="evaluatorStatus" />
-       <tags:sectionContainer2 nameKey="setup">
-            <tags:nameValueContainer2>
+       <tags:sectionContainer2 nameKey="mainDetail.sectionHeader">
+            <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
                 
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".name">
@@ -119,7 +112,9 @@
                 
                 <%-- enable/disable monitoring --%>
                 <c:if test="${validationMonitor.validationMonitorId > 0}">
-                    <tags:nameValue2 nameKey=".validationMonitoring">
+                    <c:if test="${validationMonitor.evaluatorStatus.description=='Enabled'}"><c:set var="clazz" value="success"/></c:if>
+                    <c:if test="${validationMonitor.evaluatorStatus.description=='Disabled'}"><c:set var="clazz" value="error"/></c:if>
+                    <tags:nameValue2 nameKey=".validationMonitoring" valueClass="${clazz}">
                         ${validationMonitor.evaluatorStatus.description}
                     </tags:nameValue2>
                 </c:if>
@@ -131,23 +126,31 @@
         <div class="page-action-area">
             <c:choose>
                 <c:when test="${validationMonitor.validationMonitorId >= 0}">
-                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
-                    <c:set var="toggleText" value="enable"/>
-                    <c:if test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
-                        <c:set var="toggleText" value="disable"/>
-                    </c:if>
-                     <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
-                     <cti:button id="deleteButton" nameKey="delete" onclick="deleteValidationMonitor();" busy="true" 
-                        data-disable-group="actionButtons" classes="delete"/>
+                <cti:displayForPageEditModes modes="VIEW">
+                    <cti:url var="editUrl" value="/amr/vee/monitor/${validationMonitor.validationMonitorId}/edit" />
+                <cti:button classes="js-calculating-disable" nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+                </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                    <cti:button nameKey="save" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
+                </cti:displayForPageEditModes>
+                <c:set var="toggleText" value="enable"/>
+                <c:if test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
+                    <c:set var="toggleText" value="disable"/>
+                </c:if>
+                <cti:displayForPageEditModes modes="EDIT">
+                    <cti:button id="toggleMonitor" nameKey="${toggleText}" busy="true" data-disable-group="actionButtons"/>
+                    <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
+                    <cti:url var="backUrl" value="/amr/vee/monitor/${validationMonitor.validationMonitorId}/view"/>
+                    <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
+                </cti:displayForPageEditModes>
                 </c:when>
                 <c:otherwise>
                     <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" classes="primary action"/>
                 </c:otherwise>
             </c:choose>
-            <cti:url var="backUrl" value="/meter/start"/>
-            <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
+            
         </div>
     </form:form>
-        
+<cti:includeScript link="/resources/js/pages/yukon.ami.monitor.js"/>
 </cti:standardPage>

@@ -44,7 +44,7 @@
     </table>
     
     <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
-    <form id="deleteStatusPointMonitor" action="${submitUrl}" method="post">
+    <form id="deleteMonitorForm" action="${submitUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
     </form>
@@ -166,14 +166,13 @@
         
         <%-- create / update / delete --%>
         <div class="page-action-area">
-            <cti:button nameKey="update" type="submit" busy="true" classes="primary action" data-disable-group="actionButtons"/>
+            <cti:button nameKey="save" type="submit" busy="true" classes="primary action" data-disable-group="actionButtons"/>
             <c:set var="enableDisableKey" value="disable"/>
             <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
                 <c:set var="enableDisableKey" value="enable"/>
             </c:if>
             <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>
-            <cti:button id="deleteButton" nameKey="delete" onclick="$('#deleteStatusPointMonitor').submit();" busy="true" 
-                        data-disable-group="actionButtons" classes="delete"/>
+            <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${statusPointMonitor.statusPointMonitorName}"/>
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
@@ -181,5 +180,5 @@
             <cti:button nameKey="cancel" href="${backUrl }" busy="true" data-disable-group="actionButtons"/>
         </div>
     </form:form>
-    
+<cti:includeScript link="/resources/js/pages/yukon.ami.monitor.js"/>
 </cti:standardPage>

@@ -40,12 +40,6 @@ yukon.StatusPointMonitor = (function () {
 
 $(function() {
     
-    $(document).on('yukon.dialog.confirm.cancel', function(ev) {
-        yukon.ui.unbusy('#deleteButton');
-        $('.page-action-area .button').enable();
-    });
-    
-    
     /** ADD RULE */
     $('.js-add').click(function(event) {
         
@@ -63,8 +57,5 @@ $(function() {
         yukon.StatusPointMonitor.reindexAll();
     });
     
-    $(document).on('click', '#toggleMonitor', function() {
-        $('#toggleEnabledForm').submit();
-    });
     
 });

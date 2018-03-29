@@ -13,39 +13,6 @@
 
 <cti:standardPage module="amr" page="outageMonitorConfig.${mode}">
 
-    
-    <script type="text/javascript">
-    
-        $(function() {
-            toggleReadFrequencyOptions();
-            $(document).on('yukon.dialog.confirm.cancel', function(ev) {
-                yukon.ui.unbusy('#deleteButton');
-                $('.page-action-area .button').enable();
-            });
-        });
-    
-        function toggleReadFrequencyOptions() {
-            if ($("#outageMonitorId").val().length === 0 ) {
-                if ($('#scheduleGroupCommand').is(':checked')) {
-                    $('#scheduleNameTr').show();
-                    $('#readFrequencyTr').show();
-                } else {
-                    $('#scheduleNameTr').hide();
-                    $('#readFrequencyTr').hide();
-                }
-            }
-        }
-
-        function deleteOutageMonitor() {
-            $('#deleteMonitorForm').submit();
-        }
-
-        function rewriteOutageGroupName(textEl) {
-            $('#outageGroupNameDiv').innerHTML = '${outageGroupBase}' + textEl.value;
-        }
-        
-    </script>
-    
     <c:if test="${not empty editError}">
         <div class="error">${fn:escapeXml(editError)}</div>
     </c:if>
@@ -85,7 +52,7 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <tags:input path="outageMonitorName" size="60" onkeyup="rewriteOutageGroupName(this);" onchange="rewriteOutageGroupName(this);" />
+                    <tags:input path="outageMonitorName" id="outageMonitorName" inputClass="js-monitor-name" size="60" placeholder="${outageGroupBase}"/>
                 </tags:nameValue2>
                 
                 <%-- device group --%>
@@ -105,7 +72,7 @@
             
                 <%-- outages group --%>
                 <tags:nameValue2 nameKey=".label.outagesGroup">
-                    <div id="outageGroupNameDiv">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(outageMonitor.outageMonitorName)}</div>
+                    <div class="group-base" data-groupbase="${fn:escapeXml(outageGroupBase)}">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(outageMonitor.outageMonitorName)}</div>
                 </tags:nameValue2>
             
                 <%-- number of outages --%>
@@ -163,7 +130,7 @@
             <tags:nameValueContainer>
                 
                 <%-- schedule read --%>
-                <tags:checkbox path="scheduleGroupCommand" id="scheduleGroupCommand" onclick="toggleReadFrequencyOptions();"/>
+                <tags:checkbox path="scheduleGroupCommand" id="scheduleGroupCommand"/>
                 <i:inline key=".label.scheduleReadDescription"/>
                 
                 <cti:msg2 var="scheduleReadText" key=".label.scheduleRead"/>
@@ -193,13 +160,13 @@
         <div class="page-action-area">
             <c:choose>
                 <c:when test="${not empty outageMonitor.outageMonitorId}">
-                    <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
-                    <c:set var="toggleText" value="enable"/>
-                    <c:if test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
-                        <c:set var="toggleText" value="disable"/>
+                    <cti:button nameKey="save" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
+                    <c:set var="enableDisableKey" value="disable"/>
+                    <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
+                        <c:set var="enableDisableKey" value="enable"/>
                     </c:if>
-                    <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
-                    <cti:button id="deleteButton" nameKey="delete" onclick="deleteOutageMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
+                    <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>
+                    <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete" disableGroup="actionButtons"/>
                     <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
                         <cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}" />
@@ -213,4 +180,6 @@
             <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
         </div>
     </form:form>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.outage.monitor.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.monitor.js"/>
 </cti:standardPage>

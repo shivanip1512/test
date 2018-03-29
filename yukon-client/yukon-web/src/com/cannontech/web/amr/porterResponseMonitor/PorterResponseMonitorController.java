@@ -132,7 +132,7 @@ public class PorterResponseMonitorController {
                                                            monitor.getStateGroup().toString(), 
                                                            monitor.getEvaluatorStatus().getDescription(),
                                                            userContext.getYukonUser());
-        return "redirect:editPage";
+        return "redirect:viewPage";
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)

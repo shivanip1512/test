@@ -298,7 +298,7 @@
                 <%-- monitor name --%>
                 <td>
 
-                    <cti:url var="viewValidationMonitorEditorUrl" value="/amr/vee/monitor/${monitorId}/edit"/>
+                    <cti:url var="viewValidationMonitorEditorUrl" value="/amr/vee/monitor/${monitorId}/view"/>
                     <a href="${viewValidationMonitorEditorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitorName)}"/>" >
                         ${fn:escapeXml(monitorName)}
                     </a>

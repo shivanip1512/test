@@ -166,7 +166,7 @@
 
         <%-- update / enable_disable / delete / cancel --%>
         <div class="page-action-area">
-            <cti:button nameKey="update" type="submit" busy="true" classes="primary action" data-disable-group="actionButtons"/>
+            <cti:button nameKey="save" type="submit" busy="true" classes="primary action" data-disable-group="actionButtons"/>
 
             <c:set var="monitoringKey" value="enable"/>
             <c:if test="${monitorDto.enabled}">

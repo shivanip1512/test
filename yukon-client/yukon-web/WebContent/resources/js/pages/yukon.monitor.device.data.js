@@ -263,26 +263,10 @@ yukon.ami.ddm = (function () {
         
         /** Update or create monitors */
         _monitor_save = function () {
-            _disable_btns();
+        	$('.page-action-area button, .ui-dialog-buttonset button').prop('disabled', true);
             $('.js-monitor-form').submit();
         },
         
-        /** Toggles Monitors enabling .*/
-        _monitor_toggle_enabled = function () {
-            _disable_btns();
-            $('.js-toggle-enabled-form').submit();
-        },
-        
-        /** Deletes a monitor.*/
-        _monitor_delete = function () {
-            _disable_btns();
-            $('.js-delete-form').submit();
-        },
-        
-        /** Disable the given set of buttons.*/
-        _disable_btns = function () {
-            $('.page-action-area button, .ui-dialog-buttonset button').prop('disabled', true);
-        },
         
         /** Gets processed row id from element name. 
          * @param {Object} jqueryElement - Jquery element.
@@ -637,9 +621,6 @@ yukon.ami.ddm = (function () {
             
             $('.js-save-monitor').on('click', _show_update_dialog);
             
-            $('.js-toggle-enabled').on('click', _monitor_toggle_enabled);
-            
-            $(document).on("yukon.dialog.confirm.ok", _monitor_delete);
             
             $(document).on('yukon:ami:ddm:save', _monitor_save);
             

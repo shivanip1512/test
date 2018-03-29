@@ -161,4 +161,7 @@
     <entry key="yukon.web.modules.amr.validationEditor.delete.fail.monitorNotFound">Could not delete validation monitor. Monitor with id: {0} not found.</entry>
     <entry key="yukon.web.modules.amr.validationEditor.delete.fail">Unable to delete.</entry>
     <entry key="yukon.web.modules.amr.validationEditor.monitorNotFound">Validation Monitor Does Not Exist.</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.VIEW.pageName">Device Data Monitoring</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.VIEW.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.mainDetail.sectionHeader.title">Info</entry>
 </properties>

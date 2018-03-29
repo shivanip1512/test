@@ -13,34 +13,12 @@
 
 <cti:standardPage module="amr" page="tamperFlagEditor.${mode}">
 
-<script type="text/javascript">
-
-    $(function() {
-        $(document).on('yukon.dialog.confirm.cancel', function(ev) {
-            yukon.ui.unbusy('#deleteButton');
-            $('.page-action-area .button').enable();
-        });
-    });
-    
-    function deleteTamperFlagMonitor() {
-        $("button[data-disable-group=actionButtons]").each( function(){
-            this.disabled = true;
-        });
-        $('#monitorDeleteForm').submit();
-    }
-
-    function rewriteTamperFlagGroupName(textEl) {
-        $('#tamperFlagGroupNameDiv').text('${tamperFlagGroupBase}' + textEl.value);
-    }
-    
-</script>
-
         <c:if test="${not empty editError}">
             <div class="error">${fn:escapeXml(editError)}</div>
         </c:if>
     
         <%-- MISC FORMS --%>
-        <form id="monitorDeleteForm" action="${monitorDeleteURL}" method="post">
+        <form id="deleteMonitorForm" action="${monitorDeleteURL}" method="post">
             <cti:csrfToken/>
             <input type="hidden" id="tamperFlagMonitorId" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
         </form>
@@ -70,7 +48,7 @@
             
                 <%-- name --%>
                 <tags:nameValue2 nameKey=".label.name">
-                    <tags:input path="tamperFlagMonitorName" maxlength="60" onkeyup="rewriteTamperFlagGroupName(this);" onchange="rewriteTamperFlagGroupName(this);"/>
+                    <tags:input path="tamperFlagMonitorName" maxlength="60" inputClass="js-monitor-name" />
                 </tags:nameValue2>
                 
                 <%-- device group --%>
@@ -90,12 +68,14 @@
             
                 <%-- tamper flag group --%>
                 <tags:nameValue2 nameKey=".label.tamperFlagGroup">
-                    <div id="tamperFlagGroupNameDiv">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</div>            
+                    <div class="group-base" data-groupbase="${fn:escapeXml(tamperFlagGroupBase)}">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</div>            
                 </tags:nameValue2>
             
                 <%-- enable/disable monitoring --%>
                 <c:if test="${tamperFlagMonitorId > 0}">
-                    <tags:nameValue2 nameKey=".label.tamperFlagMonitoring">
+                    <c:if test="${tamperFlagMonitor.evaluatorStatus.description=='Enabled'}"><c:set var="clazz" value="success"/></c:if>
+                    <c:if test="${tamperFlagMonitor.evaluatorStatus.description=='Disabled'}"><c:set var="clazz" value="error"/></c:if>
+                    <tags:nameValue2 nameKey=".label.tamperFlagMonitoring" valueClass="${clazz}">
                         ${fn:escapeXml(tamperFlagMonitor.evaluatorStatus.description)}
                     </tags:nameValue2>
                 </c:if>
@@ -109,16 +89,14 @@
             
                 <c:choose>
                     <c:when test="${tamperFlagMonitorId > 0}">
-                        <cti:button nameKey="update" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons"/>
+                        <cti:button nameKey="save" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons"/>
                         <c:set var="toggleText" value="enable"/>
                         <c:if test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
                             <c:set var="toggleText" value="disable"/>
                         </c:if>
                         <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" 
                             data-disable-group="actionButtons"/>
-                        <cti:button id="deleteButton" nameKey="delete" 
-                            onclick="deleteTamperFlagMonitor(${tamperFlagMonitorId});" busy="true"
-                            data-disable-group="actionButtons" classes="delete"/>
+                            <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
                         <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                         <cti:url var="backUrl" value="/amr/tamperFlagProcessing/process/process">
                             <cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitorId}"/>
@@ -133,4 +111,5 @@
                 
             </div>
        </form:form>
+<cti:includeScript link="/resources/js/pages/yukon.ami.monitor.js"/>
 </cti:standardPage>

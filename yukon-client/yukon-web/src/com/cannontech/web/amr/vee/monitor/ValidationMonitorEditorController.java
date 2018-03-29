@@ -42,6 +42,20 @@ public class ValidationMonitorEditorController {
     @Autowired private ValidationMonitorValidator validator;
     private static final String baseKey = "yukon.web.modules.amr.validationEditor";
     
+    @RequestMapping(value = "{validationMonitorId}/view", method = RequestMethod.GET)
+    public String view(ModelMap model, @PathVariable int validationMonitorId) {
+
+        model.addAttribute("mode", PageEditMode.VIEW);
+
+        ValidationMonitor validationMonitor = validationMonitorDao.getById(validationMonitorId);
+
+        if (model.containsAttribute("validationMonitor")) {
+            validationMonitor = (ValidationMonitor) model.get("validationMonitor");
+        }
+        model.addAttribute("validationMonitor", validationMonitor);
+        return "vee/monitor/edit.jsp";
+    }
+
     @RequestMapping(value = "{validationMonitorId}/edit", method = RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int validationMonitorId) {
 
@@ -100,7 +114,7 @@ public class ValidationMonitorEditorController {
         } else {
             validationMonitorService.update(validationMonitor);
         }
-        return "redirect:/meter/start";
+        return "redirect:/amr/vee/monitor/" + validationMonitor.getValidationMonitorId() + "/view";
     }
     
     private String bindAndForward(ValidationMonitor validationMonitor, BindingResult result, RedirectAttributes attrs) {

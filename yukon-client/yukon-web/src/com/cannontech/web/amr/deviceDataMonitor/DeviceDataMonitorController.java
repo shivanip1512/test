@@ -159,7 +159,7 @@ public class DeviceDataMonitorController {
         MessageSourceResolvable createMessage = new YukonMessageSourceResolvable(baseKey + ".created");
         flash.setConfirm(Collections.singletonList(createMessage));
         model.addAttribute("monitorId", monitor.getId());
-        return "redirect:/amr/deviceDataMonitor/editPage";
+        return "redirect:/amr/deviceDataMonitor/view";
     }
     
     @RequestMapping(method = RequestMethod.POST, value = "deviceDataMonitor/update")

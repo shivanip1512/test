@@ -95,6 +95,9 @@
           </page>
           <page name="validationProcessing" type="BASIC">
             <pages>
+              <page name="validationEditor.VIEW" type="DETAIL">
+                <labelArgument>${validationMonitor.name}</labelArgument>
+              </page>
               <page name="validationEditor.EDIT" type="DETAIL" hideFavorite="true">
                 <labelArgument>${validationMonitor.name}</labelArgument>
               </page>

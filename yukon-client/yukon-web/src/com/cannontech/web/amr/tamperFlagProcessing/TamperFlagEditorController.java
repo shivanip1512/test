@@ -151,7 +151,8 @@ public class TamperFlagEditorController {
                 tamperFlagMonitorService.update(tamperFlagMonitor);
             }
             // redirect to edit page with processor
-            return "redirect:/meter/start";
+        attrs.addAttribute("tamperFlagMonitorId", tamperFlagMonitor.getTamperFlagMonitorId());
+        return "redirect:/amr/tamperFlagProcessing/process/process";
     }
 
     private String bindAndForward(TamperFlagMonitor tamperFlagMonitor, BindingResult result, RedirectAttributes attrs) {
