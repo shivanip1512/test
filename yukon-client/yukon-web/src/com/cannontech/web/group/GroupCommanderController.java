@@ -6,15 +6,19 @@ import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.model.AlertType;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -36,7 +40,11 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.tools.email.EmailAttachmentMessage;
+import com.cannontech.tools.email.EmailFileDataSource;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.CollectionActionAlertHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -46,6 +54,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.GROUP_COMMANDER)
 public class GroupCommanderController {
 
+    private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
+
+    
     @Autowired private CommanderEventLogService commanderEventLogService;
     @Autowired private ContactDao contactDao;
     @Autowired private AlertService alertService;
@@ -54,9 +65,11 @@ public class GroupCommanderController {
     @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    
+    @Autowired private EmailService emailService;
+
     private final static String baseKey = "yukon.web.modules.tools.bulk.sendCommand.";
-    
+    private String emailBasekey = "yukon.web.modules.tools.bulk.emailMessage";
+
 
     @RequestMapping(value = "collectionProcessing", method = RequestMethod.GET)
     public String collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model) {
@@ -87,12 +100,15 @@ public class GroupCommanderController {
             userInputs.put("Selected Command", commandFromDropdown);
         }
         userInputs.put("Command", commandString);
+        final URL hostURL = ServletUtil.getHostURL(request);
 
         if (commandAuthorizationService.isAuthorized(context.getYukonUser(), commandString)) {
             SimpleCallback<CollectionActionResult> emailCallback = new SimpleCallback<CollectionActionResult>() {
                 @Override
                 public void handle(CollectionActionResult result) throws Exception {
-                    sendEmail(null, null, commandString, result, context);
+                    if (sendEmail) {
+                        sendEmail(emailAddress, hostURL, commandString, result, context, request);
+                    }
                     commanderEventLogService.groupCommandCompleted(
                         result.getDetail(CollectionActionDetail.SUCCESS).getDevices().getDeviceCount(),
                         result.getCounts().getFailedCount(),
@@ -115,27 +131,48 @@ public class GroupCommanderController {
     }
 
     private void sendEmail(String emailAddress, URL hostUrl, String commandString, CollectionActionResult result,
-            YukonUserContext userContext) {
-
+                           YukonUserContext userContext, HttpServletRequest request) {
+        
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        System.out.println("\"" + commandString + "\" completed.");
+
+        String subject = accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + System.lineSeparator();
+        String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
         DecimalFormat format = new DecimalFormat("0.#");
         StringBuilder builder = new StringBuilder();
+        builder.append(accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + System.lineSeparator());
         for (CollectionActionDetail detail : result.getAction().getDetails()) {
             int count = result.getDeviceCollection(detail).getDeviceCount();
             if (count > 0) {
-                builder.append(accessor.getMessage(detail) + ":" + count + " ("
-                    + format.format(result.getCounts().getPercentages().get(detail)) + "%)  ");
+                builder.append(accessor.getMessage(detail) + ": " + count + " ("
+                    + format.format(result.getCounts().getPercentages().get(detail)) + "%)  " + System.lineSeparator());
             }
         }
-        System.out.println(builder.toString());
-        System.out.println(
-            "The full results are available online at /bulk/progressReport/detail?key=" + result.getCacheKey());
-        System.out.println("---attach log file---");
-        // attach to email
-        if (result.hasLogFile()) {
-            File file = result.getLogFile();
+        for (String inputKey : result.getInputs().getInputs().keySet()) {
+            builder.append(inputKey + ": " + result.getInputs().getInputs().get(inputKey) + System.lineSeparator());
         }
-    }
+        builder.append(accessor.getMessage(emailBasekey + ".devices") + ": "  +result.getInputs().getCollection().getDeviceCount() + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".startDateTime") + ": " + result.getStartTime() + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".stopDateTime") + ": " + result.getStopTime() + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".userName") + ": " + result.getExecution().getUserName() + System.lineSeparator());
+        
+        String url = hostUrl.toExternalForm() + partialUrl + "?key=" + result.getCacheKey();
+        builder.append("The full results are available online at " + url + System.lineSeparator());
+        
+        InternetAddress internetAddress = new InternetAddress();
+        internetAddress.setAddress(emailAddress);
+        EmailAttachmentMessage message;
+        try {
+            message = new EmailAttachmentMessage(new InternetAddress[]{internetAddress}, subject, builder.toString());
+            if (result.hasLogFile()) {
+                File file = result.getLogFile();
+                EmailFileDataSource dataSource = new EmailFileDataSource(file);
+                message.addAttachment(dataSource);
+            } 
+            emailService.sendMessage(message);
+        } catch (MessagingException e) {
+            log.error("caught exception in sendEmail", e);
+        }
+        
+        }
 
 }

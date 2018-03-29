@@ -1011,4 +1011,11 @@
     <entry key="yukon.web.modules.tools.bulk.recentResults.status">Status</entry>
     <entry key="yukon.web.modules.tools.bulk.recentResults.userName">User Name</entry>
     
+    <!-- Email -->
+    <entry key="yukon.web.modules.tools.bulk.emailMessage.action">Action</entry>
+    <entry key="yukon.web.modules.tools.bulk.emailMessage.devices">Device(s)</entry>
+    <entry key="yukon.web.modules.tools.bulk.emailMessage.startDateTime">Start Date/Time</entry>
+    <entry key="yukon.web.modules.tools.bulk.emailMessage.stopDateTime">Stop Date/Time</entry>
+    <entry key="yukon.web.modules.tools.bulk.emailMessage.userName">User Name</entry>
+    
 </properties>
