@@ -21,7 +21,7 @@ public class MappingServiceImpl implements MappingService {
     private final static String mappingSatelliteUrl = "https://api.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?access_token=";
     private final static String mappingHybridUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets-satellite/{z}/{x}/{y}.png?access_token=";
     private final static String mappingDevKey = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
-    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2o5aDgxa2U1MzNqNjMybHNmdXVqa2M5bCJ9.RnL_9TapbW8dPMyRPb4cfA";
+    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2pmY3NnanBlMTFmMzMzcGFzcW5oYXk4OCJ9.YdE3jfaDYnDEBFBbkzVc-g";
 
     @Override
     public String getMappingUrl(String viewType) {
