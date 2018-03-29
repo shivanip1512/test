@@ -3,6 +3,7 @@ package com.cannontech.web.deviceConfiguration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -179,22 +180,26 @@ public class DeviceConfigurationController {
     }
 
     @RequestMapping("{id}")
-    public @ResponseBody DeviceDnpConfiguration deviceConfig(@PathVariable int id, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> deviceConfig(@PathVariable int id, YukonUserContext userContext) {
         DeviceDnpConfiguration deviceDnpConfiguration = new DeviceDnpConfiguration();
         DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(id);
         deviceDnpConfiguration.setDeviceConfiguration(deviceConfig);
-        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<String, Object>();
+
         if (deviceConfig.getDnpCategory() != null) {
             Optional<DeviceConfigCategoryItem> optional = deviceConfig.getDnpCategory().getDeviceConfigurationItems()
                     .stream().filter(item -> item.getFieldName().equals("timeOffset")).findFirst();
             if (optional.isPresent()) {
                 DeviceConfigCategoryItem timeOffset = (DeviceConfigCategoryItem) optional.get();
-                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
                 String timeOffsetValue = accessor.getMessage("yukon.web.modules.tools.configs.enum.dnpTimeOffset." + timeOffset.getValue());
                 deviceDnpConfiguration.setTimeOffsetValue(timeOffsetValue);
             } else {
                 deviceDnpConfiguration.setTimeOffsetValue(Offsets.UTC.toString());
             }
+        } else {
+            String deviceConfigName = deviceDnpConfiguration.getDeviceConfiguration().getName();
+            json.put("dnpCategoryAlertMessage", accessor.getMessage("yukon.web.modules.tools.configs.category.dnp.unassigned", deviceConfigName));
         }
         
         if (deviceConfig.getHeartbeatCategory() != null) {
@@ -202,15 +207,14 @@ public class DeviceConfigurationController {
                     .stream().filter(item -> item.getFieldName().equals("cbcHeartbeatMode")).findFirst();
             if (optional.isPresent()) {
                 DeviceConfigCategoryItem heartbeatMode = (DeviceConfigCategoryItem) optional.get();
-                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
                 String heartbeatModeValue = accessor.getMessage("yukon.web.modules.tools.configs.enum.cbcHeartbeatMode." + heartbeatMode.getValue());
                 deviceDnpConfiguration.setHeartbeatModeValue(heartbeatModeValue);
             } else {
                 deviceDnpConfiguration.setHeartbeatModeValue(CBCHeartbeatMode.DISABLED.toString());
             }
         }
-        
-        return deviceDnpConfiguration;
+        json.put("dnpConfiguration", deviceDnpConfiguration);
+        return json;
     }
 
     public enum ConfigurationSortBy implements DisplayableEnum {

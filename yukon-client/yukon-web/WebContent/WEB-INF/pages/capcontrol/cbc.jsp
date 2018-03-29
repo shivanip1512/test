@@ -232,7 +232,7 @@
                         <tags:nameValue2 nameKey=".timeOffset"
                             valueClass="js-dnp-field js-dnp-timeOffset">
                             <i:inline key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.${dnpConfig.timeOffset}"/>
-                        </tags:nameValue2>                        
+                        </tags:nameValue2>
                         <tags:nameValue2 nameKey=".enableTimeSync"
                             valueClass="js-dnp-field js-dnp-enableDnpTimesyncs">
                             ${dnpConfig.enableDnpTimesyncs}
@@ -264,56 +264,52 @@
             <c:if test="${not empty heartbeatConfig}">
                 <tags:sectionContainer2 nameKey="heartbeatConfiguration" styleClass="stacked-lg">
                     <tags:nameValueContainer2 tableClass="natural-width js-heartbeat-fields">
-                        <c:choose>
-                            <c:when test="${cbc.logical}">
-                                <tags:nameValue2 nameKey=".heartbeatConfig">
+                        <c:if test="${cbc.logical}">
+                            <tags:nameValue2 nameKey=".heartbeatConfig">
+                                <c:choose>
+                                    <c:when test="${not empty configs}">
+                                            <cti:displayForPageEditModes modes="VIEW,EDIT">
+                                                <tags:selectWithItems id="dnp-config"
+                                                    items="${configs}"
+                                                    path="dnpConfigId"
+                                                    itemLabel="name"
+                                                    itemValue="configurationId" defaultItemLabel="(none)"/>
+                                            </cti:displayForPageEditModes>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <tags:alertBox key="yukon.web.modules.tools.configs.config.cbc.noConfigsForType" arguments="${cbc.paoType.dbString}"
+                                            classes="js-no-configs-alert"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </tags:nameValue2>
+                        </c:if>
+                        <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode"
+                            valueClass="js-heartbeat-cbcHeartbeatMode" rowClass="js-heartbeat-field">
+                            <c:choose>
+                                <c:when test="${empty heartbeatConfig.mode}">
                                     <c:choose>
-                                        <c:when test="${not empty configs}">
-                                                <cti:displayForPageEditModes modes="VIEW,EDIT">
-                                                    <tags:selectWithItems id="dnp-config"
-                                                        items="${configs}"
-                                                        path="dnpConfigId"
-                                                        itemLabel="name"
-                                                        itemValue="configurationId" defaultItemLabel="(none)"/>
-                                                </cti:displayForPageEditModes>
+                                        <c:when test="${heartbeatRequired}">
+                                            <tags:alertBox key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.unassigned"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <tags:alertBox key="yukon.web.modules.tools.configs.config.cbc.noConfigsForType" arguments="${cbc.paoType.dbString}"
-                                                classes="js-no-configs-alert"/>
+                                            <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                         </c:otherwise>
                                     </c:choose>
-                                </tags:nameValue2>
-                            </c:when>
-                            <c:otherwise>
-                                <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode"
-                                    valueClass="js-heartbeat-cbcHeartbeatMode" rowClass="js-heartbeat-field">
-                                    <c:choose>
-                                        <c:when test="${empty heartbeatConfig.mode}">
-                                            <c:choose>
-                                                <c:when test="${heartbeatRequired}">
-                                                    <tags:alertBox key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.unassigned"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <i:inline key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.${heartbeatConfig.mode}"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </tags:nameValue2>
-                                <c:set var="heartbeatModeClass" value="${heartbeatConfig.mode == null || heartbeatConfig.mode == 'DISABLED' ? 'dn' : ''}"/>
-                                <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod"
-                                    valueClass="js-heartbeat-cbcHeartbeatPeriod" rowClass="js-heartbeat-field js-heartbeatMode-field ${heartbeatModeClass}">
-                                    ${heartbeatConfig.period}
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue"
-                                    valueClass="js-heartbeat-cbcHeartbeatValue" rowClass="js-heartbeat-field js-heartbeatMode-field ${heartbeatModeClass}">
-                                    ${heartbeatConfig.value}
-                                </tags:nameValue2>
-                            </c:otherwise>
-                        </c:choose>
+                                </c:when>
+                                <c:otherwise>
+                                    <i:inline key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.${heartbeatConfig.mode}"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </tags:nameValue2>
+                        <c:set var="heartbeatModeClass" value="${heartbeatConfig.mode == null || heartbeatConfig.mode == 'DISABLED' ? 'dn' : ''}"/>
+                        <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod"
+                            valueClass="js-heartbeat-cbcHeartbeatPeriod" rowClass="js-heartbeat-field js-heartbeatMode-field ${heartbeatModeClass}">
+                            ${heartbeatConfig.period}
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue"
+                            valueClass="js-heartbeat-cbcHeartbeatValue" rowClass="js-heartbeat-field js-heartbeatMode-field ${heartbeatModeClass}">
+                            ${heartbeatConfig.value}
+                        </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </c:if>

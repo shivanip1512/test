@@ -29,12 +29,12 @@ yukon.thing = (function () {
                     yukon.ui.block(dnpFields, 200);
                     $.get(url)
                      .done(function (data) {
-                        if (data.deviceConfiguration.dnpCategory != null) {
-                            data.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
+                        if (data.dnpConfiguration.deviceConfiguration.dnpCategory != null) {
+                            data.dnpConfiguration.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
                                 var fieldName = field.fieldName,
                                     value = field.value;
                                 if (fieldName == 'timeOffset') {
-                                    value = data.timeOffsetValue;
+                                    value = data.dnpConfiguration.timeOffsetValue;
                                 }
                                 dnpFields.find('.js-dnp-' + fieldName).text(value);
                             });
