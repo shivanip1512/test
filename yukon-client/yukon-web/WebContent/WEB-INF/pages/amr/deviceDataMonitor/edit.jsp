@@ -258,7 +258,7 @@
             <cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
                 <cti:param name="monitorId" value="${monitor.id}" />
             </cti:url>
-            <cti:button nameKey="back" href="${viewMonitorUrl}" />
+            <cti:button nameKey="cancel" href="${viewMonitorUrl}" />
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="CREATE">
             <cti:button nameKey="create" classes="js-save-monitor primary action"/>
