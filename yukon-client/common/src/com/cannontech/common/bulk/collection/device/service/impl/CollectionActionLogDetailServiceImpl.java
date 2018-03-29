@@ -23,17 +23,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -44,19 +48,45 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ScheduledExecutor executor;
     
     private static final String header="yukon.web.modules.tools.bulk.collectionAction.log.header.";
     
     private final Logger log = YukonLogManager.getLogger(CollectionActionLogDetailServiceImpl.class);
+
     
     /**
      * Log details are cached until execution/action is done (Completed, Canceled etc) to prevent duplicate
      * entries in the log file for the same devices.
      */
     private Cache<Integer, Set<CollectionActionLogDetail>> cache =
-            CacheBuilder.newBuilder().expireAfterAccess(7, TimeUnit.DAYS).build();
-    
+        CacheBuilder.newBuilder().expireAfterAccess(7, TimeUnit.DAYS).build();
+
+    /**
+     * Point id -> Point name
+     */
+    private Cache<Integer, String> pointNames =
+        CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS).build();
+        
+    @Override
+    public void loadPointNames(CollectionActionResult result) {
+        if (result.getAction().contains(CollectionActionOptionalLogEntry.POINT_DATA)) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    List<SimpleDevice> devices = result.getInputs().getCollection().getDeviceList();
+                    log.debug("Point names load started for for cacheKey=" + result.getCacheKey() + " devices=" + devices.size());
+                    List<LitePoint> points = pointDao.getLitePointsByDeviceIds(
+                        devices.stream().map(d -> d.getDeviceId()).collect(Collectors.toList()));
+                    pointNames.putAll(points.stream().collect(Collectors.toMap(p -> p.getLiteID(), p -> p.getPointName())));
+                    log.debug("Point names load completed for for cacheKey=" + result.getCacheKey() + " loaded point names=" + points.size());
+                }
+            });
+        }
+    }
+
     @Override
     public List<CollectionActionLogDetail> buildLogDetails(List<? extends YukonPao> paos,
             CollectionActionDetail detail) {
@@ -92,17 +122,37 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
                 fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
                 if (result.getAction().contains(POINT_DATA)) {
-                    String value = detail.getValue() != null
-                        ? "\""+pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())+"\"": "";
-                    fields.add(value);
-                } 
-                if (result.getAction().contains(LAST_VALUE) && StringUtils.isNotEmpty(detail.getLastValue())) {
-                    String value = detail.getLastValue().replaceAll("/", "");
-                    value =  "\"" + value + "\"";
-                    /*"MCT-410iL 1000026  
-Config data received: 00 00 00 00 00 00 00 00 00 00 00 00 00"*/
-                    /*BUG*/
-                    fields.add(value);
+                    if (detail.getValue() != null) {
+                        int pointId = detail.getValue().getId();
+                        String pointName = pointNames.getIfPresent(pointId);
+                        if (pointName == null) {
+                            LitePoint point = pointDao.getLitePoint(pointId);
+                            pointName = point == null ? "" : point.getPointName();
+                            log.debug("Unable to find point with id=" + pointId
+                                + "in cache. Attempted the load from DB point name=" + pointName);
+                        }
+                        fields.add(pointName);
+                        String value = "\""
+                            + pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())
+                            + "\"";
+                        fields.add(value);
+                    } else {
+                        fields.add("");
+                    }
+                }
+                if (result.getAction().contains(LAST_VALUE)) {
+                    if (StringUtils.isNotEmpty(detail.getLastValue())) {
+                        String value = detail.getLastValue().replaceAll("/", "");
+                        value = "\"" + value + "\"";
+                        /*
+                         * "MCT-410iL 1000026
+                         * Config data received: 00 00 00 00 00 00 00 00 00 00 00 00 00"
+                         */
+                        /* BUG */
+                        fields.add(value);
+                    } else {
+                        fields.add("");
+                    }
                 }
 
                 fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
@@ -136,7 +186,7 @@ Config data received: 00 00 00 00 00 00 00 00 00 00 00 00 00"*/
             FileUtils.writeLines(new File(CtiUtilities.getCollectionActionDirPath(), String.valueOf(cacheKey) + ".csv"),
                 data, true);
         } catch (IOException e) {
-            log.error(log);
+            log.error(e);
         }
     }
 

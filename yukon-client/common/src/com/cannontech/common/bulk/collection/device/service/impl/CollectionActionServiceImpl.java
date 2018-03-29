@@ -122,7 +122,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             result.setStatus(status);
         }
         
-        if(result.isCanceled()) {
+        if(result.getStatus() == CommandRequestExecutionStatus.CANCELLED) {
             addUnsupportedToResult(CANCELED, result, result.getCancelableDevices());
         }
         result.setStopTime(new Instant(stopTime));

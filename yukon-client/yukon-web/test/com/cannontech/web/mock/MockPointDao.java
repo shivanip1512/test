@@ -252,4 +252,10 @@ public class MockPointDao implements PointDao {
     public int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type) {
         return 1;
     }
+
+    @Override
+    public List<LitePoint> getLitePointsByDeviceIds(Iterable<Integer> deviceIds) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

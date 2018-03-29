@@ -171,6 +171,21 @@ public class PointDaoImpl implements PointDao {
 
         return chunkingTemplate.query(sqlGenerator, pointIds, LITE_POINT_ROW_MAPPER);
     }
+    
+    
+    @Override
+    public List<LitePoint> getLitePointsByDeviceIds(Iterable<Integer> deviceIds) {
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
+                sql.append("WHERE PaobjectId").in(subList);
+                return sql;
+            }
+        };
+        return chunkingTemplate.query(sqlGenerator, deviceIds, LITE_POINT_ROW_MAPPER);
+    }
 
     @Override
     public Map<LitePoint, PaoPointIdentifier> getLitePointsForPaoPointIdentifiers(

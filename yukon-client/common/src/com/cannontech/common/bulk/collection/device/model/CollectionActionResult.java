@@ -90,6 +90,8 @@ public class CollectionActionResult {
             status = STARTED;
             startTime = new Instant();
         }
+        
+        logService.loadPointNames(this);
     }
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,

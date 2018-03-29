@@ -36,4 +36,6 @@ public interface CollectionActionLogDetailService {
      * devices haven't responded yet.
      */
     boolean hasLog(int cacheKey);
+
+    void loadPointNames(CollectionActionResult result);
 }

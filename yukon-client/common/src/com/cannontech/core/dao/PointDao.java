@@ -270,4 +270,6 @@ public interface PointDao {
      */
     int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type);
 
+    List<LitePoint> getLitePointsByDeviceIds(Iterable<Integer> deviceIds);
+
 }

@@ -311,5 +311,10 @@ public class MockPointDao implements PointDao {
         return 1;
     }
 
+    @Override
+    public List<LitePoint> getLitePointsByDeviceIds(Iterable<Integer> deviceIds) {
+        return null;
+    }
+
 
 }
