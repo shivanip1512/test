@@ -91,7 +91,10 @@ public class CollectionActionResult {
             startTime = new Instant();
         }
         
-        logService.loadPointNames(this);
+        if(context != null) {
+           //result is cached
+            logService.loadPointNames(this);
+        }
     }
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,

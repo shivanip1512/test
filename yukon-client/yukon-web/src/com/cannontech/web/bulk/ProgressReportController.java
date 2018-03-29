@@ -43,6 +43,7 @@ public class ProgressReportController {
     @RequestMapping(value = "detail", method = RequestMethod.GET)
     public String detail(ModelMap model, Integer key) {
         CollectionActionResult result = collectionActionService.getResult(key);
+        result.log();
         model.addAttribute("result", result);
         model.addAttribute("details", CollectionActionDetail.values());
         model.addAttribute("status", CommandRequestExecutionStatus.values());

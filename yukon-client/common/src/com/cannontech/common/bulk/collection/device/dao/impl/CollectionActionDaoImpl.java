@@ -333,7 +333,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 type -> crerDao.getUnsupportedDeviceIdsByExecutionId(exec.getId(), type)));
         unsupported.values().forEach(values -> allDevices.addAll(values));
         CollectionActionResult result = new CollectionActionResult(action, Lists.newArrayList(allDevices),
-            loadInputs(key), exec, editorDao, tempGroupService, groupHelper, null, null);
+            loadInputs(key), exec, editorDao, tempGroupService, groupHelper, logService, null);
         
         List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
         List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());

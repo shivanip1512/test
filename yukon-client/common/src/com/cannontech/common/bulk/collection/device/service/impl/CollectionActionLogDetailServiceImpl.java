@@ -31,6 +31,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -62,7 +63,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
      * entries in the log file for the same devices.
      */
     private Cache<Integer, Set<CollectionActionLogDetail>> cache =
-        CacheBuilder.newBuilder().expireAfterAccess(7, TimeUnit.DAYS).build();
+        CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS).build();
 
     /**
      * Point id -> Point name
@@ -121,38 +122,41 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 fields.add(dateFormattingService.format(new Instant(), DateFormatEnum.BOTH, result.getContext()));
                 fields.add(detail.getDetail() != null ? accessor.getMessage(detail.getDetail()) : "");
                 fields.add(StringUtils.isNotEmpty(detail.getDeviceErrorText()) ? detail.getDeviceErrorText() : "");
+                String pointName = "";
+                String value = "";
                 if (result.getAction().contains(POINT_DATA)) {
                     if (detail.getValue() != null) {
                         int pointId = detail.getValue().getId();
-                        String pointName = pointNames.getIfPresent(pointId);
-                        if (pointName == null) {
-                            LitePoint point = pointDao.getLitePoint(pointId);
-                            pointName = point == null ? "" : point.getPointName();
-                            log.debug("Unable to find point with id=" + pointId
-                                + "in cache. Attempted the load from DB point name=" + pointName);
+                        if (pointId > 0) {
+                            pointName = pointNames.getIfPresent(pointId);
+                            if (pointName == null) {
+                                try {
+                                    pointName = pointDao.getLitePoint(pointId).getPointName();
+                                } catch (NotFoundException e) {
+                                    log.error(e);
+                                }
+                                log.debug("Unable to find point with id=" + pointId
+                                    + "in cache. Attempted the load from DB point name=" + pointName);
+                            }
                         }
-                        fields.add(pointName);
-                        String value = "\""
+                        value = "\""
                             + pointFormattingService.getValueString(detail.getValue(), Format.FULL, result.getContext())
                             + "\"";
-                        fields.add(value);
-                    } else {
-                        fields.add("");
                     }
+                    fields.add(pointName);
+                    fields.add(value);
                 }
                 if (result.getAction().contains(LAST_VALUE)) {
                     if (StringUtils.isNotEmpty(detail.getLastValue())) {
-                        String value = detail.getLastValue().replaceAll("/", "");
+                        value = detail.getLastValue().replaceAll("/", "");
                         value = "\"" + value + "\"";
                         /*
                          * "MCT-410iL 1000026
                          * Config data received: 00 00 00 00 00 00 00 00 00 00 00 00 00"
                          */
                         /* BUG */
-                        fields.add(value);
-                    } else {
-                        fields.add("");
                     }
+                    fields.add(value);
                 }
 
                 fields.add(StringUtils.defaultString(detail.getExecutionExceptionText()));
