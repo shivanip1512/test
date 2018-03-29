@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -32,32 +31,7 @@ public class MaintenanceHelperTest {
 
     @Test
     public void test_getNextRunTime_NoDaySelected() throws Exception {
-        GlobalSettingDao globalSettingDao = createNiceMock(GlobalSettingDao.class);
-        globalSettingDao.getSetting(EasyMock.anyObject());
-        expectLastCall().andAnswer(new IAnswer<Object>() {
-            @Override
-            public Object answer() throws Throwable {
-                if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_DAYS) {
-                    GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_DAYS, "NNNNNNN");
-                    return globalSetting;
-                } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS) {
-                    GlobalSetting globalSetting =
-                        new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS, "NNNNNNN");
-                    return globalSetting;
-                } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME) {
-                    GlobalSetting globalSetting =
-                        new GlobalSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME, "480,1080");
-                    return globalSetting;
-                } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME) {
-                    GlobalSetting globalSetting =
-                        new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME, "1140,1320");
-                    return globalSetting;
-                }
-                return null;
-            }
-        }).anyTimes();
-        replay(globalSettingDao);
-        ReflectionTestUtils.setField(mh, "globalSettingDao", globalSettingDao);
+        setMockGlobalSettingDao("NNNNNNN", "NNNNNNN", "480,1080", "1140,1320");
         Instant startTime = Instant.now();
         Duration minimumRunWindow = new Duration(1800000);
         Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
@@ -66,34 +40,9 @@ public class MaintenanceHelperTest {
         assertTrue("NextRunTime", isExpected);
     }
 
-   @Test(expected = Exception.class)
+   @Test
     public void test_getNextRunTime_noRunWindowAvailable() throws Exception {
-        GlobalSettingDao globalSettingDao = createNiceMock(GlobalSettingDao.class);
-        globalSettingDao.getSetting(EasyMock.anyObject());
-        expectLastCall().andAnswer(new IAnswer<Object>() {
-            @Override
-            public Object answer() throws Throwable {
-                if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_DAYS) {
-                    GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_DAYS, "YYYYYYY");
-                    return globalSetting;
-                } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS) {
-                    GlobalSetting globalSetting =
-                        new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS, "YYYYYYY");
-                    return globalSetting;
-                } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME) {
-                    GlobalSetting globalSetting =
-                        new GlobalSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME, "420,1140");
-                    return globalSetting;
-                } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME) {
-                    GlobalSetting globalSetting =
-                        new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME, "1140,2580");
-                    return globalSetting;
-                }
-                return null;
-            }
-        }).anyTimes();
-        replay(globalSettingDao);
-        ReflectionTestUtils.setField(mh, "globalSettingDao", globalSettingDao);
+        setMockGlobalSettingDao("YYYYYYY", "YYYYYYY", "420,1140", "1140,2580");
         Instant startTime = Instant.now();
         Duration minimumRunWindow = new Duration(1800000);
         Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
@@ -106,32 +55,7 @@ public class MaintenanceHelperTest {
 
    @Test
    public void test_getNextRunTime_oneRunWindowAvailable() throws Exception {
-       GlobalSettingDao globalSettingDao = createNiceMock(GlobalSettingDao.class);
-       globalSettingDao.getSetting(EasyMock.anyObject());
-       expectLastCall().andAnswer(new IAnswer<Object>() {
-           @Override
-           public Object answer() throws Throwable {
-               if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_DAYS) {
-                   GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_DAYS, "YYYYYYY");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS, "YYYYYYN");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME, "420,1140"); // 7:00-19:00
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME, "1140,1860");//19:00-7:00
-                   return globalSetting;
-               }
-               return null;
-           }
-       }).anyTimes();
-       replay(globalSettingDao);
-       ReflectionTestUtils.setField(mh, "globalSettingDao", globalSettingDao);
+       setMockGlobalSettingDao("YYYYYYY", "YYYYYYN", "420,1140", "1140,1860");
 
        // 2018-08-04 is a Saturday, the only valid window ever is Saturday 19:00 to 7:00 the next day 
        // Early (18:59pm)
@@ -188,33 +112,7 @@ public class MaintenanceHelperTest {
    
    @Test
    public void test_getNextRunTime_onlyBusinessDaysSelected() throws Exception {
-       GlobalSettingDao globalSettingDao = createNiceMock(GlobalSettingDao.class);
-       globalSettingDao.getSetting(EasyMock.anyObject());
-       expectLastCall().andAnswer(new IAnswer<Object>() {
-           @Override
-           public Object answer() throws Throwable {
-               if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_DAYS) {
-                   // All business days are selected except Sunday
-                   GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_DAYS, "NYYYYYY");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS, "NNNNNNN");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME, "360,1200"); // 6:00-20:00
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME, "1140,1860");//19:00-7:00
-                   return globalSetting;
-               }
-               return null;
-           }
-       }).anyTimes();
-       replay(globalSettingDao);
-       ReflectionTestUtils.setField(mh, "globalSettingDao", globalSettingDao);
+       setMockGlobalSettingDao("NYYYYYY", "NNNNNNN", "360,1200", "1140,1860");
        // Business Days [-- Mon Tue Wed Th Fri Sat] Hour [6:00 to 20:00]
        // External Maintenance Days [None Selected] Hour [19:00-7:00]
        // start time is 2018-03-28 (Wednesday) at 13:00, next valid window after start time is Wednesday 20.00 to Thursday 6.00
@@ -228,33 +126,7 @@ public class MaintenanceHelperTest {
    
    @Test
    public void test_getNextRunTime_onlyExtMaintenanceDaysSelected() throws Exception {
-       GlobalSettingDao globalSettingDao = createNiceMock(GlobalSettingDao.class);
-       globalSettingDao.getSetting(EasyMock.anyObject());
-       expectLastCall().andAnswer(new IAnswer<Object>() {
-           @Override
-           public Object answer() throws Throwable {
-               if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_DAYS) {
-                   GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_DAYS, "NNNNNNN");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS) {
-                   // All external maintenance days are selected except Saturday
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS, "YYYYYYN");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME, "360,1200"); // 6:00-20:00
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME, "360,1200");// 6:00-20:00
-                   return globalSetting;
-               }
-               return null;
-           }
-       }).anyTimes();
-       replay(globalSettingDao);
-       ReflectionTestUtils.setField(mh, "globalSettingDao", globalSettingDao);
+       setMockGlobalSettingDao("NNNNNNN", "YYYYYYN", "360,1200", "360,1200");
        // Business Days [None Selected / Hour [6:00 to 20:00]
        // External Maintenance Days [Sun Mon Tue Wed Th Fri --] Hour [6:00-20:00]
        // start time is 2018-03-30 (Friday) at 13:00, next valid window after 
@@ -268,33 +140,7 @@ public class MaintenanceHelperTest {
    
    @Test
    public void test_getNextRunTime_crossedYear() throws Exception {
-       GlobalSettingDao globalSettingDao = createNiceMock(GlobalSettingDao.class);
-       globalSettingDao.getSetting(EasyMock.anyObject());
-       expectLastCall().andAnswer(new IAnswer<Object>() {
-           @Override
-           public Object answer() throws Throwable {
-               if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_DAYS) {
-                   GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_DAYS, "NYYYYYY");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS) {
-                   // All external maintenance days are selected except Saturday
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS, "NNNNNNN");
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME, "360,1200"); // 6:00-20:00
-                   return globalSetting;
-               } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME) {
-                   GlobalSetting globalSetting =
-                       new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME, "360,1200");// 6:00-20:00
-                   return globalSetting;
-               }
-               return null;
-           }
-       }).anyTimes();
-       replay(globalSettingDao);
-       ReflectionTestUtils.setField(mh, "globalSettingDao", globalSettingDao);
+       setMockGlobalSettingDao("NYYYYYY", "NNNNNNN", "360,1200",  "360,1200");
        // Business Days [None Selected / Hour [6:00 to 20:00]
        // External Maintenance Days [Sun Mon Tue Wed Th Fri --] Hour [6:00-20:00]
        // start time is 2018-03-30 (Friday) at 13:00, next valid window after 
@@ -305,4 +151,36 @@ public class MaintenanceHelperTest {
        assertEquals(new DateTime(2018, 12, 31, 20, 0), new DateTime(nextRunTime.getStartMillis()));
        assertEquals(new DateTime(2019, 1, 1, 6, 0), new DateTime(nextRunTime.getEndMillis()));
    }
+
+    private void setMockGlobalSettingDao(String businessDays, String externalMaintDays,
+            String businessHoursStartStop, String externalMaintHoursStartStop) {
+
+        GlobalSettingDao globalSettingDao = createNiceMock(GlobalSettingDao.class);
+        globalSettingDao.getSetting(EasyMock.anyObject());
+
+        expectLastCall().andAnswer(() -> {
+            if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_DAYS) {
+                GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_DAYS,
+                                                                businessDays);
+                return globalSetting;
+            } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS) {
+                // All external maintenance days are selected except Saturday
+                GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_DAYS,
+                                                                externalMaintDays);
+                return globalSetting;
+            } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME) {
+                GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.BUSINESS_HOURS_START_STOP_TIME,
+                                                                businessHoursStartStop);
+                return globalSetting;
+            } else if ((GlobalSettingType) getCurrentArguments()[0] == GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME) {
+                GlobalSetting globalSetting = new GlobalSetting(GlobalSettingType.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME,
+                                                                externalMaintHoursStartStop);
+                return globalSetting;
+            }
+            return null;
+        }).anyTimes();
+
+        replay(globalSettingDao);
+        ReflectionTestUtils.setField(mh, "globalSettingDao", globalSettingDao);
+    }
 }

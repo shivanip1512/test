@@ -49,7 +49,7 @@ public class MaintenanceHelper {
                 }
             }
             // Search valid interval within all available Business Days and External Maintenance Days Intervals
-            for (int i = 0; i < exclusionIntervals.size(); i++) {
+            for (int i = 0; i < exclusionIntervals.size() - 1; i++) {
                 if (exclusionIntervals.get(i).overlaps(exclusionIntervals.get(i + 1)) 
                         || exclusionIntervals.get(i).abuts(exclusionIntervals.get(i + 1))) {
                     continue;
