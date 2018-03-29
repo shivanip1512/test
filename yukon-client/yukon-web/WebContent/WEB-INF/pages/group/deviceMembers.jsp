@@ -33,7 +33,7 @@
                 <tbody>
         			<c:forEach var="device" items="${deviceList}">
         				<tr>
-        					<td><cti:paoDetailUrl yukonPao="${device}">${fn:escapeXml(device.name)}</cti:paoDetailUrl></td>
+        					<td><cti:paoDetailUrl yukonPao="${device}" newTab="true">${fn:escapeXml(device.name)}</cti:paoDetailUrl></td>
                             <c:if test="${hasModifyRoleProperty}">
             					<td class="tar last">
             						<c:choose>
