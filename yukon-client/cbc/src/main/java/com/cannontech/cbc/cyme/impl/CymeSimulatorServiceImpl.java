@@ -228,7 +228,6 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
             try {
                 String xmlData = cymeXMLBuilder.generateStudy(busIdentifier);
             
-                logger.debug("Study data being sent: " + xmlData);
                 String simulationId = cymDISTWebService.runSimulation(xmlData);
                 if (simulationId != null) {
                     //Create Thread to wait for the results and process.
