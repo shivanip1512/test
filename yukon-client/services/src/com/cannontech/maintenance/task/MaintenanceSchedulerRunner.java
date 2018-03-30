@@ -136,7 +136,7 @@ public class MaintenanceSchedulerRunner {
 
         // minimum wait means to delay a minimum of 4 hours
         DateTime nextStartTime = addDelay ? DateTime.now().plus(fourHourWindow) : DateTime.now();
-        // Not complete, but this MUST return an interval. If there is
+        // This MUST return an interval. If there is
         // absolutely no interval to be found, it should
         // reschedule for end of time (not run until a dbchange comes through)
         Interval nextRunWindow = getNextRunWindow(nextStartTime.toInstant());

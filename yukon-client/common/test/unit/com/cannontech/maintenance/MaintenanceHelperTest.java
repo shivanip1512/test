@@ -23,6 +23,7 @@ import com.cannontech.system.model.GlobalSetting;
 public class MaintenanceHelperTest {
 
     private MaintenanceHelper mh;
+    private Duration minimumRunWindow = new Duration(1800000); // 30 minutes
 
     @Before
     public void setUp() {
@@ -33,7 +34,6 @@ public class MaintenanceHelperTest {
     public void test_getNextRunTime_NoDaySelected() throws Exception {
         setMockGlobalSettingDao("NNNNNNN", "NNNNNNN", "480,1080", "1140,1320");
         Instant startTime = Instant.now();
-        Duration minimumRunWindow = new Duration(1800000);
         Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
         Interval expectedInterval = new Interval(new DateTime(startTime), new DateTime(startTime).plusDays(1));
         boolean isExpected = nextRunTime.equals(expectedInterval);
@@ -44,7 +44,6 @@ public class MaintenanceHelperTest {
     public void test_getNextRunTime_noRunWindowAvailable() throws Exception {
         setMockGlobalSettingDao("YYYYYYY", "YYYYYYY", "420,1140", "1140,2580");
         Instant startTime = Instant.now();
-        Duration minimumRunWindow = new Duration(1800000);
         Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
         boolean isExpected = false;
         if (nextRunTime == null) {
@@ -60,14 +59,12 @@ public class MaintenanceHelperTest {
        // 2018-08-04 is a Saturday, the only valid window ever is Saturday 19:00 to 7:00 the next day 
        // Early (18:59pm)
        Instant startTime = new DateTime(2018, 8, 4, 18, 59).toDateTime().toInstant();
-       Duration minimumRunWindow = new Duration(1800000); // 30 minutes
        Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
        assertEquals(new DateTime(2018, 8, 4, 19, 0), new DateTime(nextRunTime.getStartMillis()));
        assertEquals(new DateTime(2018, 8, 5, 7, 0), new DateTime(nextRunTime.getEndMillis()));
        
        // 2017-08-04 was Friday (Past date),the only valid coming window is Saturday 19:00 to Sunday 7:00 the next day
        startTime = new DateTime(2017, 8, 4, 18, 59).toDateTime().toInstant();
-       minimumRunWindow = new Duration(1800000); // 30 minutes
        nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
        assertEquals(new DateTime(2017, 8, 5, 19, 0), new DateTime(nextRunTime.getStartMillis()));
        assertEquals(new DateTime(2017, 8, 6, 7, 0), new DateTime(nextRunTime.getEndMillis()));
@@ -117,7 +114,6 @@ public class MaintenanceHelperTest {
        // External Maintenance Days [None Selected] Hour [19:00-7:00]
        // start time is 2018-03-28 (Wednesday) at 13:00, next valid window after start time is Wednesday 20.00 to Thursday 6.00
        Instant startTime = new DateTime(2018, 3, 28, 13, 0).toDateTime().toInstant();
-       Duration minimumRunWindow = new Duration(1800000); // 30 minutes
        Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
        // Expected interval Wednesday 8:00 PM to Thursday 6:00 AM 
        assertEquals(new DateTime(2018, 3, 28, 20, 0), new DateTime(nextRunTime.getStartMillis()));
@@ -132,7 +128,6 @@ public class MaintenanceHelperTest {
        // start time is 2018-03-30 (Friday) at 13:00, next valid window after 
        // start time is Friday 20.00 (end of exclusion hour) to Sunday 6.00 (start of exclusion hour)
        Instant startTime = new DateTime(2018, 3, 30, 13, 0).toDateTime().toInstant();
-       Duration minimumRunWindow = new Duration(1800000); // 30 minutes
        Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
        assertEquals(new DateTime(2018, 3, 30, 20, 0), new DateTime(nextRunTime.getStartMillis()));
        assertEquals(new DateTime(2018, 4, 1, 6, 0), new DateTime(nextRunTime.getEndMillis()));
@@ -146,7 +141,6 @@ public class MaintenanceHelperTest {
        // start time is 2018-03-30 (Friday) at 13:00, next valid window after 
        // start time is Friday 20.00 (end of exclusion hour) to Sunday 6.00 (start of exclusion hour)
        Instant startTime = new DateTime(2018, 12, 31, 18, 0).toDateTime().toInstant();
-       Duration minimumRunWindow = new Duration(1800000); // 30 minutes
        Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
        assertEquals(new DateTime(2018, 12, 31, 20, 0), new DateTime(nextRunTime.getStartMillis()));
        assertEquals(new DateTime(2019, 1, 1, 6, 0), new DateTime(nextRunTime.getEndMillis()));
