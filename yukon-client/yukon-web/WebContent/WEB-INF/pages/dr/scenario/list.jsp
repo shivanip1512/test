@@ -10,36 +10,19 @@
 <cti:standardPage module="dr" page="scenarioList">
     
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
-    
-    <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filters"/>">
-        
-        <form action="<cti:url var="url" value="/dr/scenario/list"/>" method="get">
-            <input type="hidden" name="itemsPerPage" value="${paging.itemsPerPage}">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".filter.name">
-                    <input type="text" name="name" size="40" value="${fn:escapeXml(name)}">
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-            
-            <div class="action-area">
-                <cti:button nameKey="filter" type="submit" classes="action primary"/>
-                <cti:url var="url" value="/dr/scenario/list">
-                    <cti:param name="itemsPerPage" value="${paging.itemsPerPage}"/>
-                </cti:url>
-                <cti:button nameKey="showAll" href="${url}"/>
-            </div>
-        </form>
-    </div>
     
     <cti:msg2 var="scenariosTitle" key=".scenarios"/>
-    <c:set var="controls">
-        <a href="javascript:void(0);" data-popup="#filter-popup" data-popup-toggle>
-            <cti:icon icon="icon-filter"/>&nbsp;
-            <i:inline key="yukon.common.filter"/>
-        </a>
-    </c:set>
-    <tags:sectionContainer title="${scenariosTitle}" controls="${controls}">
+    <tags:sectionContainer title="${scenariosTitle}">
+    
+        <form action="<cti:url var="url" value="/dr/scenario/list"/>" method="get">
+            <i:inline key="yukon.common.filterBy"/>
+            <input type="hidden" name="itemsPerPage" value="${paging.itemsPerPage}">
+            <cti:msg2 var="namePlaceholder" key=".filter.name"/>
+            <input type="text" name="name" size="20" value="${fn:escapeXml(name)}" placeholder="${namePlaceholder}">
+            <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
+        </form>
+        <hr/>
+        
         <c:choose>
             <c:when test="${scenarios.hitCount == 0}">
                 <span class="empty-list"><i:inline key=".noResults"/></span>
@@ -102,5 +85,7 @@
     </tags:sectionContainer>
 
     <dt:pickerIncludes/>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
 
 </cti:standardPage>

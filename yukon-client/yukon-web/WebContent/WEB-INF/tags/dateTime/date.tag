@@ -12,6 +12,7 @@
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
 <%@ attribute name="id" description="ID of the input." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
+<%@ attribute name="wrapperClass" description="CSS class names applied to the outer span of the form inputs" %>
 <%@ attribute name="cssClass" description="CSS class names applied to the outer container of the picker component." %>
 <%@ attribute name="cssDialogClass" description="CSS class names applied to the popup container." %>
 
@@ -72,7 +73,7 @@
             <c:if test="${status.error}"><c:set var="cssClass">${pageScope.cssClass} error</c:set></c:if>
             <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <span class="datetimeEntry_wrap">
+                <span class="datetimeEntry_wrap ${wrapperClass}">
                     <form:input id="${id}" 
                         path="${path}"
                         value="${dateValue}"
@@ -96,7 +97,7 @@
     <c:otherwise>
         <cti:displayForPageEditModes modes="VIEW">${dateValue}</cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <span class="datetimeEntry_wrap">
+            <span class="datetimeEntry_wrap ${wrapperClass}">
                 <input id="${id}"
                     <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                     value="${dateValue}"

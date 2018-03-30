@@ -10,53 +10,31 @@
 <cti:standardPage module="dr" page="controlAreaList">
     
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
-    
-    <c:set var="baseUrl" value="/dr/controlArea/list"/>
-    <cti:url var="baseUrlWithContextPath" value="${baseUrl}"/>
-    
-    <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filters"/>">
-        <cti:flashScopeMessages/>
-        
-        <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
-            
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".filter.name">
-                    <form:input path="name" size="40"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".filter.state">
-                    <form:select path="state">
-                        <form:option value="all"><cti:msg2 key=".filter.state.all"/></form:option>
-                        <form:option value="active"><cti:msg2 key=".filter.state.active"/></form:option>
-                        <form:option value="inactive"><cti:msg2 key=".filter.state.inactive"/></form:option>
-                    </form:select>
-                </tags:nameValue2>
-                <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
-                    <tags:nameValue2 nameKey=".filter.priority">
-                        <tags:input path="priority.min" size="5"/>&nbsp;
-                        <i:inline key=".filter.min"/>&nbsp;
-                        <tags:input path="priority.max" size="5"/>&nbsp;
-                        <i:inline key=".filter.max"/>
-                    </tags:nameValue2>
-                </cti:checkRolesAndProperties>
-            </tags:nameValueContainer2>
-            
-            <div class="action-area">
-                <cti:button nameKey="filter" type="submit" classes="action primary"/>
-                <cti:button nameKey="showAll" href="${baseUrlWithContextPath}"/>
-            </div>
-        </form:form>
-    </div>
     
     <cti:msg2 var="controlAreaTitle" key=".controlAreas"/>
-    <c:set var="controls">
-        <a href="javascript:void(0);" data-popup="#filter-popup" data-popup-toggle>
-            <cti:icon icon="icon-filter"/>&nbsp;
-            <i:inline key="yukon.common.filter"/>
-        </a>
-    </c:set>
-    <tags:sectionContainer title="${controlAreaTitle}" controls="${controls}">
+    <tags:sectionContainer title="${controlAreaTitle}">
+    
+        <cti:url var="baseUrlWithContextPath" value="/dr/controlArea/list"/>
+        <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
+            <i:inline key="yukon.common.filterBy"/>
+            <cti:msg2 var="namePlaceholder" key=".filter.name"/>
+            <tags:input path="name" size="20" placeholder="${namePlaceholder}"/>
+            <form:select path="state">
+                <form:option value="all"><cti:msg2 key=".filter.state.all"/></form:option>
+                <form:option value="active"><cti:msg2 key=".filter.state.active"/></form:option>
+                <form:option value="inactive"><cti:msg2 key=".filter.state.inactive"/></form:option>
+            </form:select>
+            <cti:checkRolesAndProperties value="DR_VIEW_PRIORITY">
+                <i:inline key=".filter.priority"/>
+                <cti:msg2 var="minPlaceholder" key=".filter.min"/>
+                <tags:input path="priority.min" size="5" placeholder="${minPlaceholder}"/>&nbsp;
+                <cti:msg2 var="maxPlaceholder" key=".filter.max"/>
+                <tags:input path="priority.max" size="5" placeholder="${maxPlaceholder}"/>
+            </cti:checkRolesAndProperties>
+            <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
+        </form:form>
+        <hr/>
+        
         <c:choose>
             <c:when test="${areas.hitCount == 0}">
                 <span class="empty-list"><i:inline key=".noResults"/></span>
@@ -169,5 +147,8 @@
     </tags:sectionContainer>
     
     <dt:pickerIncludes/>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
     
 </cti:standardPage>
