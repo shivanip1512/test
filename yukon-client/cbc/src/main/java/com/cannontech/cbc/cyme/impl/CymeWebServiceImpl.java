@@ -1,5 +1,7 @@
 package com.cannontech.cbc.cyme.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 
@@ -20,6 +22,7 @@ import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 
 public class CymeWebServiceImpl implements CymeWebService {
     @Autowired private @Qualifier("cyme") RestOperations cymeRestTemplate;
@@ -46,12 +49,44 @@ public class CymeWebServiceImpl implements CymeWebService {
     public CymeWebServiceImpl(ConfigurationSource configurationSource) {
         baseCymeUrl =
             configurationSource.getString(MasterConfigString.CYME_DIST_BASE_URL, "http://localhost:8866");
-        log.info(baseCymeUrl);
+        log.debug("Using " + baseCymeUrl + " as cyme url.");
+        
+        try {
+            URI uri = new URI(baseCymeUrl);
+            
+            String hostAddress = uri.getHost();
+            if (hostAddress == null) {
+                log.error("Cyme url is missing a valid host component: " + baseCymeUrl);
+                return;
+            }
+            
+            Integer portNumber = uri.getPort();
+            if (portNumber == -1) {
+                log.error("Cyme url is missing a port number: " + baseCymeUrl);
+                return;
+            }
+            
+            hostAddress = hostAddress.startsWith("www.") ? hostAddress.substring(4) : hostAddress;
+            System.setProperty("http.nonProxyHosts", hostAddress);
+            log.debug("Adding " + hostAddress + " to JVM proxy bypass list.");
+            
+        } catch (URISyntaxException e) {
+            log.error("Cyme url is not a valid URL.", e);
+        }
     }
 
     @Override
     public String runSimulation(String xmlData) {
-        String response = cymeRestTemplate.postForObject(baseCymeUrl + SIMULATION_URL_PART + RUN_STUDY_URL_END, xmlData, String.class);
+        log.debug("Study data being sent: " + xmlData);
+        
+        String response, studyUrl = null;
+        try {
+            studyUrl = baseCymeUrl + SIMULATION_URL_PART + RUN_STUDY_URL_END;
+            response = cymeRestTemplate.postForObject(studyUrl, xmlData, String.class);
+        } catch (DigiWebServiceException e) {
+            log.error("Error sending study data to cyme at url: " + studyUrl, e);
+            return null;
+        }
         log.info("Simulation ran on CYME");
         log.debug(response);
 
