@@ -11,16 +11,18 @@
     <tags:setFormEditMode mode="${mode}" />
     
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <div id="page-actions" class="dn">
-            <cti:url var="createUrl" value="/stars/rtu/create" />
-            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" 
-                               id="create-option" href="${createUrl}"/>
-            <cti:displayForPageEditModes modes="EDIT,VIEW">
-                <li class="divider"></li>
-                <cti:url var="editUrl" value="/stars/rtu/${rtu.id}/edit" />
-                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
-            </cti:displayForPageEditModes>
-        </div>
+        <cti:displayForPageEditModes modes="VIEW">
+            <div id="page-actions" class="dn">
+                <cti:url var="createUrl" value="/stars/rtu/create" />
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" 
+                                   id="create-option" href="${createUrl}"/>
+                <cti:displayForPageEditModes modes="EDIT,VIEW">
+                    <li class="divider"></li>
+                    <cti:url var="editUrl" value="/stars/rtu/${rtu.id}/edit" />
+                    <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+                </cti:displayForPageEditModes>
+            </div>
+        </cti:displayForPageEditModes>
     </cti:checkRolesAndProperties>
 
     <cti:url var="action" value="/stars/rtu/save" />

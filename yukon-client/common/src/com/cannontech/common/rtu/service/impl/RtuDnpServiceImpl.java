@@ -162,8 +162,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         }
         
         dnpBase.setPAOName(rtuDnp.getName());
-        String disabledFlag = (String) YNBoolean.valueOf(rtuDnp.isDisableFlag()).getDatabaseRepresentation();
-        dnpBase.setDisableFlag(disabledFlag.charAt(0));
+        dnpBase.setDisabled(rtuDnp.isDisableFlag());
         
         dnpBase.getDeviceAddress().setMasterAddress(rtuDnp.getDeviceAddress().getMasterAddress());
         dnpBase.getDeviceAddress().setSlaveAddress(rtuDnp.getDeviceAddress().getSlaveAddress());
