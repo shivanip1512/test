@@ -3,6 +3,7 @@ package com.cannontech.stars.ws;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.SerialNumberValidation;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -46,17 +48,18 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsExcept
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
 import com.cannontech.stars.dr.honeywell.HoneywellBuilder;
+import com.cannontech.stars.dr.route.exception.StarsRouteNotFoundException;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.util.Validator;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class StarsControllableDeviceHelperImpl implements StarsControllableDeviceHelper {
@@ -69,7 +72,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private HoneywellBuilder honeywellBuilder;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
-    @Autowired private IDatabaseCache cache;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private SelectionListService selectionListService;
@@ -77,6 +79,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private StarsDatabaseCache starsCache;
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
     @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private DefaultRouteService defaultRouteService;
     
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -351,6 +354,29 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         // Derive Account Id
         CustomerAccount custAcct = getCustomerAccount(dto, energyCompany);
         lib.setAccountID(custAcct.getAccountId());
+        
+        // Update Route, if specified
+        String inventoryRoute = dto.getInventoryRoute();
+        if (StringUtils.isNotEmpty(inventoryRoute)) {
+            
+            // Search all of the energy companies routes for a name match
+            List<LiteYukonPAObject> allRoutes = ecDao.getAllRoutes(energyCompany);
+            Optional<LiteYukonPAObject> route = allRoutes.stream()
+                                                   .filter(tempRoute -> tempRoute.getPaoName().equalsIgnoreCase(inventoryRoute))
+                                                   .findFirst();
+            
+            LiteYukonPAObject defaultRoute = defaultRouteService.getDefaultRoute(energyCompany);
+            
+            if (route.isPresent()) {
+                ((LiteLmHardwareBase)lib).setRouteID(route.get().getLiteID());
+            } else if (inventoryRoute.equalsIgnoreCase("Default - " + defaultRoute.getPaoName())) {
+                // If we did not find a match, we check for our special case which is assigning to the EC default route
+                // so we must remove the route assignment.
+                ((LiteLmHardwareBase)lib).setRouteID(0);
+            } else {
+                throw new StarsRouteNotFoundException(inventoryRoute, energyCompany.getName());
+            }
+        }
 
         // Derive and update Installation Company id, if specified
         String serviceCompany = dto.getServiceCompanyName();

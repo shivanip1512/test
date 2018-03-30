@@ -11,6 +11,7 @@
             <deviceLabel>Upstairs</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+            <routeName>Route Name 1 (name)</routeName>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>InvalidArgument</accountNumber>
@@ -19,6 +20,7 @@
             <deviceLabel>Backyard AC</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+            <routeName>Route Name 1 (name)</routeName>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>ClientRequestError</accountNumber>
@@ -27,6 +29,7 @@
             <deviceLabel>Backyard AC</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+            <routeName>Route Name 1 (name)</routeName>
         </controllableDevice>
         <controllableDevice>
             <accountNumber>Valid</accountNumber>
@@ -35,6 +38,7 @@
             <deviceLabel>Backyard AC</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>
             <serviceCompanyName>Honeywell</serviceCompanyName>
+            <routeName>Route Name 1 (name)</routeName>
         </controllableDevice>
     </controllableDeviceList>
 </newControllableDevicesRequest>

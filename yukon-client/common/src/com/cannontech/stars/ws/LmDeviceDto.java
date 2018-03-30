@@ -19,6 +19,7 @@ public class LmDeviceDto {
     private String macAddress;
     private Integer deviceVendorUserId;
     private String serviceCompanyName;
+    private String inventoryRoute;
     private Date fieldRemoveDate;
     private Throwable throwable;    
 
@@ -114,6 +115,14 @@ public class LmDeviceDto {
         tsc.append("macAddress", getMacAddress());
         tsc.append("deviceVendorUserId", getDeviceVendorUserId());
         return tsc.toString();
+    }
+
+    public String getInventoryRoute() {
+        return inventoryRoute;
+    }
+    
+    public void setInventoryRoute(String routeName) {
+        this.inventoryRoute = routeName;
     }
 
 }

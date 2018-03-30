@@ -60,6 +60,7 @@ public class ControllableDevicesRequestEndPoint {
     static final String serviceCompanyNameStr = "y:serviceCompanyName";
     static final String macAddressStr = "y:macAddress";
     static final String deviceVendorUserIdStr = "y:deviceVendorUserId";
+    static final String routeStr = "y:routeName";
     static final String fieldInstallDateStr = "y:fieldInstallDate";
     static final String fieldRemoveDateStr = "y:fieldRemoveDate";
 
@@ -294,6 +295,7 @@ public class ControllableDevicesRequestEndPoint {
             device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
             device.setMacAddress(template.evaluateAsString(macAddressStr));
             device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
+            device.setInventoryRoute(template.evaluateAsString(routeStr));
             return device;
         }
     }
