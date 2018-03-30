@@ -369,7 +369,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             
             if (route.isPresent()) {
                 ((LiteLmHardwareBase)lib).setRouteID(route.get().getLiteID());
-            } else if (inventoryRoute.equalsIgnoreCase("Default - " + defaultRoute.getPaoName())) {
+            } else if (defaultRoute != null && inventoryRoute.equalsIgnoreCase("Default - " + defaultRoute.getPaoName())) {
                 // If we did not find a match, we check for our special case which is assigning to the EC default route
                 // so we must remove the route assignment.
                 ((LiteLmHardwareBase)lib).setRouteID(0);
