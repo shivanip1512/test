@@ -7,7 +7,7 @@ yukon.namespace('yukon.dnpconfiguration');
  * @requires JQUERY 
  * @requires yukon 
  */
-yukon.thing = (function () {
+yukon.dnpconfiguration = (function () {
  
     'use strict';
  
@@ -30,6 +30,8 @@ yukon.thing = (function () {
                     $.get(url)
                      .done(function (data) {
                         if (data.dnpConfiguration.deviceConfiguration.dnpCategory != null) {
+                            $('.js-dnp-category').removeClass('dn');
+                            $('.js-dnp-category-alert').addClass('dn');
                             data.dnpConfiguration.deviceConfiguration.dnpCategory.deviceConfigurationItems.forEach(function (field) {
                                 var fieldName = field.fieldName,
                                     value = field.value;
@@ -38,6 +40,11 @@ yukon.thing = (function () {
                                 }
                                 dnpFields.find('.js-dnp-' + fieldName).text(value);
                             });
+                        } else { 
+                            $('.js-dnp-category').addClass('dn');
+                            var errorMessage = $('#dnpCategoryError').val().replace('{0}', data.dnpConfiguration.deviceConfiguration.name);
+                            $('.js-dnp-category-alert').text(errorMessage);
+                            $('.js-dnp-category-alert').removeClass('dn');
                         }
                     }).always(function () {
                         yukon.ui.unblock(dnpFields);
@@ -53,4 +60,4 @@ yukon.thing = (function () {
     return mod;
 })();
  
-$(function () { yukon.thing.init(); });
+$(function () { yukon.dnpconfiguration.init(); });

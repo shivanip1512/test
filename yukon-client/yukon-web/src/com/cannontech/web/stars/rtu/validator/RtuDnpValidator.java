@@ -28,7 +28,7 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDao paoDao;
 
-    private static final String basekey = "yukon.web.modules.capcontrol.cbc.error";
+    private static final String basekey = "yukon.web.modules.operator.rtuDetail.error";
 
     public RtuDnpValidator() {
         super(RtuDnp.class);
@@ -43,27 +43,30 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
 
     private void validateName(RtuDnp rtuDnp, Errors errors) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
-        YukonValidationUtils.checkExceedsMaxLength(errors, "name", rtuDnp.getName(), 60);
 
         if (!errors.hasFieldErrors("name")) {
-            if (!PaoUtils.isValidPaoName(rtuDnp.getName())) {
-                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
-            }
-        }
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", rtuDnp.getName(), 60);
+            if (!errors.hasFieldErrors("name")) {
+                if (!PaoUtils.isValidPaoName(rtuDnp.getName())) {
+                    errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+                }
+                if (!errors.hasFieldErrors("name")) {
+                    boolean idSpecified = rtuDnp.getId() != null;
 
-        boolean idSpecified = rtuDnp.getId() != null;
+                    boolean nameAvailable = paoDao.isNameAvailable(rtuDnp.getName(), rtuDnp.getPaoType());
 
-        boolean nameAvailable = paoDao.isNameAvailable(rtuDnp.getName(), rtuDnp.getPaoType());
-
-        if (!nameAvailable) {
-            if (!idSpecified) {
-                // For create, we must have an available name
-                errors.rejectValue("name", "yukon.web.error.nameConflict");
-            } else {
-                // For edit, we can use our own existing name
-                LiteYukonPAObject existingPao = dbCache.getAllPaosMap().get(rtuDnp.getId());
-                if (!existingPao.getPaoName().equals(rtuDnp.getName())) {
-                    errors.rejectValue("name", "yukon.web.error.nameConflict");
+                    if (!nameAvailable) {
+                        if (!idSpecified) {
+                            // For create, we must have an available name
+                            errors.rejectValue("name", "yukon.web.error.nameConflict");
+                        } else {
+                            // For edit, we can use our own existing name
+                            LiteYukonPAObject existingPao = dbCache.getAllPaosMap().get(rtuDnp.getId());
+                            if (!existingPao.getPaoName().equals(rtuDnp.getName())) {
+                                errors.rejectValue("name", "yukon.web.error.nameConflict");
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -82,37 +85,46 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
 
         YukonValidationUtils.checkRange(errors, "deviceAddress.postCommWait", deviceAddress.getPostCommWait(), 0, 99999,
             true);
-        YukonValidationUtils.checkRange(errors, "deviceAddress.masterAddress", deviceAddress.getMasterAddress(), 0,
-            65535, true);
-        YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(), 0, 65535,
-            true);
-
-        List<Integer> devicesWithSameAddress =
-            deviceDao.getDevicesByDeviceAddress(deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
-
-        devicesWithSameAddress.removeAll(Collections.singleton(rtuDnp.getId()));
-
-        if (!devicesWithSameAddress.isEmpty()) {
-
-            List<Integer> devicesOnPort = deviceDao.getDevicesByPort(portId);
-            SetView<Integer> masterSlavePortConflicts =
-                Sets.intersection(ImmutableSet.copyOf(devicesOnPort), ImmutableSet.copyOf(devicesWithSameAddress));
-
-            if (!masterSlavePortConflicts.isEmpty()) {
-
-                String deviceName = masterSlavePortConflicts.stream().findFirst().map(new Function<Integer, String>() {
-                    @Override
-                    public String apply(Integer id) {
-                        return dbCache.getAllPaosMap().get(id).getPaoName();
-                    }
-                }).get();
-
-                errors.rejectValue("deviceAddress.masterAddress", basekey + ".masterSlave", new Object[] { deviceName },
-                    "Master/Slave combination in use");
-                errors.rejectValue("deviceAddress.slaveAddress", "yukon.common.blank");
-            }
-
+        if(!errors.hasFieldErrors("deviceAddress.masterAddress")) {
+            YukonValidationUtils.checkRange(errors, "deviceAddress.masterAddress", deviceAddress.getMasterAddress(), 0,
+                65535, true);
         }
+
+        if (!errors.hasFieldErrors("deviceAddress.slaveAddress")) {
+            YukonValidationUtils.checkRange(errors, "deviceAddress.slaveAddress", deviceAddress.getSlaveAddress(), 0, 65535,
+                true);
+        }
+
+        if (!errors.hasFieldErrors("deviceAddress.masterAddress") && !errors.hasFieldErrors("deviceAddress.slaveAddress")) {
+            List<Integer> devicesWithSameAddress =
+                deviceDao.getDevicesByDeviceAddress(deviceAddress.getMasterAddress(), deviceAddress.getSlaveAddress());
+
+            devicesWithSameAddress.removeAll(Collections.singleton(rtuDnp.getId()));
+
+            if (!devicesWithSameAddress.isEmpty()) {
+
+                List<Integer> devicesOnPort = deviceDao.getDevicesByPort(portId);
+                SetView<Integer> masterSlavePortConflicts =
+                    Sets.intersection(ImmutableSet.copyOf(devicesOnPort), ImmutableSet.copyOf(devicesWithSameAddress));
+
+                if (!masterSlavePortConflicts.isEmpty()) {
+
+                    String deviceName =
+                        masterSlavePortConflicts.stream().findFirst().map(new Function<Integer, String>() {
+                            @Override
+                            public String apply(Integer id) {
+                                return dbCache.getAllPaosMap().get(id).getPaoName();
+                            }
+                        }).get();
+
+                    errors.rejectValue("deviceAddress.masterAddress", basekey + ".masterSlave",
+                        new Object[] { deviceName }, "Master/Slave combination in use");
+                    errors.rejectValue("deviceAddress.slaveAddress", "yukon.common.blank");
+                }
+
+            }
+        }
+        
     }
 
     private void validateScanIntervals(RtuDnp rtuDnp, Errors errors) {

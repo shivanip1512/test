@@ -26,7 +26,7 @@ yukon.assets.rtu= (function () {
             max: 1440,
             min: 0,
             values: [defaultStart, defaultEnd],
-            step: 1,
+            step: 15,
             range: true,
             slide: function (ev, ui) {
                 var start = _timeFormatter.formatTime(ui.values[0], 0),

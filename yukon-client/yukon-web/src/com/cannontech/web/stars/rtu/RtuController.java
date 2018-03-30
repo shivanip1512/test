@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -50,6 +51,7 @@ import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.deviceConfiguration.enumeration.DnpTimeOffset.Offsets;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.rtu.service.RtuService;
@@ -86,7 +88,12 @@ public class RtuController {
     public String edit(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext userContext,
             HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        RtuDnp rtu = rtuDnpService.getRtuDnp(id);
+        RtuDnp rtu = null;
+        if (model.containsAttribute("rtu")) {
+            rtu = (RtuDnp) model.get("rtu");
+        } else {
+            rtu = rtuDnpService.getRtuDnp(id);
+        }
         getPointsForModel(rtu.getId(), model);
         List<MessageSourceResolvable> duplicatePointMessages =
             rtuService.generateDuplicatePointsErrorMessages(rtu.getId(), request);
@@ -216,7 +223,17 @@ public class RtuController {
         List<LightDeviceConfiguration> configs = deviceConfigDao.getAllConfigurationsByType(rtu.getPaoType());
         model.addAttribute("configs", configs);
         
-        DNPConfiguration dnpConfig = deviceConfigDao.getDnpConfiguration(deviceConfigDao.getDeviceConfiguration(rtu.getDnpConfigId()));
+        DeviceConfiguration deviceConfiguration = deviceConfigDao.getDeviceConfiguration(rtu.getDnpConfigId());
+        DNPConfiguration dnpConfig = deviceConfigDao.getDnpConfiguration(deviceConfiguration);
+        if (dnpConfig == null) {
+            dnpConfig = new DNPConfiguration(deviceConfiguration.getConfigurationId(), deviceConfiguration.getName(),
+                deviceConfiguration.getDescription());
+            dnpConfig.setTimeOffset(Offsets.UTC.toString());
+            model.addAttribute("isDnpConfigCategoryAssigned", false);
+        } else {
+            model.addAttribute("isDnpConfigCategoryAssigned", true);
+        }
+        
         model.addAttribute("dnpConfig", dnpConfig);
         
         return "/rtu/rtuDetail.jsp";

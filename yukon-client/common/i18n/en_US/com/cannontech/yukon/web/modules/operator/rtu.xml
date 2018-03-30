@@ -6,9 +6,8 @@
     <entry key="yukon.web.modules.operator.rtuList.pageName">RTUs</entry>
 
     <!-- rtuDetail.jsp -->
-    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.pageHeading">Create RTU</entry>
-    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.crumbTitle">Create RTU</entry>
-    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.pageTitle">Create RTU</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.pageName">Create RTU</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.CREATE.pageDescription">Create RTU</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.EDIT.pageHeading">Edit RTU: {0}</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.EDIT.crumbTitle">Edit</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.EDIT.pageTitle">RTU: {0}</entry>
@@ -57,6 +56,10 @@
     <entry key="yukon.web.modules.operator.rtuDetail.unsolicit3">Unsolicited Class 3</entry>
     <entry key="yukon.web.modules.operator.rtuDetail.nonUpdated">NonUpdated on Failed Scan</entry>
     
+    <entry key="yukon.web.modules.operator.rtuDetail.info.saved">RTU saved successfully.</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.error.invalidConfig">DNP configuration is not assignable for selected device type. Please select valid configuration.</entry>
+    <entry key="yukon.web.modules.operator.rtuDetail.error.masterSlave">Master/Slave address already in use by {0}.</entry>
+    
     <entry key="yukon.web.modules.operator.rtuDetail.childrenTab">Child Hierarchy</entry>
     
     <entry key="yukon.web.modules.operator.rtuDetail.allPointsTab">All Points</entry>
@@ -73,8 +76,4 @@
     
     <entry key="yukon.web.modules.operator.rtu.pointUniqueness"><![CDATA[Point type and offset must be unique across an RTU-DNP and its Logical devices.<br/>]]></entry>
     <entry key="yukon.web.modules.operator.rtu.pointUniqueness.detail"><![CDATA[Conflicting offset: {0} {1} / {2} / {3}<br/>]]></entry>
-    
-    <entry key="yukon.web.modules.operator.rtuDetail.info.saved">RTU saved successfully.</entry>
-    <entry key="yukon.web.modules.operator.rtuDetail.error.invalidConfig">DNP configuration is not assignable for selected device type. Please select valid configuration.</entry>
-    <entry key="yukon.web.modules.operator.rtuDetail.error.masterSlave">Master/Slave address already in use by {0}.</entry>
 </properties>

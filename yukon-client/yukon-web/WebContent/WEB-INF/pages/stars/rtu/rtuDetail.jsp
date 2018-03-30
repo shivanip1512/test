@@ -12,16 +12,14 @@
     
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <div id="page-actions" class="dn">
-            <cm:dropdown type="button" key="yukon.common.actions">
-                <cti:url var="createUrl" value="/stars/rtu/create" />
-                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" 
-                                   id="create-option" href="${createUrl}"/>
-                <cti:displayForPageEditModes modes="EDIT,VIEW">
-                    <li class="divider"></li>
-                    <cti:url var="editUrl" value="/stars/rtu/${rtu.id}/edit" />
-                    <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
-                </cti:displayForPageEditModes>
-            </cm:dropdown>
+            <cti:url var="createUrl" value="/stars/rtu/create" />
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" 
+                               id="create-option" href="${createUrl}"/>
+            <cti:displayForPageEditModes modes="EDIT,VIEW">
+                <li class="divider"></li>
+                <cti:url var="editUrl" value="/stars/rtu/${rtu.id}/edit" />
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+            </cti:displayForPageEditModes>
         </div>
     </cti:checkRolesAndProperties>
 
@@ -144,13 +142,11 @@
             </div>
             
             <div class="column two nogutter">
-                <c:if test="${not empty dnpConfig}">
-                    <%@ include file="../../common/dnpConfiguration.jsp" %>
-                </c:if>
+                <%@ include file="../../common/dnpConfiguration.jsp" %>
             </div>
         </div>
 
-        <cti:displayForPageEditModes modes="VIEW,EDIT">
+        <cti:displayForPageEditModes modes="VIEW">
             <cti:tabs>
                 <cti:msg2 var="childrenTab" key=".childrenTab"/>
                 <cti:tab title="${childrenTab}">

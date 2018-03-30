@@ -69,8 +69,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
             configurationDao.findConfigurationForDevice(new SimpleDevice(pao.getPaoIdentifier()));
         DeviceConfiguration deviceConfig =
             configurationDao.getDeviceConfiguration(config.getConfigurationId());
-        DNPConfiguration dnp = configurationDao.getDnpConfiguration(deviceConfig);
-        rtu.setDnpConfigId(dnp.getConfigurationId());
+        rtu.setDnpConfigId(deviceConfig.getConfigurationId());
         List<DisplayableDevice> devices = deviceDao.getChildDevices(id);
         Comparator<DisplayableDevice> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
         Collections.sort(devices, comparator);
@@ -109,53 +108,62 @@ public class RtuDnpServiceImpl implements RtuDnpService {
     }
 
     @Override
-    public int save(RtuDnp rtuDnp) {
-        if (rtuDnp.getId() == null) {
-            create(rtuDnp);
+    public int save(RtuDnp rtuDnpModel) {
+        RTUDnp rtuDnp = buildRtuDbPersistent(rtuDnpModel);
+        
+        Integer paoId = rtuDnp.getPAObjectID();
+        if (paoId == null) {
+            dbPersistentDao.performDBChange(rtuDnp, TransactionType.INSERT);
         }
         
-        int paoId = rtuDnp.getId();
-        
-        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
-        DNPBase dnpBase = (DNPBase) dbPersistentDao.retrieveDBPersistent(pao);
-        
-        setDNPFields(dnpBase, rtuDnp);
-        
         // assign DNP config.
-        SimpleDevice device = SimpleDevice.of(paoId, dnpBase.getPaoType());
+        SimpleDevice device = SimpleDevice.of(rtuDnp.getPAObjectID(), rtuDnp.getPaoType());
         LightDeviceConfiguration config =
-            configurationDao.getLightConfigurationById(rtuDnp.getDnpConfigId());
+            configurationDao.getLightConfigurationById(rtuDnpModel.getDnpConfigId());
         try {
             deviceConfigService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser(),
-                rtuDnp.getName());
+                rtuDnpModel.getName());
         } catch (InvalidDeviceTypeException e) {
             /*
              * This should have already been validated.
              * Even if not, the old (valid) device config will still be in use.
              * Log it and move on.
              */
-            log.error("An error occurred attempting to assign a DNP configuration to RTU-DNP " + "'" + rtuDnp.getName()
+            log.error("An error occurred attempting to assign a DNP configuration to RTU-DNP " + "'" + rtuDnpModel.getName()
                 + "'. Please assign this device a configuration manually.", e);
         }
 
-        dbPersistentDao.performDBChange(dnpBase, TransactionType.UPDATE);
+        dbPersistentDao.performDBChange(rtuDnp, TransactionType.UPDATE);
 
-        return dnpBase.getPAObjectID();
+        return rtuDnp.getPAObjectID();
     }
 
-    private DNPBase create(RtuDnp rtuDnp) {
-        DNPBase dnpBase = new RTUDnp();
-        setDNPFields(dnpBase, rtuDnp);
+    private void setScanRate(DNPBase dnpBase, RtuDnp rtuDnp, String typeIntegrity) {
+        if (rtuDnp.getDeviceScanRateMap().containsKey(typeIntegrity)) {
+            DeviceScanRate scanRate = new DeviceScanRate();
+            if(rtuDnp.getId() != null) {
+                scanRate.setDeviceID(rtuDnp.getId());
+            }
+            scanRate.setScanType(typeIntegrity);
+            DeviceScanRate newScanRate = rtuDnp.getDeviceScanRateMap().get(typeIntegrity);
+            scanRate.setAlternateRate(newScanRate.getAlternateRate());
+            scanRate.setScanGroup(newScanRate.getScanGroup());
+            scanRate.setIntervalRate(newScanRate.getIntervalRate());
+            dnpBase.getDeviceScanRateMap().put(typeIntegrity, scanRate);
+        }
+    }
+
+    private RTUDnp buildRtuDbPersistent(RtuDnp rtuDnp) {
+        RTUDnp dnpBase = new RTUDnp();  
+        if (rtuDnp.getId() != null) {
+            // set dnpBase to existing data.
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(rtuDnp.getId());
+            dnpBase = (RTUDnp) dbPersistentDao.retrieveDBPersistent(pao);
+        }
         
-        dbPersistentDao.performDBChange(dnpBase, TransactionType.INSERT);
-        DNPBase rtuCreated = (DNPBase) dbPersistentDao.retrieveDBPersistent(dnpBase);
-        rtuDnp.setId(rtuCreated.getPAObjectID());
-        return rtuCreated;
-    }
-
-    private void setDNPFields (DNPBase dnpBase, RtuDnp rtuDnp) {
         dnpBase.setPAOName(rtuDnp.getName());
-        dnpBase.setDisableFlag(rtuDnp.isDisableFlag() ? 'Y' : 'N');
+        String disabledFlag = (String) YNBoolean.valueOf(rtuDnp.isDisableFlag()).getDatabaseRepresentation();
+        dnpBase.setDisableFlag(disabledFlag.charAt(0));
         
         dnpBase.getDeviceAddress().setMasterAddress(rtuDnp.getDeviceAddress().getMasterAddress());
         dnpBase.getDeviceAddress().setSlaveAddress(rtuDnp.getDeviceAddress().getSlaveAddress());
@@ -173,20 +181,6 @@ public class RtuDnpServiceImpl implements RtuDnpService {
         dnpBase.setDeviceScanRateMap(new HashMap<String, DeviceScanRate>());
         setScanRate(dnpBase, rtuDnp, DeviceScanRate.TYPE_INTEGRITY);
         setScanRate(dnpBase, rtuDnp, DeviceScanRate.TYPE_EXCEPTION);
-    }
-
-    private void setScanRate(DNPBase dnpBase, RtuDnp rtuDnp, String typeIntegrity) {
-        if (rtuDnp.getDeviceScanRateMap().containsKey(typeIntegrity)) {
-            DeviceScanRate scanRate = new DeviceScanRate();
-            if(rtuDnp.getId() != null) {
-                scanRate.setDeviceID(rtuDnp.getId());
-            }
-            scanRate.setScanType(typeIntegrity);
-            DeviceScanRate newScanRate = rtuDnp.getDeviceScanRateMap().get(typeIntegrity);
-            scanRate.setAlternateRate(newScanRate.getAlternateRate());
-            scanRate.setScanGroup(newScanRate.getScanGroup());
-            scanRate.setIntervalRate(newScanRate.getIntervalRate());
-            dnpBase.getDeviceScanRateMap().put(typeIntegrity, scanRate);
-        }
+        return dnpBase;
     }
 }
