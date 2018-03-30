@@ -41,11 +41,19 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
     //  if we are, pulse the ScadaOverrideClear point.
 
     Actions actions;
+    LitePoint point = getPointByAttribute( Attribute::ScadaOverrideClear, twoWayPoints );
 
     if ( getOperatingMode( twoWayPoints ) == ScadaOverride )
     {
-        actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideClear, twoWayPoints ),
-                                                          "CBC Heartbeat Clear" ) );
+        switch ( point.getPointType() )
+        {
+            case CtiPointType_t::StatusPointType:
+                actions.emplace_back( makeStandardDigitalControl( point, "CBC Heartbeat Clear" ) );
+                break;
+            case CtiPointType_t::AnalogPointType:
+                actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideClear, 0, twoWayPoints ) );
+                break;
+        }
     }
 
     return actions;

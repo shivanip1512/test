@@ -18,7 +18,7 @@ struct CbcHeartbeatPolicy : Policy
 
     OperatingMode getOperatingMode( CtiCCTwoWayPoints & twoWayPoints );
 
-    virtual Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) = 0;
+    virtual Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints ) = 0;
 
     virtual Actions StopHeartbeat( CtiCCTwoWayPoints & twoWayPoints );
 
@@ -28,7 +28,7 @@ struct CbcHeartbeatPolicy : Policy
 
 struct NoCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) override;
+    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints ) override;
 
     Actions StopHeartbeat( CtiCCTwoWayPoints & twoWayPoints ) override;
 
@@ -40,7 +40,7 @@ protected:
 
 struct AnalogCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) override;
+    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints ) override;
 
 protected:
 
@@ -50,13 +50,13 @@ protected:
 
 struct PulsedCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints) override;
+    Actions SendHeartbeat( const long keepAliveValue, CtiCCTwoWayPoints & twoWayPoints ) override;
 
 protected:
 
     AttributeList getSupportedAttributes() const override;
 
-    long readCurrentValue( CtiCCTwoWayPoints & twoWayPoints);
+    long readCurrentValue( CtiCCTwoWayPoints & twoWayPoints );
 };
 
 
