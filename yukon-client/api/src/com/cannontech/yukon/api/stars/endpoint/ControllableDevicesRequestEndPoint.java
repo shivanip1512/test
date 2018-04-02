@@ -28,6 +28,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsExcept
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
+import com.cannontech.stars.dr.route.exception.StarsRouteNotFoundException;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.LmDeviceDto;
@@ -242,7 +243,8 @@ public class ControllableDevicesRequestEndPoint {
     }
 
     enum ErrorCodeMapper {
-        AccountNotFound(StarsAccountNotFoundException.class), 
+        AccountNotFound(StarsAccountNotFoundException.class),
+        RouteNotFound(StarsRouteNotFoundException.class),
         DeviceAlreadyAssigned(StarsDeviceAlreadyAssignedException.class), 
         DeviceAlreadyExists(StarsDeviceAlreadyExistsException.class), 
         DeviceNotFoundOnAccount(StarsDeviceNotFoundOnAccountException.class), 
