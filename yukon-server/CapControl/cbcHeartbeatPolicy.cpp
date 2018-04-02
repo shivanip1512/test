@@ -40,8 +40,10 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
     // Check the current reported mode of the CBC, if we are not in ScadaOverride mode, then don't do anything,
     //  if we are, pulse the ScadaOverrideClear point.
 
+    const auto AttributeClear = Attribute::ScadaOverrideClear;
+
     Actions actions;
-    LitePoint point = getPointByAttribute( Attribute::ScadaOverrideClear, twoWayPoints );
+    LitePoint point = getPointByAttribute( AttributeClear, twoWayPoints );
 
     if ( getOperatingMode( twoWayPoints ) == ScadaOverride )
     {
@@ -51,7 +53,10 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
                 actions.emplace_back( makeStandardDigitalControl( point, "CBC Heartbeat Clear" ) );
                 break;
             case CtiPointType_t::AnalogPointType:
-                actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideClear, 0, twoWayPoints ) );
+                actions.emplace_back( WriteAnalogValue( AttributeClear, 0, twoWayPoints ) );
+                break;
+            default:
+                CTILOG_DEBUG(dout, "Could not execute Stop Heartbeat command because the attribute is not mapped to a status or analog point type.");
                 break;
         }
     }
