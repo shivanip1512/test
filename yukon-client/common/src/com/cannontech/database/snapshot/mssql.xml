@@ -6244,7 +6244,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_CollectionActionCommandRequest</string>
+            <string>PK_CACommandRequest</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -6260,7 +6260,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_CollectionActionCommandRequest</indexName>
+              <indexName>PK_CACommandRequest</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -11092,7 +11092,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CollectionActionR_YukonPAObject</i__foreignKeyName>
+            <i__foreignKeyName>FK_CARequest_YukonPAObject</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PAObjectId</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
@@ -61649,7 +61649,7 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CollectionActionCR_CommandRequestExec</i__foreignKeyName>
+            <i__foreignKeyName>FK_CACR_CommandRequestExec</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CommandRequestExecId</i__columnName>
             <i__foreignColumnName>CommandRequestExecId</i__foreignColumnName>
@@ -64101,7 +64101,7 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CollectionActionR_CollectionAction</i__foreignKeyName>
+            <i__foreignKeyName>FK_CARequest_CollectionAction</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CollectionActionId</i__columnName>
             <i__foreignColumnName>CollectionActionId</i__foreignColumnName>
@@ -64110,7 +64110,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CollectionActionCR_CollectionAction</i__foreignKeyName>
+            <i__foreignKeyName>FK_CACR_CollectionAction</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CollectionActionId</i__columnName>
             <i__foreignColumnName>CollectionActionId</i__foreignColumnName>
@@ -64119,7 +64119,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CollectionActionI_CollectionAction</i__foreignKeyName>
+            <i__foreignKeyName>FK_CAInput_CollectionAction</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CollectionActionId</i__columnName>
             <i__foreignColumnName>CollectionActionId</i__foreignColumnName>
