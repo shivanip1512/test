@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/28/2018 6:10:27 AM                         */
+/* Created on:     4/2/2018 11:00:49 AM                         */
 /*==============================================================*/
 
 
@@ -1436,7 +1436,7 @@ create table CollectionAction  (
 create table CollectionActionCommandRequest  (
    CollectionActionId   NUMBER                          not null,
    CommandRequestExecId NUMBER                          not null,
-   constraint PK_CollectionActionCommandRequest primary key (CollectionActionId, CommandRequestExecId)
+   constraint PK_CACommandRequest primary key (CollectionActionId, CommandRequestExecId)
 );
 
 /*==============================================================*/
@@ -11569,27 +11569,27 @@ alter table CarrierRoute
       references Route (RouteID);
 
 alter table CollectionActionCommandRequest
-   add constraint FK_CollectionActionCR_CollectionAction foreign key (CollectionActionId)
+   add constraint FK_CACR_CollectionAction foreign key (CollectionActionId)
       references CollectionAction (CollectionActionId)
       on delete cascade;
 
 alter table CollectionActionCommandRequest
-   add constraint FK_CollectionActionCR_CommandRequestExec foreign key (CommandRequestExecId)
+   add constraint FK_CACR_CommandRequestExec foreign key (CommandRequestExecId)
       references CommandRequestExec (CommandRequestExecId)
       on delete cascade;
 
 alter table CollectionActionInput
-   add constraint FK_CollectionActionI_CollectionAction foreign key (CollectionActionId)
+   add constraint FK_CAInput_CollectionAction foreign key (CollectionActionId)
       references CollectionAction (CollectionActionId)
       on delete cascade;
 
 alter table CollectionActionRequest
-   add constraint FK_CollectionActionR_CollectionAction foreign key (CollectionActionId)
+   add constraint FK_CARequest_CollectionAction foreign key (CollectionActionId)
       references CollectionAction (CollectionActionId)
       on delete cascade;
 
 alter table CollectionActionRequest
-   add constraint FK_CollectionActionR_YukonPAObject foreign key (PAObjectId)
+   add constraint FK_CARequest_YukonPAObject foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
       on delete cascade;
 
