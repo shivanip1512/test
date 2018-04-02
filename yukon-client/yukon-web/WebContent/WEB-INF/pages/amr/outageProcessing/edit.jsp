@@ -162,7 +162,7 @@
                 <c:when test="${not empty outageMonitor.outageMonitorId}">
                     <cti:button nameKey="save" busy="true" type="submit" classes="primary action" data-disable-group="actionButtons" />
                     <c:set var="enableDisableKey" value="disable"/>
-                    <c:if test="${statusPointMonitor.evaluatorStatus eq 'DISABLED'}">
+                    <c:if test="${outageMonitor.evaluatorStatus eq 'DISABLED'}">
                         <c:set var="enableDisableKey" value="enable"/>
                     </c:if>
                     <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>

@@ -112,8 +112,8 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.pageName">Create Monitor</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.contextualPageName">Create</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.setup.title">Setup</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.areYouSureTitleVerb">create</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.areYouSureMsgVerb">creating</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureTitleVerb">{0,choice,0#create|1#update}</entry>
+    <entry key="yukon.web.modules.amr.deviceDataMonitor.areYouSureMsgVerb">{0,choice,0#creating|1#updating}</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.CREATE.areYouSureUpdateOrCreateDialog.ok">Create</entry>
 
     <!-- DeviceDataMonitorController edit.jsp (edit) -->
@@ -123,15 +123,11 @@
     <entry key="yukon.web.modules.amr.deviceDataMonitor.EDIT.delete.title">Delete Monitor</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.EDIT.deleteConfirmation.title">Delete Device Data Monitor</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.EDIT.deleteConfirmation.message">Are you sure you want to delete {0}?</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.EDIT.areYouSureTitleVerb">update</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.EDIT.areYouSureMsgVerb">updating</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.EDIT.areYouSureUpdateOrCreateDialog.ok">Update</entry>
 
     <!-- DeviceDataMonitorController view.jsp -->
     <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.pageName">Device Data Monitoring</entry>
     <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.areYouSureTitleVerb">view</entry>
-    <entry key="yukon.web.modules.amr.deviceDataMonitor.VIEW.areYouSureMsgVerb">viewing</entry>
 
     <!-- validation errors -->
     <entry key="yukon.web.modules.amr.deviceDataMonitor.empty.name">Name cannot be empty.</entry>

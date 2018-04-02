@@ -31,9 +31,11 @@
     <cti:displayForPageEditModes modes="EDIT">
         <cti:url value="/amr/deviceDataMonitor/update" var="action"/>
         <c:set var="disableAddProcessAtStart" value="false"/>
+        <c:set var="modeMsg" value="${1}" /> 
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
         <cti:url value="/amr/deviceDataMonitor/create" var="action"/>
+        <c:set var="modeMsg" value="${0}" /> 
     </cti:displayForPageEditModes>
     <form:form commandName="monitor" action="${action}" method="post" cssClass="js-monitor-form">
         <cti:csrfToken/>
@@ -231,8 +233,8 @@
         </tags:sectionContainer2>
     </form:form>
 
-    <cti:msg2 var="updateCreateTitleVerb" key=".${mode}.areYouSureTitleVerb"/>
-    <cti:msg2 var="updateCreateMsgVerb" key=".${mode}.areYouSureMsgVerb"/>
+    <cti:msg2 var="updateCreateTitleVerb" key=".areYouSureTitleVerb" arguments="${modeMsg}"/>
+    <cti:msg2 var="updateCreateMsgVerb" key=".areYouSureMsgVerb" arguments="${modeMsg}"/>
     <cti:msg2 var="titleKey" key=".areYouSureUpdateOrCreateDialog.title" arguments="${updateCreateTitleVerb}"/>
 
     <div class="dn" id="update-loading-dialog" data-dialog data-title="${titleKey}">
