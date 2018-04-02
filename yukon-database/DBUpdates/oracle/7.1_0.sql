@@ -66,7 +66,13 @@ ALTER TABLE CollectionActionRequest
 
 INSERT INTO DBUpdates VALUES ('YUK-17960', '7.1.0', SYSDATE);
 /* @end YUK-17960 */
-    
+
+/* @start YUK-18076 */
+ALTER TABLE Display DROP COLUMN Title;
+
+INSERT INTO DBUpdates VALUES ('YUK-18076', '7.1.0', SYSDATE);
+/* @end YUK-18076 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
