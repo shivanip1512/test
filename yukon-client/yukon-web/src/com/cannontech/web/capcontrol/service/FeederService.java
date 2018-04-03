@@ -2,6 +2,8 @@ package com.cannontech.web.capcontrol.service;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.web.capcontrol.models.Assignment;
 import com.cannontech.web.capcontrol.models.CapBankAssignment;
@@ -30,7 +32,7 @@ public interface FeederService {
      * Returns whether the capbanks assigned to feeder are assigned within zone with the given feederId
      * @return true when successful, false otherwise
      */
-     boolean isCapBanksAssignedToZone(int feederId);
+    boolean isCapBanksAssignedToZone(int feederId) throws EmptyResultDataAccessException;
 
     /**
      * @return All cap banks, as {@link ViewableCapBank}s,  attached to the feeder with given feederId in display order<br>

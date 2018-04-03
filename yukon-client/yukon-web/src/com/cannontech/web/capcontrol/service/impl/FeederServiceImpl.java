@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.dao.CapbankDao;
@@ -197,7 +198,7 @@ public class FeederServiceImpl implements FeederService {
     }
 
     @Override
-    public boolean isCapBanksAssignedToZone(int feederId) {
+    public boolean isCapBanksAssignedToZone(int feederId) throws EmptyResultDataAccessException {
 
         Integer substationBusId = feederDao.getParentSubBusID(feederId);
         Map<Season, LiteCapControlStrategy> seasonToStrat = strategyService.getSeasonStrategyAssignments(substationBusId);

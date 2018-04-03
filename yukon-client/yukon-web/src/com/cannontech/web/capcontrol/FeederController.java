@@ -234,25 +234,25 @@ public class FeederController {
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String delete(@PathVariable int id, FlashScope flash) {
         CapControlFeeder feeder = feederService.get(id);
-        Integer parentId = feederDao.getParentSubBusID(id);
-        boolean isCapbankAssigned = feederService.isCapBanksAssignedToZone(id);
-        if (isCapbankAssigned) {
-            flash.setError(new YukonMessageSourceResolvable(feederKey + ".delete.error", feeder.getName()));
-            return "redirect:/capcontrol/feeders/" + id;
-        } else {
-            try {
+        try {
+            boolean isCapbankAssigned = feederService.isCapBanksAssignedToZone(id);
+            if (isCapbankAssigned) {
+                flash.setError(new YukonMessageSourceResolvable(feederKey + ".delete.error", feeder.getName()));
+                return "redirect:/capcontrol/feeders/" + id;
+            } else {
+                Integer parentId = feederDao.getParentSubBusID(id);
                 feederService.delete(id);
                 flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
                 if (parentId != null && parentId > 0) {
                     return "redirect:/capcontrol/buses/" + parentId;
                 }
-            } catch (EmptyResultDataAccessException e) {
-                feederService.delete(id);
-                flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
-                // do nothing and return to orphan page
             }
-            return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__";
+        } catch (EmptyResultDataAccessException e) {
+            feederService.delete(id);
+            flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
+            // do nothing and return to orphan page
         }
+        return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__";
     }
 
     @RequestMapping("feeders/{feederId}/capbanks/edit")
