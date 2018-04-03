@@ -3,6 +3,7 @@
 #include "ccid.h"
 #include "cctwowaycbcpoints.h"
 #include "cbcHeartbeatPolicy.h"
+#include "desolvers.h"
 
 extern unsigned long _CC_DEBUG;
 
@@ -56,7 +57,8 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
                 actions.emplace_back( WriteAnalogValue( AttributeClear, 0, twoWayPoints ) );
                 break;
             default:
-                CTILOG_DEBUG( dout, "Could not execute Stop Heartbeat command because the attribute is not mapped to a status or analog point type. Point used: " << point.getPointName() << ", " << point.getPointId() << "." );
+                CTILOG_DEBUG( dout, "Could not execute Stop Heartbeat command because the attribute is not mapped to a status or analog point type (" << desolvePointType( point.getPointType() ) << "). " << 
+                                    "Point used: " << point.getPointName() << ", " << point.getPointId() << "." );
                 break;
         }
     }
