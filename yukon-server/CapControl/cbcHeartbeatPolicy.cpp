@@ -56,7 +56,7 @@ Policy::Actions CbcHeartbeatPolicy::StopHeartbeat( CtiCCTwoWayPoints & twoWayPoi
                 actions.emplace_back( WriteAnalogValue( AttributeClear, 0, twoWayPoints ) );
                 break;
             default:
-                CTILOG_DEBUG(dout, "Could not execute Stop Heartbeat command because the attribute is not mapped to a status or analog point type.");
+                CTILOG_DEBUG( dout, "Could not execute Stop Heartbeat command because the attribute is not mapped to a status or analog point type. Point used: " << point.getPointName() << ", " << point.getPointId() << "." );
                 break;
         }
     }
