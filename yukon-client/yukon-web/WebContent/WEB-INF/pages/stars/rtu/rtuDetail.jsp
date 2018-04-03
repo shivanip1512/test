@@ -124,7 +124,7 @@
                         <form:hidden path="deviceWindow.winOpen" id="start-time" />
                         <form:hidden path="deviceWindow.winClose" id="end-time" />
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:nameValue2 nameKey=".winTimeRange" data-toggle-group="scanWindow">
+                            <tags:nameValue2 nameKey=".winTimeRange" data-toggle-group="scanWindow" valueClass="full-width">
                                 <div class="scan-window-range">
                                     <div class="js-time-range-label fwb"></div>
                                     <div class="slider-range js-time-range-slider buffered"></div>
