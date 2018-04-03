@@ -18,11 +18,14 @@ import com.cannontech.cbc.cyme.model.CymeSimulationStatus;
 import com.cannontech.cbc.cyme.model.SimulationResultSummaryData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
+import com.cannontech.util.ServletUtil;
 
 public class CymeWebServiceImpl implements CymeWebService {
     @Autowired private @Qualifier("cyme") RestOperations cymeRestTemplate;
@@ -47,6 +50,11 @@ public class CymeWebServiceImpl implements CymeWebService {
 
     @Autowired
     public CymeWebServiceImpl(ConfigurationSource configurationSource) {
+        if (!configurationSource.getBoolean(MasterConfigBoolean.CYME_ENABLED, false)) {
+            baseCymeUrl = null;
+            return;
+        }
+        
         baseCymeUrl =
             configurationSource.getString(MasterConfigString.CYME_DIST_BASE_URL, "http://localhost:8866");
         log.debug("Using " + baseCymeUrl + " as cyme url.");
@@ -66,9 +74,7 @@ public class CymeWebServiceImpl implements CymeWebService {
                 return;
             }
             
-            hostAddress = hostAddress.startsWith("www.") ? hostAddress.substring(4) : hostAddress;
-            System.setProperty("http.nonProxyHosts", hostAddress);
-            log.debug("Adding " + hostAddress + " to JVM proxy bypass list.");
+            YukonHttpProxy.addNonProxyHosts(ServletUtil.getUriHostWithoutPrefix(hostAddress));
             
         } catch (URISyntaxException e) {
             log.error("Cyme url is not a valid URL.", e);

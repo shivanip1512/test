@@ -78,4 +78,9 @@ public class YukonHttpProxy {
         System.setProperty("http.proxyPort", getPortString());
     }
     
+    public static void addNonProxyHosts(String hostAddresses) {
+        System.setProperty("http.nonProxyHosts", hostAddresses);
+        log.info("Adding " + hostAddresses + " to JVM proxy bypass list.");
+    }
+
 }

@@ -1076,4 +1076,8 @@ public class ServletUtil {
         }
         return defaultYukonExternalUrl;
     }
+    
+    public static String getUriHostWithoutPrefix(String uriHost) {
+        return uriHost.startsWith("www.") ? uriHost.substring(4) : uriHost;
+    }
 }

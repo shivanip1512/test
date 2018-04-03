@@ -347,7 +347,9 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     }
 
     private void handleTap(int regulatorId, int tapChange) {
+        logger.debug("Tap Operation received for regulatorId: " + regulatorId + " and tap change value: " + tapChange);
         if (!isCymeCparmEnabled()) {
+            logger.debug("Unable to schedule cyme study for regulatorId: " + regulatorId + " because cyme is not enabled.");
             return;
         }
         
@@ -373,6 +375,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     public void handleOpenBank(int bankId) {
         logger.debug("Open Bank Operation received for bankId: " + bankId);
         if (!isCymeCparmEnabled()) {
+            logger.debug("Unable to schedule bank study for bankId: " + bankId + " because cyme is not enabled.");
             return;
         }
         scheduleBankStudy(bankId);
@@ -382,6 +385,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     public void handleCloseBank(int bankId) {
         logger.debug("Close Bank Operation received for bankId: " + bankId);
         if (!isCymeCparmEnabled()) {
+            logger.debug("Unable to schedule bank study for bankId: " + bankId + " because cyme is not enabled.");
             return;
         }        
         scheduleBankStudy(bankId);
@@ -403,6 +407,7 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
     public void handleScanDevice(int deviceId) {
         logger.debug("Scan Operation received for deviceId: " + deviceId);
         if (!isCymeCparmEnabled()) {
+            logger.debug("Unable to schedule cyme study for deviceId: " + deviceId + " because cyme is not enabled.");
             return;
         }
         
@@ -506,10 +511,6 @@ public class CymeSimulatorServiceImpl implements CymeSimulatorService {
      * @return the value of the CYME_ENABLED Cparm in Master.cfg.
      */
     private boolean isCymeCparmEnabled() {
-        boolean enabled = configurationSource.getBoolean(MasterConfigBoolean.CYME_ENABLED,false);
-        if (!enabled) {
-            logger.debug("CYME_ENABLED CPARM is false.");
-        }
-        return enabled;
+        return configurationSource.getBoolean(MasterConfigBoolean.CYME_ENABLED, false);
     }
 }

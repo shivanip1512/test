@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -36,6 +38,7 @@ public class CymeDataListener implements DBChangeListener, PointDataListener {
 	@Autowired private CymeSimulatorService cymeSimulatorService;
 	@Autowired private PointDao pointDao;
 	@Autowired private SubstationBusDao substationBusDao;
+    @Autowired private ConfigurationSource configurationSource;
 	
 	private Map<PaoIdentifier, Set<Integer>> busToPointMappings = new HashMap<>();
 	
@@ -45,6 +48,10 @@ public class CymeDataListener implements DBChangeListener, PointDataListener {
 	
 	@PostConstruct
 	public void initialize() {
+	    if (!configurationSource.getBoolean(MasterConfigBoolean.CYME_ENABLED, false)) {
+	        return;
+	    }
+
 		// Register as a listener for DB Change messages.
 		asyncDynamicDataSource.addDBChangeListener(this);
 
