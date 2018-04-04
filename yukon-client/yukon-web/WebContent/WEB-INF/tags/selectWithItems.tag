@@ -21,6 +21,8 @@
 <%@ attribute name="onchange" %>
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="dataPlaceholder" %>
+<%@ attribute name="useKeyLabel" type="java.lang.Boolean" %>
+<%@ attribute name="allKeyLabel"%>
 
 <cti:default var="disabled" value="false"/>
 
@@ -56,11 +58,21 @@
     <c:if test="${not empty pageScope.defaultItemLabel}">
         <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
     </c:if>
-    
+    <c:if test="${not empty allKeyLabel}">
+          <form:option value="ALL">${allKeyLabel}</form:option>
+    </c:if>
     <c:choose>
         <c:when test="${pageScope.groupItems}">
             <c:forEach var="group" items="${items}">
-                <optgroup label="<cti:msg2 key="${group.key}"/>">
+                <c:choose>
+                    <c:when test="${useKeyLabel}">
+                        <c:set var="labelVal" value="${group.key}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:msg2 var="labelVal" key="${group.key}"/>
+                    </c:otherwise>
+                </c:choose>
+                <optgroup label="${labelVal}">
                     <c:forEach var="item" items="${group.value}">
                         <c:set var="valueArg" value="${pageScope.itemValue}"/>
                         <c:if test="${not empty itemValue}">

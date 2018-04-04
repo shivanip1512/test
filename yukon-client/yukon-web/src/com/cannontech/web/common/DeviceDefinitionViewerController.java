@@ -12,13 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -47,11 +44,12 @@ public class DeviceDefinitionViewerController {
 	@Autowired private UnitMeasureDao unitMeasureDao;
 	@Autowired private StateGroupDao stateGroupDao;
     @Autowired private AttributeService attributeService;
+    private static final String NO_FILTER = "ALL";
 
 	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "RFMESH", "IPC", "Two Way LCR", "Demand Response", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", "Volt/Var", ""};
 	
 	@RequestMapping(value = "/deviceDefinition.xml", method = RequestMethod.GET)
-    public String view(HttpServletRequest request, ModelMap model, YukonUserContext context) throws Exception {
+    public String view(DeviceDefinitionsFilter definitionsFilter, ModelMap model, YukonUserContext context) throws Exception {
 
         // init
         Set<PaoDefinition> allDefinitions = paoDefinitionDao.getAllPaoDefinitions();
@@ -64,11 +62,11 @@ public class DeviceDefinitionViewerController {
         Set<PaoTag> allTags = new HashSet<PaoTag>();
         
         // parameters
-        String deviceTypeParam = ServletRequestUtils.getStringParameter(request, "deviceType");
-        String displayGroupParam = ServletRequestUtils.getStringParameter(request, "displayGroup");
-        String changeGroupParam = ServletRequestUtils.getStringParameter(request, "changeGroup");
-        String attributeParam = ServletRequestUtils.getStringParameter(request, "attribute");
-        String tagParam = ServletRequestUtils.getStringParameter(request, "tag");
+        String deviceTypeParam = definitionsFilter.getDeviceType() == null ? "-1" : definitionsFilter.getDeviceType();
+        String displayGroupParam = definitionsFilter.getDisplayGroup() == null ? "-1" : definitionsFilter.getDisplayGroup();
+        String changeGroupParam = definitionsFilter.getChangeGroup() == null ? "-1" : definitionsFilter.getChangeGroup();
+        String attributeParam = definitionsFilter.getAttribute() == null ? "-1" : definitionsFilter.getAttribute();
+        String tagParam = definitionsFilter.getTag() == null ? "-1" : definitionsFilter.getTag();
         
         // all
         for (PaoDefinition deviceDefiniton : allDefinitions) {
@@ -109,33 +107,32 @@ public class DeviceDefinitionViewerController {
         	}
         	
         	// add to displayDefinitions
-        	if (!StringUtils.isBlank(deviceTypeParam)) {
-        		if (PaoType.valueOf(deviceTypeParam) == deviceDefiniton.getType()) {
-        			displayDefinitions.add(deviceDefiniton);
-        		}
-        	} else if (!StringUtils.isBlank(displayGroupParam)) {
-    			if (displayGroupParam.equals(deviceDefiniton.getDisplayGroup() == null ? "Untitled" : deviceDefiniton.getDisplayGroup())) {
-    				displayDefinitions.add(deviceDefiniton);
-    			}
-        	} else if (!StringUtils.isBlank(changeGroupParam)) {
-    			if (changeGroupParam.equals(deviceDefiniton.getChangeGroup())) {
-    				displayDefinitions.add(deviceDefiniton);
-    			}
-        	} else if (!StringUtils.isBlank(attributeParam)) {
-        		for (AttributeDefinition attribute : definitionAttributes) {
-        			if (attribute.getAttribute().getKey().equals(attributeParam)) {
-        				displayDefinitions.add(deviceDefiniton);
-        			}
-        		}
-        	} else if (!StringUtils.isBlank(tagParam)) {
-        		for (PaoTag tag : definitionTags) {
-        			if (tagParam.equals(tag.name())) {
-        				displayDefinitions.add(deviceDefiniton);
-        			}
-        		}
-        	} else {
-        		displayDefinitions.add(deviceDefiniton);
-        	}
+            if (deviceTypeParam.equals(NO_FILTER) || displayGroupParam.equals(NO_FILTER) || changeGroupParam.equals(NO_FILTER) 
+                    || attributeParam.equals(NO_FILTER) || tagParam.equals(NO_FILTER)) {
+                displayDefinitions.add(deviceDefiniton);
+            } else if (!deviceTypeParam.equals("-1") && (StringUtils.isBlank(deviceTypeParam) 
+                    || PaoType.valueOf(deviceTypeParam) == deviceDefiniton.getType())) {
+                displayDefinitions.add(deviceDefiniton);
+            } else if (!displayGroupParam.equals("-1") && (StringUtils.isBlank(displayGroupParam) 
+                    || displayGroupParam.equals(deviceDefiniton.getDisplayGroup() == null ? "Untitled" : deviceDefiniton.getDisplayGroup()))) {
+                displayDefinitions.add(deviceDefiniton);
+            } else if (!changeGroupParam.equals("-1") && (StringUtils.isBlank(changeGroupParam)
+                    || changeGroupParam.equals(deviceDefiniton.getChangeGroup()))) {
+                displayDefinitions.add(deviceDefiniton);
+            } else if (!attributeParam.equals("-1")) {
+                for (AttributeDefinition attribute : definitionAttributes) {
+                    if (StringUtils.isBlank(attributeParam)
+                        || attribute.getAttribute().getKey().equals(attributeParam)) {
+                        displayDefinitions.add(deviceDefiniton);
+                    }
+                }
+            } else if (!StringUtils.isBlank(tagParam) && !tagParam.equals("-1")) {
+                for (PaoTag tag : definitionTags) {
+                    if (StringUtils.isBlank(tagParam) || tagParam.equals(tag.name())) {
+                        displayDefinitions.add(deviceDefiniton);
+                    }
+                }
+            } 
         }
         
          // display definitions info
@@ -149,6 +146,7 @@ public class DeviceDefinitionViewerController {
         	displayDefinitionsMap.get(displayGroup).add(deviceInfo);
         }
         
+        model.addAttribute("definitionsFilter", definitionsFilter);
         // sort
         allDeviceTypes = sortDeviceTypesByGroupOrder(allDeviceTypes);
         displayDefinitionsMap = sortDisplayDefinitionsByGroupOrder(displayDefinitionsMap);

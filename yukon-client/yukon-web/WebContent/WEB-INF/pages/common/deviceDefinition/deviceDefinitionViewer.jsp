@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:standardPage module="support" page="deviceDef">
 	<c:url var="url" value="/common/deviceDefinition.xml"/>
@@ -13,119 +14,53 @@
 		li {margin:0;padding:0;list-style-type:circle;}
         .filterOption {margin-right: 15px; margin-bottom: 15px;}
 	</style>
-
-	<script language="JavaScript">
-		function doDefinitionFilter(selectEl, filterType) {
-			var filterValue = selectEl.options[selectEl.selectedIndex].value;
-			if (filterValue.trim() == '') {
-				window.location = '${url}';
-				return;
-			}
-			window.location = '${url}?' + filterType + '=' + filterValue;
-		}
-	</script>
-    	
+    <cti:msg2 var="noneText" key="yukon.common.none.choice"/>
+    
 	<%-- WRITE SELECT --%>
     <cti:msgScope paths=".filters">
 	<tags:sectionContainer2 nameKey="title">
     <div>
+    <cti:url var="detailUrl" value="/common/deviceDefinition.xml"/>
+    <form:form id="filterForm" action="${detailUrl}" method="GET" commandName="definitionsFilter">
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".deviceType"/></strong>
             </div>
-            <select onchange="doDefinitionFilter(this, 'deviceType');">
-                <option value="" ><cti:msg2 key=".allDefinitions"/></option>
-                <c:forEach var="group" items="${allDeviceTypes}" >
-                    <optgroup label="${group.key}">
-                        <c:forEach var="definition" items="${group.value}">
-                            <c:choose>
-                                <c:when test="${deviceTypeParam == definition.type}">
-                                    <option value="${definition.type}" selected>${fn:escapeXml(definition.displayName)}</option>
-                                </c:when>
-                                <c:otherwise>
-                                    <option value="${definition.type}">${fn:escapeXml(definition.displayName)}</option>
-                                </c:otherwise>
-                            </c:choose>
-                            
-                        </c:forEach>
-                    </optgroup>
-                </c:forEach>
-            </select>
+            <cti:msg2 var="allText" key=".allDefinitions"/>
+            <tags:selectWithItems id="deviceType" inputClass="deviceDefinition-select" path="deviceType" useKeyLabel="true" groupItems="true" 
+            items="${allDeviceTypes}" itemValue="type" itemLabel="${fn:escapeXml(definition.displayName)}" defaultItemLabel="${noneText}" allKeyLabel="${allText}" defaultItemValue="-1"/>
         </div>
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".displayGroup"/></strong>
             </div>
-            <select onchange="doDefinitionFilter(this, 'displayGroup');">
-                <option value="" ><cti:msg2 key=".anyDisplayGroup"/></option>
-                <c:forEach var="group" items="${allDisplayGroups}" >
-                    <c:choose>
-                        <c:when test="${displayGroupParam == group}">
-                            <option value="${group}" selected>${group}</option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${group}">${group}</option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
+            <cti:msg2 var="allText" key=".anyDisplayGroup"/>
+            <tags:selectWithItems id="displayGroup" inputClass="deviceDefinition-select" path="displayGroup" items="${allDisplayGroups}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
         </div>
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".changeGroup"/></strong>
             </div>
-            <select onchange="doDefinitionFilter(this, 'changeGroup');">
-                <option value="" ><cti:msg2 key=".anyChangeGroup"/></option>
-                <c:forEach var="changeGroup" items="${allChangeGroups}" >
-                    <c:choose>
-                        <c:when test="${changeGroupParam == changeGroup}">
-                            <option value="${changeGroup}" selected>${changeGroup}</option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${changeGroup}">${changeGroup}</option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
+            <cti:msg2 var="allText" key=".anyChangeGroup"/>
+            <tags:selectWithItems id="changeGroup" inputClass="deviceDefinition-select" path="changeGroup" items="${allChangeGroups}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
         </div>
         
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".attribute"/></strong>
             </div>
-            <select onchange="doDefinitionFilter(this, 'attribute');">
-                <option value="" ><cti:msg2 key=".anyAttribute"/></option>
-                <c:forEach var="attribute" items="${allAttributes}" >
-                    <c:choose>
-                        <c:when test="${attributeParam == attribute.key}">
-                            <option value="${attribute.key}" selected><cti:msg2 key="${attribute}"/></option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${attribute.key}"><cti:msg2 key="${attribute}"/></option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
+            <cti:msg2 var="allText" key=".anyAttribute"/>
+            <tags:selectWithItems id="attribute" inputClass="deviceDefinition-select" path="attribute" items="${allAttributes}" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
         </div>
         
         <div class="dib filterOption">
             <div>
                 <strong><i:inline key=".tag"/></strong>
             </div>
-            <select onchange="doDefinitionFilter(this, 'tag');">
-                <option value="" ><cti:msg2 key=".anyTag"/></option>
-                <c:forEach var="tag" items="${allTags}" >
-                    <c:choose>
-                        <c:when test="${tagParam == tag.name}">
-                            <option value="${tag.name}" selected>${tag.description}</option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${tag.name}">${tag.description}</option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
+            <cti:msg2 var="allText" key=".anyTag"/>
+            <tags:selectWithItems id="tag" inputClass="deviceDefinition-select" path="tag" items="${allTags}" itemLabel="description" allKeyLabel="${allText}" defaultItemLabel="${noneText}" defaultItemValue="-1"/>
         </div>
+        </form:form>
     </div>
 	</tags:sectionContainer2>
     </cti:msgScope>
@@ -306,4 +241,5 @@
 		</tags:sectionContainer>
 	</c:forEach>
 	</cti:msgScope>
+    <cti:includeScript link="/resources/js/pages/yukon.support.deviceDefinitions.js"/>
 </cti:standardPage>
