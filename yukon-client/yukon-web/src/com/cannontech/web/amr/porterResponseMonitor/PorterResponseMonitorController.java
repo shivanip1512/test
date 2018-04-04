@@ -172,7 +172,7 @@ public class PorterResponseMonitorController {
         return "redirect:viewPage";
     }
 
-    @RequestMapping(value = "update", params = "delete", method = RequestMethod.POST)
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
     public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, FlashScope flashScope,
             LiteYukonUser user) {
 

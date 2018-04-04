@@ -58,7 +58,6 @@
 	     Devices will not be monitored for outage count violations and will no longer be added to the Outages Device Group for this monitor.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.outageMonitorConfig.confirmDelete.message">Are you sure you want to delete this Outage Monitor?</entry>
     <entry key="yukon.web.modules.amr.outageMonitorConfig.popupInfo.deviceGroup"><![CDATA[
     	 <br>
 	     The group of devices that will be monitored for outage count violations.

@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 
 <cti:standardPage module="amr" page="statusPointMonitorEditor">
 
@@ -172,8 +173,9 @@
                 <c:set var="enableDisableKey" value="enable"/>
             </c:if>
             <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>
-            <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
-            <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${statusPointMonitor.statusPointMonitorName}"/>
+            <cti:button id="deleteButton" nameKey="delete" data-disable-group="actionButtons" classes="delete"
+                        data-popup="#confirm-delete-monitor-popup"/>
+            <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${statusPointMonitor.statusPointMonitorName}"/>
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
             </cti:url>

@@ -18,10 +18,11 @@
         </c:if>
     
         <%-- MISC FORMS --%>
-        <form id="deleteMonitorForm" action="${monitorDeleteURL}" method="post">
+        <form:form id="deleteMonitorForm" action="${monitorDeleteURL}" method="post" commandName="tamperFlagMonitor">
             <cti:csrfToken/>
-            <input type="hidden" id="tamperFlagMonitorId" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
-        </form>
+            <tags:hidden path="tamperFlagMonitorId"/>
+            <tags:hidden path="tamperFlagMonitorName"/>
+        </form:form>
         
         <form id="toggleEnabledForm" action="${toggleEnabledURL}" method="post">
             <cti:csrfToken/>
@@ -30,7 +31,7 @@
         
         <%-- UPDATE FORM --%>
        <form:form id="updateForm" action="${updateURL}" method="post" commandName="tamperFlagMonitor">
-            <cti:csrfToken/>        
+            <cti:csrfToken/>
             <c:if test="${not empty tamperFlagMonitorId}">
                 <form:hidden path="tamperFlagMonitorId" />
             </c:if>
@@ -96,8 +97,10 @@
                         </c:if>
                         <cti:button id="toggleMonitor" nameKey="${toggleText}" busy="true" 
                             data-disable-group="actionButtons"/>
-                            <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
-                        <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
+                        <cti:button id="deleteButton" nameKey="delete" data-disable-group="actionButtons" 
+                                    classes="delete" data-popup="#confirm-delete-monitor-popup"/>
+                        <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${tamperFlagMonitor.tamperFlagMonitorName}"/>
+                        
                         <cti:url var="backUrl" value="/amr/tamperFlagProcessing/process/process">
                             <cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitorId}"/>
                         </cti:url>

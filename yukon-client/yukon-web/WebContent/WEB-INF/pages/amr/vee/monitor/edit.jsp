@@ -32,10 +32,11 @@
     
     <%-- MISC FORMS --%>
     <cti:url var="deleteUrl" value="/amr/vee/monitor/delete"/>
-    <form id="deleteMonitorForm" action="${deleteUrl}" method="post">
+    <form:form id="deleteMonitorForm" action="${deleteUrl}" method="post" commandName="validationMonitor">
         <cti:csrfToken/>
-        <input type="hidden" name="deleteValidationMonitorId" value="${validationMonitor.validationMonitorId}">
-    </form>
+        <tags:hidden path="validationMonitorId"/>
+        <tags:hidden path="name"/>
+    </form:form>
 
     <cti:url var="enabledUrl" value="/amr/vee/monitor/toggleEnabled"/>
     <form id="toggleEnabledForm" action="${enabledUrl}" method="post">
@@ -139,8 +140,9 @@
                 </c:if>
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:button id="toggleMonitor" nameKey="${toggleText}" busy="true" data-disable-group="actionButtons"/>
-                    <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
-                    <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
+                    <cti:button id="deleteButton" nameKey="delete" data-disable-group="actionButtons" 
+                                classes="delete" data-popup="#confirm-delete-monitor-popup"/>
+                    <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${validationMonitor.name}"/>
                     <cti:url var="backUrl" value="/amr/vee/monitor/${validationMonitor.validationMonitorId}/view"/>
                     <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
                 </cti:displayForPageEditModes>

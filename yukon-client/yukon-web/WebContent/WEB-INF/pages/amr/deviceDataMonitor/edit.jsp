@@ -7,6 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 
 <jsp:useBean id="paramMap" class="java.util.HashMap"/>
 <c:set target="${paramMap}" property="monitorId" value="${monitor.id}"/>
@@ -249,18 +250,19 @@
     <%-- update / enable_disable / delete / cancel --%>
     <div class="page-action-area">
         <cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="save" classes="js-save-monitor primary action"/>
+            <cti:button nameKey="save" classes="js-save-monitor primary action" data-disable-group="actionButtons"/>
             <c:set var="enableDisableKey" value="disable"/>
             <c:if test="${!monitor.enabled}">
                 <c:set var="enableDisableKey" value="enable"/>
             </c:if>
-            <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" classes="js-calculating-disable" busy="true" data-disable-group="actionButtons"/>
-            <cti:button id="deleteButton" nameKey="delete" classes="delete js-calculating-disable"/>
-            <d:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
+            <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" classes="js-calculating-disable" data-disable-group="actionButtons"/>
+            <cti:button id="deleteButton" nameKey="delete" classes="delete js-calculating-disable" data-disable-group="actionButtons"
+                        data-popup="#confirm-delete-monitor-popup"/>
+            <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${monitor.name}"/>
             <cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
                 <cti:param name="monitorId" value="${monitor.id}" />
             </cti:url>
-            <cti:button nameKey="cancel" href="${viewMonitorUrl}" />
+            <cti:button nameKey="cancel" href="${viewMonitorUrl}" data-disable-group="actionButtons"/>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="CREATE">
             <cti:button nameKey="create" classes="js-save-monitor primary action"/>

@@ -111,9 +111,6 @@
         If checked, the quality flag of any reading that violates the 'Peak Height Minimum' will be set 
         to 'Questionable'.
     </entry>
-    <entry key="yukon.web.modules.amr.validationEditor.confirmDelete.message">
-        Are you sure you want to delete this Validation Monitor?
-    </entry>
     <entry key="yukon.web.modules.amr.validationEditor.saveOk">Validation Monitor Has Been Saved</entry>
     <entry key="yukon.web.modules.amr.validationEditor.validationMonitoring">Validation Monitoring</entry>
     
@@ -160,6 +157,7 @@
     <entry key="yukon.web.modules.amr.validation.advanced.deleteAllTags">Delete all tags: </entry>
     <entry key="yukon.web.modules.amr.validationEditor.delete.fail.monitorNotFound">Could not delete validation monitor. Monitor with id: {0} not found.</entry>
     <entry key="yukon.web.modules.amr.validationEditor.delete.fail">Unable to delete.</entry>
+    <entry key="yukon.web.modules.amr.validationEditor.delete.success">Validation Monitor deleted : {0}.</entry>
     <entry key="yukon.web.modules.amr.validationEditor.monitorNotFound">Validation Monitor Does Not Exist.</entry>
     <entry key="yukon.web.modules.amr.validationEditor.VIEW.pageName">Validation Monitoring</entry>
     <entry key="yukon.web.modules.amr.validationEditor.VIEW.pageDescription">{0}</entry>

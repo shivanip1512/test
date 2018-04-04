@@ -49,7 +49,6 @@
 	     Devices will not be checked for tamper flags and will no longer be added to the Tamper Flag Group.
 	     <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.tamperFlagEditor.confirmDelete.message">Are you sure you want to delete this Tamper Flag Monitor?</entry>
     <entry key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup"><![CDATA[
     	 <br>
 	     The group of devices that will be checked for tamper flags.
@@ -61,7 +60,7 @@
     <!-- TamperFlagProcessingController process.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.pageName">Tamper Flag Processing</entry>     
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.pageName">Tamper Flag Processing</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.pageTitle">Tamper Flag Processing</entry>
 	<entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.sectionHeader.title">Info</entry>
@@ -108,7 +107,8 @@
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.title">Options</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.tamperFlagGroupReport">View Tamper Flag Group Devices Report</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.clearTamperFlagGroup">Clear Tamper Flag Group</entry>
-    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.otherActions">Other Actions</entry>     
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.options.otherActions">Other Actions</entry>
 
     <entry key="yukon.web.modules.amr.tamperFlagEditor.monitorNotFound">Tamper Flag Monitor Does Not Exist.</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagEditor.monitorDeleted">Tamper Flag Monitor deleted : {0}.</entry>
 </properties>

@@ -18,7 +18,7 @@ yukon.ami.monitor = (function () {
             if (_initialized) return;
             $(".js-monitor-name").bind("keyup change", function(e) {
                 var textEl=$(this).val();
-                $('div.group-base').html($('div.group-base').attr('data-groupbase') + escape(textEl));
+                $('div.group-base').html($('div.group-base').attr('data-groupbase') + encodeURIComponent(textEl));
             });
 
             /** Toggles Monitors enabling .*/
@@ -26,13 +26,14 @@ yukon.ami.monitor = (function () {
                 $('#toggleEnabledForm').submit();
             });
             
-            $(document).on("yukon.dialog.confirm.ok", function(ev) {
+            $(document).on("yukon:delete:monitor", function(event) {
                 $('.page-action-area button, .ui-dialog-buttonset button').prop('disabled', true);
                 $('#deleteMonitorForm').submit();
+                yukon.ui.blockPage();
+                $("#confirm-delete-monitor-popup").dialog("close");
             });
             
-            $(document).on('yukon.dialog.confirm.cancel', function(ev) {
-                yukon.ui.unbusy('#deleteButton');
+            $(document).on('dialogclose', '#confirm-delete-monitor-popup', function (event, ui) {
                 $('.page-action-area .button').enable();
             });
 

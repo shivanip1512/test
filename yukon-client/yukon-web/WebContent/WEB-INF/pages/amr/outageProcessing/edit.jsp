@@ -166,8 +166,11 @@
                         <c:set var="enableDisableKey" value="enable"/>
                     </c:if>
                     <cti:button id="toggleMonitor" nameKey="${enableDisableKey}" busy="true" data-disable-group="actionButtons"/>
-                    <cti:button id="deleteButton" nameKey="delete" busy="true" data-disable-group="actionButtons" classes="delete"/>
-                    <d:confirm on="#deleteButton" nameKey="confirmDelete" disableGroup="actionButtons"/>
+                    <cti:button id="deleteButton" nameKey="delete" data-disable-group="actionButtons" 
+                                classes="delete" data-popup="#confirm-delete-monitor-popup"/>
+                    
+                    <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${outageMonitor.outageMonitorName}"/>
+                    
                     <cti:url var="backUrl" value="/amr/outageProcessing/process/process">
                         <cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}" />
                     </cti:url>

@@ -5,11 +5,12 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
-    <cti:includeScript link="/resources/js/pages/yukon.monitor.porter.response.js"/>
 
     <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view"/>
+    <cti:url value="/amr/porterResponseMonitor/delete" var="deleteURL"/>
 
     <i:simplePopup titleKey=".errorCodesPopup" id="errorCodesHelpPopup" on="#codes-help" options="{'width': 600,'height': 500}">
         <table id="errorCodes" class="compact-results-table stacked">
@@ -70,6 +71,15 @@
             </td>
         </tr>
     </table>
+    
+    <form:form id="deleteMonitorForm" action="${deleteURL}" method="post" commandName="monitorDto">
+        <cti:csrfToken/>
+        <form:hidden path="monitorId"/>
+        <form:hidden path="name"/>
+        <form:hidden path="attribute"/>
+        <form:hidden path="evaluatorStatus"/>
+        <form:hidden path="stateGroup"/>
+    </form:form>
 
     <form:form commandName="monitorDto" action="update" method="post">
         <cti:csrfToken/>
@@ -173,14 +183,15 @@
                 <c:set var="monitoringKey" value="disable"/>
             </c:if>
             <cti:button type="submit" name="toggleEnabled" nameKey="${monitoringKey}" busy="true" data-disable-group="actionButtons"/>
-            <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" classes="delete"/>
-            <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${monitorDto.name}"/>
-
+            <cti:button id="deleteButton" nameKey="delete" name="delete" classes="delete" data-popup="#confirm-delete-monitor-popup" 
+                        data-disable-group="actionButtons"/>
+            <amr:confirmDeleteMonitor target="#deleteButton" monitorName="${monitorDto.name}"/>
             <cti:url value="/amr/porterResponseMonitor/viewPage" var="viewUrl">
                 <cti:param name="monitorId" value="${monitorDto.monitorId}"/>
             </cti:url>
             <cti:button nameKey="cancel" href="${viewUrl}" busy="true" data-disable-group="actionButtons" />
         </div>
     </form:form>
-    
+    <cti:includeScript link="/resources/js/pages/yukon.monitor.porter.response.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.monitor.js"/>
 </cti:standardPage>

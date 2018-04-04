@@ -128,17 +128,19 @@ public class ValidationMonitorEditorController {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String delete(ModelMap model, int deleteValidationMonitorId, FlashScope flash)
+    public String delete(@ModelAttribute("validationMonitor") ValidationMonitor validationMonitor, FlashScope flash)
             throws Exception, ServletException {
         try {
-            if (!validationMonitorService.delete(deleteValidationMonitorId)) {
+            if (!validationMonitorService.delete(validationMonitor.getValidationMonitorId())) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + ".delete.fail"));
-                return "redirect:" + deleteValidationMonitorId + "/edit";
+                return "redirect:" + validationMonitor.getValidationMonitorId() + "/edit";
             }
+            flash.setConfirm(
+                new YukonMessageSourceResolvable(baseKey + ".delete.success", validationMonitor.getName()));
         } catch (ValidationMonitorNotFoundException ex) {
-            flash.setError(
-                new YukonMessageSourceResolvable(baseKey + ".delete.fail.monitorNotFound", deleteValidationMonitorId));
-            return "redirect:" + deleteValidationMonitorId + "/edit";
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".delete.fail.monitorNotFound",
+                validationMonitor.getValidationMonitorId()));
+            return "redirect:" + validationMonitor.getValidationMonitorId() + "/edit";
         }
         return "redirect:/meter/start";
     }

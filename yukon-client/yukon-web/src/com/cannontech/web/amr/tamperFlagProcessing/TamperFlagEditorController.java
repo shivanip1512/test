@@ -3,7 +3,6 @@ package com.cannontech.web.amr.tamperFlagProcessing;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.monitor.validators.TamperFlagMonitorValidator;
@@ -48,7 +46,8 @@ public class TamperFlagEditorController {
     @Autowired private TamperFlagMonitorService tamperFlagMonitorService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private TamperFlagMonitorValidator validator;
-
+    
+    private static final String baseKey = "yukon.web.modules.amr.tamperFlagEditor";
     private Logger log = YukonLogManager.getLogger(TamperFlagEditorController.class);
 
     // EDIT
@@ -96,7 +95,7 @@ public class TamperFlagEditorController {
                 isNewMonitor = false;
             }
         } catch (TamperFlagMonitorNotFoundException e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.tamperFlagEditor.monitorNotFound"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".monitorNotFound"));
             return "redirect:" + tamperFlagMonitor.getTamperFlagMonitorId() + "/edit";
         }
 
@@ -166,15 +165,15 @@ public class TamperFlagEditorController {
     
     // DELETE
     @RequestMapping(value = "delete", method = RequestMethod.POST)
-    public String delete(HttpServletRequest request, LiteYukonUser user, ModelMap model, int tamperFlagMonitorId,
-            FlashScope flash)
-            throws Exception, ServletException {
-
+    public String delete(@ModelAttribute("tamperFlagMonitor") TamperFlagMonitor tamperFlagMonitor,
+            FlashScope flashScope) throws Exception, ServletException {
         try {
-            tamperFlagMonitorService.delete(tamperFlagMonitorId);
+            tamperFlagMonitorService.delete(tamperFlagMonitor.getTamperFlagMonitorId());
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".monitorDeleted",
+                tamperFlagMonitor.getTamperFlagMonitorName()));
         } catch (TamperFlagMonitorNotFoundException e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.tamperFlagEditor.monitorNotFound"));
-            return "redirect:" + tamperFlagMonitorId + "/edit";
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".monitorNotFound"));
+            return "redirect:" + tamperFlagMonitor.getTamperFlagMonitorId() + "/edit";
         }
         return "redirect:/meter/start";
     }
@@ -186,7 +185,7 @@ public class TamperFlagEditorController {
         try {
             tamperFlagMonitorService.toggleEnabled(tamperFlagMonitorId);
         } catch (TamperFlagMonitorNotFoundException e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.tamperFlagEditor.monitorNotFound"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + ".monitorNotFound"));
         }
 
         return "redirect:" + tamperFlagMonitorId + "/edit";
