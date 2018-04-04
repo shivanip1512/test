@@ -135,28 +135,28 @@ public class GroupCommanderController {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
-        String subject = accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + System.lineSeparator();
+        String subject = accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + "   " + System.lineSeparator();
         String partialUrl = ServletUtil.createSafeUrl(request, "/bulk/progressReport/detail");
         DecimalFormat format = new DecimalFormat("0.#");
         StringBuilder builder = new StringBuilder();
-        builder.append(accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".action") + ": " + accessor.getMessage(result.getAction().getFormatKey()) + "   " + System.lineSeparator());
         for (CollectionActionDetail detail : result.getAction().getDetails()) {
             int count = result.getDeviceCollection(detail).getDeviceCount();
             if (count > 0) {
                 builder.append(accessor.getMessage(detail) + ": " + count + " ("
-                    + format.format(result.getCounts().getPercentages().get(detail)) + "%)  " + System.lineSeparator());
+                    + format.format(result.getCounts().getPercentages().get(detail)) + "%)  " + "   " + System.lineSeparator());
             }
         }
         for (String inputKey : result.getInputs().getInputs().keySet()) {
-            builder.append(inputKey + ": " + result.getInputs().getInputs().get(inputKey) + System.lineSeparator());
+            builder.append(inputKey + ": " + result.getInputs().getInputs().get(inputKey) + "   " + System.lineSeparator());
         }
-        builder.append(accessor.getMessage(emailBasekey + ".devices") + ": "  +result.getInputs().getCollection().getDeviceCount() + System.lineSeparator());
-        builder.append(accessor.getMessage(emailBasekey + ".startDateTime") + ": " + result.getStartTime() + System.lineSeparator());
-        builder.append(accessor.getMessage(emailBasekey + ".stopDateTime") + ": " + result.getStopTime() + System.lineSeparator());
-        builder.append(accessor.getMessage(emailBasekey + ".userName") + ": " + result.getExecution().getUserName() + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".devices") + ": "  +result.getInputs().getCollection().getDeviceCount() + "   " + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".startDateTime") + ": " + result.getStartTime() + "   " + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".stopDateTime") + ": " + result.getStopTime() + "   " + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".userName") + ": " + result.getExecution().getUserName() + "   " + System.lineSeparator());
         
         String url = hostUrl.toExternalForm() + partialUrl + "?key=" + result.getCacheKey();
-        builder.append("The full results are available online at " + url + System.lineSeparator());
+        builder.append("The full results are available online at " + url + "   " + System.lineSeparator());
         
         InternetAddress internetAddress = new InternetAddress();
         internetAddress.setAddress(emailAddress);
