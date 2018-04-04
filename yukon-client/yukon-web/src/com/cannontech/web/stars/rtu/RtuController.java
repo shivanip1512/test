@@ -95,9 +95,6 @@ public class RtuController {
             rtu = rtuDnpService.getRtuDnp(id);
         }
         getPointsForModel(rtu.getId(), model);
-        List<MessageSourceResolvable> duplicatePointMessages =
-            rtuService.generateDuplicatePointsErrorMessages(rtu.getId(), request);
-        flash.setError(duplicatePointMessages, FlashScopeListType.NONE);
         return setupModel(rtu, model);
     }
 
