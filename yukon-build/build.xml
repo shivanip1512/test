@@ -195,7 +195,8 @@
         
         <copy todir="${server.bin}" preservelastmodified="true">
             <fileset dir="${server.bag}" excludes="unittests/**"/>
-            <fileset dir="${basedir}/yukon-install/resources/common_dlls" />
+            <fileset dir="${basedir}/yukon-install/resources/common_dlls"/>
+            <fileset dir="${basedir}/yukon-install/resources/scripts"/>
         </copy>
         
         <copy todir="${server.dir}/MACSscripts" file="${server.bag}/init.tcl" preservelastmodified="true"/>

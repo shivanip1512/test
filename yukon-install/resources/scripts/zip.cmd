@@ -1,0 +1,1 @@
+powershell -File zip.ps1 %2 %3
