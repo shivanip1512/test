@@ -3,7 +3,6 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
@@ -72,7 +71,7 @@
             
                 <%-- outages group --%>
                 <tags:nameValue2 nameKey=".label.outagesGroup">
-                    <div class="group-base" data-groupbase="${fn:escapeXml(outageGroupBase)}">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(outageMonitor.outageMonitorName)}</div>
+                    <span class="group-base" data-groupbase="${fn:escapeXml(outageGroupBase)}">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(outageMonitor.outageMonitorName)}</div>
                 </tags:nameValue2>
             
                 <%-- number of outages --%>

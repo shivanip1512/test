@@ -17,8 +17,8 @@ yukon.ami.monitor = (function () {
         init: function () {
             if (_initialized) return;
             $(".js-monitor-name").bind("keyup change", function(e) {
-                var textEl=$(this).val();
-                $('div.group-base').html($('div.group-base').attr('data-groupbase') + encodeURIComponent(textEl));
+                var textEl = $(this).val();
+                $('span.group-base').text($('span.group-base').attr('data-groupbase') + textEl);
             });
 
             /** Toggles Monitors enabling .*/

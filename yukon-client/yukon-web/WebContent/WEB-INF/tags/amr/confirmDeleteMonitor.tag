@@ -2,7 +2,7 @@
 
 <%@ attribute name="monitorName" required="true" type="java.lang.String" description="Name of the monitor" %>
 <%@ attribute name="target" required="true" type="java.lang.String"
-	description="CSS selector of the HTML element that is the target of the data-event"%>
+              description="CSS selector of the HTML element that is the target of the data-event"%>
 
 <cti:msg2 var="dialogTitle" key="yukon.web.components.ajaxConfirm.confirmDelete.title"/>
 <cti:msg2 var="dialogMessage" key="yukon.web.components.ajaxConfirm.confirmDelete.message" argument="${monitorName}" 

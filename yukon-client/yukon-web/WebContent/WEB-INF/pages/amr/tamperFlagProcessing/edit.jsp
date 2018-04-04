@@ -1,11 +1,9 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:url value="/amr/tamperFlagProcessing/delete" var="monitorDeleteURL"/>
 <cti:url value="/amr/tamperFlagProcessing/toggleEnabled" var="toggleEnabledURL"/>
@@ -69,7 +67,7 @@
             
                 <%-- tamper flag group --%>
                 <tags:nameValue2 nameKey=".label.tamperFlagGroup">
-                    <div class="group-base" data-groupbase="${fn:escapeXml(tamperFlagGroupBase)}">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</div>            
+                    <span class="group-base" data-groupbase="${fn:escapeXml(tamperFlagGroupBase)}">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</div>            
                 </tags:nameValue2>
             
                 <%-- enable/disable monitoring --%>
