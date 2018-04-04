@@ -32,9 +32,12 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -54,7 +57,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.GROUP_COMMANDER)
 public class GroupCommanderController {
 
-    private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
+    private static final Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
     
     @Autowired private CommanderEventLogService commanderEventLogService;
@@ -66,7 +69,9 @@ public class GroupCommanderController {
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private EmailService emailService;
-
+    @Autowired private WebserverUrlResolver webserverUrlResolver;
+    @Autowired private DateFormattingService dateFormattingService;
+    
     private final static String baseKey = "yukon.web.modules.tools.bulk.sendCommand.";
     private String emailBasekey = "yukon.web.modules.tools.bulk.emailMessage";
 
@@ -150,13 +155,14 @@ public class GroupCommanderController {
         for (String inputKey : result.getInputs().getInputs().keySet()) {
             builder.append(inputKey + ": " + result.getInputs().getInputs().get(inputKey) + "   " + System.lineSeparator());
         }
-        builder.append(accessor.getMessage(emailBasekey + ".devices") + ": "  +result.getInputs().getCollection().getDeviceCount() + "   " + System.lineSeparator());
-        builder.append(accessor.getMessage(emailBasekey + ".startDateTime") + ": " + result.getStartTime() + "   " + System.lineSeparator());
-        builder.append(accessor.getMessage(emailBasekey + ".stopDateTime") + ": " + result.getStopTime() + "   " + System.lineSeparator());
-        builder.append(accessor.getMessage(emailBasekey + ".userName") + ": " + result.getExecution().getUserName() + "   " + System.lineSeparator());
         
-        String url = hostUrl.toExternalForm() + partialUrl + "?key=" + result.getCacheKey();
-        builder.append("The full results are available online at " + url + "   " + System.lineSeparator());
+        
+        builder.append(accessor.getMessage(emailBasekey + ".devices") + ": "  +result.getInputs().getCollection().getDeviceCount() + "   " + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".startDateTime") + ": " + dateFormattingService.format(result.getStartTime(), DateFormatEnum.BOTH, userContext) + "   " + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".stopDateTime") + ": " + dateFormattingService.format(result.getStopTime(), DateFormatEnum.BOTH, userContext) + "   " + System.lineSeparator());
+        builder.append(accessor.getMessage(emailBasekey + ".userName") + ": " + result.getExecution().getUserName() + "   " + System.lineSeparator());
+
+        builder.append("The full results are available online at " +  webserverUrlResolver.getUrl(partialUrl + "?key=" + result.getCacheKey(), hostUrl.toExternalForm()) + "   " + System.lineSeparator());
         
         InternetAddress internetAddress = new InternetAddress();
         internetAddress.setAddress(emailAddress);
