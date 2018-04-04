@@ -127,8 +127,8 @@
         <pointInfo name="Received Peak kVA" attributes="RECEIVED_PEAK_KVA"/>
         <pointInfo name="Received Peak kVA (Rate A kVA)" attributes="RECEIVED_PEAK_KVA_RATE_A"/>
         <pointInfo name="Received Peak kVA (Rate B kVA)" attributes="RECEIVED_PEAK_KVA_RATE_B"/>
-        <pointInfo name="Received Peak kVA (Rate C kVA)" attributes="SUM_PEAK_KVA_RATE_C"/>
-        <pointInfo name="Received Peak kVA (Rate D kVA)" attributes="SUM_PEAK_KVA_RATE_D"/>
+        <pointInfo name="Received Peak kVA (Rate C kVA)" attributes="RECEIVED_PEAK_KVA_RATE_C"/>
+        <pointInfo name="Received Peak kVA (Rate D kVA)" attributes="RECEIVED_PEAK_KVA_RATE_D"/>
         <pointInfo name="Received Peak kVAr" attributes="RECEIVED_PEAK_KVAR"/>
         <pointInfo name="Received Peak kVAr (Rate A kVAr)" attributes="RECEIVED_PEAK_KVAR_RATE_A"/>
         <pointInfo name="Received Peak kVAr (Rate B kVAr)" attributes="RECEIVED_PEAK_KVAR_RATE_B"/>
@@ -168,6 +168,8 @@
         <pointInfo name="Sum Peak kVA" attributes="SUM_PEAK_KVA"/>
         <pointInfo name="Sum Peak kVA (Rate A kVA)" attributes="SUM_PEAK_KVA_RATE_A"/>
         <pointInfo name="Sum Peak kVA (Rate B kVA)" attributes="SUM_PEAK_KVA_RATE_B"/>
+        <pointInfo name="Sum Peak kVA (Rate C kVA)" attributes="SUM_PEAK_KVA_RATE_C"/>
+        <pointInfo name="Sum Peak kVA (Rate D kVA)" attributes="SUM_PEAK_KVA_RATE_D"/>
         <pointInfo name="Sum Peak kVAr" attributes="SUM_PEAK_KVAR"/>
         <pointInfo name="Sum Peak kVAr (Rate A kVAr)" attributes="SUM_PEAK_KVAR_RATE_A"/>
         <pointInfo name="Sum Peak kVAr (Rate B kVAr)" attributes="SUM_PEAK_KVAR_RATE_B"/>

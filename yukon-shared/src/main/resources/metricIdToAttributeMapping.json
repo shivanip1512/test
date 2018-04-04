@@ -119,6 +119,7 @@
                 { "metricId" : 2004, "attributeMagnitude" : 3, "attribute" : "NET_KWH_RATE_B" },
                 { "metricId" : 2007, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_RATE_B" },
                 { "metricId" : 2009, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN_RATE_B" },
+                { "metricId" : 2013, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND_RATE_B" },
                 { "metricId" : 2021, "attributeMagnitude" : 3, "attribute" : "KVARH_RATE_B" },
                 { "metricId" : 2022, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH_RATE_B" },
                 { "metricId" : 2023, "attributeMagnitude" : 3, "attribute" : "SUM_KVARH_RATE_B" },
@@ -134,6 +135,7 @@
                 { "metricId" : 3004, "attributeMagnitude" : 3, "attribute" : "NET_KWH_RATE_C" },
                 { "metricId" : 3007, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_RATE_C" },
                 { "metricId" : 3009, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN_RATE_C" },
+                { "metricId" : 3013, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND_RATE_C" },
                 { "metricId" : 3021, "attributeMagnitude" : 3, "attribute" : "KVARH_RATE_C" },
                 { "metricId" : 3022, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH_RATE_C" },
                 { "metricId" : 3023, "attributeMagnitude" : 3, "attribute" : "SUM_KVARH_RATE_C" },
@@ -149,6 +151,7 @@
                 { "metricId" : 4004, "attributeMagnitude" : 3, "attribute" : "NET_KWH_RATE_D" },
                 { "metricId" : 4007, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_RATE_D" },
                 { "metricId" : 4009, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN_RATE_D" },
+                { "metricId" : 4013, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND_RATE_D" },
                 { "metricId" : 4021, "attributeMagnitude" : 3, "attribute" : "KVARH_RATE_D" },
                 { "metricId" : 4022, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH_RATE_D" },
                 { "metricId" : 4023, "attributeMagnitude" : 3, "attribute" : "SUM_KVARH_RATE_D" },
@@ -164,7 +167,10 @@
                 { "attribute" : "USAGE_RATE_B",         "metricId" :  2003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
                 { "attribute" : "USAGE_RATE_C",         "metricId" :  3003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
                 { "attribute" : "USAGE_RATE_D",         "metricId" :  4003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "PEAK_DEMAND_RATE_A",   "metricId" :  1013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] }
+                { "attribute" : "PEAK_DEMAND_RATE_A",   "metricId" :  1013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
+                { "attribute" : "PEAK_DEMAND_RATE_B",   "metricId" :  2013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
+                { "attribute" : "PEAK_DEMAND_RATE_C",   "metricId" :  3013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
+                { "attribute" : "PEAK_DEMAND_RATE_D",   "metricId" :  4013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] }
         ]
 }
 

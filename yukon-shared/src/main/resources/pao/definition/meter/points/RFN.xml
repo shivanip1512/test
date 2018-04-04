@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--Highest Status OFFSET=1000 @ 2016-08-12--><!--Highest Analog OFFSET=361 @ 2017-09-20--><points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+<!--Highest Status OFFSET=1000 @ 2016-08-12-->
+<!--Highest Analog OFFSET=363 @ 2018-04-04-->
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
 <!-- Point Name naming convention: 
 [Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #] 
 Examples: 
@@ -1397,6 +1399,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="362" type="Analog">
+        <name>Sum Peak kVA (Rate C kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
     <point offset="307" type="Analog">
         <name>Sum kVArh (Rate D kVArh)</name>
         <multiplier value="1"/>
@@ -1459,6 +1467,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="318" type="Analog">
         <name>Received Peak kVA (Rate D kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="363" type="Analog">
+        <name>Sum Peak kVA (Rate D kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>

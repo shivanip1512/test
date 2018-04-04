@@ -4504,6 +4504,19 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
+        <point name="Sum Peak kVA (Rate C kVA)">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
         <point name="Delivered kVArh (Rate D kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
@@ -4671,6 +4684,19 @@
             <modifiers match="equal">
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum Peak kVA (Rate D kVA)">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
