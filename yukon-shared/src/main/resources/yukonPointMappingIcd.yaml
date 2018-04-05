@@ -133,6 +133,7 @@ Modifiers:
         - &Min Min
         - &Avg Avg
         - &Max Max
+        - &DayMax Daily Max
         - &Prev Previous
         - &Cuml Cumulative
         - &Cont Continuous Cumulative
@@ -833,7 +834,7 @@ Itron Sentinel:
     Current Phase A:                                                { unit: A,        Unit Modifiers: [ *PhA, *mil                                 ], Models: *_1234, Itron name: Instantaneous Current, Phase A }
     Current Phase B:                                                { unit: A,        Unit Modifiers: [ *PhB, *mil                                 ], Models: *_1234, Itron name: Instantaneous Current, Phase B }
     Current Phase C:                                                { unit: A,        Unit Modifiers: [ *PhC, *mil                                 ], Models: *_1234, Itron name: Instantaneous Current, Phase C }
-    Current Neutral to Ground:                                      { unit: A,        Unit Modifiers: [ Phase Neutral->Ground, *mil                ], Models: *_1234, Itron name: Instantaneous Neutral Current }
+    Current Neutral to Ground:                                      { unit: A,        Unit Modifiers: [ *Neutral, *mil                             ], Models: *_1234, Itron name: Instantaneous Neutral Current }
     Angle of Voltage Phase B to Voltage Phase A:                    { unit: V degree, Unit Modifiers: [ *PhB                                       ], Models: *_1234, Itron name: Angle Voltage B To Voltage A }
     Angle of Voltage Phase C to Voltage Phase A:                    { unit: V degree, Unit Modifiers: [ *PhC                                       ], Models: *_1234, Itron name: Angle Voltage C To Voltage A }
     Angle of Current Phase A to Voltage Phase A:                    { unit: A degree, Unit Modifiers: [ *PhA                                       ], Models: *_1234, Itron name: Angle Current A To Voltage A }
@@ -933,7 +934,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     Time of Min Power factor:                   { unit: s,        Unit Modifiers: [ *Coin1                                                ], Models: *____-RDTR-650 }
     Cumulative Min Power factor:                { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Cuml                       ], Models: *____-____-650 }
     Continuous Cumulative Min Power factor:     { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Cont                       ], Models: *____-____-650 }
-    Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, Previoius                   ], Models: *____-RDTR-650 }
+    Previous Min Power factor:                  { unit: PF,       Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev                       ], Models: *____-RDTR-650 }
     Time of Previous Min Power factor:          { unit: s,        Unit Modifiers: [ *Coin1, *Prev                                         ], Models: *____-RDTR-650 }
     Delivered Watthours:                        { unit: Wh,       Unit Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *____-____-650 }
     Received Watthours:                         { unit: Wh,       Unit Modifiers: [ *Q2, *Q3, *RateA                                      ], Models: *____-____-650 }
@@ -1318,7 +1319,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     Current Phase A:                            { unit: A,        Unit Modifiers: [ *PhA, *mil                                            ], Models: *ADTR-RDTR-650 }
     Current Phase B:                            { unit: A,        Unit Modifiers: [ *PhB, *mil                                            ], Models: *ADTR-RDTR-650 }
     Current Phase C:                            { unit: A,        Unit Modifiers: [ *PhC, *mil                                            ], Models: *ADTR-RDTR-650 }
-    Current Neutral to Ground:                  { unit: A,        Unit Modifiers: [ Phase Neutral->Ground, *mil                           ], Models: *ADTR-RDTR-650 }
+    Current Neutral to Ground:                  { unit: A,        Unit Modifiers: [ *Neutral, *mil                                        ], Models: *ADTR-RDTR-650 }
     Current Angle Phase A:                      { unit: A degree, Unit Modifiers: [ *PhA                                                  ], Models: *ADTR-RDTR-650 }
     Current Angle Phase B:                      { unit: A degree, Unit Modifiers: [ *PhB                                                  ], Models: *ADTR-RDTR-650 }
     Current Angle Phase C:                      { unit: A degree, Unit Modifiers: [ *PhC                                                  ], Models: *ADTR-RDTR-650 }
@@ -1550,7 +1551,7 @@ Metric IDs:
     125: { name: Current,                              unit: A,         Unit Modifiers: [                                       ] }
     126: { name: Voltage Angle,                        unit: V degree,  Unit Modifiers: [                                       ] }
     127: { name: Current Angle,                        unit: A degree,  Unit Modifiers: [                                       ] }
-    128: { name: Current Neutral to Ground,            unit: A,         Unit Modifiers: [ Phase Neutral->Ground                 ] }
+    128: { name: Current Neutral to Ground,            unit: A,         Unit Modifiers: [ *Neutral                              ] }
     # ------
     150: { name: Watts Phase A,                        unit: W,         Unit Modifiers: [ *PhA                                  ] }
     151: { name: Watts Phase B,                        unit: W,         Unit Modifiers: [ *PhB                                  ] }
@@ -1583,10 +1584,10 @@ Metric IDs:
     192: { name: Watt hour Q3,                         unit: Wh,        Unit Modifiers: [ *Q3                                   ] }
     193: { name: Watt hour Q4,                         unit: Wh,        Unit Modifiers: [ *Q4                                   ] }
     # ------
-    200: { name: Watts,                                unit: W,         Unit Modifiers: [ Watts                                 ] }
-    201: { name: Var,                                  unit: Var,       Unit Modifiers: [ Var                                   ] }
-    202: { name: VA,                                   unit: VA,        Unit Modifiers: [ VA                                    ] }
-    203: { name: Q,                                    unit: Q,         Unit Modifiers: [ Q                                     ] }
+    200: { name: Watts,                                unit: W,         Unit Modifiers: [                                       ] }
+    201: { name: Var,                                  unit: Var,       Unit Modifiers: [                                       ] }
+    202: { name: VA,                                   unit: VA,        Unit Modifiers: [                                       ] }
+    203: { name: Q,                                    unit: Q,         Unit Modifiers: [                                       ] }
     # ------
     206: { name: VA Q1 + Q2, peak,                     unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Max                        ] }
     207: { name: VA Q1 + Q2, peak (Frozen),            unit: VA,        Unit Modifiers: [ *Q1, *Q2, *Max, *Prev                 ] }
@@ -1607,7 +1608,7 @@ Metric IDs:
     # ------
     230: { name: Power Factor total, minimum,          unit: PF,        Unit Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min              ] }
     # ------
-    240: { name: kW Delivered Daily Max,               unit: W,         Unit Modifiers: [ *Q1, *Q4, Daily Max                   ] }
+    240: { name: kW Delivered Daily Max,               unit: W,         Unit Modifiers: [ *Q1, *Q4, *DayMax                     ] }
     # ------
     255: { name: Unknown,                              unit: -,         Unit Modifiers: [                                       ] }
     256: { name: Time in Seconds,                      unit: s,         Unit Modifiers: [                                       ] }
