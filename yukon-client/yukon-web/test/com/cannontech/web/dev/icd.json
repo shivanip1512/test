@@ -1284,7 +1284,7 @@
     },
     "Coincident Time of Peak Var Received" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1" ],
+      "Unit Modifiers" : [ "Coincident Value 1" ],
       "Models" : [ "Elster A3R" ]
     },
     "Coincident Cumulative Peak Var Received" : {
@@ -1299,7 +1299,7 @@
     },
     "Coincident Time of Peak VA Delivered" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1" ],
+      "Unit Modifiers" : [ "Coincident Value 1" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Peak VA Received" : {
@@ -1309,7 +1309,7 @@
     },
     "Coincident Time of Peak VA" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1" ],
+      "Unit Modifiers" : [ "Coincident Value 1" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Watt-hours Delivered Rate A" : {
@@ -1418,7 +1418,7 @@
     },
     "Coincident Time of Peak Var Received Rate A" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate A" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate A" ],
       "Models" : [ "Elster A3R" ]
     },
     "Coincident Cumulative Peak Var Received Rate A" : {
@@ -1449,7 +1449,7 @@
     },
     "Coincident Time of Peak VA Delivered Rate A" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate A" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate A" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Peak VA Received Rate A" : {
@@ -1459,7 +1459,7 @@
     },
     "Coincident Time of Peak VA Rate A" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate A" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate A" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Average Power Factor Rate A" : {
@@ -1574,7 +1574,7 @@
     },
     "Coincident Time of Peak Var Received Rate B" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate B" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate B" ],
       "Models" : [ "Elster A3R" ]
     },
     "Coincident Cumulative Peak Var Received Rate B" : {
@@ -1605,7 +1605,7 @@
     },
     "Coincident Time of Peak VA Delivered Rate B" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate B" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate B" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Peak VA Received Rate B" : {
@@ -1615,7 +1615,7 @@
     },
     "Coincident Time of Peak VA Rate B" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate B" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate B" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Average Power Factor Rate B" : {
@@ -1730,7 +1730,7 @@
     },
     "Coincident Time of Peak Var Received Rate C" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate C" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate C" ],
       "Models" : [ "Elster A3R" ]
     },
     "Coincident Cumulative Peak Var Received Rate C" : {
@@ -1761,7 +1761,7 @@
     },
     "Coincident Time of Peak VA Delivered Rate C" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate C" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate C" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Peak VA Received Rate C" : {
@@ -1771,7 +1771,7 @@
     },
     "Coincident Time of Peak VA Rate C" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate C" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate C" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Average Power Factor Rate C" : {
@@ -1886,7 +1886,7 @@
     },
     "Coincident Time of Peak Var Received Rate D" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate D" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate D" ],
       "Models" : [ "Elster A3R" ]
     },
     "Coincident Cumulative Peak Var Received Rate D" : {
@@ -1917,7 +1917,7 @@
     },
     "Coincident Time of Peak VA Delivered Rate D" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate D" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate D" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Peak VA Received Rate D" : {
@@ -1927,7 +1927,7 @@
     },
     "Coincident Time of Peak VA Rate D" : {
       "unit" : "s",
-      "Unit Modifiers" : [ "Coincident 1", "TOU Rate D" ],
+      "Unit Modifiers" : [ "Coincident Value 1", "TOU Rate D" ],
       "Models" : [ "Elster A3K", "Elster A3R" ]
     },
     "Average Power Factor Rate D" : {

@@ -487,12 +487,12 @@ Elster A3:
     Coincident Cumulative Peak Var with Watt-hours Received:         { unit: Var,       Unit Modifiers: [ *Q2, *Q3, *Max, *Coin2, *Cuml         ], Models: *___R }
     Coincident Peak Var Received:                                    { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *Coin3                ], Models: *___R }
     Peak Var Received:                                               { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max                        ], Models: *___R }
-    Coincident Time of Peak Var Received:                            { unit: s,         Unit Modifiers: [ Coincident 1                          ], Models: *___R }
+    Coincident Time of Peak Var Received:                            { unit: s,         Unit Modifiers: [ *Coin1                                ], Models: *___R }
     Coincident Cumulative Peak Var Received:                         { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *Coin2, *Cuml         ], Models: *___R }
     Peak VA Delivered:                                               { unit: VA,        Unit Modifiers: [ *Q1, *Q4, *Max                        ], Models: *__KR }
-    Coincident Time of Peak VA Delivered:                            { unit: s,         Unit Modifiers: [ Coincident 1                          ], Models: *__KR }
+    Coincident Time of Peak VA Delivered:                            { unit: s,         Unit Modifiers: [ *Coin1                                ], Models: *__KR }
     Peak VA Received:                                                { unit: VA,        Unit Modifiers: [ *Q2, *Q3, *Max                        ], Models: *__KR }
-    Coincident Time of Peak VA:                                      { unit: s,         Unit Modifiers: [ Coincident 1                          ], Models: *__KR }
+    Coincident Time of Peak VA:                                      { unit: s,         Unit Modifiers: [ *Coin1                                ], Models: *__KR }
     Watt-hours Delivered Rate A:                                     { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, *RateA                      ], Models: *_TKR, Other names: [ "Rate A kWh" ] }
     Volt-ampere-reactive hours Delivered Rate A:                     { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *RateA                      ], Models: *___R, Other names: [ "Rate A kVARh delivered" ] }
     Watt-hours Received Rate A:                                      { unit: Wh,        Unit Modifiers: [ *Q2, *Q3, *RateA                      ], Models: *_TKR }
@@ -512,15 +512,15 @@ Elster A3:
     Coincident Cumulative Peak Var with Watt-hours Received Rate A:  { unit: Var,       Unit Modifiers: [ *Q2, *Q3, *Max, *RateA, *Coin2, *Cuml ], Models: *___R }
     Coincident Peak Var Received Rate A:                             { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateA, *Coin3        ], Models: *___R }
     Peak Var Received Rate A:                                        { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateA                ], Models: *___R }
-    Coincident Time of Peak Var Received Rate A:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateA                  ], Models: *___R }
+    Coincident Time of Peak Var Received Rate A:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateA                        ], Models: *___R }
     Coincident Cumulative Peak Var Received Rate A:                  { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateA, *Coin2, *Cuml ], Models: *___R }
     Peak Var Rate A:                                                 { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateA                ], Models: *___R }
     Coincident Time of Peak Var Rate A:                              { unit: s,         Unit Modifiers: [ *RateA, *Coin1                        ], Models: *___R, Other names: [ "Rate A max Var date", "Rate A max Var time" ] }
     Coincident Cumulative Peak Var Rate A:                           { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateA, *Coin2, *Cuml ], Models: *___R }
     Peak VA Delivered Rate A:                                        { unit: VA,        Unit Modifiers: [ *Q1, *Q4, *Max, *RateA                ], Models: *__KR }
-    Coincident Time of Peak VA Delivered Rate A:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateA                  ], Models: *__KR }
+    Coincident Time of Peak VA Delivered Rate A:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateA                        ], Models: *__KR }
     Peak VA Received Rate A:                                         { unit: VA,        Unit Modifiers: [ *Q2, *Q3, *Max, *RateA                ], Models: *__KR }
-    Coincident Time of Peak VA Rate A:                               { unit: s,         Unit Modifiers: [ Coincident 1, *RateA                  ], Models: *__KR }
+    Coincident Time of Peak VA Rate A:                               { unit: s,         Unit Modifiers: [ *Coin1, *RateA                        ], Models: *__KR }
     Average Power Factor Rate A:                                     { unit: PF,        Unit Modifiers: [ *Q1, *Q2, *Q4, *RateA                 ], Models: *__KR, Other names: [ "Rate A average power factor" ] }
     Watt-hours Delivered Rate B:                                     { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, *RateB                      ], Models: *_TKR, Other names: [ "Rate B kWh" ] }
     Volt-ampere-reactive hours Delivered Rate B:                     { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *RateB                      ], Models: *___R, Other names: [ "Rate B kVARh delivered" ] }
@@ -541,15 +541,15 @@ Elster A3:
     Coincident Cumulative Peak Var with Watt-hours Received Rate B:  { unit: Var,       Unit Modifiers: [ *Q2, *Q3, *Max, *RateB, *Coin2, *Cuml ], Models: *___R }
     Coincident Peak Var Received Rate B:                             { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateB, *Coin3        ], Models: *___R }
     Peak Var Received Rate B:                                        { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateB                ], Models: *___R }
-    Coincident Time of Peak Var Received Rate B:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateB                  ], Models: *___R }
+    Coincident Time of Peak Var Received Rate B:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateB                        ], Models: *___R }
     Coincident Cumulative Peak Var Received Rate B:                  { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateB, *Coin2, *Cuml ], Models: *___R }
     Peak Var Rate B:                                                 { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateB                ], Models: *___R }
     Coincident Time of Peak Var Rate B:                              { unit: s,         Unit Modifiers: [ *RateB, *Coin1                        ], Models: *___R, Other names: [ "Rate B max Var date", "Rate B max Var time" ] }
     Coincident Cumulative Peak Var Rate B:                           { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateB, *Coin2, *Cuml ], Models: *___R }
     Peak VA Delivered Rate B:                                        { unit: VA,        Unit Modifiers: [ *Q1, *Q4, *Max, *RateB                ], Models: *__KR }
-    Coincident Time of Peak VA Delivered Rate B:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateB                  ], Models: *__KR }
+    Coincident Time of Peak VA Delivered Rate B:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateB                        ], Models: *__KR }
     Peak VA Received Rate B:                                         { unit: VA,        Unit Modifiers: [ *Q2, *Q3, *Max, *RateB                ], Models: *__KR }
-    Coincident Time of Peak VA Rate B:                               { unit: s,         Unit Modifiers: [ Coincident 1, *RateB                  ], Models: *__KR }
+    Coincident Time of Peak VA Rate B:                               { unit: s,         Unit Modifiers: [ *Coin1, *RateB                        ], Models: *__KR }
     Average Power Factor Rate B:                                     { unit: PF,        Unit Modifiers: [ *Q1, *Q2, *Q4, *RateB                 ], Models: *__KR, Other names: [ "Rate B average power factor" ] }
     Watt-hours Delivered Rate C:                                     { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, *RateC                      ], Models: *_TKR, Other names: [ "Rate C kWh" ] }
     Volt-ampere-reactive hours Delivered Rate C:                     { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *RateC                      ], Models: *___R, Other names: [ "Rate C kVARh delivered" ] }
@@ -570,15 +570,15 @@ Elster A3:
     Coincident Cumulative Peak Var with Watt-hours Received Rate C:  { unit: Var,       Unit Modifiers: [ *Q2, *Q3, *Max, *RateC, *Coin2, *Cuml ], Models: *___R }
     Coincident Peak Var Received Rate C:                             { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateC, *Coin3        ], Models: *___R }
     Peak Var Received Rate C:                                        { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateC                ], Models: *___R }
-    Coincident Time of Peak Var Received Rate C:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateC                  ], Models: *___R }
+    Coincident Time of Peak Var Received Rate C:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateC                        ], Models: *___R }
     Coincident Cumulative Peak Var Received Rate C:                  { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateC, *Coin2, *Cuml ], Models: *___R }
     Peak Var Rate C:                                                 { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateC                ], Models: *___R }
     Coincident Time of Peak Var Rate C:                              { unit: s,         Unit Modifiers: [ *RateC, *Coin1                        ], Models: *___R, Other names: [ "Rate C max Var date", "Rate C max Var time" ] }
     Coincident Cumulative Peak Var Rate C:                           { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateC, *Coin2, *Cuml ], Models: *___R }
     Peak VA Delivered Rate C:                                        { unit: VA,        Unit Modifiers: [ *Q1, *Q4, *Max, *RateC                ], Models: *__KR }
-    Coincident Time of Peak VA Delivered Rate C:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateC                  ], Models: *__KR }
+    Coincident Time of Peak VA Delivered Rate C:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateC                        ], Models: *__KR }
     Peak VA Received Rate C:                                         { unit: VA,        Unit Modifiers: [ *Q2, *Q3, *Max, *RateC                ], Models: *__KR }
-    Coincident Time of Peak VA Rate C:                               { unit: s,         Unit Modifiers: [ Coincident 1, *RateC                  ], Models: *__KR }
+    Coincident Time of Peak VA Rate C:                               { unit: s,         Unit Modifiers: [ *Coin1, *RateC                        ], Models: *__KR }
     Average Power Factor Rate C:                                     { unit: PF,        Unit Modifiers: [ *Q1, *Q2, *Q4, *RateC                 ], Models: *__KR, Other names: [ "Rate C average power factor" ] }
     Watt-hours Delivered Rate D:                                     { unit: Wh,        Unit Modifiers: [ *Q1, *Q4, *RateD                      ], Models: *_TKR, Other names: [ "Rate D kWh" ] }
     Volt-ampere-reactive hours Delivered Rate D:                     { unit: Varh,      Unit Modifiers: [ *Q1, *Q2, *RateD                      ], Models: *___R, Other names: [ "Rate D kVARh delivered" ] }
@@ -599,15 +599,15 @@ Elster A3:
     Coincident Cumulative Peak Var with Watt-hours Received Rate D:  { unit: Var,       Unit Modifiers: [ *Q2, *Q3, *Max, *RateD, *Coin2, *Cuml ], Models: *___R }
     Coincident Peak Var Received Rate D:                             { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateD, *Coin3        ], Models: *___R }
     Peak Var Received Rate D:                                        { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateD                ], Models: *___R }
-    Coincident Time of Peak Var Received Rate D:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateD                  ], Models: *___R }
+    Coincident Time of Peak Var Received Rate D:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateD                        ], Models: *___R }
     Coincident Cumulative Peak Var Received Rate D:                  { unit: Var,       Unit Modifiers: [ *Q3, *Q4, *Max, *RateD, *Coin2, *Cuml ], Models: *___R }
     Peak Var Rate D:                                                 { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateD                ], Models: *___R }
     Coincident Time of Peak Var Rate D:                              { unit: s,         Unit Modifiers: [ *RateD, *Coin1                        ], Models: *___R, Other names: [ "Rate D max Var date", "Rate D max Var time" ] }
     Coincident Cumulative Peak Var Rate D:                           { unit: Var,       Unit Modifiers: [ *Q1, *Q2, *Max, *RateD, *Coin2, *Cuml ], Models: *___R }
     Peak VA Delivered Rate D:                                        { unit: VA,        Unit Modifiers: [ *Q1, *Q4, *Max, *RateD                ], Models: *__KR }
-    Coincident Time of Peak VA Delivered Rate D:                     { unit: s,         Unit Modifiers: [ Coincident 1, *RateD                  ], Models: *__KR }
+    Coincident Time of Peak VA Delivered Rate D:                     { unit: s,         Unit Modifiers: [ *Coin1, *RateD                        ], Models: *__KR }
     Peak VA Received Rate D:                                         { unit: VA,        Unit Modifiers: [ *Q2, *Q3, *Max, *RateD                ], Models: *__KR }
-    Coincident Time of Peak VA Rate D:                               { unit: s,         Unit Modifiers: [ Coincident 1, *RateD                  ], Models: *__KR }
+    Coincident Time of Peak VA Rate D:                               { unit: s,         Unit Modifiers: [ *Coin1, *RateD                        ], Models: *__KR }
     Average Power Factor Rate D:                                     { unit: PF,        Unit Modifiers: [ *Q1, *Q2, *Q4, *RateD                 ], Models: *__KR, Other names: [ "Rate D average power factor" ] }
     Power Factor Angle Phase A:                                      { unit: PF degree, Unit Modifiers: [ *PhA                                  ], Models: *___R }
     Power Factor Angle Phase B:                                      { unit: PF degree, Unit Modifiers: [ *PhB                                  ], Models: *___R }
