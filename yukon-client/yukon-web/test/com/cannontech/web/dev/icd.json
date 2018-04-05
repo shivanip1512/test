@@ -16,7 +16,7 @@
     "Leading / Lagging" : [ "Leading", "Lagging" ],
     "Range" : [ "Net Flow", "Minimum", "Average", "Maximum" ],
     "Segmentation" : [ "A to B", "B to C", "C to A", "Phase Neutral->Ground", "A to Neutral", "B to Neutral", "C to Neutral" ],
-    "Rate" : [ "Rate A", "Rate B", "Rate C", "Rate D", "Rate E", "Rate F", "Rate G" ],
+    "TOU Rate" : [ "TOU Rate A", "TOU Rate B", "TOU Rate C", "TOU Rate D", "TOU Rate E", "TOU Rate F", "TOU Rate G" ],
     "Scaling Factor" : [ "Giga", "Mega", "Kilo", "milli", "Micro", "Tenths", "Overflow" ],
     "Coincident Value" : [ "Coincident Value 1", "Coincident Value 2", "Coincident Value 3", "Coincident Value 4", "Coincident Value 5", "Coincident Value 6", "Coincident Value 7" ]
   },
