@@ -18,7 +18,10 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.AdjacentPointValues;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
@@ -31,7 +34,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayConnectionStatusEvaluator.class);
     private static final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-    private static final int CONNECTED = 0;
     @Autowired GlobalSettingDao globalSettingDao;
     @Autowired RfnGatewayService rfnGatewayService;
     @Autowired private RawPointHistoryDao rphDao;
@@ -49,8 +51,9 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
         Duration warnableDuration = Duration.standardMinutes(warnableTimeMinutes);
         log.debug("Required disconnected minutes to warn: " + warnableTimeMinutes);
         
-        Map<PaoIdentifier, PointValueQualityHolder> gatewayToPointValue = rphDao.getSingleAttributeData(
-            rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS, false, null, null);
+        Map<PaoIdentifier, PointValueQualityHolder> gatewayToPointValue =
+            rphDao.getMostRecentAttributeDataByValue(rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS,
+                false, CommStatusState.CONNECTED.getRawState(), null);
 
         return gatewayToPointValue.entrySet()
                                   .stream()
@@ -62,12 +65,20 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
     /**
      * Returns true if warning should be generated.
      */
-    protected static boolean isWarnable(PointValueQualityHolder point, Duration warnableDuration) {
-        if (point.getValue() == CONNECTED
-            || new Instant(point.getPointDataTimeStamp()).plus(warnableDuration).isAfterNow()) {
+    protected boolean isWarnable(PointValueQualityHolder point, Duration warnableDuration) {
+        if (new Instant(point.getPointDataTimeStamp()).plus(warnableDuration).isAfterNow()) {
+            return false;
+        } else {
+            AdjacentPointValues values = rphDao.getAdjacentPointValues(point);
+            if (values.getSucceeding() != null) {
+                PointValueHolder valueHolder = values.getSucceeding();
+                Instant dTimestamp = new Instant(valueHolder.getPointDataTimeStamp());
+                if (dTimestamp.plus(warnableDuration).isBeforeNow()) {
+                    return true;
+                }
+            }
             return false;
         }
-        return true;
     }
     
     /**

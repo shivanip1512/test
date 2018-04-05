@@ -19,6 +19,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 import com.cannontech.system.GlobalSettingType;
@@ -33,7 +34,8 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RawPointHistoryDao rphDao;
-    
+    @Autowired GatewayConnectionStatusEvaluator gatewayConnectionStatusEvaluator;
+
     @Override
     public Set<PaoType> getSupportedTypes() {
         return PaoType.getRfGatewayTypes();
@@ -56,8 +58,9 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
                 rphDao.getSingleAttributeData(gateways, BuiltInAttribute.READY_NODES, false, null);
         
         // Get most recent connection status for each gateway
-        Map<PaoIdentifier, PointValueQualityHolder> gatewayToConnectionStatus = rphDao.getSingleAttributeData(
-            rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS, false, null, null);
+        Map<PaoIdentifier, PointValueQualityHolder> gatewayToConnectionStatus =
+            rphDao.getMostRecentAttributeDataByValue(rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS,
+                false, CommStatusState.CONNECTED.getRawState(), null);
         
         // Look for gateways whose ready node count is at or below the configurable threshold, and the gateway is
         // connected
@@ -75,7 +78,7 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
     private boolean isConnected(PaoIdentifier gateway, 
                                 Map<PaoIdentifier, PointValueQualityHolder> gatewaysToConnectionStatus,
                                 Duration connectionWarningDuration) {
-        return !GatewayConnectionStatusEvaluator.isWarnable(gatewaysToConnectionStatus.get(gateway), 
+        return !gatewayConnectionStatusEvaluator.isWarnable(gatewaysToConnectionStatus.get(gateway), 
                                                            connectionWarningDuration);
     }
 

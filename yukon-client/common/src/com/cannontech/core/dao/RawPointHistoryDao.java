@@ -395,4 +395,13 @@ public interface RawPointHistoryDao {
      * Deletes an entry from RPH by point id, value and timestamp.
      */
     void deletePointData(int pointId, double value, Instant timestamp);
+    
+    /**
+     * This method returns RawPointHistory data for a list of PAOs, a given Attribute and value
+     * and converting the Multimap into a Map (because there will only be one value per key).
+     */
+    
+    public Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
+            Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, int value,
+            Set<PointQuality> excludeQualities);
 }

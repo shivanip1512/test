@@ -1101,4 +1101,74 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("   AND timestamp").eq(timestamp);  
         yukonTemplate.update(sql);
     }
+
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
+            Iterable<? extends YukonPao> displayableDevices, Attribute attribute, boolean excludeDisabledPaos,
+            final Order order, final OrderBy orderBy, int value, Set<PointQuality> excludeQualities) {
+        Stopwatch stopwatch = null;
+        if (log.isInfoEnabled()) {
+            stopwatch = Stopwatch.createStarted();
+        }
+
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            @Override
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT * FROM (");
+                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append("rph.value, rph.quality, p.pointtype");
+                        sql.append(", ROW_NUMBER() OVER (");
+                        sql.append("PARTITION BY rph.pointid");
+                        appendOrderByClause(sql, order, orderBy);
+                        sql.append(") rn");
+                        sql.append("FROM rawpointhistory rph");
+                        sql.append("JOIN point p ON rph.pointId = p.pointId");
+                        sql.append("JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append("AND p.PointType").eq_k(pointIdentifier.getPointType());
+                        sql.append("AND yp.PAObjectID").in(subList);
+                        if (excludeDisabledPaos) {
+                            sql.append("AND yp.DisableFlag").eq(YNBoolean.NO);
+                        }
+                        if (excludeQualities != null && !excludeQualities.isEmpty()) {
+                            sql.append("AND rph.Quality").notIn(excludeQualities);
+                        }
+                        sql.append("AND rph.Value").eq_k(value);
+                        sql.append(") numberedRows");
+                        sql.append("WHERE numberedRows.rn").lte(1);
+                        sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
+
+                        return sql;
+                    }
+                };
+            }
+        };
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> values = loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 1);
+
+        if (log.isInfoEnabled()) {
+            stopwatch.stop();
+            int numPaos = Iterables.size(displayableDevices);
+            String logMessage =
+                "getMostRecentAttributeDataByValue() - " + numPaos + " paos. Attribute: " + attribute.getKey();
+            logMessage += ".  Elapsed time: " + stopwatch.toString();
+            log.info(logMessage);
+        }
+
+        return values;
+    }
+
+    @Override
+    public Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
+            Iterable<? extends YukonPao> displayableDevices, Attribute attribute, boolean excludeDisabledPaos,
+            int value, Set<PointQuality> excludeQualities) {
+
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff =
+            getMostRecentAttributeDataByValue(displayableDevices, attribute, excludeDisabledPaos, Order.REVERSE,
+                OrderBy.TIMESTAMP, value, excludeQualities);
+
+        return Maps.transformValues(limitedStuff.asMap(), Iterables::getOnlyElement);
+    }
 }
