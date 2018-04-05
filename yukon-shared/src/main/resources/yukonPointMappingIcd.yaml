@@ -1,4 +1,172 @@
-# Table 1 – Centron C1SX and C2SX with Advanced Metrology
+ï»¿Meter models:
+    Centron:
+        - &c1sx Centron C1SX
+        - &c2sx Centron C2SX
+    Landis and Gyr:
+        - &focus_kWh Landis and Gyr Focus kWh
+        - &focus_ax Landis and Gyr Focus AX
+        - &focus_rx Landis and Gyr Focus RX
+        - &axd-500 Landis and Gyr FocusAXD-500  
+        - &axt-500 Landis and Gyr FocusAXT-500  
+        - &axr-500 Landis and Gyr FocusAXR-500  
+        - &axd-sd-500 Landis and Gyr FocusAXD-SD-500  
+        - &axt-sd-500 Landis and Gyr FocusAXT-SD-500  
+        - &axr-sd-500 Landis and Gyr FocusAXR-SD-500  
+        - &rxd-500 Landis and Gyr FocusRXD-500
+        - &rxt-500 Landis and Gyr FocusRXT-500
+        - &rxr-500 Landis and Gyr FocusRXR-500
+        - &rxd-sd-500 Landis and Gyr FocusRXD-SD-500
+        - &rxt-sd-500 Landis and Gyr FocusRXT-SD-500
+        - &rxr-sd-500 Landis and Gyr FocusRXR-SD-500
+        - &s4e_ad Landis and Gyr S4-AD
+        - &s4e_at Landis and Gyr S4-AT
+        - &s4e_ar Landis and Gyr S4-AR
+        - &s4e_rd Landis and Gyr S4-RD
+        - &s4e_rt Landis and Gyr S4-RT
+        - &s4e_rr Landis and Gyr S4-RR
+        - &s4x Landis and Gyr S4x E650
+    Elster:
+        - &a3d Elster A3D
+        - &a3t Elster A3T
+        - &a3k Elster A3K
+        - &a3r Elster A3R
+    ELO:
+        - &213t ELO 213T
+    Itron:
+        - &sl0 Itron SENTINEL-L0
+        - &sl1 Itron SENTINEL-L1
+        - &sl2 Itron SENTINEL-L2
+        - &sl3 Itron SENTINEL-L3
+        - &sl4 Itron SENTINEL-L4
+
+Meter combinations:
+    - &DTKR [ *a3d, *a3t, *a3k, *a3r ]
+    - &_TKR [ *a3t, *a3k, *a3r ]
+    - &__KR [ *a3k, *a3r ]
+    - &__K_ [ *a3k ]
+    - &___R [ *a3r ]
+    - &01234 [ *sl4, *sl3, *sl2, *sl1, *sl0 ]
+    - &_1234 [ *sl4, *sl3, *sl2, *sl1 ]
+    - &__234 [ *sl4, *sl3, *sl2 ]
+    - &___34 [ *sl4, *sl3 ]
+    - &____4 [ *sl4 ]
+    - &ADTR-RDTR-___ [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr       ]
+    - &ADTR-RDTR-650 [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr, *s4x ]
+    - &____-RDTR-___ [                            *s4e_rd, *s4e_rt, *s4e_rr       ]
+    - &____-RDTR-650 [                            *s4e_rd, *s4e_rt, *s4e_rr, *s4x ]
+    - &A_TR-R_TR-___ [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr       ]
+    - &A_TR-R_TR-650 [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr, *s4x ]
+    - &____-R_TR-___ [                                     *s4e_rt, *s4e_rr       ]
+    - &____-R_TR-650 [                                     *s4e_rt, *s4e_rr, *s4x ]
+    - &____-____-650 [                                                       *s4x ]
+    - &__-RX [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500 ]
+    - &AX-RX [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *axd-500, *axt-500, *axr-500, *axd-sd-500, *axt-sd-500, *axr-sd-500 ]
+
+Units of measure:
+    - &Wh
+        Watt-Hour
+    - &Varh
+        Var-Hour
+    - &Qh
+        Q-Hour
+    - &VAh
+        VA-Hour
+    - &Time
+        Time (in seconds)
+    - &V
+        Volts (10ths Volt)
+    - &A
+        Current (10ths Amp)
+    - &Vdeg
+        Voltage Angle (10ths Degree)
+    - &Adeg
+        Current Angle (10ths Degree)
+    - &PF
+        Power Factor
+    # Pound Hour
+    - &Gal
+        Gallon
+    - &None
+        No units
+    - &W
+        Watt
+    - &Var
+        var
+    - &Q
+        Q
+    - &VA
+        VA
+    - &Outages
+        Outage Count
+    - &Restores
+        Restore Count
+    - &OutBlinks
+        Outage Blink Count
+    - &RestBlinks
+        Restore Blink Count
+    - &DegC
+        Â°C
+    - &Unknown
+        Unknown
+
+Modifiers:
+    Primary / Secondary:
+        - &Pri Primary
+        - &Sec Secondary
+    Phase:
+        - &PhaseA Phase A
+        - &PhaseB Phase B
+        - &PhaseC Phase C
+    Quadrant:
+        - &Q1 Quadrant 1
+        - &Q2 Quadrant 2
+        - &Q3 Quadrant 3
+        - &Q4 Quadrant 4
+    Fundamental / Harmonic:
+        - &Fundamental Fundamental
+        - &Harmonic Harmonic
+    Leading / Lagging:
+        - &Leading Leading
+        - &Lagging Lagging
+    Range:
+        - &NetFlow Net Flow
+        - &Minimum Minimum 
+        - &Average Average 
+        - &Maximum Maximum
+    Segmentation:
+        - &AtoB A to B
+        - &BtoC B to C
+        - &CtoA C to A
+        - &Neutral Phase Neutral->Ground
+        - &AtoNeutral A to Neutral
+        - &BtoNeutral B to Neutral
+        - &CtoNeutral C to Neutral
+    Rate:
+        - &RateA Rate A
+        - &RateB Rate B
+        - &RateC Rate C
+        - &RateD Rate D
+        - &RateE Rate E
+        - &RateF Rate F
+        - &RateG Rate G
+    Scaling Factor:
+        - &Giga Giga
+        - &Mega Mega
+        - &Kilo Kilo
+        - &milli milli
+        - &Micro Micro
+        - &Tenths Tenths
+        - &Overflow Overflow
+    Coincident Value:
+        - &Coin1 Coincident Value 1
+        - &Coin2 Coincident Value 2
+        - &Coin3 Coincident Value 3
+        - &Coin4 Coincident Value 4
+        - &Coin5 Coincident Value 5
+        - &Coin6 Coincident Value 6
+        - &Coin7 Coincident Value 7
+
+# Table 1 â€“ Centron C1SX and C2SX with Advanced Metrology
 Centron C1SX and C2SX with Advanced Metrology:
     Watt-hours Delivered:                         { unit: Wh,  Unit Modifiers: [ Quadrant 1, Quadrant 4                                               ], Models: [ *c1sx, *c2sx ] }
     Watt-hours Received:                          { unit: Wh,  Unit Modifiers: [ Quadrant 2, Quadrant 3                                               ], Models: [ *c1sx, *c2sx ] }
@@ -53,9 +221,9 @@ Centron C1SX and C2SX with Advanced Metrology:
     Coincident Time of Peak Demand Rate D:        { unit: s,   Unit Modifiers: [ TOU Rate D                                                           ], Models: [ *c1sx, *c2sx ] }
     Frozen Peak Demand Rate D:                    { unit: W,   Unit Modifiers: [ Quadrant 1, Quadrant 4, Max, TOU Rate D, Previous                    ], Models: [ *c1sx, *c2sx ] }
     Coincident Time of Frozen Peak Demand Rate D: { unit: s,   Unit Modifiers: [ TOU Rate D                                                           ], Models: [ *c1sx, *c2sx ] }
-    RFN Temperature:                              { unit: °C,  Unit Modifiers: [                                                                      ], Models: [ *c1sx, *c2sx ] }
+    RFN Temperature:                              { unit: Â°C,  Unit Modifiers: [                                                                      ], Models: [ *c1sx, *c2sx ] }
 
-# Table 2 – Centron C2SX Prior To Advanced Metrology
+# Table 2 â€“ Centron C2SX Prior To Advanced Metrology
 Centron C2SX prior to Advanced Metrology:
     Watt-hours Delivered:                   { unit: Wh, Unit Modifiers: [ Quadrant 1, Quadrant 4                         ] }
     Watt-hours Received:                    { unit: Wh, Unit Modifiers: [ Quadrant 2, Quadrant 3                         ] }
@@ -80,7 +248,7 @@ Centron C2SX prior to Advanced Metrology:
     Watt-hours Total Rate D:                { unit: Wh, Unit Modifiers: [ TOU Rate D                                     ] }
     Peak Demand Rate D:                     { unit: W,  Unit Modifiers: [ Quadrant 1, Quadrant 4, Max, TOU Rate D        ] }
     Coincident Time for Peak Demand Rate D: { unit: s,  Unit Modifiers: [ TOU Rate D                                     ] }
-    RFN Temperature:                        { unit: °C, Unit Modifiers: [                                                ] }
+    RFN Temperature:                        { unit: Â°C, Unit Modifiers: [                                                ] }
 
 # L & G Focus AX and kWh Meters
     # This section presents the Units and Modifiers used in metric data from L & G Focus meters to be used for point mapping.
@@ -90,7 +258,7 @@ Centron C2SX prior to Advanced Metrology:
     # Table 6 shows units and modifiers for RFN-420 nodes in kWh meters without Advanced Metrology.
     # Table 11 shows units and modifiers for RFN-500 nodes in AX meters with Advanced Metrology.
 
-# Table 3 – RFN-420 Node in L & G Focus AX with Advanced Metrology
+# Table 3 â€“ RFN-420 Node in L & G Focus AX with Advanced Metrology
 # This table covers models:  FocusAXD, FocusAXT, FocusAXR, FocusAXD-SD, FocusAXT-SD, FocusAXR-SD
 RFN-420 Node in L & G Focus AX with Advanced Metrology:
     Watt-hours Delivered:                         { unit: Wh,        Unit Modifiers: [ Quadrant 1, Quadrant 4                                               ] }
@@ -160,9 +328,9 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     Maximum Voltage Phase A:                      { unit: V,         Unit Modifiers: [ Phase A, Max, milli                                                  ] }
     Maximum Voltage Phase B:                      { unit: V,         Unit Modifiers: [ Phase B, Max, milli                                                  ] }
     Maximum Voltage Phase C:                      { unit: V,         Unit Modifiers: [ Phase C, Max, milli                                                  ] }
-    RFN Temperature:                              { unit: °C,        Unit Modifiers: [                                                                      ] }
+    RFN Temperature:                              { unit: Â°C,        Unit Modifiers: [                                                                      ] }
      
-# Table 4 – RFN-420 Node in L & G Focus AX Prior to Advanced Metrology
+# Table 4 â€“ RFN-420 Node in L & G Focus AX Prior to Advanced Metrology
 RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     Watt-hours Delivered:        { unit: Wh,                  Unit Modifiers: [ Quadrant 1, Quadrant 4                                               ] }
     Watt-hours Received:         { unit: Wh,                  Unit Modifiers: [ Quadrant 2, Quadrant 3                                               ] }
@@ -204,9 +372,9 @@ RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     Restore Count:               { unit: Restore Count,       Unit Modifiers: [                                                                      ] }
     Outage Blink Count:          { unit: Outage Blink Count,  Unit Modifiers: [                                                                      ] }
     Restore Blink Count:         { unit: Restore Blink Count, Unit Modifiers: [                                                                      ] }
-    RFN Temperature:             { unit: °C,                  Unit Modifiers: [                                                                      ] }
+    RFN Temperature:             { unit: Â°C,                  Unit Modifiers: [                                                                      ] }
      
-# Table 5 – RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology
+# Table 5 â€“ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology
 # The model name for meters with RFN-420 nodes is FocuskWh
 # The model name for meters with RFN-500 nodes is FocuskWh-500
 # Both meter/node combinations have all of the metrics shown below.
@@ -259,18 +427,18 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     Coincident Time of Frozen Peak Demand Rate D: { unit: s,  Unit Modifiers: [ TOU Rate D, Previous                                                 ] }
     Primary Voltage:                              { unit: V,  Unit Modifiers: [ Primary, milli                                                       ] }
     Secondary Voltage:                            { unit: V,  Unit Modifiers: [ Secondary, milli                                                     ] }
-    RFN Temperature:                              { unit: °C, Unit Modifiers: [                                                                      ] }
+    RFN Temperature:                              { unit: Â°C, Unit Modifiers: [                                                                      ] }
      
-# Table 6 – RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology
+# Table 6 â€“ RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology
 RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology:
     Watt-hours Delivered: { unit: Wh, Unit Modifiers: [ Quadrant 1, Quadrant 4 ] }
     Watt-hours Received:  { unit: Wh, Unit Modifiers: [ Quadrant 2, Quadrant 3 ] }
     Primary Voltage:      { unit: V,  Unit Modifiers: [ Primary, milli         ] }
     Secondary Voltage:    { unit: V,  Unit Modifiers: [ Secondary, milli       ] }
     Interval Demand:      { unit: W,  Unit Modifiers: [ Quadrant 1, Quadrant 4 ] }
-    RFN Temperature:      { unit: °C, Unit Modifiers: [                        ] }
+    RFN Temperature:      { unit: Â°C, Unit Modifiers: [                        ] }
 
-# Table 7 – Elster A3
+# Table 7 â€“ Elster A3
 Elster A3:
     Watt-hours Delivered:                                            { unit: Wh,        Unit Modifiers: [ Quadrant 1, Quadrant 4                                                  ], Models: *DTKR, Other names: [ "kWh delivered" ] }
     Watt-hours Received:                                             { unit: Wh,        Unit Modifiers: [ Quadrant 2, Quadrant 3                                                  ], Models: *DTKR, Other names: [ "kWh received" ] }
@@ -459,7 +627,7 @@ Elster A3:
     Volt-amperes Phase A:                                            { unit: VA,        Unit Modifiers: [ Phase A                                                                 ], Models: *__KR, Other names: [ "Phase A kVA" ] }
     Volt-amperes Phase B:                                            { unit: VA,        Unit Modifiers: [ Phase B                                                                 ], Models: *__KR, Other names: [ "Phase B kVA" ] }
     Volt-amperes Phase C:                                            { unit: VA,        Unit Modifiers: [ Phase C                                                                 ], Models: *__KR, Other names: [ "Phase C kVA" ] }
-    RFN Temperature:                                                 { unit: °C,        Unit Modifiers: [                                                                         ], Models: *DTKR }
+    RFN Temperature:                                                 { unit: Â°C,        Unit Modifiers: [                                                                         ], Models: *DTKR }
 
 # Table 8 - ELO
 ELO:
@@ -484,9 +652,9 @@ ELO:
     Current Angle Phase B:               { unit: 1/10 A degree, Unit Modifiers: [ Phase B                            ] }
     Current Angle Phase C:               { unit: 1/10 A degree, Unit Modifiers: [ Phase C                            ] }
     Power Factor:                        { unit: PF,            Unit Modifiers: [                                    ] }
-    RFN Temperature:                     { unit: °C,            Unit Modifiers: [                                    ] }
+    RFN Temperature:                     { unit: Â°C,            Unit Modifiers: [                                    ] }
 
-#Table 9 – Itron Sentinel
+#Table 9 â€“ Itron Sentinel
 Itron Sentinel:
     Watt-hours Delivered:                                           { unit: Wh,       Unit Modifiers: [ Quadrant 1, Quadrant 4                                                                         ], Models: *01234, Itron name: Delivered kWh }
     Watt-hours Received:                                            { unit: Wh,       Unit Modifiers: [ Quadrant 2, Quadrant 3                                                                         ], Models: *_1234, Itron name: Received kWh }
@@ -669,7 +837,7 @@ Itron Sentinel:
     Angle of Current Phase B to Voltage Phase A:                    { unit: A degree, Unit Modifiers: [ Phase B                                                                                        ], Models: *_1234, Itron name: Angle Current B To Voltage A }
     Angle of Current Phase C to Voltage Phase A:                    { unit: A degree, Unit Modifiers: [ Phase C                                                                                        ], Models: *_1234, Itron name: Angle Current C To Voltage A }
     Power Factor:                                                   { unit: PF,       Unit Modifiers: [                                                                                                ], Models: *_1234, Itron name: Instantaneous Power Factor }
-    RFN Temperature:                                                { unit: °C,       Unit Modifiers: [                                                                                                ], Models: *01234 }
+    RFN Temperature:                                                { unit: Â°C,       Unit Modifiers: [                                                                                                ], Models: *01234 }
 
 #  Table 10 - RFN-500 Node in Landis & Gyr S4e and S4x
 RFN-500 Node in Landis & Gyr S4e and S4x:
@@ -1151,9 +1319,9 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     Current Angle Phase A:                      { unit: A degree, Unit Modifiers: [ Phase A                                                                                                             ], Models: *ADTR-RDTR-650 }
     Current Angle Phase B:                      { unit: A degree, Unit Modifiers: [ Phase B                                                                                                             ], Models: *ADTR-RDTR-650 }
     Current Angle Phase C:                      { unit: A degree, Unit Modifiers: [ Phase C                                                                                                             ], Models: *ADTR-RDTR-650 }
-    RFN Temperature:                            { unit: °C,       Unit Modifiers: [                                                                                                                     ], Models: *ADTR-RDTR-650 }
+    RFN Temperature:                            { unit: Â°C,       Unit Modifiers: [                                                                                                                     ], Models: *ADTR-RDTR-650 }
 
-# Table 11 – RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology)
+# Table 11 â€“ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology)
 RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     Watt-hours Delivered:                 { unit: Wh,        Unit Modifiers: [ Quadrant 1, Quadrant 4                                               ], Models: *AX-RX }
     Watt-hours Received:                  { unit: Wh,        Unit Modifiers: [ Quadrant 2, Quadrant 3                                               ], Models: *AX-RX }
@@ -1249,17 +1417,17 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     Power Factor Angle Phase A:           { unit: PF degree, Unit Modifiers: [ Phase A                                                              ], Models: *AX-RX }
     Power Factor Angle Phase B:           { unit: PF degree, Unit Modifiers: [ Phase B                                                              ], Models: *AX-RX }
     Power Factor Angle Phase C:           { unit: PF degree, Unit Modifiers: [ Phase C                                                              ], Models: *AX-RX }
-    RFN Temperature:                      { unit: °C,        Unit Modifiers: [                                                                      ], Models: *AX-RX }
+    RFN Temperature:                      { unit: Â°C,        Unit Modifiers: [                                                                      ], Models: *AX-RX }
 
 # Table 12 - Next Gen Water Node
 Next Gen Water Node:
     Faceplate Reading: { unit: -,  Unit Modifiers: [       ], Metric ID: 255 }
     # Note: For the Faceplate Reading, the units string (passed to Yukon) is a dash, "-", which corresponds to Unknown units reported by the node.  
-    #     The goal of the Faceplate Reading channel is to match the number on the meter’s faceplate.  The actual units of the meter’s faceplate 
+    #     The goal of the Faceplate Reading channel is to match the number on the meterâ€™s faceplate.  The actual units of the meterâ€™s faceplate 
     #     reading will differ among the various meter types that may be attached to the node.
-    Battery Voltage:	 { unit: V,	 Unit Modifiers: [ milli ], Metric ID: 115 }
-    Temperature:	     { unit: °C, Unit Modifiers: [       ], Metric ID: 257 }
----
+    Battery Voltage:  { unit: V,  Unit Modifiers: [ milli ], Metric ID: 115 }
+    Temperature:      { unit: Â°C, Unit Modifiers: [       ], Metric ID: 257 }
+
 Metric IDs:
     1:   { name: Watt hour delivered,                  unit: Wh,        Unit Modifiers: [ Quadrant 1, Quadrant 4                                                  ] }
     2:   { name: Watt hour received,                   unit: Wh,        Unit Modifiers: [ Quadrant 2, Quadrant 3                                                  ] }
@@ -1441,7 +1609,7 @@ Metric IDs:
     255: { name: Unknown,                              unit: -,         Unit Modifiers: [                                                                         ] }
     256: { name: Time in Seconds,                      unit: s,         Unit Modifiers: [                                                                         ] }
     256: { name: Time in Seconds (Frozen),             unit: s,         Unit Modifiers: [ Previous                                                                ] }
-    257: { name: Temperature in Degrees C,             unit: °C,        Unit Modifiers: [                                                                         ] }
+    257: { name: Temperature in Degrees C,             unit: Â°C,        Unit Modifiers: [                                                                         ] }
     # ------
     300: { name: Gallons,                              unit: gal,       Unit Modifiers: [                                                                         ] }
     # ------
@@ -1449,173 +1617,3 @@ Metric IDs:
     # ------
     320: { name: Cubic Meters,                         unit: m^3,       Unit Modifiers: [                                                                         ] }
     
----
-Meter models:
-    Centron:
-        - &c1sx Centron C1SX
-        - &c2sx Centron C2SX
-    Landis and Gyr:
-        - &focus_kWh Landis and Gyr Focus kWh
-        - &focus_ax Landis and Gyr Focus AX
-        - &focus_rx Landis and Gyr Focus RX
-        - &axd-500 Landis and Gyr FocusAXD-500	
-        - &axt-500 Landis and Gyr FocusAXT-500	
-        - &axr-500 Landis and Gyr FocusAXR-500	
-        - &axd-sd-500 Landis and Gyr FocusAXD-SD-500	
-        - &axt-sd-500 Landis and Gyr FocusAXT-SD-500	
-        - &axr-sd-500 Landis and Gyr FocusAXR-SD-500	
-        - &rxd-500 Landis and Gyr FocusRXD-500
-        - &rxt-500 Landis and Gyr FocusRXT-500
-        - &rxr-500 Landis and Gyr FocusRXR-500
-        - &rxd-sd-500 Landis and Gyr FocusRXD-SD-500
-        - &rxt-sd-500 Landis and Gyr FocusRXT-SD-500
-        - &rxr-sd-500 Landis and Gyr FocusRXR-SD-500
-        - &s4e_ad Landis and Gyr S4-AD
-        - &s4e_at Landis and Gyr S4-AT
-        - &s4e_ar Landis and Gyr S4-AR
-        - &s4e_rd Landis and Gyr S4-RD
-        - &s4e_rt Landis and Gyr S4-RT
-        - &s4e_rr Landis and Gyr S4-RR
-        - &s4x Landis and Gyr S4x E650
-    Elster:
-        - &a3d Elster A3D
-        - &a3t Elster A3T
-        - &a3k Elster A3K
-        - &a3r Elster A3R
-    ELO:
-        - &213t ELO 213T
-    Itron:
-        - &sl0 Itron SENTINEL-L0
-        - &sl1 Itron SENTINEL-L1
-        - &sl2 Itron SENTINEL-L2
-        - &sl3 Itron SENTINEL-L3
-        - &sl4 Itron SENTINEL-L4
-
-Meter combinations:
-    &DTKR [ *a3d, *a3t, *a3k, *a3r ]
-    &_TKR [ *a3t, *a3k, *a3r ]
-    &__KR [ *a3k, *a3r ]
-    &__K_ [ *a3k ]
-    &___R [ *a3r ]
-    &01234 [ *sl4, *sl3, *sl2, *sl1, *sl0 ]
-    &_1234 [ *sl4, *sl3, *sl2, *sl1 ]
-    &__234 [ *sl4, *sl3, *sl2 ]
-    &___34 [ *sl4, *sl3 ]
-    &____4 [ *sl4 ]
-    &ADTR-RDTR-___ [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr       ]
-    &ADTR-RDTR-650 [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr, *s4x ]
-    &____-RDTR-___ [                            *s4e_rd, *s4e_rt, *s4e_rr       ]
-    &____-RDTR-650 [                            *s4e_rd, *s4e_rt, *s4e_rr, *s4x ]
-    &A_TR-R_TR-___ [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr       ]
-    &A_TR-R_TR-650 [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr, *s4x ]
-    &____-R_TR-___ [                                     *s4e_rt, *s4e_rr       ]
-    &____-R_TR-650 [                                     *s4e_rt, *s4e_rr, *s4x ]
-    &____-____-650 [                                                       *s4x ]
-    &__-RX [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500 ]
-    &AX-RX [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *axd-500, *axt-500, *axr-500, *axd-sd-500, *axt-sd-500, *axr-sd-500 ]
-
----
-Units of measure:
-    - &Wh
-        Watt-Hour
-    - &Varh
-        Var-Hour
-    - &Qh
-        Q-Hour
-    - &VAh
-        VA-Hour
-    - &Time
-        Time (in seconds)
-    - &V
-        Volts (10ths Volt)
-    - &A
-        Current (10ths Amp)
-    - &Vdeg
-        Voltage Angle (10ths Degree)
-    - &Adeg
-        Current Angle (10ths Degree)
-    - &PF
-        Power Factor
-    # Pound Hour
-    - &Gal
-        Gallon
-    - &None
-        No units
-    - &W
-        Watt
-    - &Var
-        var
-    - &Q
-        Q
-    - &VA
-        VA
-    - &Outages
-        Outage Count
-    - &Restores
-        Restore Count
-    - &OutBlinks
-        Outage Blink Count
-    - &RestBlinks
-        Restore Blink Count
-    - &DegC
-        °C
-    - &Unknown
-        Unknown
-
----
-Modifiers :
-    Primary / Secondary:
-        - &Pri Primary
-        - &Sec Secondary
-    Phase:
-        - &PhaseA Phase A
-        - &PhaseB Phase B
-        - &PhaseC Phase C
-    Quadrant:
-        - &Q1 Quadrant 1
-        - &Q2 Quadrant 2
-        - &Q3 Quadrant 3
-        - &Q4 Quadrant 4
-    Fundamental / Harmonic:
-        - &Fundamental Fundamental
-        - &Harmonic Harmonic
-    Leading / Lagging:
-        - &Leading Leading
-        - &Lagging Lagging
-    Range:
-        - &NetFlow Net Flow
-        - &Minimum Minimum 
-        - &Average Average 
-        - &Maximum Maximum
-    Segmentation:
-        - &AtoB A to B
-        - &BtoC B to C
-        - &CtoA C to A
-        - &Neutral Phase Neutral->Ground
-        - &AtoNeutral A to Neutral
-        - &BtoNeutral B to Neutral
-        - &CtoNeutral C to Neutral
-    Rate:
-        - &RateA Rate A
-        - &RateB Rate B
-        - &RateC Rate C
-        - &RateD Rate D
-        - &RateE Rate E
-        - &RateF Rate F
-        - &RateG Rate G
-    Scaling Factor:
-        - &Giga Giga
-        - &Mega Mega
-        - &Kilo Kilo
-        - &milli milli
-        - &Micro Micro
-        - &Tenths Tenths
-        - &Overflow Overflow
-    Coincident Value:
-        - &Coin1 Coincident Value 1
-        - &Coin2 Coincident Value 2
-        - &Coin3 Coincident Value 3
-        - &Coin4 Coincident Value 4
-        - &Coin5 Coincident Value 5
-        - &Coin6 Coincident Value 6
-        - &Coin7 Coincident Value 7
