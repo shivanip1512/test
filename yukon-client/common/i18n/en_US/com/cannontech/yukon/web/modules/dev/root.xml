@@ -282,6 +282,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.stopSendingRfnMeterMessages.label">Stop Simulating Existing RFN Meters</entry>
     <entry key="yukon.web.modules.dev.rfnTest.startSimulator.label">Simulate Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.stopSimulator.label">Stop Simulating Serial Number Range</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.pointMappingIcd.label">Yukon Point Mapping ICD</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.label">Decipher Point Mapping</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.modifiers">Modifiers</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.uom">Unit Of Measure</entry>
