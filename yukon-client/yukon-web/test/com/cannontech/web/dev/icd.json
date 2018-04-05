@@ -4929,47 +4929,47 @@
     "116" : {
       "name" : "Voltage Min Phase A",
       "unit" : "V",
-      "Unit Modifiers" : [ "Min Phase A" ]
+      "Unit Modifiers" : [ "Min", "Phase A" ]
     },
     "117" : {
       "name" : "Voltage Min Phase B",
       "unit" : "V",
-      "Unit Modifiers" : [ "Min Phase B" ]
+      "Unit Modifiers" : [ "Min", "Phase B" ]
     },
     "118" : {
       "name" : "Voltage Min Phase C",
       "unit" : "V",
-      "Unit Modifiers" : [ "Min Phase C" ]
+      "Unit Modifiers" : [ "Min", "Phase C" ]
     },
     "119" : {
       "name" : "Voltage Avg Phase A",
       "unit" : "V",
-      "Unit Modifiers" : [ "Avg Phase A" ]
+      "Unit Modifiers" : [ "Avg", "Phase A" ]
     },
     "120" : {
       "name" : "Voltage Avg Phase B",
       "unit" : "V",
-      "Unit Modifiers" : [ "Avg Phase B" ]
+      "Unit Modifiers" : [ "Avg", "Phase B" ]
     },
     "121" : {
       "name" : "Voltage Avg Phase C",
       "unit" : "V",
-      "Unit Modifiers" : [ "Avg Phase C" ]
+      "Unit Modifiers" : [ "Avg", "Phase C" ]
     },
     "122" : {
       "name" : "Voltage Max Phase A",
       "unit" : "V",
-      "Unit Modifiers" : [ "Max Phase A" ]
+      "Unit Modifiers" : [ "Max", "Phase A" ]
     },
     "123" : {
       "name" : "Voltage Max Phase B",
       "unit" : "V",
-      "Unit Modifiers" : [ "Max Phase B" ]
+      "Unit Modifiers" : [ "Max", "Phase B" ]
     },
     "124" : {
       "name" : "Voltage Max Phase C",
       "unit" : "V",
-      "Unit Modifiers" : [ "Max Phase C" ]
+      "Unit Modifiers" : [ "Max", "Phase C" ]
     },
     "125" : {
       "name" : "Current",
