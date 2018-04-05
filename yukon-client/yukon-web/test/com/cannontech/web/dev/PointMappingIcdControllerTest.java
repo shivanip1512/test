@@ -31,6 +31,6 @@ public class PointMappingIcdControllerTest {
 
         String icdExpected = IOUtils.toString(icdStream);
 
-        assertEquals((String)icd, icdExpected);
+        assertEquals(icdExpected, (String)icd);
     }
 }
