@@ -10,10 +10,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="home">
-    
-<cti:includeScript link="YUKON_TIME_FORMATTER"/>
-<cti:includeScript link="/resources/js/pages/yukon.dr.dashboard.js"/>
-<cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
 
 <tags:simpleDialog id="drDialog"/>
 <c:if test="${showSeasonReset}">
@@ -125,15 +121,7 @@
                         <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                             <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" 
                                     valueClass="full-width" nameClass="wsnw">
-                                <div class="column-6-18 clearfix stacked">
-                                    <div class="column one">
-                                        <span class="js-time-label fwb">&nbsp;</span>
-                                        <tags:hidden path="time" id="rf-performance-command-time"/>
-                                    </div>
-                                    <div class="column two nogutter">
-                                        <div class="js-time-slider" style="margin-top: 7px;"></div>
-                                    </div>
-                                </div>
+                                <tags:timeSlider startPath="time" maxValue="1425" displayTimeToLeft="true"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".rfPerformance.configure.emailResults">
                                 <tags:hidden path="email" id="rf-performance-email"/>
@@ -143,15 +131,7 @@
                                 </div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".rfPerformance.configure.dailyEmail" rowClass="js-email-schedule">
-                                <div class="column-6-18 clearfix stacked">
-                                    <div class="column one">
-                                        <span class="js-email-time-label fwb">&nbsp;</span>
-                                        <tags:hidden path="emailTime" id="rf-performance-email-time"/>
-                                    </div>
-                                    <div class="column two nogutter">
-                                        <div class="js-email-time-slider" style="margin-top: 7px;"></div>
-                                    </div>
-                                </div>
+                                <tags:timeSlider startPath="emailTime" maxValue="1425" displayTimeToLeft="true"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".rfPerformance.configure.notifGroups" rowClass="js-notif-group">
                                 <tags:hidden path="notifGroupIds" id="rf-performance-notif-group-ids"/>
@@ -235,5 +215,7 @@
     </div>
 </div>
 <dt:pickerIncludes/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.dashboard.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.dr.dataUpdater.showAction.js"/>
 
 </cti:standardPage>

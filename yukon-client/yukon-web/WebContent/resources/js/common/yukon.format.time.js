@@ -30,9 +30,6 @@ yukon.timeFormatter = (function () {
             if (minutes < 0) {
                 minutes = 0;
             }
-            if (minutes >= 1440) {
-                minutes = 24 * 60 - 1;
-            }
             
             if (typeof roundTo !== 'undefined' && roundTo !== 0) {
                 // Make sure the value is a multiple of 10
@@ -43,8 +40,14 @@ yukon.timeFormatter = (function () {
             minute = minutes % 60;
             
             ampmStr = "AM";
+            //convert hour if allowing more than 24 hours
+            if (hour > 24) {
+                hour = hour - 24;
+            }
             if (hour >= 12) {
-                ampmStr = "PM";
+                if (hour != 24) {
+                    ampmStr = "PM";
+                }
                 if (hour > 12) {
                     hour = hour - 12;
                 }

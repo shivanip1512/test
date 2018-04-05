@@ -259,7 +259,7 @@ public class SmartNotificationsController {
     }
     
     @RequestMapping(value="singleNotification", method=RequestMethod.POST)
-    public String singleNotificationSettings(@RequestParam(value="singleNotification", required=false) Boolean singleNotification, 
+    public String singleNotificationSettings(@RequestParam(value="singleNotification", required=false) boolean singleNotification, 
                                              @RequestParam(value="sendTime", required=false) String sendTime,  
                                              YukonUserContext userContext, FlashScope flash) throws Exception {
         if (singleNotification) {
@@ -345,6 +345,7 @@ public class SmartNotificationsController {
         SmartNotificationSubscription subscription = new SmartNotificationSubscription();
         setupPopupModel(model, userContext);
         setDefaultEmail(userContext, subscription);
+        subscription.addParameters("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
         model.addAttribute("subscription", subscription);
         return "subscriptionPopup.jsp";
     }
@@ -370,7 +371,6 @@ public class SmartNotificationsController {
         }
         model.addAttribute("eventTypes", events);
         model.addAttribute("deviceDataMonitors", ddms);
-        model.addAttribute("sendTime", userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
     }
     
     @RequestMapping(value="subscription/saveDetails", method=RequestMethod.POST)

@@ -9,36 +9,7 @@ yukon.namespace('yukon.dr.ecobee');
  * @requires yukon.date.time.picker
  */
 yukon.dr.ecobee = (function () {
-    
-    var 
-    _timeFormatter = yukon.timeFormatter,
-    
-    /** 
-     * Setup a slider.
-     * @param {string} containingDivSelector. div containing the .js-time-slider and .js-time-label
-     * @param {string} inputSelector. - the actual hidden input that holds the current value of this slider
-     */
-    _setupSlider = function (containingDivSelector, inputSelector) {
-        
-        var value = $(inputSelector).val();
-        
-        $(containingDivSelector +' .js-time-slider').slider({
-            max: 24 * 60 - 15,
-            min: 0,
-            value: value,
-            step: 15,
-            slide: function (ev, ui) {
-                $(containingDivSelector + ' .js-time-label').text(_timeFormatter.formatTime(ui.value, 0));
-                $(inputSelector).val(ui.value);
-            },
-            change: function (ev, ui) {
-                $(containingDivSelector + ' .js-time-label').text(_timeFormatter.formatTime(ui.value, 0));
-                $(inputSelector).val(ui.value);
-            }
-        });
-        
-        $(containingDivSelector + ' .js-time-label').text(_timeFormatter.formatTime(value, 0));
-    },
+
     mod = null;
 
     mod = {
@@ -47,8 +18,8 @@ yukon.dr.ecobee = (function () {
          */
         init: function () {
 
-            var _originalErrorCheckTime = $('#ecobee-error-check-time').val(),
-                _originalCollectionTime = $('#ecobee-data-collection-time').val(),
+            var _originalErrorCheckTime = $('#checkErrorsTime').val(),
+                _originalCollectionTime = $('#dataCollectionTime').val(),
                 appendEmptyList = function (listCont) {
                     var emptyMessage = $('#sync-issues').data('emptyKey');
                     listCont.append('<span class="empty-list" id="no-sync-issues"></span>');
@@ -67,9 +38,6 @@ yukon.dr.ecobee = (function () {
                     issueTd.append('<div class="error"></div>');
                     issueTd.find('.error').text(errorOpts.errorMsg);
                 };
-
-            _setupSlider('#ecobee-data-collection-schedule', '#ecobee-data-collection-time');
-            _setupSlider('#ecobee-error-check-schedule', '#ecobee-error-check-time');
             
             if (0 === $('.js-fixable-issue').length) {
                 $('#fix-all-btn').closest('.action-area').hide();
@@ -352,10 +320,9 @@ yukon.dr.ecobee = (function () {
             $(document).on('yukon_dr_ecobee_config_load', function () {
                 // each time the configure button popup is loaded, reset the field values of the times
                 // and reinit the sliders so they accurately reflect the current settings in the database
-                $('#ecobee-error-check-time').val(_originalErrorCheckTime);
-                $('#ecobee-data-collection-time').val(_originalCollectionTime);
-                _setupSlider('#ecobee-data-collection-schedule', '#ecobee-data-collection-time');
-                _setupSlider('#ecobee-error-check-schedule', '#ecobee-error-check-time');
+                $('#checkErrorsTime').val(_originalErrorCheckTime);
+                $('#dataCollectionTime').val(_originalCollectionTime);
+                yukon.ui.timeSlider.init();
             });
         },
         /**

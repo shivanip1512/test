@@ -121,24 +121,10 @@
                             ${rtu.deviceWindow.type}
                             <tags:hidden path="deviceWindow.type"/>
                         </tags:nameValue2>
-                        <form:hidden path="deviceWindow.winOpen" id="start-time" />
-                        <form:hidden path="deviceWindow.winClose" id="end-time" />
-                        <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:nameValue2 nameKey=".winTimeRange" data-toggle-group="scanWindow" valueClass="full-width">
-                                <div class="scan-window-range">
-                                    <div class="js-time-range-label fwb"></div>
-                                    <div class="slider-range js-time-range-slider buffered"></div>
-                                </div>
-                            </tags:nameValue2>
-                        </cti:displayForPageEditModes>
-                        <cti:displayForPageEditModes modes="VIEW">
-                            <tags:nameValue2 nameKey=".winOpen" data-toggle-group="scanWindow">
-                                <tags:input path="winOpenTime"/>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".winClose" data-toggle-group="scanWindow">
-                                <tags:input path="winCloseTime"/>
-                            </tags:nameValue2>
-                        </cti:displayForPageEditModes>
+                        <tags:nameValue2 nameKey=".winTimeRange" valueClass="full-width">
+                            <tags:timeSlider dataToggleGroup="scanWindow" startPath="deviceWindow.winOpen" endPath="deviceWindow.winClose"
+                                viewOnlyMode="${mode == 'VIEW'}" rangeEnabled="true" timeFormat="SECONDS"/>
+                        </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
             </div>
@@ -202,6 +188,5 @@
         </div>
     </form:form>
     
-    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.rtu.js" />
 </cti:standardPage>

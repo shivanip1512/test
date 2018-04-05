@@ -9,9 +9,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<cti:includeScript link="YUKON_TIME_FORMATTER"/>
-<cti:includeScript link="/resources/js/pages/yukon.dr.ecobee.js"/>
-
 <cti:msgScope  paths="modules.dr.home, modules.dr">
     <tags:sectionContainer2 nameKey="ecobee">
         <div class="stacked">
@@ -47,15 +44,7 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ecobee.configure.dailyErrorCheck" rowId="ecobee-error-check-schedule" valueClass="full-width">
-                            <div class="column-6-18 clearfix stacked">
-                                <div class="column one">
-                                    <span class="js-time-label fwb">&nbsp;</span>
-                                    <tags:hidden path="checkErrorsTime" id="ecobee-error-check-time"/>
-                                </div>
-                                <div class="column two nogutter">
-                                    <div class="js-time-slider" style="margin-top: 7px;"></div>
-                                </div>
-                            </div>
+                            <tags:timeSlider startPath="checkErrorsTime" maxValue="1425" displayTimeToLeft="true"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle" valueClass="full-width">
                             <tags:hidden path="dataCollection" id="ecobee-data-collection"/>
@@ -65,15 +54,7 @@
                             </div>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".ecobee.configure.dailyDataCollection" rowId="ecobee-data-collection-schedule" valueClass="full-width">
-                            <div class="column-6-18 clearfix stacked">
-                                <div class="column one">
-                                    <span class="js-time-label fwb">&nbsp;</span>
-                                    <tags:hidden path="dataCollectionTime" id="ecobee-data-collection-time"/>
-                                </div>
-                                <div class="column two nogutter">
-                                    <div class="js-time-slider" style="margin-top: 7px;"></div>
-                                </div>
-                            </div>
+                            <tags:timeSlider startPath="dataCollectionTime" maxValue="1425" displayTimeToLeft="true"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </form:form>
@@ -81,3 +62,5 @@
         </div>
     </tags:sectionContainer2>
 </cti:msgScope>
+
+<cti:includeScript link="/resources/js/pages/yukon.dr.ecobee.js"/>

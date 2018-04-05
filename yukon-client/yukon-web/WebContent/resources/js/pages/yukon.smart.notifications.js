@@ -19,54 +19,12 @@ yukon.smart.notifications = (function () {
         popup.find('.js-monitor').toggleClass('dn', !deviceDataMonitor);
         popup.find('#device-data-monitor').prop("disabled", !deviceDataMonitor);
    },
-   
-   initializeTimeSlider = function (container) {
-       var sendTimeField = container.find('#notifications-send-time'),
-           timeLabel = container.find('.js-time-label'),
-           timeSlider = container.find('.js-time-slider'),
-           sendTimeValue = sendTimeField.val(),
-           sendTimeValue = yukon.timeFormatter.parse24HourTime(sendTimeValue),
-           userSettingSendTime = container.find('#userSettingSendTime').val(),
-           userSettingSendTimeValue = yukon.timeFormatter.parse24HourTime(userSettingSendTime),
-           currentValue = userSettingSendTimeValue > 0 ? userSettingSendTimeValue : sendTimeValue,
-           defaultValue = currentValue ? currentValue : 0;
-       if (timeSlider) {
-           //initialize time slider
-           timeSlider.slider({
-               max: 24 * 60 - 60,
-               min: 0,
-               value: defaultValue,
-               step: 60,
-               disabled: userSettingSendTime,
-               slide: function (ev, ui) {
-                   timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                   timeSlider.val(ui.value);
-                   sendTimeField.val(yukon.timeFormatter.format24HourTime(ui.value, 0));
-               },
-               change: function (ev, ui) {
-                   timeLabel.text(yukon.timeFormatter.formatTime(ui.value, 0));
-                   timeSlider.val(ui.value);
-                   sendTimeField.val(yukon.timeFormatter.format24HourTime(ui.value, 0));
-               }
-           });
-           sendTimeField.val(yukon.timeFormatter.format24HourTime(defaultValue, 0));
-           timeLabel.text(yukon.timeFormatter.formatTime(defaultValue, 0));
-           timeSlider.val(defaultValue);
-           if (userSettingSendTime) {
-               //this made the slider hidden, but we still want it shown just disabled
-               timeSlider.removeClass('ui-state-disabled');
-               $('.js-single-notification-warning').removeClass('dn');
-           }
-       }
-    },
     
     initializeSmartNotificationsTable = function () {
         var tableContainer = $('#smart-notifications-container');
         if (tableContainer.is(':visible')) {
             var reloadUrl = tableContainer.attr('data-url');
-            tableContainer.load(reloadUrl, function () {
-                initializeTimeSlider($('#send-time'));
-            });
+            tableContainer.load(reloadUrl);
         }
     },
     
@@ -142,17 +100,13 @@ yukon.smart.notifications = (function () {
             },
             error: function (xhr, status, error, $form) {
                 form.html(xhr.responseText);
-                initializeTimeSlider(form);
+                yukon.ui.timeSlider.init();
                 updateTypeFields(form);
             }
         });
     },
     
     mod = {
-            
-        initTimeSlider : function () {
-            initializeTimeSlider($('#send-time'));
-        },
         
         initEventsTimeline : function () {
             initializeEventsTimeline();
@@ -160,14 +114,23 @@ yukon.smart.notifications = (function () {
         
         /** Initialize this module. */
         init : function () {
-                        
+                                    
             if (_initialized) return;
             
             /** Load the notifications popup. */
             $(document).on('yukon:notifications:load', function (ev) {
                 var popup = $(ev.target);
-                initializeTimeSlider(popup);
                 updateTypeFields(popup);
+                yukon.ui.timeSlider.init();
+                //check if single notification was selected
+                var singleNotificationSlider = $('#notifications-section').find('.js-time-slider');
+                if (singleNotificationSlider.is(":visible")) {
+                    //this made the slider hidden, but we still want it shown just disabled
+                    var popupSlider = popup.find('.js-time-slider');
+                    popupSlider.slider({disabled: true});
+                    popupSlider.removeClass('ui-state-disabled');
+                    $('.js-single-notification-warning').removeClass('dn');
+                }
             });
             
             $(document).on('submit', '#notification-details', function (ev) {

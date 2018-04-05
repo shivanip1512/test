@@ -7,7 +7,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-
 <cti:standardPage module="user" page="profile.${mode}">
 <script type="text/javascript">
 $(document).ready(function(){
@@ -223,16 +222,64 @@ $(document).ready(function(){
 </table>
 </cti:displayForPageEditModes>
 
+<!--NOTIFICATIONS SECTION-->
 <cti:displayForPageEditModes modes="VIEW">
 
-    <!--NOTIFICATIONS SECTION-->
-    <cti:url var="dataUrl" value="/notifications/subscriptions"/>
-    <div id="smart-notifications-container" data-url="${dataUrl}">
-        <%@ include file="../smartNotifications/subscriptions.jsp" %>
-    </div>
+    <cti:msgScope paths="modules.smartNotifications">
+    
+        <tags:setFormEditMode mode="EDIT"/>
+    
+        <div id="notifications-section" style="margin-top:50px;">
+            <cti:button icon="icon-email-add" nameKey="subscribe" data-popup="#create-popup" classes="fr"/>
+            <tags:sectionContainer2 nameKey="notifications">
+                
+                <div>
+                    <cti:url var="singleNotificationUrl" value="/notifications/singleNotification"/>
+                    <form action="${singleNotificationUrl}" method="POST">
+                        <cti:csrfToken/>
+                        <span><span class="fl" style="padding-right:10px;"><i:inline key=".singleNotification"/>: </span>
+                            <tags:switchButton name="singleNotification" classes="fn vam" onNameKey=".yes.label" offNameKey=".no.label" 
+                                checked="${!empty sendTime}" toggleGroup="singleNotificationToggle" toggleAction="hide"/>
+                             <tags:timeSlider startName="sendTime" startValue="${sendTime}" dataToggleGroup="singleNotificationToggle" stepValue="60" 
+                                displayTimeToLeft="true" timeFormat="HHMM" maxValue="1380"/>
+                            <cti:button nameKey="save" type="submit" classes="fn" style="margin-left:20px;"/>
+                        </span>
+                    </form>
+                </div>
+                <hr/>
+                
+               <cti:url var="action" value="/notifications/subscriptions"/>
+                <form:form id="filter-form" action="${action}" commandName="filter" method="get">
+                    <i:inline key="yukon.common.filterBy"/>
+                    <cti:msg2 var="allTypes" key=".allTypes"/>
+                    <tags:selectWithItems path="eventType" items="${eventTypes}" defaultItemLabel="${allTypes}" />
+                    <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
+                </form:form>
+        
+                <hr/>
+    
+                <!--NOTIFICATIONS TABLE-->
+                <cti:url var="dataUrl" value="/notifications/subscriptions"/>
+                <div id="smart-notifications-container" data-url="${dataUrl}">
+                    <%@ include file="../smartNotifications/subscriptions.jsp" %>
+                </div>
+                
+            </tags:sectionContainer2>
+        </div>
+    
+        <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>
+        <div id="create-popup" data-dialog
+                class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
+                data-title="<cti:msg2 key=".createPopup.title"/>"
+                data-url="${smartNotificationsUrl}" 
+                data-load-event="yukon:notifications:load"
+                data-width="600"></div>
+                        
+    </cti:msgScope>
     
 </cti:displayForPageEditModes>
          
 <cti:includeScript link="/resources/js/pages/yukon.user.profile.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.smart.notifications.js"/>
     
 </cti:standardPage>

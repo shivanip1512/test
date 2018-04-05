@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
@@ -95,6 +96,8 @@ public class UserProfileController {
         prefHelper.setupUserPreferences(model, user);
         profileHelper.setupPasswordData(model, user);
         model.addAttribute("filter", new SmartNotificationFilter());
+        model.addAttribute("sendTime", userPreferenceService.getPreference(context.getYukonUser(), UserPreferenceName.SMART_NOTIFICATIONS_DAILY_TIME));
+        model.addAttribute("eventTypes", SmartNotificationEventType.values());
 
         return "profile.jsp";
     }
