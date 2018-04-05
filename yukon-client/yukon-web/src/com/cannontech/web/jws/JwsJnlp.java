@@ -107,6 +107,7 @@ public enum JwsJnlp {
                 "slf4j-api-1.7.13.jar",
                 "slf4j-log4j12-1.7.2.jar",
                 "smtp-1.5.1.jar",
+                "snakeyaml-1.18.2.jar",
                 "spring-aop-4.2.0.RELEASE.jar",
                 "spring-aspects-4.2.0.RELEASE.jar",
                 "spring-beans-4.2.0.RELEASE.jar",

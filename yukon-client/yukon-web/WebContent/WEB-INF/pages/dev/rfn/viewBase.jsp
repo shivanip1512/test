@@ -69,6 +69,7 @@ $(function () { yukon.dev.rfn.init(); });
         <h3>Tools</h3>
         <ul class="simple-list stacked">
             <li><a href="decipher/view"><i:inline key=".pointMappingDecipher.label"/></a></li>
+            <li><a href="icd/view"><i:inline key=".pointMappingIcd.label"/></a></li>
         </ul>   
         <h3>Pages</h3>
         <ul class="simple-list stacked">
